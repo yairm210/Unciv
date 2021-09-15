@@ -12,6 +12,7 @@ import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import com.unciv.ui.utils.toPercent
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -132,8 +133,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     }
                 }
 
-                if (civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
-                    cityStateBonus.culture *= 1.5f
+                for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                    cityStateBonus.timesInPlace(unique.params[0].toPercent(), Stat.valueOf(unique.params[1]))
+                }
 
                 statMap.add("City-States", cityStateBonus)
             }
@@ -331,6 +333,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                             statMap["City-States"] = happinessBonus
                     }
                 }
+            }
+        }
+
+        // Just in case
+        if (statMap.containsKey("City-States")) {
+            for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                if (unique.params[1] == Stat.Happiness.name)
+                    statMap["City-States"] = statMap["City-States"]!! * unique.params[0].toPercent()
             }
         }
 

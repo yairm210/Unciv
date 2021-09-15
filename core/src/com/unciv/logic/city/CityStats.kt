@@ -121,10 +121,6 @@ class CityStats(val cityInfo: CityInfo) {
                         stats.food += 1
                     if (otherCiv.cityStateType == CityStateType.Maritime && cityInfo.isCapital())
                         stats.food += 2
-
-                    if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
-                        stats.food *= 1.5f
-                    return stats
                 }
 
                 for (bonus in 
@@ -137,9 +133,8 @@ class CityStats(val cityInfo: CityInfo) {
                     }
                 }
 
-                if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%")) {
-                    stats.food *= 1.5f
-                    stats.culture *= 1.5f
+                for (unique in cityInfo.civInfo.getMatchingUniques("[]% [] from City-States")) {
+                    stats.timesInPlace(unique.params[0].toPercent(), Stat.valueOf(unique.params[1]))
                 }
             }
         }

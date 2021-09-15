@@ -112,15 +112,26 @@ open class Stats(
         faith * number
     )
 
-    /** Multiplies each value of this instance by [number] in place */
-    fun timesInPlace(number: Float) {
-        production *= number
-        food *= number
-        gold *= number
-        science *= number
-        culture *= number
-        happiness *= number
-        faith *= number
+    /** Multiplies each value of this instance by [number] in place. If [stat] is supplied, only multiples that stat. */
+    fun timesInPlace(number: Float, stat: Stat? = null) {
+        when (stat) {
+            Stat.Production -> production *= number
+            Stat.Food       -> food *= number
+            Stat.Gold       -> gold *= number
+            Stat.Science    -> science *= number
+            Stat.Culture    -> culture *= number
+            Stat.Happiness  -> happiness *= number
+            Stat.Faith      -> faith *= number
+            else -> {
+                production *= number
+                food *= number
+                gold *= number
+                science *= number
+                culture *= number
+                happiness *= number
+                faith *= number
+            }
+        }
     }
     
     operator fun div(number: Float) = times(1/number)
