@@ -263,9 +263,10 @@ class MapUnit {
      * @return Maximum distance of tiles this unit may possibly see
      */
     private fun getVisibilityRange(): Int {
-        var visibilityRange =
-            if (isEmbarked()) 1
-            else 2
+        if (isEmbarked() && !hasUnique("Normal vision when embarked"))
+            return 1
+        
+        var visibilityRange = 2
         
         for (unique in getMatchingUniques("[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
