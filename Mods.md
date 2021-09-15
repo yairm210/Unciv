@@ -16,14 +16,18 @@ There are two kinds of mods:
 
 Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier* using a desktop device!
 
+
+## Mod names
+Mods need to conform to github repo naming rules, but best stay simple and use only letters, digits, and dashes `-`. Dashes are _automatically_ converted to spaces for display and use within Unciv. Many punctuation or extended unicode characters _might_ work, but at best potential users won't find them attractive, at worst we'll refuse support when you run into problems :smiling_imp: 
+
+
 ## Mod components
 
 Mods are located in a `/mods` directory, on Desktop that should be next to your .jar file.
 
-Mods have 2 subfolders:
+Mods typically have 2 subfolders:
 - jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons). More information on these can be found [here](/yairm210/Unciv/wiki/JSON-files-for-mods)
-- Images - here you should put game images, as in [the base image files](https://github.com/yairm210/Unciv/tree/master/android/Images)
-These images are built (at runtime) into a single image with an 'altas', so if you see "game.atlas" and "game.png" files being generated, now you know what for.
+- Images - here you should put game images, as in [the base image files](https://github.com/yairm210/Unciv/tree/master/android/Images). Please read the [atlas chapter](#more-on-images-and-the-texture-atlas) for important details.
 
 In order to remove objects from the game, you'll need to create a ModOptions file in the `/jsons` subfolder - there's an example [here](https://github.com/yairm210/Unciv-mod-example/blob/master/Removing%20Things/jsons/ModOptions.json)
 
@@ -32,6 +36,14 @@ In a base ruleset mod, ALL the original objects are removed - this is done by ad
 For an example, you can refer to [the example mod](https://github.com/yairm210/Unciv-mod-example) - just download the Example-Aliens-Mod and put it in a `/mods` folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Aliens as a playable civilization!
 
 If you want to add a new civilization as a mod, you should check out [the Civ making instructions](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization) to see what's required, or see the example Aliens mod =)
+
+
+### More on Images and the texture atlas
+Images are combined (at runtime) into texture images with an 'atlas', so if you see "game.atlas" and "game.png" files being generated, now you know what for. Most mods will need only one pair of those, the base game has around four.
+
+When the game runs from a packaged distribution (android, jar), the texture+atlas files alone are relevant, so you need to include them in your repository and keep them up to date. Actually omitting the original images would work for these uses, but we still recommend including them, so developers running from source can access them.
+
+If your mod has lots of images (or large ones), the texture might 'spill' into additional texture ".png" files. This is not good for performance, which is why the base game controls which kinds of images go together into one texture(+atlas). This works for mods, too: Create not only one Images folder, but several, the additional ones named "Images.xyz", where xyz will become the filename of the additional texture file (So don't use both Images and Images.game - those will clash). Look at the Unciv base game to get a better idea how that works.
 
 ### Adding maps to mods
 
@@ -49,6 +61,13 @@ You can add wonder images to mods and they'll be displayed instead of the standa
 
 Add the images to `/Images/WonderImages/`. They need to be named according to the name field in `Buildings.json`, so for example "Temple of Artemis.png" or "Stonehenge.png"
 
+Remember, to be compatible with mobile devices, a fresh atlas needs to be generated including these.
+
+### Adding Leader Portraits
+
+The base game comes without Leader Portraits, but is able to display them in greetings, Civilopedia, diplomacy screens, or the nation picker. A mod can supply these, by adding their images to `/Images/LeaderIcons/`. The file name must correspond exactly with the leader name of a nation as defined in Nations.json, or they will be ignored.
+
+These work best if they are square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
 
 ## Getting your mod out there
 
@@ -76,7 +95,7 @@ When you open your app, it will query Github's [list of repos with that topic](h
 
 The primary use of mods is to add them when starting a new game, or configuring a map. This will mean that both the ruleset of the mod, and the images, will be in use for that specific game/map.
 
-For mods which are primarily visual, there is a second use - through the mod manager, you can enable them as **permanent visual mods**. This means that the images from the mod will replace the original images everywhere in the game.
+For mods which are primarily visual or audio, there is a second use - through the mod manager, you can enable them as **permanent audiovisual mods**. This means that the images, sounds (or upcoming: music) from the mod will replace the original media everywhere in the game.
 
 ## Mod location for manual loading of mods
 
@@ -97,4 +116,5 @@ Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
 A list of uniques and how to use them can be found [here](uniques)!
 
-Some images don't exist at all in the base game, but can be added in mods. For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-example) is an example of how to add leader portraits to mods, which can compliment the base game.
+Some images don't exist at all in the base game, but can be added in mods [see above](#adding-wonder-splash-screens) [or here](#adding-leader-portraits).
+For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-example) is mod showing how to add leader portraits, which can complement the base game.
