@@ -12,9 +12,11 @@ When you feel that you're ready to add your translation to the game, you'll need
 
 ## Pitfalls
 
-- If a translation template (the stuff to the left of "` = `") contains square brackets, you will have to include each of them _verbatim_ in your translation, but you can move them. Upper/lower case is relevant! e.g. `All [personFilter] are cool` can be translated as `Tous les [personFilter] sont cool`, but _not_ as `Tous les [personnages] sont cool`. Failing this is the main cause of your PR's showing up with red "x"es and "checks failed".
+- If a translation template (the stuff to the left of "` = `") contains square brackets, you will have to include each of them _verbatim_ in your translation, but you can move them. Upper/lower case is relevant! e.g. `All [personFilter] are cool` can be translated as `Tous les [personFilter] sont cool`, but ***not*** as `Tous les [personnages] sont cool`, and neither as `Nous sommes vraiment cool`. Failing this is the main cause of your PR's showing up with red "x"es and "checks failed".
 
 - Blanks: Watch out for blanks at the start of a line or two of them before the equals sign. If you got such a line - those blanks are part of the translation key and must not be deleted on the left side, and you should probably also include them in your translation (unless your language doesn't need spaces to separate things).
+
+- Changes in the templates: When we find a typo in the english texts and fix it, or marginally change a wording, the template changes. Often the old template will not be automatically fixed in the existing translations, because it's a lot of work _and_ in most cases the developers cannot be sure the translation is still correct. For you, that might look like your translations are simply disappearing with an update. In such a case, you have the option to use github's history to look up old versions, copy the old translation, place it where the new template now says "requires translation" - and proofread and adapt it to the new english version. The history link for each file is in the top right area and has a nice round clock icon.
 
 ## Wait, what just happened?
 
@@ -49,6 +51,7 @@ Each untranslated phrase will have a "requires translation" line before it, so y
 Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
 
 Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
+
 
 # Translation generation - for developers
 
