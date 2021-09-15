@@ -120,7 +120,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             else translation.key
             var entry = this[hashKey]
             if (entry == null) {
-                entry = TranslationEntry(hashKey)
+                entry = TranslationEntry(translation.key)
                 this[hashKey] = entry
             }
             entry[language] = translation.value
