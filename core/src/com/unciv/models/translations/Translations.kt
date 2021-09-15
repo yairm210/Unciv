@@ -184,6 +184,12 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     fun getConditionalOrder(language: String): String {
         return getText(englishConditionalOrderingString, language, null)
     }
+    
+    fun placeConditionalsAfterUnique(language: String): Boolean {
+        if (get(conditionalUniqueOrderString, language, null)?.get(language) == "before")
+            return false
+        return true
+    }
 
     /** Returns the equivalent of a space in the given language
      * Defaults to a space if no translation is provided
@@ -200,7 +206,8 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals   
-        const val englishConditionalOrderingString = "<UNIQUE> <when at war> <when not at war>"
+        const val englishConditionalOrderingString = "<when at war> <when not at war>"
+        const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
     }
 }
@@ -258,8 +265,7 @@ fun String.tr(): String {
          * together into the final fully translated string.
          */
         
-        val baseText = this.removeConditionals()
-        val translatedBaseText = baseText.tr()
+        val translatedBaseText = this.removeConditionals().tr()
         
         val conditionals = this.getConditionals().map { it.placeholderText }
         val conditionsWithTranslation: HashMap<String, String> = hashMapOf()
@@ -271,15 +277,13 @@ fun String.tr(): String {
         
         // Somewhere, we asked the translators to reorder all possible conditionals in a way that
         // makes sense in their language. We get this ordering, and than extract each of the
-        // translated conditionals, removing the <> surrounding them, and removing placeholder text
-        // where if it exists.
+        // translated conditionals, removing the <> surrounding them, and removing param values
+        // where it exists.
         val conditionalOrdering = UncivGame.Current.translations.getConditionalOrder(language)
         for (placedConditional in pointyBraceRegex.findAll(conditionalOrdering).map { it.value.substring(1, it.value.length-1).getPlaceholderText() }) {
             if (placedConditional in conditionals) {
                 translatedConditionals.add(conditionsWithTranslation[placedConditional]!!)
                 conditionsWithTranslation.remove(placedConditional)
-            } else if (placedConditional == "UNIQUE") {
-                translatedConditionals.add(translatedBaseText)
             }
         }
         
@@ -287,6 +291,13 @@ fun String.tr(): String {
         // a few conditionals used here, just add the translations of these to the end.
         // We do test for this, but just in case.
         translatedConditionals.addAll(conditionsWithTranslation.values)
+
+        // After that, add the translation of the base unique either before or after these conditionals
+        if (UncivGame.Current.translations.placeConditionalsAfterUnique(language)) {
+            translatedConditionals.add(0, translatedBaseText)
+        } else {
+            translatedConditionals.add(translatedBaseText)
+        }
         
         var fullyTranslatedString = translatedConditionals.joinToString(UncivGame.Current.translations.getSpaceEquivalent(language))
         if (UncivGame.Current.translations.shouldCapitalize(language))
