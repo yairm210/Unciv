@@ -28,7 +28,7 @@ class ReligionManager {
     // contain the master list, and the ReligionManagers retrieve it from there every time the game loads.
 
     // Deprecated since 3.16.13
-        @Deprecated("Replace by adding to `civInfo.boughtConstructionsWithGloballyIncreasingPrice`")
+        @Deprecated("Replace by adding to `civInfo.civWideConstructions.boughtItemsWithIncreasingPrice`")
         var greatProphetsEarned = 0
             private set
     //
@@ -67,7 +67,7 @@ class ReligionManager {
         
         // greatProphetsEarned deprecated since 3.16.13, replacement code
             if (greatProphetsEarned != 0) {
-                civInfo.boughtConstructionsWithGloballyIncreasingPrice[getGreatProphetEquivalent()!!] = greatProphetsEarned
+                civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!] = greatProphetsEarned
                 greatProphetsEarned = 0
             }
         //
@@ -85,7 +85,7 @@ class ReligionManager {
         10 + (civInfo.gameInfo.civilizations.count { it.isMajorCiv() && it.religionManager.religion != null } + additionalCivs) * 5
 
     fun canFoundPantheon(): Boolean {
-        if (!civInfo.gameInfo.hasReligionEnabled()) return false
+        if (!civInfo.gameInfo.isReligionEnabled()) return false
         if (religionState != ReligionState.None) return false
         if (!civInfo.isMajorCiv()) return false
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { isPickablePantheonBelief(it) })
@@ -115,7 +115,7 @@ class ReligionManager {
     // https://www.reddit.com/r/civ/comments/2m82wu/can_anyone_detail_the_finer_points_of_great/
     // Game files (globaldefines.xml)
     fun faithForNextGreatProphet(): Int {
-        val greatProphetsEarned = civInfo.boughtConstructionsWithGloballyIncreasingPrice[getGreatProphetEquivalent()!!] ?: 0
+        val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!] ?: 0
         
         var faithCost = 
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) * 
@@ -128,6 +128,7 @@ class ReligionManager {
     }
 
     private fun canGenerateProphet(): Boolean {
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no prophets
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (getGreatProphetEquivalent() == null) return false
         if (storedFaith < faithForNextGreatProphet()) return false
@@ -152,12 +153,13 @@ class ReligionManager {
             val prophet = civInfo.addUnit(prophetUnitName, birthCity) ?: return
             prophet.religion = religion!!.name
             storedFaith -= faithForNextGreatProphet()
-            civInfo.boughtConstructionsWithGloballyIncreasingPrice[prophetUnitName] = 
-                (civInfo.boughtConstructionsWithGloballyIncreasingPrice[prophetUnitName] ?: 0) + 1
+            civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnitName, 1)
         }
     }
 
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
+        
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
 
         // Already used its power for other things
@@ -255,6 +257,7 @@ class ReligionManager {
     }
 
     fun mayEnhanceReligionAtAll(prophet: MapUnit): Boolean {
+        if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no enhancing
         if (religion == null) return false // First found a pantheon
         if (religionState != ReligionState.Religion) return false // First found an actual religion
         // Already used its power for other things

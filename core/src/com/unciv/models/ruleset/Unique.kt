@@ -457,6 +457,10 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(notification, NotificationIcon.Diplomacy)
                 return true
             }
+            
+            "Provides the cheapest [] building in your first [] cities for free", 
+            "Provides a [] in your first [] cities for free" ->
+                civInfo.civConstructions.tryAddFreeBuildings()
         }
         return false
     }

@@ -43,7 +43,8 @@ class CityConstructions {
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstructionFromQueue: String
         get() {
-            if (constructionQueue.isEmpty()) return "" else return constructionQueue.first()
+            return if (constructionQueue.isEmpty()) "" 
+                else constructionQueue.first()
         }
         set(value) {
             if (constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0] = value
@@ -53,6 +54,9 @@ class CityConstructions {
     var productionOverflow = 0
     val queueMaxSize = 10
 
+    // Maps cities to the buildings they received
+    val freeBuildingsProvidedFromThisCity: HashMap<String, HashSet<String>> = hashMapOf()
+    
     //region pure functions
     fun clone(): CityConstructions {
         val toReturn = CityConstructions()
@@ -61,17 +65,22 @@ class CityConstructions {
         toReturn.currentConstructionIsUserSet = currentConstructionIsUserSet
         toReturn.constructionQueue.addAll(constructionQueue)
         toReturn.productionOverflow = productionOverflow
+        toReturn.freeBuildingsProvidedFromThisCity.putAll(freeBuildingsProvidedFromThisCity)
         return toReturn
     }
 
     internal fun getBuildableBuildings(): Sequence<Building> = cityInfo.getRuleset().buildings.values
-            .asSequence().filter { it.isBuildable(this) }
+        .asSequence().filter { it.isBuildable(this) }
 
     fun getConstructableUnits() = cityInfo.getRuleset().units.values
-            .asSequence().filter { it.isBuildable(this) }
+        .asSequence().filter { it.isBuildable(this) }
 
     fun getBasicCultureBuildings() = cityInfo.getRuleset().buildings.values
-            .asSequence().filter { it.culture > 0f && !it.isAnyWonder() && it.replaces == null }
+        .asSequence().filter { it.culture > 0f && !it.isAnyWonder() && it.replaces == null }
+    
+    fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
+        .asSequence()
+        .filter { !it.isAnyWonder() && it.replaces == null && it.getStats(null)[stat] > 0f }
 
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
@@ -121,13 +130,14 @@ class CityConstructions {
      */
     fun getMaintenanceCosts(): Int {
         var maintenanceCost = 0
-        // We cache this to increase performance
-        val freeBuildings = cityInfo.civInfo.policies.getListOfFreeBuildings(cityInfo.id)
+        val freeBuildings = cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
+        
         for (building in getBuiltBuildings()) {
             if (building.name !in freeBuildings) {
                 maintenanceCost += building.maintenance
             }
         }
+        
         return maintenanceCost
     }
 
@@ -151,7 +161,27 @@ class CityConstructions {
         }
         return result
     }
+    
+    fun addFreeBuildings() {
+        // "Provides a free [buildingName] [cityFilter]"
+        for (unique in cityInfo.getMatchingUniques("Provides a free [] []")) {
+            val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
+            val citiesThatApply = when (unique.params[1]) {
+                "in this city" -> listOf(cityInfo)
+                "in other cities" -> cityInfo.civInfo.cities.filter { it !== cityInfo }
+                else -> cityInfo.civInfo.cities.filter { it.matchesFilter(unique.params[1]) }
+            }
+            
+            for (city in citiesThatApply) {
+                if (city.cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
+                city.cityConstructions.addBuilding(freeBuildingName)
+                if (city.id !in freeBuildingsProvidedFromThisCity)
+                    freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
 
+                freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuildingName)
+            }
+        }
+    }
 
     /** @constructionName needs to be a non-perpetual construction, else an empty string is returned */
     internal fun getTurnsToConstructionString(constructionName: String, useStoredProduction:Boolean = true): String {
@@ -171,20 +201,6 @@ class CityConstructions {
         }.joinToString(" / ") { "${construction.getStatBuyCost(cityInfo, it)}${it.character}" }
         if (otherStats.isNotEmpty()) lines += otherStats
         return lines.joinToString("\n", "\n")
-    }
-
-    // This function appears unused, can it be removed?
-    fun getProductionForTileInfo(): String {
-        /* this is because there were rare errors that I assume were caused because
-           currentConstruction changed on another thread */
-        val currentConstructionSnapshot = currentConstructionFromQueue
-        var result = currentConstructionSnapshot.tr()
-        if (currentConstructionSnapshot != ""
-                && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
-            val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-            result += " - $turnsLeft${Fonts.turn}"
-        }
-        return result
     }
 
     fun getProductionMarkup(ruleset: Ruleset): FormattedLine {
@@ -519,8 +535,7 @@ class CityConstructions {
                     && it.params[2] == stat.name
                 }
             ) {
-                cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[constructionName] =
-                    (cityInfo.civInfo.boughtConstructionsWithGloballyIncreasingPrice[constructionName] ?: 0) + 1
+                cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(constructionName, 1)
             }
         }
 
@@ -530,26 +545,26 @@ class CityConstructions {
 
         return true
     }
-
-    fun hasBuildableCultureBuilding(): Boolean {
-        return getBasicCultureBuildings()
-                .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
-                .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
-                .any()
+    
+    fun hasBuildableStatBuildings(stat: Stat): Boolean {
+        return getBasicStatBuildings(stat)
+            .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
+            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
+            .any()
     }
 
-    fun addCultureBuilding(): String? {
-        val buildableCultureBuildings = getBasicCultureBuildings()
-                .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
-                .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
+    fun addCheapestBuildableStatBuilding(stat: Stat): String? {
+        val cheapestBuildableStatBuilding = getBasicStatBuildings(stat)
+            .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
+            .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
+            .minByOrNull { it.cost }?.name
 
-        if (!buildableCultureBuildings.any())
+        if (cheapestBuildableStatBuilding == null)
             return null
 
-        val cultureBuildingToBuild = buildableCultureBuildings.minByOrNull { it.cost }!!.name
-        constructionComplete(getConstruction(cultureBuildingToBuild) as INonPerpetualConstruction)
+        constructionComplete(getConstruction(cheapestBuildableStatBuilding) as INonPerpetualConstruction)
 
-        return cultureBuildingToBuild
+        return cheapestBuildableStatBuilding
     }
 
     private fun removeCurrentConstruction() = removeFromQueue(0, true)

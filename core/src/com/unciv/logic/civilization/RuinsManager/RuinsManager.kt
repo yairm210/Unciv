@@ -41,9 +41,9 @@ class RuinsManager {
         
         for (possibleReward in possibleRewards) {
             if (civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties) continue
-            if (Constants.hiddenWithoutReligionUnique in possibleReward.uniques && !civInfo.gameInfo.hasReligionEnabled()) continue
+            if (Constants.hiddenWithoutReligionUnique in possibleReward.uniques && !civInfo.gameInfo.isReligionEnabled()) continue
             if ("Hidden after generating a Great Prophet" in possibleReward.uniques 
-                && civInfo.boughtConstructionsWithGloballyIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0 > 0
+                && civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0 > 0
             ) continue
             if (possibleReward.uniqueObjects.any { unique ->
                 unique.placeholderText == "Only available after [] turns" 
