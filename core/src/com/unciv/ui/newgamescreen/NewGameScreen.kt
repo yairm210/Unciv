@@ -50,7 +50,9 @@ class NewGameScreen(
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
             rightSideGroup.addActorAt(0, resetToDefaultsButton)
             resetToDefaultsButton.onClick {
-                game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
+                YesNoPopup("Are you sure you want to reset all game options to defaults?", {
+                    game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
+                }, this).open(true)
             }
         }
 
@@ -264,6 +266,13 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
     class TranslatedString(val value: String) {
         val translation = value.tr()
         override fun toString() = translation
+        // Equality contract needs to be implemented else TranslatedSelectBox.setSelected won't work properly
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+            return value == (other as TranslatedString).value
+        }
+        override fun hashCode() = value.hashCode()
     }
 
     init {

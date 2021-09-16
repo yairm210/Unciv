@@ -11,6 +11,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -292,10 +293,10 @@ class CityInfo {
                     cityResources.add(
                         resource,
                         unique.params[0].toInt() * civInfo.getResourceModifier(resource),
-                        "Tiles"
+                        "Improvements"
                     )
                 }
-                if (unique.placeholderText == "Consumes [] []") {
+                if (unique.matches(UniqueType.ConsumesResources, getRuleset())) {
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(
                         resource,
