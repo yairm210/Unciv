@@ -134,7 +134,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 }
 
                 for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
-                    cityStateBonus.timesInPlace(unique.params[0].toPercent(), Stat.valueOf(unique.params[1]))
+                    cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
 
                 statMap.add("City-States", cityStateBonus)

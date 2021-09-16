@@ -234,7 +234,6 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     /** Given a list of city-state bonuses, returns the list with updated values for Siam-like uniques */
     private fun getIncreasedBonuses(bonuses: List<String>): List<String> {
         val newBonuses = ArrayList<String>()
-        println(bonuses)
         for (bonus in bonuses) {
             var improved = false
             for (unique in viewingCiv.getMatchingUniques("[]% [] from City-States")) {
@@ -273,7 +272,6 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (!improved)
                 newBonuses.add(bonus)
         }
-        println(newBonuses)
         return newBonuses
     }
 

@@ -134,7 +134,7 @@ class CityStats(val cityInfo: CityInfo) {
                 }
 
                 for (unique in cityInfo.civInfo.getMatchingUniques("[]% [] from City-States")) {
-                    stats.timesInPlace(unique.params[0].toPercent(), Stat.valueOf(unique.params[1]))
+                    stats[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
             }
         }
