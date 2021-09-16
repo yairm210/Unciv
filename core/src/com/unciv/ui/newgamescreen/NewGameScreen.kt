@@ -50,7 +50,9 @@ class NewGameScreen(
             val resetToDefaultsButton = "Reset to defaults".toTextButton()
             rightSideGroup.addActorAt(0, resetToDefaultsButton)
             resetToDefaultsButton.onClick {
-                game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
+                YesNoPopup("Are you sure you want to reset all game options to defaults?", {
+                    game.setScreen(NewGameScreen(previousScreen, GameSetupInfo()))
+                }, this).open(true)
             }
         }
 
