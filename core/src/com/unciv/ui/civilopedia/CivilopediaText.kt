@@ -218,13 +218,16 @@ class FormattedLine (
         }
         return defaultColor
     }
-    
+
+    /** Used only as parameter to [FormattedLine.render] and [MarkupRenderer.render] */
+    enum class IconDisplay { All, NoLink, None }
+
     /**
      * Renders the formatted line as a scene2d [Actor] (currently always a [Table])
      * @param labelWidth Total width to render into, needed to support wrap on Labels.
-     * @param noLinkImages Omit visual indicator that a line is linked. 
+     * @param iconDisplay Flag to omit link or all images. 
      */
-    fun render(labelWidth: Float, noLinkImages: Boolean = false): Actor {
+    fun render(labelWidth: Float, iconDisplay: IconDisplay = IconDisplay.All): Actor {
         if (extraImage.isNotEmpty()) {
             val table = Table(CameraStageBaseScreen.skin)
             try {
@@ -256,11 +259,11 @@ class FormattedLine (
         val table = Table(CameraStageBaseScreen.skin)
         var iconCount = 0
         val iconSize = max(minIconSize, fontSize * 1.5f)
-        if (linkType != LinkType.None && !noLinkImages) {
+        if (linkType != LinkType.None && iconDisplay == IconDisplay.All) {
             table.add(ImageGetter.getImage(linkImage)).size(iconSize).padRight(iconPad)
             iconCount++
         }
-        //if (!noLinkImages)
+        if (iconDisplay != IconDisplay.None)
             iconCount += renderIcon(table, iconToDisplay, iconSize)
         if (starred) {
             val image = ImageGetter.getImage(starImage)
@@ -337,14 +340,14 @@ object MarkupRenderer {
      *
      *  @param labelWidth       Available width needed for wrapping labels and [centered][FormattedLine.centered] attribute.
      *  @param padding          Default cell padding (default 2.5f) to control line spacing
-     *  @param noLinkImages     Flag to omit link images (but not linking itself)
+     *  @param iconDisplay      Flag to omit link or all images (but not linking itself if linkAction is supplied)
      *  @param linkAction       Delegate to call for internal links. Leave null to suppress linking.
      */
     fun render(
         lines: Collection<FormattedLine>,
         labelWidth: Float = 0f,
         padding: Float = defaultPadding,
-        noLinkImages: Boolean = false,
+        iconDisplay: FormattedLine.IconDisplay = FormattedLine.IconDisplay.All,
         linkAction: ((id: String) -> Unit)? = null
     ): Table {
         val skin = CameraStageBaseScreen.skin
@@ -359,7 +362,7 @@ object MarkupRenderer {
                     .pad(separatorTopPadding, 0f, separatorBottomPadding, 0f)
                 continue
             }
-            val actor = line.render(labelWidth, noLinkImages)
+            val actor = line.render(labelWidth, iconDisplay)
             if (line.linkType == FormattedLine.LinkType.Internal && linkAction != null)
                 actor.onClick {
                     linkAction(line.link)

@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
 
@@ -49,7 +50,7 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
             innerTable.background = ImageGetter.getBackground(textBackgroundColor)
             val lines = nation.getCivilopediaTextLines(ruleset)
                 .filter { it.header != 3 }
-            innerTable.add(MarkupRenderer.render(lines, internalWidth, noLinkImages = true)).pad(10f)
+            innerTable.add(MarkupRenderer.render(lines, internalWidth, iconDisplay = IconDisplay.NoLink)).pad(10f)
             val borderTable = Table()
             borderTable.background = ImageGetter.getBackground(outerColor)
             borderTable.add(innerTable).pad(borderWidth).grow()
