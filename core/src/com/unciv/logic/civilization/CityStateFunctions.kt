@@ -69,7 +69,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
 
         var giftableUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }
-        if (!civInfo.gameInfo.hasReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Great Person - [Faith]")}
+        if (!civInfo.gameInfo.isReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Hidden when religion is disabled")}
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
         val giftedUnit = giftableUnits.random()
@@ -132,8 +132,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         donorCiv.addGold(-giftAmount)
         civInfo.addGold(giftAmount)
         civInfo.getDiplomacyManager(donorCiv).addInfluence(influenceGainedByGift(donorCiv, giftAmount).toFloat())
-        updateAllyCivForCityState()
-        donorCiv.updateStatsForNextTurn()
     }
 
     fun getProtectorCivs() : List<CivilizationInfo> {
@@ -380,8 +378,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-15f)
         cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
-        updateAllyCivForCityState()
-        civInfo.updateStatsForNextTurn()
     }
 
     fun tributeWorker(demandingCiv: CivilizationInfo) {
@@ -398,7 +394,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-50f)
         cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
-        updateAllyCivForCityState()
     }
 
     fun canGiveStat(statType: Stat): Boolean {

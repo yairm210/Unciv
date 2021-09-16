@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -154,6 +155,24 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
         if (requiredTech != null || upgradesTo != null || obsoleteTech != null) textList += FormattedLine()
         if (requiredTech != null) textList += FormattedLine("Required tech: [$requiredTech]", link="Technology/$requiredTech")
+
+        val canUpgradeFrom = ruleset.units
+            .filterValues {
+                (it.upgradesTo == name || it.upgradesTo != null && it.upgradesTo == replaces)
+                && (it.uniqueTo == uniqueTo || it.uniqueTo == null)
+            }.keys
+        if (canUpgradeFrom.isNotEmpty()) {
+            if (canUpgradeFrom.size == 1)
+                textList += FormattedLine("Can upgrade from [${canUpgradeFrom.first()}]", link = "Unit/${canUpgradeFrom.first()}")
+            else {
+                textList += FormattedLine()
+                textList += FormattedLine("Can upgrade from:")
+                for (unitName in canUpgradeFrom.sorted())
+                    textList += FormattedLine(unitName, indent = 2, link = "Unit/$unitName")
+                textList += FormattedLine()
+            }
+        }
+
         if (upgradesTo != null) textList += FormattedLine("Upgrades to [$upgradesTo]", link="Unit/$upgradesTo")
         if (obsoleteTech != null) textList += FormattedLine("Obsolete with [$obsoleteTech]", link="Technology/$obsoleteTech")
 
@@ -394,7 +413,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             unit.currentMovement = 0f
 
         // If this unit has special abilities that need to be kept track of, start doing so here
-        if (unit.hasUnique("Religious Unit")) {
+        if (unit.hasUnique("Religious Unit") && civInfo.gameInfo.isReligionEnabled()) {
             unit.religion =  
                 if (unit.hasUnique("Takes your religion over the one in their birth city"))
                     civInfo.religionManager.religion?.name
@@ -498,7 +517,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         val resourceRequirements = HashMap<String, Int>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in uniqueObjects)
-            if (unique.placeholderText == "Consumes [] []")
+            if (unique.isOfType(UniqueType.ConsumesResources))
                 resourceRequirements[unique.params[1]] = unique.params[0].toInt()
         return resourceRequirements
     }

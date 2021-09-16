@@ -638,6 +638,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [connection](https://thenounproject.com/term/connection/1365233/) by Popular for Mercantile City-States
 * [crossed sword](https://thenounproject.com/term/crossed-sword/2427559/) by ProSymbols for Militaristic City-States
 * [ship helm](https://thenounproject.com/term/ship-helm/2170591/) by Vectors Market for Maritime City-States
+* [Magnifying Glass](https://thenounproject.com/term/magnifying-glass/1311/) by John Caserta for Mod filter
 
 ## Main menu
 

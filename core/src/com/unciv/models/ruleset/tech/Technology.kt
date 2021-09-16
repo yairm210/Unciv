@@ -111,7 +111,7 @@ class Technology: INamed, ICivilopediaText, IHasUniques {
     // Helper: common filtering for both getEnabledBuildings and getObsoletedBuildings, difference via predicate parameter
     private fun getFilteredBuildings(civInfo: CivilizationInfo, predicate: (Building)->Boolean): Sequence<Building> {
         val nuclearWeaponsEnabled = civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-        val religionEnabled = civInfo.gameInfo.hasReligionEnabled()
+        val religionEnabled = civInfo.gameInfo.isReligionEnabled()
 
         return civInfo.gameInfo.ruleSet.buildings.values.asSequence()
             .filter {
@@ -130,7 +130,7 @@ class Technology: INamed, ICivilopediaText, IHasUniques {
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
     fun getEnabledUnits(civInfo: CivilizationInfo): Sequence<BaseUnit> {
         val nuclearWeaponsEnabled = civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-        val religionEnabled = civInfo.gameInfo.hasReligionEnabled()
+        val religionEnabled = civInfo.gameInfo.isReligionEnabled()
 
         return civInfo.gameInfo.ruleSet.units.values.asSequence()
             .filter {

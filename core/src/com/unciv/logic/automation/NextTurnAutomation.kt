@@ -568,8 +568,7 @@ object NextTurnAutomation {
         if (theirCity.getTiles().none { tile -> tile.neighbors.any { it.getOwner() == theirCity.civInfo && it.getCity() != theirCity } })
             modifierMap["Isolated city"] = 15
 
-        //Maybe not needed if city-state has potential protectors?
-        if (otherCiv.isCityState()) modifierMap["City-state"] = -10
+        if (otherCiv.isCityState()) modifierMap["City-state"] = -20
 
         return modifierMap.values.sum()
     }
