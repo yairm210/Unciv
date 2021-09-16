@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.CityStateBonusTypes
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -112,23 +113,20 @@ class CityStats(val cityInfo: CityInfo) {
         val stats = Stats()
 
         for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
+            val relationshipLevel = otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel()
+            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
                 val eraInfo = cityInfo.civInfo.getEra()
 
-                if (eraInfo.friendBonus[otherCiv.cityStateType.name] == null || eraInfo.allyBonus[otherCiv.cityStateType.name] == null) {
+                if (eraInfo.undefinedCityStateBonuses()) {
                     // Deprecated, assume Civ V values for compatibility
-                    if (otherCiv.cityStateType == CityStateType.Maritime && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Ally)
+                    if (otherCiv.cityStateType == CityStateType.Maritime && relationshipLevel == RelationshipLevel.Ally)
                         stats.food += 1
                     if (otherCiv.cityStateType == CityStateType.Maritime && cityInfo.isCapital())
                         stats.food += 2
                 } else {
-                    for (bonus in
-                        if (otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Friend)
-                            eraInfo.friendBonus[otherCiv.cityStateType.name]!!
-                        else eraInfo.allyBonus[otherCiv.cityStateType.name]!!
-                    ) {
-                        if (bonus.getPlaceholderText() == "Provides [] [] []" && cityInfo.matchesFilter(bonus.getPlaceholderParameters()[2])) {
-                            stats.add(Stat.valueOf(bonus.getPlaceholderParameters()[1]), bonus.getPlaceholderParameters()[0].toFloat())
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                        if (bonus.type == CityStateBonusTypes.AmountStatInCityFilter && cityInfo.matchesFilter(bonus.cityFilter)) {
+                            stats.add(bonus.stat!!, bonus.amount)
                         }
                     }
                 }

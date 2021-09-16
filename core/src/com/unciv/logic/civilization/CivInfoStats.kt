@@ -4,6 +4,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.CityStateBonusTypes
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceType
@@ -97,25 +98,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName)
-                    .relationshipLevel() >= RelationshipLevel.Friend
-            ) {
+            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel()
+            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
                 val cityStateBonus = Stats()
                 val eraInfo = civInfo.getEra()
 
-                val relevantBonuses =
-                    if (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Friend)
-                        eraInfo.friendBonus[otherCiv.cityStateType.name]
-                    else eraInfo.allyBonus[otherCiv.cityStateType.name]
-
-                if (relevantBonuses != null) {
-                    for (bonus in relevantBonuses) {
-                        val unique = Unique(bonus)
-                        if (unique.placeholderText == "Provides [] [] per turn")
-                            cityStateBonus.add(
-                                Stat.valueOf(unique.params[1]),
-                                unique.params[0].toFloat()
-                            )
+                if (!eraInfo.undefinedCityStateBonuses()) {
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                        if (bonus.type == CityStateBonusTypes.AmountStat)
+                            cityStateBonus.add(bonus.stat!!, bonus.amount)
                     }
                 } else {
                     // Deprecated, assume Civ V values for compatibility
@@ -126,9 +117,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                                 civInfo.getEraNumber() in 2..3 -> 6f
                                 else -> 13f
                             }
-                        if (otherCiv.getDiplomacyManager(civInfo.civName)
-                                .relationshipLevel() == RelationshipLevel.Ally
-                        )
+                        if (relationshipLevel == RelationshipLevel.Ally)
                             cityStateBonus.culture *= 2f
                     }
                 }
@@ -303,24 +292,18 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo)
-                    .relationshipLevel() >= RelationshipLevel.Friend
-            ) {
+            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo).relationshipLevel()
+            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
                 val eraInfo = civInfo.getEra()
-                val relevantBonuses =
-                    if (otherCiv.getDiplomacyManager(civInfo).relationshipLevel() == RelationshipLevel.Friend)
-                        eraInfo.friendBonus[otherCiv.cityStateType.name]
-                    else eraInfo.allyBonus[otherCiv.cityStateType.name]
 
-                if (relevantBonuses != null) {
-                    for (bonus in relevantBonuses) {
-                        if (bonus.getPlaceholderText() == "Provides [] Happiness") {
+                if (!eraInfo.undefinedCityStateBonuses()) {
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                        if (bonus.type == CityStateBonusTypes.AmountHappiness) {
                             if (statMap.containsKey("City-States"))
                                 statMap["City-States"] =
-                                    statMap["City-States"]!! + bonus.getPlaceholderParameters()[0].toFloat()
+                                    statMap["City-States"]!! + bonus.amount
                             else
-                                statMap["City-States"] =
-                                    bonus.getPlaceholderParameters()[0].toFloat()
+                                statMap["City-States"] = bonus.amount
                         }
                     }
                 } else {
