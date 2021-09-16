@@ -11,6 +11,8 @@ class Difficulty: INamed, ICivilopediaText {
     var extraHappinessPerLuxury: Float = 0f
     var researchCostModifier:Float = 1f
     var unitCostModifier:Float = 1f
+    var unitSupplyBase: Int = 0
+    var unitSupplyPerCity: Int = 0
     var buildingCostModifier:Float = 1f
     var policyCostModifier:Float = 1f
     var unhappinessModifier:Float = 1f
@@ -23,6 +25,7 @@ class Difficulty: INamed, ICivilopediaText {
     var aiWonderCostModifier:Float = 1f
     var aiBuildingMaintenanceModifier:Float = 1f
     var aiUnitMaintenanceModifier = 1f
+    var aiUnitSupplyModifier: Float = 0f
     var aiFreeTechs = ArrayList<String>()
     var aiMajorCivBonusStartingUnits = ArrayList<String>()
     var aiCityStateBonusStartingUnits = ArrayList<String>()
