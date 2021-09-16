@@ -153,9 +153,12 @@ class CityStats(val cityInfo: CityInfo) {
         stats.add(getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.nation.uniqueObjects.asSequence()))
 
         if (currentConstruction is Building
-                && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
-                && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital"))
+            && cityInfo.civInfo.cities.isNotEmpty()
+            && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
+            && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital")
+        ) {
             stats.production += 25f
+        }
 
         return stats
     }
