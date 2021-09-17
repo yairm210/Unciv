@@ -534,13 +534,13 @@ object UnitActions {
     private fun useActionWithLimitedUses(unit: MapUnit, action: String) {
         unit.abilityUsesLeft[action] = unit.abilityUsesLeft[action]!! - 1
         if (unit.abilityUsesLeft[action]!! <= 0) {
-            if (unit.isGreatPerson())
-                addStatsPerGreatPersonUsage(unit)
+            addStatsPerGreatPersonUsage(unit)
             unit.destroy()
         }
     }
 
     private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
+        if (!unit.civInfo.gameInfo.isReligionEnabled()) return
         val blockedByInquisitor =
             city.getCenterTile()
                 .getTilesInDistance(1)
@@ -566,6 +566,7 @@ object UnitActions {
     }
     
     private fun addRemoveHeresyActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
+        if (!unit.civInfo.gameInfo.isReligionEnabled()) return
         if (city.civInfo != unit.civInfo) return
         // Only allow the action if the city actually has any foreign religion
         // This will almost be always due to pressure from cities close-by

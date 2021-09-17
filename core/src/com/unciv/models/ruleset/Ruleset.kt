@@ -27,6 +27,7 @@ object ModOptionsConstants {
     const val convertGoldToScience = "Can convert gold to science with sliders"
     const val allowCityStatesSpawnUnits = "Allow City States to spawn with additional units"
     const val tradeCivIntroductions = "Can trade civilization introductions for [] Gold"
+    const val disableReligion = "Disable religion"
 }
 
 class ModOptions : IHasUniques {

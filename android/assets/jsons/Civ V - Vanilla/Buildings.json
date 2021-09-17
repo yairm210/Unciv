@@ -64,7 +64,7 @@
 	},
 	{
 		"name": "Stonehenge",
-		"culture": 6,
+		"faith": 5,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 1},
 		"requiredTech": "Calendar",
@@ -208,7 +208,7 @@
 		"greatPersonPoints": {"Great Merchant": 1},
 		"isWonder": true,
 		"uniques": ["Must be next to [Coast]", "+[1] Movement for all [{Military} {Water}] units",
-			"+[1] Sight for all [{Military} {Water}] units", "Provides a free [Lighthouse] [in this city]"],
+			"[+1] Sight for all [{Military} {Water}] units", "Provides a free [Lighthouse] [in this city]"],
 		"requiredTech": "Optics",
 		"quote": "'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24"
 	},
@@ -247,7 +247,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"requiredTech": "Mathematics",
-		"uniques": ["Provides a free [Garden] [in this city]"]
+		"uniques": ["Provides a free [Garden] [in this city]"],
 		"quote": "'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore"
 	},
 	{
@@ -448,10 +448,9 @@
 	},
 	{
 		"name": "Hagia Sophia",
-		"culture": 1,
-		"greatPersonPoints": {"Great Artist": 1},
+		"faith": 3,
 		"isWonder": true,
-		"uniques": ["[+25]% great person generation [in all cities]", "Free Great Person"],
+		"uniques": ["Provides a free [Temple] [in this city]", "Free [Great Prophet] appears"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
@@ -632,7 +631,7 @@
 	},
 	{
 		"name": "Notre Dame",
-		"culture": 3,
+		"faith": 4,
 		"happiness": 10,
 		"greatPersonPoints": {"Great Merchant": 1},
 		"isWonder": true,

@@ -153,9 +153,12 @@ class CityStats(val cityInfo: CityInfo) {
         stats.add(getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.nation.uniqueObjects.asSequence()))
 
         if (currentConstruction is Building
-                && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
-                && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital"))
+            && cityInfo.civInfo.cities.isNotEmpty()
+            && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
+            && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital")
+        ) {
             stats.production += 25f
+        }
 
         return stats
     }
@@ -320,6 +323,14 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
+    private fun getStatPercentBonusesFromUnitSupply(): Stats {
+        val stats = Stats()
+        val supplyDeficit = cityInfo.civInfo.stats().getUnitSupplyDeficit()
+        if (supplyDeficit > 0)
+            stats.production = cityInfo.civInfo.stats().getUnitSupplyProductionPenalty()
+        return stats
+    }
+
     private fun constructionMatchesFilter(construction: IConstruction, filter: String): Boolean {
         if (construction is Building) return construction.matchesFilter(filter)
         if (construction is BaseUnit) return construction.matchesFilter(filter)
@@ -465,6 +476,7 @@ class CityStats(val cityInfo: CityInfo) {
         newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
         newStatPercentBonusList["Religion"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.religion.getUniques())
+        newStatPercentBonusList["Unit Supply"] = getStatPercentBonusesFromUnitSupply()
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()
