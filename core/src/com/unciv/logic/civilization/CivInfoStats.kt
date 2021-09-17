@@ -6,6 +6,7 @@ import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -22,7 +23,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         var freeUnits = 3
-        for (unique in civInfo.getMatchingUniques("[] units cost no maintenance")) {
+        for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.FreeUnits)) {
             freeUnits += unique.params[0].toInt()
         }
 

@@ -15,11 +15,29 @@ enum class UniqueParameterType(val parameterName:String) {
             else null
         }
     },
-    UnitFilter("unitType") {
+    MapUnitFilter("mapUnitFilter"){
+        val knownValues = setOf("Wounded", "Barbarians", "City-State", "Embarked", "Non-City")
         override fun getErrorType(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if(ruleset.unitTypes.containsKey(parameterText) || unitTypeStrings.contains(parameterText)) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            if (parameterText in knownValues) return null
+            return BaseUnitFilter.getErrorType(parameterText, ruleset)
+        }
+    },
+    BaseUnitFilter("baseUnitFilter"){
+        // As you can see there is a difference between these and what's in unitTypeStrings (for translation) -
+        // the goal is to unify, but for now this is the "real" list
+        val knownValues = setOf("Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
+            "non-air", "Nuclear Weapon", "Great Person", "Religious")
+        override fun getErrorType(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
+            if (ruleset.unitTypes.containsKey(parameterText)) return null
+            if (ruleset.units.containsKey(parameterText)) return null
+
+            // We could add a giant hashset of all uniques used by units,
+            //  so we could accept that unique-targeting uniques are OK. Maybe later.
+
+            return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
     },
     Unknown("param") {
