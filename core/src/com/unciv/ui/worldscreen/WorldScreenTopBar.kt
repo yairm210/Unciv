@@ -158,15 +158,27 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return menuButton
     }
 
-    private fun getOverviewButton(): Button {
+    private fun getOverviewButton(): Table {
+        val rightTable = Table(CameraStageBaseScreen.skin).apply{ defaults().pad(10f) }
+
+        val unitSupplyImage = ImageGetter.getImage("OtherIcons/ExclamationMark")
+            .apply { color = Color.FIREBRICK }
+            .onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units")) }
+
         val overviewButton = Button(CameraStageBaseScreen.skin)
         overviewButton.add("Overview".toLabel()).pad(10f)
         overviewButton.addTooltip('e')
-        overviewButton.pack()
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
-        overviewButton.centerY(this)
-        overviewButton.x = worldScreen.stage.width - overviewButton.width - 10
-        return overviewButton
+
+        if (worldScreen.selectedCiv.stats().getUnitSupplyDeficit() > 0)
+            rightTable.add(unitSupplyImage).size(50f)
+        rightTable.add(overviewButton)
+
+        rightTable.pack()
+        rightTable.centerY(this)
+        rightTable.x = worldScreen.stage.width - rightTable.width - 10
+
+        return rightTable
     }
 
     private fun getSelectedCivilizationTable(): Table {
