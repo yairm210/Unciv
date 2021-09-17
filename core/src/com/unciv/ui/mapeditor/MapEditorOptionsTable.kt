@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -12,7 +11,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.tile.TerrainType
@@ -82,7 +80,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
         val baseTerrainTable = Table().apply { defaults().pad(20f) }
         val terrainFeaturesTable = Table().apply { defaults().pad(20f) }
 
-        terrainFeaturesTable.add(getHex(getRedCross(50f, 0.6f)).apply {
+        terrainFeaturesTable.add(getHex(ImageGetter.getRedCross(50f, 0.6f)).apply {
             onClick {
                 tileAction = {
                     it.terrainFeatures.clear()
@@ -91,7 +89,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                     it.hasBottomLeftRiver = false
                     it.hasBottomRightRiver = false
                 }
-                setCurrentHex(getHex(getRedCross(40f, 0.6f)), "Clear terrain features")
+                setCurrentHex(getHex(ImageGetter.getRedCross(40f, 0.6f)), "Clear terrain features")
             }
         }).row()
 
@@ -125,10 +123,10 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
         editorPickTable.clear()
 
         val improvementsTable = Table()
-        improvementsTable.add(getHex(getRedCross(40f, 0.6f)).apply {
+        improvementsTable.add(getHex(ImageGetter.getRedCross(40f, 0.6f)).apply {
             onClick {
                 tileAction = { it.improvement = null; it.roadStatus = RoadStatus.None }
-                setCurrentHex(getHex(getRedCross(40f, 0.6f)), "Clear improvements")
+                setCurrentHex(getHex(ImageGetter.getRedCross(40f, 0.6f)), "Clear improvements")
             }
         }).row()
 
@@ -269,20 +267,13 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
     }
 
     private fun getCrossedIcon(): Actor {
-        return getRedCross(20f, 0.6f)
+        return ImageGetter.getRedCross(20f, 0.6f)
                 .surroundWithCircle(40f, false)
                 .apply { circle.color = Color.WHITE }
     }
 
-    private fun getRedCross(size: Float, alpha: Float): Actor {
-        val redCross = ImageGetter.getImage("OtherIcons/Close")
-        redCross.setSize(size, size)
-        redCross.color = Color.RED.cpy().apply { a = alpha }
-        return redCross
-    }
-
     private fun getCrossedResource(): Actor {
-        val redCross = getRedCross(45f, 0.5f)
+        val redCross = ImageGetter.getRedCross(45f, 0.5f)
         val group = IconCircleGroup(40f, redCross, false)
         group.circle.color = ImageGetter.foodCircleColor
         return group

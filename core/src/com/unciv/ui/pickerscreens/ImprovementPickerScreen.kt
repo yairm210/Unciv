@@ -151,9 +151,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
         // icon for removing the resource by replacing improvement
         if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == tileInfo.improvement) {
             val crossedResource = Group()
-            val cross = ImageGetter.getImage("OtherIcons/Close")
-            cross.setSize(30f, 30f)
-            cross.color = Color.RED
+            val cross = ImageGetter.getRedCross(30f, 0.8f)
             val resourceIcon = ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)
             crossedResource.addActor(resourceIcon)
             crossedResource.addActor(cross)

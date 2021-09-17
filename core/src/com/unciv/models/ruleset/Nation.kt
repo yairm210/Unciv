@@ -230,7 +230,8 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
                 textList += FormattedLine(
                     (if (it.index == 0) "[Start bias:] " else "") + it.value.tr(),  // extra tr because tr cannot nest {[]} 
                     link = "Terrain/$link",
-                    indent = if (it.index == 0) 0 else 1)
+                    indent = if (it.index == 0) 0 else 1,
+                    iconCrossed = it.value.startsWith("Avoid "))
             }
             textList += FormattedLine()
         }

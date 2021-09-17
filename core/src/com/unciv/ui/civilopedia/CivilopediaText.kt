@@ -3,6 +3,7 @@ package com.unciv.ui.civilopedia
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -64,7 +65,9 @@ class FormattedLine (
     /** Decorates text with a star icon - if set, it receives the [color] instead of the text. */
     val starred: Boolean = false,
     /** Centers the line (and turns off wrap) */
-    val centered: Boolean = false
+    val centered: Boolean = false,
+    /** Paint a red X over the [icon] or [link] image */
+    val iconCrossed: Boolean = false
 ) {
     // Note: This gets directly deserialized by Json - please keep all attributes meant to be read
     // from json in the primary constructor parameters above. Everything else should be a fun(),
@@ -305,7 +308,20 @@ class FormattedLine (
         val category = CivilopediaCategories.fromLink(parts[0]) ?: return 0
         val image = category.getImage?.invoke(parts[1], iconSize) ?: return 0
 
-        table.add(image).size(iconSize).padRight(iconPad)
+        if (iconCrossed) {
+            val cross = ImageGetter.getRedCross(iconSize * 0.7f, 0.7f)
+            val group = Group().apply {
+                isTransform = false
+                setSize(iconSize, iconSize)
+                image.center(this)
+                addActor(image)
+                cross.center(this)
+                addActor(cross)
+            }
+            table.add(group).size(iconSize).padRight(iconPad)
+        } else {
+            table.add(image).size(iconSize).padRight(iconPad)
+        }
         return 1
     }
 

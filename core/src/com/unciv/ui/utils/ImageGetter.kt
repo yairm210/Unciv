@@ -227,7 +227,7 @@ object ImageGetter {
         } else getCircle().apply { color = nation.getOuterColor() }
                 .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
     }
-    
+
     fun getRandomNationIndicator(size: Float): IconCircleGroup {
         return "?"
             .toLabel(Color.WHITE, (size * 5f/8f).toInt())
@@ -238,7 +238,7 @@ object ImageGetter {
 
     private fun nationIconExists(nation: String) = imageExists("NationIcons/$nation")
     fun getNationIcon(nation: String) = getImage("NationIcons/$nation")
-    
+
     fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
     fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
 
@@ -301,7 +301,7 @@ object ImageGetter {
         }
         return circle
     }
-    
+
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
     fun getReligionImage(iconName: String): Image {
         return getImage("ReligionIcons/$iconName")
@@ -322,6 +322,12 @@ object ImageGetter {
         return drawable.tint(color)
     }
 
+    fun getRedCross(size: Float, alpha: Float): Actor {
+        val redCross = getImage("OtherIcons/Close")
+        redCross.setSize(size, size)
+        redCross.color = Color.RED.cpy().apply { a = alpha }
+        return redCross
+    }
 
     fun getResourceImage(resourceName: String, size: Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
