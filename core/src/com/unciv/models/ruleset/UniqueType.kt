@@ -31,17 +31,19 @@ enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
 
     val placeholderText = text.getPlaceholderText()
 
-    /** Ordinal determines severity - ordered from most severe at 0 */
+    /** Ordinal determines severity - ordered from least to most severe, so we can use Severity >=  */
     enum class UniqueComplianceErrorSeverity {
 
-        /** This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
-        RulesetInvariant,
+        /** This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
+        WarningOnly,
 
         /** This is a problem like "unit/resource/tech name doesn't exist in ruleset" - definite bug */
         RulesetSpecific,
 
-        /** This is for filters that can also potentially accept free text, like UnitFilter and TileFilter */
-        WarningOnly
+
+        /** This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
+        RulesetInvariant
+
     }
 
     /** Maps uncompliant parameters to their required types */
@@ -56,7 +58,7 @@ enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
                 acceptableParamTypes.map { it.getErrorSeverity(param, ruleset) }
             if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
             val leastSevereWarning =
-                errorTypesForAcceptableParameters.maxByOrNull { it!!.ordinal }!!
+                errorTypesForAcceptableParameters.minByOrNull { it!!.ordinal }!!
             errorList += UniqueComplianceError(param, acceptableParamTypes, leastSevereWarning)
         }
         return errorList
