@@ -244,16 +244,19 @@ object TranslationFileWriter {
             generatedStrings[filename] = mutableSetOf()
             val resultStrings = generatedStrings[filename]!!
 
-            fun submitString(item: Any) {
-                val string = item.toString()
-
-                val parameters = string.getPlaceholderParameters()
+            fun submitString(string: String) {
+                val unique = Unique(string)
                 var stringToTranslate = string
 
                 val existingParameterNames = HashSet<String>()
-                if (parameters.any()) {
-                    for (parameter in parameters) {
+                if (unique.params.isNotEmpty()) {
+                    for ((index,parameter) in unique.params.withIndex()) {
                         var parameterName = when {
+                            unique.type != null -> {
+                                val possibleParameterTypes = unique.type.parameterTypeMap[index]
+                                // for multiple types. will look like "[unitName/buildingName]"
+                                possibleParameterTypes.joinToString("/") { it.parameterName }
+                            }
                             parameter.toFloatOrNull() != null -> "amount"
                             Stat.values().any { it.name == parameter } -> "stat"
                             parameter in tileFilterMap -> "tileFilter"
@@ -320,7 +323,7 @@ object TranslationFileWriter {
                             is kotlin.collections.List<*> ->
                                 for (item in fieldValue)
                                     if (item is String) submitString(item) else serializeElement(item!!)
-                            else -> submitString(fieldValue)
+                            else -> submitString(fieldValue.toString())
                         }
                     }
                 }

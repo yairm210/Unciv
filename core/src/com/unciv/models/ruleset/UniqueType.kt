@@ -18,7 +18,7 @@ enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
-    private val parameterTypeMap = ArrayList<List<UniqueParameterType>>()
+    val parameterTypeMap = ArrayList<List<UniqueParameterType>>()
 
     init {
         for (placeholder in text.getPlaceholderParameters()) {
