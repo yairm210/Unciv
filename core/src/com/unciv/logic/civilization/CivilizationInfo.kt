@@ -306,6 +306,27 @@ class CivilizationInfo {
 
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
 
+    /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
+    fun getMatchingUniquesByEnum(uniqueType: UniqueType, cityToIgnore: CityInfo?=null): Sequence<Unique> {
+        val ruleset = gameInfo.ruleSet
+        return nation.uniqueObjects.asSequence().filter { it.matches(uniqueType, ruleset) } +
+                cities.asSequence().filter { it != cityToIgnore }.flatMap { city ->
+                    city.getMatchingUniquesWithNonLocalEffectsByEnum(uniqueType)
+                } +
+                policies.policyUniques.getUniques(uniqueType) +
+                tech.techUniques.getUniques(uniqueType) +
+                temporaryUniques
+                    .asSequence().map { it.first }
+                    .filter { it.matches(uniqueType, ruleset) } +
+                getEra().getMatchingUniques(uniqueType) +
+                (
+                        if (religionManager.religion != null)
+                            religionManager.religion!!.getFounderUniques()
+                                .filter { it.isOfType(uniqueType) }
+                        else sequenceOf()
+                        )
+    }
+
     // Does not return local uniques, only global ones.
     fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +

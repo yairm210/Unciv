@@ -11,7 +11,7 @@ enum class UniqueParameterType(val parameterName:String) {
     Number("amount") {
         override fun getErrorType(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            return if (parameterText.toIntOrNull() != null) UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            return if (parameterText.toIntOrNull() == null) UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
             else null
         }
     },
@@ -60,7 +60,8 @@ class UniqueComplianceError(
 
 enum class UniqueType(val text:String) {
 
-    ConsumesResources("Consumes [amount] [resource]");
+    ConsumesResources("Consumes [amount] [resource]"),
+    FreeUnits("[amount] units cost no maintenance");
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
@@ -132,6 +133,7 @@ class Unique(val text:String) {
             && uniqueType.getComplianceErrors(this, ruleset).isEmpty()
 }
 
+
 class UniqueMap:HashMap<String, ArrayList<Unique>>() {
     fun addUnique(unique: Unique) {
         if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
@@ -143,6 +145,8 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
         if (result == null) return sequenceOf()
         else return result.asSequence()
     }
+
+    fun getUniques(uniqueType: UniqueType) = getUniques(uniqueType.placeholderText)
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
