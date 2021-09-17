@@ -261,8 +261,22 @@ class CivilizationInfo {
 
     fun getCivResources(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
-        for (resourceSupply in detailedCivResources)
+        for (resourceSupply in detailedCivResources) {
             newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "All")
+        }
+        return newResourceSupplyList
+    }
+
+    // Deducts resources from city-states
+    fun getTradeableCivResources(): ResourceSupplyList {
+        val newResourceSupplyList = ResourceSupplyList()
+        for (resourceSupply in detailedCivResources) {
+            // If we got it from another trade or from a CS, it's not tradeable
+            if ((resourceSupply.origin == "City-States" || resourceSupply.origin == "Trade") && resourceSupply.amount > 0)
+                newResourceSupplyList.add(resourceSupply.resource, 0, "All")
+            else
+                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "All")
+        }
         return newResourceSupplyList
     }
 
