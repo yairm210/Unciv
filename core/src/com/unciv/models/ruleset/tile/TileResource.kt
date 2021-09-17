@@ -1,22 +1,25 @@
 package com.unciv.models.ruleset.tile
 
 import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
-import java.util.*
 
-class TileResource : NamedStats(), ICivilopediaText {
+class TileResource : NamedStats(), ICivilopediaText, IHasUniques {
 
     var resourceType: ResourceType = ResourceType.Bonus
     var terrainsCanBeFoundOn: List<String> = listOf()
     var improvement: String? = null
     var improvementStats: Stats? = null
     var revealedBy: String? = null
+    @Deprecated("As of 3.16.16 - replaced by uniques")
     var unique: String? = null
+    override var uniques: ArrayList<String> = arrayListOf()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
     override var civilopediaText = listOf<FormattedLine>()
 
@@ -91,6 +94,7 @@ class TileResource : NamedStats(), ICivilopediaText {
 
         return textList
     }
+
 }
 
 

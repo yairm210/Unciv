@@ -172,5 +172,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             for ((resource, amount) in unit.baseUnit.getResourceRequirements())
                 newDetailedCivResources.add(civInfo.gameInfo.ruleSet.tileResources[resource]!!, -amount, "Units")
         civInfo.detailedCivResources = newDetailedCivResources
+        civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }
 }

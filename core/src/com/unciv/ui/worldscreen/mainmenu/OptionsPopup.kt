@@ -318,6 +318,9 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
             MapSaver.saveZipped = it
         }).row()
+        add("Gdx Scene2D debug".toCheckBox(CameraStageBaseScreen.enableSceneDebug) {
+            CameraStageBaseScreen.enableSceneDebug = it
+        }).row()
     }
 
     //endregion
@@ -509,11 +512,9 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             val generateTranslationsButton = "Generate translation files".toTextButton()
             val generateAction = {
-                val translations = Translations()
-                translations.readAllLanguagesTranslation()
-                TranslationFileWriter.writeNewTranslationFiles(translations)
+                val result = TranslationFileWriter.writeNewTranslationFiles()
                 // notify about completion
-                generateTranslationsButton.setText("Translation files are generated successfully.".tr())
+                generateTranslationsButton.setText(result.tr())
                 generateTranslationsButton.disable()
             }
             generateTranslationsButton.onClick(generateAction)

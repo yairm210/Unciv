@@ -8,6 +8,7 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -92,6 +93,7 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
+    @Deprecated("As of 3.16.16 - replaced by regular getStatPercentBonusesFromUniques()")
     private fun getStatPercentBonusesFromResources(construction: IConstruction): Stats {
         val stats = Stats()
 
@@ -153,9 +155,12 @@ class CityStats(val cityInfo: CityInfo) {
         stats.add(getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.nation.uniqueObjects.asSequence()))
 
         if (currentConstruction is Building
-                && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
-                && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital"))
+            && cityInfo.civInfo.cities.isNotEmpty()
+            && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
+            && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital")
+        ) {
             stats.production += 25f
+        }
 
         return stats
     }
@@ -214,8 +219,7 @@ class CityStats(val cityInfo: CityInfo) {
         val stats = Stats()
 
         for (unique in uniques.toList()) { // Should help  mitigate getConstructionButtonDTOs concurrency problems.
-            // "[stats] [cityFilter]"
-            if (unique.placeholderText == "[] []" && cityInfo.matchesFilter(unique.params[1]))
+            if (unique.isOfType(UniqueType.StatsPerCity) && cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
 
             // "[stats] per [amount] population [cityFilter]"
@@ -233,7 +237,8 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.add(unique.stats)
 
             // "[stats] if this city has at least [amount] specialists"
-            if (unique.placeholderText == "[] if this city has at least [] specialists" && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt())
+            if (unique.matches(UniqueType.StatBonusForNumberOfSpecialists, cityInfo.getRuleset())
+                    && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt())
                 stats.add(unique.stats)
 
             // Deprecated since a very long time ago, moved here from another code section
@@ -317,6 +322,14 @@ class CityStats(val cityInfo: CityInfo) {
                 )
             )
 
+        return stats
+    }
+
+    private fun getStatPercentBonusesFromUnitSupply(): Stats {
+        val stats = Stats()
+        val supplyDeficit = cityInfo.civInfo.stats().getUnitSupplyDeficit()
+        if (supplyDeficit > 0)
+            stats.production = cityInfo.civInfo.stats().getUnitSupplyProductionPenalty()
         return stats
     }
 
@@ -461,10 +474,14 @@ class CityStats(val cityInfo: CityInfo) {
                 .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
         newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getCivWideBuildingUniques(cityInfo))
         newStatPercentBonusList["Railroads"] = getStatPercentBonusesFromRailroad()  // Name chosen same as tech, for translation, but theoretically independent
+        val resourceUniques = cityInfo.civInfo.getCivResources().asSequence().flatMap { it.resource.uniqueObjects }
+        newStatPercentBonusList["Resources"] = getStatPercentBonusesFromUniques(currentConstruction, resourceUniques)
+        // Deprecated as of 3.16.16
         newStatPercentBonusList["Resources"] = getStatPercentBonusesFromResources(currentConstruction)
         newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
         newStatPercentBonusList["Religion"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.religion.getUniques())
+        newStatPercentBonusList["Unit Supply"] = getStatPercentBonusesFromUnitSupply()
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()

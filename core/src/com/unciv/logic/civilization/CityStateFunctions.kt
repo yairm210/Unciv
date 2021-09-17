@@ -132,8 +132,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         donorCiv.addGold(-giftAmount)
         civInfo.addGold(giftAmount)
         civInfo.getDiplomacyManager(donorCiv).addInfluence(influenceGainedByGift(donorCiv, giftAmount).toFloat())
-        updateAllyCivForCityState()
-        donorCiv.updateStatsForNextTurn()
     }
 
     fun getProtectorCivs() : List<CivilizationInfo> {
@@ -380,8 +378,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-15f)
         cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
-        updateAllyCivForCityState()
-        civInfo.updateStatsForNextTurn()
     }
 
     fun tributeWorker(demandingCiv: CivilizationInfo) {
@@ -398,7 +394,6 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         civInfo.getDiplomacyManager(demandingCiv).addInfluence(-50f)
         cityStateBullied(demandingCiv)
         civInfo.addFlag(CivFlags.RecentlyBullied.name, 20)
-        updateAllyCivForCityState()
     }
 
     fun canGiveStat(statType: Stat): Boolean {
