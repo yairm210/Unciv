@@ -220,24 +220,6 @@ object TranslationFileWriter {
             "Building"
         )) }
         val unitTypeMap = ruleset.unitTypes.keys.toMutableSet().apply { addAll(UniqueParameterType.unitTypeStrings) }
-        val cityFilterMap = setOf(
-            "in this city",
-            "in all cities",
-            "in all coastal cities",
-            "in capital",
-            "in all non-occupied cities",
-            "in all cities with a world wonder",
-            "in all cities connected to capital",
-            "in all cities with a garrison",
-            "in all cities in which the majority religion is a major religion",
-            "in all cities in which the majority religion is an enhanced religion",
-            "in non-enemy foreign cities",
-            "in foreign cities",
-            "in annexed cities",
-            "in holy cities",
-            "in City-State cities",
-            "in cities following this religion",
-        )
 
         val startMillis = System.currentTimeMillis()
 
@@ -283,7 +265,7 @@ object TranslationFileWriter {
                             parameter in buildingMap -> "building"
                             parameter in unitTypeMap -> "unitType"
                             Stats.isStats(parameter) -> "stats"
-                            parameter in cityFilterMap -> "cityFilter"
+                            parameter in UniqueParameterType.cityFilterMap -> "cityFilter"
                             else -> "param"
                         }
                         if (parameterName in existingParameterNames) {
