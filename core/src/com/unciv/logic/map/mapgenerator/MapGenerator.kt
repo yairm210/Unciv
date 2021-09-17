@@ -418,7 +418,7 @@ class MapGenerator(val ruleset: Ruleset) {
      */
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationTypes = ruleset.terrains.values.filter {
-            it.type == TerrainType.TerrainFeature && it.uniques.contains("Vegetation")
+            it.type == TerrainType.TerrainFeature && it.uniques.contains("Vegetation") || it.name == Constants.jungle || it.name == Constants.forest
         }
         for (tile in tileMap.values.asSequence().filter { it.terrainFeatures.isEmpty() || it.isHill() }) {
             val vegetation = (randomness.getPerlinNoise(tile, randomness.RNG.nextInt().toDouble(), scale = 3.0, nOctaves = 1) + 1.0) / 2.0
