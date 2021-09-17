@@ -21,7 +21,11 @@ enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
     @Deprecated("As of 3.16.16")
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UnitMaintenanceDiscount),
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"),
-    StatsPerCity("[stats] [cityFilter]")
+    StatsPerCity("[stats] [cityFilter]"),
+    CityStateStatsPerTurn("Provides [stats] per turn"),
+    CityStateStatsPerCity("Provides [stats] [cityFilter]"),
+    CityStateHappiness("Provides [amount] Happiness"),
+    CityStateMilitaryUnits("Provides military units every ≈[amount] turns"),
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

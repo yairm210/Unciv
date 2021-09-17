@@ -6,10 +6,8 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.CityStateBonusTypes
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.utils.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
@@ -601,9 +599,9 @@ class DiplomacyManager() {
 
                 for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel())) {
                     // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
-                    if (bonus.type == CityStateBonusTypes.MilitaryUnit &&
-                       (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.amount))
-                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.amount.toInt() + variance)
+                    if (bonus.isOfType(UniqueType.CityStateMilitaryUnits) &&
+                       (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.params[0].toInt()))
+                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.params[0].toInt() + variance)
                 }
             }
         }

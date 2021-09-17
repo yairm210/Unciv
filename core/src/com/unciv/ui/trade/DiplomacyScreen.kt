@@ -13,10 +13,10 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.CityStateBonus
-import com.unciv.models.ruleset.CityStateBonusTypes
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
+import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
@@ -229,8 +229,50 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         return diplomacyTable
     }
 
-    /** Given a list of CityStateBonus-es, returns a list of pretty strings with updated values for Siam-like uniques */
-    private fun getAdjustedBonuses(bonuses: List<CityStateBonus>): List<String> {
+    /** Given a list of Uniques, returns a list of pretty strings with updated values for Siam-like uniques
+     *  Assumes that each bonus contains only one stat type */
+    private fun getAdjustedBonuses(bonuses: List<Unique>): List<String> {
+        val bonusStrings = ArrayList<String>()
+        for (bonus in bonuses) {
+            var improved = false
+            for (unique in viewingCiv.getMatchingUniques("[]% [] from City-States")) {
+                val boostAmount = unique.params[0].toPercent()
+                val boostedStat = Stat.valueOf(unique.params[1])
+                when (bonus.type) {
+                    UniqueType.CityStateStatsPerTurn -> { // "Provides [stats] per turn"
+                        if (bonus.stats[boostedStat] > 0) {
+                            bonusStrings.add(
+                                bonus.text.fillPlaceholders(
+                                    (bonus.stats * boostAmount).toStringWithDecimals()))
+                            improved = true
+                        }
+                    }
+                    UniqueType.CityStateStatsPerCity -> { // "Provides [stats] [cityFilter]"
+                        if (bonus.stats[boostedStat] > 0) {
+                            bonusStrings.add(
+                                bonus.text.fillPlaceholders(
+                                    (bonus.stats * boostAmount).toStringWithDecimals(), bonus.params[1]))
+                            improved = true
+                        }
+                    }
+                    UniqueType.CityStateHappiness -> { // "Provides [amount] Happiness"
+                        if (boostedStat == Stat.Happiness) {
+                            bonusStrings.add(
+                                bonus.text.fillPlaceholders(
+                                    (bonus.params[0].toFloat() * boostAmount).toString().removeSuffix(".0")))
+                            improved = true
+                        }
+                    }
+                }
+            }
+            // No matching unique, add it unmodified
+            if (!improved)
+                bonusStrings.add(bonus.text)
+        }
+        return bonusStrings
+    }
+
+    /*private fun getAdjustedBonuses(bonuses: List<CityStateBonus>): List<String> {
         val bonusStrings = ArrayList<String>()
         for (bonus in bonuses) {
             var improved = false
@@ -269,7 +311,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 bonusStrings.add(bonus.text)
         }
         return bonusStrings
-    }
+    }*/
 
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)

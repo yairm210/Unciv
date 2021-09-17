@@ -30,22 +30,22 @@ class Era : INamed, IHasUniques {
 
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
-    val friendBonusObjects: Map<CityStateType, List<CityStateBonus>> by lazy { initBonuses(friendBonus) }
-    val allyBonusObjects: Map<CityStateType, List<CityStateBonus>> by lazy { initBonuses(allyBonus) }
+    val friendBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(friendBonus) }
+    val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
 
     var iconRGB: List<Int>? = null
     override var uniques: ArrayList<String> = arrayListOf()
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
 
-    private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, List<CityStateBonus>> {
-        val objectMap = HashMap<CityStateType, List<CityStateBonus>>()
+    private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, List<Unique>> {
+        val objectMap = HashMap<CityStateType, List<Unique>>()
         for (pair in bonusMap) {
-            objectMap[CityStateType.valueOf(pair.key)] = pair.value.map { CityStateBonus(it) }
+            objectMap[CityStateType.valueOf(pair.key)] = pair.value.map { Unique(it) }
         }
         return objectMap
     }
 
-    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel): List<CityStateBonus> {
+    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel): List<Unique> {
         return when (relationshipLevel) {
             RelationshipLevel.Ally   -> allyBonusObjects[cityStateType]!!
             RelationshipLevel.Friend -> friendBonusObjects[cityStateType]!!
@@ -74,34 +74,4 @@ class Era : INamed, IHasUniques {
 
     /** This is used for display purposes in templates */ 
     override fun toString() = name
-}
-
-class CityStateBonus(val text:String) {
-    private val placeholder = text.getPlaceholderText()
-    private val params = text.getPlaceholderParameters()
-
-    val type = when (placeholder) {
-        "Provides [] [] []" -> CityStateBonusTypes.AmountStatInCityFilter
-        "Provides [] [] per turn" -> CityStateBonusTypes.AmountStat
-        "Provides [] Happiness" -> CityStateBonusTypes.AmountHappiness
-        "Provides military units every ≈[] turns" -> CityStateBonusTypes.MilitaryUnit
-        "Provides a unique luxury" -> CityStateBonusTypes.UniqueLuxury
-        else -> CityStateBonusTypes.valueOf("illegal bonus in Eras.json: $placeholder")  // Crash game
-    }
-    val amount = if (type == CityStateBonusTypes.UniqueLuxury) 0f else params[0].toFloat()
-    val stat = when (type) {
-        CityStateBonusTypes.AmountStatInCityFilter -> Stat.valueOf(params[1])
-        CityStateBonusTypes.AmountStat -> Stat.valueOf(params[1])
-        CityStateBonusTypes.AmountHappiness -> Stat.Happiness
-        else -> null
-    }
-    val cityFilter = if (type == CityStateBonusTypes.AmountStatInCityFilter) params[2] else ""
-}
-
-enum class CityStateBonusTypes {
-    AmountStatInCityFilter,
-    AmountStat, // Should not be Happiness
-    AmountHappiness,
-    MilitaryUnit,
-    UniqueLuxury,
 }

@@ -4,7 +4,6 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.CityStateBonusTypes
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueType
@@ -12,8 +11,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.utils.toPercent
 import kotlin.math.max
 import kotlin.math.min
@@ -131,8 +128,8 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
                 if (!eraInfo.undefinedCityStateBonuses()) {
                     for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.type == CityStateBonusTypes.AmountStat)
-                            cityStateBonus.add(bonus.stat!!, bonus.amount)
+                        if (bonus.isOfType(UniqueType.CityStateStatsPerTurn))
+                            cityStateBonus.add(bonus.stats)
                     }
                 } else {
                     // Deprecated, assume Civ V values for compatibility
@@ -324,12 +321,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
                 if (!eraInfo.undefinedCityStateBonuses()) {
                     for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.type == CityStateBonusTypes.AmountHappiness) {
+                        if (bonus.isOfType(UniqueType.CityStateHappiness)) {
                             if (statMap.containsKey("City-States"))
                                 statMap["City-States"] =
-                                    statMap["City-States"]!! + bonus.amount
+                                    statMap["City-States"]!! + bonus.params[0].toFloat()
                             else
-                                statMap["City-States"] = bonus.amount
+                                statMap["City-States"] = bonus.params[0].toFloat()
                         }
                     }
                 } else {

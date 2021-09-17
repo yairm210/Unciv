@@ -6,15 +6,12 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.CityStateBonusTypes
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.utils.toPercent
 import kotlin.math.min
 
@@ -127,8 +124,8 @@ class CityStats(val cityInfo: CityInfo) {
                         stats.food += 2
                 } else {
                     for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.type == CityStateBonusTypes.AmountStatInCityFilter && cityInfo.matchesFilter(bonus.cityFilter)) {
-                            stats.add(bonus.stat!!, bonus.amount)
+                        if (bonus.isOfType(UniqueType.CityStateStatsPerCity) && cityInfo.matchesFilter(bonus.params[1])) {
+                            stats.add(bonus.stats)
                         }
                     }
                 }
