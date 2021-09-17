@@ -329,7 +329,7 @@ class Ruleset {
                 val complianceErrors = unique.type.getComplianceErrors(unique, this)
                 for (complianceError in complianceErrors) {
                     // When not checking the entire ruleset, we can only really detect ruleset-invariant errors
-                    if (complianceError.errorType == UniqueType.UniqueComplianceErrorType.RulesetInvariant)
+                    if (complianceError.errorSeverity == UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
                         lines += "${building.name}'s unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
                                 " which does not fit parameter type" +
                                 " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"

@@ -10,26 +10,26 @@ import com.unciv.models.translations.getPlaceholderText
 enum class UniqueParameterType(val parameterName:String) {
     Number("amount") {
         override fun getErrorType(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorType? {
-            return if (parameterText.toIntOrNull() != null) UniqueType.UniqueComplianceErrorType.RulesetInvariant
+                UniqueType.UniqueComplianceErrorSeverity? {
+            return if (parameterText.toIntOrNull() != null) UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
             else null
         }
     },
     UnitFilter("unitType") {
         override fun getErrorType(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorType? {
+                UniqueType.UniqueComplianceErrorSeverity? {
             if(ruleset.unitTypes.containsKey(parameterText) || unitTypeStrings.contains(parameterText)) return null
-            return UniqueType.UniqueComplianceErrorType.RulesetSpecific
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
-    Unknown("") {
+    Unknown("param") {
         override fun getErrorType(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorType? {
+                UniqueType.UniqueComplianceErrorSeverity? {
             return null
         }
     };
 
-    abstract fun getErrorType(parameterText:String, ruleset: Ruleset): UniqueType.UniqueComplianceErrorType?
+    abstract fun getErrorType(parameterText:String, ruleset: Ruleset): UniqueType.UniqueComplianceErrorSeverity?
 
     companion object {
         val unitTypeStrings = hashSetOf(
@@ -51,10 +51,10 @@ enum class UniqueParameterType(val parameterName:String) {
     }
 }
 
-data class UniqueComplianceError(
+class UniqueComplianceError(
     val parameterName: String,
     val acceptableParameterTypes: List<UniqueParameterType>,
-    val errorType: UniqueType.UniqueComplianceErrorType
+    val errorSeverity: UniqueType.UniqueComplianceErrorSeverity
 )
 
 
@@ -77,8 +77,9 @@ enum class UniqueType(val text:String) {
 
     val placeholderText = text.getPlaceholderText()
 
-    enum class UniqueComplianceErrorType {
-        // Order from most important to least, so if we have a param that doesn't fit any types we take the least
+    /** Ordinal determines severity - ordered from most severe at 0 */
+    enum class UniqueComplianceErrorSeverity {
+
         /** This is a problem like "numbers don't parse", "stat isn't stat", "city filter not applicable" */
         RulesetInvariant,
 
