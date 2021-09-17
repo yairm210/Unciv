@@ -9,7 +9,7 @@ import com.unciv.models.translations.getPlaceholderText
 // Eventually we'll merge the translation generation to take this as the source of that
 enum class UniqueParameterType(val parameterName:String) {
     Number("amount") {
-        override fun getErrorType(parameterText: String, ruleset: Ruleset):
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             return if (parameterText.toIntOrNull() == null) UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
             else null
@@ -17,18 +17,18 @@ enum class UniqueParameterType(val parameterName:String) {
     },
     MapUnitFilter("mapUnitFilter"){
         val knownValues = setOf("Wounded", "Barbarians", "City-State", "Embarked", "Non-City")
-        override fun getErrorType(parameterText: String, ruleset: Ruleset):
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            return BaseUnitFilter.getErrorType(parameterText, ruleset)
+            return BaseUnitFilter.getErrorSeverity(parameterText, ruleset)
         }
     },
     BaseUnitFilter("baseUnitFilter"){
         // As you can see there is a difference between these and what's in unitTypeStrings (for translation) -
         // the goal is to unify, but for now this is the "real" list
-        val knownValues = setOf("Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
+        val knownValues = setOf("All", "Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
             "non-air", "Nuclear Weapon", "Great Person", "Religious")
-        override fun getErrorType(parameterText: String, ruleset: Ruleset):
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.unitTypes.containsKey(parameterText)) return null
@@ -41,13 +41,13 @@ enum class UniqueParameterType(val parameterName:String) {
         }
     },
     Unknown("param") {
-        override fun getErrorType(parameterText: String, ruleset: Ruleset):
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             return null
         }
     };
 
-    abstract fun getErrorType(parameterText:String, ruleset: Ruleset): UniqueType.UniqueComplianceErrorSeverity?
+    abstract fun getErrorSeverity(parameterText:String, ruleset: Ruleset): UniqueType.UniqueComplianceErrorSeverity?
 
     companion object {
         val unitTypeStrings = hashSetOf(
@@ -76,10 +76,16 @@ class UniqueComplianceError(
 )
 
 
-enum class UniqueType(val text:String) {
+enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
 
     ConsumesResources("Consumes [amount] [resource]"),
-    FreeUnits("[amount] units cost no maintenance");
+    FreeUnits("[amount] units cost no maintenance"),
+    UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units"),
+    @Deprecated("As of 3.16.16")
+    DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UnitMaintenanceDiscount),
+    @Deprecated("As of 3.16.16")
+    DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UnitMaintenanceDiscount),
+    ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
@@ -118,7 +124,7 @@ enum class UniqueType(val text:String) {
         for ((index, param) in unique.params.withIndex()) {
             val acceptableParamTypes = parameterTypeMap[index]
             val errorTypesForAcceptableParameters =
-                acceptableParamTypes.map { it.getErrorType(param, ruleset) }
+                acceptableParamTypes.map { it.getErrorSeverity(param, ruleset) }
             if (errorTypesForAcceptableParameters.any { it == null }) continue // This matches one of the types!
             val leastSevereWarning =
                 errorTypesForAcceptableParameters.maxByOrNull { it!!.ordinal }!!
