@@ -417,15 +417,17 @@ class MapGenerator(val ruleset: Ruleset) {
      * [MapParameters.vegetationRichness] is the threshold for vegetation spawn
      */
     private fun spawnVegetation(tileMap: TileMap) {
-        val vegetationSeed = randomness.RNG.nextInt().toDouble()
-        val candidateTerrains = Constants.vegetation.flatMap{ ruleset.terrains[it]!!.occursOn }
-        //Checking it.baseTerrain in candidateTerrains to make sure forest does not spawn on desert hill
-        for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains
-                && it.getLastTerrain().name in candidateTerrains }) {
-            val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
-
-            if (vegetation <= tileMap.mapParameters.vegetationRichness)
-                tile.terrainFeatures.add(Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn.contains(tile.getLastTerrain().name) }.random(randomness.RNG))
+        val vegetationTypes = ruleset.terrains.values.filter {
+            it.type == TerrainType.TerrainFeature && it.uniques.contains("Vegetation")
+        }
+        for (tile in tileMap.values.asSequence().filter { it.terrainFeatures.isEmpty() || it.isHill() }) {
+            val vegetation = (randomness.getPerlinNoise(tile, randomness.RNG.nextInt().toDouble(), scale = 3.0, nOctaves = 1) + 1.0) / 2.0
+            if (vegetation <= tileMap.mapParameters.vegetationRichness) {
+                val spawnableVegetation = vegetationTypes.filter { it.occursOn.contains(tile.baseTerrain)
+                        && (!tile.isHill() || it.occursOn.contains(Constants.hill)) }
+                if (spawnableVegetation.any())
+                    tile.terrainFeatures.add(spawnableVegetation.random(randomness.RNG).name)
+            }
         }
     }
     /**
