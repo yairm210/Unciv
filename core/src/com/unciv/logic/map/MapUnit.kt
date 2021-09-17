@@ -263,8 +263,12 @@ class MapUnit {
      * @return Maximum distance of tiles this unit may possibly see
      */
     private fun getVisibilityRange(): Int {
+        if (isEmbarked() && !hasUnique("Normal vision when embarked"))
+            return 1
+        
         var visibilityRange = 2
-        for (unique in civInfo.getMatchingUniques("+[] Sight for all [] units"))
+        
+        for (unique in getMatchingUniques("[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
 
@@ -272,7 +276,6 @@ class MapUnit {
         visibilityRange += getMatchingUniques("[] Visibility Range").sumOf { it.params[0].toInt() }
 
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
-
 
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
@@ -940,6 +943,8 @@ class MapUnit {
             return filter.removePrefix("{").removeSuffix("}").split("} {")
                 .all { matchesFilter(it) }
         return when (filter) {
+            // todo: unit filters should be adjectives, fitting "[filterType] units"
+            // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100
             "Barbarians", "Barbarian" -> civInfo.isBarbarian()
             "City-State" -> civInfo.isCityState()

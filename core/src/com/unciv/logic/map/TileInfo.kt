@@ -7,6 +7,7 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
@@ -387,7 +388,7 @@ open class TileInfo {
                 matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
             } -> false
             improvement.uniqueObjects.any {
-                it.placeholderText == "Consumes [] []"
+                it.matches(UniqueType.ConsumesResources, ruleset)
                 && civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))

@@ -230,7 +230,7 @@
 		"policies": [
 			{
 				"name": "Naval Tradition",
-				"uniques": ["+[1] Movement for all [{Military} {Water}] units", "+[1] Sight for all [{Military} {Water}] units",
+				"uniques": ["+[1] Movement for all [{Military} {Water}] units", "[+1] Sight for all [{Military} {Water}] units",
 				 "Free [Great General] appears", "+[2] Movement for all [Great Admiral] units"
 				],
 				"row": 1,
@@ -367,7 +367,7 @@
 	{
 		"name": "Autocracy",
 		"era": "Industrial era",
-		"uniques": ["-[33]% unit upkeep costs", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
+		"uniques": ["[-33]% maintenance costs for [All] units", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
 			"Incompatible with [Order]", "Incompatible with [Freedom]"],
 		"policies": [
 			{

@@ -11,6 +11,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -292,10 +293,10 @@ class CityInfo {
                     cityResources.add(
                         resource,
                         unique.params[0].toInt() * civInfo.getResourceModifier(resource),
-                        "Tiles"
+                        "Improvements"
                     )
                 }
-                if (unique.placeholderText == "Consumes [] []") {
+                if (unique.matches(UniqueType.ConsumesResources, getRuleset())) {
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(
                         resource,
@@ -729,6 +730,13 @@ class CityInfo {
         // Note that we don't query religion here, as those only have local effects (for now at least)
     }
 
+
+    fun getMatchingUniquesWithNonLocalEffectsByEnum(uniqueType: UniqueType): Sequence<Unique> {
+        return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
+            .filter { it.params.none { param -> param == "in this city" } }
+        // Note that we don't query religion here, as those only have local effects (for now at least)
+    }
+
     // Get all uniques that don't apply to only this city
     fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getAllUniques()
@@ -736,9 +744,7 @@ class CityInfo {
         // Note that we don't query religion here, as those only have local effects (for now at least)
     }
 
-    fun isHolyCity(): Boolean {
-        return religion.religionThisIsTheHolyCityOf != null
-    }
+    fun isHolyCity(): Boolean = religion.religionThisIsTheHolyCityOf != null
 
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
         return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)

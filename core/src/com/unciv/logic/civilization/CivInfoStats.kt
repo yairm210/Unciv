@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.CityStateBonusTypes
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -24,7 +25,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         var freeUnits = 3
-        for (unique in civInfo.getMatchingUniques("[] units cost no maintenance")) {
+        for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.FreeUnits)) {
             freeUnits += unique.params[0].toInt()
         }
 
@@ -38,13 +39,23 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
 
-
-        for (unique in civInfo.getMatchingUniques("-[]% [] unit maintenance costs")) {
+        for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.UnitMaintenanceDiscount)) {
             val numberOfUnitsWithDiscount = min(
                 numberOfUnitsToPayFor,
                 unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
             )
             numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
+        }
+
+        for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.DecreasedUnitMaintenanceCostsByFilter)) {
+            val numberOfUnitsWithDiscount = min(
+                numberOfUnitsToPayFor,
+                unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
+            )
+            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
+        }
+        for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.DecreasedUnitMaintenanceCostsGlobally)) {
+            numberOfUnitsToPayFor *= 1f - unique.params[0].toFloat() / 100f
         }
 
         val turnLimit =
@@ -56,9 +67,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
 
-        for (unique in civInfo.getMatchingUniques("-[]% unit upkeep costs")) {
-            cost *= 1f - unique.params[0].toFloat() / 100f
-        }
 
         return cost.toInt()
     }
@@ -88,6 +96,24 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         return transportationUpkeep
     }
+
+    fun getUnitSupply(): Int {
+        /* TotalSupply = BaseSupply + NumCities*modifier + Population*modifier
+        * In civ5, it seems population modifier is always 0.5, so i hardcoded it down below */
+        var supply = getBaseUnitSupply() + getUnitSupplyFromCities() + getUnitSupplyFromPop()
+
+        if (civInfo.isMajorCiv() && civInfo.playerType == PlayerType.AI)
+            supply = (supply*(1f + civInfo.getDifficulty().aiUnitSupplyModifier)).toInt()
+        return supply
+    }
+
+    fun getBaseUnitSupply(): Int = civInfo.getDifficulty().unitSupplyBase
+    fun getUnitSupplyFromCities(): Int = civInfo.cities.size * civInfo.getDifficulty().unitSupplyPerCity
+    fun getUnitSupplyFromPop(): Int = civInfo.cities.sumOf { it.population.population } / 2
+    fun getUnitSupplyDeficit(): Int = max(0,civInfo.getCivUnitsSize() - getUnitSupply())
+
+    /** Per each supply missing, a player gets -10% production. Capped at -70%. */
+    fun getUnitSupplyProductionPenalty(): Float = -min(getUnitSupplyDeficit() * 10f, 70f)
 
     fun getStatMapForNextTurn(): StatMap {
         val statMap = StatMap()

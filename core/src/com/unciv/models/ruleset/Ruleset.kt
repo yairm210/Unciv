@@ -299,11 +299,29 @@ class Ruleset {
         fun isNotOK() = status != CheckModLinksStatus.OK
     }
 
+    fun checkUniques(uniqueContainer:IHasUniques, lines:ArrayList<String>,
+                     severityToReport: UniqueType.UniqueComplianceErrorSeverity) {
+        val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
+
+        for (unique in uniqueContainer.uniqueObjects) {
+            if (unique.type == null) continue
+            val complianceErrors = unique.type.getComplianceErrors(unique, this)
+            for (complianceError in complianceErrors) {
+                if (complianceError.errorSeverity ==  severityToReport)
+                    lines += "$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
+                            " which does not fit parameter type" +
+                            " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+            }
+        }
+    }
+
     fun checkModLinks(): CheckModLinksResult {
         val lines = ArrayList<String>()
         var warningCount = 0
 
         // Checks for all mods - only those that can succeed without loading a base ruleset
+        // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
+
         for (unit in units.values) {
             if (unit.upgradesTo == unit.name)
                 lines += "${unit.name} upgrades to itself!"
@@ -311,6 +329,8 @@ class Ruleset {
                 lines += "${unit.name} is a military unit but has no assigned strength!"
             if (unit.isRanged() && unit.rangedStrength == 0 && "Cannot attack" !in unit.uniques)
                 lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
+
+            checkUniques(unit, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
         }
 
         for (tech in technologies.values) {
@@ -318,17 +338,24 @@ class Ruleset {
                 if (tech != otherTech && otherTech.column == tech.column && otherTech.row == tech.row)
                     lines += "${tech.name} is in the same row as ${otherTech.name}!"
             }
+
+            checkUniques(tech, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
         }
 
         for (building in buildings.values) {
             if (building.requiredTech == null && building.cost == 0 && !building.uniques.contains("Unbuildable"))
                 lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
+
+            checkUniques(building, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
+
         }
         
         for (nation in nations.values) {
             if (nation.cities.isEmpty() && !nation.isSpectator() && !nation.isBarbarian()) {
                 lines += "${nation.name} can settle cities, but has no city names!"
             }
+
+            checkUniques(nation, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
         }
 
         // Quit here when no base ruleset is loaded - references cannot be checked
@@ -364,6 +391,8 @@ class Ruleset {
                     warningCount++
                 }
             }
+
+            checkUniques(unit, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
         for (building in buildings.values) {
@@ -381,6 +410,7 @@ class Ruleset {
             for (unique in building.uniqueObjects)
                 if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
+            checkUniques(building, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
         for (resource in tileResources.values) {
@@ -391,6 +421,7 @@ class Ruleset {
             for (terrain in resource.terrainsCanBeFoundOn)
                 if (!terrains.containsKey(terrain))
                     lines += "${resource.name} can be found on terrain $terrain which does not exist!"
+            checkUniques(resource, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
         for (improvement in tileImprovements.values) {
@@ -399,12 +430,14 @@ class Ruleset {
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!terrains.containsKey(terrain))
                     lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
+            checkUniques(improvement, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
         for (terrain in terrains.values) {
             for (baseTerrain in terrain.occursOn)
                 if (!terrains.containsKey(baseTerrain))
                     lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
+            checkUniques(terrain, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
         val prereqsHashMap = HashMap<String,HashSet<String>>()
@@ -433,6 +466,7 @@ class Ruleset {
             }
             if (tech.era() !in eras)
                 lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
+            checkUniques(tech, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
         if (eras.isEmpty()) {
@@ -440,19 +474,20 @@ class Ruleset {
             warningCount++
         }
         
-        for (era in eras) {
-            for (wonder in era.value.startingObsoleteWonders)
+        for (era in eras.values) {
+            for (wonder in era.startingObsoleteWonders)
                 if (wonder !in buildings)
-                    lines += "Nonexistent wonder $wonder obsoleted when starting in ${era.key}!"
-            for (building in era.value.settlerBuildings)
+                    lines += "Nonexistent wonder $wonder obsoleted when starting in ${era.name}!"
+            for (building in era.settlerBuildings)
                 if (building !in buildings)
-                    lines += "Nonexistent building $building built by settlers when starting in ${era.key}"
-            if (era.value.startingMilitaryUnit !in units)
-                lines += "Nonexistent unit ${era.value.startingMilitaryUnit} marked as starting unit when starting in ${era.key}"
-            if (era.value.researchAgreementCost < 0 || era.value.startingSettlerCount < 0 || era.value.startingWorkerCount < 0 || era.value.startingMilitaryUnitCount < 0 || era.value.startingGold < 0 || era.value.startingCulture < 0)
-                lines += "Unexpected negative number found while parsing era ${era.key}"
-            if (era.value.settlerPopulation <= 0)
-                lines += "Population in cities from settlers must be strictly positive! Found value ${era.value.settlerPopulation} for era ${era.key}"
+                    lines += "Nonexistent building $building built by settlers when starting in ${era.name}"
+            if (era.startingMilitaryUnit !in units)
+                lines += "Nonexistent unit ${era.startingMilitaryUnit} marked as starting unit when starting in ${era.name}"
+            if (era.researchAgreementCost < 0 || era.startingSettlerCount < 0 || era.startingWorkerCount < 0 || era.startingMilitaryUnitCount < 0 || era.startingGold < 0 || era.startingCulture < 0)
+                lines += "Unexpected negative number found while parsing era ${era.name}"
+            if (era.settlerPopulation <= 0)
+                lines += "Population in cities from settlers must be strictly positive! Found value ${era.settlerPopulation} for era ${era.name}"
+            checkUniques(era, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
         return CheckModLinksResult(warningCount, lines)
