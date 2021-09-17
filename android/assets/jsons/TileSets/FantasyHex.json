@@ -32,6 +32,8 @@
         //Jungle improvements for Jungle
         "Grassland+Jungle+Ancient ruins": ["Grassland","Ancient ruins-Jungle","Jungle"],
         "Plains+Jungle+Ancient ruins": ["Plains","Ancient ruins-Jungle","PlainsJungle"],
+        "Grassland+Hill+Jungle+Trading post": ["Grassland","Hill","Jungle+Trading post"],
+        "Plains+Hill+Jungle+Trading post": ["Plains","Hill","Jungle+Trading post"],
 
         //resources behind forest and jungle
             //TODO all the resources...
