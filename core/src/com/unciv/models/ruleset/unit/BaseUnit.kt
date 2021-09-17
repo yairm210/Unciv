@@ -311,7 +311,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
-        return rejectionReasons.none { !it.shouldShow }
+        return rejectionReasons.all { it.shouldShow }
             || (
                 canBePurchasedWithAnyStat(cityConstructions.cityInfo)
                 && rejectionReasons.all { it == RejectionReason.Unbuildable }
@@ -347,14 +347,14 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
-            rejectionReasons.add(RejectionReason.RequiresTech.apply { this.errorMessage = "$requiredTech not researched" }) 
+            rejectionReasons.add(RejectionReason.RequiresTech.withMessage("$requiredTech not researched")) 
         if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
-            rejectionReasons.add(RejectionReason.Obsoleted.apply { this.errorMessage = "Obsolete by $obsoleteTech" })
+            rejectionReasons.add(RejectionReason.Obsoleted.withMessage("Obsolete by $obsoleteTech"))
 
         if (uniqueTo != null && uniqueTo != civInfo.civName) 
-            rejectionReasons.add(RejectionReason.UniqueToOtherNation.apply { this.errorMessage = "Unique to $uniqueTo" })
+            rejectionReasons.add(RejectionReason.UniqueToOtherNation.withMessage("Unique to $uniqueTo"))
         if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
-            rejectionReasons.add(RejectionReason.ReplacedByOurUnique.apply { this.errorMessage = "Our unique unit replaces this" })
+            rejectionReasons.add(RejectionReason.ReplacedByOurUnique.withMessage("Our unique unit replaces this"))
 
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
@@ -365,24 +365,22 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             when {
                 ruleSet.technologies.contains(filter) -> 
                     if (!civInfo.tech.isResearched(filter)) 
-                        rejectionReasons.add(RejectionReason.RequiresTech.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.RequiresTech.withMessage(unique.text))
                 ruleSet.policies.contains(filter) ->
                     if (!civInfo.policies.isAdopted(filter))
-                        rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.RequiresPolicy.withMessage(unique.text))
                 ruleSet.eras.contains(filter) ->
                     if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
-                        rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.UnlockedWithEra.withMessage(unique.text))
                 ruleSet.buildings.contains(filter) ->
                     if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
-                        rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.withMessage(unique.text))
             }
         }
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.apply {
-                    errorMessage = "Consumes [$amount] [$resource]"
-                })
+                rejectionReasons.add(RejectionReason.ConsumesResources.withMessage("Consumes [$amount] [$resource]"))
             }
 
         if (uniques.contains(Constants.settlerUnique) &&

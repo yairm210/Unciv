@@ -2,7 +2,6 @@ package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.IHasUniques
-import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.Fonts
@@ -23,7 +22,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
     fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
-    
+
     fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (stat in listOf(Stat.Production, Stat.Happiness)) return false
         if ("Cannot be purchased" in uniques) return false
@@ -44,16 +43,16 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.all { it == RejectionReason.Unbuildable }
     }
-    
+
     fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
         return Stat.values().any { canBePurchasedWithStat(cityInfo, it) }
     }
-    
+
     fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
     }
-    
+
     fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
 
@@ -72,24 +71,30 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 }
 
 
+class RejectionReasons: HashSet<IRejectionReason>() {
 
-
-class RejectionReasons(): HashSet<RejectionReason>() {
-    
-    fun filterTechPolicyEraWonderRequirements(): HashSet<RejectionReason> {
-        return filterNot { it in techPolicyEraWonderRequirements }.toHashSet()
+    fun filterTechPolicyEraWonderRequirements(): HashSet<IRejectionReason> {
+        return filterNot { techPolicyEraWonderRequirements.containsEquivalent(it) }.toHashSet()
     }
-    
+
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
-        return any { it in reasonsToDefinitivelyRemoveFromQueue }
+        return any { reasonsToDefinitivelyRemoveFromQueue.containsEquivalent(it) }
     }
-    
+
     fun getMostImportantRejectionReason(): String? {
-        return orderOfErrorMessages.firstOrNull { it in this }?.errorMessage
+        for (reasonType in orderOfErrorMessages) {
+            val reason = firstOrNull { it.isEquivalent(reasonType) }
+            if (reason != null) return reason.errorMessage
+        }
+        return null
     }
-    
+
     // Used for constant variables in the functions above
     companion object {
+        private fun HashSet<RejectionReason>.containsEquivalent(other: IRejectionReason): Boolean {
+            return this.any { it.isEquivalent(other) }
+        }
+
         private val techPolicyEraWonderRequirements = hashSetOf(
             RejectionReason.Obsoleted,
             RejectionReason.RequiresTech,
@@ -115,43 +120,89 @@ class RejectionReasons(): HashSet<RejectionReason>() {
             RejectionReason.CanOnlyBePurchased
         )
     }
-} 
+}
 
 
-enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
+/**
+ * Rejection reasons can be either a choice from the enum class [RejectionReason] or an instance of
+ * [RejectionReasonSpecific] when a dynamic error message is needed.
+ */
+interface IRejectionReason {
+    val name: String
+    val ordinal: Int
+    /** When true, the rejection reason prevents a _construction_ from being shown at all - does not refer to the rejection reason itself */
+    val shouldShow: Boolean
+    val errorMessage: String
+
+    /**
+     * Replaces `equals` because kotlin will not allow a proper equality implementation (override not allowed for the enum side)
+     * @return `true` when both [IRejectionReason] are -or are derived from- the same [RejectionReason]
+     */
+    fun isEquivalent(other: IRejectionReason): Boolean
+}
+
+/**
+ * A variant of [type] with a dynamic [errorMessage].
+ */
+class RejectionReasonSpecific(
+    val type: RejectionReason,
+    override val errorMessage: String = type.errorMessage
+): IRejectionReason {
+    override val name: String
+        get() = type.name
+    override val ordinal: Int
+        get() = type.ordinal
+    override val shouldShow: Boolean
+        get() = type.shouldShow
+
+    override fun isEquivalent(other: IRejectionReason) = when (other) {
+        is RejectionReasonSpecific -> other.type == type
+        is RejectionReason -> other == type
+        else -> false
+    }
+
+    /** debug display only */
+    override fun toString() = "$type($errorMessage)"
+}
+
+/**
+ * Predefined rejection reasons with static error messages. For a dynamic message, derive a
+ * [RejectionReasonSpecific] from one of the instances with the [withMessage] factory method.
+ */
+enum class RejectionReason(override val shouldShow: Boolean, override val errorMessage: String): IRejectionReason {
     AlreadyBuilt(false, "Building already built in this city"),
     Unbuildable(false, "Unbuildable"),
     CanOnlyBePurchased(true, "Can only be purchased"),
     ShouldNotBeDisplayed(false, "Should not be displayed"),
-    
+
     DisabledBySetting(false, "Disabled by setting"),
     HiddenWithoutVictory(false, "Hidden because a victory type has been disabled"),
-    
+
     MustBeOnTile(false, "Must be on a specific tile"),
     MustNotBeOnTile(false, "Must not be on a specific tile"),
     MustBeNextToTile(false, "Must be next to a specific tile"),
     MustNotBeNextToTile(false, "Must not be next to a specific tile"),
-    MustOwnTile(false, "Must own a specific tile closeby"),
+    MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
-    
+
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
-    
+
     Obsoleted(false, "Obsolete"),
     RequiresTech(false, "Required tech not researched"),
     RequiresPolicy(false, "Requires a specific policy!"),
-    UnlockedWithEra(false, "Unlocked when reacing a specific era"),
+    UnlockedWithEra(false, "Unlocked when reaching a specific era"),
     MorePolicyBranches(false, "Hidden until more policy branches are fully adopted"),
-    
+
     RequiresNearbyResource(false, "Requires a certain resource being exploited nearby"),
     InvalidRequiredBuilding(false, "Required building does not exist in ruleSet!"),
     CannotBeBuiltWith(false, "Cannot be built at the same time as another building already built"),
-    
+
     RequiresBuildingInThisCity(true, "Requires a specific building in this city!"),
     RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
     RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
-    
+
     WonderAlreadyBuilt(false, "Wonder already built"),
     NationalWonderAlreadyBuilt(false, "National Wonder already built"),
     WonderBeingBuiltElsewhere(true, "Wonder is being built elsewhere"),
@@ -159,21 +210,29 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     CityStateWonder(false, "No Wonders for city-states"),
     CityStateNationalWonder(false, "No National Wonders for city-states"),
     WonderDisabledEra(false, "This Wonder is disabled when starting in this era"),
-    
+
     ReachedBuildCap(false, "Don't need to build any more of these!"),
-    
+
     ConsumesResources(true, "Consumes resources which you are lacking"),
-    
+
     PopulationRequirement(true, "Requires more population"),
-    
-    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challangers");
+
+    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
+
+    ;
+    /** Factory creates a [RejectionReasonSpecific] with message [errorMessage] from a predefined [RejectionReason] */
+    fun withMessage(errorMessage: String) = RejectionReasonSpecific(this, errorMessage)
+
+    override fun isEquivalent(other: IRejectionReason) = when (other) {
+        is RejectionReasonSpecific -> other.type == this
+        is RejectionReason -> other == this
+        else -> false
+    }
 }
 
 
-
-
 open class PerpetualConstruction(override var name: String, val description: String) : IConstruction {
-    
+
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
     open fun getProductionTooltip(cityInfo: CityInfo) : String
             = "\r\n${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${Fonts.turn}"
@@ -208,7 +267,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
-    
+
     override fun getResourceRequirements(): HashMap<String, Int> = hashMapOf()
 
 }
