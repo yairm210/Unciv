@@ -227,7 +227,7 @@
 		"gold": 2,
 		"improvement": "Quarry",
 		"improvementStats": {"production": 1},
-		"unique": "+15% production towards Wonder construction"
+		"uniques": ["+15% production towards Wonder construction"]
 	},
 	{
 		"name": "Whales",
@@ -250,13 +250,13 @@
 		"name": "Jewelry",
 		"resourceType": "Luxury",
 		"gold": 2,
-		"unique": "Can only be created by Mercantile City-States"
+		"uniques": ["Can only be created by Mercantile City-States"]
 	},
 	{
 		"name": "Porcelain",
 		"resourceType": "Luxury",
 		"gold": 2,
-		"unique": "Can only be created by Mercantile City-States"
+		"uniques": ["Can only be created by Mercantile City-States"]
 	}
 	{
 		"name": "Citrus",
