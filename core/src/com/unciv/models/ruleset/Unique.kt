@@ -40,6 +40,14 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
     },
+    Stats("stats"){
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (!com.unciv.models.stats.Stats.isStats(parameterText))
+                return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            return null
+        }
+    },
     Unknown("param") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
@@ -85,6 +93,7 @@ enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UnitMaintenanceDiscount),
     @Deprecated("As of 3.16.16")
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UnitMaintenanceDiscount),
+    StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists")
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

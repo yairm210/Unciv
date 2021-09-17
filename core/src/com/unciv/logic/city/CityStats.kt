@@ -8,6 +8,7 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -236,7 +237,8 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.add(unique.stats)
 
             // "[stats] if this city has at least [amount] specialists"
-            if (unique.placeholderText == "[] if this city has at least [] specialists" && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt())
+            if (unique.matches(UniqueType.StatBonusForNumberOfSpecialists, cityInfo.getRuleset())
+                    && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt())
                 stats.add(unique.stats)
 
             // Deprecated since a very long time ago, moved here from another code section
