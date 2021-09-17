@@ -87,9 +87,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && resistanceCounter != 0
 
-            this@CityInfoConquestFunctions.moveToCiv(receivingCiv)
-
             destroyBuildingsOnCapture()
+            
+            this@CityInfoConquestFunctions.moveToCiv(receivingCiv)
 
             Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
 

@@ -15,19 +15,20 @@ class CivConstructions() {
     val boughtItemsWithIncreasingPrice: Counter<String> = Counter()
 
     // Maps to cities to all free buildings they contain
-    private val freeBuildings: HashMap<String,HashSet<String>> = hashMapOf()
+    private val freeBuildings: HashMap<String, HashSet<String>> = hashMapOf()
 
     // Maps stats to the cities that have received a building of that stat
-    // Android Studio says an EnumMap would be better, but that thing isn't serializable.
-    // I don't know how to suppress that hint :( 
-    private val freeStatBuildingsProvided: HashMap<Stat, HashSet<String>> = hashMapOf()
+    // We can't use an enum instead of a string, due to the inability of the JSON-parser
+    // to function properly and forcing this to be an `HashMap<String, HashSet<String>>`
+    // when loading, even if this wasn't the original type, leading to run-time errors.
+    private val freeStatBuildingsProvided: HashMap<String, HashSet<String>> = hashMapOf()
     
     // Maps buildings to the cities that have received that building
     private val freeSpecificBuildingsProvided: HashMap<String, HashSet<String>> = hashMapOf()
     
     init {
         for (stat in Stat.values()) {
-            freeStatBuildingsProvided[stat] = hashSetOf()
+            freeStatBuildingsProvided[stat.name] = hashSetOf()
         }
     }
     
@@ -43,7 +44,7 @@ class CivConstructions() {
     
     fun setTransients(civInfo: CivilizationInfo) {
         this.civInfo = civInfo
-        
+
         // civInfo.boughtConstructionsWithGloballyIncreasingPrice deprecated since 3.16.15, this is replacement code
             if (civInfo.boughtConstructionsWithGloballyIncreasingPrice.isNotEmpty()) {
                 for (item in civInfo.boughtConstructionsWithGloballyIncreasingPrice) {
@@ -71,7 +72,7 @@ class CivConstructions() {
         
             if (civInfo.policies.cultureBuildingsAdded.isNotEmpty()) {
                 for ((cityId, building) in civInfo.policies.cultureBuildingsAdded) {
-                    freeStatBuildingsProvided[Stat.Culture]!!.add(cityId)
+                    freeStatBuildingsProvided[Stat.Culture.name]!!.add(cityId)
                     
                     if (cityId !in freeBuildings)
                         freeBuildings[cityId] = hashSetOf()
@@ -126,11 +127,11 @@ class CivConstructions() {
     
     private fun addFreeStatBuildings(stat: Stat, amount: Int) {
         for (city in civInfo.cities.take(amount)) {
-            if (freeStatBuildingsProvided[stat]!!.contains(city.id) || !city.cityConstructions.hasBuildableStatBuildings(stat)) continue
+            if (freeStatBuildingsProvided[stat.name]!!.contains(city.id) || !city.cityConstructions.hasBuildableStatBuildings(stat)) continue
             
             val builtBuilding = city.cityConstructions.addCheapestBuildableStatBuilding(stat)
             if (builtBuilding != null) {
-                freeStatBuildingsProvided[stat]!!.add(city.id)
+                freeStatBuildingsProvided[stat.name]!!.add(city.id)
                 addFreeBuilding(city.id, builtBuilding)
             }
         }
