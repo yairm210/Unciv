@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.random.Random
 
