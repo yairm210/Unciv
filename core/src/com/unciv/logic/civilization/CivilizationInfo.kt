@@ -132,11 +132,10 @@ class CivilizationInfo {
      */
     val temporaryUniques = ArrayList<Pair<Unique, Int>>()
 
-    // Deprecated since 3.16.15
-        /** Maps the name of the construction to the amount of times bought */
-        @Deprecated("Deprecated since 3.16.15", replaceWith = ReplaceWith("civWideConstructions.boughtItemsWithIncreasingPrice"))
-        val boughtConstructionsWithGloballyIncreasingPrice = HashMap<String, Int>()
-    //
+    /** Maps the name of the construction to the amount of times bought */
+    @Deprecated("Deprecated since 3.16.15", replaceWith = ReplaceWith("civWideConstructions.boughtItemsWithIncreasingPrice"))
+    val boughtConstructionsWithGloballyIncreasingPrice = HashMap<String, Int>()
+
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.

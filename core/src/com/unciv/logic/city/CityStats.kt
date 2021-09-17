@@ -93,6 +93,7 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
+    @Deprecated("As of 3.16.16 - replaced by regular getStatPercentBonusesFromUniques()")
     private fun getStatPercentBonusesFromResources(construction: IConstruction): Stats {
         val stats = Stats()
 
@@ -473,6 +474,9 @@ class CityStats(val cityInfo: CityInfo) {
                 .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
         newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getCivWideBuildingUniques(cityInfo))
         newStatPercentBonusList["Railroads"] = getStatPercentBonusesFromRailroad()  // Name chosen same as tech, for translation, but theoretically independent
+        val resourceUniques = cityInfo.civInfo.getCivResources().asSequence().flatMap { it.resource.uniqueObjects }
+        newStatPercentBonusList["Resources"] = getStatPercentBonusesFromUniques(currentConstruction, resourceUniques)
+        // Deprecated as of 3.16.16
         newStatPercentBonusList["Resources"] = getStatPercentBonusesFromResources(currentConstruction)
         newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()

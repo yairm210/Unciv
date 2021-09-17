@@ -744,9 +744,7 @@ class CityInfo {
         // Note that we don't query religion here, as those only have local effects (for now at least)
     }
 
-    fun isHolyCity(): Boolean {
-        return religion.religionThisIsTheHolyCityOf != null
-    }
+    fun isHolyCity(): Boolean = religion.religionThisIsTheHolyCityOf != null
 
     fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
         return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)

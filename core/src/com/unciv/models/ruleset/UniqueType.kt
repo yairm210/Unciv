@@ -3,12 +3,20 @@ package com.unciv.models.ruleset
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
+enum class UniqueTarget{
+    /** Buildings, units, nations, policies, religions, techs etc. */
+    Global,
+    Building,
+    Unit,
+    Improvement,
+}
+
 enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
 
     ConsumesResources("Consumes [amount] [resource]"),
     FreeUnits("[amount] units cost no maintenance"),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units"),
-    @Deprecated("As of 3.16.16")
+    @Deprecated("As of 3.16.16", ReplaceWith("UnitMaintenanceDiscount"))
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UnitMaintenanceDiscount),
     @Deprecated("As of 3.16.16")
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UnitMaintenanceDiscount),
