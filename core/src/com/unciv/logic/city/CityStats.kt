@@ -218,8 +218,7 @@ class CityStats(val cityInfo: CityInfo) {
         val stats = Stats()
 
         for (unique in uniques.toList()) { // Should help  mitigate getConstructionButtonDTOs concurrency problems.
-            // "[stats] [cityFilter]"
-            if (unique.placeholderText == "[] []" && cityInfo.matchesFilter(unique.params[1]))
+            if (unique.isOfType(UniqueType.StatsPerCity) && cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
 
             // "[stats] per [amount] population [cityFilter]"
