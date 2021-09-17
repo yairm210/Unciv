@@ -46,7 +46,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         civInfo.cityStatePersonality = CityStatePersonality.values().random()
 
         // Mercantile bonus resources
-        if (allPossibleBonuses.any { it.placeholderText == "Provides a unique luxury" }
+        if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateUniqueLuxury) }
             || (fallback && cityStateType == CityStateType.Mercantile)) { // Fallback for badly defined Eras.json
             civInfo.cityStateResource = allMercantileResources.random()
         }

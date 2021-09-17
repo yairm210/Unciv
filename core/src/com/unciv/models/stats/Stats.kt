@@ -138,7 +138,7 @@ open class Stats(
     // For display in diplomacy window
     fun toStringWithDecimals(): String {
         return this.joinToString {
-            (if (it.value > 0) "+" else "") + it.value.toString().removeSuffix(".0") + " " + it.key.toString()
+            (if (it.value > 0) "+" else "") + it.value.toString().removeSuffix(".0") + " " + it.key.toString().tr()
         }
     }
 
