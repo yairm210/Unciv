@@ -9,6 +9,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -36,7 +37,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         val stats = selectedTile.getTileStats(city, city.civInfo)
         innerTable.pad(5f)
 
-        innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civInfo), noLinkImages = true) {
+        innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civInfo), iconDisplay = IconDisplay.None) {
             // Sorry, this will leave the city screen
             UncivGame.Current.setScreen(CivilopediaScreen(city.getRuleset(), link = it))
         } )
