@@ -37,6 +37,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             for (building in cityConstructions.getBuiltBuildings()) {
                 when {
                     building.hasUnique("Never destroyed when the city is captured") || building.isWonder -> continue
+                    building.hasUnique("Indicates the capital city") -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
                     building.hasUnique("Destroyed when the city is captured") ->
                         cityConstructions.removeBuilding(building.name)
                     else -> {
