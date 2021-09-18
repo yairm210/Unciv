@@ -717,7 +717,7 @@ object Battle {
         if (attacker.unit.hasUnique("Cannot be intercepted")) return
         for (interceptor in interceptingCiv.getCivUnits()
             .filter { it.canIntercept(attackedTile) }) {
-            if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue
+            if (Random().nextFloat() > interceptor.interceptChance() / 100f) continue
 
             var damage = BattleDamage.calculateDamageToDefender(
                 MapUnitCombatant(interceptor),
