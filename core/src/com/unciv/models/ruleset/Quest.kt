@@ -11,6 +11,15 @@ enum class QuestName(val value: String) {
     ConquerCityState("Conquer City State"),
     FindPlayer("Find Player"),
     FindNaturalWonder("Find Natural Wonder"),
+    GiveGold("Give Gold"),
+    PledgeToProtect("Pledge to Protect"),
+    ContestCulture("Contest Culture"),
+    ContestFaith("Contest Faith"),
+    ContestTech("Contest Technologies"),
+    Invest("Invest"),
+    BullyCityState("Bully City State"),
+    DenounceCiv("Denounce Civilization"),
+    SpreadReligion("Spread Religion"),
     None("")
 }
 

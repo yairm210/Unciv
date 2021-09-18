@@ -486,11 +486,13 @@ class QuestManager {
     }
 
     private fun getWonderToBuildForQuest(challenger: CivilizationInfo): Building? {
+        val startingEra = civInfo.gameInfo.ruleSet.eras[civInfo.gameInfo.gameParameters.startingEra]!!
         val wonders = civInfo.gameInfo.ruleSet.buildings.values
                 .filter { building ->
                     building.isWonder &&
                             (building.requiredTech == null || challenger.tech.isResearched(building.requiredTech!!)) &&
                             civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
+                            && building.name !in startingEra.startingObsoleteWonders
                 }
 
         if (wonders.isNotEmpty())
