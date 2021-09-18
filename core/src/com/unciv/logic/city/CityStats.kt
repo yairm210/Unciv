@@ -176,13 +176,21 @@ class CityStats(val cityInfo: CityInfo) {
 
     private fun getGrowthBonusFromPoliciesAndWonders(): Float {
         var bonus = 0f
-        // "+[amount]% growth [cityFilter]"
-        for (unique in cityInfo.getMatchingUniques("+[]% growth []"))
+        // "[amount]% growth [cityFilter]"
+        for (unique in cityInfo.getMatchingUniques("[]% growth []")) {
+            if (!unique.conditionalsApply(cityInfo.civInfo)) continue
             if (cityInfo.matchesFilter(unique.params[1]))
                 bonus += unique.params[0].toFloat()
-        for (unique in cityInfo.getMatchingUniques("+[]% growth [] when not at war"))
-            if (cityInfo.matchesFilter(unique.params[1]) && !cityInfo.civInfo.isAtWar())
-                bonus += unique.params[0].toFloat()
+        }
+        // Deprecated since 3.16.14
+            for (unique in cityInfo.getMatchingUniques("+[]% growth []")) {
+                if (cityInfo.matchesFilter(unique.params[1]))
+                    bonus += unique.params[0].toFloat()
+            }
+            for (unique in cityInfo.getMatchingUniques("+[]% growth [] when not at war"))
+                if (cityInfo.matchesFilter(unique.params[1]) && !cityInfo.civInfo.isAtWar())
+                    bonus += unique.params[0].toFloat()
+        //
         return bonus / 100
     }
 

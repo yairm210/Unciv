@@ -1,29 +1,53 @@
 package com.unciv.models.ruleset
 
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
+import com.unciv.models.translations.*
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.ui.worldscreen.unit.UnitActions
+import kotlin.random.Random
 
 
 class Unique(val text:String) {
+    /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
+     *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
     val placeholderText = text.getPlaceholderText()
     val params = text.getPlaceholderParameters()
     val type = UniqueType.values().firstOrNull { it.placeholderText == placeholderText }
 
-    /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
-     *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
     val stats: Stats by lazy {
         val firstStatParam = params.firstOrNull { Stats.isStats(it) }
         if (firstStatParam == null) Stats() // So badly-defined stats don't crash the entire game
         else Stats.parse(firstStatParam)
     }
-
+    val conditionals: List<Unique> = text.getConditionals()
 
     fun isOfType(uniqueType: UniqueType) = uniqueType == type
 
     /** We can't save compliance errors in the unique, since it's ruleset-dependant */
     fun matches(uniqueType: UniqueType, ruleset: Ruleset) = isOfType(uniqueType)
-            && uniqueType.getComplianceErrors(this, ruleset).isEmpty()
+        && uniqueType.getComplianceErrors(this, ruleset).isEmpty()
+    
+    // This function will get LARGE, as it will basically check for all conditionals if they apply
+    // This will require a lot of parameters to be passed (attacking unit, tile, defending unit, civInfo, cityInfo, ...)
+    // I'm open for better ideas, but this was the first thing that I could think of that would
+    // work in all cases.
+    fun conditionalsApply(civInfo: CivilizationInfo? = null): Boolean {
+        for (condition in conditionals) {
+            if (!conditionalApplies(condition, civInfo)) return false
+        }
+        return true
+    }
+    
+    private fun conditionalApplies(
+        condition: Unique, 
+        civInfo: CivilizationInfo? = null
+    ): Boolean {
+        return when (condition.placeholderText) {
+            "when not at war" -> civInfo?.isAtWar() == false
+            "when at war" -> civInfo?.isAtWar() == true
+            else -> false
+        }
+    }
 }
 
 
