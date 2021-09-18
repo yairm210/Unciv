@@ -493,11 +493,13 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             "non-air" -> !movesLikeAirUnits()
 
             "Nuclear Weapon" -> isNuclearWeapon()
+            // "Great" should be deprecated, replaced by "Great Person".
             "Great Person", "Great" -> isGreatPerson()
             "Religious" -> uniques.contains("Religious Unit")
             else -> {
                 if (getType().matchesFilter(filter)) return true
                 if (
+                    // Uniques using these kinds of filters should be deprecated and replaced ith adjective-only parameters
                     filter.endsWith(" units")
                     // "military units" --> "Military", using invariant locale
                     && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })

@@ -943,6 +943,8 @@ class MapUnit {
             return filter.removePrefix("{").removeSuffix("}").split("} {")
                 .all { matchesFilter(it) }
         return when (filter) {
+            // todo: unit filters should be adjectives, fitting "[filterType] units"
+            // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100
             "Barbarians", "Barbarian" -> civInfo.isBarbarian()
             "City-State" -> civInfo.isCityState()

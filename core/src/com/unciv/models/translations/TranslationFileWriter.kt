@@ -220,24 +220,6 @@ object TranslationFileWriter {
             "Building"
         )) }
         val unitTypeMap = ruleset.unitTypes.keys.toMutableSet().apply { addAll(UniqueParameterType.unitTypeStrings) }
-        val cityFilterMap = setOf(
-            "in this city",
-            "in all cities",
-            "in all coastal cities",
-            "in capital",
-            "in all non-occupied cities",
-            "in all cities with a world wonder",
-            "in all cities connected to capital",
-            "in all cities with a garrison",
-            "in all cities in which the majority religion is a major religion",
-            "in all cities in which the majority religion is an enhanced religion",
-            "in non-enemy foreign cities",
-            "in foreign cities",
-            "in annexed cities",
-            "in holy cities",
-            "in City-State cities",
-            "in cities following this religion",
-        )
 
         val startMillis = System.currentTimeMillis()
 
@@ -262,16 +244,19 @@ object TranslationFileWriter {
             generatedStrings[filename] = mutableSetOf()
             val resultStrings = generatedStrings[filename]!!
 
-            fun submitString(item: Any) {
-                val string = item.toString().removeConditionals()
-
-                val parameters = string.getPlaceholderParameters()
+            fun submitString(string: String) {
+                val unique = Unique(string)
                 var stringToTranslate = string
 
                 val existingParameterNames = HashSet<String>()
-                if (parameters.any()) {
-                    for (parameter in parameters) {
+                if (unique.params.isNotEmpty()) {
+                    for ((index,parameter) in unique.params.withIndex()) {
                         var parameterName = when {
+                            unique.type != null -> {
+                                val possibleParameterTypes = unique.type.parameterTypeMap[index]
+                                // for multiple types. will look like "[unitName/buildingName]"
+                                possibleParameterTypes.joinToString("/") { it.parameterName }
+                            }
                             parameter.toFloatOrNull() != null -> "amount"
                             Stat.values().any { it.name == parameter } -> "stat"
                             parameter in tileFilterMap -> "tileFilter"
@@ -283,7 +268,7 @@ object TranslationFileWriter {
                             parameter in buildingMap -> "building"
                             parameter in unitTypeMap -> "unitType"
                             Stats.isStats(parameter) -> "stats"
-                            parameter in cityFilterMap -> "cityFilter"
+                            parameter in UniqueParameterType.cityFilterMap -> "cityFilter"
                             else -> "param"
                         }
                         if (parameterName in existingParameterNames) {
@@ -338,7 +323,7 @@ object TranslationFileWriter {
                             is kotlin.collections.List<*> ->
                                 for (item in fieldValue)
                                     if (item is String) submitString(item) else serializeElement(item!!)
-                            else -> submitString(fieldValue)
+                            else -> submitString(fieldValue.toString())
                         }
                     }
                 }
