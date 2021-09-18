@@ -39,16 +39,16 @@ class Era : INamed, IHasUniques {
 
     private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, List<Unique>> {
         val objectMap = HashMap<CityStateType, List<Unique>>()
-        for (pair in bonusMap) {
-            objectMap[CityStateType.valueOf(pair.key)] = pair.value.map { Unique(it) }
+        for ((cityStateType, bonusList) in bonusMap) {
+            objectMap[CityStateType.valueOf(cityStateType)] = bonusList.map { Unique(it) }
         }
         return objectMap
     }
 
     fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel): List<Unique> {
         return when (relationshipLevel) {
-            RelationshipLevel.Ally   -> allyBonusObjects[cityStateType]!!
-            RelationshipLevel.Friend -> friendBonusObjects[cityStateType]!!
+            RelationshipLevel.Ally   -> allyBonusObjects[cityStateType]   ?: emptyList()
+            RelationshipLevel.Friend -> friendBonusObjects[cityStateType] ?: emptyList()
             else -> emptyList()
         }
     }
