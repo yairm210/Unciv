@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
@@ -37,6 +38,8 @@ class QuestManager {
 
         const val GLOBAL_QUEST_MAX_ACTIVE = 1
         const val INDIVIDUAL_QUEST_MAX_ACTIVE = 2
+
+        const val CONTEST_LENGTH = 30
     }
 
     /** Civilization object holding and dispatching quests */
@@ -218,6 +221,21 @@ class QuestManager {
         assignedQuests.removeAll(toRemove)
     }
 
+    /** Called when we think quests of [type] have just been completed or expired, so we don't have
+     * to wait until next turn for the reward.
+     */
+    fun handleSpecificIndividualQuests(type: QuestName) {
+        val toRemove = ArrayList<AssignedQuest>()
+
+        for (assignedQuest in assignedQuests.filter { it.isIndividual() && it.questName == type.value }) {
+            val shouldRemove = handleIndividualQuest(assignedQuest)
+            if (shouldRemove)
+                toRemove.add(assignedQuest)
+        }
+
+        assignedQuests.removeAll(toRemove)
+    }
+
     /** If quest is complete, it gives the influence reward to the player.
      *  Returns true if the quest can be removed (is either complete, obsolete or expired) */
     private fun handleIndividualQuest(assignedQuest: AssignedQuest): Boolean {
@@ -245,6 +263,8 @@ class QuestManager {
 
         val turn = civInfo.gameInfo.turns
 
+        val mostRecentBully = civInfo.diplomacy.values.maxByOrNull { it.getFlag(DiplomacyFlags.Bullied) }
+
         for (assignee in assignees) {
 
             var data1 = ""
@@ -261,6 +281,9 @@ class QuestManager {
                 QuestName.GreatPerson.value -> data1 = getGreatPersonForQuest(assignee)!!.name
                 QuestName.FindPlayer.value -> data1 = getCivilizationToFindForQuest(assignee)!!.civName
                 QuestName.FindNaturalWonder.value -> data1 = getNaturalWonderToFindForQuest(assignee)!!
+                QuestName.ConquerCityState.value -> data1 = getCityStateTarget().civName
+                QuestName.BullyCityState.value -> data1 = geCityStateTarget().civName
+
             }
 
             val newQuest = AssignedQuest(
@@ -324,6 +347,9 @@ class QuestManager {
             QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
             QuestName.FindPlayer.value -> assignee.hasMetCivTerritory(civInfo.gameInfo.getCivilization(assignedQuest.data1))
             QuestName.FindNaturalWonder.value -> assignee.naturalWonders.contains(assignedQuest.data1)
+            QuestName.PledgeToProtect.value -> assignee in civInfo.getProtectorCivs()
+            QuestName.DenounceCiv.value -> assignee.getDiplomacyManager(assignedQuest.data1).hasFlag(DiplomacyFlags.Denunciation)
+            QuestName.SpreadReligion.value -> civInfo.getCapital().religion.getMajorityReligion() == civInfo.gameInfo.religions[assignedQuest.data1]
             else -> false
         }
     }
@@ -335,6 +361,9 @@ class QuestManager {
             QuestName.ClearBarbarianCamp.value -> civInfo.gameInfo.tileMap[assignedQuest.data1.toInt(), assignedQuest.data2.toInt()].improvement != Constants.barbarianEncampment
             QuestName.ConstructWonder.value -> civInfo.gameInfo.getCities().any { it.civInfo != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
             QuestName.FindPlayer.value -> civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
+            QuestName.ConquerCityState.value ->  civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
+            QuestName.BullyCityState.value ->  civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
+            QuestName.DenounceCiv.value ->  civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
             else -> false
         }
     }
@@ -379,6 +408,59 @@ class QuestManager {
         val winningQuest = matchingQuests.filter { it.assignee == civInfo.civName }.firstOrNull()
         if (winningQuest != null)
             giveReward(winningQuest)
+
+        assignedQuests.removeAll(matchingQuests)
+    }
+
+    /**
+     * Gets notified the city state [cityState] was just conquered by [attacker].
+     */
+    fun cityStateConquered(cityState: CivilizationInfo, attacker: CivilizationInfo) {
+        val matchingQuests = assignedQuests.asSequence()
+            .filter { it.questName == QuestName.ConquerCityState.value }
+            .filter { it.data1 == cityState.civName && it.assignee == attacker.civName}
+
+        for (quest in matchingQuests)
+            giveReward(quest)
+
+        assignedQuests.removeAll(matchingQuests)
+    }
+
+    /**
+     * Gets notified the city state [cityState] was just bullied by [bully].
+     */
+    fun cityStateBullied(cityState: CivilizationInfo, bully: CivilizationInfo) {
+        val matchingQuests = assignedQuests.asSequence()
+            .filter { it.questName == QuestName.BullyCityState.value }
+            .filter { it.data1 == cityState.civName && it.assignee == bully.civName}
+
+        for (quest in matchingQuests)
+            giveReward(quest)
+
+        assignedQuests.removeAll(matchingQuests)
+
+        // What idiots haha oh wait that's us
+        if (civInfo == cityState) {
+            // Revoke most quest types from the bully
+            val revokedQuests = assignedQuests.asSequence()
+                .filter { it.isIndividual() || it.questName == QuestName.Invest.value }
+            assignedQuests.removeAll(revokedQuests)
+            if (revokedQuests.count() > 0)
+                bully.addNotification("[${civInfo.civName}] cancelled the quests they had given you because you demanded tribute from them.",
+                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+        }
+    }
+
+    /**
+     * Gets notified when given gold by [donorCiv].
+     */
+    fun receivedGoldGift(donorCiv: CivilizationInfo) {
+        val matchingQuests = assignedQuests.asSequence()
+            .filter { it.questName == QuestName.GiveGold.value }
+            .filter { it.assignee == donorCiv.civName}
+
+        for (quest in matchingQuests)
+            giveReward(quest)
 
         assignedQuests.removeAll(matchingQuests)
     }

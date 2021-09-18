@@ -132,6 +132,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         donorCiv.addGold(-giftAmount)
         civInfo.addGold(giftAmount)
         civInfo.getDiplomacyManager(donorCiv).addInfluence(influenceGainedByGift(donorCiv, giftAmount).toFloat())
+        civInfo.questManager.receivedGoldGift(donorCiv)
     }
 
     fun getProtectorCivs() : List<CivilizationInfo> {
@@ -498,6 +499,13 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 protector.popupAlerts.add(PopupAlert(AlertType.BulliedProtectedMinor,
                     bully.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
         }
+
+        // Set a diplomatic flag so we remember for future quests
+        civInfo.getDiplomacyManager(bully).setFlag(DiplomacyFlags.Bullied, 30)
+
+        // Notify all city states that we were killed (for quest completion)
+        civInfo.gameInfo.getAliveCityStates()
+            .forEach { it.questManager.cityStateBullied(civInfo, bully) }
     }
 
     /** A city state was attacked. What are its protectors going to do about it??? Also checks for Wary */
@@ -592,6 +600,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             protector.addNotification("[${attacker.civName}] has destroyed [${civInfo.civName}], whom you had pledged to protect!", attacker.civName,
                 NotificationIcon.Death, civInfo.civName)
         }
+
+        // Notify all city states that we were killed (for quest completion)
+        civInfo.gameInfo.getAliveCityStates()
+            .forEach { it.questManager.cityStateConquered(civInfo, attacker) }
     }
 
 }
