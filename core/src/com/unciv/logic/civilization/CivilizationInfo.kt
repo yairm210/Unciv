@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -97,6 +98,12 @@ class CivilizationInfo {
     @Transient
     private var cachedMilitaryMight = -1
 
+    @Transient
+    var passThroughImpassableUnlocked = false   // Cached Boolean equal to passableImpassables.isNotEmpty()
+
+    @Transient
+    var nonStandardTerrainDamage = false
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -149,6 +156,8 @@ class CivilizationInfo {
     // default false once we no longer want legacy save-game compatibility
     var hasEverOwnedOriginalCapital: Boolean? = null
 
+    val passableImpassables = HashSet<String>() // For Carthage-like uniques
+
     // For Aggressor, Warmonger status
     private var numMinorCivsAttacked = 0
 
@@ -197,6 +206,7 @@ class CivilizationInfo {
             toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
         //
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
+        toReturn.passableImpassables.addAll(passableImpassables)
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
         return toReturn
     }
@@ -643,6 +653,11 @@ class CivilizationInfo {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
             cityInfo.setTransients()
         }
+
+        passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
+        // Cache whether this civ gets nonstandard terrain damage for performance reasons.
+        nonStandardTerrainDamage = getMatchingUniques("Units ending their turn on [] tiles take [] damage")
+            .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
     }
 
     fun updateSightAndResources() {
@@ -912,6 +927,13 @@ class CivilizationInfo {
                     else -> religionManager.religion?.name
                 }
             placedUnit.setupAbilityUses()
+        }
+
+        for (unique in getMatchingUniques("Land units may cross [] tiles after the first [] is earned")) {
+            if (unit.matchesFilter(unique.params[1])) {
+                passThroughImpassableUnlocked = true    // Update the cached Boolean
+                passableImpassables.add(unique.params[0])   // Add to list of passable impassables
+            }
         }
         
         return placedUnit

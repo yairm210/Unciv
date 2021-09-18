@@ -672,8 +672,8 @@ class MapUnit {
             }
         }
 
-        getCitadelDamage()
-        getTerrainDamage()
+        doCitadelDamage()
+        doTerrainDamage()
     }
 
     fun startTurn() {
@@ -882,30 +882,38 @@ class MapUnit {
         return damageFactor
     }
 
-    private fun getTerrainDamage() {
-        // hard coded mountain damage for now
-        if (getTile().baseTerrain == Constants.mountain) {
-            val tileDamage = 50
-            health -= tileDamage
+    private fun doTerrainDamage() {
+        val tileDamage = getDamageFromTerrain()
+        health -= tileDamage
 
-            if (health <= 0) {
-                civInfo.addNotification(
-                    "Our [$name] took [$tileDamage] tile damage and was destroyed",
-                    currentTile.position,
-                    name,
-                    NotificationIcon.Death
-                )
-                destroy()
-            } else civInfo.addNotification(
-                "Our [$name] took [$tileDamage] tile damage",
+        if (health <= 0) {
+            civInfo.addNotification(
+                "Our [$name] took [$tileDamage] tile damage and was destroyed",
                 currentTile.position,
-                name
+                name,
+                NotificationIcon.Death
             )
-        }
-
+            destroy()
+        } else if (tileDamage > 0) civInfo.addNotification(
+            "Our [$name] took [$tileDamage] tile damage",
+            currentTile.position,
+            name
+        )
     }
 
-    private fun getCitadelDamage() {
+    fun getDamageFromTerrain(tile: TileInfo = currentTile): Int {
+        if (civInfo.nonStandardTerrainDamage) {
+            for (unique in getMatchingUniques("Units ending their turn on [] tiles take [] damage")) {
+                if (unique.params[0] in tile.getAllTerrains().map { it.name }) {
+                    return unique.params[1].toInt() // Use the damage from the unique
+                }
+            }
+        }
+        // Otherwise fall back to the defined standard damage
+        return  tile.getAllTerrains().sumBy { it.damagePerTurn }
+    }
+
+    private fun doCitadelDamage() {
         // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
         val citadelTile = currentTile.neighbors
             .firstOrNull {

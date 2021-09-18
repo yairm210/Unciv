@@ -40,6 +40,9 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
     var defenceBonus:Float = 0f
     var impassable = false
 
+    @Transient
+    var damagePerTurn = 0
+
     override var civilopediaText = listOf<FormattedLine>()
 
     fun isRough(): Boolean = uniques.contains("Rough terrain")
@@ -140,5 +143,11 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
         }
 
         return textList
+    }
+
+    fun setTransients() {
+        damagePerTurn = uniqueObjects.sumBy {
+            if (it.placeholderText == "Units ending their turn on this terrain take [] damage") it.params[0].toInt() else 0
+        }
     }
 }
