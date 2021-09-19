@@ -206,11 +206,11 @@ Uniques that support conditionals will be denoted with a "©" sign for now.
 
 ### Stat uniques
 
-"+[amount]% growth [cityFilter]" © - for example "+[15]% growth [in all cities]". 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth. "+[amount]% growth in all cities" and "+[amount]% growth in capital" are to be deprecated and should not be used.
+"[stats] [cityFilter]" - for example "[+3 Culture] [in capital]", "[+2 Food] [in all cities]". "[stats] in capital", "[stats] in all cities" are to be deprecated and should not be used.
 
 "+[amount]% [Stat] [cityFilter]" - For example, "+[25]% [Culture] [in all cities]"
 
-"[stats] [cityFilter]" - for example "[+3 Culture] [in capital]", "[+2 Food] [in all cities]". "[stats] in capital", "[stats] in all cities" are to be deprecated and should not be used.
+"[amount]% growth [cityFilter]" © - for example "+[15]% growth [in all cities]". 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth. "+[amount]% growth in all cities" and "+[amount]% growth in capital" are to be deprecated and should not be used.
 
 "[stats] from every specialist [cityFilter]"
 
@@ -910,5 +910,7 @@ These uniques have been recently deprecated. While they are still supported, the
 "Immediately creates a [buildingName] in each of your first [amount] cities for free" - Replaced with "Provides a [buildingName] in each of your first [amount] cities for free"
 
 "+[amount] Sight for all [unitFilter] units" - Replaced with "[amount] Sight for all [unitFilter] units"
+
+"+[amount]% growth [cityFilter]" - Replaced with "+[amount]% growth [cityFilter]" ©
 
 "[signedAmount]% growth [cityFilter] when not at war" - Replaced with "[signedAmount]% growth [cityFilter] <when not at war>" ©
