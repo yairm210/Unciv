@@ -77,8 +77,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
-        val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
-        if (placedUnit == null) return
+        val placedUnit = receivingCiv.addUnit(giftedUnit.name, cities.city1)
+            ?: return
         val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
     }
