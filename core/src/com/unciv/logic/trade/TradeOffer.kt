@@ -36,7 +36,7 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, v
                 && offer.amount == amount
     }
 
-    fun getOfferText(untradeable: List<ResourceSupply> = emptyList()): String {
+    fun getOfferText(untradable: Int = 0): String {
         var offerText = when(type){
             TradeType.WarDeclaration -> "Declare war on [$name]"
             TradeType.Introduction -> "Introduction to [$name]"
@@ -49,8 +49,10 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, v
        
         if (duration > 0) offerText += "\n" + duration + Fonts.turn
 
-        for (supply in untradeable) {
-            offerText += "\n" + "[${supply.amount}] from [${supply.origin}]".tr()
+        if (untradable == 1) {
+            offerText += "\n" + "+[${untradable}] untradable copy".tr()
+        } else if (untradable > 1) {
+            offerText += "\n" + "+[${untradable}] untradable copies".tr()
         }
 
         return offerText

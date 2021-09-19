@@ -31,9 +31,9 @@ class OffersListScroll(
     /**
      * @param offersToDisplay The offers which should be displayed as buttons
      * @param otherOffers The list of other side's offers to compare with whether these offers are unique
-     * @param untradeableOffers Things we got from sources that we can't trade on, displayed for completeness
+     * @param untradableOffers Things we got from sources that we can't trade on, displayed for completeness
      */
-    fun update(offersToDisplay:TradeOffersList, otherOffers: TradeOffersList, untradeableOffers: List<ResourceSupply> = emptyList()) {
+    fun update(offersToDisplay:TradeOffersList, otherOffers: TradeOffersList, untradableOffers: List<ResourceSupply> = emptyList()) {
         table.clear()
         expanderTabs.clear()
 
@@ -66,7 +66,7 @@ class OffersListScroll(
             }
 
             for (offer in offersOfType) {
-                val tradeButton = offer.getOfferText(untradeableOffers.filter { it.resource.name == offer.name }).toTextButton()
+                val tradeButton = offer.getOfferText(untradableOffers.filter { it.resource.name == offer.name }.sumOf { it.amount }).toTextButton()
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1
