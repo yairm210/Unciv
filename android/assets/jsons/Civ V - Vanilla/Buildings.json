@@ -47,7 +47,7 @@
 		"greatPersonPoints": {"Great Engineer": 1},
 		"uniques": ["+[10]% [Food] [in all cities]", "+[15]% Production when constructing [Ranged] units [in all cities]"],
 		"requiredTech": "Archery",
-		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.'  - Robert Louis Stevenson"
+		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson"
 	},
 	// Column 2
 	{
@@ -150,7 +150,7 @@
 		"isWonder": true,
 		"uniques": ["[-25]% tile improvement construction time","[2] free [Worker] units appear"],
 		"requiredTech": "Masonry",
-		"quote": "'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge"
+		"quote": "'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.' - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge"
 	},
 	{
 		"name": "Mausoleum of Halicarnassus",
@@ -248,7 +248,7 @@
 		"isWonder": true,
 		"requiredTech": "Mathematics",
 		"uniques": ["Provides a free [Garden] [in this city]"],
-		"quote": "'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore"
+		"quote": "'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.' - F. Frankfort Moore"
 	},
 	{
 		"name": "Colosseum",
@@ -263,7 +263,7 @@
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 1},
 		"requiredTech": "Construction",
-		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu"
+		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.' - Sun Tzu"
 	},
 	// Column 4
 	{
@@ -292,7 +292,7 @@
 		"isWonder": true,
 		"uniques": ["Free Social Policy"],
 		"requiredTech": "Philosophy",
-		"quote": "'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates"
+		"quote": "'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing' - Socrates"
 	},
 	{
 		"name": "Amphitheater",
@@ -396,7 +396,7 @@
 		"greatPersonPoints": {"Great Engineer": 1},
 		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production, +1 Gold] from [Desert] tiles without [Flood plains] [in this city]", "Provides a free [Amphitheater] [in this city]", "[+6 Culture] once [Archaeology] is discovered"],
 		"requiredTech": "Currency",
-		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...'  - Indiana Jones"
+		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones"
 	},
 	{
 		"name": "Aqueduct",
@@ -413,7 +413,7 @@
 		"uniques": ["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)",
 			"Provides a free [Walls] [in this city]"],
 		"requiredTech": "Engineering",
-		"quote": "'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu"
+		"quote": "'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.' - Sun Tzu"
 	},
 	{
 		"name": "Heroic Epic",
@@ -452,7 +452,7 @@
 		"isWonder": true,
 		"uniques": ["Provides a free [Temple] [in this city]", "Free [Great Prophet] appears"],
 		"requiredTech": "Theology",
-		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
+		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty' - Procopius, De Aedificis"
 	},
 	{
 		"name": "Great Mosque of Djenne",
@@ -482,7 +482,7 @@
 		"isWonder": true,
 		"uniques": ["Golden Age length increased by [50]%"],
 		"requiredTech": "Civil Service",
-		"quote": "'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam"
+		"quote": "'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.' - The Books of Chilam Balam"
 	},
 	{
 		"name": "National Treasury",
@@ -501,7 +501,7 @@
 		"isWonder": true,
 		"uniques": ["Gold from all trade routes +25%","Must have an owned [Mountain] within [2] tiles"],
 		"requiredTech": "Guilds",
-		"quote": "'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.'  - Hiram Bingham"
+		"quote": "'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.' - Hiram Bingham"
 	},
 	{
 		"name": "Workshop",
@@ -585,7 +585,7 @@
 		"isWonder": true,
 		"uniques": ["-[25]% Culture cost of acquiring tiles [in all cities]","-[25]% Gold cost of acquiring tiles [in all cities]"],
 		"requiredTech": "Education",
-		"quote": "'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena"
+		"quote": "'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.' - Antonio da Magdalena"
 	},
 	{
 		"name": "Castle",
@@ -618,7 +618,7 @@
 		"uniques": ["All newly-trained [relevant] units [in this city] receive the [Drill I] promotion",
 			"Provides a free [Castle] [in this city]"],
 		"requiredTech": "Chivalry",
-		"quote": "'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison"
+		"quote": "'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.' - Joseph Addison"
 	},
 	{
 		"name": "Ironworks",
@@ -636,7 +636,7 @@
 		"greatPersonPoints": {"Great Merchant": 1},
 		"isWonder": true,
 		"requiredTech": "Physics",
-		"quote": "'Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo"
+		"quote": "'Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.' - Victor Hugo"
 	},
 	{
 		"name": "Armory",
@@ -746,7 +746,7 @@
 		"uniques": ["+[15]% Strength for [Non-City] units fighting in [Friendly Land]",
 			"Provides a free [Castle] [in this city]"],
 		"requiredTech": "Gunpowder",
-		"quote": "'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo"
+		"quote": "'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.' - Yamamoto Tsunetomo"
 	},
 	// Column 8
 	{
@@ -775,7 +775,7 @@
 		"isWonder": true,
 		"uniques": ["Empire enters golden age"],
 		"requiredTech": "Architecture",
-		"quote": "'The Taj Mahal rises above the banks of the river like a solitary tear suspended on the cheek of time.'  - Rabindranath Tagore"
+		"quote": "'The Taj Mahal rises above the banks of the river like a solitary tear suspended on the cheek of time.' - Rabindranath Tagore"
 	},
 	{
 		"name": "Porcelain Tower",
@@ -784,7 +784,7 @@
 		"isWonder": true,
 		"uniques": ["Free [Great Scientist] appears","Science gained from research agreements [+50]%"],
 		"requiredTech": "Architecture",
-		"quote": "'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.'  - James Russell Lowell"
+		"quote": "'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.' - James Russell Lowell"
 	},
 	{
 		"name": "Windmill",
@@ -823,7 +823,7 @@
 		"isWonder": true,
 		"uniques": ["Defensive buildings in all cities are 25% more effective"],
 		"requiredTech": "Metallurgy",
-		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.'  - The Prophet Muhammed"
+		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.' - The Prophet Muhammed"
 	},
 
 	// Industrial Era
@@ -846,7 +846,7 @@
 		"isWonder": true,
 		"uniques": ["[2] free [Great Artist] units appear"],
 		"requiredTech": "Archaeology",
-		"quote": "'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson"
+		"quote": "'Every genuine work of art has as much reason for being as the earth and the sun' - Ralph Waldo Emerson"
 	},
 	{
 		"name": "Public School",
@@ -878,7 +878,7 @@
 		"isWonder": true,
 		"uniques": ["[Gold] cost of purchasing items in cities [-15]%"],
 		"requiredTech": "Industrialization",
-		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
+		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.' - Leonard Bernstein"
 	},
 	{
 		"name": "Military Academy",
@@ -895,7 +895,7 @@
 		"isWonder": true,
 		"uniques": ["Free [Great General] appears", "New [Military] units start with [15] Experience [in this city]"],
 		"requiredTech": "Military Science",
-		"quote": "'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace"
+		"quote": "'Pale Death beats equally at the poor man's gate and at the palaces of kings.' - Horace"
 	},
 	// Column 10
 	{
@@ -953,7 +953,7 @@
 		"isWonder": true,
 		"uniques": ["Provides 1 happiness per 2 additional social policies adopted"],
 		"requiredTech": "Radio",
-		"quote": "'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran"
+		"quote": "'We live only to discover beauty, all else is a form of waiting' - Kahlil Gibran"
 	},
 	{
 		"name": "Military Base",
@@ -971,7 +971,7 @@
 		"greatPersonPoints": {"Great Engineer": 2},
 		"uniques": ["[+1 Production] from every specialist [in all cities]"],
 		"requiredTech": "Replaceable Parts",
-		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus"
+		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!' - Emma Lazarus"
 	},
 	{
 		"name": "Neuschwanstein",
@@ -983,7 +983,7 @@
 		"uniques": ["[+1 Happiness, +2 Culture, +3 Gold] from every [Castle]",
 			"Must have an owned [Mountain] within [2] tiles"],
 		"requiredTech": "Railroads",
-		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria"
+		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.' - King Ludwig II of Bavaria"
 	},
 	// Column 12
 	{
@@ -1002,7 +1002,7 @@
 		"greatPersonPoints": {"Great Artist": 2},
 		"uniques": ["Culture cost of adopting new Policies reduced by [10]%"],
 		"requiredTech": "Plastics",
-		"quote": "'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28"
+		"quote": "'Come to me, all who labor and are heavy burdened, and I will give you rest.' - New Testament, Matthew 11:28"
 	},
 
 	// Atomic Era
@@ -1029,7 +1029,7 @@
 		"greatPersonPoints": {"Great Engineer": 2},
 		"uniques": ["Gold cost of upgrading military units reduced by 33%"],
 		"requiredTech": "Combined Arms",
-		"quote": "'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower"
+		"quote": "'In preparing for battle I have always found that plans are useless, but planning is indispensable.' - Dwight D. Eisenhower"
 	},
 	// Column 14
 	{
@@ -1048,7 +1048,7 @@
 		"percentStatBonus": {"culture": 50},
 		"uniques": ["Free Social Policy","Must be next to [Coast]"],
 		"requiredTech": "Ecology",
-		"quote": "'Those who lose dreaming are lost.'  - Australian Aboriginal saying"
+		"quote": "'Those who lose dreaming are lost.' - Australian Aboriginal saying"
 	},
 	{
 		"name": "Nuclear Plant",
@@ -1104,7 +1104,7 @@
 			"+[25]% Production when constructing [Spaceship part] [in this city]",
 			"Provides a free [Spaceship Factory] [in this city]"],
 		"requiredTech": "Satellites",
-		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
+		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.' - Anatole France"
 	},
 	{
 		"name": "SS Booster",
