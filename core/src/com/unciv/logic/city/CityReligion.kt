@@ -62,14 +62,9 @@ class CityInfoReligionManager {
         val majorityReligion = getMajorityReligion() ?: return sequenceOf()
         return majorityReligion.getFollowerUniques()
     }
+
     
-    fun getMatchingUniques(unique: String): Sequence<Unique> {
-        return getUniques().filter { it.placeholderText == unique }
-    }
-    
-    fun getPressures(): Counter<String> {
-        return pressures.clone()
-    }
+    fun getPressures(): Counter<String> = pressures.clone()
     
     private fun clearAllPressures() {
         pressures.clear()

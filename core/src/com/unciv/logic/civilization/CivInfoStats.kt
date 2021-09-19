@@ -21,7 +21,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         var freeUnits = 3
-        for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.FreeUnits)) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.FreeUnits)) {
             if (!unique.conditionalsApply(civInfo)) continue
             freeUnits += unique.params[0].toInt()
         }
@@ -36,7 +36,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
 
-        for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.UnitMaintenanceDiscount)) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscount)) {
             if (!unique.conditionalsApply(civInfo)) continue
             val numberOfUnitsWithDiscount = min(
                 numberOfUnitsToPayFor,
@@ -45,14 +45,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
         }
 
-        for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.DecreasedUnitMaintenanceCostsByFilter)) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedUnitMaintenanceCostsByFilter)) {
             val numberOfUnitsWithDiscount = min(
                 numberOfUnitsToPayFor,
                 unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
             )
             numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
         }
-        for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.DecreasedUnitMaintenanceCostsGlobally)) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedUnitMaintenanceCostsGlobally)) {
             numberOfUnitsToPayFor *= 1f - unique.params[0].toFloat() / 100f
         }
 
