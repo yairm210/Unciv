@@ -1,7 +1,7 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.models.ruleset.IHasUniques
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
 
 

@@ -3,11 +3,8 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
-import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.utils.colorFromRGB
 
 class Era : INamed, IHasUniques {

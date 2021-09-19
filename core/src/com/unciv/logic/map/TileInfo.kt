@@ -7,7 +7,7 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.UniqueType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr

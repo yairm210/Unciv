@@ -2,7 +2,7 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine

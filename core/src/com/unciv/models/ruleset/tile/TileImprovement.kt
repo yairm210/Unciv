@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine

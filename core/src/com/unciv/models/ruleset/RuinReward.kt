@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText

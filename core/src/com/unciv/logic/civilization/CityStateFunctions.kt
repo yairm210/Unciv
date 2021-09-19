@@ -5,8 +5,8 @@ import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
-import com.unciv.models.ruleset.UniqueType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*

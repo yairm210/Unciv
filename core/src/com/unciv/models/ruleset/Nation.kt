@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr

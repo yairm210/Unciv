@@ -1,5 +1,6 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.unique
 
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
