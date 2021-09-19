@@ -106,7 +106,7 @@
 		"obsoleteTech": "Machinery",
 		"replaces": "Archer",
 		"uniqueTo": "Babylon",
-		"upgradesTo": "Crossbowman",
+		"upgradesTo": "Composite Bowman",
 		"attackSound": "arrow"
 	},
 	{
@@ -120,7 +120,7 @@
 		"cost": 40,
 		"requiredTech": "Archery",
 		"obsoleteTech": "Machinery",
-		"upgradesTo": "Crossbowman",
+		"upgradesTo": "Composite Bowman",
 		"promotions": ["Slinger Withdraw"],
 		"attackSound": "arrow"
 	},
@@ -490,14 +490,14 @@
 	{
 		"name": "Landsknecht",
 		"unitType": "Sword",
-		"replaces": "Lancer",
+		"replaces": "Pikeman",
 		"uniqueTo": "Germany",
 		"movement": 2,
 		"strength": 16,
 		"cost": 45,
 		"requiredTech": "Civil Service",
 		"uniques": ["+[50]% Strength vs [Mounted]", "Can move immediately once bought" ],
-		"upgradesTo": "Musketman",
+		"upgradesTo": "Lancer",
 		"obsoleteTech": "Gunpowder",
 		"attackSound": "metalhit"
 		//"Requires [Mercenary Army]" in BNW

@@ -922,8 +922,9 @@ class CivilizationInfo {
         if (placedUnit.hasUnique("Religious Unit") && gameInfo.isReligionEnabled()) {
             placedUnit.religion = 
                 when {
-                    placedUnit.hasUnique("Takes your religion over the one in their birth city") ->
-                        religionManager.religion?.name
+                    placedUnit.hasUnique("Takes your religion over the one in their birth city")
+                    && religionManager.religion?.isMajorReligion() == true ->
+                        religionManager.religion!!.name
                     city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                     else -> religionManager.religion?.name
                 }
