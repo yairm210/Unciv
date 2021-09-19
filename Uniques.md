@@ -48,7 +48,9 @@ Most uniques are "Global uniques" - meaning, they can be put in one of four plac
 - Nation uniques - Always active for a specific Nation
 - Policy uniques - Active once the policy has been chosen
 - Building uniques - Active once the building has been constructed in any city
-- Tech uniques - active once the tech has been researched
+- Tech uniques - Active once the tech has been researched
+- Era uniques - Active once in the specified era
+- Religion uniques - Founder & Enhancer beliefs from your religion
 
 Most uniques are *ongoing* - they describe something continuous. Some, however, are one-time actions (free technology, free unit, etc) - these cannot be put in a Nation unique, since unlike the other categories, there is no specific time to activate them. Such uniques will be marked in the documentation as "one time effect".
 
@@ -181,11 +183,30 @@ For units, the UnitFilter is called. For Buildings, the following options are im
   - Provides that stat as a bonus for resources (e.g. +1 Food for Wheat)
   - Provides that stat per some amount of population (e.g. +1 Science for every 2 population [cityFilter])
 
+### Conditionals
+
+Some uniques also allow for the placing of conditionals. These are conditions that need to be met for the unique to be active. In the unique "[+10]% Growth <when at war>", the `<when at war>` part is a conditional, denoted by the pointy brackets. Making a building with this unique will provide a 10% Growth boost to cities with this building, but only as long as the empire is at war.
+
+Multiple conditionals can be applied to the same unique, for example, you can have a promotion with the following unique:
+"[+33]% Strength <vs [Armored] units> <in [Open terrain] tiles>"
+Which will only apply the strength boost when fighting armored units in open terrain.
+
+This system is currently in development, so only a small amount of conditionals exist, and only a few uniques can have conditionals for now. It will be expanded greatly, improving the amount of combinations that can be made and therefore the amount of different uniques that exist.
+Uniques that support conditionals will be denoted with a "©" sign for now.
+
+#### Existing conditionals
+
+<when at war> - Applies when the civilization is at war
+
+<when not at war> - Applies when the civilization is not at war
+
+
+
 ## General uniques
 
 ### Stat uniques
 
-"+[amount]% growth [cityFilter]" - for example "+[15]% growth [in all cities]". 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth. "+[amount]% growth in all cities" and "+[amount]% growth in capital" are to be deprecated and should not be used.
+"+[amount]% growth [cityFilter]" © - for example "+[15]% growth [in all cities]". 'Growth' is the amount of food retained by a city after calculating all bonuses and removing food eaten by population - that is, the food that leads to population growth. "+[amount]% growth in all cities" and "+[amount]% growth in capital" are to be deprecated and should not be used.
 
 "+[amount]% [Stat] [cityFilter]" - For example, "+[25]% [Culture] [in all cities]"
 
@@ -513,8 +534,6 @@ These last two uniques may seem like they only have a one-time effect. However, 
 ### Follower uniques
 
 Follower uniques are uniques applied to each city following a religion which includes this unique. It is also possible for general uniques to be used for beliefs, the ones below are specifically for religions.
-
-"[signedAmount]% growth [cityFilter] when not at war"
 
 "[amount]% attacking Strength for cities"
 
@@ -891,3 +910,5 @@ These uniques have been recently deprecated. While they are still supported, the
 "Immediately creates a [buildingName] in each of your first [amount] cities for free" - Replaced with "Provides a [buildingName] in each of your first [amount] cities for free"
 
 "+[amount] Sight for all [unitFilter] units" - Replaced with "[amount] Sight for all [unitFilter] units"
+
+"[signedAmount]% growth [cityFilter] when not at war" - Replaced with "[signedAmount]% growth [cityFilter] <when not at war>" ©
