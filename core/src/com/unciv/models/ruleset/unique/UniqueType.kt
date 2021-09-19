@@ -18,6 +18,7 @@ enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
     StatsPerCity("[stats] [cityFilter]"),
 
     ConsumesResources("Consumes [amount] [resource]"), // No conditional support as of yet
+    ProvidesResources("Provides [amount] [resource]"),
     
     FreeUnits("[amount] units cost no maintenance"),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units"),
@@ -27,7 +28,11 @@ enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UnitMaintenanceDiscount), // No conditional support
     @Deprecated("As of 3.16.16", ReplaceWith("Stats <>"))
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
+
+    // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
+    ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]"),
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]"),
+
     
     CityStateStatsPerTurn("Provides [stats] per turn"), // Should not be Happiness!
     CityStateStatsPerCity("Provides [stats] [cityFilter]"),
