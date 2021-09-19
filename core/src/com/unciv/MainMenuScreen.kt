@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.ui.TestDragScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
@@ -129,6 +130,10 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val optionsTable = getMenuButton("Options", "OtherIcons/Options", 'o')
             { this.openOptionsPopup() }
         column2.add(optionsTable).row()
+
+        val testScreen = getMenuButton("Test", "OtherIcons/Options", 't')
+           { game.setScreen(TestDragScreen()) }
+        column2.add(testScreen).row()
 
 
         val table=Table().apply { defaults().pad(10f) }
