@@ -273,7 +273,9 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
 
         if (showResources) {
             val allMercantileResources = ruleset.tileResources.values
-                .filter { it.unique == "Can only be created by Mercantile City-States" }
+                .filter { it.unique == "Can only be created by Mercantile City-States" // Deprecated 3.16.16
+                        || it.uniques.contains("Can only be created by Mercantile City-States") }
+
             if (allMercantileResources.isNotEmpty()) {
                 textList += FormattedLine()
                 textList += FormattedLine("The unique luxury is one of:")

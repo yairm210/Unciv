@@ -84,12 +84,6 @@ class TileResource : NamedStats(), ICivilopediaText, IHasUniques {
             }
         }
 
-        if (unique != null) {
-            textList += FormattedLine()
-            // Marble's unique is not parameterized, so the detour through the object is only useful for mods
-            textList += FormattedLine(Unique(unique!!))
-        }
-
         textList += Belief.getCivilopediaTextMatching(name, ruleset)
 
         return textList
