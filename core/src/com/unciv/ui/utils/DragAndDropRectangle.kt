@@ -2,6 +2,7 @@ package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.maps.objects.RectangleMapObject
@@ -13,28 +14,35 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import java.util.concurrent.RecursiveTask
 
 // generic so the body can be text, picture, video whatever
-class DragAndDropRectangle<T>(header: Label, body: T, rectangleColor: Color, screenStage: Stage) : Actor() {
+class DragAndDropRectangle(header: String, body: String, rectangleColor: Color) : Actor() {
     val _header = header
     val _body = body
     val _rectangleColor = rectangleColor
-    val _stage = screenStage
+    val table = Table()
+    var firstTime = true
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
+
         val sr = ShapeRenderer()
         sr.setAutoShapeType(true)
-        println(color)
+
+        val fr = BitmapFont()
+
+        fr.draw(batch, _header, x+10, y+10)
 
         sr.begin(ShapeRenderer.ShapeType.Filled)
         sr.color = _rectangleColor
-        sr.rect(48f, 80f, 96f, 120f)
+        sr.rect(x, y, 96f, 120f)
         sr.end()
 
-        val table = Table()
-        table.setPosition(x, y)
-        table.add(_header)
 
-        _stage.addActor(table)
+    }
+
+    private fun start(){
+        table.setPosition(400f, 50f)
+        table.add(_header)
+        stage.addActor(table)
     }
 
 
