@@ -25,6 +25,9 @@ enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UnitMaintenanceDiscount), // No conditional support
     @Deprecated("As of 3.16.16", ReplaceWith("UnitMaintenanceDiscount"))
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UnitMaintenanceDiscount), // No conditional support
+    @Deprecated("As of 3.16.16", ReplaceWith("Stats <>"))
+    StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
+    
     
     CityStateStatsPerTurn("Provides [stats] per turn"), // Should not be Happiness!
     CityStateStatsPerCity("Provides [stats] [cityFilter]"),

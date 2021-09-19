@@ -240,6 +240,14 @@ class CityStats(val cityInfo: CityInfo) {
             // "[stats] in cities on [tileFilter] tiles"
             if (unique.placeholderText == "[] in cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 stats.add(unique.stats)
+            
+            // Deprecated since 3.16.16
+                // "[stats] if this city has at least [amount] specialists"
+                if (unique.matches(UniqueType.StatBonusForNumberOfSpecialists, cityInfo.getRuleset()) 
+                    && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt()
+                )
+                    stats.add(unique.stats)
+            //
 
             // Deprecated since a very long time ago, moved here from another code section
                 if (unique.placeholderText == "+2 Culture per turn from cities before discovering Steam Power" && !cityInfo.civInfo.tech.isResearched("Steam Power"))
