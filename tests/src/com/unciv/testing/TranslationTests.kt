@@ -110,7 +110,7 @@ class TranslationTests {
     fun allPlaceholderKeysMatchEntry() {
         var allPlaceholderKeysMatchEntry = true
         for (key in translations.keys) {
-            if (!key.contains('[')) continue
+            if (!key.contains('[') || key.contains('<')) continue
             val translationEntry = translations[key]!!.entry
             val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
             if (key != keyFromEntry) {

@@ -11,7 +11,7 @@ class Unique(val text:String) {
     /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
      *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
     val placeholderText = text.getPlaceholderText()
-    val params = text.getPlaceholderParameters()
+    val params = text.removeConditionals().getPlaceholderParameters()
     val type = UniqueType.values().firstOrNull { it.placeholderText == placeholderText }
 
     val stats: Stats by lazy {
