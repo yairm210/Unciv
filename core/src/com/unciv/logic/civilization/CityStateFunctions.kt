@@ -500,10 +500,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                     bully.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
         }
 
-        // Set a diplomatic flag so we remember for future quests
-        civInfo.getDiplomacyManager(bully).setFlag(DiplomacyFlags.Bullied, 30)
+        // Set a diplomatic flag so we remember for future quests (and not to give them any)
+        civInfo.getDiplomacyManager(bully).setFlag(DiplomacyFlags.Bullied, 20)
 
-        // Notify all city states that we were killed (for quest completion)
+        // Notify all city states that we were bullied (for quests)
         civInfo.gameInfo.getAliveCityStates()
             .forEach { it.questManager.cityStateBullied(civInfo, bully) }
     }

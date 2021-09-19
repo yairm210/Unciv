@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
@@ -263,9 +264,11 @@ class QuestManager {
 
         val turn = civInfo.gameInfo.turns
 
-        val mostRecentBully = civInfo.diplomacy.values.maxByOrNull { it.getFlag(DiplomacyFlags.Bullied) }
+        val mostRecentBully = getMostRecentBully()
 
         for (assignee in assignees) {
+
+            val playerReligion = civInfo.gameInfo.religions.values.firstOrNull { it.foundingCivName == assignee.civName }
 
             var data1 = ""
             var data2 = ""
@@ -281,9 +284,12 @@ class QuestManager {
                 QuestName.GreatPerson.value -> data1 = getGreatPersonForQuest(assignee)!!.name
                 QuestName.FindPlayer.value -> data1 = getCivilizationToFindForQuest(assignee)!!.civName
                 QuestName.FindNaturalWonder.value -> data1 = getNaturalWonderToFindForQuest(assignee)!!
-                QuestName.ConquerCityState.value -> data1 = getCityStateTarget().civName
-                QuestName.BullyCityState.value -> data1 = geCityStateTarget().civName
-
+                QuestName.ConquerCityState.value -> data1 = getCityStateTarget(assignee)!!.civName
+                QuestName.BullyCityState.value -> data1 = getCityStateTarget(assignee)!!.civName
+                QuestName.PledgeToProtect.value -> data1 = mostRecentBully!!
+                QuestName.GiveGold.value -> data1 = mostRecentBully!!
+                QuestName.DenounceCiv.value -> data1 = mostRecentBully!!
+                QuestName.SpreadReligion.value -> data1 = playerReligion!!.name
             }
 
             val newQuest = AssignedQuest(
@@ -309,6 +315,7 @@ class QuestManager {
     private fun canAssignAQuestTo(challenger: CivilizationInfo): Boolean {
         return !challenger.isDefeated() && challenger.isMajorCiv() &&
                 civInfo.knows(challenger) && !civInfo.isAtWarWith(challenger)
+                && !civInfo.getDiplomacyManager(challenger).hasFlag(DiplomacyFlags.Bullied)
     }
 
     /** Returns true if the [quest] can be assigned to [challenger] */
@@ -317,6 +324,9 @@ class QuestManager {
             return false
         if (assignedQuests.any { it.assignee == challenger.civName && it.questName == quest.name })
             return false
+
+        val mostRecentBully = getMostRecentBully()
+        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull() { it.foundingCivName == challenger.civName }?.name
 
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
@@ -328,11 +338,18 @@ class QuestManager {
                 bfs.stepUntilDestination(challenger.getCapital().getCenterTile())
                 bfs.hasReachedTile(challenger.getCapital().getCenterTile())
             }
-            QuestName.ConnectResource.value -> civInfo.hasEverBeenFriendWith(challenger) && getResourceForQuest(challenger) != null
-            QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
-            QuestName.GreatPerson.value -> civInfo.hasEverBeenFriendWith(challenger) && getGreatPersonForQuest(challenger) != null
-            QuestName.FindPlayer.value -> civInfo.hasEverBeenFriendWith(challenger) && getCivilizationToFindForQuest(challenger) != null
-            QuestName.FindNaturalWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getNaturalWonderToFindForQuest(challenger) != null
+            QuestName.ConnectResource.value -> getResourceForQuest(challenger) != null
+            QuestName.ConstructWonder.value -> getWonderToBuildForQuest(challenger) != null
+            QuestName.GreatPerson.value -> getGreatPersonForQuest(challenger) != null
+            QuestName.FindPlayer.value -> getCivilizationToFindForQuest(challenger) != null
+            QuestName.FindNaturalWonder.value -> getNaturalWonderToFindForQuest(challenger) != null
+            QuestName.PledgeToProtect.value -> mostRecentBully != null
+            QuestName.GiveGold.value -> mostRecentBully != null
+            QuestName.DenounceCiv.value -> mostRecentBully != null && !challenger.getDiplomacyManager(mostRecentBully).hasFlag(DiplomacyFlags.Denunciation)
+                                            && challenger.getDiplomacyManager(mostRecentBully).diplomaticStatus != DiplomaticStatus.War
+            QuestName.SpreadReligion.value -> playerReligion != null && civInfo.getCapital().religion.getMajorityReligion()?.name != playerReligion
+            QuestName.ConquerCityState.value -> civInfo.cityStatePersonality != CityStatePersonality.Friendly
+            QuestName.PledgeToProtect.value -> challenger !in civInfo.getProtectorCivs()
             else -> true
         }
     }
@@ -522,6 +539,56 @@ class QuestManager {
                 if (trait == CityStateType.Militaristic)
                     weight *= 3f
             }
+            QuestName.GiveGold.value -> {
+                when (trait) {
+                    CityStateType.Militaristic -> weight *= 2f
+                    CityStateType.Mercantile -> weight *= 3.5f
+                    else -> weight *= 3f
+                }
+            }
+            QuestName.PledgeToProtect.value -> {
+                when (trait) {
+                    CityStateType.Militaristic -> weight *= 2f
+                    CityStateType.Cultured -> weight *= 3.5f
+                    else -> weight *= 3f
+                }
+            }
+            QuestName.BullyCityState.value -> {
+                when (personality) {
+                    CityStatePersonality.Hostile -> weight *= 2f
+                    CityStatePersonality.Irrational -> weight *= 1.5f
+                    CityStatePersonality.Friendly -> weight *= .3f
+                }
+            }
+            QuestName.DenounceCiv.value -> {
+                when (trait) {
+                    CityStateType.Religious -> weight *= 2.5f
+                    CityStateType.Maritime -> weight *= 2f
+                    else -> weight *= 1.5f
+                }
+            }
+            QuestName.SpreadReligion.value -> {
+                if (trait == CityStateType.Religious)
+                    weight *= 3f
+            }
+            QuestName.ContestCulture.value -> {
+                if (trait == CityStateType.Cultured)
+                    weight *= 2f
+            }
+            QuestName.ContestFaith.value -> {
+                when (trait) {
+                    CityStateType.Religious -> weight *= 2f
+                    else -> weight *= .5f
+                }
+            }
+            QuestName.ContestTech.value -> {
+                if (trait == CityStateType.Religious)
+                    weight *= .5f
+            }
+            QuestName.Invest.value -> {
+                if (trait == CityStateType.Mercantile)
+                    weight *= 1.5f
+            }
         }
         return weight
     }
@@ -629,6 +696,17 @@ class QuestManager {
 
         return null
     }
+
+    /**
+     * Returns a city-state [CivilizationInfo] that [civInfo] doesn't like, for hostile quests
+     */
+    private fun getCityStateTarget(challenger: CivilizationInfo): CivilizationInfo? {
+        return null // TODO
+    }
+
+    /** Returns a [CivilizationInfo] of the civ that most recently bullied [civInfo].
+     *  Note: forgets after 20 turns has passed! */
+    private fun getMostRecentBully() = civInfo.diplomacy.values.maxByOrNull { it.getFlag(com.unciv.logic.civilization.diplomacy.DiplomacyFlags.Bullied) }?.otherCivName
     //endregion
 }
 
