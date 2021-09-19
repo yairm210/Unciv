@@ -267,15 +267,17 @@ class CivilizationInfo {
         return newResourceSupplyList
     }
 
-    // Deducts resources from city-states
-    fun getTradeableCivResources(): ResourceSupplyList {
+    // Preserves some origins for resources so we can separate them for trades
+    fun getCivResourcesWithOriginsForTrade(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
         for (resourceSupply in detailedCivResources) {
-            // If we got it from another trade or from a CS, it's not tradeable
-            if ((resourceSupply.origin == "City-States" || resourceSupply.origin == "Trade") && resourceSupply.amount > 0)
-                newResourceSupplyList.add(resourceSupply.resource, 0, "All")
+            // If we got it from another trade or from a CS, preserve the origin
+            if ((resourceSupply.origin == "City-States" || resourceSupply.origin == "Trade") && resourceSupply.amount > 0) {
+                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, resourceSupply.origin)
+                newResourceSupplyList.add(resourceSupply.resource, 0, "Tradeable") // Still add an empty "tradeable" entry so it shows up in the list
+            }
             else
-                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "All")
+                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "Tradeable")
         }
         return newResourceSupplyList
     }

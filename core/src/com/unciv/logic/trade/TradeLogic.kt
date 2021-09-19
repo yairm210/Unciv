@@ -26,8 +26,9 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             offers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
         }
 
-        for (entry in civInfo.getTradeableCivResources()
-                .filterNot { it.resource.resourceType == ResourceType.Bonus }) {
+        for (entry in civInfo.getCivResourcesWithOriginsForTrade()
+                .filterNot { it.resource.resourceType == ResourceType.Bonus }
+                .filter { it.origin == "Tradeable" } ) {
             val resourceTradeType = if (entry.resource.resourceType == ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource
             offers.add(TradeOffer(entry.resource.name, resourceTradeType, entry.amount))

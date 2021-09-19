@@ -71,10 +71,12 @@ class OfferColumnsTable(private val tradeLogic: TradeLogic, val screen: Diplomac
     fun update() {
         val ourFilteredOffers = tradeLogic.ourAvailableOffers.without(tradeLogic.currentTrade.ourOffers)
         val theirFilteredOffers = tradeLogic.theirAvailableOffers.without(tradeLogic.currentTrade.theirOffers)
-        ourAvailableOffersTable.update(ourFilteredOffers, tradeLogic.theirAvailableOffers)
+        val ourUntradeables = tradeLogic.ourCivilization.getCivResourcesWithOriginsForTrade().filterNot { it.origin == "Tradeable" }
+        val theirUntradeables = tradeLogic.otherCivilization.getCivResourcesWithOriginsForTrade().filterNot { it.origin == "Tradeable" }
+        ourAvailableOffersTable.update(ourFilteredOffers, tradeLogic.theirAvailableOffers, ourUntradeables)
         ourOffersTable.update(tradeLogic.currentTrade.ourOffers, tradeLogic.theirAvailableOffers)
         theirOffersTable.update(tradeLogic.currentTrade.theirOffers, tradeLogic.ourAvailableOffers)
-        theirAvailableOffersTable.update(theirFilteredOffers, tradeLogic.ourAvailableOffers)
+        theirAvailableOffersTable.update(theirFilteredOffers, tradeLogic.ourAvailableOffers, theirUntradeables)
     }
 
     private fun openGoldSelectionPopup(offer: TradeOffer, ourOffers: TradeOffersList, maxGold: Int) {
