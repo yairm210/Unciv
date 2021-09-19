@@ -910,7 +910,7 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "+[amount] Sight for all [unitFilter] units" - Replaced with "[amount] Sight for all [unitFilter] units"
 
-"+[amount]% growth [cityFilter]" - Replaced with "+[amount]% growth [cityFilter]" ©
+"+[amount]% growth [cityFilter]" - Replaced with "[amount]% growth [cityFilter]" ©
 
 "[signedAmount]% growth [cityFilter] when not at war" - Replaced with "[signedAmount]% growth [cityFilter] <when not at war>" ©
 
