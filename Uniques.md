@@ -148,6 +148,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 
 - "in this city"
 - "in all cities"
+- "in other cities"
 - "in all coastal cities"
 - "in capital"
 - "in all non-occupied cities" - all cities that are not puppets and don't have extra unhappiness from being recently conquered
@@ -207,7 +208,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "[signedAmount]% unhappiness from specialists [cityFilter]"
 
-"-[amount]% food consumption by specialists"
+"[amount]% food consumption by specialists"
 
 "[stats] if this city has at least [amount] specialists"
 
@@ -222,6 +223,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 "[Stats] for every [amount] global followers [cityFilter]"
 
 "[Stats] from every [constructionFilter] in cities where this religion has at least [amount] followers"
+
 
 ### One time effect
 
@@ -267,7 +269,6 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance"
 
-
 "Triggers a global alert" - Can only be used as a unique for a policy. All players receive the following notification: "[civilizationName] has adopted the [policyName] policy"
 
 "Triggers the following global alert: [param1]" - Can only be used as a unique for a policy. [param1] can be any sentence. All player receive the following notification: 
@@ -284,7 +285,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "+[amount]% Strength for units fighting in [tileFilter]"
 
-"+[amount] Sight for all [unitFilter] units"
+"[amount] Sight for all [unitFilter] units"
 
 "Units fight as though they were at full strength even when damaged"
 
@@ -309,6 +310,8 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 "+[amount]% attack strength to all [unitFilter] units for [amount] turns"
 
 "When spreading religion to a city, gain [amount] times the amount of followers of other religions as [Stat]" - "Stat" may be Science, Culture, Faith or Gold
+
+"May buy [unitFilter] units for [amount] [Stat] [cityFilter] at an increasing price ([amount2])" - Prices increases by (amount bought) * (amount2) each time after buying.
 
 
 
@@ -337,6 +340,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 "Influence of all other civilizations with all city-states degrades [amount]% faster"
 
 "Gain [amount] Influence with a [unitFilter] gift to a City-State"
+
 
 ### Other
 
@@ -396,9 +400,9 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 "-[amount]% maintenance cost for buildings [cityFilter]"
 
-"Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - If more than one unique is found, the [amounts] off all uniques are added together to find the amound of cities that should receive a free culture building. No city will receive more than 1 culture building from multiple copies of this unique.
+"Provides the cheapest [Stat] building in your first [amount] cities for free" - If more than one unique is found, the [amounts] of all uniques with the same Stat are added together to find the amount of cities that should receive a free building. No city will receive more than 1 building of the same Stat from multiple copies of this unique. These buildings are maintenance-free.
 
-"Immediately creates a [buildingName] in each of your first [amount] cities for free" - If more than one unique is found, the [amounts] off all uniques are added together to find the amound of cities that should receive a free [buildingName]. No city will receive more than 1 [buildingName] from multiple copies of this unique.
+"Provides a [buildingName] in each of your first [amount] cities for free" - If more than one unique is found, the [amounts] off all uniques are added together to find the amound of cities that should receive a free [buildingName]. No city will receive more than 1 [buildingName] from multiple copies of this unique.
 
 These last two uniques may seem like they only have a one-time effect. However, the 'free' also means that you don't pay any maintenance costs for these buildings. 
 
@@ -425,6 +429,14 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "May buy [constructionFilter] buildings for [amount] [Stat] [cityFilter]"
 
 "May buy [unitFilter] units for [amount] [Stat] [cityFilter] starting from the [eraName] at an increasing price ([amount2])" - Price increases quadratically based on the the "amount" parameters
+
+"May not generate great prophet equivalents naturally"
+
+"Starting in this era disables religion" - Can only be used in uniques from eras.json
+
+"Incompatible with [param]" - Can be used for incompatible policies, techs & promotions
+
+"[amount]% of excess happiness converted to [Stat]"
 
 
 
@@ -467,6 +479,8 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Never destroyed when the city is captured"
 
 "[unitFilter] units built [cityFilter] can [unitAction] [amount] extra times" - "unitAction" may be one of: "Spread Religion", "Remove Foreign religions from your own cities"
+
+"Provides a free [buildingName] [cityFilter]" - Provides a maintenance-free copy of the 'building' in all cities of the owner of this building in all cities matching 'cityFilter'. If the city having this building is captured, all free buildings previously provided are removed, and are added to cities of its new owner instead.
 
 ### Stat uniques
 
@@ -546,6 +560,7 @@ Follower uniques are uniques applied to each city following a religion which inc
 
 "Provides a random bonus when entered" - Effectively makes this improvement ancient ruins, including it being removed when it is entered.
 
+"Consumes [amount] [resource]" - The AI does _not_ consider this unique when deciding which improvement to build
 
 
 ## Unit uniques
@@ -607,6 +622,8 @@ May be added in promotions or ancient ruins equivalents
 "+1 Sight when embarked"
 
 "Limited Visibility"
+
+"Normal vision when embarked"
 
 
 ### Movement
@@ -791,6 +808,8 @@ These are valid only in a [ModOptions.json](/yairm210/Unciv/wiki/Miscellaneous-J
 | Allow City States to spawn with additional units | CS get the same starting units as major civs |
 | Can convert gold to science with sliders | Adds sliders to the Overview screen Stats page |
 | Diplomatic relationships cannot change | Prevent changes in diplomatic relations |
+| Disable religion | disables everything to do with religion |
+| Can trade civilization introductions for [] Gold | Allows for trading of civilization introductions |
 |  |  |
 
 
@@ -813,7 +832,9 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "Specialists only produce half normal unhappiness" - Replaced with "Specialists only produce [amount]% of normal unhappiness"
 
-"-50% food consumption by specialists" - Replaced with "-[amount]% food consumption by specialists"
+"-50% food consumption by specialists" - Replaced with "[amount]% food consumption by specialists"
+
+"-[amount]% food consumption by specialists" - Replaced with "[amount]% food consumption by specialists"
 
 "-33% unit upkeep costs" - Replaced with "-[amount]% unit upkeep costs"
 
@@ -862,3 +883,11 @@ These uniques have been recently deprecated. While they are still supported, the
 "Increases embarked movement +1" - Replaced with "+[1] Movement for all [Embarked] units"
 
 "+1 Movement for all embarked units" - Replaced with "+[1] Movement for all [Embarked] units"
+
+"50% of excess happiness converted to Culture" - Replaced with "[amount]% of excess happiness converted to [Stat]"
+
+"Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - Replaced with "Provides the cheapest [Culture] building in your first [amount] cities for free"
+
+"Immediately creates a [buildingName] in each of your first [amount] cities for free" - Replaced with "Provides a [buildingName] in each of your first [amount] cities for free"
+
+"+[amount] Sight for all [unitFilter] units" - Replaced with "[amount] Sight for all [unitFilter] units"
