@@ -160,7 +160,7 @@ class CityInfo {
 
         civInfo.civConstructions.tryAddFreeBuildings()
 
-        for (unique in getMatchingUniques("Gain a free [] []")) {
+        for (unique in getMatchingUniques(UniqueType.GainFreeBuildings)) {
             val freeBuildingName = unique.params[0]
             if (matchesFilter(unique.params[1])) {
                 if (!cityConstructions.isBuilt(freeBuildingName))

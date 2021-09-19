@@ -53,6 +53,15 @@ enum class UniqueParameterType(val parameterName:String) {
             return null
         }
     },
+    BuildingName("buildingName") {
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            if (ruleset.buildings.containsKey(parameterText)) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
     Unknown("param") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
