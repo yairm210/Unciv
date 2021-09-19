@@ -200,13 +200,14 @@ Uniques that support conditionals will be denoted with a "©" sign for now.
 
 <when not at war> - Applies when the civilization is not at war
 
+<if this city has at least [amount] specialists> - Can only be used on things that exist in a city or relate to a specific city
 
 
 ## General uniques
 
 ### Stat uniques
 
-"[stats] [cityFilter]" - for example "[+3 Culture] [in capital]", "[+2 Food] [in all cities]". "[stats] in capital", "[stats] in all cities" are to be deprecated and should not be used.
+"[stats] [cityFilter]" © - for example "[+3 Culture] [in capital]", "[+2 Food] [in all cities]". "[stats] in capital", "[stats] in all cities" are to be deprecated and should not be used.
 
 "+[amount]% [Stat] [cityFilter]" - For example, "+[25]% [Culture] [in all cities]"
 
@@ -230,8 +231,6 @@ Uniques that support conditionals will be denoted with a "©" sign for now.
 "[signedAmount]% unhappiness from specialists [cityFilter]"
 
 "[amount]% food consumption by specialists"
-
-"[stats] if this city has at least [amount] specialists"
 
 "[Stats] when a city adopts this religion for the first time"
 
@@ -322,9 +321,9 @@ Uniques that support conditionals will be denoted with a "©" sign for now.
 
 "[unitFilter] units gain the [promotionName] promotion"
 
-"[amount] units cost no maintenance"
+"[amount] units cost no maintenance" ©
 
-"-[amount]% unit upkeep costs"
+"[amount]% maintenance costs for [unitFilter] units" ©
 
 "[Stat] cost of purchasing [unitFilter] units [amount]%"
 
@@ -855,7 +854,7 @@ These uniques have been recently deprecated. While they are still supported, the
 
 "-[amount]% food consumption by specialists" - Replaced with "[amount]% food consumption by specialists"
 
-"-33% unit upkeep costs" - Replaced with "-[amount]% unit upkeep costs"
+"-33% unit upkeep costs" - Replaced with "[-3]% maintenance costs for [all] units"
 
 "Quantity of Resources gifted by City-States increased by 100%" - Replaced with "Quantity of Resources gifted by City-States increased by [amount]%"
 
@@ -914,3 +913,7 @@ These uniques have been recently deprecated. While they are still supported, the
 "+[amount]% growth [cityFilter]" - Replaced with "+[amount]% growth [cityFilter]" ©
 
 "[signedAmount]% growth [cityFilter] when not at war" - Replaced with "[signedAmount]% growth [cityFilter] <when not at war>" ©
+
+"[stats] if this city has at least [amount] specialists" - Repalaced with "[stats] <if this city has at least [amount] specialists>" ©
+
+"-[amount]% unit upkeep costs" - Replaced with "[-amount]% maintenance costs for [all] units"
