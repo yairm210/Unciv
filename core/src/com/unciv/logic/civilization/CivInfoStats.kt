@@ -22,6 +22,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         val baseUnitCost = 0.5f
         var freeUnits = 3
         for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.FreeUnits)) {
+            if (!unique.conditionalsApply(civInfo)) continue
             freeUnits += unique.params[0].toInt()
         }
 
@@ -36,6 +37,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
 
         for (unique in civInfo.getMatchingUniquesByEnum(UniqueType.UnitMaintenanceDiscount)) {
+            if (!unique.conditionalsApply(civInfo)) continue
             val numberOfUnitsWithDiscount = min(
                 numberOfUnitsToPayFor,
                 unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
@@ -127,7 +129,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
                 if (!eraInfo.undefinedCityStateBonuses()) {
                     for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.isOfType(UniqueType.CityStateStatsPerTurn))
+                        if (bonus.isOfType(UniqueType.CityStateStatsPerTurn) && bonus.conditionalsApply(otherCiv))
                             cityStateBonus.add(bonus.stats)
                     }
                 } else {
@@ -320,6 +322,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
                 if (!eraInfo.undefinedCityStateBonuses()) {
                     for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                        if (!bonus.conditionalsApply(otherCiv)) continue
                         if (bonus.isOfType(UniqueType.CityStateHappiness)) {
                             if (statMap.containsKey("City-States"))
                                 statMap["City-States"] =

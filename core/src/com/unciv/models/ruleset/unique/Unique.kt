@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.logic.city.CityInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
 import com.unciv.logic.civilization.CivilizationInfo
@@ -30,20 +31,22 @@ class Unique(val text:String) {
     // This will require a lot of parameters to be passed (attacking unit, tile, defending unit, civInfo, cityInfo, ...)
     // I'm open for better ideas, but this was the first thing that I could think of that would
     // work in all cases.
-    fun conditionalsApply(civInfo: CivilizationInfo? = null): Boolean {
+    fun conditionalsApply(civInfo: CivilizationInfo? = null, city: CityInfo? = null): Boolean {
         for (condition in conditionals) {
-            if (!conditionalApplies(condition, civInfo)) return false
+            if (!conditionalApplies(condition, civInfo, city)) return false
         }
         return true
     }
     
     private fun conditionalApplies(
         condition: Unique,
-        civInfo: CivilizationInfo? = null
+        civInfo: CivilizationInfo? = null,
+        city: CityInfo? = null
     ): Boolean {
         return when (condition.placeholderText) {
             "when not at war" -> civInfo?.isAtWar() == false
             "when at war" -> civInfo?.isAtWar() == true
+            "if this city has at least [] specialists" -> city != null && city.population.getNumberOfSpecialists() >= condition.params[0].toInt()
             else -> false
         }
     }
