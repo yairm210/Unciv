@@ -1,20 +1,16 @@
-package com.unciv.ui.utils
+package com.unciv.ui.utils.DragAndDropTools
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.maps.objects.RectangleMapObject
-import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import java.util.concurrent.RecursiveTask
+import com.unciv.ui.utils.toLabel
 
 // generic so the body can be text, picture, video whatever
-class DragAndDropRectangle(header: String, body: String, rectangleColor: Color) : Actor() {
+class DragAndDropRectangle<T>(header: Label, body: T, rectangleColor: Color) : Actor() {
     val _header = header
     val _body = body
     val _rectangleColor = rectangleColor
@@ -27,9 +23,8 @@ class DragAndDropRectangle(header: String, body: String, rectangleColor: Color) 
         val sr = ShapeRenderer()
         sr.setAutoShapeType(true)
 
-        val fr = BitmapFont()
+        stage.addActor("fajsdk".toLabel())
 
-        fr.draw(batch, _header, x+10, y+10)
 
         sr.begin(ShapeRenderer.ShapeType.Filled)
         sr.color = _rectangleColor
@@ -39,7 +34,7 @@ class DragAndDropRectangle(header: String, body: String, rectangleColor: Color) 
 
     }
 
-    private fun start(){
+    fun start(stage: Stage){
         table.setPosition(400f, 50f)
         table.add(_header)
         stage.addActor(table)

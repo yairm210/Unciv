@@ -1,10 +1,9 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.MainMenuScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.DragAndDropTools.DragAndDropRectangle
 
 class TestDragScreen : CameraStageBaseScreen() {
     init {
@@ -15,7 +14,8 @@ class TestDragScreen : CameraStageBaseScreen() {
 
         stage.addActor(backButton)
 
-        val testRectangle = DragAndDropRectangle("DragTime", "tester", Color.GREEN)
+        val testRectangle = DragAndDropRectangle("DragTime".toLabel(), "tester".toLabel(), Color.GREEN)
         stage.addActor(testRectangle)
     }
+
 }
