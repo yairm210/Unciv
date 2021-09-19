@@ -1,3 +1,23 @@
+## 3.17.0
+
+Type-checking for Unique parameters in mods, basis for new Unique management
+
+By xlenstra:
+- Many bugfixes 
+- Added "conditionals" to increase unique moddability
+- Embarked units only have 1 vision (except marines)
+
+By SomeTroglodyte:
+- Better nation picker UI
+- Ask before resetting game setup to defaults
+- Modmanager sort and filter
+
+Implemented Unit Supply - By r3versi
+
+By SimonCeder:
+- Carthage civ
+- Bugfixes
+
 ## 3.16.15
 
 City-States can become wary of civs - By SimonCeder
