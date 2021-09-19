@@ -19,6 +19,7 @@ import kotlin.math.pow
 
 /** Class containing city-state-specific functions */
 class CityStateFunctions(val civInfo: CivilizationInfo) {
+    
     /** Attempts to initialize the city state, returning true if successful. */
     fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>): Boolean {
         val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
@@ -53,7 +54,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         // Unique unit for militaristic city-states
         if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateMilitaryUnits) }
-            || (fallback && cityStateType == CityStateType.Militaristic)) { // Fallback for badly defined Eras.json
+            || (fallback && cityStateType == CityStateType.Militaristic) // Fallback for badly defined Eras.json
+        ) { 
 
             val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
                 && ruleset.eras[ruleset.technologies[it.requiredTech!!]!!.era()]!!.eraNumber > ruleset.eras[startingEra]!!.eraNumber // Not from the start era or before

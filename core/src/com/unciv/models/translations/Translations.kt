@@ -116,7 +116,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     private fun createTranslations(language: String, languageTranslations: HashMap<String,String>) {
         for (translation in languageTranslations) {
-            val hashKey = if (translation.key.contains('['))
+            val hashKey = if (translation.key.contains('[') && !translation.key.contains('<'))
                 translation.key.getPlaceholderText()
             else translation.key
             var entry = this[hashKey]
@@ -212,7 +212,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals   
-        const val englishConditionalOrderingString = "<when at war> <when not at war>"
+        const val englishConditionalOrderingString = "<if this city has at least [amount] specialists> <when at war> <when not at war>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
     }
@@ -366,17 +366,17 @@ fun String.tr(): String {
 }
 
 fun String.getPlaceholderText() = this
-        .replace(squareBraceRegex, "[]")
         .removeConditionals()
+        .replace(squareBraceRegex, "[]")
 
 fun String.equalsPlaceholderText(str:String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
     return this.getPlaceholderText() == str
 }
 
-fun String.hasPlaceholderParameters() = squareBraceRegex.containsMatchIn(this)
+fun String.hasPlaceholderParameters() = squareBraceRegex.containsMatchIn(this.removeConditionals())
 
-fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
+fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this.removeConditionals()).map { it.groups[1]!!.value }.toList()
 
 /** Substitutes placeholders with [strings], respecting order of appearance. */
 fun String.fillPlaceholders(vararg strings: String): String {

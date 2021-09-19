@@ -13,21 +13,27 @@ enum class UniqueTarget{
 }
 
 enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
+    
+    Stats("[stats]"),
+    StatsPerCity("[stats] [cityFilter]"),
 
-    ConsumesResources("Consumes [amount] [resource]"),
+    ConsumesResources("Consumes [amount] [resource]"), // No conditional support as of yet
+    
     FreeUnits("[amount] units cost no maintenance"),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units"),
     @Deprecated("As of 3.16.16", ReplaceWith("UnitMaintenanceDiscount"))
-    DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UnitMaintenanceDiscount),
-    @Deprecated("As of 3.16.16")
-    DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UnitMaintenanceDiscount),
-    StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"),
-    StatsPerCity("[stats] [cityFilter]"),
+    DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UnitMaintenanceDiscount), // No conditional support
+    @Deprecated("As of 3.16.16", ReplaceWith("UnitMaintenanceDiscount"))
+    DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UnitMaintenanceDiscount), // No conditional support
+    @Deprecated("As of 3.16.16", ReplaceWith("Stats <>"))
+    StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
+    
+    
     CityStateStatsPerTurn("Provides [stats] per turn"), // Should not be Happiness!
     CityStateStatsPerCity("Provides [stats] [cityFilter]"),
     CityStateHappiness("Provides [amount] Happiness"),
-    CityStateMilitaryUnits("Provides military units every ≈[amount] turns"),
-    CityStateUniqueLuxury("Provides a unique luxury"),
+    CityStateMilitaryUnits("Provides military units every ≈[amount] turns"), // No conditional support as of yet
+    CityStateUniqueLuxury("Provides a unique luxury"), // No conditional support as of yet
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

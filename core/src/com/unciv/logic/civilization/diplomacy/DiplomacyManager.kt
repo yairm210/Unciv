@@ -578,31 +578,36 @@ class DiplomacyManager() {
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
-        if (otherCiv().isCityState()) {
-            val eraInfo = civInfo.getEra()
+        if (!otherCiv().isCityState()) return
+        
+        val eraInfo = civInfo.getEra()
 
-            if (relationshipLevel() < RelationshipLevel.Friend) {
-                if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
-            } else {
-                val variance = listOf(-1, 0, 1).random()
-                        
-                if (eraInfo.undefinedCityStateBonuses() && otherCiv().cityStateType == CityStateType.Militaristic) {
-                    // Deprecated, assume Civ V values for compatibility
-                    if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) && relationshipLevel() == RelationshipLevel.Friend)
-                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20 + variance)
+        if (relationshipLevel() < RelationshipLevel.Friend) {
+            if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) 
+                removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
+            return
+        }
+        
+        val variance = listOf(-1, 0, 1).random()
+                
+        if (eraInfo.undefinedCityStateBonuses() && otherCiv().cityStateType == CityStateType.Militaristic) {
+            // Deprecated, assume Civ V values for compatibility
+            if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) && relationshipLevel() == RelationshipLevel.Friend)
+                setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20 + variance)
 
-                    if ((!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > 17)
-                        && relationshipLevel() == RelationshipLevel.Ally)
-                        setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17 + variance)
-                }
-                if (eraInfo.undefinedCityStateBonuses()) return
+            if ((!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > 17)
+                && relationshipLevel() == RelationshipLevel.Ally)
+                setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17 + variance)
+        }
+        
+        if (eraInfo.undefinedCityStateBonuses()) return
 
-                for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel())) {
-                    // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
-                    if (bonus.isOfType(UniqueType.CityStateMilitaryUnits) &&
-                       (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.params[0].toInt()))
-                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.params[0].toInt() + variance)
-                }
+        for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel())) {
+            // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
+            if (bonus.isOfType(UniqueType.CityStateMilitaryUnits) &&
+               (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.params[0].toInt())
+            ) {
+                setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.params[0].toInt() + variance)
             }
         }
     }

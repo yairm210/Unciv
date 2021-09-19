@@ -124,7 +124,10 @@ class CityStats(val cityInfo: CityInfo) {
                         stats.food += 2
                 } else {
                     for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (bonus.isOfType(UniqueType.CityStateStatsPerCity) && cityInfo.matchesFilter(bonus.params[1])) {
+                        if (bonus.isOfType(UniqueType.CityStateStatsPerCity) 
+                            && cityInfo.matchesFilter(bonus.params[1]) 
+                            && bonus.conditionalsApply(otherCiv, cityInfo) 
+                        ) {
                             stats.add(bonus.stats)
                         }
                     }
@@ -168,7 +171,7 @@ class CityStats(val cityInfo: CityInfo) {
         var bonus = 0f
         // "[amount]% growth [cityFilter]"
         for (unique in cityInfo.getMatchingUniques("[]% growth []")) {
-            if (!unique.conditionalsApply(cityInfo.civInfo)) continue
+            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             if (cityInfo.matchesFilter(unique.params[1]))
                 bonus += unique.params[0].toFloat()
         }
@@ -216,8 +219,12 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getStatsFromUniques(uniques: Sequence<Unique>): Stats {
         val stats = Stats()
 
-        for (unique in uniques.toList()) { // Should help  mitigate getConstructionButtonDTOs concurrency problems.
-            if (unique.isOfType(UniqueType.StatsPerCity) && cityInfo.matchesFilter(unique.params[1]))
+        for (unique in uniques.toList()) { // Should help mitigate getConstructionButtonDTOs concurrency problems.
+            if (unique.isOfType(UniqueType.Stats) && unique.conditionalsApply(cityInfo.civInfo, cityInfo)) {
+                stats.add(unique.stats)
+            }
+            
+            if (unique.isOfType(UniqueType.StatsPerCity) && cityInfo.matchesFilter(unique.params[1]) && unique.conditionalsApply(cityInfo.civInfo))
                 stats.add(unique.stats)
 
             // "[stats] per [amount] population [cityFilter]"
@@ -233,11 +240,14 @@ class CityStats(val cityInfo: CityInfo) {
             // "[stats] in cities on [tileFilter] tiles"
             if (unique.placeholderText == "[] in cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 stats.add(unique.stats)
-
-            // "[stats] if this city has at least [amount] specialists"
-            if (unique.matches(UniqueType.StatBonusForNumberOfSpecialists, cityInfo.getRuleset())
-                    && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt())
-                stats.add(unique.stats)
+            
+            // Deprecated since 3.16.16
+                // "[stats] if this city has at least [amount] specialists"
+                if (unique.matches(UniqueType.StatBonusForNumberOfSpecialists, cityInfo.getRuleset()) 
+                    && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt()
+                )
+                    stats.add(unique.stats)
+            //
 
             // Deprecated since a very long time ago, moved here from another code section
                 if (unique.placeholderText == "+2 Culture per turn from cities before discovering Steam Power" && !cityInfo.civInfo.tech.isResearched("Steam Power"))
