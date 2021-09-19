@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameSpeed
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
 
 class CityInfoReligionManager {
     @Transient

@@ -1,10 +1,9 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.unique
 
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.ui.worldscreen.unit.UnitActions
-import kotlin.random.Random
+import com.unciv.models.ruleset.Ruleset
 
 
 class Unique(val text:String) {
@@ -39,7 +38,7 @@ class Unique(val text:String) {
     }
     
     private fun conditionalApplies(
-        condition: Unique, 
+        condition: Unique,
         civInfo: CivilizationInfo? = null
     ): Boolean {
         return when (condition.placeholderText) {

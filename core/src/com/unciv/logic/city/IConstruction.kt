@@ -2,7 +2,6 @@ package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.IHasUniques
-import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.Fonts

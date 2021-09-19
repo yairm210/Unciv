@@ -1,10 +1,11 @@
-package com.unciv.models.ruleset
+package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters

@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats

@@ -2,7 +2,7 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.HashMap

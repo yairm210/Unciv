@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.INamed
