@@ -135,6 +135,13 @@ open class Stats(
         }
     }
 
+    // For display in diplomacy window
+    fun toStringWithDecimals(): String {
+        return this.joinToString {
+            (if (it.value > 0) "+" else "") + it.value.toString().removeSuffix(".0") + " " + it.key.toString().tr()
+        }
+    }
+
     /** Represents one [key][Stat]/[value][Float] pair returned by the [iterator] */
     data class StatValuePair (val key: Stat, val value: Float)
 

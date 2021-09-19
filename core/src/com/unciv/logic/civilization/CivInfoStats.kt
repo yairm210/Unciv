@@ -11,8 +11,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
+import com.unciv.ui.utils.toPercent
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
@@ -122,25 +121,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo.civName)
-                    .relationshipLevel() >= RelationshipLevel.Friend
-            ) {
+            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel()
+            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
                 val cityStateBonus = Stats()
                 val eraInfo = civInfo.getEra()
 
-                val relevantBonuses =
-                    if (otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() == RelationshipLevel.Friend)
-                        eraInfo.friendBonus[otherCiv.cityStateType.name]
-                    else eraInfo.allyBonus[otherCiv.cityStateType.name]
-
-                if (relevantBonuses != null) {
-                    for (bonus in relevantBonuses) {
-                        val unique = Unique(bonus)
-                        if (unique.placeholderText == "Provides [] [] per turn")
-                            cityStateBonus.add(
-                                Stat.valueOf(unique.params[1]),
-                                unique.params[0].toFloat()
-                            )
+                if (!eraInfo.undefinedCityStateBonuses()) {
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                        if (bonus.isOfType(UniqueType.CityStateStatsPerTurn))
+                            cityStateBonus.add(bonus.stats)
                     }
                 } else {
                     // Deprecated, assume Civ V values for compatibility
@@ -151,15 +140,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                                 civInfo.getEraNumber() in 2..3 -> 6f
                                 else -> 13f
                             }
-                        if (otherCiv.getDiplomacyManager(civInfo.civName)
-                                .relationshipLevel() == RelationshipLevel.Ally
-                        )
+                        if (relationshipLevel == RelationshipLevel.Ally)
                             cityStateBonus.culture *= 2f
                     }
                 }
 
-                if (civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
-                    cityStateBonus.culture *= 1.5f
+                for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                    cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
+                }
 
                 statMap.add("City-States", cityStateBonus)
             }
@@ -327,24 +315,18 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(civInfo)
-                    .relationshipLevel() >= RelationshipLevel.Friend
-            ) {
+            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo).relationshipLevel()
+            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
                 val eraInfo = civInfo.getEra()
-                val relevantBonuses =
-                    if (otherCiv.getDiplomacyManager(civInfo).relationshipLevel() == RelationshipLevel.Friend)
-                        eraInfo.friendBonus[otherCiv.cityStateType.name]
-                    else eraInfo.allyBonus[otherCiv.cityStateType.name]
 
-                if (relevantBonuses != null) {
-                    for (bonus in relevantBonuses) {
-                        if (bonus.getPlaceholderText() == "Provides [] Happiness") {
+                if (!eraInfo.undefinedCityStateBonuses()) {
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                        if (bonus.isOfType(UniqueType.CityStateHappiness)) {
                             if (statMap.containsKey("City-States"))
                                 statMap["City-States"] =
-                                    statMap["City-States"]!! + bonus.getPlaceholderParameters()[0].toFloat()
+                                    statMap["City-States"]!! + bonus.params[0].toFloat()
                             else
-                                statMap["City-States"] =
-                                    bonus.getPlaceholderParameters()[0].toFloat()
+                                statMap["City-States"] = bonus.params[0].toFloat()
                         }
                     }
                 } else {
@@ -357,6 +339,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                             statMap["City-States"] = happinessBonus
                     }
                 }
+            }
+        }
+
+        // Just in case
+        if (statMap.containsKey("City-States")) {
+            for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                if (unique.params[1] == Stat.Happiness.name)
+                    statMap["City-States"] = statMap["City-States"]!! * unique.params[0].toPercent()
             }
         }
 

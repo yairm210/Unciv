@@ -6,9 +6,8 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.ruleset.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.utils.toPercent
 import kotlin.math.ceil
 import kotlin.math.max
@@ -586,13 +585,8 @@ class DiplomacyManager() {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             } else {
                 val variance = listOf(-1, 0, 1).random()
-
-                val relevantBonuses =
-                    if (relationshipLevel() == RelationshipLevel.Friend)
-                        eraInfo.friendBonus[otherCiv().cityStateType.name]    
-                    else eraInfo.allyBonus[otherCiv().cityStateType.name]
                         
-                if (relevantBonuses == null && otherCiv().cityStateType == CityStateType.Militaristic) {
+                if (eraInfo.undefinedCityStateBonuses() && otherCiv().cityStateType == CityStateType.Militaristic) {
                     // Deprecated, assume Civ V values for compatibility
                     if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) && relationshipLevel() == RelationshipLevel.Friend)
                         setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20 + variance)
@@ -601,13 +595,13 @@ class DiplomacyManager() {
                         && relationshipLevel() == RelationshipLevel.Ally)
                         setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17 + variance)
                 }
-                if (relevantBonuses == null) return
+                if (eraInfo.undefinedCityStateBonuses()) return
 
-                for (bonus in relevantBonuses) {
+                for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel())) {
                     // Reset the countdown if it has ended, or if we have longer to go than the current maximum (can happen when going from friend to ally)
-                    if (bonus.getPlaceholderText() == "Provides military units every ≈[] turns" &&
-                       (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.getPlaceholderParameters()[0].toInt()))
-                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.getPlaceholderParameters()[0].toInt() + variance)
+                    if (bonus.isOfType(UniqueType.CityStateMilitaryUnits) &&
+                       (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) || getFlag(DiplomacyFlags.ProvideMilitaryUnit) > bonus.params[0].toInt()))
+                            setFlag(DiplomacyFlags.ProvideMilitaryUnit, bonus.params[0].toInt() + variance)
                 }
             }
         }

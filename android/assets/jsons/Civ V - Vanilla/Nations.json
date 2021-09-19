@@ -125,7 +125,7 @@
 		"leaderName": "Elizabeth",
 		"adjective": ["English"],
 		"startBias": ["Coast"],
-//		"preferredVictoryType": "Diplomatic",
+		"preferredVictoryType": "Diplomatic",
 	
 		"startIntroPart1": "Praises upon her serene highness, Queen Elizabeth Gloriana. You lead and protect the celebrated maritime nation of England. England is an ancient land, settled as early as 35,000 years ago. The island has seen countless waves of invaders, each in turn becoming a part of the fabric of the people. Although England is a small island, for many years your people dominated the world stage. Their matchless navy, brilliant artists and shrewd merchants, giving them power and influence far in excess of their mere numbers.",
 		"startIntroPart2": "Queen Elizabeth, will you bring about a new golden age for the English people? They look to you once more to return peace and prosperity to the nation. Will you take up the mantle of greatness? Can you build a civilization that will stand the test of time?",
@@ -482,7 +482,7 @@
 		"leaderName": "Ramkhamhaeng",
 		"adjective": ["Siamese"],
 		"startBias": ["Avoid [Forest]"],
-//		"preferredVictoryType":"Diplomatic",
+		"preferredVictoryType":"Diplomatic",
 		
 		"startIntroPart1": "Greetings to you, Great King Ramkhamhaeng, leader of the glorious Siamese people! O mighty King, your people bow down before you in awe and fear! You are the ruler of Siam, an ancient country in the heart of Southeast Asia, a beautiful and mysterious land. Surrounded by foes, beset by bloody war and grinding poverty, the clever and loyal Siamese people have endured and triumphed. King Ramkhamhaeng, your empire was once part of the Khmer Empire, until the 13th century AD, when your ancestors revolted, forming the small Sukhothai kingdom. Through successful battle and cunning diplomacy, the tiny kingdom grew into a mighty empire, an empire which would dominate South East Asia for more than a century!",
 		"startIntroPart2": "Oh, wise and puissant King Ramkhamhaeng, your people need you to once again lead them to greatness! Can you use your wits and strength of arms to protect your people and defeat your foes? Can you build a civilization that will stand the test of time?",
@@ -496,7 +496,7 @@
 		"outerColor": [228,208,43],
 		"innerColor": [193,21,17],
 		"uniqueName": "Father Governs Children",
-		"uniques": ["Food and Culture from Friendly City-States are increased by 50%","Military Units gifted from City-States start with [+10] XP"],
+		"uniques": ["[+50]% [Food] from City-States","[+50]% [Culture] from City-States","[+50]% [Faith] from City-States","Military Units gifted from City-States start with [+10] XP"],
 		"cities": ["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthaya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",

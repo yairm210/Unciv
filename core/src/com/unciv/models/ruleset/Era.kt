@@ -2,7 +2,12 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.stats.INamed
+import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.utils.colorFromRGB
 
 class Era : INamed, IHasUniques {
@@ -22,11 +27,35 @@ class Era : INamed, IHasUniques {
     var startingObsoleteWonders = ArrayList<String>()
     var baseUnitBuyCost = 200
     var startPercent = 0
+
     var friendBonus = HashMap<String, List<String>>()
     var allyBonus = HashMap<String, List<String>>()
+    val friendBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(friendBonus) }
+    val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
+
     var iconRGB: List<Int>? = null
     override var uniques: ArrayList<String> = arrayListOf()
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+
+    private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, List<Unique>> {
+        val objectMap = HashMap<CityStateType, List<Unique>>()
+        for ((cityStateType, bonusList) in bonusMap) {
+            objectMap[CityStateType.valueOf(cityStateType)] = bonusList.map { Unique(it) }
+        }
+        return objectMap
+    }
+
+    fun getCityStateBonuses(cityStateType: CityStateType, relationshipLevel: RelationshipLevel): List<Unique> {
+        return when (relationshipLevel) {
+            RelationshipLevel.Ally   -> allyBonusObjects[cityStateType]   ?: emptyList()
+            RelationshipLevel.Friend -> friendBonusObjects[cityStateType] ?: emptyList()
+            else -> emptyList()
+        }
+    }
+
+    fun undefinedCityStateBonuses(): Boolean {
+        return friendBonus.isEmpty() || allyBonus.isEmpty()
+    }
 
     fun getStartingUnits(): List<String> {
         val startingUnits = mutableListOf<String>()
