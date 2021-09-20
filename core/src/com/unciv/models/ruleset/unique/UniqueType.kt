@@ -5,45 +5,52 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
 enum class UniqueTarget{
-    /** Buildings, units, nations, policies, religions, techs etc. */
+    /** Buildings, units, nations, policies, religions, techs etc.
+     * Basically anything caught by CivInfo.getMatchingUniques. */
     Global,
     Building,
     Unit,
     Improvement,
+    CityState
 }
 
-enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
+enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     
-    Stats("[stats]"),
-    StatsPerCity("[stats] [cityFilter]"),
+    Stats("[stats]", UniqueTarget.Global),
+    StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
 
-    ConsumesResources("Consumes [amount] [resource]"), // No conditional support as of yet
-    ProvidesResources("Provides [amount] [resource]"),
+    ConsumesResources("Consumes [amount] [resource]",
+        UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit), // No conditional support as of yet
+    ProvidesResources("Provides [amount] [resource]",
+            UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
     
-    FreeUnits("[amount] units cost no maintenance"),
-    UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units"),
-    @Deprecated("As of 3.16.16", ReplaceWith("UnitMaintenanceDiscount"))
-    DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UnitMaintenanceDiscount), // No conditional support
-    @Deprecated("As of 3.16.16", ReplaceWith("UnitMaintenanceDiscount"))
-    DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UnitMaintenanceDiscount), // No conditional support
-    @Deprecated("As of 3.16.16", ReplaceWith("Stats <>"))
+    FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
+    UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
+
+    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"))
+    DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs"), // No conditional support
+    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"))
+    DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs"), // No conditional support
+    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"))
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
 
     // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
-    ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]"),
-    GainFreeBuildings("Gain a free [buildingName] [cityFilter]"),
+    ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
+    GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
 
-    
-    CityStateStatsPerTurn("Provides [stats] per turn"), // Should not be Happiness!
-    CityStateStatsPerCity("Provides [stats] [cityFilter] per turn"),
-    CityStateHappiness("Provides [amount] Happiness"),
-    CityStateMilitaryUnits("Provides military units every ≈[amount] turns"), // No conditional support as of yet
-    CityStateUniqueLuxury("Provides a unique luxury"), // No conditional support as of yet
+    // I don't like the fact that currently "city state bonuses" are separate from the "global bonuses",
+    // todo: merge city state bonuses into global bonuses
+    CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
+    CityStateStatsPerCity("Provides [stats] [cityFilter] per turn", UniqueTarget.CityState),
+    CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
+    CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
+    CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
     val parameterTypeMap = ArrayList<List<UniqueParameterType>>()
+    val replacedBy: UniqueType? = null
 
     init {
         for (placeholder in text.getPlaceholderParameters()) {
