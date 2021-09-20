@@ -5,6 +5,7 @@
     * [tileFilter](#tilefilter)
     * [unitFilter](#unitfilter)
     * [cityFilter](#cityfilter)
+  - [Conditionals](#conditionals)
 - [General uniques](#general-uniques)
   * [Stat uniques](#stat-uniques)
   * [One time effect](#one-time-effect)
