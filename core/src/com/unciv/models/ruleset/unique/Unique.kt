@@ -26,7 +26,7 @@ class Unique(val text:String) {
     /** We can't save compliance errors in the unique, since it's ruleset-dependant */
     fun matches(uniqueType: UniqueType, ruleset: Ruleset) = isOfType(uniqueType)
         && uniqueType.getComplianceErrors(this, ruleset).isEmpty()
-    
+
     // This function will get LARGE, as it will basically check for all conditionals if they apply
     // This will require a lot of parameters to be passed (attacking unit, tile, defending unit, civInfo, cityInfo, ...)
     // I'm open for better ideas, but this was the first thing that I could think of that would
@@ -37,7 +37,7 @@ class Unique(val text:String) {
         }
         return true
     }
-    
+
     private fun conditionalApplies(
         condition: Unique,
         civInfo: CivilizationInfo? = null,
@@ -50,6 +50,18 @@ class Unique(val text:String) {
             else -> false
         }
     }
+
+    /** "Safe" non-throwing [params] access
+     * @return Empty string if index out of range, otherwise indexed [params] value */
+    fun getStringParam(index: Int) = if (index in params.indices) params[index] else ""
+
+    /** "Safe" non-throwing integer [params] access
+     * @return Zero if index out of range or param cannot be parsed, otherwise indexed [params] value */
+    fun getIntParam(index: Int) = getStringParam(index).toIntOrNull() ?: 0
+
+    /** "Safe" non-throwing float [params] access
+     * @return Zero if index out of range or param cannot be parsed, otherwise indexed [params] value */
+    fun getFloatParam(index: Int) = getStringParam(index).toFloatOrNull() ?: 0f
 }
 
 
