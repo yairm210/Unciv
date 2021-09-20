@@ -73,7 +73,7 @@
   },
   {
     "name": "Invest",
-    "description": "Our people are rejoicing thanks to a tourism boom. For a certain amount of time, any Gold donation will yield double the Influence.",
+    "description": "Our people are rejoicing thanks to a tourism boom. For a certain amount of time, any Gold donation will yield 50% extra Influence.",
     "type": "Global",
     "influence": 0,
     "duration": 30,
@@ -93,7 +93,6 @@
     "name": "Spread Religion",
     "description": ""
   },
-  */
   /* BNW */
   /*
   {

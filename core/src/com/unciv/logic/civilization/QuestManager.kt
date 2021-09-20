@@ -59,6 +59,12 @@ class QuestManager {
     /** Returns true if [civInfo] have active quests for [challenger] */
     fun haveQuestsFor(challenger: CivilizationInfo): Boolean = assignedQuests.any { it.assignee == challenger.civName }
 
+    /** Returns true if [civInfo] has asked anyone to conquer [target] */
+    fun wantsDead(target: String): Boolean = assignedQuests.any { it.questName == QuestName.ConquerCityState.value && it.data1 == target }
+
+    /** Returns true if [civInfo] will give extra influence for gold to [donor] */
+    fun lookingForInvestment(donor: String): Boolean = assignedQuests.any { it.questName == QuestName.Invest.value && it.assignee == donor }
+
     fun clone(): QuestManager {
         val toReturn = QuestManager()
         toReturn.globalQuestCountdown = globalQuestCountdown
@@ -222,21 +228,6 @@ class QuestManager {
         assignedQuests.removeAll(toRemove)
     }
 
-    /** Called when we think quests of [type] have just been completed or expired, so we don't have
-     * to wait until next turn for the reward.
-     */
-    fun handleSpecificIndividualQuests(type: QuestName) {
-        val toRemove = ArrayList<AssignedQuest>()
-
-        for (assignedQuest in assignedQuests.filter { it.isIndividual() && it.questName == type.value }) {
-            val shouldRemove = handleIndividualQuest(assignedQuest)
-            if (shouldRemove)
-                toRemove.add(assignedQuest)
-        }
-
-        assignedQuests.removeAll(toRemove)
-    }
-
     /** If quest is complete, it gives the influence reward to the player.
      *  Returns true if the quest can be removed (is either complete, obsolete or expired) */
     private fun handleIndividualQuest(assignedQuest: AssignedQuest): Boolean {
@@ -264,8 +255,6 @@ class QuestManager {
 
         val turn = civInfo.gameInfo.turns
 
-        val mostRecentBully = getMostRecentBully()
-
         for (assignee in assignees) {
 
             val playerReligion = civInfo.gameInfo.religions.values.firstOrNull { it.foundingCivName == assignee.civName }
@@ -286,10 +275,13 @@ class QuestManager {
                 QuestName.FindNaturalWonder.value -> data1 = getNaturalWonderToFindForQuest(assignee)!!
                 QuestName.ConquerCityState.value -> data1 = getCityStateTarget(assignee)!!.civName
                 QuestName.BullyCityState.value -> data1 = getCityStateTarget(assignee)!!.civName
-                QuestName.PledgeToProtect.value -> data1 = mostRecentBully!!
-                QuestName.GiveGold.value -> data1 = mostRecentBully!!
-                QuestName.DenounceCiv.value -> data1 = mostRecentBully!!
+                QuestName.PledgeToProtect.value -> data1 = getMostRecentBully()!!
+                QuestName.GiveGold.value -> data1 = getMostRecentBully()!!
+                QuestName.DenounceCiv.value -> data1 = getMostRecentBully()!!
                 QuestName.SpreadReligion.value -> data1 = playerReligion!!.name
+                QuestName.ContestCulture.value -> data1 = assignee.policies.totalCulture.toString()
+                QuestName.ContestFaith.value -> data1 = assignee.religionManager.totalFaith.toString()
+                QuestName.ContestTech.value -> data1 = assignee.tech.getNumberOfTechsResearched().toString()
             }
 
             val newQuest = AssignedQuest(
@@ -315,7 +307,6 @@ class QuestManager {
     private fun canAssignAQuestTo(challenger: CivilizationInfo): Boolean {
         return !challenger.isDefeated() && challenger.isMajorCiv() &&
                 civInfo.knows(challenger) && !civInfo.isAtWarWith(challenger)
-                && !civInfo.getDiplomacyManager(challenger).hasFlag(DiplomacyFlags.Bullied)
     }
 
     /** Returns true if the [quest] can be assigned to [challenger] */
@@ -324,32 +315,30 @@ class QuestManager {
             return false
         if (assignedQuests.any { it.assignee == challenger.civName && it.questName == quest.name })
             return false
+        if (quest.isIndividual() && civInfo.getDiplomacyManager(challenger).hasFlag(DiplomacyFlags.Bullied))
+            return false
 
         val mostRecentBully = getMostRecentBully()
         val playerReligion = civInfo.gameInfo.religions.values.firstOrNull() { it.foundingCivName == challenger.civName }?.name
 
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
-            QuestName.Route.value -> {
-                if (challenger.cities.none() || !civInfo.hasEverBeenFriendWith(challenger)
-                        || civInfo.isCapitalConnectedToCity(challenger.getCapital())) return false
-
-                val bfs = BFS(civInfo.getCapital().getCenterTile()) { it.isLand && !it.isImpassible() }
-                bfs.stepUntilDestination(challenger.getCapital().getCenterTile())
-                bfs.hasReachedTile(challenger.getCapital().getCenterTile())
-            }
+            QuestName.Route.value -> !challenger.cities.none()
+                    && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
+                    && civInfo.getCapital().getCenterTile().getContinent() == challenger.getCapital().getCenterTile().getContinent()
             QuestName.ConnectResource.value -> getResourceForQuest(challenger) != null
             QuestName.ConstructWonder.value -> getWonderToBuildForQuest(challenger) != null
             QuestName.GreatPerson.value -> getGreatPersonForQuest(challenger) != null
             QuestName.FindPlayer.value -> getCivilizationToFindForQuest(challenger) != null
             QuestName.FindNaturalWonder.value -> getNaturalWonderToFindForQuest(challenger) != null
-            QuestName.PledgeToProtect.value -> mostRecentBully != null
+            QuestName.PledgeToProtect.value -> mostRecentBully != null && challenger !in civInfo.getProtectorCivs()
             QuestName.GiveGold.value -> mostRecentBully != null
             QuestName.DenounceCiv.value -> mostRecentBully != null && !challenger.getDiplomacyManager(mostRecentBully).hasFlag(DiplomacyFlags.Denunciation)
                                             && challenger.getDiplomacyManager(mostRecentBully).diplomaticStatus != DiplomaticStatus.War
+                                            && !( challenger.playerType == PlayerType.Human && civInfo.gameInfo.getCivilization(mostRecentBully).playerType == PlayerType.Human)
             QuestName.SpreadReligion.value -> playerReligion != null && civInfo.getCapital().religion.getMajorityReligion()?.name != playerReligion
-            QuestName.ConquerCityState.value -> civInfo.cityStatePersonality != CityStatePersonality.Friendly
-            QuestName.PledgeToProtect.value -> challenger !in civInfo.getProtectorCivs()
+            QuestName.ConquerCityState.value -> getCityStateTarget(challenger) != null && civInfo.cityStatePersonality != CityStatePersonality.Friendly
+            QuestName.BullyCityState.value -> getCityStateTarget(challenger) != null
             else -> true
         }
     }
@@ -404,11 +393,26 @@ class QuestManager {
 
     /** Returns the score for the [assignedQuest] */
     private fun getScoreForQuest(assignedQuest: AssignedQuest): Int {
-        @Suppress("UNUSED_VARIABLE")  // This is a work in progress
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
-            // Waiting for contest quests
+            QuestName.ContestCulture.value -> assignee.policies.totalCulture - assignedQuest.data1.toInt()
+            QuestName.ContestFaith.value -> assignee.religionManager.totalFaith - assignedQuest.data1.toInt()
+            QuestName.ContestTech.value -> assignee.tech.getNumberOfTechsResearched() - assignedQuest.data1.toInt()
             else -> 0
+        }
+    }
+
+    /** Returns a string with the leading civ and their score for [questName] */
+    fun getLeaderStringForQuest(questName: String): String {
+        val leadingQuest = assignedQuests.filter { it.questName == questName }.maxByOrNull { getScoreForQuest(it) }
+        if (leadingQuest == null)
+            return "No one is attempting this quest."
+
+        return when (questName){
+            QuestName.ContestCulture.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Culture generated."
+            QuestName.ContestFaith.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Faith generated."
+            QuestName.ContestTech.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Technologies discovered."
+            else -> "Current leader is ${leadingQuest.assignee}."
         }
     }
 
@@ -642,6 +646,8 @@ class QuestManager {
                             (building.requiredTech == null || challenger.tech.isResearched(building.requiredTech!!)) &&
                             civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
                             && building.name !in startingEra.startingObsoleteWonders
+                            && civInfo.gameInfo.getCities().none {
+                        it.cityConstructions.getWorkDone(building.name) * 3 > it.cityConstructions.getRemainingWork(building.name) }
                 }
 
         if (wonders.isNotEmpty())
@@ -698,10 +704,19 @@ class QuestManager {
     }
 
     /**
-     * Returns a city-state [CivilizationInfo] that [civInfo] doesn't like, for hostile quests
+     * Returns a city-state [CivilizationInfo] that [civInfo] wants to target for hostile quests
      */
     private fun getCityStateTarget(challenger: CivilizationInfo): CivilizationInfo? {
-        return null // TODO
+        val closestProximity = civInfo.gameInfo.getAliveCityStates()
+            .mapNotNull { civInfo.proximity[it.civName] }.filter { it != Proximity.None }.minByOrNull { it.ordinal }
+
+        if (closestProximity == null || closestProximity == Proximity.Distant) // None close enough
+            return null
+
+        val validTargets = civInfo.getKnownCivs().filter { it.isCityState() && challenger.knows(it)
+                && civInfo.proximity[it.civName] == closestProximity }
+
+        return validTargets.randomOrNull()
     }
 
     /** Returns a [CivilizationInfo] of the civ that most recently bullied [civInfo].

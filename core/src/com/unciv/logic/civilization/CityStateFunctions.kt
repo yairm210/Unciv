@@ -122,6 +122,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
         for (unique in donorCiv.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
+        if (civInfo.questManager.lookingForInvestment(donorCiv.civName))
+            influenceGained *= 1.5f
         influenceGained -= influenceGained % 5
         if (influenceGained < 5f) influenceGained = 5f
         return influenceGained.toInt()
@@ -529,6 +531,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 if (cityState.getAllyCiv() == attacker.civName) // Must not be allied to the attacker
                     continue
                 if (!cityState.knows(attacker)) // Must have met
+                    continue
+                if (cityState.questManager.wantsDead(civInfo.civName))  // Must not want us dead
                     continue
 
                 var probability: Int

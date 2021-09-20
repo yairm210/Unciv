@@ -25,6 +25,7 @@ class PolicyManager {
 
     var freePolicies = 0
     var storedCulture = 0
+    var totalCulture = 0 // for contests
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
     var shouldOpenPolicyPicker = false
@@ -45,6 +46,7 @@ class PolicyManager {
         toReturn.freePolicies = freePolicies
         toReturn.shouldOpenPolicyPicker = shouldOpenPolicyPicker
         toReturn.storedCulture = storedCulture
+        toReturn.totalCulture = totalCulture
         // Deprecated since 3.16.15
             toReturn.cultureBuildingsAdded.putAll(cultureBuildingsAdded)
             toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
@@ -79,6 +81,7 @@ class PolicyManager {
     fun addCulture(culture: Int) {
         val couldAdoptPolicyBefore = canAdoptPolicy()
         storedCulture += culture
+        totalCulture += culture
         if (!couldAdoptPolicyBefore && canAdoptPolicy())
             shouldOpenPolicyPicker = true
     }

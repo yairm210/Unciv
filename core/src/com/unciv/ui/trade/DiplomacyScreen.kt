@@ -499,6 +499,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             .width(stage.width / 2).row()
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
+        if (quest.isGlobal())
+            questTable.add(viewingCiv.questManager.getLeaderStringForQuest(assignedQuest.questName).toLabel()).row()
 
         questTable.onClick {
             assignedQuest.onClickAction()
