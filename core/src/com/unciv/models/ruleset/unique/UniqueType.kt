@@ -35,7 +35,7 @@ enum class UniqueType(val text:String, val replacedBy: UniqueType? = null) {
 
     
     CityStateStatsPerTurn("Provides [stats] per turn"), // Should not be Happiness!
-    CityStateStatsPerCity("Provides [stats] [cityFilter]"),
+    CityStateStatsPerCity("Provides [stats] [cityFilter] per turn"),
     CityStateHappiness("Provides [amount] Happiness"),
     CityStateMilitaryUnits("Provides military units every ≈[amount] turns"), // No conditional support as of yet
     CityStateUniqueLuxury("Provides a unique luxury"), // No conditional support as of yet

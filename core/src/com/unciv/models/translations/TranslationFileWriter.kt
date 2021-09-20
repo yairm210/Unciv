@@ -111,9 +111,12 @@ object TranslationFileWriter {
                 }
 
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
-                val hashMapKey = translationKey
-                    .replace(pointyBraceRegex, "")
-                    .replace(squareBraceRegex, "[]")
+                val hashMapKey = 
+                    if (translationKey == Translations.englishConditionalOrderingString)
+                        Translations.englishConditionalOrderingString
+                    else translationKey
+                        .replace(pointyBraceRegex, "")
+                        .replace(squareBraceRegex, "[]")
 
                 if (existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
                 existingTranslationKeys.add(hashMapKey)
@@ -248,7 +251,7 @@ object TranslationFileWriter {
 
             fun submitString(string: String) {
                 val unique = Unique(string)
-                var stringToTranslate = string
+                var stringToTranslate = string.removeConditionals()
 
                 val existingParameterNames = HashSet<String>()
                 if (unique.params.isNotEmpty()) {
