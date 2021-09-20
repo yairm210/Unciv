@@ -41,7 +41,7 @@ class Quest : INamed {
     var type: QuestType = QuestType.Individual
 
     /** Influence reward gained on quest completion */
-    var influece: Float = 40f
+    var influence: Float = 40f
 
     /** Maximum number of turns to complete the quest, 0 if there's no turn limit */
     var duration: Int = 0

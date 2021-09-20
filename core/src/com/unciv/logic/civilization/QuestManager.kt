@@ -333,7 +333,8 @@ class QuestManager {
             QuestName.FindNaturalWonder.value -> getNaturalWonderToFindForQuest(challenger) != null
             QuestName.PledgeToProtect.value -> mostRecentBully != null && challenger !in civInfo.getProtectorCivs()
             QuestName.GiveGold.value -> mostRecentBully != null
-            QuestName.DenounceCiv.value -> mostRecentBully != null && !challenger.getDiplomacyManager(mostRecentBully).hasFlag(DiplomacyFlags.Denunciation)
+            QuestName.DenounceCiv.value -> mostRecentBully != null && challenger.knows(mostRecentBully)
+                                            && !challenger.getDiplomacyManager(mostRecentBully).hasFlag(DiplomacyFlags.Denunciation)
                                             && challenger.getDiplomacyManager(mostRecentBully).diplomaticStatus != DiplomaticStatus.War
                                             && !( challenger.playerType == PlayerType.Human && civInfo.gameInfo.getCivilization(mostRecentBully).playerType == PlayerType.Human)
             QuestName.SpreadReligion.value -> playerReligion != null && civInfo.getCapital().religion.getMajorityReligion()?.name != playerReligion
@@ -376,7 +377,7 @@ class QuestManager {
 
     /** Increments [assignedQuest.assignee][AssignedQuest.assignee] influence on [civInfo] and adds a [Notification] */
     private fun giveReward(assignedQuest: AssignedQuest) {
-        val rewardInfluence = civInfo.gameInfo.ruleSet.quests[assignedQuest.questName]!!.influece
+        val rewardInfluence = civInfo.gameInfo.ruleSet.quests[assignedQuest.questName]!!.influence
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
 
         civInfo.getDiplomacyManager(assignedQuest.assignee).addInfluence(rewardInfluence)
@@ -406,13 +407,13 @@ class QuestManager {
     fun getLeaderStringForQuest(questName: String): String {
         val leadingQuest = assignedQuests.filter { it.questName == questName }.maxByOrNull { getScoreForQuest(it) }
         if (leadingQuest == null)
-            return "No one is attempting this quest."
+            return ""
 
         return when (questName){
             QuestName.ContestCulture.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Culture generated."
             QuestName.ContestFaith.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Faith generated."
             QuestName.ContestTech.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Technologies discovered."
-            else -> "Current leader is ${leadingQuest.assignee}."
+            else -> ""
         }
     }
 
@@ -721,7 +722,10 @@ class QuestManager {
 
     /** Returns a [CivilizationInfo] of the civ that most recently bullied [civInfo].
      *  Note: forgets after 20 turns has passed! */
-    private fun getMostRecentBully() = civInfo.diplomacy.values.maxByOrNull { it.getFlag(com.unciv.logic.civilization.diplomacy.DiplomacyFlags.Bullied) }?.otherCivName
+    private fun getMostRecentBully(): String? {
+        val bullies = civInfo.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.Bullied)}
+        return bullies.maxByOrNull { it.getFlag(DiplomacyFlags.Bullied) }?.otherCivName
+    }
     //endregion
 }
 
