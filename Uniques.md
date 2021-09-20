@@ -185,10 +185,10 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 
 ### Conditionals
 
-Some uniques also allow for the placing of conditionals. These are conditions that need to be met for the unique to be active. In the unique "[+10]% Growth <when at war>", the `<when at war>` part is a conditional, denoted by the pointy brackets. Making a building with this unique will provide a 10% Growth boost to cities with this building, but only as long as the empire is at war.
+Some uniques also allow for the placing of conditionals. These are conditions that need to be met for the unique to be active. In the unique "[+10]% Growth \<when at war\>", the `<when at war>` part is a conditional, denoted by the pointy brackets. Making a building with this unique will provide a 10% Growth boost to cities with this building, but only as long as the empire is at war.
 
 Multiple conditionals can be applied to the same unique, for example, you can have a promotion with the following unique:
-"[+33]% Strength <vs [Armored] units> <in [Open terrain] tiles>"
+"[+33]% Strength \<vs [Armored] units\> \<in [Open terrain] tiles\>"
 Which will only apply the strength boost when fighting armored units in open terrain.
 
 This system is currently in development, so only a small amount of conditionals exist, and only a few uniques can have conditionals for now. It will be expanded greatly, improving the amount of combinations that can be made and therefore the amount of different uniques that exist.
@@ -196,11 +196,11 @@ Uniques that support conditionals will be denoted with a "©" sign for now.
 
 #### Existing conditionals
 
-<when at war> - Applies when the civilization is at war
+\<when at war\> - Applies when the civilization is at war
 
-<when not at war> - Applies when the civilization is not at war
+\<when not at war\> - Applies when the civilization is not at war
 
-<if this city has at least [amount] specialists> - Can only be used on things that exist in a city or relate to a specific city
+\<if this city has at least [amount] specialists\> - Can only be used on things that exist in a city or relate to a specific city
 
 
 ## General uniques
