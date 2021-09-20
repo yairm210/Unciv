@@ -44,9 +44,12 @@ class Unique(val text:String) {
         city: CityInfo? = null
     ): Boolean {
         return when (condition.placeholderText) {
-            "when not at war" -> civInfo?.isAtWar() == false
-            "when at war" -> civInfo?.isAtWar() == true
-            "if this city has at least [] specialists" -> city != null && city.population.getNumberOfSpecialists() >= condition.params[0].toInt()
+            UniqueType.ConditionalNotWar.placeholderText -> civInfo?.isAtWar() == false
+            UniqueType.ConditionalWar.placeholderText -> civInfo?.isAtWar() == true
+            UniqueType.ConditionalSpecialistCount.placeholderText -> 
+                city != null && city.population.getNumberOfSpecialists() >= condition.params[0].toInt()
+            UniqueType.ConditionalHappy.placeholderText -> 
+                civInfo != null && civInfo.statsForNextTurn.happiness >= 0
             else -> false
         }
     }
