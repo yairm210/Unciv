@@ -499,7 +499,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             else -> {
                 if (getType().matchesFilter(filter)) return true
                 if (
-                    // Uniques using these kinds of filters should be deprecated and replaced ith adjective-only parameters
+                    // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
                     // "military units" --> "Military", using invariant locale
                     && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })

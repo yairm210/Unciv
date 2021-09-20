@@ -20,6 +20,8 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     
     Stats("[stats]", UniqueTarget.Global),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
+    
+    StatPercentBonus("[amount]% [Stat]", UniqueTarget.Global),
 
     ConsumesResources("Consumes [amount] [resource]",
         UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit), // No conditional support as of yet
