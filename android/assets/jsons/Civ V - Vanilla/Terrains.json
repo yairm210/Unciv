@@ -207,7 +207,7 @@
 		"uniques": ["Must be adjacent to [1] to [6] [Coast] tiles",
 			"Must be adjacent to [6] to [6] [Water] tiles",
 			"Occurs on latitudes from [10] to [70] percent of distance equator to pole",
-			"Occurs in groups of [2] to [6] tiles"],
+			"Occurs in groups of [2] to [2] tiles"],
 		"turnsInto": "Coast",
 		"impassable": true,
 		"unbuildable": true,
