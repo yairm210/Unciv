@@ -69,6 +69,10 @@ enum class UniqueParameterType(val parameterName:String) {
             "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
+            if ("," in parameterText || " or " in parameterText)
+                return parameterText.split(" or ").flatMap { it.split(',') }.map { it.trim() }
+                    .mapNotNull { getErrorSeverity(it, ruleset) }
+                    .maxByOrNull { it.ordinal }
             if (parameterText in knownValues) return null
             if (ruleset.terrains.containsKey(parameterText)) return null
             if (TerrainType.values().any { parameterText == it.name }) return null
