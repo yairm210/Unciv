@@ -23,7 +23,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
-import kotlin.reflect.typeOf
 
 object ModOptionsConstants {
     const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
