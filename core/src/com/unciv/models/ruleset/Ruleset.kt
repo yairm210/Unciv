@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
@@ -153,7 +154,7 @@ class Ruleset {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
             } catch (ex: Exception) {}
-            modOptions.uniqueObjects = modOptions.uniques.map { Unique(it) }
+            modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
         }
 
         val techFile = folderHandle.child("Techs.json")
@@ -312,10 +313,18 @@ class Ruleset {
             if (unique.type == null) continue
             val complianceErrors = unique.type.getComplianceErrors(unique, this)
             for (complianceError in complianceErrors) {
-                if (complianceError.errorSeverity ==  severityToReport)
+                if (complianceError.errorSeverity == severityToReport)
                     lines += "$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
                             " which does not fit parameter type" +
                             " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+            }
+
+            val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
+                .getAnnotation(Deprecated::class.java)
+            if (deprecationAnnotation != null) {
+                // Not user-visible
+                println("$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
+                        " replace with \"${deprecationAnnotation.replaceWith.expression}\"")
             }
         }
     }

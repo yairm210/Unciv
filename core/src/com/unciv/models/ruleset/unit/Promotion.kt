@@ -3,6 +3,7 @@ package com.unciv.models.ruleset.unit
 import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -22,7 +23,7 @@ class Promotion : INamed, ICivilopediaText, IHasUniques {
         if (effect.isNotEmpty()) yield(effect)
         yieldAll(uniques)
     }
-    override val uniqueObjects: List<Unique> by lazy { uniquesWithEffect().map { Unique(it) }.toList() }
+    override val uniqueObjects: List<Unique> by lazy { uniquesWithEffect().map { Unique(it, UniqueTarget.Promotion, name) }.toList() }
 
     override var civilopediaText = listOf<FormattedLine>()
 
