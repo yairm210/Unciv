@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
@@ -43,7 +44,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     lateinit var outerColor: List<Int>
     var uniqueName = ""
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Nation, name) } }
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
