@@ -642,6 +642,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [crossed sword](https://thenounproject.com/term/crossed-sword/2427559/) by ProSymbols for Militaristic City-States
 * [ship helm](https://thenounproject.com/term/ship-helm/2170591/) by Vectors Market for Maritime City-States
 * [Magnifying Glass](https://thenounproject.com/term/magnifying-glass/1311/) by John Caserta for Mod filter
+* [tick](https://thenounproject.com/term/tick/3968142/) by Adrien Coquet on Nation picker
 
 ## Main menu
 

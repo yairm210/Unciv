@@ -3,10 +3,14 @@ package com.unciv.ui.newgamescreen
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -251,14 +255,16 @@ private class NationPickerPopup(
     private val nationListTable = Table()
     private val nationListScroll = ScrollPane(nationListTable)
     private val nationDetailsTable = Table()
+    private val nationDetailsScroll = ScrollPane(nationDetailsTable)
+    private var selectedNation: Nation? = null
 
     init {
         nationListScroll.setOverscroll(false, false)
         add(nationListScroll).size( civBlocksWidth + 10f, partHeight )
             // +10, because the nation table has a 5f pad, for a total of +10f
         if (screen.isNarrowerThan4to3()) row()
-        add(ScrollPane(nationDetailsTable).apply { setOverscroll(false, false) })
-            .size(civBlocksWidth + 10f, partHeight) // Same here, see above
+        nationDetailsScroll.setOverscroll(false, false)
+        add(nationDetailsScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
 
         val randomNation = Nation().apply {
             name = "Random"
@@ -301,31 +307,46 @@ private class NationPickerPopup(
             nationListScroll.scrollY = nationListScrollY.coerceIn(0f, nationListScroll.maxY)
         }
 
-        val closeImage = ImageGetter.getImage("OtherIcons/Close")
-        closeImage.setSize(30f, 30f)
-        val closeImageHolder =
-            Group() // This is to add it some more clickable space, to make it easier to click on the phone
-        closeImageHolder.setSize(50f, 50f)
-        closeImage.center(closeImageHolder)
-        closeImageHolder.addActor(closeImage)
-        closeImageHolder.onClick { close() }
-        closeImageHolder.setPosition(0f, height, Align.topLeft)
-        addActor(closeImageHolder)
+        val closeButton = "OtherIcons/Close".toImageButton(50f, Color.FIREBRICK)
+        closeButton.onClick { close() }
+        closeButton.setPosition(25f, 25f, Align.bottomLeft)
+        innerTable.addActor(closeButton)
+        keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
+
+        val okButton = "OtherIcons/Checkmark".toImageButton(50f, Color.LIME)
+        okButton.onClick { returnSelected() }
+        okButton.setPosition(innerTable.width - 25f, 25f, Align.bottomRight)
+        innerTable.addActor(okButton)
+
+        nationDetailsTable.onClick { returnSelected() }
+    }
+
+    private fun String.toImageButton(size: Float, overColor: Color): ImageButton {
+        val style = ImageButton.ImageButtonStyle()
+        val image = ImageGetter.getDrawable(this)
+        style.imageUp = image
+        style.imageOver = image.tint(overColor)
+        val button = ImageButton(style)
+        button.setSize(size, size)
+        return button
     }
 
     private fun setNationDetails(nation: Nation) {
         nationDetailsTable.clear()
 
         nationDetailsTable.add(NationTable(nation, civBlocksWidth, partHeight, ruleset))
-        nationDetailsTable.onClick {
-            if (previousScreen is GameParametersScreen)
-                previousScreen.mapEditorScreen.tileMap.switchPlayersNation(
-                    player,
-                    nation
-                )
-            player.chosenCiv = nation.name
-            close()
-            playerPicker.update()
-        }
+        selectedNation = nation
+    }
+
+    private fun returnSelected() {
+        if (selectedNation == null) return
+        if (previousScreen is GameParametersScreen)
+            previousScreen.mapEditorScreen.tileMap.switchPlayersNation(
+                player,
+                selectedNation!!
+            )
+        player.chosenCiv = selectedNation!!.name
+        close()
+        playerPicker.update()
     }
 }
