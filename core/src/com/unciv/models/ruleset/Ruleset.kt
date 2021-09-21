@@ -312,10 +312,18 @@ class Ruleset {
             if (unique.type == null) continue
             val complianceErrors = unique.type.getComplianceErrors(unique, this)
             for (complianceError in complianceErrors) {
-                if (complianceError.errorSeverity ==  severityToReport)
+                if (complianceError.errorSeverity == severityToReport)
                     lines += "$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
                             " which does not fit parameter type" +
                             " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+            }
+
+            val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
+                .getAnnotation(Deprecated::class.java)
+            if (deprecationAnnotation != null) {
+                // Not user-visible
+                println("$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
+                        " replace with \"${deprecationAnnotation.replaceWith.expression}\"")
             }
         }
     }
