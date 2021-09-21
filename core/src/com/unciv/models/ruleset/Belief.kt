@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -12,7 +13,7 @@ class Belief : INamed, ICivilopediaText, IHasUniques {
     override var name: String = ""
     var type: BeliefType = BeliefType.None
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Belief, name) } }
 
     override var civilopediaText = listOf<FormattedLine>()
 
