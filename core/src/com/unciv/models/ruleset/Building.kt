@@ -8,6 +8,7 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.NamedStats
@@ -66,7 +67,11 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     var uniqueTo: String? = null
     var quote: String = ""
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { 
+        uniques.map { 
+            Unique(it, if (isAnyWonder()) UniqueTarget.Wonder else UniqueTarget.Building, name) 
+        } 
+    }
     private var replacementTextForUniques = ""
 
     override var civilopediaText = listOf<FormattedLine>()

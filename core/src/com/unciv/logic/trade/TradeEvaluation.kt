@@ -254,7 +254,7 @@ class TradeEvaluation {
     fun distanceCityTradeModifier(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
         val distanceBetweenCities = capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile())
 
-        if (distanceBetweenCities < 500)  return 0
+        if (distanceBetweenCities < 500) return 0
         return min(50,  (500 - distanceBetweenCities) * civInfo.getEraNumber())
     }
 

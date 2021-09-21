@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 
 
-class Unique(val text:String) {
+class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
     /** This is so the heavy regex-based parsing is only activated once per unique, instead of every time it's called
      *  - for instance, in the city screen, we call every tile unique for every tile, which can lead to ANRs */
     val placeholderText = text.getPlaceholderText()

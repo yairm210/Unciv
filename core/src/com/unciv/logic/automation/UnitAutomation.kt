@@ -24,7 +24,7 @@ object UnitAutomation {
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {
-        if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return true
+        if (tryGoToRuinAndEncampment(unit) && (unit.currentMovement == 0f || unit.isDestroyed)) return true
 
         val explorableTilesThisTurn =
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it) }
@@ -503,8 +503,7 @@ object UnitAutomation {
     /** This is what a unit with the 'explore' action does.
     It also explores, but also has other functions, like healing if necessary. */
     fun automatedExplore(unit: MapUnit) {
-        if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
-        if (unit.isDestroyed) return // Opening ruins _might_ have upgraded us to another unit
+        if (tryGoToRuinAndEncampment(unit) && (unit.currentMovement == 0f || unit.isDestroyed)) return
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
         unit.civInfo.addNotification("${unit.shortDisplayName()} finished exploring.", unit.currentTile.position, unit.name, "OtherIcons/Sleep")

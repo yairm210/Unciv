@@ -8,6 +8,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -22,7 +23,7 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
     var techRequired: String? = null
     var uniqueTo:String? = null
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Improvement, name) } }
     val shortcutKey: Char? = null
     val turnsToBuild: Int = 0 // This is the base cost.
 

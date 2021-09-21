@@ -4,15 +4,36 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
-enum class UniqueTarget{
+enum class UniqueTarget {
     /** Buildings, units, nations, policies, religions, techs etc.
      * Basically anything caught by CivInfo.getMatchingUniques. */
     Global,
+    
+    // Civilization-specific
+    Nation,
+    Era,
+    Tech,
+    Policy,
+    Belief,
+    
+    // City-specific
     Building,
+    Wonder,
+    
+    // Unit-specific
     Unit,
-    Improvement,
-    CityState,
+    UnitType,
+    Promotion,
+    
+    // Tile-specific
     Terrain,
+    Improvement,
+    Resource,
+    Ruins,
+    
+    // Other
+    CityState,
+    ModOptions,
 }
 
 enum class UniqueType(val text:String, vararg target: UniqueTarget) {
