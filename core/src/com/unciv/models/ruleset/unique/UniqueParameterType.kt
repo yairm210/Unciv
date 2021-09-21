@@ -65,14 +65,11 @@ enum class UniqueParameterType(val parameterName:String) {
         }
     },
     TerrainFilter("terrainFilter") {
-        private val knownValues = setOf("All", "Coastal", "River", "Open terrain", "Rough terrain", "Water resource",
+        private val knownValues = setOf("All",
+            "Coastal", "River", "Open terrain", "Rough terrain", "Water resource",
             "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if ("," in parameterText || " or " in parameterText)
-                return parameterText.split(" or ").flatMap { it.split(',') }.map { it.trim() }
-                    .mapNotNull { getErrorSeverity(it, ruleset) }
-                    .maxByOrNull { it.ordinal }
             if (parameterText in knownValues) return null
             if (ruleset.terrains.containsKey(parameterText)) return null
             if (TerrainType.values().any { parameterText == it.name }) return null
@@ -81,10 +78,15 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
     },
-    BaseTerrain("baseTerrain") {
+    /** Used by NaturalWonderGenerator, only tests base terrain or a feature */
+    SimpleTerrain("simpleTerrain") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if (ruleset.terrains.values.any { it.name == parameterText && it.type.isBaseTerrain })
+            if (parameterText == "Elevated") return null
+            if (ruleset.terrains.values.any {
+                it.name == parameterText &&
+                (it.type.isBaseTerrain || it.type == TerrainType.TerrainFeature) 
+            })
                 return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }

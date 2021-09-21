@@ -11,7 +11,7 @@ class BFS(
 ) {
     /** Maximum number of tiles to search */
     var maxSize = Int.MAX_VALUE
-    
+
     /** remaining tiles to check */
     private val tilesToCheck = ArrayDeque<TileInfo>(37)  // needs resize at distance 4
 
@@ -23,12 +23,10 @@ class BFS(
         tilesReached[startingPoint] = startingPoint
     }
 
-    /** Process fully until there's nowhere left to check
-     *  Optionally assigns a continent ID as it goes */
-    fun stepToEnd(actionPerTile: ((TileInfo)->Unit)? = null) {
-        actionPerTile?.invoke(startingPoint)
+    /** Process fully until there's nowhere left to check */
+    fun stepToEnd() {
         while (!hasEnded())
-            nextStep(actionPerTile)
+            nextStep()
     }
 
     /**
@@ -48,14 +46,13 @@ class BFS(
      * 
      * Will do nothing when [hasEnded] returns `true`
      */
-    fun nextStep(actionPerTile: ((TileInfo)->Unit)? = null) {
+    fun nextStep() {
         if (tilesReached.size >= maxSize) { tilesToCheck.clear(); return }
         val current = tilesToCheck.removeFirstOrNull() ?: return
         for (neighbor in current.neighbors) {
             if (neighbor !in tilesReached && predicate(neighbor)) {
                 tilesReached[neighbor] = current
                 tilesToCheck.add(neighbor)
-                actionPerTile?.invoke(neighbor)
             }
         }
     }

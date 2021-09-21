@@ -475,7 +475,10 @@ class MapGenerator(val ruleset: Ruleset) {
 
         while (landTiles.any()) {
             val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
-            bfs.stepToEnd { it.setContinent(currentContinent) }
+            bfs.stepToEnd()
+            bfs.getReachedTiles().forEach {
+                it.setContinent(currentContinent)
+            }
             val continent = bfs.getReachedTiles()
             tileMap.continentSizes[currentContinent] = continent.size
             if (continent.size > 20) {

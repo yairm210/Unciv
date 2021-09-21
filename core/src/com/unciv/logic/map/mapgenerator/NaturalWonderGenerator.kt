@@ -6,12 +6,16 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.round
 
 class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
+
+    private val allTerrainFeatures = ruleset.terrains.values
+        .filter { it.type == TerrainType.TerrainFeature }
+        .map { it.name }.toSet()
 
     /*
     https://gaming.stackexchange.com/questions/95095/do-natural-wonders-spawn-more-closely-to-city-states/96479
@@ -22,7 +26,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             return
         val mapRadius = tileMap.mapParameters.mapSize.radius
         // number of Natural Wonders scales linearly with mapRadius as #wonders = mapRadius * 0.13133208 - 0.56128831
-        val numberToSpawn = round(mapRadius * 0.13133208f - 0.56128831f).toInt()
+        val numberToSpawn = round(mapRadius * 0.13133208f - 0.56128831f).toInt()+9
 
         val spawned = mutableListOf<Terrain>()
         val allNaturalWonders = ruleset.terrains.values
@@ -47,6 +51,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             println("Natural Wonders for this game: $spawned")
     }
 
+    private fun Unique.getIntParam(index: Int) = params[index].toInt()
+
     private fun spawnSpecificWonder(tileMap: TileMap, wonder: Terrain): Boolean {
         val suitableLocations = tileMap.values.filter { tile->
             tile.resource == null &&
@@ -67,8 +73,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                                 tile.getContinent() !in sortedContinents.take(unique.getIntParam(0))
                             }
                             UniqueType.NaturalWonderLatitude -> {
-                                val lower = tileMap.maxLatitude * unique.getFloatParam(0) * 0.01f
-                                val upper = tileMap.maxLatitude * unique.getFloatParam(1) * 0.01f
+                                val lower = tileMap.maxLatitude * unique.getIntParam(0) * 0.01f
+                                val upper = tileMap.maxLatitude * unique.getIntParam(1) * 0.01f
                                 abs(tile.latitude) in lower..upper
                             }
                             else -> true
@@ -93,17 +99,14 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         val targetGroupSize = if (minGroupSize == maxGroupSize) maxGroupSize
             else (minGroupSize..maxGroupSize).random(randomness.RNG)
 
-        var convertNeighborsTo: String? = null
         var convertNeighborsExcept: String? = null
         var convertUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighbors).firstOrNull()
-        convertNeighborsTo = convertUnique?.getStringParam(0)
+        var convertNeighborsTo = convertUnique?.params?.get(0)
         if (convertNeighborsTo == null) {
             convertUnique = wonder.getMatchingUniques(UniqueType.NaturalWonderConvertNeighborsExcept).firstOrNull()
-            convertNeighborsExcept = convertUnique?.getStringParam(0)
-            convertNeighborsTo = convertUnique?.getStringParam(1)
+            convertNeighborsExcept = convertUnique?.params?.get(0)
+            convertNeighborsTo = convertUnique?.params?.get(1)
         }
-        if (ruleset.terrains.values.none { it.name == convertNeighborsTo && it.type.isBaseTerrain })
-            convertNeighborsTo = null  // ignore if mod badly defined
 
         if (suitableLocations.size >= minGroupSize) {
             val location = suitableLocations.random(randomness.RNG)
@@ -156,13 +159,12 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         tile.setTerrainTransients()
     }
 
-    private fun TileInfo.matchesWonderFilter(filter: String): Boolean {
-        if (this.matchesTerrainFilter(filter)) return true
-        val list = filter.split(" or ")
-            .flatMap { it.split(',') }
-            .map { it.trim() }
-            .filter { it.isNotEmpty() }
-        return this.getAllTerrains().any { it.name in list }
+    private fun TileInfo.matchesWonderFilter(filter: String) = when (filter) {
+        "Elevated" -> baseTerrain == Constants.mountain || isHill()
+        "Water" -> isWater
+        "Hill" -> isHill()
+        in allTerrainFeatures -> getLastTerrain().name == filter
+        else -> baseTerrain == filter
     }
 
     /*
