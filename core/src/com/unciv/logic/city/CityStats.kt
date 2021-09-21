@@ -283,15 +283,16 @@ class CityStats(val cityInfo: CityInfo) {
                     stats.production += unique.params[0].toInt()
             }
 
-        for (unique in uniques.filter { it.placeholderText == UniqueType.StatPercentBonus.placeholderText }) {
+        for (unique in uniques.filter { it.isOfType(UniqueType.StatPercentBonus) }) {
             if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
         
-        // For instance "+[50]% [Production]
-        // Shouldn't this be deprecated?
-        for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
-            stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        // Deprecated since 3.17.0
+            // For instance "+[50]% [Production]
+            for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
+                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        //
 
         // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
         // For instance "+[50]% [Production] [in all cities]
