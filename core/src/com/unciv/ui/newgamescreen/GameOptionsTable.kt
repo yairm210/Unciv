@@ -170,6 +170,7 @@ class GameOptionsTable(
         ruleset.modOptions = newRuleset.modOptions
 
         ImageGetter.setNewRuleset(ruleset)
+        UncivGame.Current.musicController.setModList(gameParameters.mods)
     }
 
     fun getModCheckboxes(isPortrait: Boolean = false): Table {

@@ -24,7 +24,7 @@
     {
         "name": "Fertility Rites",
         "type": "Pantheon",
-        "uniques": ["+[10]% Growth [in this city]"] 
+        "uniques": ["[+10]% growth [in this city]"] 
         // Preferably I would not have a cityFilter here, but doing so requires no additional implementation 
     },
     {
@@ -147,7 +147,7 @@
     {
         "name": "Guruship",
         "type": "Follower",
-        "uniques": ["[+2 Production] if this city has at least [1] specialists"]
+        "uniques": ["[+2 Production] <if this city has at least [1] specialists>"]
     },
     // ToDo: Holy Warriors (I have to look up the faith costs for these sometime)
     {
@@ -193,7 +193,7 @@
     {
         "name": "Swords into Ploughshares",
         "type": "Follower",
-        "uniques": ["[+15]% growth [in this city] when not at war"]
+        "uniques": ["[+15]% growth [in this city] <when not at war>"]
     },
 ///////////////////////////////////////// Founder beliefs //////////////////////////////////////////
     

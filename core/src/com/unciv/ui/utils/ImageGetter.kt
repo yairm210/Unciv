@@ -1,6 +1,7 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.Texture.TextureFilter
@@ -62,38 +63,40 @@ object ImageGetter {
             textureRegionDrawables[region.name] = drawable
         }
 
-        // See #4993 - you can't .list() on a jar file, so the ImagePacker leaves us the list of actual atlases.
-        val fileNames = GameSaver.json().fromJson(Array<String>::class.java, Gdx.files.internal("Atlases.json"))
-        for (fileName in fileNames) {
-            val file = Gdx.files.internal("$fileName.atlas")
-            val extraAtlas = file.nameWithoutExtension()
-            val tempAtlas = atlases[extraAtlas]  // fetch if cached
-                ?: TextureAtlas(file.name()).apply {  // load if not
-                    atlases[extraAtlas] = this  // cache the freshly loaded
-                }
-            for (region in tempAtlas.regions) {
-                val drawable = TextureRegionDrawable(region)
-                textureRegionDrawables[region.name] = drawable
-            }
-        }
+        // Load base (except game.atlas which is already loaded)
+        loadModAtlases("", Gdx.files.internal("."))
 
         // These are from the mods
         for (mod in UncivGame.Current.settings.visualMods + ruleset.mods) {
-            val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
-            if (!modAtlasFile.exists()) continue
-
-            if (!atlases.containsKey(mod)) atlases[mod] = TextureAtlas(modAtlasFile)
-            val modAtlas = atlases[mod]!!
-
-            for (region in modAtlas.regions) {
-                val drawable = TextureRegionDrawable(region)
-                textureRegionDrawables[region.name] = drawable
-            }
+            loadModAtlases(mod, Gdx.files.local("mods/$mod"))
         }
 
         TileSetCache.assembleTileSetConfigs(ruleset.mods)
     }
 
+    /** Loads all atlas/texture files from a folder, as controlled by an Atlases.json */
+    fun loadModAtlases(mod: String, folder: FileHandle) {
+        // See #4993 - you can't .list() on a jar file, so the ImagePacker leaves us the list of actual atlases.
+        val controlFile = folder.child("Atlases.json")
+        val fileNames = (if (controlFile.exists()) GameSaver.json().fromJson(Array<String>::class.java, controlFile)
+            else emptyArray()).toMutableList()
+        if (mod.isNotEmpty()) fileNames += "game"
+        for (fileName in fileNames) {
+            val file = folder.child("$fileName.atlas")
+            if (!file.exists()) continue
+            val extraAtlas = if (mod.isEmpty()) fileName else if (fileName == "game") mod else "$mod/$fileName"
+            var tempAtlas = atlases[extraAtlas]  // fetch if cached
+            if (tempAtlas == null) {
+                println("Loading $extraAtlas = ${file.path()}")
+                tempAtlas = TextureAtlas(file)  // load if not
+                atlases[extraAtlas] = tempAtlas  // cache the freshly loaded
+            }
+            for (region in tempAtlas.regions) {
+                val drawable = TextureRegionDrawable(region)
+                textureRegionDrawables[region.name] = drawable
+            }
+        }
+    }
 
     /**
      * Colors a multilayer image and returns it as a list of layers (Image).
@@ -227,7 +230,7 @@ object ImageGetter {
         } else getCircle().apply { color = nation.getOuterColor() }
                 .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
     }
-    
+
     fun getRandomNationIndicator(size: Float): IconCircleGroup {
         return "?"
             .toLabel(Color.WHITE, (size * 5f/8f).toInt())
@@ -238,7 +241,7 @@ object ImageGetter {
 
     private fun nationIconExists(nation: String) = imageExists("NationIcons/$nation")
     fun getNationIcon(nation: String) = getImage("NationIcons/$nation")
-    
+
     fun wonderImageExists(wonderName: String) = imageExists("WonderImages/$wonderName")
     fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
 
@@ -301,7 +304,7 @@ object ImageGetter {
         }
         return circle
     }
-    
+
     fun religionIconExists(iconName: String) = imageExists("ReligionIcons/$iconName")
     fun getReligionImage(iconName: String): Image {
         return getImage("ReligionIcons/$iconName")
@@ -322,6 +325,12 @@ object ImageGetter {
         return drawable.tint(color)
     }
 
+    fun getRedCross(size: Float, alpha: Float): Actor {
+        val redCross = getImage("OtherIcons/Close")
+        redCross.setSize(size, size)
+        redCross.color = Color.RED.cpy().apply { a = alpha }
+        return redCross
+    }
 
     fun getResourceImage(resourceName: String, size: Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)

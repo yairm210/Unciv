@@ -209,7 +209,11 @@ object GameStarter {
             .sortedByDescending { it in civNamesWithStartingLocations } )
 
 
-        val allMercantileResources = ruleset.tileResources.values.filter { it.unique == "Can only be created by Mercantile City-States" }.map { it.name }
+        val allMercantileResources = ruleset.tileResources.values.filter {
+            it.unique == "Can only be created by Mercantile City-States" // Deprecated as of 3.16.16
+                || it.uniques.contains("Can only be created by Mercantile City-States") }.map { it.name }
+
+
         val unusedMercantileResources = Stack<String>()
         unusedMercantileResources.addAll(allMercantileResources.shuffled())
         

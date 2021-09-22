@@ -6,6 +6,7 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import com.unciv.logic.trade.TradeType.TradeTypeNumberType
+import com.unciv.models.ruleset.tile.ResourceSupply
 
 data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, var duration: Int = -1) {
 
@@ -35,7 +36,7 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, v
                 && offer.amount == amount
     }
 
-    fun getOfferText(): String {
+    fun getOfferText(untradable: Int = 0): String {
         var offerText = when(type){
             TradeType.WarDeclaration -> "Declare war on [$name]"
             TradeType.Introduction -> "Introduction to [$name]"
@@ -47,6 +48,12 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, v
         else if (type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount${Fonts.gold})"
        
         if (duration > 0) offerText += "\n" + duration + Fonts.turn
+
+        if (untradable == 1) {
+            offerText += "\n" + "+[${untradable}] untradable copy".tr()
+        } else if (untradable > 1) {
+            offerText += "\n" + "+[${untradable}] untradable copies".tr()
+        }
 
         return offerText
     }

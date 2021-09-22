@@ -5,9 +5,9 @@ import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.HashMap
@@ -19,6 +19,7 @@ import kotlin.math.pow
 
 /** Class containing city-state-specific functions */
 class CityStateFunctions(val civInfo: CivilizationInfo) {
+
     /** Attempts to initialize the city state, returning true if successful. */
     fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>): Boolean {
         val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
@@ -29,28 +30,32 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             civInfo.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
 
         val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique("Can only be created by Mercantile City-States") }.map { it.name }
-        val allPossibleBonuses = HashSet<String>()    // We look through these to determine what kind of city state we are
+        val allPossibleBonuses = HashSet<Unique>()    // We look through these to determine what kind of city state we are
+        var fallback = false
         for (era in ruleset.eras.values) {
-            val allyBonuses = era.allyBonus[cityStateType.name]
-            val friendBonuses = era.friendBonus[cityStateType.name]
-            if (allyBonuses != null)
-                allPossibleBonuses.addAll(allyBonuses)
-            if (friendBonuses != null)
-                allPossibleBonuses.addAll(friendBonuses)
+            if (era.undefinedCityStateBonuses()) {
+                fallback = true
+                break
+            }
+            val allyBonuses = era.getCityStateBonuses(cityStateType, RelationshipLevel.Ally)
+            val friendBonuses = era.getCityStateBonuses(cityStateType, RelationshipLevel.Friend)
+            allPossibleBonuses.addAll(allyBonuses)
+            allPossibleBonuses.addAll(friendBonuses)
         }
 
         // CS Personality
         civInfo.cityStatePersonality = CityStatePersonality.values().random()
 
         // Mercantile bonus resources
-        if ("Provides a unique luxury" in allPossibleBonuses
-            || (allPossibleBonuses.isEmpty() && cityStateType == CityStateType.Mercantile)) { // Fallback for badly defined Eras.json
+        if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateUniqueLuxury) }
+            || (fallback && cityStateType == CityStateType.Mercantile)) { // Fallback for badly defined Eras.json
             civInfo.cityStateResource = allMercantileResources.random()
         }
 
         // Unique unit for militaristic city-states
-        if (allPossibleBonuses.any { it.getPlaceholderText() == "Provides military units every ≈[] turns" }
-            || (allPossibleBonuses.isEmpty() && cityStateType == CityStateType.Militaristic)) { // Fallback for badly defined Eras.json
+        if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateMilitaryUnits) }
+            || (fallback && cityStateType == CityStateType.Militaristic) // Fallback for badly defined Eras.json
+        ) {
 
             val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
                 && ruleset.eras[ruleset.technologies[it.requiredTech!!]!!.era()]!!.eraNumber > ruleset.eras[startingEra]!!.eraNumber // Not from the start era or before
@@ -74,8 +79,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
-        val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
-        if (placedUnit == null) return
+        val placedUnit = receivingCiv.addUnit(giftedUnit.name, cities.city1)
+            ?: return
         val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
     }
@@ -403,19 +408,12 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState())
             return false
         val eraInfo = civInfo.getEra()
-        val allyBonuses = eraInfo.allyBonus[civInfo.cityStateType.name]
-        if (allyBonuses != null) {
+        if (!eraInfo.undefinedCityStateBonuses()) {
             // Defined city states in json
-            val bonuses = allyBonuses + eraInfo.friendBonus[civInfo.cityStateType.name]!!
-            for (bonus in bonuses) {
-                if (statType == Stat.Happiness && bonus.getPlaceholderText() == "Provides [] Happiness")
-                    return true
-                if (bonus.getPlaceholderText() == "Provides [] [] per turn" && bonus.getPlaceholderParameters()[1] == statType.name)
-                    return true
-                if (bonus.getPlaceholderText() == "Provides [] [] []" && bonus.getPlaceholderParameters()[1] == statType.name)
+            for (bonus in eraInfo.getCityStateBonuses(civInfo.cityStateType, RelationshipLevel.Ally)) {
+                if (bonus.stats[statType] > 0 || (bonus.isOfType(UniqueType.CityStateHappiness) && statType == Stat.Happiness))
                     return true
             }
-
         } else {
             // compatibility mode
             return when {

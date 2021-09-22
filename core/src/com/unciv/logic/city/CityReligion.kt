@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameSpeed
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
 
 class CityInfoReligionManager {
     @Transient
@@ -62,14 +62,9 @@ class CityInfoReligionManager {
         val majorityReligion = getMajorityReligion() ?: return sequenceOf()
         return majorityReligion.getFollowerUniques()
     }
+
     
-    fun getMatchingUniques(unique: String): Sequence<Unique> {
-        return getUniques().filter { it.placeholderText == unique }
-    }
-    
-    fun getPressures(): Counter<String> {
-        return pressures.clone()
-    }
+    fun getPressures(): Counter<String> = pressures.clone()
     
     private fun clearAllPressures() {
         pressures.clear()

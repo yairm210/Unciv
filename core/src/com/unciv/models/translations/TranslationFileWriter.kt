@@ -10,6 +10,8 @@ import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
@@ -68,6 +70,9 @@ object TranslationFileWriter {
             if (templateFile.exists())
                 linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
+            linesToTranslate += "\n######### City filters ###########\n"
+            linesToTranslate.addAll(UniqueParameterType.cityFilterStrings.map { "$it = " })
+
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
                         generateStringsFromJSONs(Gdx.files.local("jsons/${baseRuleset.fullName}"))
@@ -109,9 +114,12 @@ object TranslationFileWriter {
                 }
 
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
-                val hashMapKey = if (translationKey.contains('['))
-                    translationKey.replace(squareBraceRegex, "[]")
-                else translationKey
+                val hashMapKey = 
+                    if (translationKey == Translations.englishConditionalOrderingString)
+                        Translations.englishConditionalOrderingString
+                    else translationKey
+                        .replace(pointyBraceRegex, "")
+                        .replace(squareBraceRegex, "[]")
 
                 if (existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
                 existingTranslationKeys.add(hashMapKey)
@@ -246,7 +254,7 @@ object TranslationFileWriter {
 
             fun submitString(string: String) {
                 val unique = Unique(string)
-                var stringToTranslate = string
+                var stringToTranslate = string.removeConditionals()
 
                 val existingParameterNames = HashSet<String>()
                 if (unique.params.isNotEmpty()) {
@@ -268,7 +276,7 @@ object TranslationFileWriter {
                             parameter in buildingMap -> "building"
                             parameter in unitTypeMap -> "unitType"
                             Stats.isStats(parameter) -> "stats"
-                            parameter in UniqueParameterType.cityFilterMap -> "cityFilter"
+                            parameter in UniqueParameterType.cityFilterStrings -> "cityFilter"
                             else -> "param"
                         }
                         if (parameterName in existingParameterNames) {

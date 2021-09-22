@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset
 
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -10,7 +12,7 @@ open class Policy : INamed, IHasUniques, ICivilopediaText {
 
     override lateinit var name: String
     override var uniques: ArrayList<String> = ArrayList()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Policy, name) } }
     var row: Int = 0
     var column: Int = 0
     var requires: ArrayList<String>? = null

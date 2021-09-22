@@ -3,13 +3,14 @@ package com.unciv.ui.civilopedia
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.*
 import kotlin.math.max
@@ -26,7 +27,6 @@ import kotlin.math.max
  */
 
 
-// Kdoc not using the @property syntax because Android Studio 4.2.2 renders those _twice_
 /** Represents a decorated text line with optional linking capability.
  *  A line can have [text] with optional [size], [color], [indent] or as [header];
  *  and up to three icons: [link], [object][icon], [star][starred] in that order.
@@ -64,7 +64,9 @@ class FormattedLine (
     /** Decorates text with a star icon - if set, it receives the [color] instead of the text. */
     val starred: Boolean = false,
     /** Centers the line (and turns off wrap) */
-    val centered: Boolean = false
+    val centered: Boolean = false,
+    /** Paint a red X over the [icon] or [link] image */
+    val iconCrossed: Boolean = false
 ) {
     // Note: This gets directly deserialized by Json - please keep all attributes meant to be read
     // from json in the primary constructor parameters above. Everything else should be a fun(),
@@ -219,13 +221,16 @@ class FormattedLine (
         }
         return defaultColor
     }
-    
+
+    /** Used only as parameter to [FormattedLine.render] and [MarkupRenderer.render] */
+    enum class IconDisplay { All, NoLink, None }
+
     /**
      * Renders the formatted line as a scene2d [Actor] (currently always a [Table])
      * @param labelWidth Total width to render into, needed to support wrap on Labels.
-     * @param noLinkImages Omit visual indicator that a line is linked. 
+     * @param iconDisplay Flag to omit link or all images. 
      */
-    fun render(labelWidth: Float, noLinkImages: Boolean = false): Actor {
+    fun render(labelWidth: Float, iconDisplay: IconDisplay = IconDisplay.All): Actor {
         if (extraImage.isNotEmpty()) {
             val table = Table(CameraStageBaseScreen.skin)
             try {
@@ -257,11 +262,11 @@ class FormattedLine (
         val table = Table(CameraStageBaseScreen.skin)
         var iconCount = 0
         val iconSize = max(minIconSize, fontSize * 1.5f)
-        if (linkType != LinkType.None && !noLinkImages) {
+        if (linkType != LinkType.None && iconDisplay == IconDisplay.All) {
             table.add(ImageGetter.getImage(linkImage)).size(iconSize).padRight(iconPad)
             iconCount++
         }
-        if (!noLinkImages)
+        if (iconDisplay != IconDisplay.None)
             iconCount += renderIcon(table, iconToDisplay, iconSize)
         if (starred) {
             val image = ImageGetter.getImage(starImage)
@@ -275,7 +280,7 @@ class FormattedLine (
                 centered -> -usedWidth
                 indent == 0 && iconCount == 0 -> 0f
                 indent == 0 -> iconPad
-                noLinkImages -> indent * indentPad - usedWidth
+                iconCount == 0 -> indent * indentPad - usedWidth
                 else -> (indent-1) * indentPad +
                         indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }
@@ -305,7 +310,20 @@ class FormattedLine (
         val category = CivilopediaCategories.fromLink(parts[0]) ?: return 0
         val image = category.getImage?.invoke(parts[1], iconSize) ?: return 0
 
-        table.add(image).size(iconSize).padRight(iconPad)
+        if (iconCrossed) {
+            val cross = ImageGetter.getRedCross(iconSize * 0.7f, 0.7f)
+            val group = Group().apply {
+                isTransform = false
+                setSize(iconSize, iconSize)
+                image.center(this)
+                addActor(image)
+                cross.center(this)
+                addActor(cross)
+            }
+            table.add(group).size(iconSize).padRight(iconPad)
+        } else {
+            table.add(image).size(iconSize).padRight(iconPad)
+        }
         return 1
     }
 
@@ -338,14 +356,14 @@ object MarkupRenderer {
      *
      *  @param labelWidth       Available width needed for wrapping labels and [centered][FormattedLine.centered] attribute.
      *  @param padding          Default cell padding (default 2.5f) to control line spacing
-     *  @param noLinkImages     Flag to omit link images (but not linking itself)
+     *  @param iconDisplay      Flag to omit link or all images (but not linking itself if linkAction is supplied)
      *  @param linkAction       Delegate to call for internal links. Leave null to suppress linking.
      */
     fun render(
         lines: Collection<FormattedLine>,
         labelWidth: Float = 0f,
         padding: Float = defaultPadding,
-        noLinkImages: Boolean = false,
+        iconDisplay: FormattedLine.IconDisplay = FormattedLine.IconDisplay.All,
         linkAction: ((id: String) -> Unit)? = null
     ): Table {
         val skin = CameraStageBaseScreen.skin
@@ -360,7 +378,7 @@ object MarkupRenderer {
                     .pad(separatorTopPadding, 0f, separatorBottomPadding, 0f)
                 continue
             }
-            val actor = line.render(labelWidth, noLinkImages)
+            val actor = line.render(labelWidth, iconDisplay)
             if (line.linkType == FormattedLine.LinkType.Internal && linkAction != null)
                 actor.onClick {
                     linkAction(line.link)

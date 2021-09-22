@@ -59,9 +59,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         for (building in tech.getObsoletedBuildings(techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize).apply {
-                val closeImage = ImageGetter.getImage("OtherIcons/Close")
-                closeImage.setSize(techIconSize / 2, techIconSize / 2)
-                closeImage.color = Color.RED
+                val closeImage = ImageGetter.getRedCross(techIconSize / 2, 1f)
                 closeImage.center(this)
                 addActor(closeImage)
             })

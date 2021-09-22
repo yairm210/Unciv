@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
@@ -42,7 +44,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     lateinit var outerColor: List<Int>
     var uniqueName = ""
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Nation, name) } }
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
@@ -230,7 +232,8 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
                 textList += FormattedLine(
                     (if (it.index == 0) "[Start bias:] " else "") + it.value.tr(),  // extra tr because tr cannot nest {[]} 
                     link = "Terrain/$link",
-                    indent = if (it.index == 0) 0 else 1)
+                    indent = if (it.index == 0) 0 else 1,
+                    iconCrossed = it.value.startsWith("Avoid "))
             }
             textList += FormattedLine()
         }
@@ -271,7 +274,9 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
 
         if (showResources) {
             val allMercantileResources = ruleset.tileResources.values
-                .filter { it.unique == "Can only be created by Mercantile City-States" }
+                .filter { it.unique == "Can only be created by Mercantile City-States" // Deprecated 3.16.16
+                        || it.uniques.contains("Can only be created by Mercantile City-States") }
+
             if (allMercantileResources.isNotEmpty()) {
                 textList += FormattedLine()
                 textList += FormattedLine("The unique luxury is one of:")

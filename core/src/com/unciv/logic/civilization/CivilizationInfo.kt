@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -19,6 +18,8 @@ import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -271,8 +272,24 @@ class CivilizationInfo {
 
     fun getCivResources(): ResourceSupplyList {
         val newResourceSupplyList = ResourceSupplyList()
-        for (resourceSupply in detailedCivResources)
+        for (resourceSupply in detailedCivResources) {
             newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "All")
+        }
+        return newResourceSupplyList
+    }
+
+    // Preserves some origins for resources so we can separate them for trades
+    fun getCivResourcesWithOriginsForTrade(): ResourceSupplyList {
+        val newResourceSupplyList = ResourceSupplyList()
+        for (resourceSupply in detailedCivResources) {
+            // If we got it from another trade or from a CS, preserve the origin
+            if ((resourceSupply.origin == "City-States" || resourceSupply.origin == "Trade") && resourceSupply.amount > 0) {
+                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, resourceSupply.origin)
+                newResourceSupplyList.add(resourceSupply.resource, 0, "Tradable") // Still add an empty "tradable" entry so it shows up in the list
+            }
+            else
+                newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "Tradable")
+        }
         return newResourceSupplyList
     }
 
@@ -316,11 +333,11 @@ class CivilizationInfo {
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
 
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
-    fun getMatchingUniquesByEnum(uniqueType: UniqueType, cityToIgnore: CityInfo?=null): Sequence<Unique> {
+    fun getMatchingUniques(uniqueType: UniqueType, cityToIgnore: CityInfo?=null): Sequence<Unique> {
         val ruleset = gameInfo.ruleSet
         return nation.uniqueObjects.asSequence().filter { it.matches(uniqueType, ruleset) } +
                 cities.asSequence().filter { it != cityToIgnore }.flatMap { city ->
-                    city.getMatchingUniquesWithNonLocalEffectsByEnum(uniqueType)
+                    city.getMatchingUniquesWithNonLocalEffects(uniqueType)
                 } +
                 policies.policyUniques.getUniques(uniqueType) +
                 tech.techUniques.getUniques(uniqueType) +
@@ -921,8 +938,9 @@ class CivilizationInfo {
         if (placedUnit.hasUnique("Religious Unit") && gameInfo.isReligionEnabled()) {
             placedUnit.religion = 
                 when {
-                    placedUnit.hasUnique("Takes your religion over the one in their birth city") ->
-                        religionManager.religion?.name
+                    placedUnit.hasUnique("Takes your religion over the one in their birth city")
+                    && religionManager.religion?.isMajorReligion() == true ->
+                        religionManager.religion!!.name
                     city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                     else -> religionManager.religion?.name
                 }

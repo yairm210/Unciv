@@ -7,13 +7,11 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.Unique
-import com.unciv.models.ruleset.UniqueType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.ui.utils.toPercent
 import kotlin.math.min
 
@@ -114,34 +112,29 @@ class CityStats(val cityInfo: CityInfo) {
         val stats = Stats()
 
         for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
+            val relationshipLevel = otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel()
+            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
                 val eraInfo = cityInfo.civInfo.getEra()
 
-                if (eraInfo.friendBonus[otherCiv.cityStateType.name] == null || eraInfo.allyBonus[otherCiv.cityStateType.name] == null) {
+                if (eraInfo.undefinedCityStateBonuses()) {
                     // Deprecated, assume Civ V values for compatibility
-                    if (otherCiv.cityStateType == CityStateType.Maritime && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Ally)
+                    if (otherCiv.cityStateType == CityStateType.Maritime && relationshipLevel == RelationshipLevel.Ally)
                         stats.food += 1
                     if (otherCiv.cityStateType == CityStateType.Maritime && cityInfo.isCapital())
                         stats.food += 2
-
-                    if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
-                        stats.food *= 1.5f
-                    return stats
-                }
-
-                for (bonus in 
-                    if (otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() == RelationshipLevel.Friend)
-                        eraInfo.friendBonus[otherCiv.cityStateType.name]!! 
-                    else eraInfo.allyBonus[otherCiv.cityStateType.name]!!
-                ) {
-                    if (bonus.getPlaceholderText() == "Provides [] [] []" && cityInfo.matchesFilter(bonus.getPlaceholderParameters()[2])) {
-                        stats.add(Stat.valueOf(bonus.getPlaceholderParameters()[1]), bonus.getPlaceholderParameters()[0].toFloat())
+                } else {
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                        if (bonus.isOfType(UniqueType.CityStateStatsPerCity) 
+                            && cityInfo.matchesFilter(bonus.params[1]) 
+                            && bonus.conditionalsApply(otherCiv, cityInfo) 
+                        ) {
+                            stats.add(bonus.stats)
+                        }
                     }
                 }
 
-                if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%")) {
-                    stats.food *= 1.5f
-                    stats.culture *= 1.5f
+                for (unique in cityInfo.civInfo.getMatchingUniques("[]% [] from City-States")) {
+                    stats[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
             }
         }
@@ -176,13 +169,21 @@ class CityStats(val cityInfo: CityInfo) {
 
     private fun getGrowthBonusFromPoliciesAndWonders(): Float {
         var bonus = 0f
-        // "+[amount]% growth [cityFilter]"
-        for (unique in cityInfo.getMatchingUniques("+[]% growth []"))
+        // "[amount]% growth [cityFilter]"
+        for (unique in cityInfo.getMatchingUniques("[]% growth []")) {
+            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             if (cityInfo.matchesFilter(unique.params[1]))
                 bonus += unique.params[0].toFloat()
-        for (unique in cityInfo.getMatchingUniques("+[]% growth [] when not at war"))
-            if (cityInfo.matchesFilter(unique.params[1]) && !cityInfo.civInfo.isAtWar())
-                bonus += unique.params[0].toFloat()
+        }
+        // Deprecated since 3.16.14
+            for (unique in cityInfo.getMatchingUniques("+[]% growth []")) {
+                if (cityInfo.matchesFilter(unique.params[1]))
+                    bonus += unique.params[0].toFloat()
+            }
+            for (unique in cityInfo.getMatchingUniques("+[]% growth [] when not at war"))
+                if (cityInfo.matchesFilter(unique.params[1]) && !cityInfo.civInfo.isAtWar())
+                    bonus += unique.params[0].toFloat()
+        //
         return bonus / 100
     }
 
@@ -218,8 +219,12 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getStatsFromUniques(uniques: Sequence<Unique>): Stats {
         val stats = Stats()
 
-        for (unique in uniques.toList()) { // Should help  mitigate getConstructionButtonDTOs concurrency problems.
-            if (unique.isOfType(UniqueType.StatsPerCity) && cityInfo.matchesFilter(unique.params[1]))
+        for (unique in uniques.toList()) { // Should help mitigate getConstructionButtonDTOs concurrency problems.
+            if (unique.isOfType(UniqueType.Stats) && unique.conditionalsApply(cityInfo.civInfo, cityInfo)) {
+                stats.add(unique.stats)
+            }
+            
+            if (unique.isOfType(UniqueType.StatsPerCity) && cityInfo.matchesFilter(unique.params[1]) && unique.conditionalsApply(cityInfo.civInfo))
                 stats.add(unique.stats)
 
             // "[stats] per [amount] population [cityFilter]"
@@ -235,11 +240,14 @@ class CityStats(val cityInfo: CityInfo) {
             // "[stats] in cities on [tileFilter] tiles"
             if (unique.placeholderText == "[] in cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 stats.add(unique.stats)
-
-            // "[stats] if this city has at least [amount] specialists"
-            if (unique.matches(UniqueType.StatBonusForNumberOfSpecialists, cityInfo.getRuleset())
-                    && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt())
-                stats.add(unique.stats)
+            
+            // Deprecated since 3.16.16
+                // "[stats] if this city has at least [amount] specialists"
+                if (unique.matches(UniqueType.StatBonusForNumberOfSpecialists, cityInfo.getRuleset()) 
+                    && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt()
+                )
+                    stats.add(unique.stats)
+            //
 
             // Deprecated since a very long time ago, moved here from another code section
                 if (unique.placeholderText == "+2 Culture per turn from cities before discovering Steam Power" && !cityInfo.civInfo.tech.isResearched("Steam Power"))
@@ -275,10 +283,16 @@ class CityStats(val cityInfo: CityInfo) {
                     stats.production += unique.params[0].toInt()
             }
 
-
-        // For instance "+[50]% [Production]
-        for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
+        for (unique in uniques.filter { it.isOfType(UniqueType.StatPercentBonus) }) {
+            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        }
+        
+        // Deprecated since 3.17.0
+            // For instance "+[50]% [Production]
+            for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
+                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        //
 
         // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
         // For instance "+[50]% [Production] [in all cities]
@@ -290,7 +304,7 @@ class CityStats(val cityInfo: CityInfo) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
-        // Used for specific buildings (ex.: +100% Production when constructing a Factory)
+        // Used for specific buildings (e.g. +100% Production when constructing a Factory)
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing a []" }) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
@@ -308,10 +322,12 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.production += unique.params[0].toInt()
         }
 
-        if (cityInfo.civInfo.getHappiness() >= 0) {
-            for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
-                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-        }
+        // Deprecated since 3.17.1
+            if (cityInfo.civInfo.getHappiness() >= 0) {
+                for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
+                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+            }
+        //
         
         for (unique in uniques.filter { it.placeholderText == "[]% [] from every follower, up to []%" })
             stats.add(

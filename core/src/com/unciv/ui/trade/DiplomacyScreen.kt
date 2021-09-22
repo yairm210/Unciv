@@ -15,7 +15,11 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.stats.Stat
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.tilegroups.CityButton
@@ -189,12 +193,14 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val eraInfo = viewingCiv.getEra()
 
         var friendBonusText = "{When Friends:} ".tr()
-        val friendBonuses = eraInfo.friendBonus[otherCiv.cityStateType.name]
-        friendBonusText += friendBonuses?.joinToString(separator = ", ") { it.tr() } ?: ""
+        val friendBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
+        val friendBonusStrings = getAdjustedBonuses(friendBonusObjects)
+        friendBonusText += friendBonusStrings.joinToString(separator = ", ") { it.tr() }
 
         var allyBonusText = "{When Allies:} ".tr()
-        val allyBonuses = eraInfo.allyBonus[otherCiv.cityStateType.name]
-        allyBonusText += allyBonuses?.joinToString(separator = ", ") { it.tr() } ?: ""
+        val allyBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
+        val allyBonusStrings = getAdjustedBonuses(allyBonusObjects)
+        allyBonusText += allyBonusStrings.joinToString(separator = ", ") { it.tr() }
 
         val relationLevel = otherCivDiplomacyManager.relationshipLevel()
         if (relationLevel >= RelationshipLevel.Friend) {
@@ -221,6 +227,50 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
 
         return diplomacyTable
+    }
+
+    /** Given a list of [bonuses], returns a list of pretty strings with updated values for Siam-like uniques
+     *  Assumes that each bonus contains only one stat type */
+    private fun getAdjustedBonuses(bonuses: List<Unique>): List<String> {
+        val bonusStrings = ArrayList<String>()
+        for (bonus in bonuses) {
+            var improved = false
+            for (unique in viewingCiv.getMatchingUniques("[]% [] from City-States")) {
+                val boostAmount = unique.params[0].toPercent()
+                val boostedStat = Stat.valueOf(unique.params[1])
+                when (bonus.type) {
+                    UniqueType.CityStateStatsPerTurn -> { // "Provides [stats] per turn"
+                        if (bonus.stats[boostedStat] > 0) {
+                            bonusStrings.add(
+                                bonus.text.fillPlaceholders(
+                                    (bonus.stats * boostAmount).toStringWithDecimals()))
+                            improved = true
+                        }
+                    }
+                    UniqueType.CityStateStatsPerCity -> { // "Provides [stats] [cityFilter]"
+                        if (bonus.stats[boostedStat] > 0) {
+                            bonusStrings.add(
+                                bonus.text.fillPlaceholders(
+                                    (bonus.stats * boostAmount).toStringWithDecimals(), bonus.params[1]))
+                            improved = true
+                        }
+                    }
+                    UniqueType.CityStateHappiness -> { // "Provides [amount] Happiness"
+                        if (boostedStat == Stat.Happiness) {
+                            bonusStrings.add(
+                                bonus.text.fillPlaceholders(
+                                    (bonus.params[0].toFloat() * boostAmount).toString().removeSuffix(".0")))
+                            improved = true
+                        }
+                    }
+                    else -> Unit  // To silence "exhaustive when" warning
+                }
+            }
+            // No matching unique, add it unmodified
+            if (!improved)
+                bonusStrings.add(bonus.text)
+        }
+        return bonusStrings
     }
 
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {

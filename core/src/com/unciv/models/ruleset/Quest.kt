@@ -34,7 +34,7 @@ class Quest : INamed {
     /** Unique identifier name of the quest, it is also shown */
     override var name: String = ""
 
-    /** Descrption of the quest shown to players */
+    /** Description of the quest shown to players */
     var description: String = ""
 
     /** [QuestType]: it is either Individual or Global */
@@ -46,8 +46,8 @@ class Quest : INamed {
     /** Maximum number of turns to complete the quest, 0 if there's no turn limit */
     var duration: Int = 0
 
-    /**Minimum number of [CivInfo] needed to start the quest. It is meaningful only for [QuestType.Global]
-     * quests [type]. */
+    /** Minimum number of [CivInfo] needed to start the quest. It is meaningful only for [QuestType.Global]
+     *  quests [type]. */
     var minimumCivs: Int = 1
 
     /** Checks if [this] is a Global quest */

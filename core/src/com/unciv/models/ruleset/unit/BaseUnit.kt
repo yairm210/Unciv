@@ -6,8 +6,9 @@ import com.unciv.logic.city.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
-import com.unciv.models.ruleset.UniqueType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -40,7 +41,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     var requiredTech: String? = null
     private var requiredResource: String? = null
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Unit, name) } }
     private var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
@@ -115,7 +116,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             stats += "$rangedStrength${Fonts.rangedStrength}"
             stats += "$range${Fonts.range}"
         }
-        if (movement != 0 && !movesLikeAirUnits()) stats += "$movement${Fonts.movement}"
+        if (movement != 0 && ruleset.unitTypes[unitType]?.isAirUnit() != true) stats += "$movement${Fonts.movement}"
         if (stats.isNotEmpty())
             textList += FormattedLine(stats.joinToString(", "))
 
@@ -142,28 +143,39 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             for ((resource, amount) in resourceRequirements) {
                 textList += FormattedLine(
                     if (amount == 1) "Consumes 1 [$resource]" else "Consumes [$amount] [$resource]",
-                    link="Resource/$resource", color="#F42")
+                    link = "Resource/$resource", color = "#F42"
+                )
             }
         }
 
         if (uniqueTo != null) {
             textList += FormattedLine()
-            textList += FormattedLine("Unique to [$uniqueTo]", link="Nation/$uniqueTo")
+            textList += FormattedLine("Unique to [$uniqueTo]", link = "Nation/$uniqueTo")
             if (replaces != null)
-                textList += FormattedLine("Replaces [$replaces]", link="Unit/$replaces", indent=1)
+                textList += FormattedLine(
+                    "Replaces [$replaces]",
+                    link = "Unit/$replaces",
+                    indent = 1
+                )
         }
 
         if (requiredTech != null || upgradesTo != null || obsoleteTech != null) textList += FormattedLine()
-        if (requiredTech != null) textList += FormattedLine("Required tech: [$requiredTech]", link="Technology/$requiredTech")
+        if (requiredTech != null) textList += FormattedLine(
+            "Required tech: [$requiredTech]",
+            link = "Technology/$requiredTech"
+        )
 
         val canUpgradeFrom = ruleset.units
             .filterValues {
                 (it.upgradesTo == name || it.upgradesTo != null && it.upgradesTo == replaces)
-                && (it.uniqueTo == uniqueTo || it.uniqueTo == null)
+                        && (it.uniqueTo == uniqueTo || it.uniqueTo == null)
             }.keys
         if (canUpgradeFrom.isNotEmpty()) {
             if (canUpgradeFrom.size == 1)
-                textList += FormattedLine("Can upgrade from [${canUpgradeFrom.first()}]", link = "Unit/${canUpgradeFrom.first()}")
+                textList += FormattedLine(
+                    "Can upgrade from [${canUpgradeFrom.first()}]",
+                    link = "Unit/${canUpgradeFrom.first()}"
+                )
             else {
                 textList += FormattedLine()
                 textList += FormattedLine("Can upgrade from:")
@@ -173,28 +185,35 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             }
         }
 
-        if (upgradesTo != null) textList += FormattedLine("Upgrades to [$upgradesTo]", link="Unit/$upgradesTo")
-        if (obsoleteTech != null) textList += FormattedLine("Obsolete with [$obsoleteTech]", link="Technology/$obsoleteTech")
+        if (upgradesTo != null) textList += FormattedLine(
+            "Upgrades to [$upgradesTo]",
+            link = "Unit/$upgradesTo"
+        )
+        if (obsoleteTech != null) textList += FormattedLine(
+            "Obsolete with [$obsoleteTech]",
+            link = "Technology/$obsoleteTech"
+        )
 
         if (promotions.isNotEmpty()) {
             textList += FormattedLine()
             promotions.withIndex().forEach {
                 textList += FormattedLine(
-                        when {
-                            promotions.size == 1 -> "{Free promotion:} "
-                            it.index == 0 -> "{Free promotions:} "
-                            else -> ""
-                        } + "{${it.value}}" +
-                        (if (promotions.size == 1 || it.index == promotions.size - 1) "" else ","),
-                        link="Promotions/${it.value}",
-                        indent=if(it.index==0) 0 else 1)
+                    when {
+                        promotions.size == 1 -> "{Free promotion:} "
+                        it.index == 0 -> "{Free promotions:} "
+                        else -> ""
+                    } + "{${it.value}}" +
+                            (if (promotions.size == 1 || it.index == promotions.size - 1) "" else ","),
+                    link = "Promotions/${it.value}",
+                    indent = if (it.index == 0) 0 else 1
+                )
             }
         }
 
         val seeAlso = ArrayList<FormattedLine>()
         for ((other, unit) in ruleset.units) {
-            if (unit.replaces == name || uniques.contains("[$name]") ) {
-                seeAlso += FormattedLine(other, link="Unit/$other", indent=1)
+            if (unit.replaces == name || uniques.contains("[$name]")) {
+                seeAlso += FormattedLine(other, link = "Unit/$other", indent = 1)
             }
         }
         if (seeAlso.isNotEmpty()) {
@@ -499,7 +518,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             else -> {
                 if (getType().matchesFilter(filter)) return true
                 if (
-                    // Uniques using these kinds of filters should be deprecated and replaced ith adjective-only parameters
+                    // Uniques using these kinds of filters should be deprecated and replaced with adjective-only parameters
                     filter.endsWith(" units")
                     // "military units" --> "Military", using invariant locale
                     && matchesFilter(filter.removeSuffix(" units").lowercase().replaceFirstChar { it.uppercaseChar() })

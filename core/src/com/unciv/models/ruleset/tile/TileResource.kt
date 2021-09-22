@@ -3,7 +3,8 @@ package com.unciv.models.ruleset.tile
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.ui.civilopedia.FormattedLine
@@ -19,7 +20,7 @@ class TileResource : NamedStats(), ICivilopediaText, IHasUniques {
     @Deprecated("As of 3.16.16 - replaced by uniques")
     var unique: String? = null
     override var uniques: ArrayList<String> = arrayListOf()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Resource, name) } }
 
     override var civilopediaText = listOf<FormattedLine>()
 
@@ -82,12 +83,6 @@ class TileResource : NamedStats(), ICivilopediaText, IHasUniques {
             buildingsRequiringThis.forEach {
                 textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
             }
-        }
-
-        if (unique != null) {
-            textList += FormattedLine()
-            // Marble's unique is not parameterized, so the detour through the object is only useful for mods
-            textList += FormattedLine(Unique(unique!!))
         }
 
         textList += Belief.getCivilopediaTextMatching(name, ruleset)

@@ -6,7 +6,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.INamed
@@ -22,7 +23,7 @@ class Technology: INamed, ICivilopediaText, IHasUniques {
     var cost: Int = 0
     var prerequisites = HashSet<String>()
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Tech, name) } }
 
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0

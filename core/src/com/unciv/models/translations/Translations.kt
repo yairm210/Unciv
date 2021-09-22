@@ -2,6 +2,7 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.HashMap
@@ -27,7 +28,7 @@ import kotlin.collections.LinkedHashSet
  *  @see    String.tr   for more explanations (below)
  */
 class Translations : LinkedHashMap<String, TranslationEntry>(){
-
+    
     var percentCompleteOfLanguages = HashMap<String,Int>()
             .apply { put("English",100) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
@@ -115,7 +116,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     private fun createTranslations(language: String, languageTranslations: HashMap<String,String>) {
         for (translation in languageTranslations) {
-            val hashKey = if (translation.key.contains('['))
+            val hashKey = if (translation.key.contains('[') && !translation.key.contains('<'))
                 translation.key.getPlaceholderText()
             else translation.key
             var entry = this[hashKey]
@@ -185,6 +186,36 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationFilesTime = System.currentTimeMillis() - startTime
         println("Loading percent complete of languages - ${translationFilesTime}ms")
     }
+    
+    fun getConditionalOrder(language: String): String {
+        return getText(englishConditionalOrderingString, language, null)
+    }
+    
+    fun placeConditionalsAfterUnique(language: String): Boolean {
+        if (get(conditionalUniqueOrderString, language, null)?.get(language) == "before")
+            return false
+        return true
+    }
+
+    /** Returns the equivalent of a space in the given language
+     * Defaults to a space if no translation is provided
+     */
+    fun getSpaceEquivalent(language: String): String {
+        val translation = getText("\" \"", language, null)
+        return translation.substring(1, translation.length-1)
+    }
+    
+    fun shouldCapitalize(language: String): Boolean {
+        return get(shouldCapitalizeString, language, null)?.get(language)?.toBoolean() ?: true
+    }
+    
+    companion object {
+        // Whenever this string is changed, it should also be changed in the translation files!
+        // It is mostly used as the template for translating the order of conditionals   
+        const val englishConditionalOrderingString = "<if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy>"
+        const val conditionalUniqueOrderString = "ConditionalsPlacement"
+        const val shouldCapitalizeString = "StartWithCapitalLetter"
+    }
 }
 
 
@@ -202,6 +233,10 @@ val eitherSquareBraceRegex = Regex("""\[|\]""")
 // Analogous as above: Expect a {} pair with any chars but } in between and capture that
 val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 
+// Analogous as above: Expect a <> pair with any chars but > in between and capture that
+val pointyBraceRegex = Regex("""\<([^>]*)\>""")
+
+
 /**
  *  This function does the actual translation work,
  *      using an instance of [Translations] stored in UncivGame.Current
@@ -211,6 +246,7 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
  *                  placeholders - contains at least one '[' - see below
  *                  sentences - contains at least one '{'
  *                  - phrases between curly braces are translated individually
+ *                  Additionally, they may contain conditionals between '<' and '>'
  *  @return     The translated string
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
@@ -218,6 +254,63 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 fun String.tr(): String {
     val activeMods = with(UncivGame.Current) {
         if (isGameInfoInitialized()) gameInfo.gameParameters.mods else translations.translationActiveMods
+    }
+    val language = UncivGame.Current.settings.language
+    
+    if (contains('<')) { // Conditionals!
+        /**
+         * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
+         * can contain multiple filters, such as <vs [{Military} {Water}] units>.
+         * Moreover, we can have any amount of conditionals in any order, and translations
+         * can reorder these conditionals in any way they like, even putting them in front
+         * of the rest of the translatable string.
+         * All of this nesting makes it quite difficult to translate, and is the reason we check
+         * for these first.
+         * 
+         * The plan: First translate each of the conditionals on its own, and then combine them
+         * together into the final fully translated string.
+         */
+        
+        var translatedBaseUnique = this.removeConditionals().tr()
+        
+        val conditionals = this.getConditionals().map { it.placeholderText }
+        val conditionsWithTranslation: HashMap<String, String> = hashMapOf()
+        
+        for (conditional in this.getConditionals())
+            conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr()
+        
+        val translatedConditionals: MutableList<String> = mutableListOf()
+        
+        // Somewhere, we asked the translators to reorder all possible conditionals in a way that
+        // makes sense in their language. We get this ordering, and than extract each of the
+        // translated conditionals, removing the <> surrounding them, and removing param values
+        // where it exists.
+        val conditionalOrdering = UncivGame.Current.translations.getConditionalOrder(language)
+        for (placedConditional in pointyBraceRegex.findAll(conditionalOrdering).map { it.value.substring(1, it.value.length-1).getPlaceholderText() }) {
+            if (placedConditional in conditionals) {
+                translatedConditionals.add(conditionsWithTranslation[placedConditional]!!)
+                conditionsWithTranslation.remove(placedConditional)
+            }
+        }
+        
+        // If the translated string that should contain all conditionals doesn't contain
+        // a few conditionals used here, just add the translations of these to the end.
+        // We do test for this, but just in case.
+        translatedConditionals.addAll(conditionsWithTranslation.values)
+
+        // After that, add the translation of the base unique either before or after these conditionals
+        if (UncivGame.Current.translations.placeConditionalsAfterUnique(language)) {
+            translatedConditionals.add(0, translatedBaseUnique)
+        } else {
+            if (UncivGame.Current.translations.shouldCapitalize(language) && translatedBaseUnique[0].isUpperCase())
+                translatedBaseUnique = translatedBaseUnique.replaceFirstChar { it.lowercase() }
+            translatedConditionals.add(translatedBaseUnique)
+        }
+        
+        var fullyTranslatedString = translatedConditionals.joinToString(UncivGame.Current.translations.getSpaceEquivalent(language))
+        if (UncivGame.Current.translations.shouldCapitalize(language))
+            fullyTranslatedString = fullyTranslatedString.replaceFirstChar { it.uppercase() }
+        return fullyTranslatedString
     }
 
     // There might still be optimization potential here!
@@ -237,7 +330,6 @@ fun String.tr(): String {
 
         // Convert "work on [building] has completed in [city]" to "work on [] has completed in []"
         val translationStringWithSquareBracketsOnly = this.getPlaceholderText()
-        val language = UncivGame.Current.settings.language
         // That is now the key into the translation HashMap!
         val translationEntry = UncivGame.Current.translations
                 .get(translationStringWithSquareBracketsOnly, language, activeMods)
@@ -272,19 +364,21 @@ fun String.tr(): String {
 
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    return UncivGame.Current.translations.getText(this, UncivGame.Current.settings.language, activeMods)
+    return UncivGame.Current.translations.getText(this, language, activeMods)
 }
 
-fun String.getPlaceholderText() = this.replace(squareBraceRegex, "[]")
+fun String.getPlaceholderText() = this
+        .removeConditionals()
+        .replace(squareBraceRegex, "[]")
 
 fun String.equalsPlaceholderText(str:String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
     return this.getPlaceholderText() == str
 }
 
-fun String.hasPlaceholderParameters() = squareBraceRegex.containsMatchIn(this)
+fun String.hasPlaceholderParameters() = squareBraceRegex.containsMatchIn(this.removeConditionals())
 
-fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
+fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this.removeConditionals()).map { it.groups[1]!!.value }.toList()
 
 /** Substitutes placeholders with [strings], respecting order of appearance. */
 fun String.fillPlaceholders(vararg strings: String): String {
@@ -297,3 +391,17 @@ fun String.fillPlaceholders(vararg strings: String): String {
         filledString = filledString.replaceFirst(keys[i], strings[i])
     return filledString
 }
+
+fun String.getConditionals() = pointyBraceRegex.findAll(this).map { Unique(it.groups[1]!!.value) }.toList()
+
+fun String.removeConditionals() = this
+    .replace(pointyBraceRegex, "")
+    // So, this is a quick hack, but it works as long as nobody uses word separators different from " " (space) and "" (none),
+    // And no translations start or end with a space.
+    // According to https://linguistics.stackexchange.com/questions/6131/is-there-a-long-list-of-languages-whose-writing-systems-dont-use-spaces
+    // This is a reasonable but not fully correct assumption to make.
+    // By doing it like this, we exclude languages such as Tibetan, Dzongkha (Bhutan), and Ethiopian.
+    // If we ever start getting translations for these, we'll work something out then.
+    .replace("  ", " ")
+    .trim()
+

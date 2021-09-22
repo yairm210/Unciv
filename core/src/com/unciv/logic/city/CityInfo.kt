@@ -10,8 +10,8 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.Unique
-import com.unciv.models.ruleset.UniqueType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -160,7 +160,8 @@ class CityInfo {
 
         civInfo.civConstructions.tryAddFreeBuildings()
 
-        for (unique in getMatchingUniques("Gain a free [] []")) {
+        for (unique in getMatchingUniques(UniqueType.GainFreeBuildings)) {
+            if (!unique.conditionalsApply(civInfo, this)) continue
             val freeBuildingName = unique.params[0]
             if (matchesFilter(unique.params[1])) {
                 if (!cityConstructions.isBuilt(freeBuildingName))
@@ -288,7 +289,8 @@ class CityInfo {
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
             for (unique in tileImprovement!!.uniqueObjects) {
-                if (unique.placeholderText == "Provides [] []") {
+                if (unique.matches(UniqueType.ProvidesResources, getRuleset())) {
+                    if (!unique.conditionalsApply(civInfo, this)) continue
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(
                         resource,
@@ -314,7 +316,8 @@ class CityInfo {
             }
         }
         
-        for (unique in getLocalMatchingUniques("Provides [] []")) { // E.G "Provides [1] [Iron]"
+        for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources)) { // E.G "Provides [1] [Iron]"
+            if (!unique.conditionalsApply(civInfo, this)) continue
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(
@@ -654,6 +657,7 @@ class CityInfo {
         }
     }
 
+    // When adding here, add to UniqueParameterType.cityFilterStrings
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
@@ -711,11 +715,32 @@ class CityInfo {
                 }
     }
 
+    // Finds matching uniques provided from both local and non-local sources.
+    fun getMatchingUniques(
+        uniqueType: UniqueType,
+        // We might have this cached to avoid concurrency problems. If we don't, just get it directly
+        localUniques: Sequence<Unique> = getLocalMatchingUniques(uniqueType),
+    ): Sequence<Unique> {
+        // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
+        // The time loss shouldn't be that large I don't think
+        return civInfo.getMatchingUniques(uniqueType, this) +
+                localUniques.filter {
+                    it.isOfType(uniqueType)
+                    && it.params.none { param -> param == "in other cities" }
+                }
+    }
+
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
             .filter { it.params.none { param -> param == "in other cities" } } +
-                religion.getMatchingUniques(placeholderText)
+                religion.getUniques().filter { it.placeholderText == placeholderText }
+    }
+
+    fun getLocalMatchingUniques(uniqueType: UniqueType): Sequence<Unique> {
+        return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
+            .filter { it.params.none { param -> param == "in other cities" } } +
+                religion.getUniques().filter { it.isOfType(uniqueType) }
     }
 
     // Get all uniques that originate from this city
@@ -731,7 +756,7 @@ class CityInfo {
     }
 
 
-    fun getMatchingUniquesWithNonLocalEffectsByEnum(uniqueType: UniqueType): Sequence<Unique> {
+    fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
             .filter { it.params.none { param -> param == "in this city" } }
         // Note that we don't query religion here, as those only have local effects (for now at least)

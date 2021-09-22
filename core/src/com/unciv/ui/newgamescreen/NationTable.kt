@@ -8,10 +8,9 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
+import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.utils.*
 
 // The ruleset also acts as a secondary parameter to determine if this is the right or self side of the player picker
 class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: Ruleset? = null)
@@ -19,42 +18,76 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
     val innerTable = Table()
 
     init {
-        background = ImageGetter.getBackground(nation.getInnerColor())
-        if (ruleset != null) pad(5f)
-        innerTable.pad(5f)
-        val totalPadding = 20f // pad*2 + innerTable.pad*2
-
-        innerTable.background = ImageGetter.getBackground(nation.getOuterColor())
+        val innerColor = nation.getInnerColor()
+        val outerColor = nation.getOuterColor()
+        val textBackgroundColor = Color(0x002042ff) // getBlue().lerp(Black,0.5).apply { a = 1 }
+        val borderWidth = 5f
+        val totalPadding = 10f + 4 * borderWidth // pad*2 + innerTable.pad*2 + borderTable.pad*2
         val internalWidth = width - totalPadding
 
         val titleTable = Table()
+        titleTable.background = ImageGetter.getBackground(outerColor)
+        val nationIndicator: Actor =
+            if (nation.name == Constants.random) ImageGetter.getRandomNationIndicator(50f)
+            else ImageGetter.getNationIndicator(nation, 50f)
+        titleTable.add(nationIndicator).pad(10f).padLeft(0f)  // left 0 for centering _with_ label
 
-        val nationIndicator: Actor
-        if(nation.name=="Random") nationIndicator = "?".toLabel(Color.WHITE, 30)
-                .apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(45f).apply { circle.color = Color.BLACK }
-                .surroundWithCircle(50f, false).apply { circle.color = Color.WHITE }
-        else nationIndicator = ImageGetter.getNationIndicator(nation, 50f)
-
-        titleTable.add(nationIndicator).pad(10f)
-
-        val titleText = if (ruleset == null || nation.name== Constants.random || nation.name==Constants.spectator)
+        val titleText = if (ruleset == null || nation.name == Constants.random || nation.name == Constants.spectator)
             nation.name else nation.getLeaderDisplayName()
-        val leaderDisplayLabel = titleText.toLabel(nation.getInnerColor(), 24)
-        val leaderDisplayNameMaxWidth = internalWidth - 90f // 70 for the nation indicator + 20 extra
-        if (leaderDisplayLabel.width > leaderDisplayNameMaxWidth) { // for instance Polish has really long [x] of [y] translations
+        val leaderDisplayNameMaxWidth = internalWidth - 70f // for the nation indicator with padding
+        val leaderDisplayLabel = WrappableLabel(titleText, leaderDisplayNameMaxWidth, innerColor, 24)
+        if (leaderDisplayLabel.prefWidth > leaderDisplayNameMaxWidth - 2f) {
             leaderDisplayLabel.wrap = true
             titleTable.add(leaderDisplayLabel).width(leaderDisplayNameMaxWidth)
-        } else titleTable.add(leaderDisplayLabel)
-        innerTable.add(titleTable).row()
+        } else {
+            titleTable.add(leaderDisplayLabel).align(Align.center).pad(10f,0f)
+        }
+
+        innerTable.add(titleTable).growX().fillY().row()
 
         if (ruleset != null) {
-            val nationUniqueLabel = nation.getUniqueString(ruleset).toLabel(nation.getInnerColor())
-            nationUniqueLabel.wrap = true
-            innerTable.add(nationUniqueLabel).width(internalWidth)
+            titleTable.padBottom(borderWidth) // visual centering including upper border
+            innerTable.background = ImageGetter.getBackground(textBackgroundColor)
+            val lines = nation.getCivilopediaTextLines(ruleset)
+                .filter { it.header != 3 }
+            innerTable.add(MarkupRenderer.render(lines, internalWidth, iconDisplay = IconDisplay.NoLink)).pad(10f)
+            val borderTable = Table()
+            borderTable.background = ImageGetter.getBackground(outerColor)
+            borderTable.add(innerTable).pad(borderWidth).grow()
+            add(borderTable).pad(borderWidth).width(width).minHeight(minHeight - totalPadding)
+        } else {
+            innerTable.background = ImageGetter.getBackground(outerColor)
+            add(innerTable).width(width).minHeight(minHeight - totalPadding)
         }
 
         touchable = Touchable.enabled
-        add(innerTable).width(width).minHeight(minHeight - totalPadding)
+        background = ImageGetter.getBackground(innerColor)
     }
 }
+
+/*
+Layout if ruleset != null:
+
+       *Widgets*
+         Text colour                     Background Colour
+           Align                           Padding
+
++----- *NationTable* ----------------------------------------+
+|                                        getInnerColor       |
+| +---- *borderTable* -------------------------------------+ |
+| |                                      getOuterColor     | |
+| | +--- *innerTable* -----------------------------------+ | |
+| | | +-- *titleTable* --------------------------------+ | | |
+| | | |   getInnerColor                  getOuterColor | | | |
+| | | |     *nationIndicator*   *leaderDisplayLabel*   | | | |
+| | | |   center or left/wrap            0: all sides  | | | |
+| | | +------------------------------------------------+ | | |
+| | |     White                          Dark-blue       | | |
+| | |   MarkupRenderer.render(getCivilopediaTextLines)   | | |
+| | |     left/wrap                      10: all sides   | | |
+| | |                                                    | | |
+| | +----------------------------------------------------+ | |
+| +--------------------------------------------------------+ |
++------------------------------------------------------------+
+
+*/

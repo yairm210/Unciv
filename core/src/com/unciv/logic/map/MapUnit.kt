@@ -11,7 +11,7 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
@@ -910,7 +910,7 @@ class MapUnit {
             }
         }
         // Otherwise fall back to the defined standard damage
-        return  tile.getAllTerrains().sumBy { it.damagePerTurn }
+        return  tile.getAllTerrains().sumOf { it.damagePerTurn }
     }
 
     private fun doCitadelDamage() {

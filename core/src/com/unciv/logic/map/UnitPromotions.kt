@@ -1,8 +1,7 @@
 package com.unciv.logic.map
 
-import com.unciv.models.ruleset.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.Promotion
-import com.unciv.models.translations.equalsPlaceholderText
 
 class UnitPromotions {
     // Having this as mandatory constructor parameter would be safer, but this class is part of a

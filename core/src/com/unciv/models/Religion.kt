@@ -3,7 +3,6 @@ package com.unciv.models
 import com.unciv.logic.GameInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.Unique
 import com.unciv.models.stats.INamed
 
 /** Data object for Religions */

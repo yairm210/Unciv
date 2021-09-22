@@ -6,7 +6,8 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -75,9 +76,6 @@ class CityConstructions {
     fun getConstructableUnits() = cityInfo.getRuleset().units.values
         .asSequence().filter { it.isBuildable(this) }
 
-    fun getBasicCultureBuildings() = cityInfo.getRuleset().buildings.values
-        .asSequence().filter { it.culture > 0f && !it.isAnyWonder() && it.replaces == null }
-    
     fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
         .asSequence()
         .filter { !it.isAnyWonder() && it.replaces == null && it.getStats(null)[stat] > 0f }
@@ -164,7 +162,8 @@ class CityConstructions {
     
     fun addFreeBuildings() {
         // "Provides a free [buildingName] [cityFilter]"
-        for (unique in cityInfo.getMatchingUniques("Provides a free [] []")) {
+        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.ProvidesFreeBuildings)) {
+            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
             val citiesThatApply = when (unique.params[1]) {
                 "in this city" -> listOf(cityInfo)

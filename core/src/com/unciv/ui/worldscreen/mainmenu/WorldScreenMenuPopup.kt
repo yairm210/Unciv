@@ -14,6 +14,8 @@ import com.unciv.ui.worldscreen.WorldScreen
 class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
     init {
         defaults().fillX()
+        worldScreen.game.musicController.pause()
+
         addButton("Main menu") { worldScreen.game.setScreen(MainMenuScreen()) }
         addButton("Civilopedia") { worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet)) }
         addButton("Save game") { worldScreen.game.setScreen(SaveGameScreen(worldScreen.gameInfo)) }
@@ -30,8 +32,11 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addButton("Options") { worldScreen.openOptionsPopup() }
         addButton("Community") {
             close()
-            WorldScreenCommunityPopup(worldScreen).open(force = true) }
-        addCloseButton()
+            WorldScreenCommunityPopup(worldScreen).open(force = true)
+        }
+        addCloseButton {
+            worldScreen.game.musicController.resume()
+        }
         pack()
     }
 }

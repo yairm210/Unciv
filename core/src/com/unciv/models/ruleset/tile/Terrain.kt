@@ -5,7 +5,8 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.NamedStats
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
@@ -28,7 +29,7 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
 
     /** Uniques (Properties such as Temp/humidity, Fresh water, elevation, rough, defense, Natural Wonder specials) */
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Terrain, name) } }
 
     /** Natural Wonder weight: probability to be picked */
     var weight = 10
@@ -146,7 +147,7 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
     }
 
     fun setTransients() {
-        damagePerTurn = uniqueObjects.sumBy {
+        damagePerTurn = uniqueObjects.sumOf {
             if (it.placeholderText == "Units ending their turn on this terrain take [] damage") it.params[0].toInt() else 0
         }
     }

@@ -1,14 +1,12 @@
 package com.unciv.logic.civilization
 
-import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
-import com.unciv.models.ruleset.UniqueMap
-import com.unciv.models.ruleset.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueMap
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
