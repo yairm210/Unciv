@@ -18,7 +18,7 @@ import com.unciv.ui.utils.*
 class ReligiousBeliefsPickerScreen (
     private val choosingCiv: CivilizationInfo,
     private val gameInfo: GameInfo,
-    private val beliefsContainer: BeliefContainer,
+    private val beliefsToChoose: Counter<BeliefType>,
     private val pickIconAndName: Boolean
 ): PickerScreen(disableScroll = true) {
 
@@ -32,6 +32,8 @@ class ReligiousBeliefsPickerScreen (
     private var previouslySelectedIcon: Button? = null
     private var displayName: String? = null
     private var religionName: String? = null
+
+    private val chosenBeliefs: Array<Belief?> = Array(beliefsToChoose.values.sum()) { null }
     
     init {
         closeButton.isVisible = true
@@ -53,14 +55,14 @@ class ReligiousBeliefsPickerScreen (
         if (pickIconAndName) rightSideButton.label = "Choose a religion".toLabel()
         else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.getReligionDisplayName()}]".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
-            choosingCiv.religionManager.chooseBeliefs(displayName, religionName, beliefsContainer.chosenBeliefs.map { it!! })            
+            choosingCiv.religionManager.chooseBeliefs(displayName, religionName, chosenBeliefs.map { it!! })            
             UncivGame.Current.setWorldScreen()
         }
     }
 
     private fun checkAndEnableRightSideButton() {
         if (pickIconAndName && (religionName == null || displayName == null)) return
-        if (beliefsContainer.chosenBeliefs.any { it == null }) return
+        if (chosenBeliefs.any { it == null }) return
         rightSideButton.enable()
     }
     
@@ -158,8 +160,8 @@ class ReligiousBeliefsPickerScreen (
             beliefButton.disable()
         }
         
-        for (newBelief in beliefsContainer.chosenBeliefs.withIndex()) {
-            addChoosableBeliefButton(newBelief, beliefsContainer.getBeliefTypeFromIndex(newBelief.index))
+        for (newBelief in chosenBeliefs.withIndex()) {
+            addChoosableBeliefButton(newBelief, getBeliefTypeFromIndex(newBelief.index))
         }
     }
     
@@ -171,12 +173,12 @@ class ReligiousBeliefsPickerScreen (
                 && gameInfo.religions.values.none {
                     religion -> religion.hasBelief(it.name)
                 }
-                && (it !in beliefsContainer.chosenBeliefs)
+                && (it !in chosenBeliefs)
             }
         for (belief in availableBeliefs) {
             val beliefButton = convertBeliefToButton(belief)
             beliefButton.onClick {
-                beliefsContainer.chosenBeliefs[leftButtonIndex] = belief
+                chosenBeliefs[leftButtonIndex] = belief
                 updateLeftTable()
                 checkAndEnableRightSideButton()
             }
@@ -211,19 +213,13 @@ class ReligiousBeliefsPickerScreen (
             contentsTable.add("Choose any belief!".toLabel())
         return Button(contentsTable, skin)
     }
-}
-
-
-data class BeliefContainer(val beliefAmounts: Counter<BeliefType>) {
     
-    val chosenBeliefs: Array<Belief?> = Array(beliefAmounts.values.sum()) { null }
-    
-    fun getBeliefTypeFromIndex(index: Int): BeliefType {
+    private fun getBeliefTypeFromIndex(index: Int): BeliefType {
         return when {
-            index < beliefAmounts.filter { it.key <= BeliefType.Pantheon }.values.sum() -> BeliefType.Pantheon
-            index < beliefAmounts.filter { it.key <= BeliefType.Founder }.values.sum() -> BeliefType.Founder
-            index < beliefAmounts.filter { it.key <= BeliefType.Follower }.values.sum() -> BeliefType.Follower
-            index < beliefAmounts.filter { it.key <= BeliefType.Enhancer }.values.sum() -> BeliefType.Enhancer
+            index < beliefsToChoose.filter { it.key <= BeliefType.Pantheon }.values.sum() -> BeliefType.Pantheon
+            index < beliefsToChoose.filter { it.key <= BeliefType.Founder }.values.sum() -> BeliefType.Founder
+            index < beliefsToChoose.filter { it.key <= BeliefType.Follower }.values.sum() -> BeliefType.Follower
+            index < beliefsToChoose.filter { it.key <= BeliefType.Enhancer }.values.sum() -> BeliefType.Enhancer
             else -> BeliefType.Any
         }
     }

@@ -5,7 +5,6 @@ import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.ui.pickerscreens.BeliefContainer
 import com.unciv.ui.utils.toPercent
 import kotlin.random.Random
 
@@ -205,7 +204,7 @@ class ReligionManager {
         civInfo.religionManager.foundingCityId = prophet.getTile().getCity()!!.id
     }
 
-    fun getBeliefsToChooseAtFounding(): BeliefContainer {
+    fun getBeliefsToChooseAtFounding(): Counter<BeliefType> {
         val beliefsToChoose: Counter<BeliefType> = Counter()
         beliefsToChoose.add(BeliefType.Founder, 1)
         beliefsToChoose.add(BeliefType.Follower, 1)
@@ -217,7 +216,7 @@ class ReligionManager {
             beliefsToChoose.add(BeliefType.valueOf(unique.params[1]), unique.params[0].toInt())
         }
         
-        return BeliefContainer(beliefsToChoose)
+        return beliefsToChoose
     }
 
     fun chooseBeliefs(iconName: String?, religionName: String?, beliefs: List<Belief>) {
@@ -298,7 +297,7 @@ class ReligionManager {
         religionState = ReligionState.EnhancingReligion
     }
 
-    fun getBeliefsToChooseAtEnhancing(): BeliefContainer {
+    fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> {
         val beliefsToChoose: Counter<BeliefType> = Counter()
         beliefsToChoose.add(BeliefType.Follower, 1)
         beliefsToChoose.add(BeliefType.Enhancer, 1)
@@ -307,8 +306,8 @@ class ReligionManager {
             if (unique.params[2] != "enhancing") continue
             beliefsToChoose.add(BeliefType.valueOf(unique.params[1]), unique.params[0].toInt())
         }
-
-        return BeliefContainer(beliefsToChoose)
+        
+        return beliefsToChoose
     }
 
     fun enhanceReligion(beliefs: List<Belief>) {
