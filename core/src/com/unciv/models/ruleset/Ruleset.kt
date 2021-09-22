@@ -278,34 +278,8 @@ class Ruleset {
         return stringList.joinToString { it.tr() }
     }
 
-    /** Severity level of Mod RuleSet check */
-    enum class CheckModLinksStatus {OK, Warning, Error}
-    /** Result of a Mod RuleSet check */
-    // essentially a named Pair with a few shortcuts
-    class CheckModLinksResult(val status: CheckModLinksStatus, val message: String) {
-        // Empty constructor just makes the Complex Mod Check on the new game screen shorter
-        constructor(): this(CheckModLinksStatus.OK, "")
-        // Constructor that joins lines
-        constructor(status: CheckModLinksStatus, lines: ArrayList<String>):
-                this (status,
-                    lines.joinToString("\n"))
-        // Constructor that auto-determines severity
-        constructor(warningCount: Int, lines: ArrayList<String>):
-                this (
-                    when {
-                        lines.isEmpty() -> CheckModLinksStatus.OK
-                        lines.size == warningCount -> CheckModLinksStatus.Warning
-                        else -> CheckModLinksStatus.Error
-                    },
-                    lines)
-        // Allows $this in format strings
-        override fun toString() = message
-        // Readability shortcuts
-        fun isError() = status == CheckModLinksStatus.Error
-        fun isNotOK() = status != CheckModLinksStatus.OK
-    }
 
-    fun checkUniques(uniqueContainer:IHasUniques, lines:ArrayList<String>,
+    fun checkUniques(uniqueContainer:IHasUniques, lines:RulesetErrorList,
                      severityToReport: UniqueType.UniqueComplianceErrorSeverity) {
         val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
 
@@ -323,15 +297,47 @@ class Ruleset {
                 .getAnnotation(Deprecated::class.java)
             if (deprecationAnnotation != null) {
                 // Not user-visible
-                println("$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                        " replace with \"${deprecationAnnotation.replaceWith.expression}\"")
+                lines.add("$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
+                        " replace with \"${deprecationAnnotation.replaceWith.expression}\"",
+                    RulesetErrorSeverity.WarningOptionsOnly)
             }
         }
     }
 
-    fun checkModLinks(): CheckModLinksResult {
-        val lines = ArrayList<String>()
-        var warningCount = 0
+
+    class RulesetError(val text:String, val errorSeverityToReport: RulesetErrorSeverity)
+    enum class RulesetErrorSeverity{
+        OK,
+        Warning,
+        WarningOptionsOnly,
+        Error,
+    }
+
+    class RulesetErrorList:ArrayList<RulesetError>() {
+        operator fun plusAssign(text: String) {
+            add(text, RulesetErrorSeverity.Error)
+        }
+
+        fun add(text: String, errorSeverityToReport: RulesetErrorSeverity) {
+            add(RulesetError(text, errorSeverityToReport))
+        }
+
+        fun getFinalSeverity(): RulesetErrorSeverity {
+            if (isEmpty()) return RulesetErrorSeverity.OK
+            return this.maxOf { it.errorSeverityToReport }
+        }
+
+        fun isError() = getFinalSeverity() == RulesetErrorSeverity.Error
+        fun isNotOK() = getFinalSeverity() != RulesetErrorSeverity.OK
+
+        fun getErrorText() =
+            filter { it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
+                .sortedByDescending { it.errorSeverityToReport }
+                .joinToString { it.errorSeverityToReport.name + ": " + it.text }
+    }
+
+    fun checkModLinks(): RulesetErrorList {
+        val lines = RulesetErrorList()
 
         // Checks for all mods - only those that can succeed without loading a base ruleset
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
@@ -373,7 +379,7 @@ class Ruleset {
         }
 
         // Quit here when no base ruleset is loaded - references cannot be checked
-        if (!modOptions.isBaseRuleset) return CheckModLinksResult(warningCount, lines)
+        if (!modOptions.isBaseRuleset) return lines
 
         val baseRuleset = RulesetCache.getBaseRuleset()  // for UnitTypes fallback
 
@@ -401,8 +407,8 @@ class Ruleset {
                 else if ((tileImprovements[improvementName] as Stats).none() &&
                         unit.isCivilian() &&
                         !unit.hasUnique("Bonus for units in 2 tile radius 15%")) {
-                    lines += "${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!"
-                    warningCount++
+                    lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
+                        RulesetErrorSeverity.Warning)
                 }
             }
 
@@ -474,8 +480,8 @@ class Ruleset {
 
                 if (tech.prerequisites.asSequence().filterNot { it == prereq }
                         .any { getPrereqTree(it).contains(prereq) }){
-                    lines += "No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!"
-                    warningCount++
+                    lines.add("No need to add $prereq as a prerequisite of ${tech.name} - it is already implicit from the other prerequisites!",
+                        RulesetErrorSeverity.Warning)
                 }
             }
             if (tech.era() !in eras)
@@ -485,7 +491,6 @@ class Ruleset {
 
         if (eras.isEmpty()) {
             lines += "Eras file is empty! This will likely lead to crashes. Ask the mod maker to update this mod!"
-            warningCount++
         }
         
         for (era in eras.values) {
@@ -504,7 +509,7 @@ class Ruleset {
             checkUniques(era, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
-        return CheckModLinksResult(warningCount, lines)
+        return lines
     }
 }
 
@@ -536,7 +541,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 this[modRuleset.name] = modRuleset
                 if (printOutput) {
                     println("Mod loaded successfully: " + modRuleset.name)
-                    println(modRuleset.checkModLinks())
+                    println(modRuleset.checkModLinks().getErrorText())
                 }
             } catch (ex: Exception) {
                 if (printOutput) {
@@ -588,7 +593,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
     /**
      * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
      */
-    fun checkCombinedModLinks(mods: LinkedHashSet<String>): Ruleset.CheckModLinksResult {
+    fun checkCombinedModLinks(mods: LinkedHashSet<String>): Ruleset.RulesetErrorList {
         return try {
             val newRuleset = getComplexRuleset(mods)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
@@ -596,7 +601,8 @@ object RulesetCache : HashMap<String,Ruleset>() {
         } catch (ex: Exception) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
-            Ruleset.CheckModLinksResult(Ruleset.CheckModLinksStatus.Error, ex.localizedMessage)
+            Ruleset.RulesetErrorList()
+                .apply { add(ex.localizedMessage, Ruleset.RulesetErrorSeverity.Error) }
         }
     }
 

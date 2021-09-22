@@ -14,7 +14,7 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.Ruleset.CheckModLinksStatus
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
@@ -275,19 +275,22 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             val lines = ArrayList<FormattedLine>()
             var noProblem = true
             for (mod in RulesetCache.values.sortedBy { it.name }) {
-                val modLinks = if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
-                    else mod.checkModLinks()
-                val color = when (modLinks.status) {
-                    CheckModLinksStatus.OK -> "#0F0"
-                    CheckModLinksStatus.Warning -> "#FF0"
-                    CheckModLinksStatus.Error -> "#F00"
-                }
                 val label = if (mod.name.isEmpty()) BaseRuleset.Civ_V_Vanilla.fullName else mod.name
-                lines += FormattedLine("$label{}", starred = true, color = color, header = 3)
-                if (modLinks.isNotOK()) {
-                    lines += FormattedLine(modLinks.message)
-                    noProblem = false
+                lines += FormattedLine("$label{}", starred = true, header = 3)
+
+                val modLinks =
+                    if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
+                    else mod.checkModLinks()
+                for (error in modLinks) {
+                    val color = when (error.errorSeverityToReport) {
+                        Ruleset.RulesetErrorSeverity.OK -> "#0F0"
+                        Ruleset.RulesetErrorSeverity.Warning,
+                        Ruleset.RulesetErrorSeverity.WarningOptionsOnly -> "#FF0"
+                        Ruleset.RulesetErrorSeverity.Error -> "#F00"
+                    }
+                    lines += FormattedLine(error.text, color = color)
                 }
+                if (modLinks.isNotOK()) noProblem = false
                 lines += FormattedLine()
             }
             if (noProblem) lines += FormattedLine("{No problems found}.")

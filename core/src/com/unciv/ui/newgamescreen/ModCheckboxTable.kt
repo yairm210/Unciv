@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.Ruleset.CheckModLinksResult
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -61,12 +60,10 @@ class ModCheckboxTable(
             if (modLinkErrors.isError()) {
                 lastToast?.close()
                 val toastMessage =
-                    "The mod you selected is incorrectly defined!".tr() + "\n\n$modLinkErrors"
+                    "The mod you selected is incorrectly defined!".tr() + "\n\n${modLinkErrors.getErrorText()}"
                 lastToast = ToastPopup(toastMessage, screen, 5000L)
-                if (modLinkErrors.isError()) {
-                    checkBox.isChecked = false
-                    return false
-                }
+                checkBox.isChecked = false
+                return false
             }
 
             // Save selection for a rollback
@@ -88,7 +85,7 @@ class ModCheckboxTable(
                 val toastMessage = (
                         if (complexModLinkCheck.isError()) "The mod combination you selected is incorrectly defined!"
                         else "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}"
-                        ).tr() + "\n\n$complexModLinkCheck"
+                        ).tr() + "\n\n${complexModLinkCheck.getErrorText()}"
                 lastToast = ToastPopup(toastMessage, screen, 5000L)
 
                 if (complexModLinkCheck.isError()) {
