@@ -275,7 +275,7 @@
 	{
 		"name": "Rationalism",
 		"era": "Renaissance era",
-		"uniques": ["[15]% [Science] while the empire is happy", "Incompatible with [Piety]"],
+		"uniques": ["[+15]% [Science] <while the empire is happy>", "Incompatible with [Piety]"],
 		"policies": [
 			{
 				"name": "Secularism",

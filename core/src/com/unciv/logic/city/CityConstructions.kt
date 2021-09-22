@@ -162,7 +162,8 @@ class CityConstructions {
     
     fun addFreeBuildings() {
         // "Provides a free [buildingName] [cityFilter]"
-        for (unique in cityInfo.getMatchingUniques(UniqueType.ProvidesFreeBuildings)) {
+        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.ProvidesFreeBuildings)) {
+            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
             val citiesThatApply = when (unique.params[1]) {
                 "in this city" -> listOf(cityInfo)

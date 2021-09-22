@@ -33,18 +33,21 @@ enum class UniqueTarget {
     
     // Other
     CityState,
-    ModOptions,
+    ModOptions,    
+    Conditional,
 }
 
 enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     
     Stats("[stats]", UniqueTarget.Global),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
+    
+    StatPercentBonus("[amount]% [Stat]", UniqueTarget.Global),
 
     ConsumesResources("Consumes [amount] [resource]",
         UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit), // No conditional support as of yet
     ProvidesResources("Provides [amount] [resource]",
-            UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
+            UniqueTarget.Improvement, UniqueTarget.Building),
     
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
@@ -67,6 +70,14 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
     CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
+    
+    
+    ///// CONDITIONALS
+    
+    ConditionalWar("when at war", UniqueTarget.Conditional),
+    ConditionalNotWar("when not at war", UniqueTarget.Conditional),
+    ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
+    ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

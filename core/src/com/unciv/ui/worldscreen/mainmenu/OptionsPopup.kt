@@ -3,7 +3,6 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -19,8 +18,8 @@ import com.unciv.models.ruleset.Ruleset.CheckModLinksStatus
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
-import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.civilopedia.SimpleCivilopediaText
@@ -30,6 +29,7 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
@@ -207,11 +207,12 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
 
         addSoundEffectsVolumeSlider()
 
-        val musicLocation = Gdx.files.local(previousScreen.game.musicLocation)
-        if (musicLocation.exists())
+        if (previousScreen.game.musicController.isMusicAvailable()) {
             addMusicVolumeSlider()
-        else
-            addDownloadMusic(musicLocation)
+            addMusicPauseSlider()
+        } else {
+            addDownloadMusic()
+        }
     }
 
     private fun getMultiplayerTab(): Table = Table(CameraStageBaseScreen.skin).apply {
@@ -247,7 +248,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {
                 settings.allowAndroidPortrait = it
                 // Note the following might close the options screen indirectly and delayed
-                previousScreen.game.limitOrientationsHelper!!.allowPortrait(it)
+                previousScreen.game.limitOrientationsHelper.allowPortrait(it)
             }
         }
 
@@ -392,7 +393,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
     private fun Table.addSoundEffectsVolumeSlider() {
         add("Sound effects volume".tr()).left().fillX()
 
-        val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
+        val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
             initial = settings.soundEffectsVolume
         ) {
             settings.soundEffectsVolume = it
@@ -404,24 +405,55 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
     private fun Table.addMusicVolumeSlider() {
         add("Music volume".tr()).left().fillX()
 
-        val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.1f,
+        val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
             initial = settings.musicVolume,
             sound = UncivSound.Silent
         ) {
             settings.musicVolume = it
             settings.save()
 
-            val music = previousScreen.game.music
-            if (music == null) // restart music, if it was off at the app start
-                thread(name = "Music") { previousScreen.game.startMusic() }
-
-            music?.volume = 0.4f * it
+            val music = previousScreen.game.musicController
+            music.setVolume(it)
+            if (!music.isPlaying())
+                music.chooseTrack(flags = EnumSet.of(MusicTrackChooserFlags.PlayDefaultFile, MusicTrackChooserFlags.PlaySingle))
         }
-        musicVolumeSlider.value = settings.musicVolume
         add(musicVolumeSlider).pad(5f).row()
     }
 
-    private fun Table.addDownloadMusic(musicLocation: FileHandle) {
+    private fun Table.addMusicPauseSlider() {
+        val music = previousScreen.game.musicController
+
+        // map to/from 0-1-2..10-12-14..30-35-40..60-75-90-105-120
+        fun posToLength(pos: Float): Float = when (pos) {
+            in 0f..10f -> pos
+            in 11f..20f -> pos * 2f - 10f
+            in 21f..26f -> pos * 5f - 70f
+            else -> pos * 15f - 330f
+        }
+        fun lengthToPos(length: Float): Float = floor(when (length) {
+            in 0f..10f -> length
+            in 11f..30f -> (length + 10f) / 2f
+            in 31f..60f -> (length + 10f) / 5f
+            else -> (length + 330f) / 15f
+        })
+        val getTipText: (Float)->String = {
+            "%.0f".format(posToLength(it))
+        }
+
+        add("Pause between tracks".tr()).left().fillX()
+
+        val pauseLengthSlider = UncivSlider(0f, 30f, 1f,
+            initial = lengthToPos(music.silenceLength),
+            sound = UncivSound.Silent,
+            getTipText = getTipText
+        ) {
+            music.silenceLength = posToLength(it)
+            settings.pauseBetweenTracks = music.silenceLength.toInt()
+        }
+        add(pauseLengthSlider).pad(5f).row()
+    }
+
+    private fun Table.addDownloadMusic() {
         val downloadMusicButton = "Download music".toTextButton()
         add(downloadMusicButton).colspan(2).row()
         val errorTable = Table()
@@ -435,11 +467,10 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             // So the whole game doesn't get stuck while downloading the file
             thread(name = "Music") {
                 try {
-                    val file = DropBox.downloadFile("/Music/thatched-villagers.mp3")
-                    musicLocation.write(file, false)
+                    previousScreen.game.musicController.downloadDefaultFile()
                     Gdx.app.postRunnable {
                         tabs.replacePage("Sound", getSoundTab())
-                        previousScreen.game.startMusic()
+                        previousScreen.game.musicController.chooseTrack(flags = EnumSet.of(MusicTrackChooserFlags.PlayDefaultFile, MusicTrackChooserFlags.PlaySingle))
                     }
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {
