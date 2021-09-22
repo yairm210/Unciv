@@ -3,14 +3,11 @@ package com.unciv.ui.newgamescreen
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -246,6 +243,14 @@ private class NationPickerPopup(
     private val playerPicker: PlayerPickerTable,
     private val player: Player
 ) : Popup(playerPicker.previousScreen as CameraStageBaseScreen) {
+    companion object {
+        // These are used for the Close/OK buttons in the lower left/right corners:
+        const val buttonsCircleSize = 70f
+        const val buttonsIconSize = 50f
+        const val buttonsOffsetFromEdge = 5f
+        val buttonsBackColor: Color = Color.BLACK.cpy().apply { a = 0.67f }
+    }
+
     private val previousScreen = playerPicker.previousScreen
     private val ruleset = previousScreen.ruleset
     // This Popup's body has two halves of same size, either side by side or arranged vertically
@@ -307,28 +312,29 @@ private class NationPickerPopup(
             nationListScroll.scrollY = nationListScrollY.coerceIn(0f, nationListScroll.maxY)
         }
 
-        val closeButton = "OtherIcons/Close".toImageButton(50f, Color.FIREBRICK)
+        val closeButton = "OtherIcons/Close".toImageButton(Color.FIREBRICK)
         closeButton.onClick { close() }
-        closeButton.setPosition(25f, 25f, Align.bottomLeft)
+        closeButton.setPosition(buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomLeft)
         innerTable.addActor(closeButton)
         keyPressDispatcher[KeyCharAndCode.BACK] = { close() }
 
-        val okButton = "OtherIcons/Checkmark".toImageButton(50f, Color.LIME)
+        val okButton = "OtherIcons/Checkmark".toImageButton(Color.LIME)
         okButton.onClick { returnSelected() }
-        okButton.setPosition(innerTable.width - 25f, 25f, Align.bottomRight)
+        okButton.setPosition(innerTable.width - buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomRight)
         innerTable.addActor(okButton)
 
         nationDetailsTable.onClick { returnSelected() }
     }
 
-    private fun String.toImageButton(size: Float, overColor: Color): ImageButton {
+    private fun String.toImageButton(overColor: Color): Group {
         val style = ImageButton.ImageButtonStyle()
         val image = ImageGetter.getDrawable(this)
         style.imageUp = image
         style.imageOver = image.tint(overColor)
         val button = ImageButton(style)
-        button.setSize(size, size)
-        return button
+        button.setSize(buttonsIconSize, buttonsIconSize)
+
+        return button.surroundWithCircle(buttonsCircleSize, false, buttonsBackColor)
     }
 
     private fun setNationDetails(nation: Nation) {
