@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
@@ -205,9 +206,18 @@ class ReligionManager {
     }
 
     fun getBeliefsToChooseAtFounding(): BeliefContainer {
+        val beliefsToChoose: Counter<BeliefType> = Counter()
+        beliefsToChoose.add(BeliefType.Founder, 1)
+        beliefsToChoose.add(BeliefType.Follower, 1)
         if (shouldChoosePantheonBelief)
-            return BeliefContainer(pantheonBeliefCount = 1, founderBeliefCount = 1, followerBeliefCount = 1)
-        return BeliefContainer(founderBeliefCount = 1, followerBeliefCount = 1)
+            beliefsToChoose.add(BeliefType.Pantheon, 1)
+            
+        for (unique in civInfo.getMatchingUniques("May choose [] additional [] beliefs when [] a religion")) {
+            if (unique.params[2] != "founding") continue
+            beliefsToChoose.add(BeliefType.valueOf(unique.params[1]), unique.params[0].toInt())
+        }
+        
+        return BeliefContainer(beliefsToChoose)
     }
 
     fun chooseBeliefs(iconName: String?, religionName: String?, beliefs: List<Belief>) {
@@ -289,7 +299,16 @@ class ReligionManager {
     }
 
     fun getBeliefsToChooseAtEnhancing(): BeliefContainer {
-        return BeliefContainer(followerBeliefCount = 1, enhancerBeliefCount = 1)
+        val beliefsToChoose: Counter<BeliefType> = Counter()
+        beliefsToChoose.add(BeliefType.Follower, 1)
+        beliefsToChoose.add(BeliefType.Enhancer, 1)
+
+        for (unique in civInfo.getMatchingUniques("May choose [] additional [] beliefs when [] a religion")) {
+            if (unique.params[2] != "enhancing") continue
+            beliefsToChoose.add(BeliefType.valueOf(unique.params[1]), unique.params[0].toInt())
+        }
+
+        return BeliefContainer(beliefsToChoose)
     }
 
     fun enhanceReligion(beliefs: List<Belief>) {

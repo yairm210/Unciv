@@ -7,6 +7,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
@@ -166,7 +167,7 @@ class ReligiousBeliefsPickerScreen (
         rightBeliefsToChoose.clear()
         val availableBeliefs = gameInfo.ruleSet.beliefs.values
             .filter { 
-                it.type == beliefType
+                (it.type == beliefType || beliefType == BeliefType.Any)
                 && gameInfo.religions.values.none {
                     religion -> religion.hasBelief(it.name)
                 }
@@ -204,22 +205,26 @@ class ReligiousBeliefsPickerScreen (
     
     private fun emptyBeliefButton(beliefType: BeliefType): Button {
         val contentsTable = Table()
-        contentsTable.add("Choose a [${beliefType.name}] belief!".toLabel())
+        if (beliefType != BeliefType.Any)
+            contentsTable.add("Choose a [${beliefType.name}] belief!".toLabel())
+        else
+            contentsTable.add("Choose any belief!".toLabel())
         return Button(contentsTable, skin)
     }
 }
 
 
-data class BeliefContainer(val pantheonBeliefCount: Int = 0, val founderBeliefCount: Int = 0, val followerBeliefCount: Int = 0, val enhancerBeliefCount: Int = 0) {
+data class BeliefContainer(val beliefAmounts: Counter<BeliefType>) {
     
-    val chosenBeliefs: Array<Belief?> = Array(pantheonBeliefCount + founderBeliefCount + followerBeliefCount + enhancerBeliefCount) { null }
+    val chosenBeliefs: Array<Belief?> = Array(beliefAmounts.values.sum()) { null }
     
     fun getBeliefTypeFromIndex(index: Int): BeliefType {
         return when {
-            index < pantheonBeliefCount -> BeliefType.Pantheon
-            index < pantheonBeliefCount + founderBeliefCount -> BeliefType.Founder
-            index < pantheonBeliefCount + founderBeliefCount + followerBeliefCount -> BeliefType.Follower
-            else -> BeliefType.Enhancer
+            index < beliefAmounts.filter { it.key <= BeliefType.Pantheon }.values.sum() -> BeliefType.Pantheon
+            index < beliefAmounts.filter { it.key <= BeliefType.Founder }.values.sum() -> BeliefType.Founder
+            index < beliefAmounts.filter { it.key <= BeliefType.Follower }.values.sum() -> BeliefType.Follower
+            index < beliefAmounts.filter { it.key <= BeliefType.Enhancer }.values.sum() -> BeliefType.Enhancer
+            else -> BeliefType.Any
         }
     }
 }

@@ -345,29 +345,20 @@ object NextTurnAutomation {
         // belief less than make the game crash. The `continue`s should only be reached whenever
         // there are not enough beliefs to choose, but there should be, as otherwise we could
         // not have used a great prophet to found/enhance our religion.
-        for (counter in 0 until beliefContainer.pantheonBeliefCount)
-            chosenBeliefs.add(
-                chooseBeliefOfType(civInfo, BeliefType.Pantheon, chosenBeliefs) ?: continue
-            )
-        for (counter in 0 until beliefContainer.followerBeliefCount)
-            chosenBeliefs.add(
-                chooseBeliefOfType(civInfo, BeliefType.Follower, chosenBeliefs) ?: continue
-            )
-        for (counter in 0 until beliefContainer.founderBeliefCount)
-            chosenBeliefs.add(
-                chooseBeliefOfType(civInfo, BeliefType.Founder, chosenBeliefs) ?: continue
-            )
-        for (counter in 0 until beliefContainer.enhancerBeliefCount)
-            chosenBeliefs.add(
-                chooseBeliefOfType(civInfo, BeliefType.Enhancer, chosenBeliefs) ?: continue
-            )
+        for (belief in BeliefType.values()) {
+            if (belief == BeliefType.None) continue
+            for (counter in 0 until (beliefContainer.beliefAmounts[belief] ?: 0))
+                chosenBeliefs.add(
+                    chooseBeliefOfType(civInfo, belief, chosenBeliefs) ?: continue
+                )
+        }
         return chosenBeliefs
     }
 
     private fun chooseBeliefOfType(civInfo: CivilizationInfo, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
         return civInfo.gameInfo.ruleSet.beliefs
             .filter { 
-                it.value.type == beliefType 
+                (it.value.type == beliefType || beliefType == BeliefType.Any) 
                 && !additionalBeliefsToExclude.contains(it.value)
                 && !civInfo.gameInfo.religions.values
                     .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value) 
