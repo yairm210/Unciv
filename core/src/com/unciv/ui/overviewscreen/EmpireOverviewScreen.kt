@@ -34,7 +34,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             Pair("Diplomacy", IconAndKey("OtherIcons/DiplomacyW", 'D')),
             Pair("Resources", IconAndKey("StatIcons/Happiness", 'R')),
             Pair("Religion", IconAndKey("StatIcons/Faith", 'F')),
-            Pair("Wonders", IconAndKey("OtherIcons/Star", 'W'))
+            Pair("Wonders", IconAndKey("OtherIcons/Wonders", 'W'))
         )
     }
 
