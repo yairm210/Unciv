@@ -42,7 +42,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain for Bowman
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
-* [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Quinquereme
+* [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Quinquereme // These credits are incorrect
+* [Norse Longship](https://thenounproject.com/zmccune/uploads/?i=1626302) by Zack McCune for Dromon
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
 * [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado for War Elephant
 * [Centaur](https://thenounproject.com/search/?q=horse+archer&i=1791296) by Michael Wohlwend for Horse Archer 
@@ -64,8 +65,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
 * [Elephant](https://thenounproject.com/term/elephant/1302749) By Angriawan Ditya Zulkarnain for African Forest Elephant
-* [Judge](https://thenounproject.com/search/?q=judge&i=1076388) By Krisztián Mátyás for Courthouse
-* [Petra](https://thenounproject.com/search/?q=petra&i=2855893) By Ranah Pixel Studio for Petra
+* [Horse](https://thenounproject.com/search/?q=horse&i=3270758) By Ranah Pixel Studio for Cataphract
 
 ### Medieval Era
 
@@ -244,6 +244,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Canoe](https://thenounproject.com/term/canoe/402285/) By Viktor Fedyuk (Tim P) for Floating Gardens
 * [Arc de Triomphe](https://thenounproject.com/search/?q=Arc+de+Triomphe&i=789893) By Andrejs Kirma, LV for National Epic
 * [Bank](https://thenounproject.com/term/bank/213472/) by By P Thanga Vignesh for National Treasury
+* [Judge](https://thenounproject.com/search/?q=judge&i=1076388) By Krisztián Mátyás for Courthouse
+* [Petra](https://thenounproject.com/search/?q=petra&i=2855893) By Ranah Pixel Studio for Petra
 
 ### Medieval Era
 
