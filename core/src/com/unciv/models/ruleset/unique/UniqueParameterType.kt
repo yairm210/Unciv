@@ -48,7 +48,7 @@ enum class UniqueParameterType(val parameterName:String) {
     CityFilter("cityFilter"){
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if (parameterText !in cityFilterMap)
+            if (parameterText !in cityFilterStrings)
                 return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
             return null
         }
@@ -89,7 +89,7 @@ enum class UniqueParameterType(val parameterName:String) {
             // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
         )
 
-        val cityFilterMap = setOf( // taken straight from the translation!
+        val cityFilterStrings = setOf( // taken straight from the translation!
             "in this city",
             "in all cities",
             "in all coastal cities",

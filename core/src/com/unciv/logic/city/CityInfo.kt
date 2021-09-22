@@ -657,6 +657,7 @@ class CityInfo {
         }
     }
 
+    // When adding here, add to UniqueParameterType.cityFilterStrings
     fun matchesFilter(filter: String, viewingCiv: CivilizationInfo = civInfo): Boolean {
         return when (filter) {
             "in this city" -> true
