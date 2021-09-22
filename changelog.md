@@ -1,3 +1,16 @@
+## 3.17.1
+
+We now find and report deprecated uniques in the command line!
+
+Resolved crash from unit civilopedia lines
+
+Music controller with fade-over and mod capabilities - By SomeTroglodyte
+
+By xlenstra:
+- Added support for conditionals to some more uniques
+- Save the sources of uniques with the uniques themselves
+- Fixed bug where a unit auto-exploring ancient ruins would in some cases disappear after upgrading
+
 ## 3.17.0
 
 Type-checking for Unique parameters in mods, basis for new Unique management
