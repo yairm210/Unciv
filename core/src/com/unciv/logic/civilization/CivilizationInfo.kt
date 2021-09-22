@@ -465,7 +465,7 @@ class CivilizationInfo {
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
         
         if (!(isCityState() && otherCiv.isMajorCiv())) return
-        if (warOnContact) return // No gift if we are just about to be at war
+        if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
 
         val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
 
