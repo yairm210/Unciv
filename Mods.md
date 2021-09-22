@@ -17,6 +17,15 @@ There are two kinds of mods:
 Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier* using a desktop device!
 
 
+## Audiovisual Mods
+
+I addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](./Audiovisual-Mods).
+
+Custom tilesets are closely related, see [Creating a custom tileset](./Creating-a-custom-tileset).
+
+Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen. Note that this feature includes graphics or sounds from the selected mod in _all_ games, even those started before installing the mod. In case of a mod bringing both changed rules and audiovisuals, the 'permanent' feature will include only the media on all games, to use the rules you will still need to select the mod for a new game.
+
+
 ## Mod names
 Mods need to conform to github repo naming rules, but best stay simple and use only letters, digits, and dashes `-`. Dashes are _automatically_ converted to spaces for display and use within Unciv. Many punctuation or extended unicode characters _might_ work, but at best potential users won't find them attractive, at worst we'll refuse support when you run into problems :smiling_imp: 
 
@@ -37,7 +46,6 @@ For an example, you can refer to [the example mod](https://github.com/yairm210/U
 
 If you want to add a new civilization as a mod, you should check out [the Civ making instructions](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization) to see what's required, or see the example Aliens mod =)
 
-
 ### More on Images and the texture atlas
 Images are combined (at runtime) into texture images with an 'atlas', so if you see "game.atlas" and "game.png" files being generated, now you know what for. Most mods will need only one pair of those, the base game has around four.
 
@@ -54,20 +62,6 @@ A mod can also be maps-only, if all you want to do is share your maps.
 When you've finished making your map in the Map Editor, save it, and it will be in the `/maps` folder of your game.
 
 Copy it to a `/maps` folder in your *mod*, and you're done!
-
-### Adding Wonder Splash Screens
-
-You can add wonder images to mods and they'll be displayed instead of the standard icon when a wonder is finished. The image needs to be a .png and 2:1 ratio so for example 200x100 px.
-
-Add the images to `/Images/WonderImages/`. They need to be named according to the name field in `Buildings.json`, so for example "Temple of Artemis.png" or "Stonehenge.png"
-
-Remember, to be compatible with mobile devices, a fresh atlas needs to be generated including these.
-
-### Adding Leader Portraits
-
-The base game comes without Leader Portraits, but is able to display them in greetings, Civilopedia, diplomacy screens, or the nation picker. A mod can supply these, by adding their images to `/Images/LeaderIcons/`. The file name must correspond exactly with the leader name of a nation as defined in Nations.json, or they will be ignored.
-
-These work best if they are square, between 100x100 and 256x256 pixels, and include some transparent border within that area.
 
 ## Getting your mod out there
 
@@ -116,5 +110,4 @@ Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
 A list of uniques and how to use them can be found [here](uniques)!
 
-Some images don't exist at all in the base game, but can be added in mods [see above](#adding-wonder-splash-screens) [or here](#adding-leader-portraits).
-For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-example) is mod showing how to add leader portraits, which can complement the base game.
+Some images don't exist at all in the base game, but can be added in mods. For more info, see [Audiovisual Mods](./Audiovisual-Mods).
