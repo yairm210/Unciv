@@ -175,6 +175,21 @@
 		"obsoleteTech": "Astronomy",
 		"attackSound": "nonmetalhit"
 	},
+	{
+		"name": "Dromon",
+		"unitType": "Ranged Water",
+		"uniqueTo": "Byzantium",
+		"replaces": "Trireme",
+		"movement": 4,
+		"strength": 8,
+		"rangedStrength": 10,
+		"cost": 56,
+		"requiredTech": "Sailing",
+		"uniques": ["Cannot enter ocean tiles", "+[50]% Strength vs [Water] units"],
+		"upgradesTo": "Galleass",
+		"obsoleteTech": "Astronomy",
+		"attackSound": "arrow"
+	},
 	/*
 	{
 		"name": "Galley",
@@ -331,7 +346,7 @@
 		"requiredTech": "Horseback Riding",
 		"requiredResource": "Horses",
 		"upgradesTo": "Knight",
-		"obsoleteTech": "Metallurgy",
+		"obsoleteTech": "Chivalry",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","-[33]% Strength vs [City]" ],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
@@ -346,7 +361,7 @@
 		"cost": 75,
 		"requiredTech": "Horseback Riding",
 		"upgradesTo": "Knight",
-		"obsoleteTech": "Metallurgy",
+		"obsoleteTech": "Chivalry",
 		"promotions": ["Great Generals I"],
 		"requiredResource": "Horses",
 		"uniques": ["Can move after attacking", "No defensive terrain bonus", "-[33]% Strength vs [City]"],
@@ -363,11 +378,27 @@
 		"cost": 100,
 		"requiredTech": "Horseback Riding",
 		"upgradesTo": "Knight",
-		"obsoleteTech": "Metallurgy",
+		"obsoleteTech": "Chivalry",
 		"promotions": ["Great Generals II"],
-		"uniques": ["Can move after attacking", "No defensive terrain bonus", "-[33]% Strength vs [City]","[-10]% Strength for enemy [Military] units in adjacent [All] tiles"],
+		"uniques": ["Can move after attacking", "No defensive terrain bonus", "-[33]% Strength vs [City]",
+			"[-10]% Strength for enemy [Military] units in adjacent [All] tiles"],
 		"hurryCostModifier": 20,
 		"attackSound": "elephant"
+	},
+	{
+		"name": "Cataphract",
+		"unitType": "Mounted",
+		"uniqueTo": "Byzantium",
+		"replaces": "Horseman",
+		"movement": 3,
+		"strength": 15,
+		"cost": 75,
+		"requiredTech": "Horseback Riding",
+		"upgradesTo": "Knight",
+		"obsoleteTech": "Chivalry",
+		"uniques": ["Can move after attacking", "-[25]% Strength vs [City]"],
+		"hurryCostModifier": 20,
+		"attackSound": "horse"
 	},
 	{
 		"name": "Catapult",
