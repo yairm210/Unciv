@@ -195,12 +195,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         var friendBonusText = "{When Friends:} ".tr()
         val friendBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
         val friendBonusStrings = getAdjustedBonuses(friendBonusObjects)
-        friendBonusText += friendBonusStrings.joinToString(separator = ", ") { it.tr() } ?: ""
+        friendBonusText += friendBonusStrings.joinToString(separator = ", ") { it.tr() }
 
         var allyBonusText = "{When Allies:} ".tr()
         val allyBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
         val allyBonusStrings = getAdjustedBonuses(allyBonusObjects)
-        allyBonusText += allyBonusStrings.joinToString(separator = ", ") { it.tr() } ?: ""
+        allyBonusText += allyBonusStrings.joinToString(separator = ", ") { it.tr() }
 
         val relationLevel = otherCivDiplomacyManager.relationshipLevel()
         if (relationLevel >= RelationshipLevel.Friend) {
@@ -263,6 +263,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                             improved = true
                         }
                     }
+                    else -> Unit  // To silence "exhaustive when" warning
                 }
             }
             // No matching unique, add it unmodified
@@ -540,7 +541,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val quest: Quest = viewingCiv.gameInfo.ruleSet.quests[assignedQuest.questName]!!
         val remainingTurns: Int = assignedQuest.getRemainingTurns()
-        val title = "[${quest.name}] (+[${quest.influece.toInt()}] influence)"
+        val title = "[${quest.name}] (+[${quest.influence.toInt()}] influence)"
         val description = assignedQuest.getDescription()
 
         questTable.add(title.toLabel(fontSize = 24)).row()

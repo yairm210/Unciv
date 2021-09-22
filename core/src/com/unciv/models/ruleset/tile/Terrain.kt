@@ -147,7 +147,7 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
     }
 
     fun setTransients() {
-        damagePerTurn = uniqueObjects.sumBy {
+        damagePerTurn = uniqueObjects.sumOf {
             if (it.placeholderText == "Units ending their turn on this terrain take [] damage") it.params[0].toInt() else 0
         }
     }

@@ -341,7 +341,7 @@ class QuestManager {
 
     /** Increments [assignedQuest.assignee][AssignedQuest.assignee] influence on [civInfo] and adds a [Notification] */
     private fun giveReward(assignedQuest: AssignedQuest) {
-        val rewardInfluence = civInfo.gameInfo.ruleSet.quests[assignedQuest.questName]!!.influece
+        val rewardInfluence = civInfo.gameInfo.ruleSet.quests[assignedQuest.questName]!!.influence
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
 
         civInfo.getDiplomacyManager(assignedQuest.assignee).addInfluence(rewardInfluence)

@@ -3,7 +3,6 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -19,9 +18,7 @@ import com.unciv.models.ruleset.Ruleset.CheckModLinksStatus
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
-import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
-import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
@@ -33,7 +30,6 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.math.floor
-import kotlin.math.roundToInt
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /**

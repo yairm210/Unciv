@@ -910,7 +910,7 @@ class MapUnit {
             }
         }
         // Otherwise fall back to the defined standard damage
-        return  tile.getAllTerrains().sumBy { it.damagePerTurn }
+        return  tile.getAllTerrains().sumOf { it.damagePerTurn }
     }
 
     private fun doCitadelDamage() {
