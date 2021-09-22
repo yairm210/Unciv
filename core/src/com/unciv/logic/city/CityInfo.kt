@@ -161,6 +161,7 @@ class CityInfo {
         civInfo.civConstructions.tryAddFreeBuildings()
 
         for (unique in getMatchingUniques(UniqueType.GainFreeBuildings)) {
+            if (!unique.conditionalsApply(civInfo, this)) continue
             val freeBuildingName = unique.params[0]
             if (matchesFilter(unique.params[1])) {
                 if (!cityConstructions.isBuilt(freeBuildingName))
@@ -289,6 +290,7 @@ class CityInfo {
             val tileImprovement = tileInfo.getTileImprovement()
             for (unique in tileImprovement!!.uniqueObjects) {
                 if (unique.matches(UniqueType.ProvidesResources, getRuleset())) {
+                    if (!unique.conditionalsApply(civInfo, this)) continue
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(
                         resource,
@@ -315,6 +317,7 @@ class CityInfo {
         }
         
         for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources)) { // E.G "Provides [1] [Iron]"
+            if (!unique.conditionalsApply(civInfo, this)) continue
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(

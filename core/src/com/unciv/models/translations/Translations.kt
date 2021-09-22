@@ -212,7 +212,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals   
-        const val englishConditionalOrderingString = "<if this city has at least [amount] specialists> <when at war> <when not at war>"
+        const val englishConditionalOrderingString = "<if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
     }
@@ -271,7 +271,7 @@ fun String.tr(): String {
          * together into the final fully translated string.
          */
         
-        val translatedBaseText = this.removeConditionals().tr()
+        var translatedBaseUnique = this.removeConditionals().tr()
         
         val conditionals = this.getConditionals().map { it.placeholderText }
         val conditionsWithTranslation: HashMap<String, String> = hashMapOf()
@@ -300,9 +300,11 @@ fun String.tr(): String {
 
         // After that, add the translation of the base unique either before or after these conditionals
         if (UncivGame.Current.translations.placeConditionalsAfterUnique(language)) {
-            translatedConditionals.add(0, translatedBaseText)
+            translatedConditionals.add(0, translatedBaseUnique)
         } else {
-            translatedConditionals.add(translatedBaseText)
+            if (UncivGame.Current.translations.shouldCapitalize(language) && translatedBaseUnique[0].isUpperCase())
+                translatedBaseUnique = translatedBaseUnique.replaceFirstChar { it.lowercase() }
+            translatedConditionals.add(translatedBaseUnique)
         }
         
         var fullyTranslatedString = translatedConditionals.joinToString(UncivGame.Current.translations.getSpaceEquivalent(language))
