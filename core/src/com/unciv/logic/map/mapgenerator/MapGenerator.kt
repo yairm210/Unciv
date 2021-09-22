@@ -19,7 +19,7 @@ import kotlin.random.Random
 class MapGenerator(val ruleset: Ruleset) {
     companion object {
         // temporary instrumentation while tuning/debugging
-        const val consoleOutput = true
+        const val consoleOutput = false
         private const val consoleTimings = false
     }
 

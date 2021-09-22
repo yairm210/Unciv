@@ -120,7 +120,8 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
         if (turnsInto == null && displayAs(TerrainType.Land, ruleset) && !isRough())
             textList += FormattedLine("Open terrain")   // Rough is in uniques
         uniqueObjects.forEach {
-            textList += FormattedLine(it)
+            if (it.type?.hideFromCivilopedia() != true)
+                textList += FormattedLine(it)
         }
 
         textList += FormattedLine()

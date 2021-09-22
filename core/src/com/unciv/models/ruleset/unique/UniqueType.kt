@@ -8,32 +8,32 @@ enum class UniqueTarget {
     /** Buildings, units, nations, policies, religions, techs etc.
      * Basically anything caught by CivInfo.getMatchingUniques. */
     Global,
-    
+
     // Civilization-specific
     Nation,
     Era,
     Tech,
     Policy,
     Belief,
-    
+
     // City-specific
     Building,
     Wonder,
-    
+
     // Unit-specific
     Unit,
     UnitType,
     Promotion,
-    
+
     // Tile-specific
     Terrain,
     Improvement,
     Resource,
     Ruins,
-    
+
     // Other
     CityState,
-    ModOptions,    
+    ModOptions,
     Conditional,
 }
 
@@ -135,4 +135,8 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
         }
         return errorList
     }
+
+    /** Hide from Civilopedia */
+    // Hardcoded fr now - could be an additional direct property of the enum instead
+    fun hideFromCivilopedia() = this in NaturalWonderNeighbors..NaturalWonderConvertNeighborsExcept
 }
