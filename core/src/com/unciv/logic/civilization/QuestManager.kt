@@ -257,7 +257,7 @@ class QuestManager {
 
         for (assignee in assignees) {
 
-            val playerReligion = civInfo.gameInfo.religions.values.firstOrNull { it.foundingCivName == assignee.civName }
+            val playerReligion = civInfo.gameInfo.religions.values.firstOrNull { it.foundingCivName == assignee.civName && it.isMajorReligion() }
 
             var data1 = ""
             var data2 = ""
@@ -278,7 +278,8 @@ class QuestManager {
                 QuestName.PledgeToProtect.value -> data1 = getMostRecentBully()!!
                 QuestName.GiveGold.value -> data1 = getMostRecentBully()!!
                 QuestName.DenounceCiv.value -> data1 = getMostRecentBully()!!
-                QuestName.SpreadReligion.value -> data1 = playerReligion!!.name
+                QuestName.SpreadReligion.value -> { data1 = playerReligion!!.getReligionDisplayName() // For display
+                                                    data2 = playerReligion.name } // To check completion
                 QuestName.ContestCulture.value -> data1 = assignee.policies.totalCulture.toString()
                 QuestName.ContestFaith.value -> data1 = assignee.religionManager.totalFaith.toString()
                 QuestName.ContestTech.value -> data1 = assignee.tech.getNumberOfTechsResearched().toString()
@@ -325,7 +326,9 @@ class QuestManager {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
             QuestName.Route.value -> !challenger.cities.none()
                     && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
-                    && civInfo.getCapital().getCenterTile().getContinent() == challenger.getCapital().getCenterTile().getContinent()
+                    // Need to have a city within 7 tiles on the same continent
+                    && challenger.cities.any { it.getCenterTile().aerialDistanceTo(civInfo.getCapital().getCenterTile()) <= 7
+                        && it.getCenterTile().getContinent() == civInfo.getCapital().getCenterTile().getContinent() }
             QuestName.ConnectResource.value -> getResourceForQuest(challenger) != null
             QuestName.ConstructWonder.value -> getWonderToBuildForQuest(challenger) != null
             QuestName.GreatPerson.value -> getGreatPersonForQuest(challenger) != null
@@ -356,7 +359,7 @@ class QuestManager {
             QuestName.FindNaturalWonder.value -> assignee.naturalWonders.contains(assignedQuest.data1)
             QuestName.PledgeToProtect.value -> assignee in civInfo.getProtectorCivs()
             QuestName.DenounceCiv.value -> assignee.getDiplomacyManager(assignedQuest.data1).hasFlag(DiplomacyFlags.Denunciation)
-            QuestName.SpreadReligion.value -> civInfo.getCapital().religion.getMajorityReligion() == civInfo.gameInfo.religions[assignedQuest.data1]
+            QuestName.SpreadReligion.value -> civInfo.getCapital().religion.getMajorityReligion() == civInfo.gameInfo.religions[assignedQuest.data2]
             else -> false
         }
     }
@@ -646,7 +649,10 @@ class QuestManager {
                     building.isWonder &&
                             (building.requiredTech == null || challenger.tech.isResearched(building.requiredTech!!)) &&
                             civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
+                            // Can't be disabled
                             && building.name !in startingEra.startingObsoleteWonders
+                            && (civInfo.gameInfo.gameParameters.religionEnabled || !building.hasUnique("Hidden when religion is disabled"))
+                            // Can't be more than 25% built anywhere
                             && civInfo.gameInfo.getCities().none {
                         it.cityConstructions.getWorkDone(building.name) * 3 > it.cityConstructions.getRemainingWork(building.name) }
                 }

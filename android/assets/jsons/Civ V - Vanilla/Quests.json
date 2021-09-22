@@ -40,13 +40,13 @@
   /* G&K */
   {
     "name": "Give Gold",
-    "description": "We are suffering great poverty, and unless we receive a sum of [250] Gold, it's only a matter of time before we collapse.",
+    "description": "We are suffering great poverty after being robbed by [civName], and unless we receive a sum of Gold, it's only a matter of time before we collapse.",
     "influence": 20,
     "duration": 30
   },
   {
     "name": "Pledge to Protect",
-    "description": "Our peoples deserve to be protected by the likes of you. By signing a Pledge of Protection, you'll confirm the bond that ties us.",
+    "description": "We need your protection to stop the aggressions of [civName]. By signing a Pledge of Protection, you'll confirm the bond that ties us.",
     "influence": 20,
     "duration": 30
   },
@@ -86,12 +86,12 @@
   },
   {
     "name": "Denounce Civilization",
-    "description": "",
+    "description": "We have been forced to pay tribute to [civName]! We need you to tell the world of their ill deeds.",
     "duration": 30
   },
   {
     "name": "Spread Religion",
-    "description": ""
+    "description": "We have heard the tenets of [religionName] and are most curious. Will you send missionaries to teach us about your religion?"
   },
   /* BNW */
   /*
