@@ -556,6 +556,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Three Crowns](https://thenounproject.com/search/?q=three+crowns&i=1155972) by Daniel Falk for Sweden
 * [Flag of Austria](https://thenounproject.com/term/flag-of-austria/3292053/) by Olena Panasovska, UA for Austria
 * [Elephant](https://thenounproject.com/term/elephant/564421/) by Hea Poh Lin for Carthage
+* [Orthodox Cross](https://thenounproject.com/search/?q=orthodox&i=2069822) by Avana Vana for Byzantium
 
 
 ## Promotions
