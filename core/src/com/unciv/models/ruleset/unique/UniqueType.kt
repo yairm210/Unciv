@@ -4,9 +4,9 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
+/** Buildings, units, nations, policies, religions, techs etc.
+ * Basically anything caught by CivInfo.getMatchingUniques. */
 enum class UniqueTarget {
-    /** Buildings, units, nations, policies, religions, techs etc.
-     * Basically anything caught by CivInfo.getMatchingUniques. */
     Global,
 
     // Civilization-specific
@@ -71,7 +71,8 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
 
-    NaturalWonderNeighbors("Must be adjacent to [amount] to [amount] [terrainFilter] tiles", UniqueTarget.Terrain),
+    NaturalWonderNeighborCount("Must be adjacent to [amount] [terrainFilter] tiles", UniqueTarget.Terrain),
+    NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [terrainFilter] tiles", UniqueTarget.Terrain),
     NaturalWonderLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
     NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain),
     NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain),
@@ -135,8 +136,4 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
         }
         return errorList
     }
-
-    /** Hide from Civilopedia */
-    // Hardcoded fr now - could be an additional direct property of the enum instead
-    fun hideFromCivilopedia() = this in NaturalWonderNeighbors..NaturalWonderConvertNeighborsExcept
 }

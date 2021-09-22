@@ -120,8 +120,7 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
         if (turnsInto == null && displayAs(TerrainType.Land, ruleset) && !isRough())
             textList += FormattedLine("Open terrain")   // Rough is in uniques
         uniqueObjects.forEach {
-            if (it.type?.hideFromCivilopedia() != true)
-                textList += FormattedLine(it)
+            textList += FormattedLine(it)
         }
 
         textList += FormattedLine()
@@ -148,7 +147,7 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
     }
 
     fun setTransients() {
-        damagePerTurn = uniqueObjects.sumBy {
+        damagePerTurn = uniqueObjects.sumOf {
             if (it.placeholderText == "Units ending their turn on this terrain take [] damage") it.params[0].toInt() else 0
         }
     }

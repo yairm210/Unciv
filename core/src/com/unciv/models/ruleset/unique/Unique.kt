@@ -26,7 +26,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     /** We can't save compliance errors in the unique, since it's ruleset-dependant */
     fun matches(uniqueType: UniqueType, ruleset: Ruleset) = isOfType(uniqueType)
         && uniqueType.getComplianceErrors(this, ruleset).isEmpty()
-    
+
     // This function will get LARGE, as it will basically check for all conditionals if they apply
     // This will require a lot of parameters to be passed (attacking unit, tile, defending unit, civInfo, cityInfo, ...)
     // I'm open for better ideas, but this was the first thing that I could think of that would
@@ -37,7 +37,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
         return true
     }
-    
+
     private fun conditionalApplies(
         condition: Unique,
         civInfo: CivilizationInfo? = null,
@@ -53,6 +53,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             else -> false
         }
     }
+
+    override fun toString() = if (type == null) "\"$text\"" else "$type (\"$text\")"
 }
 
 
