@@ -23,8 +23,11 @@ class GameSettings {
     var tutorialsShown = HashSet<String>()
     var tutorialTasksCompleted = HashSet<String>()
     var hasCrashedRecently = false
+
     var soundEffectsVolume = 0.5f
     var musicVolume = 0.5f
+    var pauseBetweenTracks = 10
+
     var turnsBetweenAutosaves = 1
     var tileSet: String = "FantasyHex"
     var showTutorials: Boolean = true
