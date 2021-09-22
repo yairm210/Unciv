@@ -58,23 +58,15 @@ internal object ImagePacker {
         val defaultSettings = getDefaultSettings()
 
         // Scan for Image folders and build one atlas each
-        if (File("../Images").exists()) { // So we don't run this from within a fat JAR
-            val atlasList = mutableListOf<String>()
-            for ((file, packFileName) in imageFolders()) {
-                atlasList += packFileName
-                packImagesIfOutdated(defaultSettings, file, ".", packFileName)
-            }
-            atlasList.remove("game")
-            File("Atlases.json").writeText(atlasList.sorted().joinToString(",","[","]"))
-        }
+        packImagesPerMod("..", ".", defaultSettings)
 
         // pack for mods as well
         val modDirectory = File("mods")
         if (modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!) {
-                if (!mod.isHidden && File(mod.path + "/Images").exists()) {
+                if (!mod.isHidden) {
                     try {
-                        packImagesIfOutdated(defaultSettings, mod.path + "/Images", mod.path, "game")
+                        packImagesPerMod(mod.path, mod.path, defaultSettings)
                     } catch (ex: Throwable) {
                         println("Exception in ImagePacker: ${ex.message}")
                     }
@@ -84,6 +76,20 @@ internal object ImagePacker {
 
         val texturePackingTime = System.currentTimeMillis() - startTime
         println("Packing textures - " + texturePackingTime + "ms")
+    }
+
+    // Scan multiple image folders and generate an atlas for each - if outdated
+    private fun packImagesPerMod(input: String, output: String, defaultSettings: TexturePacker.Settings) {
+        if (!File("$input${File.separator}Images").exists()) return  // So we don't run this from within a fat JAR
+        val atlasList = mutableListOf<String>()
+        for ((file, packFileName) in imageFolders(input)) {
+            atlasList += packFileName
+            packImagesIfOutdated(defaultSettings, file, output, packFileName)
+        }
+        atlasList.remove("game")
+        val listFile = File("$output${File.separator}Atlases.json")
+        if (atlasList.isEmpty()) listFile.delete()
+        else listFile.writeText(atlasList.sorted().joinToString(",","[","]"))
     }
 
     // Process one Image folder, checking for atlas older than contained images first
@@ -112,13 +118,13 @@ internal object ImagePacker {
 
     // Iterator providing all Image folders to process with the destination atlas name
     private data class ImageFolderResult(val folder: String, val atlasName: String)
-    private fun imageFolders() = sequence {
-        val parent = File("..")
+    private fun imageFolders(path: String) = sequence {
+        val parent = File(path)
         for (folder in parent.listFiles()!!) {
             if (!folder.isDirectory) continue
             if (folder.nameWithoutExtension != "Images") continue
             val atlasName = if (folder.name == "Images") "game" else folder.extension
-            yield(ImageFolderResult("..${File.separator}${folder.name}", atlasName))
+            yield(ImageFolderResult(folder.path, atlasName))
         }
     }
 }
