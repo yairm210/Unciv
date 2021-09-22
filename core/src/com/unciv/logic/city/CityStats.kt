@@ -283,10 +283,16 @@ class CityStats(val cityInfo: CityInfo) {
                     stats.production += unique.params[0].toInt()
             }
 
-
-        // For instance "+[50]% [Production]
-        for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
+        for (unique in uniques.filter { it.isOfType(UniqueType.StatPercentBonus) }) {
+            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        }
+        
+        // Deprecated since 3.17.0
+            // For instance "+[50]% [Production]
+            for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
+                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        //
 
         // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
         // For instance "+[50]% [Production] [in all cities]
@@ -298,7 +304,7 @@ class CityStats(val cityInfo: CityInfo) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
-        // Used for specific buildings (ex.: +100% Production when constructing a Factory)
+        // Used for specific buildings (e.g. +100% Production when constructing a Factory)
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing a []" }) {
             if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
@@ -316,10 +322,12 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.production += unique.params[0].toInt()
         }
 
-        if (cityInfo.civInfo.getHappiness() >= 0) {
-            for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
-                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-        }
+        // Deprecated since 3.17.1
+            if (cityInfo.civInfo.getHappiness() >= 0) {
+                for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
+                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+            }
+        //
         
         for (unique in uniques.filter { it.placeholderText == "[]% [] from every follower, up to []%" })
             stats.add(

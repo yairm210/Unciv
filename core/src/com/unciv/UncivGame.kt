@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
@@ -15,6 +14,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
+import com.unciv.ui.audio.MusicController
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
@@ -37,6 +37,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings: GameSettings
     lateinit var crashController: CrashController
+    lateinit var musicController: MusicController
+
     /**
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
@@ -57,8 +59,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     lateinit var worldScreen: WorldScreen
 
-    var music: Music? = null
-    val musicLocation = "music/thatched-villagers.mp3"
     var isInitialized = false
 
 
@@ -86,6 +86,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          */
         settings = GameSaver.getGeneralSettings() // needed for the screen
         screen = LoadingScreen()  // NOT dependent on any atlas or skin
+        musicController = MusicController()  // early, but at this point does only copy volume from settings
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
@@ -110,10 +111,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             // This stuff needs to run on the main thread because it needs the GL context
             Gdx.app.postRunnable {
+                musicController.chooseTrack()
+
                 ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
-
-
-                thread(name="Music") { startMusic() }
 
                 if (settings.isFreshlyCreated) {
                     setScreen(LanguagePickerScreen())
@@ -127,24 +127,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun loadGame(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
         ImageGetter.setNewRuleset(gameInfo.ruleSet)
+        musicController.setModList(gameInfo.gameParameters.mods)
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
         if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
             setScreen(PlayerReadyScreen(gameInfo, gameInfo.getPlayerToViewAs()))
         else {
             worldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
             setWorldScreen()
-        }
-    }
-
-    fun startMusic() {
-        if (settings.musicVolume < 0.01) return
-
-        val musicFile = Gdx.files.local(musicLocation)
-        if (musicFile.exists()) {
-            music = Gdx.audio.newMusic(musicFile)
-            music!!.isLooping = true
-            music!!.volume = 0.4f * settings.musicVolume
-            music!!.play()
         }
     }
 
@@ -178,13 +167,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun dispose() {
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
+        if (::musicController.isInitialized) musicController.shutdown()
 
         // Log still running threads (on desktop that should be only this one and "DestroyJavaVM")
         val numThreads = Thread.activeCount()
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
 
-        if (isGameInfoInitialized()){
+        if (isGameInfoInitialized()) {
             val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
             if (autoSaveThread != null && autoSaveThread.isAlive) {
                 // auto save is already in progress (e.g. started by onPause() event)
@@ -217,4 +207,3 @@ private class LoadingScreen : CameraStageBaseScreen() {
         stage.addActor(happinessImage)
     }
 }
-
