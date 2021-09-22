@@ -135,9 +135,7 @@ class GameInfo {
     fun isReligionEnabled(): Boolean {
         if (ruleSet.eras[gameParameters.startingEra]!!.hasUnique("Starting in this era disables religion")
             || ruleSet.modOptions.uniques.contains(ModOptionsConstants.disableReligion)
-        ) {
-            return false
-        }
+        ) return false
         return gameParameters.religionEnabled
     }
 

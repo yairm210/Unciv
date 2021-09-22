@@ -70,6 +70,9 @@ object TranslationFileWriter {
             if (templateFile.exists())
                 linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
+            linesToTranslate += "\n######### City filters ###########\n"
+            linesToTranslate.addAll(UniqueParameterType.cityFilterStrings.map { "$it = " })
+
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
                         generateStringsFromJSONs(Gdx.files.local("jsons/${baseRuleset.fullName}"))
@@ -273,7 +276,7 @@ object TranslationFileWriter {
                             parameter in buildingMap -> "building"
                             parameter in unitTypeMap -> "unitType"
                             Stats.isStats(parameter) -> "stats"
-                            parameter in UniqueParameterType.cityFilterMap -> "cityFilter"
+                            parameter in UniqueParameterType.cityFilterStrings -> "cityFilter"
                             else -> "param"
                         }
                         if (parameterName in existingParameterNames) {
