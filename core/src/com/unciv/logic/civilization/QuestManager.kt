@@ -413,8 +413,8 @@ class QuestManager {
             return ""
 
         return when (questName){
-            QuestName.ContestCulture.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Culture generated."
-            QuestName.ContestFaith.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Faith generated."
+            QuestName.ContestCulture.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} [Culture] generated."
+            QuestName.ContestFaith.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} [Faith] generated."
             QuestName.ContestTech.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Technologies discovered."
             else -> ""
         }
