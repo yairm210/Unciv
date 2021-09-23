@@ -16,7 +16,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
@@ -235,7 +234,7 @@ class WonderOverviewTable(
                 if (wonder.location != null)
                     locationLabel.onClick{
                         UncivGame.Current.setWorldScreen()
-                        UncivGame.Current.worldScreen.mapHolder.setCenterPosition(wonder.location!!.position)
+                        UncivGame.Current.worldScreen.mapHolder.setCenterPosition(wonder.location.position)
                     }
                 add(locationLabel).fillY()
             }
