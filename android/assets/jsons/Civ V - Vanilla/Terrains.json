@@ -251,7 +251,7 @@
 		"impassable": true,
 		"unbuildable": true,
 		"uniques": ["Must be adjacent to [0] [Coast] tiles",
-			"Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game"],
+			"Grants [Rejuvenation] ([all healing effects doubled]) to adjacent [{Military} {Land}] units for the rest of the game"],
 		"weight": 1
 	},
 	{
@@ -443,7 +443,7 @@
 		"uniques": ["Must be adjacent to [0] [Coast] tiles",
 			"Must be adjacent to [2] to [6] [Hill] tiles",
 			"Must be adjacent to [0] to [2] [Mountain] tiles",
-			"Grants Altitude Training (double movement and +10% Strength in hills) to adjacent land units for the rest of the game"], //ToDo
+			"Grants [Altitude Training] ([double movement and +10% Strength in hills]) to adjacent [Land] units for the rest of the game"], //ToDo
 		"weight": 10
 	}
 	*/
