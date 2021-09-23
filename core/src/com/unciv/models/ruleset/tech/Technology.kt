@@ -23,7 +23,8 @@ class Technology: INamed, ICivilopediaText, IHasUniques {
     var cost: Int = 0
     var prerequisites = HashSet<String>()
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Tech, name) } }
+    override val uniqueTarget = UniqueTarget.Tech
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
 
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0

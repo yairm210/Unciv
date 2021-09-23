@@ -7,13 +7,14 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
-import java.util.ArrayList
+import kotlin.collections.ArrayList
 
 class Belief : INamed, ICivilopediaText, IHasUniques {
     override var name: String = ""
     var type: BeliefType = BeliefType.None
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Belief, name) } }
+    override val uniqueTarget = UniqueTarget.Belief
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
 
     override var civilopediaText = listOf<FormattedLine>()
 

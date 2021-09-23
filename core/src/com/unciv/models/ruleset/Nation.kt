@@ -44,7 +44,8 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     lateinit var outerColor: List<Int>
     var uniqueName = ""
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Nation, name) } }
+    override val uniqueTarget = UniqueTarget.Nation
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()

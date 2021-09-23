@@ -12,7 +12,8 @@ open class Policy : INamed, IHasUniques, ICivilopediaText {
 
     override lateinit var name: String
     override var uniques: ArrayList<String> = ArrayList()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Policy, name) } }
+    override val uniqueTarget = UniqueTarget.Policy
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
     var row: Int = 0
     var column: Int = 0
     var requires: ArrayList<String>? = null

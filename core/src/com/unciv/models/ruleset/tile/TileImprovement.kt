@@ -23,7 +23,8 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
     var techRequired: String? = null
     var uniqueTo:String? = null
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Improvement, name) } }
+    override val uniqueTarget = UniqueTarget.Improvement
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
     val shortcutKey: Char? = null
     val turnsToBuild: Int = 0 // This is the base cost.
 

@@ -51,6 +51,8 @@ class ModOptions : IHasUniques {
     override var uniques = ArrayList<String>()
     // If this is delegated with "by lazy", the mod download process crashes and burns
     override var uniqueObjects: List<Unique> = listOf()
+    override val uniqueTarget = UniqueTarget.ModOptions
+
 }
 
 class Ruleset {

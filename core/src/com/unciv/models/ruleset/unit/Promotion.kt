@@ -23,7 +23,8 @@ class Promotion : INamed, ICivilopediaText, IHasUniques {
         if (effect.isNotEmpty()) yield(effect)
         yieldAll(uniques)
     }
-    override val uniqueObjects: List<Unique> by lazy { uniquesWithEffect().map { Unique(it, UniqueTarget.Promotion, name) }.toList() }
+    override val uniqueTarget = UniqueTarget.Promotion
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
 
     override var civilopediaText = listOf<FormattedLine>()
 
