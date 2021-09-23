@@ -105,6 +105,8 @@ class MusicTrackController(private var volume: Float) {
             return
         }
         fadeVolume = 0f
+        music!!.volume = 0f
+        music!!.pause()
         state = State.Idle
     }
 
