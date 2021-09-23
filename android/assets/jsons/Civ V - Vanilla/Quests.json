@@ -36,7 +36,7 @@
   {
     "name": "Find Natural Wonder",
     "description": "Send your best explorers on a quest to discover Natural Wonders. Nobody knows the location of [naturalWonder] yet."
-  }
+  },
   /* G&K */
   {
     "name": "Give Gold",
@@ -73,7 +73,7 @@
   },
   {
     "name": "Invest",
-    "description": "Our people are rejoicing thanks to a tourism boom. For a certain amount of time, any Gold donation will yield 50% extra Influence.",
+    "description": "Our people are rejoicing thanks to a tourism boom. For a certain amount of time, any Gold donation will yield [50]% extra Influence.",
     "type": "Global",
     "influence": 0,
     "duration": 30,
@@ -81,7 +81,7 @@
   },
   {
     "name": "Bully City State",
-    "description": "We are tired of the pretensions of [cityState]. If someone were to put them in their place by Demanding Tribute from them, they would be rewarded."
+    "description": "We are tired of the pretensions of [cityState]. If someone were to put them in their place by Demanding Tribute from them, they would be rewarded.",
     "duration": 30
   },
   {
@@ -92,7 +92,7 @@
   {
     "name": "Spread Religion",
     "description": "We have heard the tenets of [religionName] and are most curious. Will you send missionaries to teach us about your religion?"
-  },
+  }
   /* BNW */
   /*
   {

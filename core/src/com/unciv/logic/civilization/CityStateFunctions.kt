@@ -127,8 +127,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
         for (unique in donorCiv.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
-        if (civInfo.questManager.lookingForInvestment(donorCiv.civName))
-            influenceGained *= 1.5f
+
+        // Bonus due to "Invest" quests
+        influenceGained *= civInfo.questManager.getInvestmentMultiplier(donorCiv.civName)
+
         influenceGained -= influenceGained % 5
         if (influenceGained < 5f) influenceGained = 5f
         return influenceGained.toInt()

@@ -6,7 +6,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
@@ -15,7 +14,9 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.randomWeighted
+import com.unciv.ui.utils.toPercent
 import kotlin.math.max
 import kotlin.random.Random
 
@@ -39,8 +40,6 @@ class QuestManager {
 
         const val GLOBAL_QUEST_MAX_ACTIVE = 1
         const val INDIVIDUAL_QUEST_MAX_ACTIVE = 2
-
-        const val CONTEST_LENGTH = 30
     }
 
     /** Civilization object holding and dispatching quests */
@@ -62,8 +61,14 @@ class QuestManager {
     /** Returns true if [civInfo] has asked anyone to conquer [target] */
     fun wantsDead(target: String): Boolean = assignedQuests.any { it.questName == QuestName.ConquerCityState.value && it.data1 == target }
 
-    /** Returns true if [civInfo] will give extra influence for gold to [donor] */
-    fun lookingForInvestment(donor: String): Boolean = assignedQuests.any { it.questName == QuestName.Invest.value && it.assignee == donor }
+    /** Returns the influence multiplier for [donor] from a Investment quest that [civInfo] might have (assumes only one) */
+    fun getInvestmentMultiplier(donor: String): Float {
+        val investmentQuest = assignedQuests.firstOrNull { it.questName == QuestName.Invest.value && it.assignee == donor }
+        return if (investmentQuest == null)
+            1f
+        else
+            investmentQuest.data1.toPercent()
+    }
 
     fun clone(): QuestManager {
         val toReturn = QuestManager()
@@ -280,9 +285,10 @@ class QuestManager {
                 QuestName.DenounceCiv.value -> data1 = getMostRecentBully()!!
                 QuestName.SpreadReligion.value -> { data1 = playerReligion!!.getReligionDisplayName() // For display
                                                     data2 = playerReligion.name } // To check completion
-                QuestName.ContestCulture.value -> data1 = assignee.policies.totalCulture.toString()
-                QuestName.ContestFaith.value -> data1 = assignee.religionManager.totalFaith.toString()
+                QuestName.ContestCulture.value -> data1 = assignee.totalCultureForContests.toString()
+                QuestName.ContestFaith.value -> data1 = assignee.totalFaithForContests.toString()
                 QuestName.ContestTech.value -> data1 = assignee.tech.getNumberOfTechsResearched().toString()
+                QuestName.Invest.value -> data1 = quest.description.getPlaceholderParameters().first()
             }
 
             val newQuest = AssignedQuest(
@@ -320,7 +326,7 @@ class QuestManager {
             return false
 
         val mostRecentBully = getMostRecentBully()
-        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull() { it.foundingCivName == challenger.civName }?.name
+        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull() { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
 
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
@@ -399,8 +405,8 @@ class QuestManager {
     private fun getScoreForQuest(assignedQuest: AssignedQuest): Int {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
-            QuestName.ContestCulture.value -> assignee.policies.totalCulture - assignedQuest.data1.toInt()
-            QuestName.ContestFaith.value -> assignee.religionManager.totalFaith - assignedQuest.data1.toInt()
+            QuestName.ContestCulture.value -> assignee.totalCultureForContests - assignedQuest.data1.toInt()
+            QuestName.ContestFaith.value -> assignee.totalFaithForContests - assignedQuest.data1.toInt()
             QuestName.ContestTech.value -> assignee.tech.getNumberOfTechsResearched() - assignedQuest.data1.toInt()
             else -> 0
         }
@@ -646,15 +652,18 @@ class QuestManager {
         val startingEra = civInfo.gameInfo.ruleSet.eras[civInfo.gameInfo.gameParameters.startingEra]!!
         val wonders = civInfo.gameInfo.ruleSet.buildings.values
                 .filter { building ->
-                    building.isWonder &&
-                            (building.requiredTech == null || challenger.tech.isResearched(building.requiredTech!!)) &&
-                            civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
+                            // Buildable wonder
+                            building.isWonder
+                            && (building.requiredTech == null || challenger.tech.isResearched(building.requiredTech!!))
+                            && civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
                             // Can't be disabled
                             && building.name !in startingEra.startingObsoleteWonders
                             && (civInfo.gameInfo.gameParameters.religionEnabled || !building.hasUnique("Hidden when religion is disabled"))
                             // Can't be more than 25% built anywhere
                             && civInfo.gameInfo.getCities().none {
                         it.cityConstructions.getWorkDone(building.name) * 3 > it.cityConstructions.getRemainingWork(building.name) }
+                            // Can't be a unique wonder
+                            && building.uniqueTo == null
                 }
 
         if (wonders.isNotEmpty())

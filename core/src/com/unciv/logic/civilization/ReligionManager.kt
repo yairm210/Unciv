@@ -14,7 +14,6 @@ class ReligionManager {
     lateinit var civInfo: CivilizationInfo
 
     var storedFaith = 0
-    var totalFaith = 0 // For contests
 
     @Transient
     var religion: Religion? = null
@@ -50,7 +49,6 @@ class ReligionManager {
         clone.foundingCityId = foundingCityId
         clone.shouldChoosePantheonBelief = shouldChoosePantheonBelief
         clone.storedFaith = storedFaith
-        clone.totalFaith = totalFaith
         clone.religionState = religionState
         return clone
     }
@@ -81,7 +79,6 @@ class ReligionManager {
 
     fun endTurn(faithFromNewTurn: Int) {
         storedFaith += faithFromNewTurn
-        totalFaith += faithFromNewTurn
     }
 
     fun faithForPantheon(additionalCivs: Int = 0) =
