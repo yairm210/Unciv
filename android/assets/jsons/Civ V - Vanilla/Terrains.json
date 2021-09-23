@@ -123,7 +123,7 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"uniques": ["Rough terrain", "Provides a one-time Production bonus to the closest city when cut down", 
+		"uniques": ["Vegetation","Rough terrain", "Provides a one-time Production bonus to the closest city when cut down", 
 			"Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"],
 		"civilopediaText": [{"text":"A Camp can be built here without cutting it down", "link":"Improvement/Camp"}]
 	},
@@ -135,8 +135,8 @@
 		"overrideStats": true,
 		"unbuildable": true,
 		"defenceBonus": 0.25,
-		"occursOn": ["Plains","Grassland"],
-		"uniques": ["Rough terrain", "Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"]
+		"occursOn": ["Plains","Grassland","Hill"],
+		"uniques": ["Vegetation","Rough terrain", "Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"]
 	},
 	{
 		"name": "Marsh",

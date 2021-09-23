@@ -32,7 +32,6 @@ object Constants {
     const val atoll = "Atoll"
     const val ice = "Ice"
     const val floodPlains = "Flood plains"
-    val vegetation = arrayOf(forest, jungle)
     val sea = arrayOf(ocean, coast)
 
     const val barringerCrater = "Barringer Crater"
