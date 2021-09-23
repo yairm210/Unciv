@@ -23,8 +23,8 @@ Each terrain entry can have the following properties:
 | movementCost | Integer | Default 1 | base movement cost |
 | defenceBonus | Float | Default 0 | combat bonus for units being attacked here |
 | RGB | List Integer * 3 | Default 'Gold' | RGB color for 'Default' tileset display |
-| uniques | List | Default empty | List of effects, [see here](../Uniques#terrain-uniques) |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+| uniques | List | Default empty | List of effects, [see here](Uniques#terrain-uniques) |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files#civilopedia-text) |
 
 Note that many Natural Wonders have hardcoded routines for their placement and are recognized by name (e.g. Great Barrier Reef being more than one tile).
 
@@ -45,7 +45,7 @@ Each improvement can have the following properties:
 | turnsToBuild | Integer |  | Number of turns a worker spends building this (ignored for 'create' actions) |
 | uniques | List | Default empty | List of effects, [see here](Uniques#improvement-uniques) |
 | shortcutKey | String | Default none | Keyboard binding. At the moment a single character (no function keys or Ctrl combinations) |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files#civilopedia-text) |
 
 * Tiles with no terrains, but positive turns to build, can be built only when the tile has a resource that names this improvement or special uniques are used. (TODO: missing something?)
 * Tiles with no terrains, and no turns to build, are like great improvements - they're placeable. That means a unit could exist with a 'Can create [this]' unique, and that the improvement will not show in a worker's improvement picker dialog.
@@ -71,7 +71,7 @@ Each resource can have the following properties:
 | improvementStats | Object | Default empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
 | revealedBy | String | Default empty | The technology name required to see, work and improve this resource |
 | unique | String | Default empty | Effects, [see here](Uniques#resource-uniques) - at the moment only one unique may be added |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files#civilopedia-text) |
 
 
 ## Ruins.json
@@ -86,7 +86,7 @@ Each of the objects in the file represents a single reward you can get from ruin
 | name | String | required | Name of the ruins. Never shown to the user, but they have to be distinct |
 | notification | String | required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
 | weight | Integer (≥0) | defaults to 1 | Weight this reward should have. Higher weights result in a higher chance of it being chosen* |
-| uniques | List of Strings | defaults to none | [uniques](https://github.com/yairm210/Unciv/wiki/Uniques#one-time-effect) or [uniques](https://github.com/yairm210/Unciv/wiki/Uniques#one-time-effect-units) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug. |
+| uniques | List of Strings | defaults to none | [uniques]Uniques#one-time-effect) or [uniques](Uniques#one-time-effect-units) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug. |
 | excludedDifficulties | List of Strings | defaults to None | A list of all difficulties on which this reward may _not_ be awarded |
 
 
@@ -106,7 +106,7 @@ Some of the rewards ruins can give will have results that are not deterministic 
 | Gain []-[] [] | The exact amount of the stat gained will be filled in the notification |
 | [] free random reasearchable Tech(s) from the [] | The notification must have placeholders equal to the number of techs granted this way. Each of the names of these free techs will be filled in the notification |
 | Gain enough Faith for a Pantheon | The amount of faith gained is filled in the notification |
-| Gain engouh Faith for []% of a Great Prophet | The amount of faith gained is filled in the notifciation |
+| Gain enough Faith for []% of a Great Prophet | The amount of faith gained is filled in the notification |
 
 ### Specific uniques
 
@@ -153,4 +153,4 @@ If an object carries general stats, any combination (or none) of these can be sp
 		"improvementStats": {"gold": 1,"production": 1},
 ```
 
-The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupproted. Go ahead and thoroughly test that in a mod and help out with feedback 😁.
+The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupported. Go ahead and thoroughly test that in a mod and help out with feedback 😁.
