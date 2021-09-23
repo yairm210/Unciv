@@ -778,7 +778,13 @@ open class TileInfo {
         }
     }
 
-    // Should only be set once at map generation
+    /**
+     * Assign a continent ID to this tile.
+     *
+     * Should only be set once at map generation.
+     * @param continent Numeric ID >= 0
+     * @throws Exception when tile already has a continent ID
+     */
     fun setContinent(continent: Int) {
         if (this.continent != -1)
             throw Exception("Continent already assigned @ $position")

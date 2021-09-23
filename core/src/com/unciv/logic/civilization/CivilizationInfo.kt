@@ -450,12 +450,12 @@ class CivilizationInfo {
         return baseUnit
     }
 
-    fun makeCivilizationsMeet(otherCiv: CivilizationInfo) {
-        meetCiv(otherCiv)
-        otherCiv.meetCiv(this)
+    fun makeCivilizationsMeet(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
+        meetCiv(otherCiv, warOnContact)
+        otherCiv.meetCiv(this, warOnContact)
     }
 
-    private fun meetCiv(otherCiv: CivilizationInfo) {
+    private fun meetCiv(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
@@ -465,6 +465,7 @@ class CivilizationInfo {
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
         
         if (!(isCityState() && otherCiv.isMajorCiv())) return
+        if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
 
         val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
 
