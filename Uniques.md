@@ -786,14 +786,12 @@ May be added in promotions or ancient ruins equivalents
 "Can be purchased for [amount] [Stat] [cityFilter]"
 
 
-
 # Terrain uniques
+Some of the terrain uniques have gameplay effect, others are used only for map generation:
+
+### Terrain uniques - gameplay
 
 "[(+/-)amount] Strength for cities built on this terrain"
-
-"Occurs at temperature between [0.8] and [1] and humidity between [0] and [0.7]" - This allows modding freedom in map generation. Temperature is between -1 and 1, humidity is between 0 and 1. Since this is a large 2*1 rectangle, and every individual terrain also covers one or more rectangles, you may find it helpful to draw out on paper the temperature and humidity graph, and see where there are missing pieces that aren't covered.
-
-"Grants 500 Gold to the first civilization to discover it" - given to natural wonders
 
 "[(+/-)amount] Sight for [unitFilter] units"
 
@@ -807,9 +805,31 @@ May be added in promotions or ancient ruins equivalents
 
 "Rough Terrain"
 
+"Grants 500 Gold to the first civilization to discover it" - given to natural wonders
+
+"Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game" (Fountain of Youth)
+
+### Terrain uniques - map generation
+
+"Occurs at temperature between [0.8] and [1] and humidity between [0] and [0.7]" - This allows modding freedom in map generation. Temperature is between -1 and 1, humidity is between 0 and 1. Since this is a large 2*1 rectangle, and every individual terrain also covers one or more rectangles, you may find it helpful to draw out on paper the temperature and humidity graph, and see where there are missing pieces that aren't covered.
+
 "Occurs in groups around high elevations"
 
 "Occurs in chains at high elevations"
+
+"Must be adjacent to [amount] [terrainFilter] tiles"
+
+"Must be adjacent to [amount] to [amount] [terrainFilter] tiles"
+
+"Must not be on [amount] largest landmasses"
+
+"Occurs on latitudes from [amount] to [amount] percent of distance equator to pole"
+
+"Occurs in groups of [amount] to [amount] tiles"
+
+"Neighboring tiles will convert to [baseTerrain]"
+
+"Neighboring tiles except [terrainFilter] will convert to [baseTerrain]"
 
 
 # Resource Uniques
