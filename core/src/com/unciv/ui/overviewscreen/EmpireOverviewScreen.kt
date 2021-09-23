@@ -23,7 +23,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
     // 50 normal button height + 2*10 topTable padding + 2 Separator + 2*5 centerTable padding
     // Since a resize recreates this screen this should be fine as a val
     internal val centerAreaHeight = stage.height - 82f
-    
+
     private object ButtonDecorations {
         data class IconAndKey (val icon: String, val key: Char = Char.MIN_VALUE)
         val keyIconMap: HashMap<String,IconAndKey> = hashMapOf(
@@ -80,7 +80,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             else game.settings.lastOverviewPage
 
         onBackButtonClicked { game.setWorldScreen() }
-        
+
         addCategory("Cities", CityOverviewTable(viewingPlayer, this), viewingPlayer.cities.isEmpty())
         addCategory("Stats", StatsOverviewTable(viewingPlayer, this))
         addCategory("Trades", TradesOverviewTable(viewingPlayer, this), viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
