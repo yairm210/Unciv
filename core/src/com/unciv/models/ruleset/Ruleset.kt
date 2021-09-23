@@ -296,10 +296,13 @@ class Ruleset {
             val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
                 .getAnnotation(Deprecated::class.java)
             if (deprecationAnnotation != null) {
-                // Not user-visible
-                lines.add("$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                        " replace with \"${deprecationAnnotation.replaceWith.expression}\"",
-                    RulesetErrorSeverity.WarningOptionsOnly)
+                val deprecationText = "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
+                        " replace with \"${deprecationAnnotation.replaceWith.expression}\""
+                val severity = if(deprecationAnnotation.level == DeprecationLevel.WARNING)
+                    RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
+                else RulesetErrorSeverity.Warning // User visible
+
+                lines.add(deprecationText, severity)
             }
         }
     }

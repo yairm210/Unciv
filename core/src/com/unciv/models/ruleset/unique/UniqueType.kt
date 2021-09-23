@@ -52,11 +52,11 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
 
-    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"))
+    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs"), // No conditional support
-    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"))
+    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs"), // No conditional support
-    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"))
+    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.WARNING)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
 
     // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
