@@ -4,51 +4,51 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
+/** Buildings, units, nations, policies, religions, techs etc.
+ * Basically anything caught by CivInfo.getMatchingUniques. */
 enum class UniqueTarget {
-    /** Buildings, units, nations, policies, religions, techs etc.
-     * Basically anything caught by CivInfo.getMatchingUniques. */
     Global,
-    
+
     // Civilization-specific
     Nation,
     Era,
     Tech,
     Policy,
     Belief,
-    
+
     // City-specific
     Building,
     Wonder,
-    
+
     // Unit-specific
     Unit,
     UnitType,
     Promotion,
-    
+
     // Tile-specific
     Terrain,
     Improvement,
     Resource,
     Ruins,
-    
+
     // Other
     CityState,
-    ModOptions,    
+    ModOptions,
     Conditional,
 }
 
 enum class UniqueType(val text:String, vararg target: UniqueTarget) {
-    
+
     Stats("[stats]", UniqueTarget.Global),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
-    
+
     StatPercentBonus("[amount]% [Stat]", UniqueTarget.Global),
 
     ConsumesResources("Consumes [amount] [resource]",
         UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit), // No conditional support as of yet
     ProvidesResources("Provides [amount] [resource]",
             UniqueTarget.Improvement, UniqueTarget.Building),
-    
+
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
 
@@ -70,10 +70,18 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
     CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
-    
-    
+
+    NaturalWonderNeighborCount("Must be adjacent to [amount] [terrainFilter] tiles", UniqueTarget.Terrain),
+    NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [terrainFilter] tiles", UniqueTarget.Terrain),
+    NaturalWonderLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
+    NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain),
+    NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain),
+    NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain),
+    NaturalWonderConvertNeighborsExcept("Neighboring tiles except [terrainFilter] will convert to [baseTerrain]", UniqueTarget.Terrain),
+
+
     ///// CONDITIONALS
-    
+
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),

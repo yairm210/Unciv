@@ -84,10 +84,10 @@ object GameStarter {
             addCivStats(gameInfo)
         }
 
-        runAndMeasure("assignContinents?") {
-            if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
+        if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
+            runAndMeasure("assignContinents") {
                 mapGen.assignContinents(tileMap)
-        }
+            }
 
         runAndMeasure("addCivStartingUnits") {
             // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!

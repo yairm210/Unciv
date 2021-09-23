@@ -464,8 +464,10 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
-    // Set a continent id for each tile, so we can quickly see which tiles are connected.
-    // Can also be called on saved maps
+    /** Set a continent id for each tile, so we can quickly see which tiles are connected.
+     *  Can also be called on saved maps.
+     *  @throws Exception when any land tile already has a continent ID
+     */
     fun assignContinents(tileMap: TileMap) {
         var landTiles = tileMap.values
             .filter { it.isLand && !it.isImpassible()}
@@ -473,7 +475,10 @@ class MapGenerator(val ruleset: Ruleset) {
 
         while (landTiles.any()) {
             val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
-            bfs.stepToEnd(currentContinent)
+            bfs.stepToEnd()
+            bfs.getReachedTiles().forEach {
+                it.setContinent(currentContinent)
+            }
             val continent = bfs.getReachedTiles()
             tileMap.continentSizes[currentContinent] = continent.size
             if (continent.size > 20) {
