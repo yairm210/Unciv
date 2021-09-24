@@ -392,6 +392,16 @@ class Ruleset {
             checkUniques(nation, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
         }
 
+        for (promotion in unitPromotions.values)
+            if (promotion.effect != "")
+                lines.add("`Promotion.effect` used in ${promotion.name} is deprecated, please use `uniques` instead",
+                    RulesetErrorSeverity.WarningOptionsOnly)
+
+        for (resource in tileResources.values)
+            if (resource.unique != null)
+                lines.add("`Resource.unique` used in ${resource.name} is deprecated, please use `uniques` instead",
+                    RulesetErrorSeverity.WarningOptionsOnly)
+
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return lines
 
