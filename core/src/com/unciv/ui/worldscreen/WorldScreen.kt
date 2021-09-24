@@ -108,6 +108,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             ToastPopup("Not enough memory on phone to load game!", this)
         }
 
+        // resume music (in case choices from the menu lead to instantiation of a new WorldScreen)
+        UncivGame.Current.musicController.resume()
+
         techButtonHolder.touchable = Touchable.enabled
         techButtonHolder.onClick(UncivSound.Paper) {
             game.setScreen(TechPickerScreen(viewingCiv))
