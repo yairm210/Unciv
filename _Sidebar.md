@@ -10,6 +10,7 @@
 * [Creating a custom tileset](./Creating-a-custom-tileset)
 * [JSON files for mods](./JSON-files-for-mods)
 * [Uniques](./Uniques)
+* [Images and texture atlas](./Mods#more-on-images-and-the-texture-atlas)
 * [Audiovisual Mods](./Audiovisual-Mods)
 
 # Development
