@@ -1,16 +1,13 @@
 package com.unciv.models.ruleset.tile
 
 import com.unciv.models.ruleset.Belief
-import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 
-class TileResource : NamedStats(), ICivilopediaText, IHasUniques {
+class TileResource : RulesetStatsObject() {
 
     var resourceType: ResourceType = ResourceType.Bonus
     var terrainsCanBeFoundOn: List<String> = listOf()
@@ -19,12 +16,7 @@ class TileResource : NamedStats(), ICivilopediaText, IHasUniques {
     var revealedBy: String? = null
     @Deprecated("As of 3.16.16 - replaced by uniques")
     var unique: String? = null
-    override var uniques: ArrayList<String> = arrayListOf()
     override fun getUniqueTarget() = UniqueTarget.Resource
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
-        getUniqueTarget(), name) } }
-
-    override var civilopediaText = listOf<FormattedLine>()
 
 
     override fun makeLink() = "Resource/$name"

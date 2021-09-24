@@ -5,6 +5,7 @@ import com.unciv.logic.city.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -24,9 +25,8 @@ import kotlin.math.pow
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
+class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
-    override lateinit var name: String
     var cost: Int = 0
     override var hurryCostModifier: Int = 0
     var movement: Int = 0
@@ -40,10 +40,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     var requiredTech: String? = null
     private var requiredResource: String? = null
 
-    override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
     override fun getUniqueTarget() = UniqueTarget.Unit
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
-        getUniqueTarget(), name) } }
 
     private var replacementTextForUniques = ""
     var promotions = HashSet<String>()
@@ -64,7 +61,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     lateinit var ruleset: Ruleset
 
-    override var civilopediaText = listOf<FormattedLine>()
 
     fun getShortDescription(): String {
         val infoList = mutableListOf<String>()
@@ -493,8 +489,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     fun getDirectUpgradeUnit(civInfo: CivilizationInfo): BaseUnit {
         return civInfo.getEquivalentUnit(upgradesTo!!)
     }
-
-    override fun toString(): String = name
 
     fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
         return if (replaces == null) this

@@ -22,3 +22,5 @@ interface IHasUniques {
     fun hasUnique(uniqueTemplate: String) = uniqueObjects.any { it.placeholderText == uniqueTemplate }
     fun hasUnique(uniqueType: UniqueType) = uniqueObjects.any { it.isOfType(uniqueType) }
 }
+
+

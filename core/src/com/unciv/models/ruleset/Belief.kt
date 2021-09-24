@@ -9,18 +9,12 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 import kotlin.collections.ArrayList
 
-class Belief : INamed, ICivilopediaText, IHasUniques {
-    override var name: String = ""
+class Belief : RulesetObject() {
     var type: BeliefType = BeliefType.None
-    override var uniques = ArrayList<String>()
 
     override fun getUniqueTarget() =
         if (type == BeliefType.Founder || type == BeliefType.Enhancer)  UniqueTarget.FounderBelief
         else UniqueTarget.FollowerBelief
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
-        getUniqueTarget(), name) } }
-
-    override var civilopediaText = listOf<FormattedLine>()
 
     override fun makeLink() = "Belief/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, color = if (type == BeliefType.None) "#e34a2b" else "")

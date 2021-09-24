@@ -22,9 +22,7 @@ enum class VictoryType {
     Scientific,
 }
 
-class Nation : INamed, ICivilopediaText, IHasUniques {
-    override lateinit var name: String
-
+class Nation : RulesetObject() {
     var leaderName = ""
     fun getLeaderDisplayName() = if (isCityState()) name
     else "[$leaderName] of [$name]"
@@ -43,10 +41,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
 
     lateinit var outerColor: List<Int>
     var uniqueName = ""
-    override var uniques = ArrayList<String>()
     override fun getUniqueTarget() = UniqueTarget.Nation
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
-        getUniqueTarget(), name) } }
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
@@ -57,8 +52,6 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     /* Properties present in json but not yet implemented:
     var adjective = ArrayList<String>()
      */
-
-    override var civilopediaText = listOf<FormattedLine>()
     
     @Transient
     private lateinit var outerColorObject: Color

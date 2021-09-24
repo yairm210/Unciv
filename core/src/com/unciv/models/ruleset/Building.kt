@@ -10,13 +10,11 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
 import kotlin.collections.ArrayList
@@ -24,7 +22,7 @@ import kotlin.collections.HashMap
 import kotlin.math.pow
 
 
-class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
+class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     var requiredTech: String? = null
 
@@ -66,17 +64,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     var replaces: String? = null
     var uniqueTo: String? = null
     var quote: String = ""
-    override var uniques = ArrayList<String>()
-    override fun getUniqueTarget() = UniqueTarget.Building
-    override val uniqueObjects: List<Unique> by lazy { 
-        uniques.map { 
-            Unique(it, if (isAnyWonder()) UniqueTarget.Wonder else UniqueTarget.Building, name) 
-        } 
-    }
+    override fun getUniqueTarget() = if (isAnyWonder()) UniqueTarget.Wonder else UniqueTarget.Building
     private var replacementTextForUniques = ""
-
-    override var civilopediaText = listOf<FormattedLine>()
-
 
     /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
