@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.city.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
@@ -127,8 +126,11 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         if (cost > 0) {
             stats.clear()
             stats += "$cost${Fonts.production}"
-            if (canBePurchasedWithStat(null, Stat.Gold))
-                stats += "${getBaseGoldCost(UncivGame.Current.gameInfo.currentPlayerCiv).toInt() / 10 * 10}${Fonts.gold}"
+            if (canBePurchasedWithStat(null, Stat.Gold)) {
+                // We need what INonPerpetualConstruction.getBaseGoldCost calculates but without any game- or civ-specific modifiers
+                val buyCost = 30.0 * cost.toFloat().pow(0.75f) * hurryCostModifier.toPercent() / 10 * 10
+                stats += "$buyCost${Fonts.gold}"
+            }
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
@@ -272,10 +274,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                 && it.params[2] == stat.name
             }
         ) return true
-        
+
         return super.canBePurchasedWithStat(cityInfo, stat)
     }
-    
+
     private fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()        
     }
@@ -314,7 +316,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             )
         ).minOrNull()
     }
-    
+
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
