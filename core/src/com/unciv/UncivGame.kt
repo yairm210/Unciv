@@ -4,42 +4,48 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.logic.GameStarter
-import com.unciv.logic.map.MapParameters
-import com.unciv.models.metadata.GameParameters
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
+import com.unciv.ui.audio.MusicController
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 
-class UncivGame(
-        val version: String,
-        private val crashReportSender: CrashReportSender? = null,
-        val exitEvent: (()->Unit)? = null
-) : Game() {
+class UncivGame(parameters: UncivGameParameters) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
-    constructor(version: String) : this(version, null)
+    constructor(version: String) : this(UncivGameParameters(version, null))
+
+    val version = parameters.version
+    private val crashReportSender = parameters.crashReportSender
+    val cancelDiscordEvent = parameters.cancelDiscordEvent
+    val fontImplementation = parameters.fontImplementation
+    val consoleMode = parameters.consoleMode
+    val customSaveLocationHelper = parameters.customSaveLocationHelper
+    val limitOrientationsHelper = parameters.limitOrientationsHelper
 
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings: GameSettings
     lateinit var crashController: CrashController
+    lateinit var musicController: MusicController
+
     /**
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
      */
     var viewEntireMapForDebug = false
     /** For when you need to test something in an advanced game and don't have time to faff around */
-    val superchargedForDebug = false
+    var superchargedForDebug = false
 
     /** Simulate until this turn on the first "Next turn" button press.
      *  Does not update World View changes until finished.
@@ -47,10 +53,12 @@ class UncivGame(
      */
     val simulateUntilTurnForDebug: Int = 0
 
+    /** Console log battles
+     */
+    val alertBattle = false
+
     lateinit var worldScreen: WorldScreen
 
-    var music: Music? = null
-    val musicLocation = "music/thatched-villagers.mp3"
     var isInitialized = false
 
 
@@ -62,79 +70,76 @@ class UncivGame(
             viewEntireMapForDebug = false
         }
         Current = this
-
+        GameSaver.customSaveLocationHelper = customSaveLocationHelper
 
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
         // So it's basically a long set of deferred actions.
-        settings = GameSaver().getGeneralSettings() // needed for the screen
-        screen = LoadingScreen()
+
+        /** When we recreate the GL context for whatever reason (say - we moved to a split screen on Android),
+         * ALL objects that were related to the old context - need to be recreated.
+         * So far we have:
+         * - All textures (hence the texture atlas)
+         * - SpriteBatch (hence CameraStageBaseScreen uses a new SpriteBatch for each screen)
+         * - Skin (hence CameraStageBaseScreen.setSkin())
+         * - Font (hence Fonts.resetFont() inside setSkin())
+         */
+        settings = GameSaver.getGeneralSettings() // needed for the screen
+        screen = LoadingScreen()  // NOT dependent on any atlas or skin
+        musicController = MusicController()  // early, but at this point does only copy volume from settings
+
+        ImageGetter.resetAtlases()
+        ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
+        if(settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
+            settings.tileSet = "FantasyHex"
+        }
+
+        CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
         thread(name = "LoadJSON") {
-            RulesetCache.loadRulesets()
+            RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
+            TileSetCache.loadTileSetConfigs(printOutput = true)
 
-            if (settings.userId == "") { // assign permanent user id
+            if (settings.userId.isEmpty()) { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
                 settings.save()
             }
 
             // This stuff needs to run on the main thread because it needs the GL context
             Gdx.app.postRunnable {
-                CameraStageBaseScreen.resetFonts()
-                autoLoadGame()
-                thread(name="Music") { startMusic() }
+                musicController.chooseTrack()
+
+                ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
+
+                if (settings.isFreshlyCreated) {
+                    setScreen(LanguagePickerScreen())
+                } else { setScreen(MainMenuScreen()) }
                 isInitialized = true
             }
         }
         crashController = CrashController.Impl(crashReportSender)
     }
 
-    fun autoLoadGame() {
-        if (!GameSaver().getSave("Autosave").exists())
-            return setScreen(LanguagePickerScreen())
-        try {
-            loadGame("Autosave")
-        } catch (ex: Exception) { // silent fail if we can't read the autosave
-            startNewGame()
-        }
-    }
-
-    fun startMusic() {
-        if (settings.musicVolume < 0.01) return
-
-        val musicFile = Gdx.files.local(musicLocation)
-        if (musicFile.exists()) {
-            music = Gdx.audio.newMusic(musicFile)
-            music!!.isLooping = true
-            music!!.volume = 0.4f * settings.musicVolume
-            music!!.play()
+    fun loadGame(gameInfo: GameInfo) {
+        this.gameInfo = gameInfo
+        ImageGetter.setNewRuleset(gameInfo.ruleSet)
+        musicController.setModList(gameInfo.gameParameters.mods)
+        Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
+        if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
+            setScreen(PlayerReadyScreen(gameInfo, gameInfo.getPlayerToViewAs()))
+        else {
+            worldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
+            setWorldScreen()
         }
     }
 
     fun setScreen(screen: CameraStageBaseScreen) {
         Gdx.input.inputProcessor = screen.stage
         super.setScreen(screen)
-    }
-
-    fun loadGame(gameInfo: GameInfo) {
-        this.gameInfo = gameInfo
-        ImageGetter.ruleset = gameInfo.ruleSet
-        ImageGetter.refreshAtlas()
-        worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
-        setWorldScreen()
-    }
-
-    fun loadGame(gameName: String) {
-        loadGame(GameSaver().loadGameByName(gameName))
-    }
-
-    fun startNewGame() {
-        val newGame = GameStarter().startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
-        loadGame(newGame)
     }
 
     fun setWorldScreen() {
@@ -148,26 +153,41 @@ class UncivGame(
     override fun resume() {
         super.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
-        ImageGetter.refreshAtlas()
-
-        // This is to solve a rare problem -
-        // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.
-        // Can happen if you resume to the language picker screen for instance.
-        if (!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
-            return autoLoadGame()
-
-        if (::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
-        loadGame(gameInfo)
     }
 
-    // Maybe this will solve the resume error on chrome OS, issue 322? Worth a shot
+    override fun pause() {
+        if (isGameInfoInitialized()) GameSaver.autoSave(this.gameInfo)
+        super.pause()
+    }
+
     override fun resize(width: Int, height: Int) {
-        resume()
+        screen.resize(width, height)
     }
 
     override fun dispose() {
-        if (::gameInfo.isInitialized)
-            GameSaver().autoSave(gameInfo)
+        cancelDiscordEvent?.invoke()
+        Sounds.clearCache()
+        if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
+
+        // Log still running threads (on desktop that should be only this one and "DestroyJavaVM")
+        val numThreads = Thread.activeCount()
+        val threadList = Array(numThreads) { _ -> Thread() }
+        Thread.enumerate(threadList)
+
+        if (isGameInfoInitialized()) {
+            val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
+            if (autoSaveThread != null && autoSaveThread.isAlive) {
+                // auto save is already in progress (e.g. started by onPause() event)
+                // let's allow it to finish and do not try to autosave second time
+                autoSaveThread.join()
+            } else
+                GameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
+        }
+        settings.save()
+
+        threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM"}.forEach {
+            println ("    Thread ${it.name} still running in UncivGame.dispose().")
+        }
     }
 
     companion object {
@@ -176,9 +196,9 @@ class UncivGame(
     }
 }
 
-class LoadingScreen:CameraStageBaseScreen() {
+private class LoadingScreen : CameraStageBaseScreen() {
     init {
-        val happinessImage = ImageGetter.getImage("StatIcons/Happiness")
+        val happinessImage = ImageGetter.getExternalImage("LoadScreen.png")
         happinessImage.center(stage)
         happinessImage.setOrigin(Align.center)
         happinessImage.addAction(Actions.sequence(

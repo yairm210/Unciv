@@ -5,31 +5,35 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
-class TechButton(techName:String, val techManager: TechManager, isWorldScreen: Boolean = true) : Table(CameraStageBaseScreen.skin) {
-    val text= "".toLabel().apply { setAlignment(Align.center) }
+class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(CameraStageBaseScreen.skin) {
+    val text = "".toLabel().apply { setAlignment(Align.center) }
 
     init {
         touchable = Touchable.enabled
-        defaults().pad(10f)
-        background = ImageGetter.getRoundedEdgeTableBackground()
+        background = ImageGetter.getRoundedEdgeRectangle()
+        pad(10f)
+
         if (ImageGetter.techIconExists(techName))
-            add(ImageGetter.getTechIconGroup(techName, 60f))
+            add(ImageGetter.getTechIconGroup(techName, 60f)).left()
 
         val rightSide = Table()
-        val techCost = techManager.costOfTech(techName)
-        val remainingTech = techManager.remainingScienceToTech(techName)
-        if (techCost != remainingTech) {
-            val percentComplete = (techCost - remainingTech) / techCost.toFloat()
-            add(ImageGetter.getProgressBarVertical(2f, 50f, percentComplete, Color.BLUE, Color.WHITE))
-        } else add().width(2f)
 
-        if (isWorldScreen) rightSide.add(text).padBottom(5f).row()
-        else rightSide.add(text).height(25f).padBottom(5f).row()
+        if (isWorldScreen) {
+            val techCost = techManager.costOfTech(techName)
+            val remainingTech = techManager.remainingScienceToTech(techName)
+            val techThisTurn = techManager.civInfo.statsForNextTurn.science
+
+            val percentComplete = (techCost - remainingTech) / techCost.toFloat()
+            val percentWillBeComplete = (techCost - (remainingTech-techThisTurn)) / techCost.toFloat()
+            val progressBar = ImageGetter.VerticalProgressBar(2f, 50f)
+                    .addColor(Color.WHITE, 1f)
+                    .addColor(Color.BLUE.cpy().lerp(Color.WHITE, 0.3f), percentWillBeComplete)
+                    .addColor(Color.BLUE.cpy().lerp(Color.BLACK, 0.5f), percentComplete)
+            add(progressBar.addBorder(1f, Color.GRAY)).pad(10f)
+            rightSide.add(text).padBottom(5f).row()
+        } else rightSide.add(text).height(25f).padBottom(5f).row()
 
         addTechEnabledIcons(techName, isWorldScreen, rightSide)
 
@@ -40,34 +44,44 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
     private fun addTechEnabledIcons(techName: String, isWorldScreen: Boolean, rightSide: Table) {
         val techEnabledIcons = Table()
         techEnabledIcons.defaults().pad(5f)
+        val techIconSize = 30f
 
         val civName = techManager.civInfo.civName
-        val gameBasics = techManager.civInfo.gameInfo.ruleSet
+        val ruleset = techManager.civInfo.gameInfo.ruleSet
 
-        val tech = gameBasics.technologies[techName]!!
+        val tech = ruleset.technologies[techName]!!
 
         for (unit in tech.getEnabledUnits(techManager.civInfo))
-            techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(30f))
+            techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(techIconSize))
 
         for (building in tech.getEnabledBuildings(techManager.civInfo))
-            techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
+            techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize))
 
-        for (improvement in gameBasics.tileImprovements.values
-                .filter { it.techRequired == techName || it.improvingTech == techName }
-                .filter { it.uniqueTo==null || it.uniqueTo==civName }) {
-            if (improvement.name.startsWith("Remove"))
-                techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(30f)
-            else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, 30f))
-        }
+        for (building in tech.getObsoletedBuildings(techManager.civInfo))
+            techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize).apply {
+                val closeImage = ImageGetter.getRedCross(techIconSize / 2, 1f)
+                closeImage.center(this)
+                addActor(closeImage)
+            })
 
-        for (resource in gameBasics.tileResources.values.filter { it.revealedBy == techName })
-            techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, 30f))
+        for (improvement in ruleset.tileImprovements.values
+                .filter {
+                    it.techRequired == techName || it.uniqueObjects.any { u -> u.params.contains(techName) }
+                            || it.uniqueObjects.any { it.placeholderText == "[] once [] is discovered" && it.params[1] == techName }
+                }
+                .filter { it.uniqueTo == null || it.uniqueTo == civName })
+            techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize))
+
+
+        for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName })
+            techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, techIconSize))
 
         for (unique in tech.uniques)
             techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Star")
-                    .apply { color = Color.BLACK }.surroundWithCircle(30f))
+                    .apply { color = Color.BLACK }.surroundWithCircle(techIconSize))
 
         if (isWorldScreen) rightSide.add(techEnabledIcons)
-        else rightSide.add(techEnabledIcons).width(150f)
+        else rightSide.add(techEnabledIcons)
+                .minWidth(225f)
     }
 }

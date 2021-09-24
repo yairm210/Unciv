@@ -2,19 +2,24 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
+import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.roundToInt
 
-class CityScreenTileTable(val cityScreen: CityScreen): Table(){
-    val innerTable = Table()
+class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
+    private val innerTable = Table()
     val city = cityScreen.city
-    init{
+
+    init {
         innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         add(innerTable).pad(2f).fill()
         background = ImageGetter.getBackground(Color.WHITE)
@@ -22,75 +27,115 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
 
     fun update(selectedTile: TileInfo?) {
         innerTable.clear()
-        if (selectedTile == null){
-            isVisible=false
+        if (selectedTile == null) {
+            isVisible = false
             return
         }
-        isVisible=true
+        isVisible = true
         innerTable.clearChildren()
 
         val stats = selectedTile.getTileStats(city, city.civInfo)
-        innerTable.pad(20f)
+        innerTable.pad(5f)
 
-        innerTable.add(selectedTile.toString(city.civInfo).toLabel()).colspan(2)
+        innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civInfo), iconDisplay = IconDisplay.None) {
+            // Sorry, this will leave the city screen
+            UncivGame.Current.setScreen(CivilopediaScreen(city.getRuleset(), link = it))
+        } )
         innerTable.row()
         innerTable.add(getTileStatsTable(stats)).row()
 
-
-        if(selectedTile.getOwner()==null && selectedTile.neighbors.any {it.getCity()==city}
-            && selectedTile in city.tilesInRange){
+        if (isTilePurchaseShown(selectedTile)) {
             val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
-
-            val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(), CameraStageBaseScreen.skin)
-            buyTileButton.onClick(UncivSound.Coin) {
-                city.expansion.buyTile(selectedTile)
-                UncivGame.Current.setScreen(CityScreen(city))
-            }
-            if(goldCostOfTile>city.civInfo.gold || city.isPuppet || !UncivGame.Current.worldScreen.isPlayersTurn)
+            val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
+            buyTileButton.onClick {
                 buyTileButton.disable()
-
-            innerTable.add(buyTileButton).row()
-            innerTable.add("You have [${city.civInfo.gold}] gold".toLabel(Color.YELLOW, 16)).padTop(2f)
-        }
-        if(city.canAcquireTile(selectedTile)) {
-            val acquireTileButton = TextButton("Acquire".tr(), CameraStageBaseScreen.skin)
-            acquireTileButton.onClick {
-                city.expansion.takeOwnership(selectedTile)
-                UncivGame.Current.setScreen(CityScreen(city))
+                askToBuyTile(selectedTile)
             }
-            innerTable.add(acquireTileButton).row()
+            buyTileButton.isEnabled = isTilePurchaseAllowed(goldCostOfTile)
+            buyTileButton.addTooltip('T')  // The key binding is done in CityScreen constructor
+            innerTable.add(buyTileButton).padTop(5f).row()
         }
 
-        if(city.workedTiles.contains(selectedTile.position)){
-            if(selectedTile.isLocked()) {
-                val unlockButton = TextButton("Unlock", CameraStageBaseScreen.skin)
+        if (city.civInfo.cities.filterNot { it == city }.any { it.isWorked(selectedTile) })
+            innerTable.add("Worked by [${selectedTile.getWorkingCity()!!.name}]".toLabel()).row()
+
+        if (city.isWorked(selectedTile)) {
+            if (selectedTile.isLocked()) {
+                val unlockButton = "Unlock".toTextButton()
                 unlockButton.onClick {
                     city.lockedTiles.remove(selectedTile.position)
                     update(selectedTile)
                     cityScreen.update()
                 }
-                innerTable.add(unlockButton).row()
-            }
-            else {
-                val lockButton = TextButton("Lock", CameraStageBaseScreen.skin)
+                if (!cityScreen.canChangeState) unlockButton.disable()
+                innerTable.add(unlockButton).padTop(5f).row()
+            } else {
+                val lockButton = "Lock".toTextButton()
                 lockButton.onClick {
                     city.lockedTiles.add(selectedTile.position)
                     update(selectedTile)
                     cityScreen.update()
                 }
-                innerTable.add(lockButton).row()
+                if (!cityScreen.canChangeState) lockButton.disable()
+                innerTable.add(lockButton).padTop(5f).row()
             }
         }
+        if (selectedTile.isCityCenter() && selectedTile.getCity() != city && selectedTile.getCity()!!.civInfo == city.civInfo)
+            innerTable.add("Move to city".toTextButton().onClick { cityScreen.game.setScreen(CityScreen(selectedTile.getCity()!!)) })
+
         innerTable.pack()
         pack()
+    }
+
+    /** Ask whether user wants to buy [selectedTile] for gold.
+     * 
+     * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
+     * and it needs to do all checks and the sound as appropriate.
+     */
+    fun askToBuyTile(selectedTile: TileInfo) {
+        // These checks are redundant for the onClick action, but not for the keyboard binding
+        if (!isTilePurchaseShown(selectedTile)) return
+        val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
+        if (!isTilePurchaseAllowed(goldCostOfTile)) return
+
+        cityScreen.closeAllPopups()
+
+        val purchasePrompt = "Currently you have [${city.civInfo.gold}] [Gold].".tr() + "\n\n" +
+                "Would you like to purchase [Tile] for [$goldCostOfTile] [${Stat.Gold.character}]?".tr()
+        YesNoPopup(
+            purchasePrompt,
+            action = {
+                Sounds.play(UncivSound.Coin)
+                city.expansion.buyTile(selectedTile)
+                // preselect the next tile on city screen rebuild so bulk buying can go faster
+                UncivGame.Current.setScreen(CityScreen(city, selectedTile = city.expansion.chooseNewTileToOwn()))
+            },
+            screen = cityScreen,
+            restoreDefault = { cityScreen.update() }
+        ).open()
+    }
+
+    /** This tests whether the buy button should be _shown_ */
+    private fun isTilePurchaseShown(selectedTile: TileInfo) = when {
+        selectedTile.getOwner() != null -> false
+        selectedTile !in city.tilesInRange -> false
+        else -> selectedTile.neighbors.any { it.getCity() == city }
+    }
+    /** This tests whether the buy button should be _enabled_ */
+    private fun isTilePurchaseAllowed(goldCostOfTile: Int) = when {
+        city.isPuppet -> false
+        !cityScreen.canChangeState -> false
+        city.civInfo.gameInfo.gameParameters.godMode -> true
+        goldCostOfTile == 0 -> true
+        else -> city.civInfo.gold >= goldCostOfTile
     }
 
     private fun getTileStatsTable(stats: Stats): Table {
         val statsTable = Table()
         statsTable.defaults().pad(2f)
-        for (entry in stats.toHashMap().filterNot { it.value == 0f }) {
-            statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
-            statsTable.add(entry.value.roundToInt().toString().toLabel()).padRight(5f)
+        for ((key, value) in stats) {
+            statsTable.add(ImageGetter.getStatIcon(key.name)).size(20f)
+            statsTable.add(value.roundToInt().toLabel()).padRight(5f)
         }
         return statsTable
     }

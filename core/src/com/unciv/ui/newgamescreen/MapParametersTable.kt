@@ -1,18 +1,14 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.MapSize
-import com.unciv.logic.map.MapType
-import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.onChange
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
+import com.unciv.Constants
+import com.unciv.UncivGame
+import com.unciv.logic.map.*
+import com.unciv.ui.utils.*
 
 /** Table for editing [mapParameters]
  *
@@ -20,44 +16,64 @@ import com.unciv.ui.utils.toLabel
  *
  *  @param isEmptyMapAllowed whether the [MapType.empty] option should be present. Is used by the Map Editor, but should **never** be used with the New Game
  * */
-class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed: Boolean = false):
-    Table() {
+class MapParametersTable(
+    private val mapParameters: MapParameters,
+    private val isEmptyMapAllowed: Boolean = false
+) : Table() {
+    // These are accessed fom outside the class to read _and_ write values,
+    // namely from MapOptionsTable, NewMapScreen and NewGameScreen
     lateinit var mapTypeSelectBox: TranslatedSelectBox
-    lateinit var noRuinsCheckbox: CheckBox
-    lateinit var noNaturalWondersCheckbox: CheckBox
+    lateinit var customMapSizeRadius: TextField
+    lateinit var customMapWidth: TextField
+    lateinit var customMapHeight: TextField
+
+    private lateinit var worldSizeSelectBox: TranslatedSelectBox
+    private var customWorldSizeTable = Table ()
+    private var hexagonalSizeTable = Table()
+    private var rectangularSizeTable = Table()
+    private lateinit var noRuinsCheckbox: CheckBox
+    private lateinit var noNaturalWondersCheckbox: CheckBox
+    private lateinit var worldWrapCheckbox: CheckBox
+
+    // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders
+    // in a HashMap for reuse later - in the reset to defaults button. Better here as field than as closure.
+    // A HashMap indexed on a Widget is problematic, as it does not define its own hashCode and equals
+    // overrides nor is a Widget a data class. Seems to work anyway.  
+    private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
     init {
         skin = CameraStageBaseScreen.skin
-        defaults().pad(5f)
+        defaults().pad(5f, 10f)
         addMapShapeSelectBox()
         addMapTypeSelectBox()
-        addWorldSizeSelectBox()
-        addNoRuinsCheckbox()
-        addNoNaturalWondersCheckbox()
+        addWorldSizeTable()
+        addWrappedCheckBoxes()
         addAdvancedSettings()
     }
 
     private fun addMapShapeSelectBox() {
         val mapShapes = listOfNotNull(
-                MapShape.hexagonal,
-                MapShape.rectangular
+            MapShape.hexagonal,
+            MapShape.rectangular
         )
         val mapShapeSelectBox =
-                TranslatedSelectBox(mapShapes, mapParameters.shape, skin)
+            TranslatedSelectBox(mapShapes, mapParameters.shape, skin)
         mapShapeSelectBox.onChange {
-                mapParameters.shape = mapShapeSelectBox.selected.value
-            }
+            mapParameters.shape = mapShapeSelectBox.selected.value
+            updateWorldSizeTable()
+        }
 
-        add ("{Map shape}:".toLabel()).left()
+        add ("{Map Shape}:".toLabel()).left()
         add(mapShapeSelectBox).fillX().row()
     }
 
     private fun addMapTypeSelectBox() {
-
+        // MapType is not an enum so we can't simply enumerate. //todo: make it so!
         val mapTypes = listOfNotNull(
             MapType.default,
             MapType.pangaea,
             MapType.continents,
+            MapType.fourCorners,
             MapType.perlin,
             MapType.archipelago,
             if (isEmptyMapAllowed) MapType.empty else null
@@ -66,112 +82,183 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type, skin)
 
         mapTypeSelectBox.onChange {
-                mapParameters.type = mapTypeSelectBox.selected.value
+            mapParameters.type = mapTypeSelectBox.selected.value
 
-                // If the map won't be generated, these options are irrelevant and are hidden
-                noRuinsCheckbox.isVisible = mapParameters.type != MapType.empty
-                noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
-            }
+            // If the map won't be generated, these options are irrelevant and are hidden
+            noRuinsCheckbox.isVisible = mapParameters.type != MapType.empty
+            noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
+        }
 
-        add("{Map generation type}:".toLabel()).left()
+        add("{Map Generation Type}:".toLabel()).left()
         add(mapTypeSelectBox).fillX().row()
     }
 
+    private fun addWorldSizeTable() {
+        val mapSizes = MapSize.values().map { it.name } + listOf(Constants.custom)
+        worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name, skin)
+        worldSizeSelectBox.onChange { updateWorldSizeTable() }
 
-    private fun addWorldSizeSelectBox() {
-        val worldSizeSelectBox = TranslatedSelectBox(
-            MapSize.values().map { it.name },
-            mapParameters.size.name,
-            skin
-        )
+        addHexagonalSizeTable()
+        addRectangularSizeTable()
 
-        worldSizeSelectBox.onChange {
-                mapParameters.size = MapSize.valueOf(worldSizeSelectBox.selected.value)
-            }
-
-        add("{World size}:".toLabel()).left()
+        add("{World Size}:".toLabel()).left()
         add(worldSizeSelectBox).fillX().row()
+        add(customWorldSizeTable).colspan(2).grow().row()
+
+        updateWorldSizeTable()
     }
 
-    private fun addNoRuinsCheckbox() {
-        noRuinsCheckbox = CheckBox("No ancient ruins".tr(), skin)
-        noRuinsCheckbox.isChecked = mapParameters.noRuins
-        noRuinsCheckbox.onChange { mapParameters.noRuins = noRuinsCheckbox.isChecked }
-        add(noRuinsCheckbox).colspan(2).row()
-    }
-
-    private fun addNoNaturalWondersCheckbox() {
-        noNaturalWondersCheckbox = CheckBox("No Natural Wonders".tr(), skin)
-        noNaturalWondersCheckbox.isChecked = mapParameters.noNaturalWonders
-        noNaturalWondersCheckbox.onChange {
-            mapParameters.noNaturalWonders = noNaturalWondersCheckbox.isChecked
+    private fun addHexagonalSizeTable() {
+        val defaultRadius = mapParameters.mapSize.radius.toString()
+        customMapSizeRadius = TextField(defaultRadius, skin).apply {
+            textFieldFilter = DigitsOnlyFilter()
         }
-        add(noNaturalWondersCheckbox).colspan(2).row()
+        customMapSizeRadius.onChange {
+            mapParameters.mapSize = MapSizeNew(customMapSizeRadius.text.toIntOrNull() ?: 0 )
+        }
+        hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
+        hexagonalSizeTable.add(customMapSizeRadius).right().row()
+        hexagonalSizeTable.add("Anything above 40 may work very slowly on Android!".toLabel(Color.RED)
+            .apply { wrap=true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
+    }
+
+    private fun addRectangularSizeTable() {
+        val defaultWidth = mapParameters.mapSize.width.toString()
+        customMapWidth = TextField(defaultWidth, skin).apply {
+            textFieldFilter = DigitsOnlyFilter()
+        }
+
+        val defaultHeight = mapParameters.mapSize.height.toString()
+        customMapHeight = TextField(defaultHeight, skin).apply {
+            textFieldFilter = DigitsOnlyFilter()
+        }
+
+        customMapWidth.onChange {
+            mapParameters.mapSize = MapSizeNew(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+        }
+        customMapHeight.onChange {
+            mapParameters.mapSize = MapSizeNew(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+        }
+
+        rectangularSizeTable.defaults().pad(5f)
+        rectangularSizeTable.add("{Width}:".toLabel()).grow().left()
+        rectangularSizeTable.add(customMapWidth).right().row()
+        rectangularSizeTable.add("{Height}:".toLabel()).grow().left()
+        rectangularSizeTable.add(customMapHeight).right().row()
+        rectangularSizeTable.add("Anything above 80 by 50 may work very slowly on Android!".toLabel(Color.RED)
+            .apply { wrap = true }).width(prefWidth).colspan(hexagonalSizeTable.columns)
+    }
+
+    private fun updateWorldSizeTable() {
+        customWorldSizeTable.clear()
+
+        if (mapParameters.shape == MapShape.hexagonal && worldSizeSelectBox.selected.value == Constants.custom)
+            customWorldSizeTable.add(hexagonalSizeTable).grow().row()
+        else if (mapParameters.shape == MapShape.rectangular && worldSizeSelectBox.selected.value == Constants.custom)
+            customWorldSizeTable.add(rectangularSizeTable).grow().row()
+        else
+            mapParameters.mapSize = MapSizeNew(worldSizeSelectBox.selected.value)
+    }
+
+    private fun Table.addNoRuinsCheckbox() {
+        noRuinsCheckbox = "No Ancient Ruins".toCheckBox(mapParameters.noRuins) {
+            mapParameters.noRuins = it
+        }
+        add(noRuinsCheckbox).row()
+    }
+
+    private fun Table.addNoNaturalWondersCheckbox() {
+        noNaturalWondersCheckbox = "No Natural Wonders".toCheckBox(mapParameters.noNaturalWonders) {
+            mapParameters.noNaturalWonders = it
+        }
+        add(noNaturalWondersCheckbox).row()
+    }
+
+    private fun Table.addWorldWrapCheckbox() {
+        worldWrapCheckbox = "World Wrap".toCheckBox(mapParameters.worldWrap) {
+            mapParameters.worldWrap = it
+        }
+        add(worldWrapCheckbox).row()
+    }
+
+    private fun addWrappedCheckBoxes() {
+        val showWorldWrap = UncivGame.Current.settings.showExperimentalWorldWrap
+        add(Table(skin).apply {
+            defaults().left().pad(2.5f)
+            addNoRuinsCheckbox()
+            addNoNaturalWondersCheckbox()
+            if (showWorldWrap) addWorldWrapCheckbox()
+        }).colspan(2).center().row()
+        if (showWorldWrap)
+            add("World wrap maps are very memory intensive - creating large world wrap maps on Android can lead to crashes!"
+                .toLabel(fontSize = 14).apply { wrap=true }).colspan(2).fillX().row()
     }
 
     private fun addAdvancedSettings() {
-        val button = TextButton("Show advanced settings".tr(), skin)
-        val advancedSettingsTable = Table()
-                .apply {isVisible = false; defaults().pad(5f)}
+        val expander = ExpanderTab("Advanced Settings", startsOutOpened = false) {
+            addAdvancedControls(it)
+        }
+        add(expander).pad(0f).padTop(10f).colspan(2).growX().row()
+    }
 
-        add(button).colspan(2).row()
-        val advancedSettingsCell = add(Table()).colspan(2)
-        row()
+    private fun addAdvancedControls(table: Table) {
+        table.defaults().pad(5f)
 
-        button.onClick {
-            advancedSettingsTable.isVisible = !advancedSettingsTable.isVisible
+        val seedTextField = TextField(mapParameters.seed.toString(), skin)
+        seedTextField.textFieldFilter = DigitsOnlyFilter()
 
-            if (advancedSettingsTable.isVisible) {
-                button.setText("Hide advanced settings".tr())
-                advancedSettingsCell.setActor(advancedSettingsTable)
-            } else {
-                button.setText("Show advanced settings".tr())
-                advancedSettingsCell.setActor(Table())
+        // If the field is empty, fallback seed value to 0
+        seedTextField.onChange {
+            mapParameters.seed = try {
+                seedTextField.text.toLong()
+            } catch (e: Exception) {
+                0L
             }
         }
 
-        val sliders = HashMap<Slider, ()->Float>()
+        table.add("RNG Seed".toLabel()).left()
+        table.add(seedTextField).fillX().padBottom(10f).row()
 
-        fun addSlider(text:String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): Slider {
-            val slider = Slider(min, max, (max-min)/20,false,skin)
+        fun addSlider(text: String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): UncivSlider {
+            val slider = UncivSlider(min, max, (max - min) / 20, onChange = onChange)
             slider.value = getValue()
-            slider.onChange { onChange(slider.value) }
-            advancedSettingsTable.add(text.toLabel()).left()
-            advancedSettingsTable.add(slider).fillX().row()
-            sliders.put(slider, getValue)
+            table.add(text.toLabel()).left()
+            table.add(slider).fillX().row()
+            advancedSliders[slider] = getValue
             return slider
         }
 
-        addSlider("Map Height", {mapParameters.elevationExponent}, 0.5f,1f)
-            {mapParameters.elevationExponent=it}
+        addSlider("Map Height", {mapParameters.elevationExponent}, 0.6f,0.8f)
+        { mapParameters.elevationExponent = it }
 
         addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)
-            { mapParameters.temperatureExtremeness = it}
+        { mapParameters.temperatureExtremeness = it }
 
         addSlider("Resource richness", {mapParameters.resourceRichness},0f,0.5f)
-            { mapParameters.resourceRichness=it }
+        { mapParameters.resourceRichness = it }
 
         addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f)
-            { mapParameters.vegetationRichness=it }
+        { mapParameters.vegetationRichness = it }
 
         addSlider("Rare features richness", {mapParameters.rareFeaturesRichness}, 0f, 0.5f)
-            { mapParameters.rareFeaturesRichness = it }
+        { mapParameters.rareFeaturesRichness = it }
 
         addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 0f, 5f)
-            { mapParameters.maxCoastExtension =it.toInt() }.apply { stepSize=1f }
+        { mapParameters.maxCoastExtension = it.toInt() }.apply { stepSize = 1f }
 
         addSlider("Biome areas extension", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)
-            { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize=1f }
+        { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize = 1f }
 
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
-            { mapParameters.waterThreshold = it }
+        { mapParameters.waterThreshold = it }
 
-        val resetToDefaultButton = TextButton("Reset to default".tr(), skin)
+        val resetToDefaultButton = "Reset to defaults".toTextButton()
         resetToDefaultButton.onClick {
             mapParameters.resetAdvancedSettings()
-            for(entry in sliders)
+            seedTextField.text = mapParameters.seed.toString()
+            for (entry in advancedSliders)
                 entry.key.value = entry.value()
         }
-        advancedSettingsTable.add(resetToDefaultButton).colspan(2).row()
+        table.add(resetToDefaultButton).colspan(2).padTop(10f).row()
     }
 }

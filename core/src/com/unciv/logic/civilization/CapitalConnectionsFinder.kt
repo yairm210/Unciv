@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
@@ -14,12 +13,15 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
 
     private val allCivCities = civInfo.gameInfo.getCities()
 
-    private val theWheelIsResearched = civInfo.tech.isResearched("The Wheel")
-    private val railroadIsResearched = civInfo.tech.isResearched("Railroad")
-
+    private val harbor = "Harbor"   // hardcoding at least centralized for this class for now
     private val road = RoadStatus.Road.name
     private val railroad = RoadStatus.Railroad.name
-    private val harbor = "Harbor"
+    private val harborFromRoad = "$harbor-$road"
+    private val harborFromRailroad = "$harbor-$railroad"
+
+    private val ruleset = civInfo.gameInfo.ruleSet
+    private val roadIsResearched = ruleset.tileImprovements.containsKey(road) && civInfo.tech.isResearched(ruleset.tileImprovements[road]!!.techRequired!!)
+    private val railroadIsResearched = ruleset.tileImprovements.containsKey(railroad) && civInfo.tech.isResearched(ruleset.tileImprovements[railroad]!!.techRequired!!)
 
     init {
         citiesReachedToMediums[civInfo.getCapital()] = hashSetOf("Start")
@@ -30,16 +32,18 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         // this is so we know that if we've seen which cities can be connected by port A, and one
         // of those is city B, then we don't need to check the cities that B can connect to by port,
         // since we'll get the same cities we got from A, since they're connected to the same sea.
-        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < allCivCities.size) {
+        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < allCivCities.count()) {
             newCitiesToCheck = mutableListOf()
             for (cityToConnectFrom in citiesToCheck) {
                 if (cityToConnectFrom.containsHarbor()) {
                     checkHarbor(cityToConnectFrom)
                 }
-                if (railroadIsResearched) {
-                    checkRailroad(cityToConnectFrom)
+                if (railroadIsResearched){
+                    val mediumsReached= citiesReachedToMediums[cityToConnectFrom]!!
+                    if(mediumsReached.contains("Start") || mediumsReached.contains(railroad) || mediumsReached.contains(harborFromRailroad))
+                        checkRailroad(cityToConnectFrom) // This is only relevant for city connection if there is an unbreaking line from the capital
                 }
-                if (theWheelIsResearched) {
+                if (roadIsResearched) {
                     checkRoad(cityToConnectFrom)
                 }
             }
@@ -53,7 +57,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                 cityToConnectFrom,
                 transportType = road,
                 overridingTransportType = railroad,
-                tileFilter = { tile -> tile.hasRoad(civInfo) || tile.hasRailroad() || tile.isCityCenter() }
+                tileFilter = { tile -> tile.hasConnection(civInfo) || tile.isCityCenter() }
         )
     }
 
@@ -61,14 +65,15 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         check(
                 cityToConnectFrom,
                 transportType = railroad,
-                tileFilter = { tile -> tile.hasRailroad() || tile.isCityCenter() }
+                tileFilter = { tile -> tile.roadStatus == RoadStatus.Railroad || tile.isCityCenter() }
         )
     }
 
     private fun checkHarbor(cityToConnectFrom: CityInfo) {
         check(
                 cityToConnectFrom,
-                transportType = harbor,
+                transportType = if(cityToConnectFrom.wasPreviouslyReached(railroad,null)) harborFromRailroad else harborFromRoad,
+                overridingTransportType = harborFromRailroad,
                 tileFilter = { tile -> tile.isWater || tile.isCityCenter() },
                 cityFilter = { city -> city.containsHarbor() }
         )

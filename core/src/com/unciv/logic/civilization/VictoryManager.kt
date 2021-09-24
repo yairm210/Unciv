@@ -4,10 +4,12 @@ import com.unciv.models.Counter
 import com.unciv.models.ruleset.VictoryType
 
 class VictoryManager {
-    @Transient lateinit var civInfo: CivilizationInfo
+    @Transient
+    lateinit var civInfo: CivilizationInfo
 
     var requiredSpaceshipParts = Counter<String>()
     var currentsSpaceshipParts = Counter<String>()
+    var hasWonDiplomaticVictory = false
 
     init {
         requiredSpaceshipParts.add("SS Booster", 3)
@@ -30,22 +32,61 @@ class VictoryManager {
 
     fun spaceshipPartsRemaining() = requiredSpaceshipParts.values.sum() - currentsSpaceshipParts.values.sum()
 
-    fun hasWonScientificVictory() = civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
-            && spaceshipPartsRemaining()==0
+    fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String>): Counter<String> {
+        val results = Counter<String>()
+        for (castVote in votesCast) {
+            results.add(castVote.value, 1)
+        }
+        return results
+    }
+    
+    fun votesNeededForDiplomaticVictory(): Int {
+        val civCount = civInfo.gameInfo.civilizations.count { !it.isDefeated() }
 
-    fun hasWonCulturalVictory() = civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)
-            && civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 4
+        // CvGame.cpp::DoUpdateDiploVictory() in the source code of the original
+        return (
+            if (civCount > 28) 0.35 * civCount
+            else (67 - 1.1 * civCount) / 100 * civCount
+        ).toInt()
+    }
+    
+    fun hasEnoughVotesForDiplomaticVictory(): Boolean {
+        val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
+        val bestCiv = results.maxByOrNull { it.value }
+        if (bestCiv == null) return false
 
-    fun hasWonDominationVictory() = civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Domination)
-            && civInfo.gameInfo.civilizations.all { it==civInfo || it.isDefeated() || !it.isMajorCiv() }
+        // If we don't have the highest score, we have not won anyway
+        if (bestCiv.key != civInfo.civName) return false
+        
+        // If there's a tie, we haven't won either
+        return (results.none { it != bestCiv && it.value == bestCiv.value }) 
+    }
+    
+    private fun hasVictoryType(victoryType: VictoryType) = civInfo.gameInfo.gameParameters.victoryTypes.contains(victoryType)
+
+    fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) && spaceshipPartsRemaining() == 0
+
+    fun hasWonCulturalVictory() = hasVictoryType(VictoryType.Cultural)
+            && civInfo.hasUnique("Triggers a Cultural Victory upon completion")
+
+    fun hasWonDominationVictory(): Boolean {
+        return hasVictoryType(VictoryType.Domination)
+                && civInfo.gameInfo.civilizations.all { it == civInfo || it.isDefeated() || !it.isMajorCiv() }
+    }
+    
+    fun hasWonDiplomaticVictory() = hasVictoryType(VictoryType.Diplomatic) 
+            && civInfo.shouldCheckForDiplomaticVictory()
+            && hasEnoughVotesForDiplomaticVictory()
 
     fun hasWonVictoryType(): VictoryType? {
-        if(!civInfo.isMajorCiv()) return null
-        if(hasWonDominationVictory()) return VictoryType.Domination
-        if(hasWonScientificVictory()) return VictoryType.Scientific
-        if(hasWonCulturalVictory()) return VictoryType.Cultural
+        if (!civInfo.isMajorCiv()) return null
+        if (hasWonDominationVictory()) return VictoryType.Domination
+        if (hasWonScientificVictory()) return VictoryType.Scientific
+        if (hasWonCulturalVictory()) return VictoryType.Cultural
+        if (hasWonDiplomaticVictory()) return VictoryType.Diplomatic
+        if (civInfo.hasUnique("Triggers victory")) return VictoryType.Neutral
         return null
     }
 
-    fun hasWon() = hasWonVictoryType()!=null
+    fun hasWon() = hasWonVictoryType() != null
 }

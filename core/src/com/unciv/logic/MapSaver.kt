@@ -1,26 +1,51 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.saves.Gzip
 
-class MapSaver {
-    fun json() = GameSaver().json()
-    private val mapsFolder = "maps"
+object MapSaver {
 
-    fun getMap(mapName:String) = Gdx.files.local("$mapsFolder/$mapName")
-    fun saveMap(mapName: String,tileMap: TileMap){
-        getMap(mapName).writeString(Gzip.zip(json().toJson(tileMap)), false)
+    fun json() = GameSaver.json()
+
+    private const val mapsFolder = "maps"
+    var saveZipped = true
+
+    private fun getMap(mapName:String) = Gdx.files.local("$mapsFolder/$mapName")
+
+    fun mapFromSavedString(mapString: String, checkSizeErrors: Boolean = true): TileMap {
+        val unzippedJson = try {
+            Gzip.unzip(mapString)
+        } catch (ex: Exception) {
+            mapString
+        }
+        return mapFromJson(unzippedJson).apply {
+            // old maps (rarely) can come with mapSize fields not matching tile list
+            if (checkSizeErrors && mapParameters.getArea() != values.size)
+                throw UncivShowableException("Invalid map: Area ([${values.size}]) does not match saved dimensions ([${mapParameters.displayMapDimensions()}]).")
+            // compatibility with rare maps saved with old mod names
+            if (!checkSizeErrors)
+                mapParameters.mods.filter { '-' in it }.forEach {
+                    mapParameters.mods.remove(it)
+                    mapParameters.mods.add(it.replace('-',' '))
+                }
+        }
     }
-    fun loadMap(mapName: String): TileMap {
-        val gzippedString = getMap(mapName).readString()
-        val unzippedJson = Gzip.unzip(gzippedString)
-        return json().fromJson(TileMap::class.java, unzippedJson)
+    fun mapToSavedString(tileMap: TileMap): String {
+        val mapJson = json().toJson(tileMap)
+        return if (saveZipped) Gzip.zip(mapJson) else mapJson
     }
-    fun deleteMap(mapName: String) = getMap(mapName).delete()
 
-    fun getMaps() = Gdx.files.local(mapsFolder).list().map { it.name() }
+    fun saveMap(mapName: String,tileMap: TileMap) {
+        getMap(mapName).writeString(mapToSavedString(tileMap), false)
+    }
 
-    fun mapFromJson(json:String): TileMap = json().fromJson(TileMap::class.java, json)
+    fun loadMap(mapFile:FileHandle, checkSizeErrors: Boolean = true):TileMap {
+        return mapFromSavedString(mapFile.readString(), checkSizeErrors)
+    }
 
+    fun getMaps(): Array<FileHandle> = Gdx.files.local(mapsFolder).list()
+
+    private fun mapFromJson(json:String): TileMap = json().fromJson(TileMap::class.java, json)
 }

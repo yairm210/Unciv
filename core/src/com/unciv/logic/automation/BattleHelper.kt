@@ -1,6 +1,5 @@
 package com.unciv.logic.automation
 
-import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.ICombatant
@@ -10,13 +9,15 @@ import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 
-class BattleHelper {
+object BattleHelper {
 
     fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
+        if (unit.hasUnique("Cannot attack")) return false
         val attackableEnemies = getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                 // Only take enemies we can fight without dying
                 .filter {
-                    BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+                    BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
+                            it.tileToAttackFrom,
                             Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
 
@@ -47,12 +48,12 @@ class BattleHelper {
         // Silly floats, basically
 
         val unitMustBeSetUp = unit.hasUnique("Must set up to ranged attack")
-        val tilesToAttackFrom = if (unit.type.isAirUnit()) sequenceOf(unit.currentTile)
+        val tilesToAttackFrom = if (unit.baseUnit.movesLikeAirUnits()) sequenceOf(unit.currentTile)
         else
             unitDistanceToTiles.asSequence()
                     .filter {
                         val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
-                        val movementPointsToExpendHere = if (unitMustBeSetUp && unit.action != Constants.unitActionSetUp) 1 else 0
+                        val movementPointsToExpendHere = if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
                         val movementPointsToExpendBeforeAttack = if (it.key == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
                         unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack > 0.1
                     } // still got leftover movement points after all that, to attack (0.1 is because of Float nonsense, see MapUnit.moveToTile(...)
@@ -61,7 +62,7 @@ class BattleHelper {
 
         for (reachableTile in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                    if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.type.isAirUnit())
+                    if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
                         reachableTile.getTilesInDistance(rangeOfAttack)
                     else reachableTile.getViewableTilesList(rangeOfAttack)
                             .asSequence()
@@ -73,45 +74,45 @@ class BattleHelper {
     }
 
     fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
-        if (combatant is MapUnitCombatant) {
-            if (combatant.unit.isEmbarked()) {
-                if (tile.isWater) return false // can't attack water units while embarked, only land
-                if (combatant.isRanged()) return false
-            }
-            if (combatant.unit.hasUnique("Can only attack water")) {
-                if (tile.isLand) return false
-
-                // trying to attack lake-to-coast or vice versa
-                if ((tile.baseTerrain == Constants.lakes) != (combatant.getTile().baseTerrain == Constants.lakes))
-                    return false
-            }
+        if (combatant is MapUnitCombatant && combatant.unit.isEmbarked()) {
+            if (tile.isWater) return false // can't attack water units while embarked, only land
+            if (combatant.isRanged()) return false
         }
 
         val tileCombatant = Battle.getMapCombatantOfTile(tile) ?: return false
         if (tileCombatant.getCivInfo() == combatant.getCivInfo()) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
-        //only submarine and destroyer can attack submarine
-        //garrisoned submarine can be attacked by anyone, or the city will be in invincible
-        if (tileCombatant.isInvisible() && !tile.isCityCenter()) {
-            if (combatant is MapUnitCombatant
-                && combatant.unit.hasUnique("Can attack submarines")
-                && combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)) {
-                return true
-            }
+        if (combatant is MapUnitCombatant && 
+            combatant.unit.hasUnique("Can only attack [] units") &&
+            combatant.unit.getMatchingUniques("Can only attack [] units").none { tileCombatant.matchesCategory(it.params[0]) }
+        )
             return false
+
+        if (combatant is MapUnitCombatant &&
+            combatant.unit.hasUnique("Can only attack [] tiles") &&
+            combatant.unit.getMatchingUniques("Can only attack [] tiles").none { tile.matchesFilter(it.params[0]) }
+        )
+            return false
+
+        // Only units with the right unique can view submarines (or other invisible units) from more then one tile away.
+        // Garrisoned invisible units can be attacked by anyone, as else the city will be in invincible.
+        if (tileCombatant.isInvisible(combatant.getCivInfo()) && !tile.isCityCenter()) {
+            return combatant is MapUnitCombatant 
+                && combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)
         }
         return true
     }
 
     fun tryDisembarkUnitToAttackPosition(unit: MapUnit): Boolean {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        if (!unit.type.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
+        if (!unit.baseUnit.isMelee() || !unit.baseUnit.isLandUnit() || !unit.isEmbarked()) return false
 
         val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
                 .filter {
-                    BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+                    BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
+                            it.tileToAttackFrom,
                             Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
                 .filter { it.tileToAttackFrom.isLand }
@@ -133,14 +134,17 @@ class BattleHelper {
 
         var enemyTileToAttack: AttackableTile? = null
         val capturableCity = cityTilesToAttack.firstOrNull { it.tileToAttack.getCity()!!.health == 1 }
-        val cityWithHealthLeft = cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
-                .minBy { it.tileToAttack.getCity()!!.health }
+        val cityWithHealthLeft =
+            cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
+                .minByOrNull { it.tileToAttack.getCity()!!.health }
 
-        if (unit.type.isMelee() && capturableCity != null)
+        if (unit.baseUnit.isMelee() && capturableCity != null)
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
-            enemyTileToAttack = nonCityTilesToAttack.minBy { Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
+            enemyTileToAttack = nonCityTilesToAttack.minByOrNull {
+                Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth()
+            }
         else if (cityWithHealthLeft != null) enemyTileToAttack = cityWithHealthLeft // third priority, city
 
         return enemyTileToAttack

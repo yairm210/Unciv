@@ -1,66 +1,111 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.models.ruleset.Belief
+import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.tr
-import java.util.*
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.ICivilopediaText
 
-class TileResource : NamedStats() {
+class TileResource : NamedStats(), ICivilopediaText, IHasUniques {
 
     var resourceType: ResourceType = ResourceType.Bonus
     var terrainsCanBeFoundOn: List<String> = listOf()
     var improvement: String? = null
     var improvementStats: Stats? = null
-
-    /**
-     * The building that improves this resource, if any. E.G.: Granary for wheat, Stable for cattle.
-     */
-    var building: String? = null
     var revealedBy: String? = null
+    @Deprecated("As of 3.16.16 - replaced by uniques")
     var unique: String? = null
+    override var uniques: ArrayList<String> = arrayListOf()
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Resource, name) } }
+
+    override var civilopediaText = listOf<FormattedLine>()
 
 
-    fun getDescription(ruleset: Ruleset): String {
-        val stringBuilder = StringBuilder()
-        stringBuilder.appendln(resourceType.name.tr())
-        stringBuilder.appendln(this.clone().toString())
-        val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
-        terrainsCanBeBuiltOnString.addAll(terrainsCanBeFoundOn.map { it.tr() })
-        stringBuilder.appendln("Can be found on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))
-        stringBuilder.appendln()
-        stringBuilder.appendln("Improved by [$improvement]".tr())
-        stringBuilder.appendln("Bonus stats for improvement: ".tr() + "$improvementStats".tr())
+    override fun makeLink() = "Resource/$name"
 
-        val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.requiredResource==name }
-        if(buildingsThatConsumeThis.isNotEmpty())
-            stringBuilder.appendln("Buildings that consume this resource: ".tr()
-                    + buildingsThatConsumeThis.joinToString { it.name.tr() })
+    override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        val textList = ArrayList<FormattedLine>()
 
-        val unitsThatConsumeThis = ruleset.units.values.filter { it.requiredResource==name }
-        if(unitsThatConsumeThis.isNotEmpty())
-            stringBuilder.appendln("Units that consume this resource: ".tr()
-                    + unitsThatConsumeThis.joinToString { it.name.tr() })
+        textList += FormattedLine("${resourceType.name} resource", header = 4, color = resourceType.color)
+        textList += FormattedLine()
 
-        if(unique!=null) stringBuilder.appendln(unique!!.tr())
-        return stringBuilder.toString()
+        textList += FormattedLine(this.clone().toString())
+
+        if (terrainsCanBeFoundOn.isNotEmpty()) {
+            textList += FormattedLine()
+            if (terrainsCanBeFoundOn.size == 1) {
+                with (terrainsCanBeFoundOn[0]) {
+                    textList += FormattedLine("{Can be found on} {$this}", link = "Terrain/$this")
+                }
+            } else {
+                textList += FormattedLine("{Can be found on}:")
+                terrainsCanBeFoundOn.forEach {
+                    textList += FormattedLine(it, link = "Terrain/$it", indent = 1)
+                }
+            }
+        }
+
+        if (improvement != null) {
+            textList += FormattedLine()
+            textList += FormattedLine("Improved by [$improvement]", link = "Improvement/$improvement")
+            if (improvementStats != null && !improvementStats!!.isEmpty())
+                textList += FormattedLine("{Bonus stats for improvement}: " + improvementStats.toString())
+        }
+
+        val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.getResourceRequirements().containsKey(name) }
+        if (buildingsThatConsumeThis.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Buildings that consume this resource}:")
+            buildingsThatConsumeThis.forEach {
+                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
+            }
+        }
+
+        val unitsThatConsumeThis = ruleset.units.values.filter { it.getResourceRequirements().containsKey(name) }
+        if (unitsThatConsumeThis.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Units that consume this resource}: ")
+            unitsThatConsumeThis.forEach {
+                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
+            }
+        }
+
+        val buildingsRequiringThis =  ruleset.buildings.values.filter {
+            it.requiredNearbyImprovedResources?.contains(name) == true
+        }
+        if (buildingsRequiringThis.isNotEmpty()) {
+            textList += FormattedLine()
+            textList += FormattedLine("{Buildings that require this resource worked near the city}: ")
+            buildingsRequiringThis.forEach {
+                textList += FormattedLine(it.name, link = it.makeLink(), indent = 1)
+            }
+        }
+
+        textList += Belief.getCivilopediaTextMatching(name, ruleset)
+
+        return textList
     }
+
 }
+
 
 data class ResourceSupply(val resource:TileResource,var amount:Int, val origin:String)
 
-class ResourceSupplyList:ArrayList<ResourceSupply>(){
-    fun add(resource: TileResource, amount: Int, origin: String){
-        val existingResourceSupply=firstOrNull{it.resource==resource && it.origin==origin}
-        if(existingResourceSupply!=null) {
+class ResourceSupplyList:ArrayList<ResourceSupply>() {
+    fun add(resource: TileResource, amount: Int, origin: String) {
+        val existingResourceSupply = firstOrNull { it.resource == resource && it.origin == origin }
+        if (existingResourceSupply != null) {
             existingResourceSupply.amount += amount
-            if(existingResourceSupply.amount==0) remove(existingResourceSupply)
-        }
-        else add(ResourceSupply(resource,amount,origin))
+            if (existingResourceSupply.amount == 0) remove(existingResourceSupply)
+        } else add(ResourceSupply(resource, amount, origin))
     }
 
-    fun add(resourceSupplyList: ResourceSupplyList){
-        for(resourceSupply in resourceSupplyList)
-            add(resourceSupply.resource,resourceSupply.amount,resourceSupply.origin)
+    fun add(resourceSupplyList: ResourceSupplyList) {
+        for (resourceSupply in resourceSupplyList)
+            add(resourceSupply.resource, resourceSupply.amount, resourceSupply.origin)
     }
 }

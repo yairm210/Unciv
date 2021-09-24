@@ -13,6 +13,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.io.PrintWriter
@@ -71,18 +72,17 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * For more infos: https://developer.android.com/training/notify-user/channels.html#CreateChannel
          */
         fun createNotificationChannelInfo(appContext: Context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = appContext.resources.getString(R.string.Notify_ChannelInfo_Short)
-                val descriptionText = appContext.resources.getString(R.string.Notify_ChannelInfo_Long)
-                val importance = NotificationManager.IMPORTANCE_HIGH
-                val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_INFO, name, importance)
-                mChannel.description = descriptionText
-                mChannel.setShowBadge(true)
-                mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+            val name = appContext.resources.getString(R.string.Notify_ChannelInfo_Short)
+            val descriptionText = appContext.resources.getString(R.string.Notify_ChannelInfo_Long)
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_INFO, name, importance)
+            mChannel.description = descriptionText
+            mChannel.setShowBadge(true)
+            mChannel.lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
 
-                val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(mChannel)
-            }
+            val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(mChannel)
         }
 
         /**
@@ -93,18 +93,17 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          * For more infos: https://developer.android.com/training/notify-user/channels.html#CreateChannel
          */
         fun createNotificationChannelService(appContext: Context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = appContext.resources.getString(R.string.Notify_ChannelService_Short)
-                val descriptionText = appContext.resources.getString(R.string.Notify_ChannelService_Long)
-                val importance = NotificationManager.IMPORTANCE_MIN
-                val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_SERVICE, name, importance)
-                mChannel.setShowBadge(false)
-                mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                mChannel.description = descriptionText
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+            val name = appContext.resources.getString(R.string.Notify_ChannelService_Short)
+            val descriptionText = appContext.resources.getString(R.string.Notify_ChannelService_Long)
+            val importance = NotificationManager.IMPORTANCE_MIN
+            val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_SERVICE, name, importance)
+            mChannel.setShowBadge(false)
+            mChannel.lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+            mChannel.description = descriptionText
 
-                val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.createNotificationChannel(mChannel)
-            }
+            val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(mChannel)
         }
 
         /**
@@ -162,12 +161,29 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             }
         }
 
-        fun startTurnChecker(applicationContext: Context, gameInfo: GameInfo, settings: GameSettings) {
-            if (gameInfo.currentPlayerCiv.playerId == settings.userId) {
+        fun startTurnChecker(applicationContext: Context, currentGameInfo: GameInfo, settings: GameSettings) {
+            val gameFiles = GameSaver.getSaves(true)
+            val gameIds = Array(gameFiles.count()) {""}
+            val gameNames = Array(gameFiles.count()) {""}
+
+            var count = 0
+            for (gameFile in gameFiles) {
+                try {
+                    gameIds[count] = GameSaver.getGameIdFromFile(gameFile)
+                    gameNames[count] = gameFile.name()
+                    count++
+                } catch (ex: Exception) {
+                    //only getGameIdFromFile can throw an exception
+                    //nothing will be added to the arrays if it fails
+                    //just skip one file
+                }
+            }
+
+            if (currentGameInfo.currentPlayerCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
                 notifyUserAboutTurn(applicationContext)
             } else {
-                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameInfo.gameId),
+                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.multiplayerTurnCheckerDelayInMinutes),
                         Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.multiplayerTurnCheckerPersistentNotificationEnabled))
 
@@ -194,12 +210,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          *  Therefore Unciv needs to create new ones and delete legacy ones.
          */
         private fun destroyOldChannels(appContext: Context) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
-                HISTORIC_NOTIFICATION_CHANNELS.forEach {
-                    if (null != notificationManager.getNotificationChannel(it)) {
-                        notificationManager.deleteNotificationChannel(it)
-                    }
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+            val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
+            HISTORIC_NOTIFICATION_CHANNELS.forEach {
+                if (null != notificationManager.getNotificationChannel(it)) {
+                    notificationManager.deleteNotificationChannel(it)
                 }
             }
         }
@@ -208,9 +223,38 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
     override fun doWork(): Result {
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
         val configuredDelay = inputData.getInt(CONFIGURED_DELAY, 5)
+
         try {
-            val currentTurnPlayer = OnlineMultiplayer().tryDownloadCurrentTurnCiv(inputData.getString(GAME_ID)!!)
-            if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!!) {
+            val gameIds = inputData.getStringArray(GAME_ID)!!
+            var arrayIndex = 0
+            // We only want to notify the user or update persisted notification once but still want
+            // to download all games to update the files hence this bool
+            var foundGame = false
+
+            for (gameId in gameIds){
+                //gameId could be an empty string if startTurnChecker fails to load all files
+                if (gameId.isEmpty())
+                    continue
+
+                val game = OnlineMultiplayer().tryDownloadGameUninitialized(gameId)
+                val currentTurnPlayer = game.getCivilization(game.currentPlayer)
+
+                //Save game so MultiplayerScreen gets updated
+                /*
+                I received multiple reports regarding broken save games.
+                All of them where missing a few thousand chars at the end of the save game.
+                I assume this happened because the TurnCheckerWorker gets canceled by the AndroidLauncher
+                while saves are getting saved right here.
+                 */
+                //GameSaver.saveGame(game, gameNames[arrayIndex], true)
+
+                if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!!) {
+                    foundGame = true
+                }
+                arrayIndex++
+            }
+
+            if (foundGame){
                 notifyUserAboutTurn(applicationContext)
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
@@ -221,6 +265,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 val inputDataFailReset = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, 0).build()
                 enqueue(applicationContext, configuredDelay, inputDataFailReset)
             }
+
         } catch (ex: Exception) {
             val failCount = inputData.getInt(FAIL_COUNT, 0)
             if (failCount > 3) {

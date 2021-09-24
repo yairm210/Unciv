@@ -1,20 +1,25 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.ui.utils.ImageGetter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.*
+import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.surroundWithCircle
+import com.unciv.ui.utils.toLabel
 
 class ConstructionInfoTable(val city: CityInfo): Table() {
-    val selectedConstructionTable = Table()
-    init{
+    private val selectedConstructionTable = Table()
+
+    init {
         selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         add(selectedConstructionTable).pad(2f).fill()
         background = ImageGetter.getBackground(Color.WHITE)
@@ -22,7 +27,6 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
 
     fun update(selectedConstruction: IConstruction?) {
         selectedConstructionTable.clear()
-        selectedConstructionTable.pad(20f)
 
         if (selectedConstruction == null) {
             isVisible = false
@@ -30,55 +34,47 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
         }
         isVisible = true
 
-        addSelectedConstructionTable(selectedConstruction)
+        updateSelectedConstructionTable(selectedConstruction)
 
         pack()
     }
 
-    private fun addSelectedConstructionTable(construction: IConstruction) {
+    private fun updateSelectedConstructionTable(construction: IConstruction) {
         val cityConstructions = city.cityConstructions
 
         //val selectedConstructionTable = Table()
-        selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
-        selectedConstructionTable.pad(10f)
+        selectedConstructionTable.run {
+            pad(10f)
 
-        selectedConstructionTable.add(
-                ImageGetter.getConstructionImage(construction.name).surroundWithCircle(50f))
+            add(ImageGetter.getConstructionImage(construction.name).surroundWithCircle(50f))
                 .pad(5f)
 
+            var buildingText = construction.name.tr()
+            val specialConstruction = PerpetualConstruction.perpetualConstructionsMap[construction.name]
 
-        var buildingText = construction.name.tr()
-        val specialConstruction = PerpetualConstruction.perpetualConstructionsMap[construction.name]
-        if (specialConstruction == null) {
-            val turnsToComplete = cityConstructions.turnsToConstruction(construction.name)
-            buildingText += ("\r\n" + "Cost".tr() + " " + construction.getProductionCost(city.civInfo).toString()).tr()
-            buildingText += turnOrTurns(turnsToComplete)
+            buildingText += specialConstruction?.getProductionTooltip(city)
+                    ?: cityConstructions.getTurnsToConstructionString(construction.name)
+
+            add(buildingText.toLabel()).row()
+
+            val (description, link) = when (construction) {
+                is BaseUnit -> construction.getDescription() to construction.makeLink()
+                is Building -> construction.getDescription(city, city.getRuleset()) to construction.makeLink()
+                is PerpetualConstruction -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]") to ""
+                else -> "" to "" // Should never happen
+            }
+
+            val descriptionLabel = description.toLabel()
+            descriptionLabel.wrap = true
+            add(descriptionLabel).colspan(2).width(stage.width / 4)
+
+            clearListeners()
+            if (link.isEmpty()) return
+            touchable = Touchable.enabled
+            onClick {
+                UncivGame.Current.setScreen(CivilopediaScreen(city.getRuleset(), link = link))
+            }
         }
-        else {
-            buildingText += specialConstruction.getProductionTooltip(city)
-        }
-        selectedConstructionTable.add(buildingText.toLabel()).row()
-
-
-        val description: String
-        if (construction is BaseUnit)
-            description = construction.getDescription(true)
-        else if (construction is Building)
-            description = construction.getDescription(true, city.civInfo, city.civInfo.gameInfo.ruleSet)
-        else if(construction is PerpetualConstruction)
-            description = construction.description.tr()
-        else description="" // Should never happen
-
-        val descriptionLabel = description.toLabel()
-        descriptionLabel.setWrap(true)
-        descriptionLabel.width = stage.width / 4
-
-        val descriptionScroll = ScrollPane(descriptionLabel)
-        selectedConstructionTable.add(descriptionScroll).colspan(2).width(stage.width / 4).height(stage.height / 8)
-
     }
 
-    companion object {
-        internal fun turnOrTurns(turns: Int): String = "\r\n$turns ${(if (turns > 1) " {turns}" else " {turn}").tr()}"
-    }
 }

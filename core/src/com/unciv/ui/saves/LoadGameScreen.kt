@@ -1,56 +1,70 @@
 package com.unciv.ui.saves
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import java.text.SimpleDateFormat
+import com.unciv.ui.utils.UncivDateFormat.formatDate
 import java.util.*
+import java.util.concurrent.CancellationException
+import kotlin.concurrent.thread
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class LoadGameScreen : PickerScreen() {
-    lateinit var selectedSave:String
-    private val copySavedGameToClipboardButton = TextButton("Copy saved game to clipboard".tr(),skin)
+class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disableScroll = true) {
+    lateinit var selectedSave: String
+    private val copySavedGameToClipboardButton = "Copy saved game to clipboard".toTextButton()
     private val saveTable = Table()
-    private val deleteSaveButton = TextButton("Delete save".tr(), skin)
+    private val deleteSaveButton = "Delete save".toTextButton()
     private val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
 
     init {
-        setDefaultCloseAction()
+        setDefaultCloseAction(previousScreen)
 
         resetWindowState()
-        topTable.add(ScrollPane(saveTable)).height(stage.height*2/3)
+        topTable.add(ScrollPane(saveTable))
 
         val rightSideTable = getRightSideTable()
 
         topTable.add(rightSideTable)
 
         rightSideButton.onClick {
-            try {
-                UncivGame.Current.loadGame(selectedSave)
-            }
-            catch (ex:Exception){
-                val cantLoadGamePopup = Popup(this)
-                cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
-                if (ex is UncivShowableException && ex.localizedMessage != null) {
-                    // thrown exceptions are our own tests and can be shown to the user
-                    cantLoadGamePopup.addGoodSizedLabel(ex.localizedMessage).row()
-                    cantLoadGamePopup.open()
-                } else {
-                    cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                    cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                    cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
-                    cantLoadGamePopup.open()
-                    ex.printStackTrace()
+            val loadingPopup = Popup( this)
+            loadingPopup.addGoodSizedLabel("Loading...")
+            loadingPopup.open()
+            thread {
+                try {
+                    // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
+                    val loadedGame = GameSaver.loadGameByName(selectedSave)
+                    Gdx.app.postRunnable { UncivGame.Current.loadGame(loadedGame) }
+                } catch (ex: Exception) {
+                    Gdx.app.postRunnable {
+                        loadingPopup.close()
+                        val cantLoadGamePopup = Popup(this)
+                        cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
+                        if (ex is UncivShowableException && ex.localizedMessage != null) {
+                            // thrown exceptions are our own tests and can be shown to the user
+                            cantLoadGamePopup.addGoodSizedLabel(ex.localizedMessage).row()
+                            cantLoadGamePopup.addCloseButton()
+                            cantLoadGamePopup.open()
+                        } else {
+                            cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                            cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+                            cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
+                            cantLoadGamePopup.addCloseButton()
+                            cantLoadGamePopup.open()
+                            ex.printStackTrace()
+                        }
+                    }
                 }
             }
         }
@@ -59,25 +73,45 @@ class LoadGameScreen : PickerScreen() {
 
     private fun getRightSideTable(): Table {
         val rightSideTable = Table()
+        rightSideTable.defaults().pad(10f)
 
         val errorLabel = "".toLabel(Color.RED)
-        val loadFromClipboardButton = TextButton("Load copied data".tr(), skin)
+        val loadFromClipboardButton = "Load copied data".toTextButton()
         loadFromClipboardButton.onClick {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
-                val loadedGame = GameSaver().gameInfoFromString(decoded)
+                val loadedGame = GameSaver.gameInfoFromString(decoded)
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
-                errorLabel.setText("Could not load game from clipboard!".tr())
+                var text = "Could not load game from clipboard!".tr()
+                if (ex is UncivShowableException) text += "\n" + ex.message
+                errorLabel.setText(text)
+
                 ex.printStackTrace()
             }
         }
         rightSideTable.add(loadFromClipboardButton).row()
+        if (GameSaver.canLoadFromCustomSaveLocation()) {
+            val loadFromCustomLocation = "Load from custom location".toTextButton()
+            loadFromCustomLocation.onClick {
+                GameSaver.loadGameFromCustomLocation { gameInfo, exception ->
+                    if (gameInfo != null) {
+                        Gdx.app.postRunnable {
+                            game.loadGame(gameInfo)
+                        }
+                    } else if (exception !is CancellationException) {
+                        errorLabel.setText("Could not load game from custom location!".tr())
+                        exception?.printStackTrace()
+                    }
+                }
+            }
+            rightSideTable.add(loadFromCustomLocation).row()
+        }
         rightSideTable.add(errorLabel).row()
 
         deleteSaveButton.onClick {
-            GameSaver().deleteSave(selectedSave)
+            GameSaver.deleteSave(selectedSave)
             resetWindowState()
         }
         deleteSaveButton.disable()
@@ -85,7 +119,7 @@ class LoadGameScreen : PickerScreen() {
 
         copySavedGameToClipboardButton.disable()
         copySavedGameToClipboardButton.onClick {
-            val gameText = GameSaver().getSave(selectedSave).readString()
+            val gameText = GameSaver.getSave(selectedSave).readString()
             val gzippedGameText = Gzip.zip(gameText)
             Gdx.app.clipboard.contents = gzippedGameText
         }
@@ -93,8 +127,8 @@ class LoadGameScreen : PickerScreen() {
 
         showAutosavesCheckbox.isChecked = false
         showAutosavesCheckbox.onChange {
-                updateLoadableGames(showAutosavesCheckbox.isChecked)
-            }
+            updateLoadableGames(showAutosavesCheckbox.isChecked)
+        }
         rightSideTable.add(showAutosavesCheckbox).row()
         return rightSideTable
     }
@@ -108,35 +142,61 @@ class LoadGameScreen : PickerScreen() {
         descriptionLabel.setText("")
     }
 
-    private fun updateLoadableGames(showAutosaves:Boolean) {
+    private fun updateLoadableGames(showAutosaves: Boolean) {
         saveTable.clear()
-        for (save in GameSaver().getSaves().sortedByDescending { GameSaver().getSave(it).lastModified() }) {
-            if(save.startsWith("Autosave") && !showAutosaves) continue
-            val textButton = TextButton(save, skin)
-            textButton.onClick {
-                selectedSave = save
-                copySavedGameToClipboardButton.enable()
-                var textToSet = save
 
-                val savedAt = Date(GameSaver().getSave(save).lastModified())
-                textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
-                try {
-                    val game = GameSaver().loadGameByName(save)
-                    val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
-                    textToSet += "\n" + playerCivNames +
-                            ", " + game.difficulty.tr() + ", {Turn} ".tr() + game.turns
-                } catch (ex: Exception) {
-                    textToSet += "\n{Could not load game}!".tr()
+        val loadImage = ImageGetter.getImage("OtherIcons/Load")
+        loadImage.setSize(50f, 50f) // So the origin sets correctly
+        loadImage.setOrigin(Align.center)
+        loadImage.addAction(Actions.rotateBy(360f, 2f))
+        saveTable.add(loadImage).size(50f)
+
+        thread { // Apparently, even jut getting the list of saves can cause ANRs -
+            // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
+            // .toList() because otherwise the lastModified will only be checked inside the postRunnable
+            val saves = GameSaver.getSaves().sortedByDescending { it.lastModified() }.toList()
+
+            Gdx.app.postRunnable {
+                saveTable.clear()
+                for (save in saves) {
+                    if (save.name().startsWith("Autosave") && !showAutosaves) continue
+                    val textButton = TextButton(save.name(), skin)
+                    textButton.onClick { onSaveSelected(save) }
+                    saveTable.add(textButton).pad(5f).row()
                 }
-                descriptionLabel.setText(textToSet)
-                rightSideButton.setText("Load [$save]".tr())
-                rightSideButton.enable()
-                deleteSaveButton.enable()
-                deleteSaveButton.color = Color.RED
             }
-            saveTable.add(textButton).pad(5f).row()
+        }
+    }
+
+    private fun onSaveSelected(save: FileHandle) {
+        selectedSave = save.name()
+        copySavedGameToClipboardButton.enable()
+
+        rightSideButton.setText("Load [${save.name()}]".tr())
+        rightSideButton.enable()
+        deleteSaveButton.enable()
+        deleteSaveButton.color = Color.RED
+        descriptionLabel.setText("Loading...".tr())
+
+
+        val savedAt = Date(save.lastModified())
+        var textToSet = save.name() + "\n${"Saved at".tr()}: " + savedAt.formatDate()
+        thread { // Even loading the game to get its metadata can take a long time on older phones
+            try {
+                val game = GameSaver.loadGamePreviewFromFile(save)
+                val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
+                textToSet += "\n" + playerCivNames +
+                        ", " + game.difficulty.tr() + ", ${Fonts.turn}" + game.turns
+                if (game.gameParameters.mods.isNotEmpty())
+                    textToSet += "\n${"Mods:".tr()} " + game.gameParameters.mods.joinToString()
+            } catch (ex: Exception) {
+                textToSet += "\n${"Could not load game".tr()}!"
+            }
+
+            Gdx.app.postRunnable {
+                descriptionLabel.setText(textToSet)
+            }
         }
     }
 
 }
-

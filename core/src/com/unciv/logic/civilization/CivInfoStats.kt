@@ -1,117 +1,225 @@
 package com.unciv.logic.civilization
 
-import com.unciv.Constants
-import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
+import com.unciv.models.ruleset.BeliefType
+import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.toPercent
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
 /** CivInfo class was getting too crowded */
-class CivInfoStats(val civInfo: CivilizationInfo){
+class CivInfoStats(val civInfo: CivilizationInfo) {
 
-    private fun getUnitUpkeep(): Int {
+    private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
-        val freeUnits = 3
-        var unitsToPayFor = civInfo.getCivUnits()
-        if(civInfo.policies.isAdopted("Oligarchy"))
-            // Only land military units can truly "garrison"
-            unitsToPayFor = unitsToPayFor.filterNot {
-                it.getTile().isCityCenter()
-                        && it.canGarrison()
-            }
-
-        var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
-        if(civInfo.nation.unique == UniqueAbility.FUROR_TEUTONICUS){
-            val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() }.toFloat())
-            numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
+        var freeUnits = 3
+        for (unique in civInfo.getMatchingUniques(UniqueType.FreeUnits)) {
+            if (!unique.conditionalsApply(civInfo)) continue
+            freeUnits += unique.params[0].toInt()
         }
 
-        val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        val gameProgress = civInfo.gameInfo.turns / turnLimit // as game progresses Maintenance cost rises
-        var cost = baseUnitCost*numberOfUnitsToPayFor*(1+gameProgress)
-        cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
-        if(!civInfo.isPlayerCivilization())
+        var unitsToPayFor = civInfo.getCivUnits()
+        if (civInfo.hasUnique("Units in cities cost no Maintenance"))
+        // Only land military units can truly "garrison"
+            unitsToPayFor = unitsToPayFor.filterNot {
+                it.getTile().isCityCenter() && it.canGarrison()
+            }
+
+
+        var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscount)) {
+            if (!unique.conditionalsApply(civInfo)) continue
+            val numberOfUnitsWithDiscount = min(
+                numberOfUnitsToPayFor,
+                unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
+            )
+            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
+        }
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedUnitMaintenanceCostsByFilter)) {
+            val numberOfUnitsWithDiscount = min(
+                numberOfUnitsToPayFor,
+                unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
+            )
+            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
+        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedUnitMaintenanceCostsGlobally)) {
+            numberOfUnitsToPayFor *= 1f - unique.params[0].toFloat() / 100f
+        }
+
+        val turnLimit =
+            BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        val gameProgress =
+            min(civInfo.gameInfo.turns / turnLimit, 1f) // as game progresses Maintenance cost rises
+        var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)
+        cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
+        if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
-        if(civInfo.policies.isAdopted("Autocracy")) cost *= 0.66f
+
+
         return cost.toInt()
     }
 
     private fun getTransportationUpkeep(): Int {
         var transportationUpkeep = 0
-        var hillsUpkeep = 0
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
-        for (city  in civInfo.cities) {
+
+        val ignoredTileTypes =
+            civInfo.getMatchingUniques("No Maintenance costs for improvements in [] tiles")
+                .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
+        // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
+
+        for (city in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                val tileUpkeep =
-                    when (tile.roadStatus) {
-                        RoadStatus.Road -> 1
-                        RoadStatus.Railroad -> 2
-                        RoadStatus.None -> 0
-                    }
-                transportationUpkeep += tileUpkeep
-                if (tile.baseTerrain == Constants.hill) hillsUpkeep += tileUpkeep
+                if (tile.roadStatus == RoadStatus.None) continue // Cheap checks before pricey checks
+                if (ignoredTileTypes.any { tile.matchesFilter(it, civInfo) }) continue
+
+                transportationUpkeep += tile.roadStatus.upkeep
             }
         }
-        // Inca unique according to https://civilization.fandom.com/wiki/Incan_%28Civ5%29
-        if (civInfo.nation.greatAndeanRoad)
-            transportationUpkeep = (transportationUpkeep - hillsUpkeep) / 2
-        if (civInfo.policies.isAdopted("Trade Unions"))
-            transportationUpkeep = (transportationUpkeep * 2 / 3f).toInt()
+        for (unique in civInfo.getMatchingUniques("Maintenance on roads & railroads reduced by []%"))
+            transportationUpkeep =
+                (transportationUpkeep * (100f - unique.params[0].toInt()) / 100).toInt()
+
         return transportationUpkeep
     }
 
-    fun getStatMapForNextTurn(): HashMap<String, Stats> {
+    fun getUnitSupply(): Int {
+        /* TotalSupply = BaseSupply + NumCities*modifier + Population*modifier
+        * In civ5, it seems population modifier is always 0.5, so i hardcoded it down below */
+        var supply = getBaseUnitSupply() + getUnitSupplyFromCities() + getUnitSupplyFromPop()
+
+        if (civInfo.isMajorCiv() && civInfo.playerType == PlayerType.AI)
+            supply = (supply*(1f + civInfo.getDifficulty().aiUnitSupplyModifier)).toInt()
+        return supply
+    }
+
+    fun getBaseUnitSupply(): Int = civInfo.getDifficulty().unitSupplyBase
+    fun getUnitSupplyFromCities(): Int = civInfo.cities.size * civInfo.getDifficulty().unitSupplyPerCity
+    fun getUnitSupplyFromPop(): Int = civInfo.cities.sumOf { it.population.population } / 2
+    fun getUnitSupplyDeficit(): Int = max(0,civInfo.getCivUnitsSize() - getUnitSupply())
+
+    /** Per each supply missing, a player gets -10% production. Capped at -70%. */
+    fun getUnitSupplyProductionPenalty(): Float = -min(getUnitSupplyDeficit() * 10f, 70f)
+
+    fun getStatMapForNextTurn(): StatMap {
         val statMap = StatMap()
         for (city in civInfo.cities) {
             for (entry in city.cityStats.finalStatList)
                 statMap.add(entry.key, entry.value)
         }
 
-        //City states culture bonus
+        //City-States bonuses
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
-                    && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
-                val cultureBonus = Stats()
-                var culture = 3f * (civInfo.getEra().ordinal+1)
-                if(civInfo.nation.unique == UniqueAbility.FATHER_GOVERNS_CHILDREN)
-                    culture*=1.5f
-                cultureBonus.add(Stat.Culture, culture)
-                statMap.add("City States",cultureBonus)
+            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel()
+            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
+                val cityStateBonus = Stats()
+                val eraInfo = civInfo.getEra()
+
+                if (!eraInfo.undefinedCityStateBonuses()) {
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                        if (bonus.isOfType(UniqueType.CityStateStatsPerTurn) && bonus.conditionalsApply(otherCiv))
+                            cityStateBonus.add(bonus.stats)
+                    }
+                } else {
+                    // Deprecated, assume Civ V values for compatibility
+                    if (otherCiv.cityStateType == CityStateType.Cultured) {
+                        cityStateBonus.culture =
+                            when {
+                                civInfo.getEraNumber() in 0..1 -> 3f
+                                civInfo.getEraNumber() in 2..3 -> 6f
+                                else -> 13f
+                            }
+                        if (relationshipLevel == RelationshipLevel.Ally)
+                            cityStateBonus.culture *= 2f
+                    }
+                }
+
+                for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                    cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
+                }
+
+                statMap.add("City-States", cityStateBonus)
             }
+
+            if (otherCiv.isCityState())
+                for (unique in civInfo.getMatchingUniques("Allied City-States provide [] equal to []% of what they produce for themselves")) {
+                    if (otherCiv.getDiplomacyManager(civInfo.civName)
+                            .relationshipLevel() != RelationshipLevel.Ally
+                    ) continue
+                    statMap.add(
+                        "City-States",
+                        Stats().add(
+                            Stat.valueOf(unique.params[0]),
+                            otherCiv.statsForNextTurn[Stat.valueOf(unique.params[0])] * unique.params[1].toFloat() / 100f
+                        )
+                    )
+                }
         }
 
-        for (entry in getHappinessBreakdown()) {
-            statMap.add(entry.key, Stats().apply { happiness=entry.value })
+        statMap["Transportation upkeep"] = Stats(gold = -getTransportationUpkeep().toFloat())
+        statMap["Unit upkeep"] = Stats(gold = -getUnitMaintenance().toFloat())
+
+        if (civInfo.religionManager.religion != null) {
+            for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
+                .flatMap { it.uniqueObjects }) {
+                if (unique.placeholderText == "[] for each global city following this religion") {
+                    statMap.add(
+                        "Religion",
+                        unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion())
+                    )
+                }
+            }
+            for (unique in civInfo.religionManager.religion!!.getFounderUniques())
+                if (unique.placeholderText == "[] for every [] global followers []")
+                    statMap.add(
+                        "Religion",
+                        unique.stats *
+                                civInfo.religionManager.numberOfFollowersFollowingThisReligion(
+                                    unique.params[2]
+                                ).toFloat() /
+                                unique.params[1].toFloat()
+                    )
         }
 
-        statMap["Transportation upkeep"] = Stats().apply { gold=- getTransportationUpkeep().toFloat()}
-        statMap["Unit upkeep"] = Stats().apply { gold=- getUnitUpkeep().toFloat()}
-
-        if (civInfo.policies.isAdopted("Mandate Of Heaven")) {
-            val happiness = statMap.values.map { it.happiness }.sum()
-            if(happiness>0) statMap.add("Policies", Stats().apply { culture=happiness/2 })
+        // Deprecated since 3.16.15
+            if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
+                val happiness = civInfo.getHappiness()
+                if (happiness > 0) statMap.add("Policies", Stats(culture = happiness / 2f))
+            }
+        //
+        
+        if (civInfo.getHappiness() > 0) {
+            val excessHappinessConversion = Stats()
+            for (unique in civInfo.getMatchingUniques("[]% of excess happiness converted to []")) {
+                excessHappinessConversion.add(Stat.valueOf(unique.params[1]), (unique.params[0].toInt() / 100 * civInfo.getHappiness()).toFloat())
+            }
+            statMap.add("Policies", excessHappinessConversion)
         }
 
         // negative gold hurts science
         // if we have - or 0, then the techs will never be complete and the tech button
         // will show a negative number of turns and int.max, respectively
-        if (statMap.values.map { it.gold }.sum() < 0) {
+        if (statMap.values.map { it.gold }.sum() < 0 && civInfo.gold < 0) {
             val scienceDeficit = max(statMap.values.map { it.gold }.sum(),
-                    1 - statMap.values.map { it.science }.sum())// Leave at least 1
-            statMap["Treasury deficit"] = Stats().apply { science = scienceDeficit }
+                1 - statMap.values.map { it.science }.sum()
+            )// Leave at least 1
+            statMap["Treasury deficit"] = Stats(science = scienceDeficit)
         }
-        val goldDifferenceFromTrade = civInfo.diplomacy.values.sumBy { it.goldPerTurn() }
-        if(goldDifferenceFromTrade!=0)
-            statMap["Trade"] = Stats().apply { gold= goldDifferenceFromTrade.toFloat() }
+        val goldDifferenceFromTrade = civInfo.diplomacy.values.sumOf { it.goldPerTurn() }
+        if (goldDifferenceFromTrade != 0)
+            statMap["Trade"] = Stats(gold = goldDifferenceFromTrade.toFloat())
 
         return statMap
     }
@@ -121,40 +229,126 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         val statMap = HashMap<String, Float>()
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
-        // TODO - happinessPerUnique should be difficulty-dependent, 5 on Settler and Chieftian and 4 on other difficulties (should be parameter, not in code)
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        if (civInfo.policies.isAdopted("Protectionism")) happinessPerUniqueLuxury += 1
-        statMap["Luxury resources"]= civInfo.getCivResources().map { it.resource }
-                .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
+        for (unique in civInfo.getMatchingUniques("+[] happiness from each type of luxury resource"))
+            happinessPerUniqueLuxury += unique.params[0].toInt()
 
-        for(city in civInfo.cities.toList()){
-            for(keyvalue in city.cityStats.happinessList){
-                if(statMap.containsKey(keyvalue.key))
-                    statMap[keyvalue.key] = statMap[keyvalue.key]!!+keyvalue.value
-                else statMap[keyvalue.key] = keyvalue.value
+        val ownedLuxuries = civInfo.getCivResources().map { it.resource }
+            .filter { it.resourceType == ResourceType.Luxury }
+
+        statMap["Luxury resources"] = civInfo.getCivResources()
+            .map { it.resource }
+            .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
+
+        val happinessBonusForCityStateProvidedLuxuries =
+            civInfo.getMatchingUniques("Happiness from Luxury Resources gifted by City-States increased by []%")
+                .sumOf { it.params[0].toInt() } / 100f
+
+        val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
+            .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
+            .flatMap { it.getCivResources().map { res -> res.resource } }
+            .distinct()
+            .count { it.resourceType === ResourceType.Luxury && ownedLuxuries.contains(it) }
+
+        statMap["City-State Luxuries"] =
+            happinessPerUniqueLuxury * luxuriesProvidedByCityStates * happinessBonusForCityStateProvidedLuxuries
+
+        val luxuriesAllOfWhichAreTradedAway = civInfo.detailedCivResources
+            .filter {
+                it.amount < 0 && it.resource.resourceType == ResourceType.Luxury
+                        && (it.origin == "Trade" || it.origin == "Trade request")
+            }
+            .map { it.resource }
+            .filter { !ownedLuxuries.contains(it) }
+
+        statMap["Traded Luxuries"] =
+            luxuriesAllOfWhichAreTradedAway.count() * happinessPerUniqueLuxury *
+                    civInfo.getMatchingUniques("Retain []% of the happiness from a luxury after the last copy has been traded away")
+                        .sumOf { it.params[0].toInt() } / 100f
+
+        for (city in civInfo.cities) {
+            // There appears to be a concurrency problem? In concurrent thread in ConstructionsTable.getConstructionButtonDTOs
+            // Literally no idea how, since happinessList is ONLY replaced, NEVER altered.
+            // Oh well, toList() should solve the problem, wherever it may come from.
+            for ((key, value) in city.cityStats.happinessList.toList()) {
+                if (statMap.containsKey(key))
+                    statMap[key] = statMap[key]!! + value
+                else statMap[key] = value
             }
         }
 
-        if (civInfo.containsBuildingUnique("Provides 1 happiness per 2 additional social policies adopted")) {
-            if(!statMap.containsKey("Policies")) statMap["Policies"]=0f
+        if (civInfo.hasUnique("Provides 1 happiness per 2 additional social policies adopted")) {
+            if (!statMap.containsKey("Policies")) statMap["Policies"] = 0f
             statMap["Policies"] = statMap["Policies"]!! +
-                    civInfo.policies.getAdoptedPolicies().count { !it.endsWith("Complete") } / 2
+                    civInfo.policies.getAdoptedPolicies()
+                        .count { !Policy.isBranchCompleteByName(it) } / 2
         }
 
         var happinessPerNaturalWonder = 1f
-        if (civInfo.nation.unique == UniqueAbility.SEVEN_CITIES_OF_GOLD)
+        if (civInfo.hasUnique("Double Happiness from Natural Wonders"))
             happinessPerNaturalWonder *= 2
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
 
+        if (civInfo.religionManager.religion != null) {
+            statMap["Religion"] = 0f
+            for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
+                .flatMap { it.uniqueObjects }) {
+                if (unique.placeholderText == "[] for each global city following this religion") {
+                    statMap["Religion"] =
+                        statMap["Religion"]!! +
+                                unique.stats.happiness * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
+                            .toFloat()
+                }
+                if (unique.placeholderText == "[] for every [] global followers []") {
+                    statMap["Religion"] =
+                        statMap["Religion"]!! +
+                                unique.stats.happiness *
+                                civInfo.religionManager.numberOfFollowersFollowingThisReligion(
+                                    unique.params[2]
+                                ).toFloat() /
+                                unique.params[1].toFloat()
+                }
+            }
+            if (statMap["Religion"] == 0f)
+                statMap.remove("Religion")
+        }
+
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile
-                    && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
-                if (statMap.containsKey("City-states"))
-                    statMap["City-states"] = statMap["City-states"]!! + 3f
-                else
-                    statMap["City-states"] = 3f
+            val relationshipLevel = otherCiv.getDiplomacyManager(civInfo).relationshipLevel()
+            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
+                val eraInfo = civInfo.getEra()
+
+                if (!eraInfo.undefinedCityStateBonuses()) {
+                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                        if (!bonus.conditionalsApply(otherCiv)) continue
+                        if (bonus.isOfType(UniqueType.CityStateHappiness)) {
+                            if (statMap.containsKey("City-States"))
+                                statMap["City-States"] =
+                                    statMap["City-States"]!! + bonus.params[0].toFloat()
+                            else
+                                statMap["City-States"] = bonus.params[0].toFloat()
+                        }
+                    }
+                } else {
+                    // Deprecated, assume Civ V values for compatibility
+                    if (otherCiv.cityStateType == CityStateType.Mercantile) {
+                        val happinessBonus = if (civInfo.getEraNumber() in 0..1) 2f else 3f
+                        if (statMap.containsKey("City-States"))
+                            statMap["City-States"] = statMap["City-States"]!! + happinessBonus
+                        else
+                            statMap["City-States"] = happinessBonus
+                    }
+                }
+            }
+        }
+
+        // Just in case
+        if (statMap.containsKey("City-States")) {
+            for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                if (unique.params[1] == Stat.Happiness.name)
+                    statMap["City-States"] = statMap["City-States"]!! * unique.params[0].toPercent()
             }
         }
 

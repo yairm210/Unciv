@@ -1,7 +1,9 @@
 package com.unciv.logic.civilization.diplomacy
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.Nation
 import com.unciv.testing.GdxTestRunner
 import io.mockk.every
 import io.mockk.mockk
@@ -23,19 +25,23 @@ class DiplomacyManagerTests {
 
     private fun meetByName(civilization: String, civilizationToMeet: String) {
         civilizations.getValue(civilization)
-            .meetCivilization(civilizations.getValue(civilizationToMeet))
+            .makeCivilizationsMeet(civilizations.getValue(civilizationToMeet))
     }
 
     @Before
     fun setup() {
         // Setup the GameInfo mock
-
         every { mockGameInfo.getCivilization(capture(slot)) } answers { civilizations.getValue(slot.captured) }
         // Just return the default CivilizationInfo, since the .meetCivilization() includes the tutorial logic and crashes otherwise
         every { mockGameInfo.getCurrentPlayerCivilization() } returns CivilizationInfo()
 
-        for (civ in civilizations.values) {
-            civ.gameInfo = mockGameInfo
+        // Initialize test civilizations so they pass certain criteria
+        civilizations.values.forEach {
+            it.gameInfo = mockGameInfo
+            it.nation = Nation()            // for isMajorCiv() (as cityStateType will be null)
+            it.nation.name = it.civName     // for isBarbarian()
+            it.cities = listOf(CityInfo())  // for isDefeated()
+            it.hasEverOwnedOriginalCapital = true   // also isDefeated() - adding a unit is much harder so we need the other defeat condition
         }
     }
 
@@ -45,6 +51,15 @@ class DiplomacyManagerTests {
         for (civ in civilizations.values) {
             civ.diplomacy.clear()
         }
+    }
+
+    @Test
+    fun `all mock civilizations are major and alive`() {
+        // Without these prerequisites the diplomacy tests won't work properly
+        val pass = civilizations.values.all {
+            it.isMajorCiv() && it.isAlive()
+        }
+        Assert.assertTrue(pass)
     }
 
     @Test

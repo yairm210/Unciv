@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import java.util.*
+import kotlin.math.abs
 
 /**
  * This class checks whether a Game- or Player-ID matches the old or new format.
@@ -20,8 +21,8 @@ import java.util.*
  * Same ID in proposed new Game-ID format:
  * G-2ddb3a34-0699-4126-b7a5-38603e665928-5
  */
-class IdChecker {
-    companion object {
+object IdChecker {
+
         fun checkAndReturnPlayerUuid(playerId: String): String {
             return checkAndReturnUuiId(playerId, "P")
         }
@@ -30,17 +31,17 @@ class IdChecker {
             return checkAndReturnUuiId(gameId, "G")
         }
 
-        fun checkAndReturnUuiId(id: String, prefix: String): String {
+        private fun checkAndReturnUuiId(id: String, prefix: String): String {
             val trimmedPlayerId = id.trim()
             if (trimmedPlayerId.length == 40) { // length of a UUID (36) with pre- and postfix
                 if (!trimmedPlayerId.startsWith(prefix, true)) {
-                    throw IllegalArgumentException("Not a valid ID. Does not start with prefix " + prefix)
+                    throw IllegalArgumentException("Not a valid ID. Does not start with prefix $prefix")
                 }
                 val checkDigit = trimmedPlayerId.substring(trimmedPlayerId.lastIndex, trimmedPlayerId.lastIndex +1)
                 // remember, the format is: P-9e37e983-a676-4ecc-800e-ef8ec721a9b9-5
                 val shortenedPlayerId = trimmedPlayerId.substring(2, 38)
                 val calculatedCheckDigit = getCheckDigit(shortenedPlayerId).toString()
-                if (!calculatedCheckDigit.equals(checkDigit)) {
+                if (calculatedCheckDigit != checkDigit) {
                     throw IllegalArgumentException("Not a valid ID. Checkdigit invalid.")
                 }
                 return shortenedPlayerId
@@ -56,10 +57,11 @@ class IdChecker {
          */
         fun getCheckDigit(uuid: String): Int {
             // allowable characters within identifier
+            @Suppress("SpellCheckingInspection")
             val validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVYWXZ-"
             var idWithoutCheckdigit = uuid
             // remove leading or trailing whitespace, convert to uppercase
-            idWithoutCheckdigit = idWithoutCheckdigit.trim().toUpperCase(Locale.ENGLISH)
+            idWithoutCheckdigit = idWithoutCheckdigit.trim().uppercase(Locale.ENGLISH)
 
             // this will be a running total
             var sum = 0
@@ -68,15 +70,14 @@ class IdChecker {
             for (i in idWithoutCheckdigit.indices) {
 
                 //set ch to "current" character to be processed
-                val ch = idWithoutCheckdigit.get(idWithoutCheckdigit.length - i - 1)
+                val ch = idWithoutCheckdigit[idWithoutCheckdigit.length - i - 1]
 
                 // throw exception for invalid characters
                 if (validChars.indexOf(ch) == -1)
-                    throw IllegalArgumentException(
-                            ch + " is an invalid character")
+                    throw IllegalArgumentException("$ch is an invalid character")
 
                 // our "digit" is calculated using ASCII value - 48
-                val digit = ch.toInt() - 48
+                val digit = ch.code - 48
 
                 // weight will be the current digit's contribution to
                 // the running total
@@ -104,14 +105,12 @@ class IdChecker {
             }
             // avoid sum less than 10 (if characters below "0" allowed,
             // this could happen)
-            sum = Math.abs(sum) + 10
+            sum = abs(sum) + 10
 
             // check digit is amount needed to reach next number
             // divisible by ten
-            val returnValue= (10 - (sum % 10)) % 10
-            return returnValue
+            return (10 - (sum % 10)) % 10
         }
-    }
 }
 
 

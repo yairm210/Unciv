@@ -2,15 +2,18 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
+import com.unciv.UncivGame
 import com.unciv.models.UnitActionType
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.TranslationFileWriter
-import com.unciv.models.translations.Translations
+import com.unciv.models.translations.*
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.OutputStream
+import java.io.PrintStream
 import java.util.*
 
 @RunWith(GdxTestRunner::class)
@@ -20,9 +23,16 @@ class TranslationTests {
 
     @Before
     fun loadTranslations() {
+        // Since the ruleset and translation loader have their own output,
+        // We 'disable' the output stream for their outputs, and only enable it for the test itself.
+        val outputChannel = System.out
+        System.setOut(PrintStream(object : OutputStream() {
+            override fun write(b: Int) {}
+        }))
         translations.readAllLanguagesTranslation()
         RulesetCache.loadRulesets()
         ruleset = RulesetCache.getBaseRuleset()
+        System.setOut(outputChannel)
     }
 
     @Test
@@ -35,110 +45,27 @@ class TranslationTests {
     fun allUnitActionsHaveTranslation() {
         val actions: MutableSet<String> = HashSet()
         for (action in UnitActionType.values()) {
-            if (action == UnitActionType.Upgrade)
-                actions.add("Upgrade to [unitType] ([goldCost] gold)")
-            else
-                actions.add(action.value)
+            actions.add( 
+                when(action) {
+                    UnitActionType.Upgrade -> "Upgrade to [unitType] ([goldCost] gold)"
+                    UnitActionType.Create -> "Create [improvement]"
+                    UnitActionType.SpreadReligion -> "Spread [religionName]"
+                    else -> action.value
+                }
+            )
         }
         val allUnitActionsHaveTranslation = allStringAreTranslated(actions)
         Assert.assertTrue("This test will only pass when there is a translation for all unit actions",
                 allUnitActionsHaveTranslation)
     }
 
-    @Test
-    fun allBuildingsHaveTranslation() {
-        val allBuildingsHaveTranslation = allStringAreTranslated(ruleset.buildings.keys)
-        Assert.assertTrue("This test will only pass when there is a translation for all buildings",
-                allBuildingsHaveTranslation)
-    }
-
-    @Test
-    fun allBuildingUniquesHaveTranslation() {
-        val strings: MutableSet<String> = HashSet()
-        for (building in ruleset.buildings.values) {
-            strings.addAll(building.uniques)
-        }
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all building uniques",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allBuildingQuotesHaveTranslation() {
-        val strings: MutableSet<String> = HashSet()
-        for (building in ruleset.buildings.values) {
-            if (building.quote == "") continue
-            strings.add(building.quote)
-        }
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all building quotes",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allTerrainsHaveTranslation() {
-        val strings: Set<String> = ruleset.terrains.keys
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all buildings",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allTerrainUniquesHaveTranslation() {
-        val strings: MutableSet<String> = HashSet()
-        for (terrain in ruleset.terrains.values) {
-            strings.addAll(terrain.uniques)
-        }
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all terrain uniques",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allImprovementsHaveTranslation() {
-        val strings: Set<String> = ruleset.tileImprovements.keys
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all improvements",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allImprovementUniquesHaveTranslation() {
-        val strings: MutableSet<String> = HashSet()
-        for (improvement in ruleset.tileImprovements.values) {
-            strings.addAll(improvement.uniques)
-        }
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all improvements uniques",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allTechnologiesHaveTranslation() {
-        val strings: Set<String> = ruleset.technologies.keys
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all technologies",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allTechnologiesQuotesHaveTranslation() {
-        val strings: MutableSet<String> = HashSet()
-        for (tech in ruleset.technologies.values) {
-            strings.add(tech.quote)
-        }
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all technologies quotes",
-                allStringsHaveTranslation)
-    }
-
-
     private fun allStringAreTranslated(strings: Set<String>): Boolean {
         var allStringsHaveTranslation = true
-        for (key in strings) {
+        for (entry in strings) {
+            val key = if (entry.contains('[')) entry.replace(squareBraceRegex, "[]") else entry
             if (!translations.containsKey(key)) {
                 allStringsHaveTranslation = false
-                println(key)
+                println(entry)
             }
         }
         return allStringsHaveTranslation
@@ -156,16 +83,19 @@ class TranslationTests {
     /** For every translatable string find its placeholders and check if all translations have them */
     @Test
     fun allTranslationsHaveCorrectPlaceholders() {
-        val placeholderPattern = """\[[^]]*]""".toRegex()
         var allTranslationsHaveCorrectPlaceholders = true
         val languages = translations.getLanguages()
         for (key in translations.keys) {
-            val placeholders = placeholderPattern.findAll(key).map { it.value }.toList()
+            val translationEntry = translations[key]!!.entry
+            val placeholders = squareBraceRegex.findAll(translationEntry)
+                    .map { it.value }.toList()
             for (language in languages) {
+                val output = translations.getText(key, language)
+                if (output == key) continue // the language doesn't have the required translation, so we got back the key
                 for (placeholder in placeholders) {
-                    if (!translations.get(key, language).contains(placeholder)) {
+                    if (!output.contains(placeholder)) {
                         allTranslationsHaveCorrectPlaceholders = false
-                        println("Placeholder `$placeholder` not found in `$language` for key `$key`")
+                        println("Placeholder `$placeholder` not found in `$language` for entry `$translationEntry`")
                     }
                 }
             }
@@ -177,15 +107,126 @@ class TranslationTests {
     }
 
     @Test
+    fun allPlaceholderKeysMatchEntry() {
+        var allPlaceholderKeysMatchEntry = true
+        for (key in translations.keys) {
+            if (!key.contains('[') || key.contains('<')) continue
+            val translationEntry = translations[key]!!.entry
+            val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
+            if (key != keyFromEntry) {
+                allPlaceholderKeysMatchEntry = false
+                println("Entry $translationEntry found under bad key $key")
+                break
+            }
+        }
+        Assert.assertTrue(
+                "This test will only pass when all placeholder translations'keys match their entry with shortened placeholders",
+                allPlaceholderKeysMatchEntry
+        )
+    }
+
+    @Test
+    fun noTwoPlaceholdersAreTheSame() {
+        var noTwoPlaceholdersAreTheSame = true
+        for (translationEntry in translations.values) {
+            val placeholders = squareBraceRegex.findAll(translationEntry.entry)
+                    .map { it.value }.toList()
+
+            for (placeholder in placeholders)
+                if (placeholders.count { it == placeholder } > 1) {
+                    noTwoPlaceholdersAreTheSame = false
+                    println("Entry $translationEntry has the parameter $placeholder more than once")
+                    break
+                }
+        }
+        Assert.assertTrue(
+                "This test will only pass when no translation keys have the same parameter twice",
+                noTwoPlaceholdersAreTheSame
+        )
+    }
+
+    @Test
     fun allTranslationsEndWithASpace() {
         val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
         var failed = false
         for (line in templateLines) {
             if (line.endsWith(" =")) {
                 println("$line ends without a space at the end")
-                failed=true
+                failed = true
             }
         }
         Assert.assertFalse(failed)
     }
+
+
+    @Test
+    fun allStringsTranslate() {
+        // Needed for .tr() to work
+        UncivGame.Current = UncivGame("")
+        UncivGame.Current.settings = GameSettings()
+
+        for ((key, value) in translations)
+            UncivGame.Current.translations[key] = value
+
+        var allWordsTranslatedCorrectly = true
+        for (translationEntry in translations.values) {
+            for ((language, translation) in translationEntry) {
+                UncivGame.Current.settings.language = language
+                try {
+                    translationEntry.entry.tr()
+                } catch (ex: Exception) {
+                    allWordsTranslatedCorrectly = false
+                    println("Crashed when translating ${translationEntry.entry} to $language")
+                }
+            }
+        }
+        Assert.assertTrue(
+            "This test will only pass when all phrases properly translate to their language",
+            allWordsTranslatedCorrectly
+        )
+    }
+    
+    @Test
+    fun wordBoundaryTranslationIsFormattedCorrectly() {
+        val translationEntry = translations["\" \""]!!
+                
+        var allTranslationsCheckedOut = true
+        for ((language, translation) in translationEntry) {
+            if (!translation.startsWith("\"")
+                || !translation.endsWith("\"")
+                || translation.count { it == '\"' } != 2
+            ) {
+                allTranslationsCheckedOut = false
+                println("Translation of the word boundary in $language was incorrectly formatted")
+            }
+        }
+        
+        Assert.assertTrue(
+            "This test will only pass when the word boundrary translation succeeds",
+            allTranslationsCheckedOut
+        )
+    }
+    
+//    @Test
+//    fun allConditionalsAreContainedInConditionalOrderTranslation() {
+//        val orderedConditionals = Translations.englishConditionalOrderingString
+//        val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
+//        val translationEntry = translations[orderedConditionals]!!
+//        
+//        var allTranslationsCheckedOut = true
+//        for ((language, translation) in translationEntry) {
+//            val translationConditionals = translation.getConditionals().map { it.placeholderText }
+//            if (translationConditionals.toHashSet() != orderedConditionalsSet.toHashSet()
+//                || translationConditionals.count() != translationConditionals.distinct().count()
+//            ) {
+//                allTranslationsCheckedOut = false
+//                println("Not all or double parameters found in the conditional ordering for $language")
+//            }
+//        }
+//        
+//        Assert.assertTrue(
+//            "This test will only pass when each of the conditionals exists exactly once in the translations for the conditional ordering",
+//            allTranslationsCheckedOut
+//        )
+//    }
 }

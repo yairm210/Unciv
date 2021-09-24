@@ -2,23 +2,21 @@ package com.unciv.ui.worldscreen.mainmenu
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.saves.Gzip
-import java.io.BufferedReader
-import java.io.DataOutputStream
-import java.io.InputStream
-import java.io.InputStreamReader
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
 
-class DropBox {
 
-    fun dropboxApi(url:String, data:String="",contentType:String="",dropboxApiArg:String=""): InputStream? {
+object DropBox {
+
+    fun dropboxApi(url: String, data: String = "", contentType: String = "", dropboxApiArg: String = ""): InputStream? {
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "POST"  // default is GET
 
+            @Suppress("SpellCheckingInspection")
             setRequestProperty("Authorization", "Bearer LTdBbopPUQ0AAAAAAAACxh4_Qd1eVMM7IBK3ULV3BgxzWZDMfhmgFbuUNF_rXQWb")
 
             if (dropboxApiArg != "") setRequestProperty("Dropbox-API-Arg", dropboxApiArg)
@@ -41,37 +39,53 @@ class DropBox {
                 val reader = BufferedReader(InputStreamReader(errorStream))
                 println(reader.readText())
                 return null
+            } catch (error: Error) {
+                println(error.message)
+                val reader = BufferedReader(InputStreamReader(errorStream))
+                println(reader.readText())
+                return null
             }
         }
     }
 
-    fun getFolderList(folder:String):FolderList{
+    fun getFolderList(folder: String): ArrayList<FolderListEntry> {
+        val folderList = ArrayList<FolderListEntry>()
+        // The DropBox API returns only partial file listings from one request. list_folder and
+        // list_folder/continue return similar responses, but list_folder/continue requires a cursor
+        // instead of the path.
         val response = dropboxApi("https://api.dropboxapi.com/2/files/list_folder",
-                "{\"path\":\"$folder\"}","application/json")
-        return GameSaver().json().fromJson(FolderList::class.java,response)
+                "{\"path\":\"$folder\"}", "application/json")
+        var currentFolderListChunk = GameSaver.json().fromJson(FolderList::class.java, response)
+        folderList.addAll(currentFolderListChunk.entries)
+        while (currentFolderListChunk.has_more) {
+            val continuationResponse = dropboxApi("https://api.dropboxapi.com/2/files/list_folder/continue",
+                    "{\"cursor\":\"${currentFolderListChunk.cursor}\"}", "application/json")
+            currentFolderListChunk = GameSaver.json().fromJson(FolderList::class.java, continuationResponse)
+            folderList.addAll(currentFolderListChunk.entries)
+        }
+        return folderList
     }
 
-    fun downloadFile(fileName:String): InputStream {
+    fun downloadFile(fileName: String): InputStream {
         val response = dropboxApi("https://content.dropboxapi.com/2/files/download",
-                contentType = "text/plain",dropboxApiArg = "{\"path\":\"$fileName\"}")
+                contentType = "text/plain", dropboxApiArg = "{\"path\":\"$fileName\"}")
         return response!!
     }
 
-    fun downloadFileAsString(fileName:String): String {
+    fun downloadFileAsString(fileName: String): String {
         val inputStream = downloadFile(fileName)
-        val text = BufferedReader(InputStreamReader(inputStream)).readText()
-        return text
+        return BufferedReader(InputStreamReader(inputStream)).readText()
     }
 
-    fun uploadFile(fileName: String, data: String, overwrite:Boolean=false){
+    fun uploadFile(fileName: String, data: String, overwrite: Boolean = false){
         val overwriteModeString = if(!overwrite) "" else ""","mode":{".tag":"overwrite"}"""
         dropboxApi("https://content.dropboxapi.com/2/files/upload",
-                data,"application/octet-stream", """{"path":"$fileName"$overwriteModeString}""")
+                data, "application/octet-stream", """{"path":"$fileName"$overwriteModeString}""")
     }
 
-    fun deleteFile(fileName:String){
+    fun deleteFile(fileName: String){
         dropboxApi("https://api.dropboxapi.com/2/files/delete_v2",
-                "{\"path\":\"$fileName\"}","application/json")
+                "{\"path\":\"$fileName\"}", "application/json")
     }
 //
 //    fun createTemplate(): String {
@@ -81,11 +95,14 @@ class DropBox {
 //        return BufferedReader(InputStreamReader(result)).readText()
 //    }
 
-
+    @Suppress("PropertyName")
     class FolderList{
         var entries = ArrayList<FolderListEntry>()
+        var cursor = ""
+        var has_more = false
     }
 
+    @Suppress("PropertyName")
     class FolderListEntry{
         var name=""
         var path_display=""
@@ -94,25 +111,25 @@ class DropBox {
 }
 
 class OnlineMultiplayer {
-    fun getGameLocation(gameId:String) = "/MultiplayerGames/$gameId"
+    fun getGameLocation(gameId: String) = "/MultiplayerGames/$gameId"
 
     fun tryUploadGame(gameInfo: GameInfo){
-        val zippedGameInfo = Gzip.zip(GameSaver().json().toJson(gameInfo))
-        DropBox().uploadFile(getGameLocation(gameInfo.gameId),zippedGameInfo,true)
+        val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
+        DropBox.uploadFile(getGameLocation(gameInfo.gameId), zippedGameInfo, true)
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {
-        val zippedGameInfo = DropBox().downloadFileAsString(getGameLocation(gameId))
-        return GameSaver().gameInfoFromString(Gzip.unzip(zippedGameInfo))
+        val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
+        return GameSaver.gameInfoFromString(Gzip.unzip(zippedGameInfo))
     }
 
     /**
-     * Returns current turn's player.
+     * WARNING!
      * Does not initialize transitive GameInfo data.
-     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike tryDownloadGame().
+     * It is therefore stateless and safe to call for Multiplayer Turn Notifier, unlike tryDownloadGame().
      */
-    fun tryDownloadCurrentTurnCiv(gameId: String): CivilizationInfo {
-        val zippedGameInfo = DropBox().downloadFileAsString(getGameLocation(gameId))
-        return GameSaver().currentTurnCivFromString(Gzip.unzip(zippedGameInfo))
+    fun tryDownloadGameUninitialized(gameId: String): GameInfo {
+        val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
+        return GameSaver.gameInfoFromStringWithoutTransients(Gzip.unzip(zippedGameInfo))
     }
 }

@@ -7,38 +7,37 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.pad
 import com.unciv.ui.worldscreen.WorldMapHolder
 
 class IdleUnitButton (
-        internal val unitTable: UnitTable,
-        val tileMapHolder: WorldMapHolder,
-        val previous:Boolean
+    internal val unitTable: UnitTable,
+    private val tileMapHolder: WorldMapHolder,
+    val previous:Boolean
 ) : Table() {
 
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
 
-    fun hasIdleUnits() = unitTable.worldScreen.viewingCiv.getIdleUnits().any()
-
     init {
         val imageSize = 25f
-        if(!previous){
-            image.setSize(imageSize,imageSize)
+        if(!previous) {
+            image.setSize(imageSize, imageSize)
             image.setOrigin(Align.center)
             image.rotateBy(180f)
         }
-        add(image).size(imageSize).pad(10f,20f,10f,20f)
+        add(image).size(imageSize).pad(10f,20f)
         enable()
         onClick {
 
             val idleUnits = unitTable.worldScreen.viewingCiv.getIdleUnits()
-            if(idleUnits.none()) return@onClick
+            if (idleUnits.none()) return@onClick
 
             val unitToSelect: MapUnit
-            if (unitTable.selectedUnit==null || !idleUnits.contains(unitTable.selectedUnit!!))
+            if (unitTable.selectedUnit == null || !idleUnits.contains(unitTable.selectedUnit!!))
                 unitToSelect = idleUnits.first()
             else {
                 var index = idleUnits.indexOf(unitTable.selectedUnit!!)
-                if(previous) index-- else index++
+                if (previous) index-- else index++
                 index += idleUnits.count()
                 index %= idleUnits.count() // for looping
                 unitToSelect = idleUnits.elementAt(index)
@@ -46,10 +45,8 @@ class IdleUnitButton (
 
             unitToSelect.due = false
             tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
-            unitTable.selectedCity = null // need to deselect city, so that units on cities show their tiles
-            unitTable.selectedUnit = unitToSelect
-            unitTable.worldScreen.shouldUpdate=true
-
+            unitTable.selectUnit(unitToSelect)
+            unitTable.worldScreen.shouldUpdate = true
         }
     }
 
@@ -63,4 +60,3 @@ class IdleUnitButton (
         touchable=Touchable.disabled
     }
 }
-

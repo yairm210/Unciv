@@ -19,7 +19,8 @@ class CrashReportSenderAndroid(private val activity: Activity) : CrashReportSend
                                        "Game version: %s\n" +
                                        "OS version: %s\n" +
                                        "Device model: %s\n" +
-                                       "Game data: %s\n"
+                                       "Mods: %s\n" +
+                                       "Game data: \n%s\n"
     }
 
     override fun sendReport(report: CrashReport) {
@@ -35,11 +36,11 @@ class CrashReportSenderAndroid(private val activity: Activity) : CrashReportSend
     private fun prepareIntent(report: CrashReport) = Intent(Intent.ACTION_SEND).apply {
         type = "message/rfc822"
         putExtra(Intent.EXTRA_EMAIL, arrayOf(EMAIL_TO))
-        putExtra(Intent.EXTRA_SUBJECT, EMAIL_TITLE)
+        putExtra(Intent.EXTRA_SUBJECT, "$EMAIL_TITLE - ${report.version}")
         putExtra(Intent.EXTRA_TEXT, buildEmailBody(report))
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     private fun buildEmailBody(report: CrashReport): String =
-            EMAIL_BODY.format(report.version, Build.VERSION.SDK_INT, Build.MODEL, report.gameInfo)
+            EMAIL_BODY.format(report.version, Build.VERSION.SDK_INT, Build.MODEL, report.mods.joinToString(), report.gameInfo)
 }

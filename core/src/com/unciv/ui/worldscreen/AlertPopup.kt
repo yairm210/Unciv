@@ -1,38 +1,60 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PopupAlert
+import com.unciv.Constants
+import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.*
 
-class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen){
-    fun getCloseButton(text: String, action: (() -> Unit)?=null): TextButton {
-        val button = TextButton(text.tr(), skin)
-        button.onClick {
-            if(action!=null) action()
-            worldScreen.shouldUpdate=true
+/**
+ * [Popup] communicating events other than trade offers to the player.
+ * (e.g. First Contact, Wonder built, Tech researched,...) 
+ *
+ * Called in [WorldScreen].update, which pulls them from viewingCiv.popupAlerts.
+ * 
+ * @param worldScreen The parent screen
+ * @param popupAlert The [PopupAlert] entry to present
+ * 
+ * @see AlertType
+ */
+class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen) {
+    fun getCloseButton(text: String, key: Char = Char.MIN_VALUE, action: (() -> Unit)? = null): TextButton {
+        // Popup.addCloseButton is close but AlertPopup needs the flexibility to add these inside a wrapper
+        val button = text.toTextButton()
+        val buttonAction = {
+            if (action != null) action()
+            worldScreen.shouldUpdate = true
             close()
+        }
+        button.onClick(buttonAction)
+        if (key == Char.MIN_VALUE) {
+            keyPressDispatcher[KeyCharAndCode.BACK] = buttonAction
+            keyPressDispatcher[KeyCharAndCode.SPACE] = buttonAction
+        } else {
+            keyPressDispatcher[key] = buttonAction
         }
         return button
     }
 
-    fun addLeaderName(civInfo : CivilizationInfo){
-        val otherCivLeaderName = civInfo.getLeaderDisplayName()
-        add(otherCivLeaderName.toLabel())
+    fun addLeaderName(civInfo: CivilizationInfo) {
+        add(LeaderIntroTable(civInfo))
         addSeparator()
     }
 
     init {
 
-        when(popupAlert.type){
+        when (popupAlert.type) {
             AlertType.WarDeclaration -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(civInfo)
                 addGoodSizedLabel(civInfo.nation.declaringWar).row()
                 val responseTable = Table()
+                responseTable.defaults().pad(0f, 5f)
                 responseTable.add(getCloseButton("You'll pay for this!"))
                 responseTable.add(getCloseButton("Very well."))
                 add(responseTable)
@@ -46,103 +68,101 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.FirstContact -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val nation = civInfo.nation
+                addLeaderName(civInfo)
                 if (civInfo.isCityState()) {
-                    addLeaderName(civInfo)
                     addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
                     add(getCloseButton("Excellent!"))
                 } else {
-                    addLeaderName(civInfo)
                     addGoodSizedLabel(nation.introduction).row()
                     add(getCloseButton("A pleasure to meet you."))
                 }
             }
             AlertType.CityConquered -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
-                addGoodSizedLabel("What would you like to do with the city?",24)
+                addGoodSizedLabel("What would you like to do with the city?", 24)
                         .padBottom(20f).row()
                 val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
 
                 if (city.foundingCiv != ""
                         && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
                         && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
-                    add(TextButton("Liberate".tr(), skin).onClick {
+                    val liberateAction = {
                         city.liberateCity(conqueringCiv)
-                        worldScreen.shouldUpdate=true
+                        worldScreen.shouldUpdate = true
                         close()
-                    }).row()
-                    addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
+                    }        
+                    addLiberateOption(city.foundingCiv, liberateAction)
                     addSeparator()
                 }
 
-                if (!conqueringCiv.isOneCityChallenger()){
-
-                    add(TextButton("Annex".tr(), skin).onClick {
+                if (conqueringCiv.isOneCityChallenger()) {
+                    val destroyAction = {
+                        city.puppetCity(conqueringCiv)
+                        city.destroyCity()
+                        worldScreen.shouldUpdate = true
+                        close()
+                    }
+                    addDestroyOption(destroyAction)
+                } else {
+                    val annexAction = {
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
-                        worldScreen.shouldUpdate=true
+                        worldScreen.shouldUpdate = true
                         close()
-                    }).row()
-                    addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
-                    addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+                    }
+                    addAnnexOption(annexAction)
                     addSeparator()
 
-                    add(TextButton("Puppet".tr(), skin).onClick {
+                    val puppetAction = {
                         city.puppetCity(conqueringCiv)
-                        worldScreen.shouldUpdate=true
+                        worldScreen.shouldUpdate = true
                         close()
-                    }).row()
-                    addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
-                    addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
-                    addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
-                    addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+                    }
+                    addPuppetOption(puppetAction)
                     addSeparator()
 
-
-                    add(TextButton("Raze".tr(), skin).onClick {
+                    val razeAction = {
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
                         city.isBeingRazed = true
-                        worldScreen.shouldUpdate=true
+                        worldScreen.shouldUpdate = true
                         close()
+                    }
+                    add("Raze".toTextButton().apply {
+                        if (!city.canBeDestroyed(justCaptured = true)) disable()
+                        else {
+                            onClick(function = razeAction)
+                            keyPressDispatcher['r'] = razeAction
+                        } 
                     }).row()
                     addGoodSizedLabel("Razing the city annexes it, and starts razing the city to the ground.").row()
                     addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
-                } else {
-
-                    add(TextButton("Destroy".tr(), skin).onClick {
-                        city.puppetCity(conqueringCiv)
-                        city.destroyCity()
-                        worldScreen.shouldUpdate=true
-                        close()
-                    }).row()
-                    addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
-
                 }
-
             }
             AlertType.BorderConflict -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(civInfo)
                 addGoodSizedLabel("Remove your troops in our border immediately!").row()
                 val responseTable = Table()
+                responseTable.defaults().pad(0f, 5f)
                 responseTable.add(getCloseButton("Sorry."))
                 responseTable.add(getCloseButton("Never!"))
                 add(responseTable)
             }
             AlertType.DemandToStopSettlingCitiesNear -> {
-                val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
+                val otherciv = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val playerDiploManager = worldScreen.viewingCiv.getDiplomacyManager(otherciv)
                 addLeaderName(otherciv)
                 addGoodSizedLabel("Please don't settle new cities near us.").row()
-                add(getCloseButton("Very well, we shall look for new lands to settle."){
+                add(getCloseButton("Very well, we shall look for new lands to settle.", 'y') {
                     playerDiploManager.agreeNotToSettleNear()
                 }).row()
-                add(getCloseButton("We shall do as we please.") {
+                add(getCloseButton("We shall do as we please.", 'n') {
                     playerDiploManager.refuseDemandNotToSettleNear()
                 }).row()
             }
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> {
-                val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
+                val otherciv = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(otherciv)
                 addGoodSizedLabel("We noticed your new city near our borders, despite your promise. This will have....implications.").row()
                 add(getCloseButton("Very well."))
@@ -151,13 +171,29 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val wonder = worldScreen.gameInfo.ruleSet.buildings[popupAlert.value]!!
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
+                if(ImageGetter.wonderImageExists(wonder.name)) {    // Wonder Graphic exists
+                    if(worldScreen.stage.height * 3 > worldScreen.stage.width * 4) {    // Portrait
+                        add(ImageGetter.getWonderImage(wonder.name))
+                            .width(worldScreen.stage.width / 1.5f)
+                            .height(worldScreen.stage.width / 3)
+                            .row()
+                    }
+                    else {  // Landscape (or squareish)
+                        add(ImageGetter.getWonderImage(wonder.name))
+                            .width(worldScreen.stage.width / 2.5f)
+                            .height(worldScreen.stage.width / 5)
+                            .row()
+                    }
+                } else {    // Fallback
+                    add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f).row()
+                }
+
                 val centerTable = Table()
-                centerTable.add(wonder.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
-                centerTable.add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f)
+                centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
-                        .toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                        .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 add(centerTable).row()
-                add(getCloseButton("Close"))
+                add(getCloseButton(Constants.close))
             }
             AlertType.TechResearched -> {
                 val gameBasics = worldScreen.gameInfo.ruleSet
@@ -165,22 +201,151 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addGoodSizedLabel(tech.name)
                 addSeparator()
                 val centerTable = Table()
-                centerTable.add(tech.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
-                centerTable.add(ImageGetter.getTechIconGroup(tech.name,100f)).pad(20f)
-                centerTable.add(tech.getDescription(gameBasics).toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                centerTable.add(tech.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3)
+                centerTable.add(ImageGetter.getTechIconGroup(tech.name, 100f)).pad(20f)
+                val descriptionScroll = ScrollPane(tech.getDescription(gameBasics).toLabel().apply { wrap = true })
+                centerTable.add(descriptionScroll).width(worldScreen.stage.width / 3).maxHeight(worldScreen.stage.height / 2)
                 add(centerTable).row()
-                add(getCloseButton("Close"))
+                add(getCloseButton(Constants.close))
             }
             AlertType.GoldenAge -> {
                 addGoodSizedLabel("GOLDEN AGE")
                 addSeparator()
                 addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a Golden Age!").row()
-                add(getCloseButton("Close"))
+                add(getCloseButton(Constants.close))
+            }
+            AlertType.DeclarationOfFriendship -> {
+                val otherciv = worldScreen.gameInfo.getCivilization(popupAlert.value)
+                val playerDiploManager = worldScreen.viewingCiv.getDiplomacyManager(otherciv)
+                addLeaderName(otherciv)
+                addGoodSizedLabel("My friend, shall we declare our friendship to the world?").row()
+                add(getCloseButton("We are not interested.", 'n')).row()
+                add(getCloseButton("Declare Friendship ([30] turns)", 'y') {
+                    playerDiploManager.signDeclarationOfFriendship()
+                }).row()
+            }
+            AlertType.StartIntro -> {
+                val civInfo = worldScreen.viewingCiv
+                addLeaderName(civInfo)
+                addGoodSizedLabel(civInfo.nation.startIntroPart1).row()
+                addGoodSizedLabel(civInfo.nation.startIntroPart2).row()
+                add(getCloseButton("Let's begin!"))
+            }
+            AlertType.DiplomaticMarriage -> {
+                val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
+                addGoodSizedLabel(city.name.tr() + ": " + "What would you like to do with the city?".tr(), 24) // Add name because there might be several cities
+                    .padBottom(20f).row()
+                val marryingCiv = worldScreen.gameInfo.currentPlayerCiv
+
+                if (marryingCiv.isOneCityChallenger()) {
+                    val destroyAction = {
+                        city.destroyCity(overrideSafeties = true)
+                        worldScreen.shouldUpdate = true
+                        close()
+                    }
+                    addDestroyOption(destroyAction)
+                } else {
+                    val annexAction = {
+                        city.annexCity()
+                        close()
+                    }
+                    addAnnexOption(annexAction)
+                    addSeparator()
+
+                    val puppetAction = {
+                        city.isPuppet = true
+                        city.cityStats.update()
+                        worldScreen.shouldUpdate = true
+                        close()
+                    }
+                    addPuppetOption(puppetAction)
+                }
+            }
+            AlertType.BulliedProtectedMinor -> {
+                val involvedCivs = popupAlert.value.split('@')
+                val bully = worldScreen.gameInfo.getCivilization(involvedCivs[0])
+                val cityState = worldScreen.gameInfo.getCivilization(involvedCivs[1])
+                val player = worldScreen.viewingCiv
+                addLeaderName(bully)
+
+                val text = if (bully.getDiplomacyManager(player).relationshipLevel() >= RelationshipLevel.Neutral) // Nice message
+                    "I've been informed that my armies have taken tribute from [${cityState.civName}], a city-state under your protection.\nI assure you, this was quite unintentional, and I hope that this does not serve to drive us apart."
+                else    // Nasty message
+                    "We asked [${cityState.civName}] for a tribute recently and they gave in.\nYou promised to protect them from such things, but we both know you cannot back that up."
+                addGoodSizedLabel(text).row()
+
+                add(getCloseButton("You'll pay for this!", 'y') {
+                    player.getDiplomacyManager(bully).sideWithCityState()
+                }).row()
+                add(getCloseButton("Very well.", 'n') {
+                    if(cityState.cities.isEmpty())
+                        player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", cityState.civName)
+                    else {
+                        val capitalLocation = LocationAction(listOf(cityState.getCapital().location))
+                        player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, cityState.civName)
+                    }
+                    cityState.removeProtectorCiv(player, forced = true)
+                }).row()
+            }
+            AlertType.AttackedProtectedMinor -> {
+                val involvedCivs = popupAlert.value.split('@')
+                val attacker = worldScreen.gameInfo.getCivilization(involvedCivs[0])
+                val cityState = worldScreen.gameInfo.getCivilization(involvedCivs[1])
+                val player = worldScreen.viewingCiv
+                addLeaderName(attacker)
+
+                val text = if (attacker.getDiplomacyManager(player).relationshipLevel() >= RelationshipLevel.Neutral) // Nice message
+                    "It's come to my attention that I may have attacked [${cityState.civName}], a city-state under your protection.\nWhile it was not my goal to be at odds with your empire, this was deemed a necessary course of action."
+                else    // Nasty message
+                    "I thought you might like to know that I've launched an invasion of one of your little pet states.\nThe lands of [${cityState.civName}] will make a fine addition to my own."
+                addGoodSizedLabel(text).row()
+
+                add(getCloseButton("You'll pay for this!", 'y') {
+                    player.getDiplomacyManager(attacker).sideWithCityState()
+                }).row()
+                add(getCloseButton("Very well.", 'n') {
+                    if(cityState.cities.isEmpty())
+                        player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", cityState.civName)
+                    else {
+                        val capitalLocation = LocationAction(listOf(cityState.getCapital().location))
+                        player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, cityState.civName)
+                    }
+                    cityState.removeProtectorCiv(player, forced = true)
+                }).row()
             }
         }
     }
 
-    override fun close(){
+    private fun addDestroyOption(destroyAction: () -> Unit) {
+        add("Destroy".toTextButton().onClick(function = destroyAction)).row()
+        keyPressDispatcher['d'] = destroyAction
+        addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
+    }
+
+    private fun addAnnexOption(annexAction: () -> Unit) {
+        add("Annex".toTextButton().onClick(function = annexAction)).row()
+        keyPressDispatcher['a'] = annexAction
+        addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
+        addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+    }
+
+    private fun addPuppetOption(puppetAction: () -> Unit) {
+        add("Puppet".toTextButton().onClick(function = puppetAction) ).row()
+        keyPressDispatcher['p'] = puppetAction
+        addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
+        addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
+        addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
+        addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+    }
+
+    private fun addLiberateOption(foundingCiv: String, liberateAction: () -> Unit) {
+        val liberateText = "Liberate (city returns to [originalOwner])".fillPlaceholders(foundingCiv)
+        add(liberateText.toTextButton().onClick(function = liberateAction)).row()
+        keyPressDispatcher['l'] = liberateAction
+        addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
+    }
+
+    override fun close() {
         worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
         super.close()
     }

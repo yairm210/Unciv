@@ -12,14 +12,15 @@ class YieldGroup : HorizontalGroup() {
         isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
-    var currentStats=Stats()
+    var currentStats = Stats()
 
     fun setStats(stats: Stats) {
-        if(currentStats.equals(stats)) return // don't need to update - this is a memory and time saver!
+        if (currentStats.equals(stats)) return // don't need to update - this is a memory and time saver!
         currentStats = stats
         clearChildren()
-        for (entry in stats.toHashMap().filter { it.value > 0 }) {
-            addActor(getStatIconsTable(entry.key.toString(), entry.value.toInt()))
+        for ((stat, amount) in stats) {
+            if (amount > 0f)  // Defense against upstream bugs - negatives would show as "lots"
+                addActor(getStatIconsTable(stat.name, amount.toInt()))
         }
         pack()
     }

@@ -1,9 +1,8 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.graphics.Color
-import com.unciv.UniqueAbility
+import com.unciv.ui.utils.toPercent
 
-class GoldenAgeManager{
+class GoldenAgeManager {
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -13,28 +12,26 @@ class GoldenAgeManager{
 
     fun clone(): GoldenAgeManager {
         val toReturn = GoldenAgeManager()
-        toReturn.numberOfGoldenAges=numberOfGoldenAges
-        toReturn.storedHappiness=storedHappiness
-        toReturn.turnsLeftForCurrentGoldenAge=turnsLeftForCurrentGoldenAge
+        toReturn.numberOfGoldenAges = numberOfGoldenAges
+        toReturn.storedHappiness = storedHappiness
+        toReturn.turnsLeftForCurrentGoldenAge = turnsLeftForCurrentGoldenAge
         return toReturn
     }
 
     fun isGoldenAge(): Boolean = turnsLeftForCurrentGoldenAge > 0
 
     fun happinessRequiredForNextGoldenAge(): Int {
-        return ((500 + numberOfGoldenAges * 250) * (1 + civInfo.cities.size / 100.0)).toInt() //https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+        return ((500 + numberOfGoldenAges * 250) * civInfo.cities.size.toPercent()).toInt() //https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
     }
 
-    fun enterGoldenAge() {
-        var turnsToGoldenAge = 10.0
-        if (civInfo.containsBuildingUnique("Golden Age length increases +50%")) turnsToGoldenAge *= 1.5
-        if(civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY )
-            turnsToGoldenAge*=1.5
-        if (civInfo.policies.isAdopted("Freedom Complete")) turnsToGoldenAge *= 1.5
+    fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
+        var turnsToGoldenAge = unmodifiedNumberOfTurns.toFloat()
+        for (unique in civInfo.getMatchingUniques("Golden Age length increased by []%"))
+            turnsToGoldenAge *= unique.params[0].toPercent()
         turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
-        civInfo.addNotification("You have entered a golden age!", null, Color.GOLD)
-        civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge,""))
+        civInfo.addNotification("You have entered a Golden Age!", "StatIcons/Happiness")
+        civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge, ""))
     }
 
     fun endTurn(happiness: Int) {

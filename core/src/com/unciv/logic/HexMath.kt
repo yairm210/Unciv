@@ -2,8 +2,11 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapShape
 import kotlin.math.*
 
+@Suppress("MemberVisibilityCanBePrivate", "unused")  // this is a library offering optional services
 object HexMath {
 
     fun getVectorForAngle(angle: Float): Vector2 {
@@ -20,25 +23,35 @@ object HexMath {
         return 1 + 6 * size * (size + 1) / 2
     }
 
-    /* In our reference system latitude, i.e. how distant from equator we are is proportional to x + y*/
+    /** Almost inverse of [getNumberOfTilesInHexagon] - get equivalent fractional Hexagon radius for an Area */
+    fun getHexagonalRadiusForArea(numberOfTiles: Int) =
+        if (numberOfTiles < 1) 0f else ((sqrt(12f * numberOfTiles - 3) - 3) / 6)
+
+    // In our reference system latitude, i.e. how distant from equator we are, is proportional to x + y
     fun getLatitude(vector: Vector2): Float {
         return vector.x + vector.y
     }
+
     fun getLongitude(vector: Vector2): Float {
         return vector.x - vector.y
     }
 
     /** returns a vector containing width and height a rectangular map should have to have
-     * approximately the same number of tiles as an hexagonal map given a height/width ratio */
+     *  approximately the same number of tiles as an hexagonal map given a height/width ratio */
     fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): Vector2 {
         if (size < 0)
             return Vector2.Zero
 
         val nTiles = getNumberOfTilesInHexagon(size)
-        val width = round(sqrt(nTiles.toFloat()/ratio))
+        val width = round(sqrt(nTiles.toFloat() / ratio))
         val height = round(width * ratio)
         return Vector2(width, height)
     }
+
+    /** Returns a radius of a hexagonal map that has approximately the same number of
+     *  tiles as a rectangular map of a given width/height */
+    fun getEquivalentHexagonalRadius(width: Int, height: Int) =
+        getHexagonalRadiusForArea(width * height).roundToInt()
 
     fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
         val vectors = arrayListOf(
@@ -67,6 +80,7 @@ object HexMath {
         return xVector.scl(hexCoord.x).add(yVector.scl(hexCoord.y))
     }
 
+    @Suppress("LocalVariableName")  // clearer
     fun world2HexCoords(worldCoord: Vector2): Vector2 {
         // D: diagonal, A: antidiagonal versors
         val D = getVectorByClockHour(10).scl(sqrt(3.0).toFloat())
@@ -88,15 +102,19 @@ object HexMath {
     fun cubic2EvenQCoords(cubicCoord: Vector3): Vector2 {
         return Vector2(cubicCoord.x, cubicCoord.z + (cubicCoord.x + (cubicCoord.x.toInt() and 1)) / 2)
     }
+
     fun evenQ2CubicCoords(evenQCoord: Vector2): Vector3 {
         val x = evenQCoord.x
         val z = evenQCoord.y - (evenQCoord.x + (evenQCoord.x.toInt() and 1)) / 2
-        val y = -x-z
-        return Vector3(x,y,z)
+        val y = -x - z
+        return Vector3(x, y, z)
     }
 
     fun evenQ2HexCoords(evenQCoord: Vector2): Vector2 {
-        return cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
+        return if (evenQCoord == Vector2.Zero)
+            Vector2.Zero
+        else
+            cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
     }
 
     fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
@@ -109,11 +127,11 @@ object HexMath {
         val deltaZ = abs(rz - cubicCoords.z)
 
         if (deltaX > deltaY && deltaX > deltaZ)
-            rx = -ry-rz
+            rx = -ry - rz
         else if (deltaY > deltaZ)
-            ry = -rx-rz
+            ry = -rx - rz
         else
-            rz = -rx-ry
+            rz = -rx - ry
 
         return Vector3(rx, ry, rz)
     }
@@ -122,7 +140,7 @@ object HexMath {
         return cubic2HexCoords(roundCubicCoords(hex2CubicCoords(hexCoord)))
     }
 
-    fun getVectorsAtDistance(origin: Vector2, distance: Int): List<Vector2> {
+    fun getVectorsAtDistance(origin: Vector2, distance: Int, maxDistance: Int, worldWrap: Boolean): List<Vector2> {
         val vectors = mutableListOf<Vector2>()
         if (distance == 0) {
             vectors += origin.cpy()
@@ -131,36 +149,81 @@ object HexMath {
         val current = origin.cpy().sub(distance.toFloat(), distance.toFloat()) // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
             vectors += current.cpy()
-            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of cloick
+            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
             current.add(1f, 0f)
         }
         for (i in 0 until distance) { // 8 to 10
             vectors += current.cpy()
-            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+            if (!worldWrap || distance != maxDistance)
+                vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
             current.add(1f, 1f)
         }
         for (i in 0 until distance) { // 10 to 12
             vectors += current.cpy()
-            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+            if (!worldWrap || distance != maxDistance || i != 0)
+                vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
             current.add(0f, 1f)
         }
         return vectors
     }
 
-    fun getVectorsInDistance(origin: Vector2, distance: Int): List<Vector2> {
+    fun getVectorsInDistance(origin: Vector2, distance: Int, worldWrap: Boolean): List<Vector2> {
         val hexesToReturn = mutableListOf<Vector2>()
-        for (i in 0 .. distance) {
-            hexesToReturn += getVectorsAtDistance(origin, i)
+        for (i in 0..distance) {
+            hexesToReturn += getVectorsAtDistance(origin, i, distance, worldWrap)
         }
         return hexesToReturn
     }
 
     fun getDistance(origin: Vector2, destination: Vector2): Int {
-        val relative_x = origin.x-destination.x
-        val relative_y = origin.y-destination.y
-        if (relative_x * relative_y >= 0)
-            return max(abs(relative_x),abs(relative_y)).toInt()
+        val relativeX = origin.x - destination.x
+        val relativeY = origin.y - destination.y
+        return if (relativeX * relativeY >= 0)
+            max(abs(relativeX), abs(relativeY)).toInt()
         else
-            return (abs(relative_x) + abs(relative_y)).toInt()
+            (abs(relativeX) + abs(relativeY)).toInt()
+    }
+
+    // Statically allocate the Vectors (in World coordinates)
+    // of the 6 clock directions for border and road drawing in TileGroup 
+    private val clockToWorldVectors: Map<Int,Vector2> = mapOf(
+        2 to hex2WorldCoords(Vector2(0f, -1f)),
+        4 to hex2WorldCoords(Vector2(1f, 0f)),
+        6 to hex2WorldCoords(Vector2(1f, 1f)),
+        8 to hex2WorldCoords(Vector2(0f, 1f)),
+        10 to hex2WorldCoords(Vector2(-1f, 0f)),
+        12 to hex2WorldCoords(Vector2(-1f, -1f)) )
+
+    fun getClockDirectionToWorldVector(clockDirection: Int): Vector2 =
+        clockToWorldVectors[clockDirection] ?: Vector2.Zero
+
+    fun getDistanceFromEdge(vector: Vector2, mapParameters: MapParameters): Int {
+        val x = vector.x.toInt()
+        val y = vector.y.toInt()
+        if (mapParameters.shape == MapShape.rectangular) {
+            val height = mapParameters.mapSize.height
+            val width = mapParameters.mapSize.width
+            val left = if (mapParameters.worldWrap) Int.MAX_VALUE else width / 2 - (x - y)
+            val right = if (mapParameters.worldWrap) Int.MAX_VALUE else (width - 1) / 2 - (y - x)
+            val top = height / 2 -  (x + y) / 2
+            // kotlin's Int division rounds in different directions depending on sign! Thus 1 extra `-1`
+            val bottom = (x + y - 1) / 2 + (height - 1) / 2
+            return minOf(left, right, top, bottom)
+        } else {
+            val radius = mapParameters.mapSize.radius
+            if (mapParameters.worldWrap) {
+                // The non-wrapping method holds in the upper two and lower two 'triangles' of the hexagon
+                // but needs special casing for left and right 'wedges', where only distance from the
+                // 'choke points' counts (upper and lower hex at the 'seam' where height is smallest).
+                // These are at (radius,0) and (0,-radius)
+                if (x.sign == y.sign) return radius - getDistance(vector, Vector2.Zero)
+                // left wedge - the 'choke points' are not wrapped relative to us
+                if (x > 0) return min(getDistance(vector, Vector2(radius.toFloat(),0f)), getDistance(vector, Vector2(0f, -radius.toFloat())))
+                // right wedge - compensate wrap by using a hex 1 off along the edge - same result
+                return min(getDistance(vector, Vector2(1f, radius.toFloat())), getDistance(vector, Vector2(-radius.toFloat(), -1f)))
+            } else {
+                return radius - getDistance(vector, Vector2.Zero)
+            }
+        }
     }
 }

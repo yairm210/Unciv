@@ -6,98 +6,89 @@ import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.Files
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.tools.texturepacker.TexturePacker
+import com.badlogic.gdx.files.FileHandle
+import com.sun.jna.Native
+import com.unciv.JsonParser
 import com.unciv.UncivGame
+import com.unciv.UncivGameParameters
+import com.unciv.logic.GameSaver
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
-import java.io.File
-import kotlin.concurrent.thread
-import kotlin.system.exitProcess
-
+import com.unciv.ui.utils.Fonts
+import java.util.*
+import kotlin.concurrent.timer
 
 internal object DesktopLauncher {
+    private var discordTimer: Timer? = null
+
     @JvmStatic
     fun main(arg: Array<String>) {
+        // Solves a rendering problem in specific GPUs and drivers.
+        // For more info see https://github.com/yairm210/Unciv/pull/3202 and https://github.com/LWJGL/lwjgl/issues/119
+        System.setProperty("org.lwjgl.opengl.Display.allowSoftwareOpenGL", "true")
 
-        packImages()
+        ImagePacker.packImages()
 
         val config = LwjglApplicationConfiguration()
         // Don't activate GL 3.0 because it causes problems for MacOS computers
         config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
         config.title = "Unciv"
         config.useHDPI = true
+        if (FileHandle(GameSaver.settingsFileName).exists()) {
+            val settings = JsonParser().getFromJson(GameSettings::class.java, FileHandle(GameSaver.settingsFileName))
+            config.width = settings.windowState.width
+            config.height = settings.windowState.height
+        }
 
-        val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion
+        val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
-        val game = UncivGame(if (versionFromJar != null) versionFromJar else "Desktop", null){exitProcess(0)}
+        val desktopParameters = UncivGameParameters(
+                versionFromJar,
+                cancelDiscordEvent = { discordTimer?.cancel() },
+                fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt()),
+                customSaveLocationHelper = CustomSaveLocationHelperDesktop()
+        )
 
-        if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
+        val game = UncivGame(desktopParameters)
+
+        if (!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)
 
         LwjglApplication(game, config)
     }
 
-    private fun packImages() {
-        val startTime = System.currentTimeMillis()
-
-        val settings = TexturePacker.Settings()
-        // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
-        // don't support non-power-of-two texture sizes - kudos @yuroller!
-        // https://github.com/yairm210/UnCiv/issues/1340
-        settings.maxWidth = 2048
-        settings.maxHeight = 2048
-        settings.combineSubdirectories = true
-        settings.pot = true
-        settings.fast = true
-
-        // This is so they don't look all pixelated
-        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
-        settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
-
-        if (File("../Images").exists()) // So we don't run this from within a fat JAR
-            TexturePacker.process(settings, "../Images", ".", "game")
-
-        // pack for mods as well
-        val modDirectory = File("mods")
-        if(modDirectory.exists()) {
-            for (mod in modDirectory.listFiles()!!){
-                if (!mod.isHidden && File(mod.path + "/Images").exists())
-                    TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
-            }
-        }
-
-        val texturePackingTime = System.currentTimeMillis() - startTime
-        println("Packing textures - "+texturePackingTime+"ms")
-    }
-
     private fun tryActivateDiscord(game: UncivGame) {
-
         try {
+            /*
+             We try to load the Discord library manually before the instance initializes.
+             This is because if there's a crash when the instance initializes on a similar line,
+              it's not within the bounds of the try/catch and thus the app will crash.
+             */
+            Native.loadLibrary("discord-rpc", DiscordRPC::class.java)
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
 
             Runtime.getRuntime().addShutdownHook(Thread { DiscordRPC.INSTANCE.Discord_Shutdown() })
 
-            thread {
-                while (true) {
-                    try {
-                        updateRpc(game)
-                    }catch (ex:Exception){}
-                    Thread.sleep(1000)
+            discordTimer = timer(name = "Discord", daemon = true, period = 1000) {
+                try {
+                    updateRpc(game)
+                } catch (ex: Exception) {
                 }
             }
-        } catch (ex: Exception) {
-            print("Could not initialize Discord")
+        } catch (ex: Throwable) {
+            // This needs to be a Throwable because if we can't find the discord_rpc library, we'll get a UnsatisfiedLinkError, which is NOT an exception.
+            println("Could not initialize Discord")
         }
     }
 
-    fun updateRpc(game: UncivGame) {
-        if(!game.isInitialized) return
+    private fun updateRpc(game: UncivGame) {
+        if (!game.isInitialized) return
         val presence = DiscordRichPresence()
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
-        presence.details=currentPlayerCiv.nation.getLeaderDisplayName().tr()
+        presence.details = currentPlayerCiv.nation.getLeaderDisplayName().tr()
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
-        presence.largeImageText ="Turn".tr()+" " + currentPlayerCiv.gameInfo.turns
+        presence.largeImageText = "Turn".tr() + " " + currentPlayerCiv.gameInfo.turns
         DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }

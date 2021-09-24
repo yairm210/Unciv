@@ -9,13 +9,13 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
-    var blackSpinningCircle:Image?=null
+    var blackSpinningCircle: Image? = null
+    var actionGroup :Group? = null
     val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
-            .apply { setSize(size * 0.75f, size * 0.75f) }
+        .apply { setSize(size * 0.75f, size * 0.75f) }
 
     init {
-
-        val background = getBackgroundImageForUnit(unit)
+        val background = getBackgroundImageForUnit()
         background.apply {
             this.color = unit.civInfo.nation.getOuterColor()
             setSize(size, size)
@@ -25,15 +25,24 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         unitBaseImage.center(this)
         addActor(unitBaseImage)
 
+        val actionImage = getActionImage()
+        if (actionImage != null) {
+            actionImage.color = Color.BLACK
+            val actionCircle = actionImage.surroundWithCircle(size / 2 * 0.9f)
+                .surroundWithCircle(size / 2, false, Color.BLACK)
+            actionCircle.setPosition(size / 2, 0f)
+            addActor(actionCircle)
+            actionGroup = actionCircle
+        }
 
         if (unit.health < 100) { // add health bar
             addActor(ImageGetter.getHealthBar(unit.health.toFloat(), 100f, size))
         }
 
-        isTransform=false // performance helper - nothing here is rotated or scaled
+        isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
-    fun getBackgroundImageForUnit(unit: MapUnit): Image {
+    fun getBackgroundImageForUnit(): Image {
         return when {
             unit.isEmbarked() -> ImageGetter.getImage("OtherIcons/Banner")
             unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield")
@@ -41,9 +50,22 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         }
     }
 
+    fun getActionImage(): Image? {
+        return when {
+            unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield")
+            unit.isSleeping() -> ImageGetter.getImage("OtherIcons/Sleep")
+            unit.isMoving() -> ImageGetter.getStatIcon("Movement")
+            //todo: Less hardcoding, or move to Constants with explanation (should icon change with mods?)
+            unit.isExploring() -> ImageGetter.getUnitIcon("Scout")
+            unit.isAutomated() -> ImageGetter.getUnitIcon("Great Engineer")
+            unit.isSetUpForSiege() -> ImageGetter.getUnitIcon("Catapult")
+            else -> null
+        }
+    }
+
 
     fun selectUnit() {
-        val whiteHalo = getBackgroundImageForUnit(unit)
+        val whiteHalo = getBackgroundImageForUnit()
         val whiteHaloSize = 30f
         whiteHalo.setSize(whiteHaloSize, whiteHaloSize)
         whiteHalo.center(this)
@@ -57,9 +79,17 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
             spinningCircle.color = Color.BLACK
             spinningCircle.center(this)
             spinningCircle.x += whiteHaloSize / 2 // to edge of white halo
-            spinningCircle.setOrigin(spinningCircle.width / 2 - whiteHaloSize / 2, spinningCircle.height / 2)
+            spinningCircle.setOrigin(
+                spinningCircle.width / 2 - whiteHaloSize / 2,
+                spinningCircle.height / 2
+            )
             addActor(spinningCircle)
-            spinningCircle.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(90f, 1f)))
+            spinningCircle.addAction(
+                Actions.repeat(
+                    RepeatAction.FOREVER,
+                    Actions.rotateBy(90f, 1f)
+                )
+            )
             blackSpinningCircle = spinningCircle
         }
     }

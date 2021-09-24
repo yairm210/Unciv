@@ -1,24 +1,26 @@
-# Unciv - Civ V for Android (+Desktop)
+# Unciv - FOSS Civ V for Android+Desktop
 
-![](https://lh3.googleusercontent.com/l8fuQ2DnNjoD9pFnHLsli1xt8OClfr6O9GSBJJ9w7IIb2VHOyxqKZ9lNZXtMqOabCfyI=w1920-h867-rw)
+![](/extraImages/GithubPreviewImage.png)
 
-
-[![Google Play](https://img.shields.io/badge/Google-Play-black.svg)](https://play.google.com/store/apps/details?id=com.unciv.app)
+[![Google Play](https://img.shields.io/static/v1?label=Google&message=Play&color=607D8B&logo=google-play)](https://play.google.com/store/apps/details?id=com.unciv.app)
 [![F-Droid](https://img.shields.io/f-droid/v/com.unciv.app)](https://f-droid.org/en/packages/com.unciv.app/)
+[![itch.io](https://img.shields.io/static/v1?label=itch.io&message=Unciv&color=607D8B&logo=itch.io)](https://yairm210.itch.io/unciv)
+[![Flathub](https://img.shields.io/flathub/v/io.github.yairm210.unciv)](https://flathub.org/apps/details/io.github.yairm210.unciv)
 
-[![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/UnCiv/master.svg?logo=travis)](https://travis-ci.org/yairm210/UnCiv)  
-[![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)  
-
-[![LibGDX](https://img.shields.io/badge/libgdx-1.9.10-red.svg)](https://libgdx.badlogicgames.com/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.3.50-orange.svg)](http://kotlinlang.org/)
-
+![Build and deploy](https://github.com/yairm210/Unciv/workflows/Build%20and%20deploy/badge.svg)
+[![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)
 
 
 
 # What is this?
 
-An open-source Android/Desktop port of Civ V,
-Made with LibGDX on Android Studio
+An open-source, mod-friendly Android+Desktop remake of Civ V, made with LibGDX
+
+## Is this any good?
+
+Depends what you're looking for. If you're in the market for high-res graphics, amazing soundtracks, animations etc, I highly recommend Firaxis's Civ-V-like game, "Civilization V".
+
+If you want a small, fast, moddable, FOSS, in-depth 4X that can still run on a potato, you've come to the right place :)
 
 ## What's the roadmap?
 
@@ -27,12 +29,7 @@ Is this order:
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
     * UI+UX improvements (suggestions welcome!)
     * Better automation, AI etc. in-game
-* Development and distribution cycle
-   * Automated tests - done!
-   * Automated F-droid and Google Play version deployment - done!
-   * Standalone Desktop executables - done!
-   * Maybe Itch.io?
-* Missing features from Vanilla - Natural wonders (done!), city-state quests, missing civs etc.
+* Missing features from Vanilla - Natural wonders , city-state quests, missing civs etc. - mostly done!
 * G&K mechanics - religion, faith etc.
 * BNW mechanics - trade routes etc.
 
@@ -40,17 +37,16 @@ Is this order:
 
 ## How can I help?
 
-If you're a programmer, get started at [here!](https://github.com/yairm210/Unciv/wiki/Getting-Started)
+Programmers start [here](https://github.com/yairm210/Unciv/wiki/Getting-Started)!
 
-If you want to help with the translation, get started [here!](https://github.com/yairm210/Unciv/wiki/Translating)
+Translators start [here](https://github.com/yairm210/Unciv/wiki/Translating)!
+
+Modders start [here](https://github.com/yairm210/Unciv/wiki/Mods)!
 
 You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
 
 If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
 
-If you REALLY want to donate for some reason, I have a Patreon page [here!](https://www.patreon.com/yairm210)
-        
-If you want to mod, see [here!](https://github.com/yairm210/Unciv/wiki/Mods)
 
 # FAQ
 
@@ -62,43 +58,39 @@ There's a lot left to implement, so it's hard to give an estimation of when exac
 
 If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
 
-## Please add {Civilization}
+### Why not? This is its own game, why not add features that weren't in Civ V?
 
-THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
+Having a clear vision is important for actually getting things done. 
+
+Anyone can make a suggestion. Not all are good, viable, or simple. Not many can actually implement stuff.
+
+As an open source project, this stuff is done in our spare time, of which there isn't much.
+
+We need a clear-cut criteria to decide what to work on and what not to work on.
 
 ## Will you implement Civ VI?
 
-Maybe, once we've finished with all of Civ V. But considering how long it took to get this far, Civ VII may be out by then.
+Considering how long it took to get this far, no.
 
 ## Is there a desktop version?
 
-There are standalone zip files for each operating system in [Releases](https://github.com/yairm210/UnCiv/releases) which contain everything needed for Unciv to run
+Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch.io/unciv), and if you're using the Itch app, your game will stay up-to-date - and we release pretty frequently so that's an issue ;)
 
-If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`
+UnCiv can also be installed on macOS, a guide on how to do that can be found [here](https://github.com/yairm210/Unciv/wiki/Installing-on-macOS).
 
-Be aware that the game will generate files inside the folder where the Jar is located!
+If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`.
 
-If you also have JDK 8 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
+If you use Flatpaks, there's a Flatpak by [MayeulC](https://github.com/MayeulC) and you can know more about it [here](https://github.com/flathub/io.github.yairm210.unciv). Flathub link is available in the [Downloads](#downloads) section.
 
-### Windows
+If you want to build it from scratch for some reason, [we have instructions for that as well](https://github.com/yairm210/Unciv/wiki/Building-locally-without-Android-Studio)
 
-Running: `gradlew desktop:run`
+## How about IOS?
 
-Building: `gradlew desktop:dist`
+I'm not planning on it.
 
-### Linux/Mac OS
-
-Running: `./gradlew desktop:run`
-
-Building: `./gradlew desktop:dist`
-
-If the terminal returns `Permission denied` or `Command not found` on Mac/Linux, run `chmod +x ./gradlew` first. *This is a one-time procedure.*
-
-Gradle may take up to several minutes to download files. Be patient.
-After building, the output .JAR file should be in /desktop/build/libs/Unciv.jar
-
-For actual development, you'll probably need to download Android Studio and build it yourself - see Contributing :)
-
+It means paying money to Apple, yet another release path,
+ and since I don't have an IOS device it means I can't test it properly.
+ 
 ## How can I learn to play? Where's the wiki?
 
 All the tutorial information is available in-game at menu > civilopedia > tutorials
@@ -121,5 +113,16 @@ From what I gather, it is illegal:
 From what I understand, intellectual property rights apply to names, characters and settings. They do not apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
+
+## Disclosure
+
+Multiplayer takes advantage of Dropbox, which is *non-free software*, for syncing purposes.
+
+Single player does not use this feature.
+
+## Downloads
+
+| [![](https://static.itch.io/images/badge.svg)](https://yairm210.itch.io/unciv)    |    [![](https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png)](https://play.google.com/store/apps/details?id=com.unciv.app)   |    [![](https://fdroid.gitlab.io/artwork/badge/get-it-on.png)](https://f-droid.org/en/packages/com.unciv.app/)	| [![](https://flathub.org/assets/badges/flathub-badge-en.svg)](https://flathub.org/apps/details/io.github.yairm210.unciv)  
+|---	|---	|---	|---	|
 
 # [Credits and 3rd parties](docs/Credits.md)

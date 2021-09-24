@@ -1,6 +1,6 @@
 package com.unciv.logic.civilization
 
-enum class AlertType{
+enum class AlertType {
     Defeated,
     WonderBuilt,
     TechResearched,
@@ -8,11 +8,14 @@ enum class AlertType{
     FirstContact,
     CityConquered,
     BorderConflict,
-    @Deprecated("As of 2.19.0 - replaced with DemandToStopSettlingCitiesNear")
-    CitiesSettledNearOtherCiv,
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,
     GoldenAge,
+    DeclarationOfFriendship,
+    StartIntro,
+    DiplomaticMarriage,
+    BulliedProtectedMinor,
+    AttackedProtectedMinor,
 }
 
 class PopupAlert {
