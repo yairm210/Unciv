@@ -20,7 +20,9 @@ class TileResource : NamedStats(), ICivilopediaText, IHasUniques {
     @Deprecated("As of 3.16.16 - replaced by uniques")
     var unique: String? = null
     override var uniques: ArrayList<String> = arrayListOf()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Resource, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Resource
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
+        getUniqueTarget(), name) } }
 
     override var civilopediaText = listOf<FormattedLine>()
 

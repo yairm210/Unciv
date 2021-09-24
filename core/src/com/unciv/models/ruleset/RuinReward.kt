@@ -10,9 +10,11 @@ class RuinReward : INamed, ICivilopediaText, IHasUniques {
     override lateinit var name: String  // Displayed in Civilopedia!
     val notification: String = ""
     override var uniques = ArrayList<String>()
+
+    override fun getUniqueTarget() = UniqueTarget.Ruins
     @delegate:Transient     // Defense in depth against mad modders
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Ruins, name) } }
-    
+
     val excludedDifficulties: List<String> = listOf()
     val weight: Int = 1
     val color: String = ""  // For Civilopedia

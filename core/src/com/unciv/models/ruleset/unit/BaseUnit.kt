@@ -40,8 +40,12 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     fun getType() = ruleset.unitTypes[unitType]!!
     var requiredTech: String? = null
     private var requiredResource: String? = null
+
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Unit, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Unit
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
+        getUniqueTarget(), name) } }
+
     private var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null

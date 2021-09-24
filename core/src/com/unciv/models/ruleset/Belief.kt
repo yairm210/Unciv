@@ -7,13 +7,18 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
-import java.util.ArrayList
+import kotlin.collections.ArrayList
 
 class Belief : INamed, ICivilopediaText, IHasUniques {
     override var name: String = ""
     var type: BeliefType = BeliefType.None
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Belief, name) } }
+
+    override fun getUniqueTarget() =
+        if (type == BeliefType.Founder || type == BeliefType.Enhancer)  UniqueTarget.FounderBelief
+        else UniqueTarget.FollowerBelief
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
+        getUniqueTarget(), name) } }
 
     override var civilopediaText = listOf<FormattedLine>()
 
@@ -26,12 +31,12 @@ class Belief : INamed, ICivilopediaText, IHasUniques {
         val textList = ArrayList<FormattedLine>()
         if (type != BeliefType.None)
             textList += FormattedLine("{Type}: $type", color = type.color )
-        uniqueObjects.forEach { 
+        uniqueObjects.forEach {
             textList += FormattedLine(it)
         }
         return textList
     }
-    
+
     companion object {
         // private but potentially reusable, therefore not folded into getCivilopediaTextMatching
         private fun getBeliefsMatching(name: String, ruleset: Ruleset): Sequence<Belief> {

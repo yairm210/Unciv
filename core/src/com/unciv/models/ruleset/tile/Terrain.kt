@@ -29,7 +29,9 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
 
     /** Uniques (Properties such as Temp/humidity, Fresh water, elevation, rough, defense, Natural Wonder specials) */
     override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Terrain, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Terrain
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
+        getUniqueTarget(), name) } }
 
     /** Natural Wonder weight: probability to be picked */
     var weight = 10
