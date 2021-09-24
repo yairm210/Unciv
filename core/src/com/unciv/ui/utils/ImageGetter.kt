@@ -19,7 +19,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
-import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
@@ -64,7 +63,7 @@ object ImageGetter {
         }
 
         // Load base (except game.atlas which is already loaded)
-        loadModAtlases("", Gdx.files.internal("."))
+        loadModAtlases("", Gdx.files.internal(""))
 
         // These are from the mods
         for (mod in UncivGame.Current.settings.visualMods + ruleset.mods) {
