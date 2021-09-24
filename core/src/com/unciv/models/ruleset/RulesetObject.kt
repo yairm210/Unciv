@@ -6,7 +6,9 @@ import com.unciv.models.stats.NamedStats
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
 
-abstract class RulesetObject: INamed, IHasUniques, ICivilopediaText {
+interface IRulesetObject:INamed, IHasUniques, ICivilopediaText
+
+abstract class RulesetObject: IRulesetObject {
     override lateinit var name: String
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
     @delegate:Transient
@@ -18,7 +20,7 @@ abstract class RulesetObject: INamed, IHasUniques, ICivilopediaText {
 }
 
 // Same, but inherits from NamedStats - I couldn't find a way to unify the declarations but this is fine
-abstract class RulesetStatsObject: NamedStats(), IHasUniques, ICivilopediaText {
+abstract class RulesetStatsObject: NamedStats(), IRulesetObject {
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
     @delegate:Transient
     override val uniqueObjects: List<Unique> by lazy {
