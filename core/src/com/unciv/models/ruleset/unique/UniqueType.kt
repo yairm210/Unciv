@@ -19,7 +19,9 @@ enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
     Era(Global),
     Tech(Global),
     Policy(Global),
-    Belief(Global),
+    FounderBelief(Global),
+    /** These apply only to cities where the religion is the majority religion */
+    FollowerBelief,
 
     // City-specific
     /** This is used as the base when checking buildings */

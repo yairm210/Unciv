@@ -13,7 +13,9 @@ class Belief : INamed, ICivilopediaText, IHasUniques {
     override var name: String = ""
     var type: BeliefType = BeliefType.None
     override var uniques = ArrayList<String>()
-    override val uniqueTarget = UniqueTarget.Belief
+    /** Beliefs are pecial, in that different belief types can accept different unique types -
+     * therefore they have their own special check in Ruleset.checkUniques */
+    override val uniqueTarget = UniqueTarget.FollowerBelief
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
 
     override var civilopediaText = listOf<FormattedLine>()
