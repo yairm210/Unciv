@@ -51,7 +51,7 @@ class ModOptions : IHasUniques {
     override var uniques = ArrayList<String>()
     // If this is delegated with "by lazy", the mod download process crashes and burns
     override var uniqueObjects: List<Unique> = listOf()
-    override val uniqueTarget = UniqueTarget.ModOptions
+    override fun getUniqueTarget() = UniqueTarget.ModOptions
 
 }
 
@@ -308,11 +308,7 @@ class Ruleset {
                 lines.add(deprecationText, severity)
             }
 
-            val acceptableUniqueType = when {
-                uniqueContainer !is Belief -> uniqueContainer.uniqueTarget
-                uniqueContainer.type == BeliefType.Founder || uniqueContainer.type == BeliefType.Enhancer -> UniqueTarget.FounderBelief
-                else -> UniqueTarget.FollowerBelief
-            }
+            val acceptableUniqueType = uniqueContainer.getUniqueTarget()
             if (unique.type.targetTypes.none { acceptableUniqueType.canAcceptUniqueTarget(it) })
                 lines.add(
                     "$name's unique \"${unique.text}\" cannot be put on this type of object!",

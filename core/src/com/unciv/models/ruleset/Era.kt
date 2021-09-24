@@ -33,8 +33,9 @@ class Era : INamed, IHasUniques {
 
     var iconRGB: List<Int>? = null
     override var uniques: ArrayList<String> = arrayListOf()
-    override val uniqueTarget = UniqueTarget.Era
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Era
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
+        getUniqueTarget(), name) } }
 
     private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, List<Unique>> {
         val objectMap = HashMap<CityStateType, List<Unique>>()

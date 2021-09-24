@@ -67,7 +67,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     var uniqueTo: String? = null
     var quote: String = ""
     override var uniques = ArrayList<String>()
-    override val uniqueTarget = UniqueTarget.Building
+    override fun getUniqueTarget() = UniqueTarget.Building
     override val uniqueObjects: List<Unique> by lazy { 
         uniques.map { 
             Unique(it, if (isAnyWonder()) UniqueTarget.Wonder else UniqueTarget.Building, name) 

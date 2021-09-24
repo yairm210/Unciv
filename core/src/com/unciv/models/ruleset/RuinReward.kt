@@ -11,7 +11,7 @@ class RuinReward : INamed, ICivilopediaText, IHasUniques {
     val notification: String = ""
     override var uniques = ArrayList<String>()
 
-    override val uniqueTarget = UniqueTarget.Ruins
+    override fun getUniqueTarget() = UniqueTarget.Ruins
     @delegate:Transient     // Defense in depth against mad modders
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Ruins, name) } }
 

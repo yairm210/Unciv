@@ -24,8 +24,9 @@ class UnitType() : INamed, IHasUniques {
     private val unitMovementType: UnitMovementType? by lazy { if (movementType == null) null else UnitMovementType.valueOf(movementType!!) }
     
     override var uniques: ArrayList<String> = ArrayList()
-    override val uniqueTarget = UniqueTarget.UnitType
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
+    override fun getUniqueTarget() = UniqueTarget.UnitType
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
+        getUniqueTarget(), name) } }
     
     constructor(name: String, domain: String? = null) : this() {
         this.name = name

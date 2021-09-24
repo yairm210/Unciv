@@ -13,10 +13,12 @@ class Belief : INamed, ICivilopediaText, IHasUniques {
     override var name: String = ""
     var type: BeliefType = BeliefType.None
     override var uniques = ArrayList<String>()
-    /** Beliefs are pecial, in that different belief types can accept different unique types -
-     * therefore they have their own special check in Ruleset.checkUniques */
-    override val uniqueTarget = UniqueTarget.FollowerBelief
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
+
+    override fun getUniqueTarget() =
+        if (type == BeliefType.Founder || type == BeliefType.Enhancer)  UniqueTarget.FounderBelief
+        else UniqueTarget.FollowerBelief
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
+        getUniqueTarget(), name) } }
 
     override var civilopediaText = listOf<FormattedLine>()
 
@@ -29,12 +31,12 @@ class Belief : INamed, ICivilopediaText, IHasUniques {
         val textList = ArrayList<FormattedLine>()
         if (type != BeliefType.None)
             textList += FormattedLine("{Type}: $type", color = type.color )
-        uniqueObjects.forEach { 
+        uniqueObjects.forEach {
             textList += FormattedLine(it)
         }
         return textList
     }
-    
+
     companion object {
         // private but potentially reusable, therefore not folded into getCivilopediaTextMatching
         private fun getBeliefsMatching(name: String, ruleset: Ruleset): Sequence<Belief> {

@@ -42,8 +42,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     private var requiredResource: String? = null
 
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
-    override val uniqueTarget = UniqueTarget.Unit
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, uniqueTarget, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Unit
+    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
+        getUniqueTarget(), name) } }
 
     private var replacementTextForUniques = ""
     var promotions = HashSet<String>()
