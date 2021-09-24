@@ -4,6 +4,7 @@ import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -116,10 +117,8 @@ class Promotion : INamed, ICivilopediaText, IHasUniques {
                     && it.params[2] == name
             }
         } + ruleset.terrains.values.filter {
-            // once that unique is parameterized, this will be the efficient order of checks
-            terrain -> terrain.uniques.any {
-                it == "Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game"
-                    && name == "Rejuvenation"
+            terrain -> terrain.uniqueObjects.any {
+                it.isOfType(UniqueType.TerrainGrantsPromotion) && name == it.params[0]
             }
         }
         if (grantors.isNotEmpty()) {

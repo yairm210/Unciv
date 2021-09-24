@@ -13,6 +13,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.toPercent
@@ -746,12 +747,14 @@ class MapUnit {
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 
-        if (!hasUnique("All healing effects doubled") && baseUnit.isLandUnit() && baseUnit.isMilitary()) {
-            //todo: Grants [promotion] to adjacent [unitFilter] units for the rest of the game
-            val gainDoubleHealPromotion = tile.neighbors
-                .any { it.hasUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
-            if (gainDoubleHealPromotion && civInfo.gameInfo.ruleSet.unitPromotions.containsKey("Rejuvenation"))
-                promotions.addPromotion("Rejuvenation", true)
+        val promotionUniques = tile.neighbors
+            .flatMap { it.getAllTerrains() }
+            .flatMap { it.getMatchingUniques(UniqueType.TerrainGrantsPromotion) }
+        for (unique in promotionUniques) {
+            if (!this.matchesFilter(unique.params[2])) continue
+            val promotion = unique.params[0]
+            if (promotion in promotions.promotions) continue
+            promotions.addPromotion(promotion, true)
         }
 
         updateVisibleTiles()

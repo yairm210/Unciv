@@ -35,26 +35,6 @@ object Constants {
     val vegetation = arrayOf(forest, jungle)
     val sea = arrayOf(ocean, coast)
 
-    const val barringerCrater = "Barringer Crater"
-    const val grandMesa = "Grand Mesa"
-    const val greatBarrierReef = "Great Barrier Reef"
-    const val krakatoa = "Krakatoa"
-    const val mountFuji = "Mount Fuji"
-    const val oldFaithful = "Old Faithful"
-    const val rockOfGibraltar = "Rock of Gibraltar"
-    const val cerroDePotosi = "Cerro de Potosi"
-    const val elDorado = "El Dorado"
-    const val fountainOfYouth = "Fountain of Youth"
-    const val mountKailash = "Mount Kailash"
-    const val mountSinai = "Mount Sinai"
-    const val sriPada = "Sri Pada"
-    const val uluru = "Uluru"
-    /*
-    const val kingSolomonsMines = "King Solomon's Mines" //BNW
-    const val lakeVictoria = "Lake Victoria" //BNW
-    const val mountKilimanjaro = "Mount Kilimanjaro" //BNW
-    */
-
     const val barbarianEncampment = "Barbarian encampment"
 
     const val peaceTreaty = "Peace Treaty"
