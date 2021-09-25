@@ -819,7 +819,7 @@
 		"outerColor": [114, 162, 233],
 		"innerColor": [61, 0, 109],
 		"uniqueName": "Patriarchate of Constantinople",
-		"uniques": ["May choose [1] additional [Any] beliefs when [founding] a religion"],
+		"uniques": ["May choose [1] additional belief(s) of any type when [founding] a religion"],
 		
 		"cities": ["Constantinople", "Adrianople", "Nicaea", "Antioch", "Varna", "Ohrid", "Nicomedia", "Trebizond", "Cherson", "Sardica", 
 			"Ani", "Dyrrachium", "Edessa", "Chalcedon", "Naissus", "Bari", "Iconium", "Prilep", "Samosata", "Kars", "Nicopolis", "Theodosiopolis", 

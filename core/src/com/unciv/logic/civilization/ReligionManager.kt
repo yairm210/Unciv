@@ -215,6 +215,10 @@ class ReligionManager {
             if (unique.params[2] != "founding") continue
             beliefsToChoose.add(BeliefType.valueOf(unique.params[1]), unique.params[0].toInt())
         }
+        for (unique in civInfo.getMatchingUniques("May choose [] additional belief(s) of any type when [] a religion")) {
+            if (unique.params[1] != "founding") continue
+            beliefsToChoose.add(BeliefType.Any, unique.params[0].toInt())
+        }
         
         return beliefsToChoose
     }
