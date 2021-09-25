@@ -43,7 +43,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Quinquereme. The original work has been modified.
-* [Norse Longship](https://thenounproject.com/zmccune/uploads/?i=1626302) by Zack McCune for Dromon
+* [dragon](https://thenounproject.com/search/?q=dragon&i=1646681) by BGBOXXX Design for Dromon
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
 * [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado for War Elephant
 * [Centaur](https://thenounproject.com/search/?q=horse+archer&i=1791296) by Michael Wohlwend for Horse Archer 
