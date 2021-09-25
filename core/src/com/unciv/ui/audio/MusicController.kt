@@ -193,7 +193,7 @@ class MusicController {
     /**
      * Chooses and plays a music track using an adaptable approach - for details see the wiki.
      * Called without parameters it will choose a new ambient music track and start playing it with fade-in/out.
-     * Will do nothing when no music files exist.
+     * Will do nothing when no music files exist or the master volume is zero.
      * 
      * @param prefix file name prefix, meant to represent **Context** - in most cases a Civ name or default "Ambient"
      * @param suffix file name suffix, meant to represent **Mood** - e.g. Peace, War, Theme...
@@ -205,6 +205,8 @@ class MusicController {
         suffix: String = "", 
         flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
     ): Boolean {
+        if (baseVolume == 0f) return false
+
         val musicFile = chooseFile(prefix, suffix, flags)
 
         if (musicFile == null) {
@@ -265,6 +267,8 @@ class MusicController {
         if ((state != ControllerState.Playing && state != ControllerState.PlaySingle) || current == null) return
         val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
         current!!.startFade(MusicTrackController.State.FadeOut, fadingStep)
+        if (next?.state == MusicTrackController.State.FadeIn)
+            next!!.startFade(MusicTrackController.State.FadeOut)
         state = ControllerState.Pause
     }
 

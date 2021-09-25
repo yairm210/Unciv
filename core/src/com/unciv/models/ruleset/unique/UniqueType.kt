@@ -3,60 +3,78 @@ package com.unciv.models.ruleset.unique
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
-enum class UniqueTarget {
+/** inheritsFrom means that all such uniques are acceptable as well.
+ * For example, all Global uniques are acceptable for Nations, Eras, etc. */
+enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
+
     /** Buildings, units, nations, policies, religions, techs etc.
      * Basically anything caught by CivInfo.getMatchingUniques. */
     Global,
-    
+
     // Civilization-specific
-    Nation,
-    Era,
-    Tech,
-    Policy,
-    Belief,
-    
+    Nation(Global),
+    Era(Global),
+    Tech(Global),
+    Policy(Global),
+    FounderBelief(Global),
+    /** These apply only to cities where the religion is the majority religion */
+    FollowerBelief,
+
     // City-specific
-    Building,
-    Wonder,
-    
+    /** This is used as the base when checking buildings */
+    Building(Global),
+    Wonder(Building),
+
     // Unit-specific
+    // These are a bit of a lie. There's no "Promotion only" or "UnitType only" uniques,
+    //  they're all just Unit uniques in different places.
+    //  So there should be no uniqueType that has a Promotion or UnitType target.
     Unit,
-    UnitType,
-    Promotion,
-    
+    UnitType(Unit),
+    Promotion(Unit),
+
     // Tile-specific
     Terrain,
     Improvement,
     Resource,
     Ruins,
-    
+
     // Other
     CityState,
-    ModOptions,    
+    ModOptions,
     Conditional,
+    ;
+
+    fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
+        if (this == uniqueTarget) return true
+        if (inheritsFrom != null) return inheritsFrom.canAcceptUniqueTarget(uniqueTarget)
+        return false
+    }
 }
 
-enum class UniqueType(val text:String, vararg target: UniqueTarget) {
-    
+enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
+
     Stats("[stats]", UniqueTarget.Global),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
-    
+
     StatPercentBonus("[amount]% [Stat]", UniqueTarget.Global),
 
     ConsumesResources("Consumes [amount] [resource]",
         UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit), // No conditional support as of yet
     ProvidesResources("Provides [amount] [resource]",
             UniqueTarget.Improvement, UniqueTarget.Building),
-    
+
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
 
-    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"))
+    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs"), // No conditional support
-    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"))
+    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs"), // No conditional support
-    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"))
+    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.WARNING)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
 
     // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
@@ -70,10 +88,18 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
     CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
-    
-    
+
+    NaturalWonderNeighborCount("Must be adjacent to [amount] [terrainFilter] tiles", UniqueTarget.Terrain),
+    NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [terrainFilter] tiles", UniqueTarget.Terrain),
+    NaturalWonderLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
+    NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain),
+    NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain),
+    NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain),
+    NaturalWonderConvertNeighborsExcept("Neighboring tiles except [terrainFilter] will convert to [baseTerrain]", UniqueTarget.Terrain),
+
+
     ///// CONDITIONALS
-    
+
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
@@ -83,7 +109,7 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
     val parameterTypeMap = ArrayList<List<UniqueParameterType>>()
-    val replacedBy: UniqueType? = null
+    val targetTypes = HashSet<UniqueTarget>()
 
     init {
         for (placeholder in text.getPlaceholderParameters()) {
@@ -92,6 +118,7 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
                     ?: UniqueParameterType.Unknown
             parameterTypeMap.add(listOf(matchingParameterType))
         }
+        targetTypes.addAll(targets)
     }
 
     val placeholderText = text.getPlaceholderText()

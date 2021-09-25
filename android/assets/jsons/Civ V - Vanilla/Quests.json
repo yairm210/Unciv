@@ -22,12 +22,12 @@
   {
     "name": "Acquire Great Person",
     "description": "Great People can change the course of a Civilization! You will be rewarded for acquiring a new [greatPerson]."
-  },/*
+  },
   {
     "name": "Conquer City State",
-    "description": "You will be rewarded for conquering the city state of [cityState]!",
+    "description": "It's time to erase the City State of [cityState] from the map. You will be greatly rewarded for conquering them!",
     "influence": 80
-  },*/
+  },
   {
     "name": "Find Player",
     "description": "You have yet to discover where [civName] set up their cities. You will be rewarded for finding their territories.",
@@ -36,18 +36,17 @@
   {
     "name": "Find Natural Wonder",
     "description": "Send your best explorers on a quest to discover Natural Wonders. Nobody knows the location of [naturalWonder] yet."
-  }
+  },
   /* G&K */
-  /*
   {
     "name": "Give Gold",
-    "description": "We are suffering great poverty, and unless we receive a sum of [250] Gold, it's only a matter of time before we collapse.",
+    "description": "We are suffering great poverty after being robbed by [civName], and unless we receive a sum of Gold, it's only a matter of time before we collapse.",
     "influence": 20,
     "duration": 30
   },
   {
     "name": "Pledge to Protect",
-    "description": "Our peoples deserve to be protected by the likes of you. By signing a Protection Pedging, you'll confirm the bond that ties us.",
+    "description": "We need your protection to stop the aggressions of [civName]. By signing a Pledge of Protection, you'll confirm the bond that ties us.",
     "influence": 20,
     "duration": 30
   },
@@ -66,7 +65,7 @@
     "minimumCivs": 3
   },
   {
-    "name": "Contest Techs",
+    "name": "Contest Technologies",
     "description": "The civilization with the largest number of new Technologies researched will gain a reward.",
     "type": "Global",
     "duration": 30,
@@ -74,7 +73,7 @@
   },
   {
     "name": "Invest",
-    "description": "Our people are rejoycing thanks to a tourism boom. For a certain amount of time, any Gold donation will yeld double the Influence.",
+    "description": "Our people are rejoicing thanks to a tourism boom. For a certain amount of time, any Gold donation will yield [50]% extra Influence.",
     "type": "Global",
     "influence": 0,
     "duration": 30,
@@ -82,19 +81,18 @@
   },
   {
     "name": "Bully City State",
-    "description": ""
+    "description": "We are tired of the pretensions of [cityState]. If someone were to put them in their place by Demanding Tribute from them, they would be rewarded.",
     "duration": 30
   },
   {
     "name": "Denounce Civilization",
-    "description": "",
+    "description": "We have been forced to pay tribute to [civName]! We need you to tell the world of their ill deeds.",
     "duration": 30
   },
   {
     "name": "Spread Religion",
-    "description": ""
-  },
-  */
+    "description": "We have heard the tenets of [religionName] and are most curious. Will you send missionaries to teach us about your religion?"
+  }
   /* BNW */
   /*
   {

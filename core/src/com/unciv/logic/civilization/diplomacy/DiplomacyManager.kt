@@ -51,6 +51,7 @@ enum class DiplomacyFlags {
     RememberSidedWithProtectedMinor,
     Denunciation,
     WaryOf,
+    Bullied,
 }
 
 enum class DiplomaticModifiers {
@@ -675,21 +676,32 @@ class DiplomacyManager() {
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
 
+        // Go through our city state allies.
         if (!civInfo.isCityState()) {
             for (thirdCiv in civInfo.getKnownCivs()) {
-                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == civInfo.civName
-                        && thirdCiv.knows(otherCiv)
-                        && thirdCiv.getDiplomacyManager(otherCiv).canDeclareWar()) {
-                    thirdCiv.getDiplomacyManager(otherCiv).declareWar()
+                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == civInfo.civName) {
+                    if (thirdCiv.knows(otherCiv) && !thirdCiv.isAtWarWith(otherCiv))
+                        thirdCiv.getDiplomacyManager(otherCiv).declareWar()
+                    else if (!thirdCiv.knows(otherCiv)) {
+                        // Our city state ally has not met them yet, so they have to meet first
+                        thirdCiv.makeCivilizationsMeet(otherCiv, warOnContact = true)
+                        thirdCiv.getDiplomacyManager(otherCiv).declareWar()
+                    }
                 }
             }
         }
+
+        // Go through their city state allies.
         if (!otherCiv.isCityState()) {
             for (thirdCiv in otherCiv.getKnownCivs()) {
-                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName
-                        && thirdCiv.knows(civInfo)
-                        && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
-                    thirdCiv.getDiplomacyManager(civInfo).declareWar()
+                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName) {
+                    if (thirdCiv.knows(civInfo) && !thirdCiv.isAtWarWith(civInfo))
+                        thirdCiv.getDiplomacyManager(civInfo).declareWar()
+                    else if (!thirdCiv.knows(civInfo)) {
+                        // Their city state ally has not met us yet, so we have to meet first
+                        thirdCiv.makeCivilizationsMeet(civInfo, warOnContact = true)
+                        thirdCiv.getDiplomacyManager(civInfo).declareWar()
+                    }
                 }
             }
         }

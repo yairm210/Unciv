@@ -51,6 +51,8 @@ class ModOptions : IHasUniques {
     override var uniques = ArrayList<String>()
     // If this is delegated with "by lazy", the mod download process crashes and burns
     override var uniqueObjects: List<Unique> = listOf()
+    override fun getUniqueTarget() = UniqueTarget.ModOptions
+
 }
 
 class Ruleset {
@@ -296,11 +298,23 @@ class Ruleset {
             val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
                 .getAnnotation(Deprecated::class.java)
             if (deprecationAnnotation != null) {
-                // Not user-visible
-                lines.add("$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                        " replace with \"${deprecationAnnotation.replaceWith.expression}\"",
-                    RulesetErrorSeverity.WarningOptionsOnly)
+                val deprecationText =
+                    "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
+                            " replace with \"${deprecationAnnotation.replaceWith.expression}\""
+                val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
+                    RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
+                else RulesetErrorSeverity.Warning // User visible
+
+                lines.add(deprecationText, severity)
             }
+
+            val acceptableUniqueType = uniqueContainer.getUniqueTarget()
+            if (unique.type.targetTypes.none { acceptableUniqueType.canAcceptUniqueTarget(it) })
+                lines.add(
+                    "$name's unique \"${unique.text}\" cannot be put on this type of object!",
+                    RulesetErrorSeverity.Warning
+                )
+
         }
     }
 
@@ -377,6 +391,16 @@ class Ruleset {
 
             checkUniques(nation, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
         }
+
+        for (promotion in unitPromotions.values)
+            if (promotion.effect != "")
+                lines.add("`Promotion.effect` used in ${promotion.name} is deprecated, please use `uniques` instead",
+                    RulesetErrorSeverity.WarningOptionsOnly)
+
+        for (resource in tileResources.values)
+            if (resource.unique != null)
+                lines.add("`Resource.unique` used in ${resource.name} is deprecated, please use `uniques` instead",
+                    RulesetErrorSeverity.WarningOptionsOnly)
 
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return lines

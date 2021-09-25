@@ -162,6 +162,9 @@ class CivilizationInfo {
     // For Aggressor, Warmonger status
     private var numMinorCivsAttacked = 0
 
+    var totalCultureForContests = 0
+    var totalFaithForContests = 0
+
     constructor()
 
     constructor(civName: String) {
@@ -209,6 +212,8 @@ class CivilizationInfo {
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
         toReturn.passableImpassables.addAll(passableImpassables)
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
+        toReturn.totalCultureForContests = totalCultureForContests
+        toReturn.totalFaithForContests = totalFaithForContests
         return toReturn
     }
 
@@ -450,12 +455,12 @@ class CivilizationInfo {
         return baseUnit
     }
 
-    fun makeCivilizationsMeet(otherCiv: CivilizationInfo) {
-        meetCiv(otherCiv)
-        otherCiv.meetCiv(this)
+    fun makeCivilizationsMeet(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
+        meetCiv(otherCiv, warOnContact)
+        otherCiv.meetCiv(this, warOnContact)
     }
 
-    private fun meetCiv(otherCiv: CivilizationInfo) {
+    private fun meetCiv(otherCiv: CivilizationInfo, warOnContact: Boolean = false) {
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
@@ -465,6 +470,7 @@ class CivilizationInfo {
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
         
         if (!(isCityState() && otherCiv.isMajorCiv())) return
+        if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
 
         val cityStateLocation = if (cities.isEmpty()) null else getCapital().location
 
@@ -729,6 +735,7 @@ class CivilizationInfo {
         val nextTurnStats = statsForNextTurn
 
         policies.endTurn(nextTurnStats.culture.toInt())
+        totalCultureForContests += nextTurnStats.culture.toInt()
 
         if (isCityState())
             questManager.endTurn()
@@ -753,6 +760,7 @@ class CivilizationInfo {
             tech.endTurn(nextTurnStats.science.toInt())
 
         religionManager.endTurn(nextTurnStats.faith.toInt())
+        totalFaithForContests += nextTurnStats.faith.toInt()
 
         if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
@@ -860,10 +868,12 @@ class CivilizationInfo {
 
     fun addStat(stat: Stat, amount: Int) {
         when (stat) {
-            Stat.Culture -> policies.addCulture(amount)
+            Stat.Culture -> { policies.addCulture(amount)
+                              totalCultureForContests += amount }
             Stat.Science -> tech.addScience(amount)
             Stat.Gold -> addGold(amount)
-            Stat.Faith -> religionManager.storedFaith += amount
+            Stat.Faith -> { religionManager.storedFaith += amount
+                            totalFaithForContests += amount }
             else -> {}
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead

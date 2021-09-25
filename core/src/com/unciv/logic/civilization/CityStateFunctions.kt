@@ -19,7 +19,7 @@ import kotlin.math.pow
 
 /** Class containing city-state-specific functions */
 class CityStateFunctions(val civInfo: CivilizationInfo) {
-    
+
     /** Attempts to initialize the city state, returning true if successful. */
     fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>): Boolean {
         val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
@@ -55,7 +55,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         // Unique unit for militaristic city-states
         if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateMilitaryUnits) }
             || (fallback && cityStateType == CityStateType.Militaristic) // Fallback for badly defined Eras.json
-        ) { 
+        ) {
 
             val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
                 && ruleset.eras[ruleset.technologies[it.requiredTech!!]!!.era()]!!.eraNumber > ruleset.eras[startingEra]!!.eraNumber // Not from the start era or before
@@ -127,6 +127,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         }
         for (unique in donorCiv.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
+
+        // Bonus due to "Invest" quests
+        influenceGained *= civInfo.questManager.getInvestmentMultiplier(donorCiv.civName)
+
         influenceGained -= influenceGained % 5
         if (influenceGained < 5f) influenceGained = 5f
         return influenceGained.toInt()
@@ -137,6 +141,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         donorCiv.addGold(-giftAmount)
         civInfo.addGold(giftAmount)
         civInfo.getDiplomacyManager(donorCiv).addInfluence(influenceGainedByGift(donorCiv, giftAmount).toFloat())
+        civInfo.questManager.receivedGoldGift(donorCiv)
     }
 
     fun getProtectorCivs() : List<CivilizationInfo> {
@@ -226,6 +231,17 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 newAllyCiv.updateDetailedCivResources()
                 for (unique in newAllyCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns."))
                     newAllyCiv.getDiplomacyManager(civInfo.civName).setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
+
+                // Join the wars of our new ally - loop through all civs they are at war with
+                for (newEnemy in civInfo.gameInfo.civilizations.filter { it.isAtWarWith(newAllyCiv) && it.isAlive() } ) {
+                    if (civInfo.knows(newEnemy) && !civInfo.isAtWarWith(newEnemy))
+                        civInfo.getDiplomacyManager(newEnemy).declareWar()
+                    else if (!civInfo.knows(newEnemy)) {
+                        // We have to meet first
+                        civInfo.makeCivilizationsMeet(newEnemy, warOnContact = true)
+                        civInfo.getDiplomacyManager(newEnemy).declareWar()
+                    }
+                }
             }
             if (oldAllyName != null) {
                 val oldAllyCiv = civInfo.gameInfo.getCivilization(oldAllyName)
@@ -496,6 +512,13 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 protector.popupAlerts.add(PopupAlert(AlertType.BulliedProtectedMinor,
                     bully.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
         }
+
+        // Set a diplomatic flag so we remember for future quests (and not to give them any)
+        civInfo.getDiplomacyManager(bully).setFlag(DiplomacyFlags.Bullied, 20)
+
+        // Notify all city states that we were bullied (for quests)
+        civInfo.gameInfo.getAliveCityStates()
+            .forEach { it.questManager.cityStateBullied(civInfo, bully) }
     }
 
     /** A city state was attacked. What are its protectors going to do about it??? Also checks for Wary */
@@ -519,6 +542,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 if (cityState.getAllyCiv() == attacker.civName) // Must not be allied to the attacker
                     continue
                 if (!cityState.knows(attacker)) // Must have met
+                    continue
+                if (cityState.questManager.wantsDead(civInfo.civName))  // Must not want us dead
                     continue
 
                 var probability: Int
@@ -590,6 +615,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             protector.addNotification("[${attacker.civName}] has destroyed [${civInfo.civName}], whom you had pledged to protect!", attacker.civName,
                 NotificationIcon.Death, civInfo.civName)
         }
+
+        // Notify all city states that we were killed (for quest completion)
+        civInfo.gameInfo.getAliveCityStates()
+            .forEach { it.questManager.cityStateConquered(civInfo, attacker) }
     }
 
 }

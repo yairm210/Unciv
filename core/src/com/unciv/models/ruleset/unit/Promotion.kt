@@ -1,31 +1,26 @@
 package com.unciv.models.ruleset.unit
 
-import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 
 
-class Promotion : INamed, ICivilopediaText, IHasUniques {
-    override lateinit var name: String
+class Promotion : RulesetObject() {
     var prerequisites = listOf<String>()
-    // effect deprecated since 3.16.12, use uniques instead
+
+    @Deprecated("As of 3.16.12", ReplaceWith("uniques"))
         var effect = ""
-    //
+
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
-    override var uniques = ArrayList<String>()
     fun uniquesWithEffect() = sequence {
         if (effect.isNotEmpty()) yield(effect)
         yieldAll(uniques)
     }
-    override val uniqueObjects: List<Unique> by lazy { uniquesWithEffect().map { Unique(it, UniqueTarget.Promotion, name) }.toList() }
 
-    override var civilopediaText = listOf<FormattedLine>()
+    override fun getUniqueTarget() = UniqueTarget.Promotion
 
 
     /** Used to describe a Promotion on the PromotionPickerScreen */

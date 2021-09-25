@@ -42,7 +42,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain for Bowman
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
-* [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Quinquereme // These credits are incorrect
+* [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Quinquereme. The original work has been modified.
 * [Norse Longship](https://thenounproject.com/zmccune/uploads/?i=1626302) by Zack McCune for Dromon
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
 * [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado for War Elephant
@@ -64,7 +64,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Roman Helmet](https://thenounproject.com/search/?q=legion&i=440134) By parkjisun for Legion
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
-* [Elephant](https://thenounproject.com/term/elephant/1302749) By Angriawan Ditya Zulkarnain for African Forest Elephant
+* [Elephant](https://thenounproject.com/term/elephant/1302749) By Angriawan Ditya Zulkarnain for African Forest Elephant. The original work has been modified.
 * [Horse](https://thenounproject.com/search/?q=horse&i=3270758) By Ranah Pixel Studio for Cataphract
 
 ### Medieval Era
@@ -101,7 +101,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Bayonet](https://thenounproject.com/term/bayonet/3101681/) By food lover for Carolean
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
 * [horse racing](https://thenounproject.com/antimso/uploads/?i=2427932) By Sergio Morozov for Cossack
-* [Marching Band](https://thenounproject.com/term/marching-band/871426/) by Darrin Loeliger, US for Hussar
+* [Marching Band](https://thenounproject.com/term/marching-band/871426/) by Darrin Loeliger, US for Hussar. The original work has been modified.
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
@@ -556,8 +556,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for The Huns
 * [Lion](https://thenounproject.com/search/?q=lion&i=76154) by Nikki Rodriguez for The Netherlands
 * [Three Crowns](https://thenounproject.com/search/?q=three+crowns&i=1155972) by Daniel Falk for Sweden
-* [Flag of Austria](https://thenounproject.com/term/flag-of-austria/3292053/) by Olena Panasovska, UA for Austria
-* [Elephant](https://thenounproject.com/term/elephant/564421/) by Hea Poh Lin for Carthage
+* [Flag of Austria](https://thenounproject.com/term/flag-of-austria/3292053/) by Olena Panasovska, UA for Austria. The original work has been modified.
+* [Elephant](https://thenounproject.com/term/elephant/564421/) by Hea Poh Lin for Carthage. The original work has been modified.
 * [Orthodox Cross](https://thenounproject.com/search/?q=orthodox&i=2069822) by Avana Vana for Byzantium
 
 
@@ -645,6 +645,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [crossed sword](https://thenounproject.com/term/crossed-sword/2427559/) by ProSymbols for Militaristic City-States
 * [ship helm](https://thenounproject.com/term/ship-helm/2170591/) by Vectors Market for Maritime City-States
 * [Magnifying Glass](https://thenounproject.com/term/magnifying-glass/1311/) by John Caserta for Mod filter
+* [tick](https://thenounproject.com/term/tick/3968142/) by Adrien Coquet on Nation picker
 
 ## Main menu
 
