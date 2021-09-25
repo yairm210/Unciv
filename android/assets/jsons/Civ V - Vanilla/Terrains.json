@@ -404,8 +404,8 @@
 		"impassable": true,
 		"unbuildable": true,
 		"weight": 10
-	}
-	/*
+	},
+/*
 	// BNW wonders
 	{
 		"name": "King Solomon's Mines",
@@ -424,11 +424,10 @@
 		"type": "NaturalWonder",
 		"food": 6,
 		"occursOn": ["Plains"],
-		"uniques": ["Must be adjacent to [0] [Coast] tiles"],
 		"turnsInto": "Mountain",
 		"impassable": true,
 		"unbuildable": true,
-		"uniques": ["Fresh water"],
+		"uniques": ["Fresh water","Must be adjacent to [0] [Coast] tiles"],
 		"weight": 10
 	},
 	{
@@ -443,8 +442,8 @@
 		"uniques": ["Must be adjacent to [0] [Coast] tiles",
 			"Must be adjacent to [2] to [6] [Hill] tiles",
 			"Must be adjacent to [0] to [2] [Mountain] tiles",
-			"Grants [Altitude Training] ([double movement and +10% Strength in hills]) to adjacent [Land] units for the rest of the game"], //ToDo
+			"Grants [Altitude Training] ([double movement and +10% Strength in hills]) to adjacent [Land] units for the rest of the game"],
 		"weight": 10
 	}
-	*/
+*/
 ]
