@@ -22,11 +22,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.allTilesCosts1)
             return 1f
 
-        var extraCost = 0f
-
         val toOwner = to.getOwner()
-        if (toOwner != null && to.isLand && toOwner.hasActiveGreatWall && civInfo.isAtWarWith(toOwner))
-            extraCost += 1
+        val extraCost = if (
+            toOwner != null &&
+            to.isLand &&
+            toOwner.hasActiveGreatWall &&
+            civInfo.isAtWarWith(toOwner)
+        ) 1f else 0f
 
         if (from.roadStatus == RoadStatus.Railroad && to.roadStatus == RoadStatus.Railroad)
             return RoadStatus.Railroad.movement + extraCost
@@ -40,26 +42,30 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.ignoresTerrainCost) return 1f + extraCost
         if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
 
-        if (unit.doubleMovementInForestAndJungle &&
-                (to.terrainFeatures.contains(Constants.forest) || to.terrainFeatures.contains(Constants.jungle)))
-            return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
+        val terrainCost = to.getLastTerrain().movementCost.toFloat()
+
+        if (unit.doubleMovementInForest && Constants.forest in to.terrainFeatures)
+            return terrainCost * 0.5f + extraCost
+        if (unit.doubleMovementInJungle && Constants.jungle in to.terrainFeatures)
+            return terrainCost * 0.5f + extraCost
 
         if (unit.roughTerrainPenalty && to.isRoughTerrain())
-            return 100f // units that have to sped all movement in rough terrain, have to spend all movement in rough terrain
+            return 100f // units that have to spend all movement in rough terrain, have to spend all movement in rough terrain
         // Placement of this 'if' based on testing, see #4232
-        
+
         if (civInfo.nation.ignoreHillMovementCost && to.isHill())
             return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
         if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)
-            return 1 / 2f + extraCost
+            return terrainCost * 0.5f + extraCost
+        if (unit.doubleMovementInSnow && to.baseTerrain == Constants.snow)
+            return terrainCost * 0.5f + extraCost
+        if (unit.doubleMovementInTundra && to.baseTerrain == Constants.tundra)
+            return terrainCost * 0.5f + extraCost
+        if (unit.doubleMovementInHills && to.isHill())
+            return terrainCost * 0.5f + extraCost
 
-        if (unit.doubleMovementInSnowTundraAndHills && to.isHill())
-            return 1f + extraCost // usually hills take 2
-        if (unit.doubleMovementInSnowTundraAndHills && (to.baseTerrain == Constants.snow || to.baseTerrain == Constants.tundra))
-            return 1 / 2f + extraCost
-
-        return to.getLastTerrain().movementCost.toFloat() + extraCost // no road
+        return terrainCost + extraCost // no road
     }
 
     /** Returns whether the movement between the adjacent tiles [from] and [to] is affected by Zone of Control */
@@ -423,11 +429,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         val origin = unit.getTile()
         var needToFindNewRoute = false
         // Cache this in case something goes wrong
-        
+
         var lastReachedEnterableTile = unit.getTile()
-        
+
         unit.removeFromTile()
-        
+
         for (tile in pathToLastReachableTile) {
             if (!unit.movement.canPassThrough(tile)) {
                 // AAAH something happened making our previous path invalid
@@ -439,16 +445,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 break // If you ever remove this break, remove the `assumeCanPassThrough` param below
             }
             unit.moveThroughTile(tile)
-            
+
             // In case something goes wrong, cache the last tile we were able to end on
             // We can assume we can pass through this tile, as we would have broken earlier
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
                 lastReachedEnterableTile = tile
             }
-            
+
             if (unit.isDestroyed) break
         }
-        
+
         if (!unit.isDestroyed)
             unit.putInTile(lastReachedEnterableTile)
 
@@ -533,7 +539,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         }
         return false
     }
-    
+
     // Can a paratrooper land at this tile?
     fun canParadropOn(destination: TileInfo): Boolean {
         // Can only move to land tiles within range that are visible and not impassible
@@ -579,7 +585,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 return false
         }
         if (tile.naturalWonder != null) return false
-        
+
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 
         val firstUnit = tile.getFirstUnit()

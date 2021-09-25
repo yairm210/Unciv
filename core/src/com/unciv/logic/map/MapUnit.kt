@@ -64,14 +64,12 @@ class MapUnit {
     @Transient
     var roughTerrainPenalty = false
 
-    @Transient
-    var doubleMovementInCoast = false
-
-    @Transient
-    var doubleMovementInForestAndJungle = false
-
-    @Transient
-    var doubleMovementInSnowTundraAndHills = false
+    @Transient var doubleMovementInCoast = false
+    @Transient var doubleMovementInForest = false
+    @Transient var doubleMovementInJungle = false
+    @Transient var doubleMovementInSnow = false
+    @Transient var doubleMovementInTundra = false
+    @Transient var doubleMovementInHills = false
 
     @Transient
     var canEnterIceTiles = false
@@ -208,8 +206,16 @@ class MapUnit {
         tempUniques.asSequence().filter { it.placeholderText == placeholderText } + 
             civInfo.getMatchingUniques(placeholderText)
 
+    fun getMatchingUniques(uniqueType: UniqueType): Sequence<Unique> =
+        tempUniques.asSequence().filter { it.type == uniqueType } +
+            civInfo.getMatchingUniques(uniqueType)
+
     fun hasUnique(unique: String): Boolean {
-        return getUniques().any { it.placeholderText == unique } || civInfo.hasUnique(unique)
+        return tempUniques.any { it.placeholderText == unique } || civInfo.hasUnique(unique)
+    }
+
+    fun hasUnique(uniqueType: UniqueType): Boolean {
+        return tempUniques.any { it.type == uniqueType } || civInfo.hasUnique(uniqueType)
     }
 
     fun updateUniques() {
@@ -218,25 +224,41 @@ class MapUnit {
         uniques.addAll(baseUnit.uniqueObjects)
         uniques.addAll(type.uniqueObjects)
 
-        for (promotion in promotions.promotions) {
-            uniques.addAll(currentTile.tileMap.gameInfo.ruleSet.unitPromotions[promotion]!!.uniqueObjects)
+        for (promotion in promotions.getPromotions()) {
+            uniques.addAll(promotion.uniqueObjects)
         }
 
         tempUniques = uniques
 
-        //todo: parameterize [terrainFilter] in 5 to 7 of the following:
+        allTilesCosts1 = hasUnique(UniqueType.AllTilesCost1Move)
+        canPassThroughImpassableTiles = hasUnique(UniqueType.CanPassImpassable)
+        ignoresTerrainCost = hasUnique(UniqueType.IgnoresTerrainCost)
+        ignoresZoneOfControl = hasUnique(UniqueType.IgnoresZOC)
+        roughTerrainPenalty = hasUnique(UniqueType.RoughTerrainPenalty)
 
-        allTilesCosts1 = hasUnique("All tiles cost 1 movement")
-        canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
-        ignoresTerrainCost = hasUnique("Ignores terrain cost")
-        ignoresZoneOfControl = hasUnique("Ignores Zone of Control")
-        roughTerrainPenalty = hasUnique("Rough terrain penalty")
-        doubleMovementInCoast = hasUnique("Double movement in coast")
-        doubleMovementInForestAndJungle = hasUnique("Double movement rate through Forest and Jungle")
-        doubleMovementInSnowTundraAndHills = hasUnique("Double movement in Snow, Tundra and Hills")
-        canEnterIceTiles = hasUnique("Can enter ice tiles")
-        cannotEnterOceanTiles = hasUnique("Cannot enter ocean tiles")
-        cannotEnterOceanTilesUntilAstronomy = hasUnique("Cannot enter ocean tiles until Astronomy")
+        doubleMovementInCoast = hasUnique(UniqueType.DoubleMovementCoast)
+        doubleMovementInForest = hasUnique(UniqueType.DoubleMovementForestJungle)
+        doubleMovementInJungle = doubleMovementInForest
+        doubleMovementInSnow = hasUnique(UniqueType.DoubleMovementSnowTundraHill)
+        doubleMovementInTundra = doubleMovementInSnow
+        doubleMovementInHills = doubleMovementInSnow
+        for (unique in getMatchingUniques(UniqueType.DoubleMovementOnTerrain)) {
+            when (unique.params[0]) {
+                Constants.coast -> doubleMovementInCoast = true
+                Constants.forest -> doubleMovementInForest = true
+                Constants.jungle -> doubleMovementInJungle = true
+                Constants.snow -> doubleMovementInSnow = true
+                Constants.tundra -> doubleMovementInTundra= true
+                Constants.hill -> doubleMovementInHills = true
+                else -> Unit  // silence "exhaustive when" warning
+            }
+        }
+
+        //todo: consider parameterizing [terrainFilter] in some of the following:
+        canEnterIceTiles = hasUnique(UniqueType.CanEnterIceTiles)
+        cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean)
+        cannotEnterOceanTilesUntilAstronomy = hasUnique(UniqueType.CannotEnterOceanUntilAstronomy)
+
         hasUniqueToBuildImprovements = hasUnique(Constants.canBuildImprovements)
         canEnterForeignTerrain =
             hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
@@ -266,9 +288,9 @@ class MapUnit {
     private fun getVisibilityRange(): Int {
         if (isEmbarked() && !hasUnique("Normal vision when embarked"))
             return 1
-        
+
         var visibilityRange = 2
-        
+
         for (unique in getMatchingUniques("[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
@@ -988,7 +1010,7 @@ class MapUnit {
         return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
     }
 
-    /** For the actual value, check the member variable `maxAbilityUses`
+    /** For the actual value, check the member variable [maxAbilityUses]
      */
     fun getBaseMaxActionUses(action: String): Int {
         return getMatchingUniques("Can [] [] times")

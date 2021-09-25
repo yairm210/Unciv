@@ -11,20 +11,45 @@ class UnitPromotions {
     @Transient 
     private lateinit var unit: MapUnit
 
+    /** Experience this unit has accumulated on top of the last promotion */
     @Suppress("PropertyName")
     var XP = 0
 
+    /** The _names_ of the promotions this unit has acquired - see [getPromotions] for object access */
     var promotions = HashSet<String>()
-    // The number of times this unit has been promoted
+        private set
+
     // some promotions don't come from being promoted but from other things,
     // like from being constructed in a specific city etc.
+    /** The number of times this unit has been promoted using experience, not counting free promotions */
     var numberOfPromotions = 0
+
+    /** Gets this unit's promotions as objects.
+     *  @param sorted if `true` return the promotions in json order (`false` gives hashset order) for display.
+     *  @return a Sequence of this unit's promotions
+     */
+    fun getPromotions(sorted: Boolean = false): Sequence<Promotion> = sequence {
+        if (promotions.isEmpty()) return@sequence
+        val unitPromotions = unit.civInfo.gameInfo.ruleSet.unitPromotions
+        if (sorted && promotions.size > 1) {
+            for (promotion in unitPromotions.values)
+                if (promotion.name in promotions) yield(promotion)
+        } else {
+            for (name in promotions)
+                yield(unitPromotions[name] ?: continue)
+        }
+    }
 
     fun setTransients(unit: MapUnit) {
         this.unit = unit
     }
 
-    fun xpForNextPromotion() = (numberOfPromotions+1)*10
+    /** @return the XP points needed to "buy" the next promotion. 10, 30, 60, 100, 150,... */
+    fun xpForNextPromotion() = (numberOfPromotions + 1) * 10
+
+    /** @return Total XP including that already "spent" on promotions */
+    fun totalXpProduced() = XP + (numberOfPromotions * (numberOfPromotions + 1)) * 5
+
     fun canBePromoted(): Boolean {
         if (XP < xpForNextPromotion()) return false
         if (getAvailablePromotions().none()) return false
@@ -39,7 +64,7 @@ class UnitPromotions {
 
         val promotion = unit.civInfo.gameInfo.ruleSet.unitPromotions[promotionName]!!
         doDirectPromotionEffects(promotion)
-        
+
         if (promotion.uniqueObjects.none { it.placeholderText == "Doing so will consume this opportunity to choose a Promotion" })
             promotions.add(promotionName)
 
@@ -50,13 +75,16 @@ class UnitPromotions {
         // So, if the addPromotion was triggered from there, simply don't update
         unit.updateVisibleTiles()  // some promotions/uniques give the unit bonus sight
     }
-    
-    fun doDirectPromotionEffects(promotion: Promotion) {
+
+    private fun doDirectPromotionEffects(promotion: Promotion) {
         for (unique in promotion.uniqueObjects) {
-            UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)       
+            UniqueTriggerActivation.triggerUnitwideUnique(unique, unit)
         }
     }
 
+    /** Gets all promotions this unit could currently "buy" with enough [XP]
+     *  Checks unit type, already acquired promotions, prerequisites and incompatibility uniques.
+     */
     fun getAvailablePromotions(): Sequence<Promotion> {
         return unit.civInfo.gameInfo.ruleSet.unitPromotions.values
             .asSequence()
@@ -77,11 +105,5 @@ class UnitPromotions {
         toReturn.numberOfPromotions = numberOfPromotions
         toReturn.unit = unit
         return toReturn
-    }
-
-    fun totalXpProduced(): Int {
-        var sum = XP
-        for(i in 1..numberOfPromotions) sum += 10*i
-        return sum
     }
 }
