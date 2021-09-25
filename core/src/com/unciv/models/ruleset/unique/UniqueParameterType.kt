@@ -18,6 +18,10 @@ enum class UniqueParameterType(val parameterName:String) {
         private val knownValues = setOf("Wounded", "Barbarians", "City-State", "Embarked", "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
+            if ('{' in parameterText) // "{filter} {filter}" for and logic
+                return parameterText.removePrefix("{").removeSuffix("}").split("} {")
+                    .mapNotNull { getErrorSeverity(it, ruleset) }
+                    .maxByOrNull { it.ordinal }
             if (parameterText in knownValues) return null
             return BaseUnitFilter.getErrorSeverity(parameterText, ruleset)
         }
@@ -90,6 +94,18 @@ enum class UniqueParameterType(val parameterName:String) {
                 return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
+    },
+    Promotion("promotion") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                in ruleset.unitPromotions -> null
+                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            }
+    },
+    /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
+    Comment("comment") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = null
     },
     Unknown("param") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
