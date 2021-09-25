@@ -167,7 +167,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun dispose() {
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
-        if (::musicController.isInitialized) musicController.shutdown()
+        if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
 
         // Log still running threads (on desktop that should be only this one and "DestroyJavaVM")
         val numThreads = Thread.activeCount()

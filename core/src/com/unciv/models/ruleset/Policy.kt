@@ -1,23 +1,16 @@
 package com.unciv.models.ruleset
 
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 
-open class Policy : INamed, IHasUniques, ICivilopediaText {
+open class Policy : RulesetObject() {
     lateinit var branch: PolicyBranch // not in json - added in gameBasics
 
-    override lateinit var name: String
-    override var uniques: ArrayList<String> = ArrayList()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Policy, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Policy
     var row: Int = 0
     var column: Int = 0
     var requires: ArrayList<String>? = null
-
-    override var civilopediaText = listOf<FormattedLine>()
 
     /** Indicates whether a [Policy] is a [PolicyBranch] starting policy, a normal one, or the branch completion */
     enum class PolicyBranchType {BranchStart, Member, BranchComplete}
@@ -34,8 +27,6 @@ open class Policy : INamed, IHasUniques, ICivilopediaText {
          */
         fun isBranchCompleteByName(name: String) = name.endsWith(branchCompleteSuffix)
     }
-
-    override fun toString() = name
 
     /** Used in PolicyPickerScreen to display Policy properties */
     fun getDescription(): String {

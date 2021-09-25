@@ -3,31 +3,26 @@ package com.unciv.models.ruleset.tile
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.ruleset.Belief
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.ruleset.IHasUniques
+import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.math.roundToInt
 
-class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
+class TileImprovement : RulesetStatsObject() {
 
     var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
     var techRequired: String? = null
     var uniqueTo:String? = null
-    override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Improvement, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Improvement
     val shortcutKey: Char? = null
     val turnsToBuild: Int = 0 // This is the base cost.
-
-    override var civilopediaText = listOf<FormattedLine>()
 
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
@@ -163,8 +158,15 @@ class TileImprovement : NamedStats(), ICivilopediaText, IHasUniques {
         }
 
         if (isAncientRuinsEquivalent() && ruleset.ruinRewards.isNotEmpty()) {
-            val difficulty = UncivGame.Current.gameInfo.gameParameters.difficulty
-            val religionEnabled = UncivGame.Current.gameInfo.isReligionEnabled()
+            val difficulty: String
+            val religionEnabled: Boolean
+            if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized()) {
+                difficulty = UncivGame.Current.gameInfo.gameParameters.difficulty
+                religionEnabled = UncivGame.Current.gameInfo.isReligionEnabled()
+            } else {
+                difficulty = "Prince"  // most factors == 1
+                religionEnabled = true
+            }
             textList += FormattedLine()
             textList += FormattedLine("The possible rewards are:")
             ruleset.ruinRewards.values.asSequence()

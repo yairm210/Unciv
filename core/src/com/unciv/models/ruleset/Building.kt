@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.city.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
@@ -11,20 +10,19 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.math.pow
 
 
-class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
+class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     var requiredTech: String? = null
 
@@ -66,16 +64,8 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
     var replaces: String? = null
     var uniqueTo: String? = null
     var quote: String = ""
-    override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { 
-        uniques.map { 
-            Unique(it, if (isAnyWonder()) UniqueTarget.Wonder else UniqueTarget.Building, name) 
-        } 
-    }
+    override fun getUniqueTarget() = if (isAnyWonder()) UniqueTarget.Wonder else UniqueTarget.Building
     private var replacementTextForUniques = ""
-
-    override var civilopediaText = listOf<FormattedLine>()
-
 
     /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
@@ -228,7 +218,9 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         if (cost > 0) {
             val stats = mutableListOf("$cost${Fonts.production}")
             if (canBePurchasedWithStat(null, Stat.Gold)) {
-                stats += "${getBaseGoldCost(UncivGame.Current.gameInfo.currentPlayerCiv).toInt() / 10 * 10}${Fonts.gold}"
+                // We need what INonPerpetualConstruction.getBaseGoldCost calculates but without any game- or civ-specific modifiers
+                val buyCost = 30.0 * cost.toFloat().pow(0.75f) * hurryCostModifier.toPercent() / 10 * 10
+                stats += "$buyCost${Fonts.gold}"
             }
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
@@ -402,7 +394,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         val cityCenter = cityConstructions.cityInfo.getCenterTile()
         val civInfo = cityConstructions.cityInfo.civInfo
         val ruleSet = civInfo.gameInfo.ruleSet
-        
+
         if (cityConstructions.isBuilt(name)) 
             rejectionReasons.add(RejectionReason.AlreadyBuilt)
         // for buildings that are created as side effects of other things, and not directly built,
@@ -417,7 +409,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                         if (!cityConstructions.containsBuildingOrEquivalent(unique.params[0]))
                             rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
                 //
-                
+
                 "Not displayed as an available construction without []" ->
                     if (unique.params[0] in ruleSet.tileResources && !civInfo.hasResource(unique.params[0])
                         || unique.params[0] in ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(unique.params[0])
@@ -425,35 +417,35 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                         || unique.params[0] in ruleSet.policies && !civInfo.policies.isAdopted(unique.params[0])
                     )
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
-                
+
                 "Enables nuclear weapon" -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled) 
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
-                
+
                 "Must be on []" -> 
                     if (!cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
                         rejectionReasons.add(RejectionReason.MustBeOnTile.apply { errorMessage = unique.text })
-                
+
                 "Must not be on []" -> 
                     if (cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
                         rejectionReasons.add(RejectionReason.MustNotBeOnTile.apply { errorMessage = unique.text })
-                
+
                 "Must be next to []" -> 
                     if (// Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
                         !(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) 
                         && cityCenter.getTilesInDistance(1).none { it.matchesFilter(unique.params[0], civInfo) }
                     ) 
                         rejectionReasons.add(RejectionReason.MustBeNextToTile.apply { errorMessage = unique.text })
-                
+
                 "Must not be next to []" -> 
                     if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) }) 
                         rejectionReasons.add(RejectionReason.MustNotBeNextToTile.apply { errorMessage = unique.text })
-                
+
                 "Must have an owned [] within [] tiles" -> 
                     if (cityCenter.getTilesInDistance(unique.params[1].toInt())
                         .none { it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == cityConstructions.cityInfo.civInfo }
                     ) 
                         rejectionReasons.add(RejectionReason.MustOwnTile.apply { errorMessage = unique.text })
-                
+
                 // Deprecated since 3.16.11
                     "Can only be built in annexed cities" -> 
                         if (
@@ -462,15 +454,15 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                         ) 
                             rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
                 //
-                
+
                 "Can only be built []" -> 
                     if (!cityConstructions.cityInfo.matchesFilter(unique.params[0])) 
                         rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
-                
+
                 "Obsolete with []" -> 
                     if (civInfo.tech.isResearched(unique.params[0])) 
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
-                
+
                 Constants.hiddenWithoutReligionUnique -> 
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
@@ -479,10 +471,10 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
 
         if (uniqueTo != null && uniqueTo != civInfo.civName)
             rejectionReasons.add(RejectionReason.UniqueToOtherNation.apply { errorMessage = "Unique to $uniqueTo"})
-        
+
         if (civInfo.gameInfo.ruleSet.buildings.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique)
-        
+
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
             rejectionReasons.add(RejectionReason.RequiresTech.apply { "$requiredTech not researched!"})
 
@@ -526,7 +518,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
         if (isNationalWonder) {
             if (civInfo.cities.any { it.cityConstructions.isBuilt(name) })
                 rejectionReasons.add(RejectionReason.NationalWonderAlreadyBuilt)
-                
+
             if (requiredBuildingInAllCities != null && civInfo.gameInfo.ruleSet.buildings[requiredBuildingInAllCities!!] == null) {
                 rejectionReasons.add(RejectionReason.InvalidRequiredBuilding)
             } else {
@@ -539,10 +531,10 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                     rejectionReasons.add(RejectionReason.RequiresBuildingInAllCities
                         .apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(requiredBuildingInAllCities!!)}] in all cities"})
                 }
-                
+
                 if (civInfo.cities.any { it != cityConstructions.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                     rejectionReasons.add(RejectionReason.NationalWonderBeingBuiltElsewhere)
-                
+
                 if (civInfo.isCityState())
                     rejectionReasons.add(RejectionReason.CityStateNationalWonder)
             }
@@ -553,7 +545,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                 rejectionReasons.add(
                     RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" }
                 )
-            
+
             if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0)
                 rejectionReasons.add(RejectionReason.ReachedBuildCap)
         }
@@ -583,7 +575,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
                     )
                 }
             }
-            
+
             "Hidden until [] social policy branches have been completed" -> {
                 if (cityConstructions.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt())
                     rejectionReasons.add(RejectionReason.MorePolicyBranches.apply { errorMessage = unique.text })
@@ -632,7 +624,7 @@ class Building : NamedStats(), INonPerpetualConstruction, ICivilopediaText {
             if (!containsResourceWithImprovement) 
                 rejectionReasons.add(RejectionReason.RequiresNearbyResource.apply { errorMessage = "Nearby $requiredNearbyImprovedResources required" })
         }
-        
+
         return rejectionReasons
     }
 

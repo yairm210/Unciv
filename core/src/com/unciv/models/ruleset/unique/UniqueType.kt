@@ -3,27 +3,38 @@ package com.unciv.models.ruleset.unique
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
-/** Buildings, units, nations, policies, religions, techs etc.
- * Basically anything caught by CivInfo.getMatchingUniques. */
-enum class UniqueTarget {
+/** inheritsFrom means that all such uniques are acceptable as well.
+ * For example, all Global uniques are acceptable for Nations, Eras, etc. */
+enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
+
+    /** Buildings, units, nations, policies, religions, techs etc.
+     * Basically anything caught by CivInfo.getMatchingUniques. */
     Global,
 
     // Civilization-specific
-    Nation,
-    Era,
-    Tech,
-    Policy,
-    Belief,
+    Nation(Global),
+    Era(Global),
+    Tech(Global),
+    Policy(Global),
+    FounderBelief(Global),
+    /** These apply only to cities where the religion is the majority religion */
+    FollowerBelief,
 
     // City-specific
-    Building,
-    Wonder,
+    /** This is used as the base when checking buildings */
+    Building(Global),
+    Wonder(Building),
 
     // Unit-specific
+    // These are a bit of a lie. There's no "Promotion only" or "UnitType only" uniques,
+    //  they're all just Unit uniques in different places.
+    //  So there should be no uniqueType that has a Promotion or UnitType target.
     Unit,
-    UnitType,
-    Promotion,
+    UnitType(Unit),
+    Promotion(Unit),
 
     // Tile-specific
     Terrain,
@@ -35,9 +46,16 @@ enum class UniqueTarget {
     CityState,
     ModOptions,
     Conditional,
+    ;
+
+    fun canAcceptUniqueTarget(uniqueTarget: UniqueTarget): Boolean {
+        if (this == uniqueTarget) return true
+        if (inheritsFrom != null) return inheritsFrom.canAcceptUniqueTarget(uniqueTarget)
+        return false
+    }
 }
 
-enum class UniqueType(val text:String, vararg target: UniqueTarget) {
+enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     Stats("[stats]", UniqueTarget.Global),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
@@ -93,7 +111,7 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
     val parameterTypeMap = ArrayList<List<UniqueParameterType>>()
-    val replacedBy: UniqueType? = null
+    val targetTypes = HashSet<UniqueTarget>()
 
     init {
         for (placeholder in text.getPlaceholderParameters()) {
@@ -102,6 +120,7 @@ enum class UniqueType(val text:String, vararg target: UniqueTarget) {
                     ?: UniqueParameterType.Unknown
             parameterTypeMap.add(listOf(matchingParameterType))
         }
+        targetTypes.addAll(targets)
     }
 
     val placeholderText = text.getPlaceholderText()

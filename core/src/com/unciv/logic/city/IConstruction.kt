@@ -22,7 +22,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
     fun getRejectionReasons(cityConstructions: CityConstructions): RejectionReasons
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
-    
+
     fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (stat in listOf(Stat.Production, Stat.Happiness)) return false
         if ("Cannot be purchased" in uniques) return false
@@ -47,12 +47,12 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
         return Stat.values().any { canBePurchasedWithStat(cityInfo, it) }
     }
-    
+
     fun getBaseGoldCost(civInfo: CivilizationInfo): Double {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         return (30.0 * getProductionCost(civInfo)).pow(0.75) * hurryCostModifier.toPercent()
     }
-    
+
     fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
 
@@ -73,20 +73,20 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
 
 
-class RejectionReasons(): HashSet<RejectionReason>() {
-    
+class RejectionReasons: HashSet<RejectionReason>() {
+
     fun filterTechPolicyEraWonderRequirements(): HashSet<RejectionReason> {
         return filterNot { it in techPolicyEraWonderRequirements }.toHashSet()
     }
-    
+
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
         return any { it in reasonsToDefinitivelyRemoveFromQueue }
     }
-    
+
     fun getMostImportantRejectionReason(): String? {
         return orderOfErrorMessages.firstOrNull { it in this }?.errorMessage
     }
-    
+
     // Used for constant variables in the functions above
     companion object {
         private val techPolicyEraWonderRequirements = hashSetOf(
@@ -122,35 +122,35 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     Unbuildable(false, "Unbuildable"),
     CanOnlyBePurchased(true, "Can only be purchased"),
     ShouldNotBeDisplayed(false, "Should not be displayed"),
-    
+
     DisabledBySetting(false, "Disabled by setting"),
     HiddenWithoutVictory(false, "Hidden because a victory type has been disabled"),
-    
+
     MustBeOnTile(false, "Must be on a specific tile"),
     MustNotBeOnTile(false, "Must not be on a specific tile"),
     MustBeNextToTile(false, "Must be next to a specific tile"),
     MustNotBeNextToTile(false, "Must not be next to a specific tile"),
-    MustOwnTile(false, "Must own a specific tile closeby"),
+    MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
-    
+
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
-    
+
     Obsoleted(false, "Obsolete"),
     RequiresTech(false, "Required tech not researched"),
     RequiresPolicy(false, "Requires a specific policy!"),
-    UnlockedWithEra(false, "Unlocked when reacing a specific era"),
+    UnlockedWithEra(false, "Unlocked when reaching a specific era"),
     MorePolicyBranches(false, "Hidden until more policy branches are fully adopted"),
-    
+
     RequiresNearbyResource(false, "Requires a certain resource being exploited nearby"),
     InvalidRequiredBuilding(false, "Required building does not exist in ruleSet!"),
     CannotBeBuiltWith(false, "Cannot be built at the same time as another building already built"),
-    
+
     RequiresBuildingInThisCity(true, "Requires a specific building in this city!"),
     RequiresBuildingInAllCities(true, "Requires a specific building in all cities!"),
     RequiresBuildingInSomeCity(true, "Requires a specific building anywhere in your empire!"),
-    
+
     WonderAlreadyBuilt(false, "Wonder already built"),
     NationalWonderAlreadyBuilt(false, "National Wonder already built"),
     WonderBeingBuiltElsewhere(true, "Wonder is being built elsewhere"),
@@ -158,21 +158,19 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     CityStateWonder(false, "No Wonders for city-states"),
     CityStateNationalWonder(false, "No National Wonders for city-states"),
     WonderDisabledEra(false, "This Wonder is disabled when starting in this era"),
-    
+
     ReachedBuildCap(false, "Don't need to build any more of these!"),
-    
+
     ConsumesResources(true, "Consumes resources which you are lacking"),
-    
+
     PopulationRequirement(true, "Requires more population"),
-    
-    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challangers");
+
+    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers");
 }
 
 
-
-
 open class PerpetualConstruction(override var name: String, val description: String) : IConstruction {
-    
+
     override fun shouldBeDisplayed(cityConstructions: CityConstructions) = isBuildable(cityConstructions)
     open fun getProductionTooltip(cityInfo: CityInfo) : String
             = "\r\n${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${Fonts.turn}"
@@ -207,7 +205,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean =
             throw Exception("Impossible!")
-    
+
     override fun getResourceRequirements(): HashMap<String, Int> = hashMapOf()
 
 }
