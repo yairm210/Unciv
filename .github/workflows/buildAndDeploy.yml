@@ -83,7 +83,7 @@ jobs:
           ./gradlew :android:assembleRelease
 
       - name: Sign AAB for Google Play upload
-        uses: r0adkll/sign-android-release@v1
+        uses: r0adkll/sign-android-release@v1.0.15
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         with:
           releaseDirectory: android/build/outputs/bundle/release
