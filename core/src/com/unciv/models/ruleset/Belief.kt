@@ -71,7 +71,8 @@ class Belief : RulesetObject() {
 enum class BeliefType(val color: String) {
     None(""),
     Pantheon("#44c6cc"),
-    Follower("#ccaa44"),
     Founder("#c00000"),
-    Enhancer("#72cc45") 
+    Follower("#ccaa44"),
+    Enhancer("#72cc45"),
+    Any(""),
 }

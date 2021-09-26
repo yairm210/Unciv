@@ -81,6 +81,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
 
+    FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
+    FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
+    
     // I don't like the fact that currently "city state bonuses" are separate from the "global bonuses",
     // todo: merge city state bonuses into global bonuses
     CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
