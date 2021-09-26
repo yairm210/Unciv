@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.UniqueType
@@ -36,7 +37,7 @@ class MapUnit {
 
     @Transient
     val movement = UnitMovementAlgorithms(this)
-    
+
     @Transient
     var isDestroyed = false
 
@@ -51,25 +52,45 @@ class MapUnit {
     // which in turn is a component of getShortestPath and canReach
     @Transient
     var ignoresTerrainCost = false
+        private set
 
     @Transient
     var ignoresZoneOfControl = false
+        private set
 
     @Transient
     var allTilesCosts1 = false
+        private set
 
     @Transient
     var canPassThroughImpassableTiles = false
+        private set
 
     @Transient
     var roughTerrainPenalty = false
+        private set
 
-    @Transient var doubleMovementInCoast = false
-    @Transient var doubleMovementInForest = false
-    @Transient var doubleMovementInJungle = false
-    @Transient var doubleMovementInSnow = false
-    @Transient var doubleMovementInTundra = false
-    @Transient var doubleMovementInHills = false
+    /** If set causes an early exit in getMovementCostBetweenAdjacentTiles
+     *  - means no double movement uniques, roughTerrainPenalty or ignoreHillMovementCost */
+    @Transient
+    var noTerrainMovementUniques = false
+        private set
+
+    /** If set causes a second early exit in getMovementCostBetweenAdjacentTiles */
+    @Transient
+    var noBaseTerrainOrHillDoubleMovementUniques = false
+        private set
+
+    /** If set skips tile.matchesFilter tests for double movement in getMovementCostBetweenAdjacentTiles */
+    @Transient
+    var noFilteredDoubleMovementUniques = false
+        private set
+
+    /** Used for getMovementCostBetweenAdjacentTiles only, based on order of testing */
+    enum class DoubleMovementTerrainTarget { Feature, Base, Hill, Filter }
+    /** Mod-friendly cache of double-movement terrains */
+    @Transient
+    val doubleMovementInTerrain = HashMap<String, DoubleMovementTerrainTarget>()
 
     @Transient
     var canEnterIceTiles = false
@@ -89,6 +110,7 @@ class MapUnit {
     @Transient
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
 
+    /** civName owning the unit */
     lateinit var owner: String
 
     /**
@@ -218,7 +240,7 @@ class MapUnit {
         return tempUniques.any { it.type == uniqueType } || civInfo.hasUnique(uniqueType)
     }
 
-    fun updateUniques() {
+    fun updateUniques(ruleset: Ruleset) {
         val uniques = ArrayList<Unique>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniqueObjects)
@@ -236,23 +258,39 @@ class MapUnit {
         ignoresZoneOfControl = hasUnique(UniqueType.IgnoresZOC)
         roughTerrainPenalty = hasUnique(UniqueType.RoughTerrainPenalty)
 
-        doubleMovementInCoast = hasUnique(UniqueType.DoubleMovementCoast)
-        doubleMovementInForest = hasUnique(UniqueType.DoubleMovementForestJungle)
-        doubleMovementInJungle = doubleMovementInForest
-        doubleMovementInSnow = hasUnique(UniqueType.DoubleMovementSnowTundraHill)
-        doubleMovementInTundra = doubleMovementInSnow
-        doubleMovementInHills = doubleMovementInSnow
+        doubleMovementInTerrain.clear()
+        // Cache the deprecated uniques
+        if (hasUnique(UniqueType.DoubleMovementCoast)) {
+            doubleMovementInTerrain[Constants.coast] = DoubleMovementTerrainTarget.Base
+        }
+        if (hasUnique(UniqueType.DoubleMovementForestJungle)) {
+            doubleMovementInTerrain[Constants.forest] = DoubleMovementTerrainTarget.Feature
+            doubleMovementInTerrain[Constants.jungle] = DoubleMovementTerrainTarget.Feature
+        }
+        if (hasUnique(UniqueType.DoubleMovementSnowTundraHill)) {
+            doubleMovementInTerrain[Constants.snow] = DoubleMovementTerrainTarget.Base
+            doubleMovementInTerrain[Constants.tundra] = DoubleMovementTerrainTarget.Base
+            doubleMovementInTerrain[Constants.hill] = DoubleMovementTerrainTarget.Feature
+        }
+        // Now the current unique
         for (unique in getMatchingUniques(UniqueType.DoubleMovementOnTerrain)) {
-            when (unique.params[0]) {
-                Constants.coast -> doubleMovementInCoast = true
-                Constants.forest -> doubleMovementInForest = true
-                Constants.jungle -> doubleMovementInJungle = true
-                Constants.snow -> doubleMovementInSnow = true
-                Constants.tundra -> doubleMovementInTundra= true
-                Constants.hill -> doubleMovementInHills = true
-                else -> Unit  // silence "exhaustive when" warning
+            val param = unique.params[0]
+            val terrain = ruleset.terrains[param]
+            doubleMovementInTerrain[param] = when {
+                terrain == null -> DoubleMovementTerrainTarget.Filter
+                terrain.name == Constants.hill -> DoubleMovementTerrainTarget.Hill
+                terrain.type == TerrainType.TerrainFeature -> DoubleMovementTerrainTarget.Feature
+                terrain.type.isBaseTerrain -> DoubleMovementTerrainTarget.Base
+                else -> DoubleMovementTerrainTarget.Filter
             }
         }
+        // Init shortcut flags
+        noTerrainMovementUniques = doubleMovementInTerrain.isEmpty() &&
+            !roughTerrainPenalty && !civInfo.nation.ignoreHillMovementCost
+        noBaseTerrainOrHillDoubleMovementUniques = doubleMovementInTerrain
+            .none { it.value != DoubleMovementTerrainTarget.Feature }
+        noFilteredDoubleMovementUniques = doubleMovementInTerrain
+            .none { it.value == DoubleMovementTerrainTarget.Filter }
 
         //todo: consider parameterizing [terrainFilter] in some of the following:
         canEnterIceTiles = hasUnique(UniqueType.CanEnterIceTiles)
@@ -277,7 +315,7 @@ class MapUnit {
 
         newUnit.promotions = promotions.clone()
 
-        newUnit.updateUniques()
+        newUnit.updateUniques(civInfo.gameInfo.ruleSet)
         newUnit.updateVisibleTiles()
     }
 
@@ -476,7 +514,7 @@ class MapUnit {
         baseUnit = ruleset.units[name]
             ?: throw java.lang.Exception("Unit $name is not found!")
 
-        updateUniques()
+        updateUniques(ruleset)
     }
 
     fun useMovementPoints(amount: Float) {

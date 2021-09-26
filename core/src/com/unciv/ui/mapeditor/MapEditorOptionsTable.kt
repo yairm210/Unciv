@@ -201,7 +201,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                 unit.name = currentUnit.name
                 unit.owner = currentNation.name
                 unit.civInfo = CivilizationInfo(currentNation.name).apply { nation = currentNation } // needed for the unit icon to render correctly
-                unit.updateUniques()
+                unit.updateUniques(ruleset)
                 if (unit.movement.canMoveTo(it)) {
                     when {
                         unit.baseUnit.movesLikeAirUnits() -> {

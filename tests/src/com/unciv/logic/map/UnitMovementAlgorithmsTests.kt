@@ -118,7 +118,7 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-            unit.updateUniques()
+            unit.updateUniques(ruleSet)
 
             Assert.assertTrue(
                 "$type cannot be in Ice",
@@ -190,7 +190,7 @@ class UnitMovementAlgorithmsTests {
                 if (this.isRanged())
                     uniques.add("Cannot enter ocean tiles until Astronomy")
             }
-            unit.updateUniques()
+            unit.updateUniques(ruleSet)
 
             Assert.assertTrue("$type cannot be in Ocean",
                     (unit.baseUnit.isMelee()) != unit.movement.canPassThrough(tile))

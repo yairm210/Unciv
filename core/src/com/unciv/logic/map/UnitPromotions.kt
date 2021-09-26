@@ -62,13 +62,14 @@ class UnitPromotions {
             numberOfPromotions++
         }
 
-        val promotion = unit.civInfo.gameInfo.ruleSet.unitPromotions[promotionName]!!
+        val ruleset = unit.civInfo.gameInfo.ruleSet
+        val promotion = ruleset.unitPromotions[promotionName]!!
         doDirectPromotionEffects(promotion)
 
         if (promotion.uniqueObjects.none { it.placeholderText == "Doing so will consume this opportunity to choose a Promotion" })
             promotions.add(promotionName)
 
-        unit.updateUniques()
+        unit.updateUniques(ruleset)
 
         // Since some units get promotions upon construction, they will get the addPromotion from the unit.postBuildEvent
         // upon creation, BEFORE they are assigned to a tile, so the updateVisibleTiles() would crash.
