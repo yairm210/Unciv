@@ -73,6 +73,8 @@ open class TileInfo {
 
     private var continent = -1
 
+    var barbarianCounter = 0
+
     val latitude: Float
         get() = HexMath.getLatitude(position)
     val longitude: Float
@@ -96,6 +98,7 @@ open class TileInfo {
         toReturn.hasBottomRightRiver = hasBottomRightRiver
         toReturn.hasBottomRiver = hasBottomRiver
         toReturn.continent = continent
+        toReturn.barbarianCounter = barbarianCounter
         return toReturn
     }
 

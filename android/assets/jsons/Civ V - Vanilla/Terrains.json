@@ -157,7 +157,8 @@
 		"gold": -3,
 		"movementCost": 2,
 		"unbuildable": true,
-		"defenceBonus": -0.15
+		"defenceBonus": -0.15,
+		"uniques": ["No Improvements can be built here"]
 	},
 	{
 		"name": "Oasis",
@@ -168,7 +169,7 @@
 		"unbuildable": true,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"],
-		"uniques": ["Fresh water", "Rare feature"]
+		"uniques": ["Fresh water", "Rare feature", "No Improvements can be built here"]
 	},
 	{
 		"name": "Flood plains",

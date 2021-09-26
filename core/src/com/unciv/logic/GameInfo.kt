@@ -11,11 +11,13 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import java.util.*
+import kotlin.math.pow
 
 class UncivShowableException(missingMods: String) : Exception(missingMods)
 
@@ -176,9 +178,8 @@ class GameInfo {
                 NextTurnAutomation.automateCivMoves(thisPlayer)
 
                 // Placing barbarians after their turn
-                if (thisPlayer.isBarbarian()
-                        && !gameParameters.noBarbarians
-                        && turns % 10 == 0) placeBarbarians()
+                if (thisPlayer.isBarbarian() && !gameParameters.noBarbarians)
+                    placeBarbarians()
 
                 // exit simulation mode when player wins
                 if (thisPlayer.victoryManager.hasWon() && simulateUntilWin) {
@@ -238,18 +239,9 @@ class GameInfo {
     fun placeBarbarians() {
         val encampments = tileMap.values.filter { it.improvement == Constants.barbarianEncampment }
 
-        if (encampments.size < civilizations.filter { it.isMajorCiv() }.size) {
-            val newEncampmentTile = placeBarbarianEncampment(encampments)
-            if (newEncampmentTile != null)
-                placeBarbarianUnit(newEncampmentTile)
-        }
+        placeBarbarianEncampment(encampments)
 
-        val totalBarbariansAllowedOnMap = encampments.size * 3
-        var extraBarbarians = totalBarbariansAllowedOnMap - getBarbarianCivilization().getCivUnits().count()
-
-        for (tile in tileMap.values.filter { it.improvement == Constants.barbarianEncampment }) {
-            if (extraBarbarians <= 0) break
-            extraBarbarians--
+        for (tile in encampments) {
             placeBarbarianUnit(tile)
         }
     }
@@ -258,22 +250,95 @@ class GameInfo {
         // Barbarians will only spawn in places that no one can see
         val allViewableTiles = civilizations.filterNot { it.isBarbarian() || it.isSpectator() }
                 .flatMap { it.viewableTiles }.toHashSet()
-        val tilesWithin3ofExistingEncampment = existingEncampments.asSequence()
-                .flatMap { it.getTilesInDistance(3) }.toSet()
-        val viableTiles = tileMap.values.filter {
-            it.isLand && it.terrainFeatures.isEmpty()
-                    && !it.isImpassible()
-                    && it !in tilesWithin3ofExistingEncampment
-                    && it !in allViewableTiles
+        val fogTiles = tileMap.values.filter { it.isLand && it !in allViewableTiles }
+
+        val fogTilesPerCamp = (tileMap.values.size.toFloat().pow(0.4f)).toInt() // Approximately
+
+        // Check if we have more room
+        var campsToAdd = (fogTiles.size / fogTilesPerCamp) - existingEncampments.size
+
+        // First turn of the game add 1/3 of all possible camps
+        if (turns == 1) {
+            campsToAdd /= 3
+            println("Placing $campsToAdd starting barbs")
+        } else { // Other turns, place one camp with 50% probability
+            campsToAdd = if (Random().nextBoolean())
+                1
+            else
+                0
         }
-        if (viableTiles.isEmpty()) return null // no place for more barbs =(
-        val tile = viableTiles.random()
-        tile.improvement = Constants.barbarianEncampment
-        notifyCivsOfBarbarianEncampment(tile)
-        return tile
+        if (campsToAdd <= 0) return null
+
+        // Camps can't spawn within 7 tiles of each other or within 4 tiles of major civ capitals
+        val tooCloseToEncampments = existingEncampments.asSequence()
+                .flatMap { it.getTilesInDistance(7) }.toSet()
+        val tooCloseToCapitals = civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() }
+            .flatMap { it.getCapital().getCenterTile().getTilesInDistance(4) }.toSet()
+
+        val viableTiles = fogTiles.filter {
+            !it.isImpassible()
+                    && it.resource == null
+                    && it.terrainFeatures.none { feature -> ruleSet.terrains[feature]!!.hasUnique("No Improvements can be built here") }
+                    && it.neighbors.any { neighbor -> neighbor.isLand }
+                    && it !in tooCloseToEncampments
+                    && it !in tooCloseToCapitals
+        }.toMutableList()
+
+        var tile: TileInfo? = null
+        var addedCamps = 0
+        var biasCoast = Random().nextInt(6) == 0
+
+        // Add the camps
+        while (addedCamps < campsToAdd) {
+            if (viableTiles.isEmpty())
+                break
+
+            // If we're biasing for coast, get a coast tile if possible
+            if (biasCoast) {
+                tile = viableTiles.filter { it.isCoastalTile() }.randomOrNull()
+                if (tile == null)
+                    tile = viableTiles.random()
+            } else
+                tile = viableTiles.random()
+
+            tile.improvement = Constants.barbarianEncampment
+            notifyCivsOfBarbarianEncampment(tile)
+            placeBarbarianUnit(tile)
+            addedCamps++
+
+            // Still more camps to add?
+            if (addedCamps < campsToAdd) {
+                // Remove some newly non-viable tiles
+                viableTiles.removeAll( tile.getTilesInDistance(7) )
+                // Reroll bias
+                biasCoast = Random().nextInt(6) == 0
+            }
+        }
+
+        return tile // The last tile we added a camp to
     }
 
     private fun placeBarbarianUnit(tileToPlace: TileInfo) {
+        // Not yet
+        if (tileToPlace.barbarianCounter > 0) {
+            tileToPlace.barbarianCounter--
+            return
+        }
+        // Don't spawn wandering barbs too early
+        if (turns < 10 && tileToPlace.militaryUnit?.civInfo == getBarbarianCivilization())
+            return
+
+        // Seed the countdown for next spawn
+        var countdown = 7 + Random().nextInt(5) + ruleSet.difficulties[gameParameters.difficulty]!!.barbarianSpawnDelay
+        countdown *= 100
+        countdown /= when (gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 67
+            GameSpeed.Standard -> 100
+            GameSpeed.Epic -> 150
+            GameSpeed.Marathon -> 400 // sic
+        }
+        tileToPlace.barbarianCounter = countdown
+
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = ruleSet.technologies.keys.toMutableList()
