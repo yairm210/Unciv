@@ -456,7 +456,6 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.currentMovement -= distanceToTiles[lastReachedEnterableTile]!!.totalDistance
             if (unit.currentMovement < Constants.minimumMovementEpsilon) 
                 unit.currentMovement = 0f // silly floats which are "almost zero"
-            // const Epsilon, anyone?
         }
 
         // The .toList() here is because we have a sequence that's running on the units in the tile,

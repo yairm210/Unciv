@@ -69,6 +69,17 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
+    BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
+    RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
+
+    GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter]"), DeprecationLevel.WARNING)
+    GrowthPercentBonusPositive("+[amount]% growth [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.WARNING)
+    GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
+
+    TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Improvement),
+
 
     @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs"), // No conditional support
