@@ -83,67 +83,12 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
     }
 
     private fun addReligionInfo() {
-        val label = cityInfo.religion.getMajorityReligion()?.getReligionDisplayName()
-            ?: "None"
-        val icon = 
-            if (label == "None") "Religion" 
-            else cityInfo.religion.getMajorityReligion()!!.getIconName()
-        val expanderTab =
-            ExpanderTab(
-                title = "Majority Religion: [$label]",
-                fontSize = 18,
-                icon = ImageGetter.getCircledReligionIcon(icon, 30f),
-                defaultPad = 0f,
-                persistenceID = "CityStatsTable.Religion",
-                startsOutOpened = false,
-                onChange = {
-                    pack()
-                    // We have to re-anchor as our position in the city screen, otherwise it expands upwards.
-                    // ToDo: This probably should be refactored so its placed somewhere else in due time
-                    setPosition(stage.width - CityScreen.posFromEdge, stage.height - CityScreen.posFromEdge, Align.topRight)
-                }
-            ) {
-                if (cityInfo.religion.religionThisIsTheHolyCityOf != null) {
-                    // I want this to be centered, but `.center()` doesn't seem to do anything,
-                    // regardless of where I place it :(
-                    it.add(
-                        "Holy city of: [${cityInfo.civInfo.gameInfo.religions[cityInfo.religion.religionThisIsTheHolyCityOf!!]!!.getReligionDisplayName()}]".toLabel()
-                    ).center().colspan(2).pad(5f).row()
-                }
-                it.add(getReligionsTable()).colspan(2).pad(5f)
-            }
-        
-        innerTable.add(expanderTab).growX().row()
-    }
-    
-    private fun getReligionsTable(): Table {
-        val gridColor = Color.DARK_GRAY
-        val religionsTable = Table(CameraStageBaseScreen.skin)
-        val followers = cityInfo.religion.getNumberOfFollowers()
-        val futurePressures = cityInfo.religion.getPressuresFromSurroundingCities()
-        
-        religionsTable.add().pad(5f)
-        religionsTable.addSeparatorVertical(gridColor)
-        religionsTable.add("Followers".toLabel()).pad(5f)
-        religionsTable.addSeparatorVertical(gridColor)
-        religionsTable.add("Pressure".toLabel()).pad(5f)
-        religionsTable.row()
-        religionsTable.addSeparator(gridColor)
-        
-        for ((religion, followerCount) in followers) {
-            religionsTable.add(
-                ImageGetter.getCircledReligionIcon(cityInfo.civInfo.gameInfo.religions[religion]!!.getIconName(), 30f)
-            ).pad(5f)
-            religionsTable.addSeparatorVertical(gridColor)
-            religionsTable.add(followerCount.toLabel()).pad(5f)
-            religionsTable.addSeparatorVertical(gridColor)
-            if (futurePressures.containsKey(religion))
-                religionsTable.add(("+ [${futurePressures[religion]!!}] pressure").toLabel()).pad(5f)
-            else
-                religionsTable.add()
-            religionsTable.row()
+        val expanderTab = CityReligionInfoTable(cityInfo.religion).asExpander {
+            pack()
+            // We have to re-anchor as our position in the city screen, otherwise it expands upwards.
+            // ToDo: This probably should be refactored so its placed somewhere else in due time
+            setPosition(stage.width - CityScreen.posFromEdge, stage.height - CityScreen.posFromEdge, Align.topRight)
         }
-        
-        return religionsTable
+        innerTable.add(expanderTab).growX().row()
     }
 }

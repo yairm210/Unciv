@@ -1,3 +1,19 @@
+## 3.17.2
+
+Warn modders for uniques located on the wrong objects, and usages of deprecated fields
+
+By SomeTroglodyte:
+- Mini-UI to see Religion info on foreign cities
+- World and Natural Wonders Overview
+- Natural Wonders un-hardcoded
+- Texture pack/load for mods also distributes by Images.
+
+By SimonCeder:
+- Quests fixes and additions
+- Can't trade resources from other trades or city-states
+
+Fix missed sound for Sea Beggar  - By AdityaMH
+
 ## 3.17.1
 
 We now find and report deprecated uniques in the command line!
