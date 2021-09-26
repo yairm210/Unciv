@@ -15,8 +15,8 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
-import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.ui.cityscreen.CityReligionInfoTable
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
@@ -129,13 +129,13 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
     private fun addAirUnitTable() {
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
-        val secondarycolor = city.civInfo.nation.getInnerColor()
+        val secondaryColor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table()
         airUnitTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
-        aircraftImage.color = secondarycolor
+        aircraftImage.color = secondaryColor
         airUnitTable.add(aircraftImage).size(15f)
-        airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel(secondarycolor,14))
+        airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel(secondaryColor,14))
         add(airUnitTable).row()
     }
 
@@ -158,10 +158,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                 if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || viewingCiv.isSpectator()) {
                     uncivGame.setScreen(CityScreen(city))
                 } else if (viewingCiv.knows(city.civInfo)) {
-                    // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-                    val screen = DiplomacyScreen(viewingCiv)
-                    screen.updateRightSide(city.civInfo)
-                    uncivGame.setScreen(screen)
+                    foreignCityInfoPopup()
                 }
             } else {
                 moveButtonDown()
@@ -180,13 +177,13 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         }
     }
 
-    private fun getIconTable(): Table {
+    private fun getIconTable(forPopup: Boolean = false): Table {
         val secondaryColor = city.civInfo.nation.getInnerColor()
-        class IconTable:Table(){
+        class IconTable: Table() {
             override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
         }
         val iconTable = IconTable()
-        iconTable.touchable=Touchable.enabled
+        iconTable.touchable = Touchable.enabled
         iconTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor())
 
         if (city.isInResistance()) {
@@ -204,6 +201,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
             iconTable.add(fireImage).size(20f).padLeft(5f)
         }
+
         if (city.isCapital()) {
             if (city.civInfo.isCityState()) {
                 val cityStateImage = ImageGetter.getNationIcon("CityState")
@@ -233,11 +231,14 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         label.toBack() // this is so the label is rendered right before the population group,
         //  so we save the font texture and avoid another texture switch
 
-        // City strength is added NOT inside the table, but rather - top-center to it
         val cityStrength = CityCombatant(city).getCityStrength()
-        val cityStrengthLabel = "${Fonts.strength}$cityStrength".toLabel(city.civInfo.nation.getInnerColor(), 10)
-        iconTable.addActor(cityStrengthLabel)        // We create this here to we can .toBack() it as well.
-        cityStrengthLabel.toBack()
+        val cityStrengthLabel =
+            "${Fonts.strength}$cityStrength".toLabel(city.civInfo.nation.getInnerColor(), 10)
+        if (!forPopup) {
+            // City strength is added NOT inside the table, but rather - top-center to it
+            iconTable.addActor(cityStrengthLabel)        // We create this here to we can .toBack() it as well.
+            cityStrengthLabel.toBack()
+        }
 
         if (city.civInfo.isCityState()) {
             val cityStateImage = ImageGetter.getImage(city.civInfo.cityStateType.icon).apply { color = secondaryColor }
@@ -253,22 +254,25 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             // and the two labels in the the population group are rendered *first* (toBack()),
             // What we get is that ALL 4 LABELS are rendered one after the other,
             // and so the glyph texture only needs to be swapped in once rather than 4 times! :)
-        }
-        else if (city.civInfo.isMajorCiv()) {
+        } else if (city.civInfo.isMajorCiv()) {
             val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)
             nationIcon.color = secondaryColor
             iconTable.add(nationIcon).size(20f)
         }
-        
-        val cityReligion = city.religion.getMajorityReligion()
-        if (cityReligion != null) {
-            val religionImage = ImageGetter.getReligionImage(cityReligion.getIconName())
-            iconTable.add(religionImage).size(20f).padLeft(5f).fillY()
+
+        if (!forPopup) {
+            val cityReligion = city.religion.getMajorityReligion()
+            if (cityReligion != null) {
+                val religionImage = ImageGetter.getReligionImage(cityReligion.getIconName())
+                iconTable.add(religionImage).size(20f).padLeft(5f).fillY()
+            }
         }
 
         iconTable.pack()
-        cityStrengthLabel.x = label.x // so it'll be aligned right above the city name
-        cityStrengthLabel.setY(iconTable.height, Align.top)
+        if (!forPopup) {
+            cityStrengthLabel.x = label.x // so it'll be aligned right above the city name
+            cityStrengthLabel.setY(iconTable.height, Align.top)
+        }
         return iconTable
     }
 
@@ -280,7 +284,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                     updateHiddenUnitMarkers()
                 }
         )
-        parent.addAction(moveButtonAction) // Move the whole cityButtonLayerGroup down, so the citybutton remains clickable
+        parent.addAction(moveButtonAction) // Move the whole cityButtonLayerGroup down, so the CityButton remains clickable
     }
 
     private fun moveButtonUp() {
@@ -329,17 +333,16 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
 
             group.addActor(growthBar)
 
-            val turnLabel : Label
-            when {
+            val turnLabel: Label = when {
                 city.isGrowing() -> {
                     val turnsToGrowth = city.getNumTurnsToNewPopulation()
-                    turnLabel = if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString().toLabel() else "∞".toLabel()
+                    if (turnsToGrowth != null && turnsToGrowth < 100) turnsToGrowth.toString().toLabel() else "∞".toLabel()
                 }
                 city.isStarving() -> {
                     val turnsToStarvation = city.getNumTurnsToStarvation()
-                    turnLabel = if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString().toLabel() else "∞".toLabel()
+                    if (turnsToStarvation != null && turnsToStarvation < 100) turnsToStarvation.toString().toLabel() else "∞".toLabel()
                 }
-                else -> turnLabel = "∞".toLabel()
+                else -> "∞".toLabel()
             }
             turnLabel.color = city.civInfo.nation.getInnerColor()
             turnLabel.setFontSize(14)
@@ -407,6 +410,28 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             label.toFront()
         }
         return group
+    }
+
+    private fun foreignCityInfoPopup() {
+        fun openDiplomacy() {
+            // If city doesn't belong to you, go directly to its owner's diplomacy screen.
+            val screen = DiplomacyScreen(worldScreen.viewingCiv)
+            screen.updateRightSide(city.civInfo)
+            worldScreen.game.setScreen(screen)
+        }
+
+        // If there's nothing to display cuz no Religion - skip popup
+        if (!city.civInfo.gameInfo.isReligionEnabled()) return openDiplomacy()
+
+        val popup = Popup(worldScreen).apply {
+            name = "ForeignCityInfoPopup"
+            add(getIconTable(true)).fillX().padBottom(5f).colspan(3).row()
+            add(CityReligionInfoTable(city.religion, true)).colspan(3).row()
+            addOKButton("Diplomacy") { openDiplomacy() }
+            add().expandX()
+            addCloseButton()
+        }
+        popup.open()
     }
 
     companion object {
