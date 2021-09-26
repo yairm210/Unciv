@@ -219,7 +219,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             val stats = mutableListOf("$cost${Fonts.production}")
             if (canBePurchasedWithStat(null, Stat.Gold)) {
                 // We need what INonPerpetualConstruction.getBaseGoldCost calculates but without any game- or civ-specific modifiers
-                val buyCost = 30.0 * cost.toFloat().pow(0.75f) * hurryCostModifier.toPercent() / 10 * 10
+                val buyCost = (30.0 * cost.toFloat().pow(0.75f) * hurryCostModifier.toPercent()).toInt() / 10 * 10
                 stats += "$buyCost${Fonts.gold}"
             }
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
