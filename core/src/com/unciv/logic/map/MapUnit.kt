@@ -268,8 +268,9 @@ class MapUnit {
 
         if (isEmbarked() && !hasUnique("Normal vision when embarked")) {
             visibilityRange = 1
-            for (unique in getMatchingUniques("[] Sight for all [] units").filter { it.params[1] == "Embarked" })
-                visibilityRange += unique.params[0].toInt()
+            for (unique in getMatchingUniques("[] Sight for all [] units"))
+                if (unique.params[1] == "Embarked")
+                    visibilityRange += unique.params[0].toInt()
             return visibilityRange
         }
         
