@@ -269,7 +269,7 @@ class MapUnit {
         if (isEmbarked() && !hasUnique("Normal vision when embarked")) {
             visibilityRange = 1
             for (unique in getMatchingUniques("[] Sight for all [] units"))
-                if (unique.params[1] == "Embarked")
+                if (unique.params[1] == "Embarked") // only count bonuses explicitly for embarked units
                     visibilityRange += unique.params[0].toInt()
             return visibilityRange
         }
