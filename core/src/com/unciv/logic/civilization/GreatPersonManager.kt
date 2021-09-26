@@ -6,7 +6,7 @@ import com.unciv.models.stats.Stats
 
 class GreatPersonManager {
     var pointsForNextGreatPerson = 100
-    var pointsForNextGreatGeneral = 30
+    var pointsForNextGreatGeneral = 200
 
     var greatPersonPointsCounter = Counter<String>()
     var greatGeneralPoints = 0
