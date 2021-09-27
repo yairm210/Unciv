@@ -113,6 +113,23 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
 
+    // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
+    DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
+    DoubleMovementCoast("Double movement in coast", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
+    DoubleMovementForestJungle("Double movement rate through Forest and Jungle", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
+    DoubleMovementSnowTundraHill("Double movement in Snow, Tundra and Hills", UniqueTarget.Unit),
+    AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
+    CanPassImpassable("Can pass through impassable tiles", UniqueTarget.Unit),
+    IgnoresTerrainCost("Ignores terrain cost", UniqueTarget.Unit),
+    IgnoresZOC("Ignores Zone of Control", UniqueTarget.Unit),
+    RoughTerrainPenalty("Rough terrain penalty", UniqueTarget.Unit),
+    CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
+    CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
+    CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
+
 
     ///// CONDITIONALS
 

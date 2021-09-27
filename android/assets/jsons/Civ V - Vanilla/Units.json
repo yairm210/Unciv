@@ -1011,7 +1011,12 @@
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Great War Infantry",
-		"uniques": ["+[25]% Strength in [Snow]", "+[25]% Strength in [Tundra]", "+[25]% Strength in [Hill]", "Double movement in Snow, Tundra and Hills"],
+		"uniques": ["+[25]% Strength in [Snow]",
+			"+[25]% Strength in [Tundra]",
+			"+[25]% Strength in [Hill]",
+			"Double movement in [Snow]",
+			"Double movement in [Tundra]",
+			"Double movement in [Hill]"],
 		"attackSound": "shot"
 	},
 	{
@@ -1083,7 +1088,7 @@
 		"requiredResource": "Coal",
 		"upgradesTo": "Destroyer",
 		"obsoleteTech": "Combustion",
-		"uniques": ["+[33]% Strength vs [City]","Double movement in coast"],
+		"uniques": ["+[33]% Strength vs [City]","Double movement in [Coast]"],
 		"attackSound": "shipguns"
 	},
 	{
