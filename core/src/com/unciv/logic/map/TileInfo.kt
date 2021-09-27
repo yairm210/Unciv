@@ -194,7 +194,8 @@ open class TileInfo {
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
-    fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
+    fun hasUnique(unique: String) = getAllTerrains().any { it.hasUnique(unique) }
+    fun hasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner() ?: return null
@@ -202,8 +203,12 @@ open class TileInfo {
     }
 
     fun isWorked(): Boolean = getWorkingCity() != null
-    fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
-            || getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true)
+    fun providesYield() = getCity() != null && (
+            isCityCenter() ||
+            isWorked() ||
+            getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true ||
+            hasUnique(UniqueType.TileProvidesYieldWithoutPopulation)
+        )
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()

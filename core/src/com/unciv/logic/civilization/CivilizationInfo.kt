@@ -338,7 +338,7 @@ class CivilizationInfo {
     fun hasUnique(uniqueType: UniqueType) = getMatchingUniques(uniqueType).any()
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
 
-    /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
+    /** Destined to replace getMatchingUniques(uniqueTemplate), gradually, as we fill the enum */
     fun getMatchingUniques(uniqueType: UniqueType, cityToIgnore: CityInfo?=null): Sequence<Unique> {
         val ruleset = gameInfo.ruleSet
         return nation.uniqueObjects.asSequence().filter { it.matches(uniqueType, ruleset) } +
