@@ -76,7 +76,7 @@ This file contains all the nations and city states, including Barbarians and Spe
 | style | String | Default empty | Modifier appended to pixel unit image names |
 | adjective | String | Default empty | Currently unused |
 | cityStateType | Enum | Default absent | Distinguishes Major Civilizations from City States (Cultured, Maritime, Mercantile, Militaristic) |
-| startBias | List | Default empty | Zero or more of: terrainFilter or "Avoid [terrainFilter]" |
+| startBias | List | Default empty | Zero or more of: terrainFilter or "Avoid [terrainFilter]". Two or more will be logically "and"-ed, and if the filters result in no choices, the entire attribute is ignored (e.g. `"startBias": ["Snow","Tundra"]` will _never_ work. |
 | preferredVictoryType | Enum | Default Neutral | Neutral, Cultural, Diplomatic, Domination or Scientific |
 | startIntroPart1 | String | Default empty | Introductory blurb shown to Player on game start... |
 | startIntroPart2 | String | Default empty | ... second paragraph. ***NO*** "TBD"!!! Leave empty to skip that alert. |
