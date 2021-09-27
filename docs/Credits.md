@@ -43,6 +43,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Quinquereme. The original work has been modified.
+* [dragon](https://thenounproject.com/search/?q=dragon&i=1646681) by BGBOXXX Design for Dromon
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
 * [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado for War Elephant
 * [Centaur](https://thenounproject.com/search/?q=horse+archer&i=1791296) by Michael Wohlwend for Horse Archer 
@@ -64,8 +65,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
 * [Elephant](https://thenounproject.com/term/elephant/1302749) By Angriawan Ditya Zulkarnain for African Forest Elephant. The original work has been modified.
-* [Judge](https://thenounproject.com/search/?q=judge&i=1076388) By Krisztián Mátyás for Courthouse
-* [Petra](https://thenounproject.com/search/?q=petra&i=2855893) By Ranah Pixel Studio for Petra
+* [Horse](https://thenounproject.com/search/?q=horse&i=3270758) By Ranah Pixel Studio for Cataphract
 
 ### Medieval Era
 
@@ -244,6 +244,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Canoe](https://thenounproject.com/term/canoe/402285/) By Viktor Fedyuk (Tim P) for Floating Gardens
 * [Arc de Triomphe](https://thenounproject.com/search/?q=Arc+de+Triomphe&i=789893) By Andrejs Kirma, LV for National Epic
 * [Bank](https://thenounproject.com/term/bank/213472/) by By P Thanga Vignesh for National Treasury
+* [Judge](https://thenounproject.com/search/?q=judge&i=1076388) By Krisztián Mátyás for Courthouse
+* [Petra](https://thenounproject.com/search/?q=petra&i=2855893) By Ranah Pixel Studio for Petra
 
 ### Medieval Era
 
@@ -556,6 +558,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Three Crowns](https://thenounproject.com/search/?q=three+crowns&i=1155972) by Daniel Falk for Sweden
 * [Flag of Austria](https://thenounproject.com/term/flag-of-austria/3292053/) by Olena Panasovska, UA for Austria. The original work has been modified.
 * [Elephant](https://thenounproject.com/term/elephant/564421/) by Hea Poh Lin for Carthage. The original work has been modified.
+* [Orthodox Cross](https://thenounproject.com/search/?q=orthodox&i=2069822) by Avana Vana for Byzantium
 
 
 ## Promotions

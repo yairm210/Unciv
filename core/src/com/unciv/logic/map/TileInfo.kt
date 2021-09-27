@@ -203,7 +203,7 @@ open class TileInfo {
 
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
-            || getTileImprovement()?.hasUnique("Tile provides yield without assigned population") == true)
+            || getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true)
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()

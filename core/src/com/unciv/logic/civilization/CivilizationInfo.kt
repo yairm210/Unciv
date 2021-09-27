@@ -335,6 +335,7 @@ class CivilizationInfo {
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
+    fun hasUnique(uniqueType: UniqueType) = getMatchingUniques(uniqueType).any()
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
 
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */

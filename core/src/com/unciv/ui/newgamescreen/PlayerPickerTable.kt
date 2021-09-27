@@ -323,6 +323,7 @@ private class NationPickerPopup(
         okButton.setPosition(innerTable.width - buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomRight)
         innerTable.addActor(okButton)
 
+        nationDetailsTable.touchable = Touchable.enabled
         nationDetailsTable.onClick { returnSelected() }
     }
 
@@ -338,7 +339,7 @@ private class NationPickerPopup(
     }
 
     private fun setNationDetails(nation: Nation) {
-        nationDetailsTable.clear()
+        nationDetailsTable.clearChildren()  // .clear() also clears listeners!
 
         nationDetailsTable.add(NationTable(nation, civBlocksWidth, partHeight, ruleset))
         selectedNation = nation

@@ -95,7 +95,7 @@ jobs:
       - name: Upload AAB to google play
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         continue-on-error: true
-        uses: r0adkll/upload-google-play@v1
+        uses: r0adkll/upload-google-play@v1.0.15
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON  }}
           packageName: com.unciv.app

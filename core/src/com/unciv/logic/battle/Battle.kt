@@ -395,7 +395,7 @@ object Battle {
         thisCombatant.unit.promotions.XP += xpGained
 
 
-        if (thisCombatant.getCivInfo().isMajorCiv()) {
+        if (thisCombatant.getCivInfo().isMajorCiv() && !otherCombatant.getCivInfo().isBarbarian()) { // Can't get great generals from Barbarians
             var greatGeneralPointsModifier = 1f
             for (unique in thisCombatant.getMatchingUniques("[] is earned []% faster")) {
                 val unitName = unique.params[0]

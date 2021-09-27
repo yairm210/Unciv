@@ -44,7 +44,7 @@ class CityStats(val cityInfo: CityInfo) {
         val stats = Stats()
         for (cell in cityInfo.tilesInRange
                 .filter { cityInfo.location == it.position || cityInfo.isWorked(it) ||
-                        it.getTileImprovement()?.hasUnique("Tile provides yield without assigned population")==true && it.owningCity == cityInfo })
+                        it.getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation)==true && it.owningCity == cityInfo })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }
@@ -127,13 +127,11 @@ class CityStats(val cityInfo: CityInfo) {
                         if (bonus.isOfType(UniqueType.CityStateStatsPerCity) 
                             && cityInfo.matchesFilter(bonus.params[1]) 
                             && bonus.conditionalsApply(otherCiv, cityInfo) 
-                        ) {
-                            stats.add(bonus.stats)
-                        }
+                        ) stats.add(bonus.stats)
                     }
                 }
 
-                for (unique in cityInfo.civInfo.getMatchingUniques("[]% [] from City-States")) {
+                for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
                     stats[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
             }
@@ -170,17 +168,17 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getGrowthBonusFromPoliciesAndWonders(): Float {
         var bonus = 0f
         // "[amount]% growth [cityFilter]"
-        for (unique in cityInfo.getMatchingUniques("[]% growth []")) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.GrowthPercentBonus)) {
             if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             if (cityInfo.matchesFilter(unique.params[1]))
                 bonus += unique.params[0].toFloat()
         }
         // Deprecated since 3.16.14
-            for (unique in cityInfo.getMatchingUniques("+[]% growth []")) {
+            for (unique in cityInfo.getMatchingUniques(UniqueType.GrowthPercentBonusPositive)) {
                 if (cityInfo.matchesFilter(unique.params[1]))
                     bonus += unique.params[0].toFloat()
             }
-            for (unique in cityInfo.getMatchingUniques("+[]% growth [] when not at war"))
+            for (unique in cityInfo.getMatchingUniques(UniqueType.GrowthPercentBonusWhenNotAtWar))
                 if (cityInfo.matchesFilter(unique.params[1]) && !cityInfo.civInfo.isAtWar())
                     bonus += unique.params[0].toFloat()
         //
@@ -189,7 +187,7 @@ class CityStats(val cityInfo: CityInfo) {
 
     fun hasExtraAnnexUnhappiness(): Boolean {
         if (cityInfo.civInfo.civName == cityInfo.foundingCiv || cityInfo.isPuppet) return false
-        return !cityInfo.containsBuildingUnique("Remove extra unhappiness from annexed cities")
+        return !cityInfo.containsBuildingUnique(UniqueType.RemoveAnnexUnhappiness)
     }
 
     fun getStatsOfSpecialist(specialistName: String): Stats {
