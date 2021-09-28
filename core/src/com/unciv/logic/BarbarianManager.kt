@@ -234,6 +234,9 @@ class Encampment {
     private fun resetCountdown() {
         // Base 8-12 turns
         countdown = 8 + Random().nextInt(5)
+        // Quicker on Raging Barbarians
+        if (gameInfo.gameParameters.ragingBarbarians)
+            countdown /= 2
         // Higher on low difficulties
         countdown += gameInfo.ruleSet.difficulties[gameInfo.gameParameters.difficulty]!!.barbarianSpawnDelay
         // Quicker if this camp has already spawned units
