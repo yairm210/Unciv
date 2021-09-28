@@ -7,6 +7,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
@@ -17,7 +18,7 @@ import com.unciv.ui.utils.*
 class ReligiousBeliefsPickerScreen (
     private val choosingCiv: CivilizationInfo,
     private val gameInfo: GameInfo,
-    private val beliefsContainer: BeliefContainer,
+    private val beliefsToChoose: Counter<BeliefType>,
     private val pickIconAndName: Boolean
 ): PickerScreen(disableScroll = true) {
 
@@ -31,6 +32,8 @@ class ReligiousBeliefsPickerScreen (
     private var previouslySelectedIcon: Button? = null
     private var displayName: String? = null
     private var religionName: String? = null
+
+    private val chosenBeliefs: Array<Belief?> = Array(beliefsToChoose.values.sum()) { null }
     
     init {
         closeButton.isVisible = true
@@ -52,14 +55,14 @@ class ReligiousBeliefsPickerScreen (
         if (pickIconAndName) rightSideButton.label = "Choose a religion".toLabel()
         else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.getReligionDisplayName()}]".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
-            choosingCiv.religionManager.chooseBeliefs(displayName, religionName, beliefsContainer.chosenBeliefs.map { it!! })            
+            choosingCiv.religionManager.chooseBeliefs(displayName, religionName, chosenBeliefs.map { it!! })            
             UncivGame.Current.setWorldScreen()
         }
     }
 
     private fun checkAndEnableRightSideButton() {
         if (pickIconAndName && (religionName == null || displayName == null)) return
-        if (beliefsContainer.chosenBeliefs.any { it == null }) return
+        if (chosenBeliefs.any { it == null }) return
         rightSideButton.enable()
     }
     
@@ -157,8 +160,8 @@ class ReligiousBeliefsPickerScreen (
             beliefButton.disable()
         }
         
-        for (newBelief in beliefsContainer.chosenBeliefs.withIndex()) {
-            addChoosableBeliefButton(newBelief, beliefsContainer.getBeliefTypeFromIndex(newBelief.index))
+        for (newBelief in chosenBeliefs.withIndex()) {
+            addChoosableBeliefButton(newBelief, getBeliefTypeFromIndex(newBelief.index))
         }
     }
     
@@ -166,16 +169,16 @@ class ReligiousBeliefsPickerScreen (
         rightBeliefsToChoose.clear()
         val availableBeliefs = gameInfo.ruleSet.beliefs.values
             .filter { 
-                it.type == beliefType
+                (it.type == beliefType || beliefType == BeliefType.Any)
                 && gameInfo.religions.values.none {
                     religion -> religion.hasBelief(it.name)
                 }
-                && (it !in beliefsContainer.chosenBeliefs)
+                && (it !in chosenBeliefs)
             }
         for (belief in availableBeliefs) {
             val beliefButton = convertBeliefToButton(belief)
             beliefButton.onClick {
-                beliefsContainer.chosenBeliefs[leftButtonIndex] = belief
+                chosenBeliefs[leftButtonIndex] = belief
                 updateLeftTable()
                 checkAndEnableRightSideButton()
             }
@@ -204,22 +207,20 @@ class ReligiousBeliefsPickerScreen (
     
     private fun emptyBeliefButton(beliefType: BeliefType): Button {
         val contentsTable = Table()
-        contentsTable.add("Choose a [${beliefType.name}] belief!".toLabel())
+        if (beliefType != BeliefType.Any)
+            contentsTable.add("Choose a [${beliefType.name}] belief!".toLabel())
+        else
+            contentsTable.add("Choose any belief!".toLabel())
         return Button(contentsTable, skin)
     }
-}
-
-
-data class BeliefContainer(val pantheonBeliefCount: Int = 0, val founderBeliefCount: Int = 0, val followerBeliefCount: Int = 0, val enhancerBeliefCount: Int = 0) {
     
-    val chosenBeliefs: Array<Belief?> = Array(pantheonBeliefCount + founderBeliefCount + followerBeliefCount + enhancerBeliefCount) { null }
-    
-    fun getBeliefTypeFromIndex(index: Int): BeliefType {
+    private fun getBeliefTypeFromIndex(index: Int): BeliefType {
         return when {
-            index < pantheonBeliefCount -> BeliefType.Pantheon
-            index < pantheonBeliefCount + founderBeliefCount -> BeliefType.Founder
-            index < pantheonBeliefCount + founderBeliefCount + followerBeliefCount -> BeliefType.Follower
-            else -> BeliefType.Enhancer
+            index < beliefsToChoose.filter { it.key <= BeliefType.Pantheon }.values.sum() -> BeliefType.Pantheon
+            index < beliefsToChoose.filter { it.key <= BeliefType.Founder }.values.sum() -> BeliefType.Founder
+            index < beliefsToChoose.filter { it.key <= BeliefType.Follower }.values.sum() -> BeliefType.Follower
+            index < beliefsToChoose.filter { it.key <= BeliefType.Enhancer }.values.sum() -> BeliefType.Enhancer
+            else -> BeliefType.Any
         }
     }
 }

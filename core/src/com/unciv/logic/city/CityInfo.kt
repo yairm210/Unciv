@@ -391,6 +391,9 @@ class CityInfo {
     fun containsBuildingUnique(unique: String) =
         cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
+    fun containsBuildingUnique(uniqueType: UniqueType) =
+        cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
+
     fun getGreatPersonPointsForNextTurn(): HashMap<String, Counter<String>> {
         val sourceToGPP = HashMap<String, Counter<String>>()
 

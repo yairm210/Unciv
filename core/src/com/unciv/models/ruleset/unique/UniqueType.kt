@@ -69,6 +69,17 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
+    BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
+    RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
+
+    GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter]"), DeprecationLevel.WARNING)
+    GrowthPercentBonusPositive("+[amount]% growth [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.WARNING)
+    GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
+
+    TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Improvement),
+
 
     @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs"), // No conditional support
@@ -81,6 +92,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
 
+    FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
+    FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
+    
     // I don't like the fact that currently "city state bonuses" are separate from the "global bonuses",
     // todo: merge city state bonuses into global bonuses
     CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
@@ -99,6 +113,23 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     NaturalWonderConvertNeighborsExcept("Neighboring tiles except [terrainFilter] will convert to [baseTerrain]", UniqueTarget.Terrain),
 
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
+
+    // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
+    DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
+    DoubleMovementCoast("Double movement in coast", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
+    DoubleMovementForestJungle("Double movement rate through Forest and Jungle", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
+    DoubleMovementSnowTundraHill("Double movement in Snow, Tundra and Hills", UniqueTarget.Unit),
+    AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
+    CanPassImpassable("Can pass through impassable tiles", UniqueTarget.Unit),
+    IgnoresTerrainCost("Ignores terrain cost", UniqueTarget.Unit),
+    IgnoresZOC("Ignores Zone of Control", UniqueTarget.Unit),
+    RoughTerrainPenalty("Rough terrain penalty", UniqueTarget.Unit),
+    CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
+    CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
+    CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
 
 
     ///// CONDITIONALS

@@ -132,9 +132,7 @@
 	{
 		"name": "Woodsman",
 		"prerequisites": ["Shock III","Drill III"],
-		"uniques": ["Double movement rate through Forest and Jungle"],
-		// This could be generalized: ["-[50]% movement costs through [Forest] tiles", "-[50]% movement costs through [Jungle] tiles"],
-		// but with how getMovementCostBetweenAdjacentTiles() is optimized, that's difficult to implement.
+		"uniques": ["Double movement in [Forest]","Double movement in [Jungle]"],
 		"unitTypes": ["Sword","Gunpowder"]
 	},
 	{

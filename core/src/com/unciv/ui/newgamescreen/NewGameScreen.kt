@@ -28,22 +28,23 @@ class NewGameScreen(
 
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
     override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the GameOptionsTable etc. depend on this
-    private val newGameOptionsTable = GameOptionsTable(this, isNarrowerThan4to3()) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-
-    // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
-    private val playerPickerTable = PlayerPickerTable(
-        this, gameSetupInfo.gameParameters,
-        if (isNarrowerThan4to3()) stage.width - 20f else 0f
-    )
-    private val mapOptionsTable = MapOptionsTable(this)
+    private val newGameOptionsTable: GameOptionsTable
+    private val playerPickerTable: PlayerPickerTable
+    private val mapOptionsTable: MapOptionsTable
 
     init {
+        updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
+        // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
+        playerPickerTable = PlayerPickerTable(
+            this, gameSetupInfo.gameParameters,
+            if (isNarrowerThan4to3()) stage.width - 20f else 0f
+        )
+        newGameOptionsTable = GameOptionsTable(this, isNarrowerThan4to3()) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+        mapOptionsTable = MapOptionsTable(this)
         setDefaultCloseAction(previousScreen)
 
         if (isNarrowerThan4to3()) initPortrait()
         else initLandscape()
-
-        updateRuleset()
 
         if (UncivGame.Current.settings.lastGameSetup != null) {
             rightSideGroup.addActorAt(0, VerticalGroup().padBottom(5f))
