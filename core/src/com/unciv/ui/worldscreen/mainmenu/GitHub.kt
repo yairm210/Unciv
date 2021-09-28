@@ -107,10 +107,15 @@ object Github {
 
         return finalDestination
     }
-    
+
     private fun FileHandle.renameOrMove(dest: FileHandle) {
         // Gdx tries a java rename for Absolute and External, but NOT for Local - rectify that
-        if (type() == Files.FileType.Local && file().renameTo(dest.file())) return
+        if (type() == Files.FileType.Local) {
+            if (isDirectory)
+                if (file().renameTo(dest.child(name()).file())) return
+            else
+                if (file().renameTo(dest.file())) return
+        } 
         moveTo(dest)
     }
 
