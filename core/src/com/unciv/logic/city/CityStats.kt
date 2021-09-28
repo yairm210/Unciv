@@ -514,11 +514,13 @@ class CityStats(val cityInfo: CityInfo) {
     fun update(currentConstruction: IConstruction = cityInfo.cityConstructions.getCurrentConstruction()) {
         // We calculate this here for concurrency reasons
         // If something needs this, we pass this through as a parameter
-        // Is that really necessary? There is only a single unique that actually uses this, 
-        // and it is passed to functions at least 3 times for that
-        // It also requires an additional parameter to `cityInfo.getMatchingUniques()` which clutters code
-        // so if this isn't explicitely necessary, I'd like to remove this for readability reasons
         val localBuildingUniques = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
+        
+        // Is This line really necessary? There is only a single unique that actually uses this, 
+        // and it is passed to functions at least 3 times for that
+        // It's the only reason `cityInfo.getMatchingUniques` has a localUniques parameter,
+        // which clutters readability, and also the only reason `CityInfo.getAllLocalUniques()`
+        // exists in the first place, though that could be useful for the previous line too.
         val citySpecificUniques = cityInfo.getAllLocalUniques()
 
         // We need to compute Tile yields before happiness
