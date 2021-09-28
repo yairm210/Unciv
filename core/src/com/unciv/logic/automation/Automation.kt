@@ -147,6 +147,10 @@ object Automation {
             else if (distance <= 3) score -= 104
             
         } else {
+            // Rough tiles are meant to have less appeal for expansion than plain ones
+            // I literally just made up the the 15 here, need absolute values for this
+            // For now it acts as a placeholder score to mark off an element in #4697
+            if(tile.isRoughTerrain()) score += 15
             // Water tiles without resources aren't great
             if (tile.isWater) score += 25
             // Can't work it anyways
