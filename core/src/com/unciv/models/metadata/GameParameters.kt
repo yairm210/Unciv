@@ -1,11 +1,14 @@
 package com.unciv.models.metadata
 
-import com.unciv.Constants
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.VictoryType
 
 enum class BaseRuleset(val fullName:String){
-    Civ_V_Vanilla("Civ V - Vanilla"),
+    Civ_V_Vanilla("Civ V - Vanilla");
+
+    companion object {
+        fun setOfNames() = values().map { it.fullName }.toSet()
+    }
 }
 
 class GameParameters { // Default values are the default new game

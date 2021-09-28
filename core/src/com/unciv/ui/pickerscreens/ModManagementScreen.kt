@@ -476,10 +476,14 @@ class ModManagementScreen(
 
         val visualCheckBox = "Permanent audiovisual mod".toCheckBox(isVisual) {
             checked ->
-            if (checked)
+            if (checked) {
+                if (!mod.isCompatibleAudiovisual())
+                    //todo Test then change to hard restriction, template
+                    ToastPopup("That mod is not declared to be suitable as permanent audiovisual mod!", this)
                 visualMods.add(mod.name)
-            else
+            } else {
                 visualMods.remove(mod.name)
+            }
             game.settings.save()
             ImageGetter.setNewRuleset(ImageGetter.ruleset)
             refreshModActions(mod)

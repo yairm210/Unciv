@@ -41,6 +41,10 @@ class ModOptions : IHasUniques {
     var nationsToRemove = HashSet<String>()
 
 
+    /** Lists other mods this promises to be compatible with */
+    var compatibility = HashSet<String>()
+
+    // The next 4 are written by the mod downloader
     var lastUpdated = ""
     var modUrl = ""
     var author = ""
@@ -192,16 +196,16 @@ class Ruleset {
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
         // Using a map sidesteps this problem
         eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
-        
+
         val unitTypesFile = folderHandle.child("UnitTypes.json")
         if (unitTypesFile.exists()) unitTypes += createHashmap(jsonParser.getFromJson(Array<UnitType>::class.java, unitTypesFile))
-        
+
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
-        
+
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(jsonParser.getFromJson(Array<Quest>::class.java, questsFile))
 
@@ -235,7 +239,7 @@ class Ruleset {
         val ruinRewardsFile = folderHandle.child("Ruins.json")
         if (ruinRewardsFile.exists())
             ruinRewards += createHashmap(jsonParser.getFromJson(Array<RuinReward>::class.java, ruinRewardsFile))
-        
+
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
@@ -244,6 +248,8 @@ class Ruleset {
 
         val difficultiesFile = folderHandle.child("Difficulties.json")
         if (difficultiesFile.exists()) difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
+
+        ensureDefaultCompatibility()
 
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
@@ -269,7 +275,7 @@ class Ruleset {
     /** Used for displaying a RuleSet's name */
     override fun toString() = when {
         name.isNotEmpty() -> name
-        mods.isEmpty() -> BaseRuleset.Civ_V_Vanilla.fullName  //todo differentiate once more than 1 BaseRuleset
+        mods.isEmpty() -> BaseRuleset.values().first().fullName  //todo differentiate once more than 1 BaseRuleset
         else -> "Combined RuleSet"
     }
 
@@ -279,14 +285,34 @@ class Ruleset {
         if (technologies.isNotEmpty()) stringList += "[${technologies.size}] Techs"
         if (nations.isNotEmpty()) stringList += "[${nations.size}] Nations"
         if (units.isNotEmpty()) stringList += "[${units.size}] Units"
+        if (unitPromotions.isNotEmpty()) stringList += "[${unitPromotions.size}] Promotions"
         if (buildings.isNotEmpty()) stringList += "[${buildings.size}] Buildings"
+        if (terrains.isNotEmpty()) stringList += "[${terrains.size}] Terrains"
         if (tileResources.isNotEmpty()) stringList += "[${tileResources.size}] Resources"
         if (tileImprovements.isNotEmpty()) stringList += "[${tileImprovements.size}] Improvements"
+        if (policies.isNotEmpty()) stringList += "[${policies.size}] Policies"
         if (religions.isNotEmpty()) stringList += "[${religions.size}] Religions"
         if (beliefs.isNotEmpty()) stringList += "[${beliefs.size}] Beliefs"
+        if (difficulties.isNotEmpty()) stringList += "[${difficulties.size}] Difficulties"
+        if (ruinRewards.isNotEmpty()) stringList += "[${ruinRewards.size}] Ruin rewards"
+        if (quests.isNotEmpty()) stringList += "[${quests.size}] Quests"
+        if (specialists.isNotEmpty()) stringList += "[${specialists.size}] Specialists"
+
+        // Not listed: unitTypes, eras, policyBranches
         return stringList.joinToString { it.tr() }
     }
 
+    private fun ensureDefaultCompatibility() {
+        when {
+            modOptions.isBaseRuleset -> return
+            getSummary().isEmpty() ->
+                // Mods with no ruleset objects are compatible with everything
+                modOptions.compatibility.add("*")
+            modOptions.compatibility.isEmpty() ->
+                // No declaration on an extension mod means compatible with vanilla only
+                modOptions.compatibility.add(BaseRuleset.Civ_V_Vanilla.fullName)
+        }
+    }
 
     fun checkUniques(uniqueContainer:IHasUniques, lines:RulesetErrorList,
                      severityToReport: UniqueType.UniqueComplianceErrorSeverity) {
@@ -330,6 +356,28 @@ class Ruleset {
         }
     }
 
+    /** Tests for declarative compatibility as per [ModOptions.compatibility]
+     * @return `true` when one declares compatibility with the other
+     * @throws IllegalArgumentException when called with a complex ruleset */
+    //todo decide on "*" and move it to Constants
+    private fun isCompatibleWith(otherMod: Ruleset): Boolean {
+        fun Ruleset.halfTest(otherMod: Ruleset) = when {
+            mods.isNotEmpty() ->
+                throw IllegalArgumentException("RuleSet.isCompatibleWith called with complex ruleset")
+            "*" in modOptions.compatibility ->
+                true
+            otherMod.name.isEmpty() ->
+                // otherMod is a BaseRuleset
+                modOptions.compatibility.intersect(BaseRuleset.setOfNames()).isNotEmpty()
+            else -> name in otherMod.modOptions.compatibility
+        }
+        return this.halfTest(otherMod) || otherMod.halfTest(this)
+    }
+
+    /** @return whether this mod is suitable as permanent audiovisual mod */
+    //todo string to Constants
+    fun isCompatibleAudiovisual() = "*" in modOptions.compatibility ||
+            "*Audiovisual*" in modOptions.compatibility
 
     class RulesetError(val text:String, val errorSeverityToReport: RulesetErrorSeverity)
     enum class RulesetErrorSeverity {
@@ -432,6 +480,20 @@ class Ruleset {
         if (!modOptions.isBaseRuleset) return lines
 
         val baseRuleset = RulesetCache.getBaseRuleset()  // for UnitTypes fallback
+
+        if (name.isEmpty() && mods.isNotEmpty()) {
+            // This is a complex RuleSet - check declarative compatibility
+            val allMods = mods.asSequence().mapNotNull { RulesetCache[it] }.toMutableList()
+            if (allMods.none { it.modOptions.isBaseRuleset })
+                allMods += baseRuleset
+            for ((index, secondMod) in allMods.withIndex().drop(1)) {
+                for (firstMod in allMods.take(index)) {
+                    if (!firstMod.isCompatibleWith(secondMod)) {
+                        lines.add("No compatibility declaration for $firstMod / $secondMod", RulesetErrorSeverity.Warning)
+                    }
+                }
+            }
+        }
 
         for (unit in units.values) {
             if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
@@ -609,7 +671,10 @@ object RulesetCache : HashMap<String,Ruleset>() {
             val fileName = "jsons/${ruleset.fullName}"
             val fileHandle = if (consoleMode) FileHandle(fileName)
             else Gdx.files.internal(fileName)
-            this[ruleset.fullName] = Ruleset().apply { load(fileHandle, printOutput) }
+            this[ruleset.fullName] = Ruleset().apply {
+                modOptions.isBaseRuleset = true
+                load(fileHandle, printOutput)
+            }
         }
 
         if (noMods) return
@@ -622,8 +687,8 @@ object RulesetCache : HashMap<String,Ruleset>() {
             if (!modFolder.isDirectory) continue
             try {
                 val modRuleset = Ruleset()
-                modRuleset.load(modFolder.child("jsons"), printOutput)
                 modRuleset.name = modFolder.name()
+                modRuleset.load(modFolder.child("jsons"), printOutput)
                 this[modRuleset.name] = modRuleset
                 if (printOutput) {
                     println("Mod loaded successfully: " + modRuleset.name)
