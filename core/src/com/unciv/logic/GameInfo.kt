@@ -16,7 +16,9 @@ import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
+import kotlin.math.min
 import kotlin.math.pow
 
 class UncivShowableException(missingMods: String) : Exception(missingMods)
@@ -24,6 +26,7 @@ class UncivShowableException(missingMods: String) : Exception(missingMods)
 class GameInfo {
     //region Fields - Serialized
     var civilizations = mutableListOf<CivilizationInfo>()
+    var barbarians = BarbarianManager()
     var religions: HashMap<String, Religion> = hashMapOf()
     var difficulty = "Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
@@ -79,6 +82,7 @@ class GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
+        toReturn.barbarians = barbarians.clone()
         toReturn.religions.putAll(religions.map { Pair(it.key, it.value.clone()) })
         toReturn.currentPlayer = currentPlayer
         toReturn.turns = turns
@@ -114,7 +118,7 @@ class GameInfo {
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     /** Get barbarian civ
      *  @throws NoSuchElementException in no-barbarians games! */
-    private fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
+    fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
     fun getCities() = civilizations.asSequence().flatMap { it.cities }
     fun getAliveCityStates() = civilizations.filter { it.isAlive() && it.isCityState() }
@@ -179,7 +183,7 @@ class GameInfo {
 
                 // Placing barbarians after their turn
                 if (thisPlayer.isBarbarian() && !gameParameters.noBarbarians)
-                    placeBarbarians()
+                    barbarians.updateEncampments()
 
                 // exit simulation mode when player wins
                 if (thisPlayer.victoryManager.hasWon() && simulateUntilWin) {
@@ -233,144 +237,6 @@ class GameInfo {
             val positions = tiles.map { it.position }
             thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
         }
-    }
-
-
-    fun placeBarbarians() {
-        val encampments = tileMap.values.filter { it.improvement == Constants.barbarianEncampment }
-
-        placeBarbarianEncampment(encampments)
-
-        for (tile in encampments) {
-            placeBarbarianUnit(tile)
-        }
-    }
-
-    fun placeBarbarianEncampment(existingEncampments: List<TileInfo>): TileInfo? {
-        // Barbarians will only spawn in places that no one can see
-        val allViewableTiles = civilizations.filterNot { it.isBarbarian() || it.isSpectator() }
-                .flatMap { it.viewableTiles }.toHashSet()
-        val fogTiles = tileMap.values.filter { it.isLand && it !in allViewableTiles }
-
-        val fogTilesPerCamp = (tileMap.values.size.toFloat().pow(0.4f)).toInt() // Approximately
-
-        // Check if we have more room
-        var campsToAdd = (fogTiles.size / fogTilesPerCamp) - existingEncampments.size
-
-        // First turn of the game add 1/3 of all possible camps
-        if (turns == 1) {
-            campsToAdd /= 3
-            println("Placing $campsToAdd starting barbs")
-        } else { // Other turns, place one camp with 50% probability
-            campsToAdd = if (Random().nextBoolean())
-                1
-            else
-                0
-        }
-        if (campsToAdd <= 0) return null
-
-        // Camps can't spawn within 7 tiles of each other or within 4 tiles of major civ capitals
-        val tooCloseToEncampments = existingEncampments.asSequence()
-                .flatMap { it.getTilesInDistance(7) }.toSet()
-        val tooCloseToCapitals = civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() }
-            .flatMap { it.getCapital().getCenterTile().getTilesInDistance(4) }.toSet()
-
-        val viableTiles = fogTiles.filter {
-            !it.isImpassible()
-                    && it.resource == null
-                    && it.terrainFeatures.none { feature -> ruleSet.terrains[feature]!!.hasUnique("No Improvements can be built here") }
-                    && it.neighbors.any { neighbor -> neighbor.isLand }
-                    && it !in tooCloseToEncampments
-                    && it !in tooCloseToCapitals
-        }.toMutableList()
-
-        var tile: TileInfo? = null
-        var addedCamps = 0
-        var biasCoast = Random().nextInt(6) == 0
-
-        // Add the camps
-        while (addedCamps < campsToAdd) {
-            if (viableTiles.isEmpty())
-                break
-
-            // If we're biasing for coast, get a coast tile if possible
-            if (biasCoast) {
-                tile = viableTiles.filter { it.isCoastalTile() }.randomOrNull()
-                if (tile == null)
-                    tile = viableTiles.random()
-            } else
-                tile = viableTiles.random()
-
-            tile.improvement = Constants.barbarianEncampment
-            notifyCivsOfBarbarianEncampment(tile)
-            placeBarbarianUnit(tile)
-            addedCamps++
-
-            // Still more camps to add?
-            if (addedCamps < campsToAdd) {
-                // Remove some newly non-viable tiles
-                viableTiles.removeAll( tile.getTilesInDistance(7) )
-                // Reroll bias
-                biasCoast = Random().nextInt(6) == 0
-            }
-        }
-
-        return tile // The last tile we added a camp to
-    }
-
-    private fun placeBarbarianUnit(tileToPlace: TileInfo) {
-        // Not yet
-        if (tileToPlace.barbarianCounter > 0) {
-            tileToPlace.barbarianCounter--
-            return
-        }
-        // Don't spawn wandering barbs too early
-        if (turns < 10 && tileToPlace.militaryUnit?.civInfo == getBarbarianCivilization())
-            return
-
-        // Seed the countdown for next spawn
-        var countdown = 7 + Random().nextInt(5) + ruleSet.difficulties[gameParameters.difficulty]!!.barbarianSpawnDelay
-        countdown *= 100
-        countdown /= when (gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 67
-            GameSpeed.Standard -> 100
-            GameSpeed.Epic -> 150
-            GameSpeed.Marathon -> 400 // sic
-        }
-        tileToPlace.barbarianCounter = countdown
-
-        // if we don't make this into a separate list then the retain() will happen on the Tech keys,
-        // which effectively removes those techs from the game and causes all sorts of problems
-        val allResearchedTechs = ruleSet.technologies.keys.toMutableList()
-        for (civ in civilizations.filter { !it.isBarbarian() && !it.isDefeated() }) {
-            allResearchedTechs.retainAll(civ.tech.techsResearched)
-        }
-        val barbarianCiv = getBarbarianCivilization()
-        barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
-        val unitList = ruleSet.units.values
-                .filter { it.isMilitary() }
-                .filter { it.isBuildable(barbarianCiv) }
-
-        val landUnits = unitList.filter { it.isLandUnit() }
-        val waterUnits = unitList.filter { it.isWaterUnit() }
-
-        val unit: String = if (waterUnits.isNotEmpty() && tileToPlace.isCoastalTile() && Random().nextBoolean())
-            waterUnits.random().name
-        else landUnits.random().name
-
-        tileMap.placeUnitNearTile(tileToPlace.position, unit, getBarbarianCivilization())
-    }
-
-    /**
-     * [CivilizationInfo.addNotification][Add a notification] to every civilization that have
-     * adopted Honor policy and have explored the [tile] where the Barbarian Encampment has spawned.
-     */
-    private fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
-        civilizations.filter {
-            it.hasUnique("Notified of new Barbarian encampments")
-                    && it.exploredTiles.contains(tile.position)
-        }
-                .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War) }
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
@@ -439,6 +305,8 @@ class GameInfo {
                 civInfo.hasEverOwnedOriginalCapital = civInfo.cities.any { it.isOriginalCapital }
             }
         }
+
+        barbarians.setTransients(this)
     }
 
     //endregion
