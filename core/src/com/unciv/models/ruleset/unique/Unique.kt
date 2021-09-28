@@ -27,29 +27,29 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun matches(uniqueType: UniqueType, ruleset: Ruleset) = isOfType(uniqueType)
         && uniqueType.getComplianceErrors(this, ruleset).isEmpty()
 
-    // This function will get LARGE, as it will basically check for all conditionals if they apply
-    // This will require a lot of parameters to be passed (attacking unit, tile, defending unit, civInfo, cityInfo, ...)
-    // I'm open for better ideas, but this was the first thing that I could think of that would
-    // work in all cases.
     fun conditionalsApply(civInfo: CivilizationInfo? = null, city: CityInfo? = null): Boolean {
+        return conditionalsApply(StateForConditionals(civInfo, city))
+    }
+    
+    fun conditionalsApply(state: StateForConditionals?): Boolean {
+        if (state == null) return conditionals.isEmpty() 
         for (condition in conditionals) {
-            if (!conditionalApplies(condition, civInfo, city)) return false
+            if (!conditionalApplies(condition, state)) return false
         }
         return true
     }
-
+    
     private fun conditionalApplies(
         condition: Unique,
-        civInfo: CivilizationInfo? = null,
-        city: CityInfo? = null
+        state: StateForConditionals
     ): Boolean {
         return when (condition.placeholderText) {
-            UniqueType.ConditionalNotWar.placeholderText -> civInfo?.isAtWar() == false
-            UniqueType.ConditionalWar.placeholderText -> civInfo?.isAtWar() == true
+            UniqueType.ConditionalNotWar.placeholderText -> state.civInfo?.isAtWar() == false
+            UniqueType.ConditionalWar.placeholderText -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalSpecialistCount.placeholderText -> 
-                city != null && city.population.getNumberOfSpecialists() >= condition.params[0].toInt()
+                state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
             UniqueType.ConditionalHappy.placeholderText -> 
-                civInfo != null && civInfo.statsForNextTurn.happiness >= 0
+                state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
             else -> false
         }
     }

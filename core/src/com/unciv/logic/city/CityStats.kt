@@ -7,6 +7,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -222,8 +223,12 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.add(unique.stats)
             }
             
-            if (unique.isOfType(UniqueType.StatsPerCity) && cityInfo.matchesFilter(unique.params[1]) && unique.conditionalsApply(cityInfo.civInfo))
+            if (unique.isOfType(UniqueType.StatsPerCity) 
+                && cityInfo.matchesFilter(unique.params[1]) 
+                && unique.conditionalsApply(cityInfo.civInfo)
+            ) {
                 stats.add(unique.stats)
+            }
 
             // "[stats] per [amount] population [cityFilter]"
             if (unique.placeholderText == "[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
@@ -510,6 +515,12 @@ class CityStats(val cityInfo: CityInfo) {
         // We calculate this here for concurrency reasons
         // If something needs this, we pass this through as a parameter
         val localBuildingUniques = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
+        
+        // Is This line really necessary? There is only a single unique that actually uses this, 
+        // and it is passed to functions at least 3 times for that
+        // It's the only reason `cityInfo.getMatchingUniques` has a localUniques parameter,
+        // which clutters readability, and also the only reason `CityInfo.getAllLocalUniques()`
+        // exists in the first place, though that could be useful for the previous line too.
         val citySpecificUniques = cityInfo.getAllLocalUniques()
 
         // We need to compute Tile yields before happiness

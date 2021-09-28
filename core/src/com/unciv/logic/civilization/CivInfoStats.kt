@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
@@ -21,8 +22,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
     private fun getUnitMaintenance(): Int {
         val baseUnitCost = 0.5f
         var freeUnits = 3
-        for (unique in civInfo.getMatchingUniques(UniqueType.FreeUnits)) {
-            if (!unique.conditionalsApply(civInfo)) continue
+        for (unique in civInfo.getMatchingUniques(UniqueType.FreeUnits, StateForConditionals(civInfo))) {
             freeUnits += unique.params[0].toInt()
         }
 
@@ -36,8 +36,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscount)) {
-            if (!unique.conditionalsApply(civInfo)) continue
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscount, StateForConditionals(civInfo))) {
             val numberOfUnitsWithDiscount = min(
                 numberOfUnitsToPayFor,
                 unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()

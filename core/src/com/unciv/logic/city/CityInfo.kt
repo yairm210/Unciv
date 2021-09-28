@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import java.util.*
@@ -160,8 +161,7 @@ class CityInfo {
 
         civInfo.civConstructions.tryAddFreeBuildings()
 
-        for (unique in getMatchingUniques(UniqueType.GainFreeBuildings)) {
-            if (!unique.conditionalsApply(civInfo, this)) continue
+        for (unique in getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(civInfo, this))) {
             val freeBuildingName = unique.params[0]
             if (matchesFilter(unique.params[1])) {
                 if (!cityConstructions.isBuilt(freeBuildingName))
@@ -723,14 +723,16 @@ class CityInfo {
         uniqueType: UniqueType,
         // We might have this cached to avoid concurrency problems. If we don't, just get it directly
         localUniques: Sequence<Unique> = getLocalMatchingUniques(uniqueType),
+        stateForConditionals: StateForConditionals? = null,
     ): Sequence<Unique> {
         // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
         // The time loss shouldn't be that large I don't think
-        return civInfo.getMatchingUniques(uniqueType, this) +
-                localUniques.filter {
-                    it.isOfType(uniqueType)
-                    && it.params.none { param -> param == "in other cities" }
-                }
+        return civInfo.getMatchingUniques(uniqueType, stateForConditionals, this) +
+            localUniques.filter {
+                it.isOfType(uniqueType)
+                && it.conditionalsApply(stateForConditionals)
+                && it.params.none { param -> param == "in other cities" }
+            }
     }
 
     // Matching uniques provided by sources in the city itself
@@ -740,10 +742,14 @@ class CityInfo {
                 religion.getUniques().filter { it.placeholderText == placeholderText }
     }
 
-    fun getLocalMatchingUniques(uniqueType: UniqueType): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { it.params.none { param -> param == "in other cities" } } +
-                religion.getUniques().filter { it.isOfType(uniqueType) }
+    fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
+        return (
+            cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
+                .filter { it.params.none { param -> param == "in other cities" } } 
+            + religion.getUniques().filter { it.isOfType(uniqueType) }
+        ).filter {
+            it.conditionalsApply(stateForConditionals)
+        }
     }
 
     // Get all uniques that originate from this city
@@ -755,21 +761,21 @@ class CityInfo {
     fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
             .filter { it.params.none { param -> param == "in this city" } }
-        // Note that we don't query religion here, as those only have local effects (for now at least)
+        // Note that we don't query religion here, as those only have local effects
     }
 
 
-    fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType): Sequence<Unique> {
+    fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { it.params.none { param -> param == "in this city" } }
-        // Note that we don't query religion here, as those only have local effects (for now at least)
+            .filter { it.params.none { param -> param == "in this city" } && it.conditionalsApply(stateForConditionals) }
+        // Note that we don't query religion here, as those only have local effects
     }
 
     // Get all uniques that don't apply to only this city
     fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getAllUniques()
             .filter { it.params.none { param -> param == "in this city" } }
-        // Note that we don't query religion here, as those only have local effects (for now at least)
+        // Note that we don't query religion here, as those only have local effects
     }
 
     fun isHolyCity(): Boolean = religion.religionThisIsTheHolyCityOf != null

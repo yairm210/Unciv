@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -162,8 +163,7 @@ class CityConstructions {
     
     fun addFreeBuildings() {
         // "Provides a free [buildingName] [cityFilter]"
-        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.ProvidesFreeBuildings)) {
-            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
+        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.ProvidesFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo))) {
             val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
             val citiesThatApply = when (unique.params[1]) {
                 "in this city" -> listOf(cityInfo)
