@@ -50,6 +50,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
             UniqueType.ConditionalHappy.placeholderText -> 
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
+            UniqueType.ConditionalVsCity.placeholderText ->
+                state.defender != null && state.defender.matchesCategory("City")
+            UniqueType.ConditionalVsUnits.placeholderText ->
+                state.defender != null && state.defender.matchesCategory(condition.params[0])
             else -> false
         }
     }
