@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -10,17 +11,22 @@ import com.unciv.models.ruleset.unique.UniqueType
 interface IHasUniques {
     var uniques: ArrayList<String> // Can not be a hashset as that would remove doubles
     // I bet there's a way of initializing these without having to override it everywhere...
-    val uniqueObjects: List<Unique>
+    val uniqueObjects: List<Unique> 
+    
     /** Technically not currently needed, since the unique target can be retrieved from every unique in the uniqueObjects,
      * But making this a function is relevant for future "unify Unciv object" plans ;)
      * */
     fun getUniqueTarget(): UniqueTarget
     
-    fun getMatchingUniques(uniqueTemplate: String) = uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate }
-    fun getMatchingUniques(uniqueType: UniqueType) = uniqueObjects.asSequence().filter { it.isOfType(uniqueType) }
+    fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null) = 
+        uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate && it.conditionalsApply(stateForConditionals) }
     
-    fun hasUnique(uniqueTemplate: String) = uniqueObjects.any { it.placeholderText == uniqueTemplate }
-    fun hasUnique(uniqueType: UniqueType) = uniqueObjects.any { it.isOfType(uniqueType) }
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = 
+        uniqueObjects.asSequence().filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
+    
+    fun hasUnique(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null) = 
+        uniqueObjects.any { it.placeholderText == uniqueTemplate && it.conditionalsApply(stateForConditionals) }
+    
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = 
+        uniqueObjects.any { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
 }
-
-

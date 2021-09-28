@@ -7,6 +7,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -224,8 +225,12 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.add(unique.stats)
             }
             
-            if (unique.isOfType(UniqueType.StatsPerCity) && cityInfo.matchesFilter(unique.params[1]) && unique.conditionalsApply(cityInfo.civInfo))
+            if (unique.isOfType(UniqueType.StatsPerCity) 
+                && cityInfo.matchesFilter(unique.params[1]) 
+                && unique.conditionalsApply(cityInfo.civInfo)
+            ) {
                 stats.add(unique.stats)
+            }
 
             // "[stats] per [amount] population [cityFilter]"
             if (unique.placeholderText == "[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
@@ -511,6 +516,10 @@ class CityStats(val cityInfo: CityInfo) {
     fun update(currentConstruction: IConstruction = cityInfo.cityConstructions.getCurrentConstruction()) {
         // We calculate this here for concurrency reasons
         // If something needs this, we pass this through as a parameter
+        // Is that really necessary? There is only a single unique that actually uses this, 
+        // and it is passed to functions at least 3 times for that
+        // It also requires an additional parameter to `cityInfo.getMatchingUniques()` which clutters code
+        // so if this isn't explicitely necessary, I'd like to remove this for readability reasons
         val localBuildingUniques = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
         val citySpecificUniques = cityInfo.getAllLocalUniques()
 
