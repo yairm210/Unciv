@@ -84,6 +84,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         }
 
         addCloseButton {
+            previousScreen.game.musicController.onChange(null)
             previousScreen.game.limitOrientationsHelper?.allowPortrait(settings.allowAndroidPortrait)
             if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
@@ -210,6 +211,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         if (previousScreen.game.musicController.isMusicAvailable()) {
             addMusicVolumeSlider()
             addMusicPauseSlider()
+            addMusicCurrentlyPlaying()
         } else {
             addDownloadMusic()
         }
@@ -454,6 +456,17 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             settings.pauseBetweenTracks = music.silenceLength.toInt()
         }
         add(pauseLengthSlider).pad(5f).row()
+    }
+
+    private fun Table.addMusicCurrentlyPlaying() {
+        val label = WrappableLabel("", this.width - 10f, Color(-0x2f5001), 16)
+        label.wrap = true
+        add(label).padTop(20f).colspan(2).fillX().row()
+        previousScreen.game.musicController.onChange {
+            Gdx.app.postRunnable {
+                label.setText("Currently playing: [$it]".tr())
+            }
+        }
     }
 
     private fun Table.addDownloadMusic() {
