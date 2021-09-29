@@ -2,7 +2,6 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -10,7 +9,6 @@ import com.unciv.models.metadata.GameSpeed
 import java.util.*
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
 
 class BarbarianManager {
@@ -40,7 +38,6 @@ class BarbarianManager {
         // Check if camps were destroyed
         for (camp in camps.toList()) {
             if (tileMap[camp.position].improvement != Constants.barbarianEncampment) {
-                println("camp destroyed")
                 camps.remove(camp)
             }
         }
@@ -54,6 +51,11 @@ class BarbarianManager {
         for (camp in camps) {
             camp.update()
         }
+    }
+
+    /** Called when an encampment was attacked, will speed up time to next spawn */
+    fun campAttacked(position: Vector2) {
+        camps.firstOrNull { it.position == position }?.wasAttacked()
     }
 
     fun placeBarbarianEncampment() {
@@ -74,7 +76,6 @@ class BarbarianManager {
         // First turn of the game add 1/3 of all possible camps
         if (gameInfo.turns == 1) {
             campsToAdd /= 3
-            println("Placing $campsToAdd starting barbs")
         } else if (campsToAdd > 0)
             campsToAdd = 1
 
@@ -111,8 +112,7 @@ class BarbarianManager {
                     tile = viableTiles.random()
             } else
                 tile = viableTiles.random()
-
-            println("add camp to ${tile.position}")
+            
             tile.improvement = Constants.barbarianEncampment
             val newCamp = Encampment()
             newCamp.position = tile.position
@@ -170,6 +170,10 @@ class Encampment {
             }
         } else
             countdown--
+    }
+
+    fun wasAttacked() {
+        countdown /= 2
     }
 
     /** Attempts to spawn a Barbarian from this encampment. Returns true if a unit was spawned. */
