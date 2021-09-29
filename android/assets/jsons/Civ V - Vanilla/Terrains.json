@@ -158,7 +158,6 @@
 		"movementCost": 2,
 		"unbuildable": true,
 		"defenceBonus": -0.15,
-		"uniques": ["No improvements except Roads may be built on this tile"]
 	},
 	{
 		"name": "Oasis",
