@@ -42,6 +42,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         private const val FAIL_COUNT = "FAIL_COUNT"
         private const val GAME_ID = "GAME_ID"
+        private const val GAME_NAME = "GAME_NAME"
         private const val USER_ID = "USER_ID"
         private const val CONFIGURED_DELAY = "CONFIGURED_DELAY"
         private const val PERSISTENT_NOTIFICATION_ENABLED = "PERSISTENT_NOTIFICATION_ENABLED"
@@ -136,7 +137,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             }
         }
 
-        fun notifyUserAboutTurn(applicationContext: Context) {
+        fun notifyUserAboutTurn(applicationContext: Context, gameName: String) {
             val pendingIntent: PendingIntent =
                     Intent(applicationContext, AndroidLauncher::class.java).let { notificationIntent ->
                         PendingIntent.getActivity(applicationContext, 0, notificationIntent, 0)
@@ -146,7 +147,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
                     .setPriority(NotificationManagerCompat.IMPORTANCE_HIGH) // people are waiting!
                     .setContentTitle(contentTitle)
-                    .setContentText(applicationContext.resources.getString(R.string.Notify_YourTurn_Long))
+                    .setContentText(applicationContext.resources.getString(R.string.Notify_YourTurn_Long).replace("[gameName]", gameName))
                     .setTicker(contentTitle)
                     // without at least vibrate, some Android versions don't show a heads-up notification
                     .setDefaults(DEFAULT_VIBRATE)
@@ -181,9 +182,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
             if (currentGameInfo.currentPlayerCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
-                notifyUserAboutTurn(applicationContext)
+                notifyUserAboutTurn(applicationContext, gameNames[gameIds.indexOf(currentGameInfo.gameId)])
             } else {
-                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds),
+                val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAME, gameNames),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.multiplayerTurnCheckerDelayInMinutes),
                         Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.multiplayerTurnCheckerPersistentNotificationEnabled))
 
@@ -226,6 +227,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         try {
             val gameIds = inputData.getStringArray(GAME_ID)!!
+            val gameNames = inputData.getStringArray(GAME_NAME)!!
             var arrayIndex = 0
             // We only want to notify the user or update persisted notification once but still want
             // to download all games to update the files hence this bool
@@ -250,12 +252,14 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
                 if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!!) {
                     foundGame = true
+                    //As we do not need to look any further we can just break here
+                    break
                 }
                 arrayIndex++
             }
 
             if (foundGame){
-                notifyUserAboutTurn(applicationContext)
+                notifyUserAboutTurn(applicationContext, gameNames[arrayIndex])
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }
