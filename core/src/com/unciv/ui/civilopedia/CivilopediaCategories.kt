@@ -132,12 +132,12 @@ enum class CivilopediaCategories (
     Resource ("Resources", false,
         CivilopediaImageGetters.resource,
         KeyCharAndCode('R'),
-        "StatIcons/Happiness"
+        "OtherIcons/Resources"
     ),
     Terrain ("Terrains", false,
         CivilopediaImageGetters.terrain,
         KeyCharAndCode('T'),
-        "TileSets/FantasyHex/Tiles/Mountain"
+        "OtherIcons/Terrains"
     ),
     Improvement ("Tile Improvements", false,
         CivilopediaImageGetters.improvement,
@@ -152,7 +152,7 @@ enum class CivilopediaCategories (
     Nation ("Nations", false,
         CivilopediaImageGetters.nation,
         KeyCharAndCode('N'),
-        "NationIcons/CityState"
+        "OtherIcons/Nations"
     ),
     Technology ("Technologies", false,
         CivilopediaImageGetters.technology,

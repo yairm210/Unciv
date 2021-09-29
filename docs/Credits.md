@@ -158,7 +158,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Anvil](https://thenounproject.com/term/anvil/166414/) By Jason Dilworth for Iron
 * [Deer](https://thenounproject.com/term/deer/338013/) By Richard Nixon
 * [Banana](https://thenounproject.com/term/banana/1262865/) By Adrian Coquet
-* [Oil](https://thenounproject.com/term/oil/88649/) By Tiago Maricate
+* [Oil](https://thenounproject.com/term/oil/88649/) By Tiago Maricate (also as Civilopedia category icon)
 * [Statue](https://thenounproject.com/term/statue/5221/) By Joris Hoogendoorn for Marble
 * [Ribbon](https://thenounproject.com/term/ribbon/418996) By Anton for Silk
 * [Stone](https://thenounproject.com/term/stone/1373902/) By AFY Studio
@@ -648,6 +648,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [ship helm](https://thenounproject.com/term/ship-helm/2170591/) by Vectors Market for Maritime City-States
 * [Magnifying Glass](https://thenounproject.com/term/magnifying-glass/1311/) by John Caserta for Mod filter
 * [tick](https://thenounproject.com/term/tick/3968142/) by Adrien Coquet on Nation picker
+* [people](https://thenounproject.com/term/people/458671) by Wilson Joseph as base for Civilopedia category Nations
+* [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains
 
 ## Main menu
 
