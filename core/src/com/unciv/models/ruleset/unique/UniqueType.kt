@@ -37,10 +37,11 @@ enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
     Promotion(Unit),
 
     // Tile-specific
-    Terrain,
-    Improvement,
-    Resource,
-    Ruins,
+    Tile,
+    Terrain(Tile),
+    Improvement(Tile),
+    Resource(Tile),
+    Ruins(Tile),
 
     // Other
     CityState,
@@ -78,7 +79,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.WARNING)
     GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
 
-    TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Improvement),
+    TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Tile),
 
     @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs"), // No conditional support
