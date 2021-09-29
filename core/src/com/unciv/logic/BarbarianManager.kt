@@ -9,7 +9,6 @@ import com.unciv.models.metadata.GameSpeed
 import java.util.*
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.system.measureTimeMillis
 
 class BarbarianManager {
     val camps = ArrayList<Encampment>()
@@ -43,9 +42,7 @@ class BarbarianManager {
         }
 
         // Possibly place a new encampment
-        val timeToPlace = measureTimeMillis {
-            placeBarbarianEncampment()
-        }
+        placeBarbarianEncampment()
 
         // Update all existing camps
         for (camp in camps) {
@@ -96,7 +93,7 @@ class BarbarianManager {
                     && it !in tooCloseToCamps
         }.toMutableList()
 
-        var tile: TileInfo? = null
+        var tile: TileInfo?
         var addedCamps = 0
         var biasCoast = Random().nextInt(6) == 0
 
