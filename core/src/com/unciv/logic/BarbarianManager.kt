@@ -29,6 +29,17 @@ class BarbarianManager {
         this.gameInfo = gameInfo
         this.tileMap = gameInfo.tileMap
 
+        // Add any preexisting camps as Encampment objects
+        for (tile in tileMap.values) {
+            if (tile.improvement == Constants.barbarianEncampment
+                && camps.none { it.position == tile.position }) {
+                val newCamp = Encampment()
+                newCamp.position = tile.position
+                newCamp.gameInfo = gameInfo
+                camps.add(newCamp)
+            }
+        }
+
         for (camp in camps)
             camp.gameInfo = gameInfo
     }
