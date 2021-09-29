@@ -111,6 +111,9 @@ object Github {
     private fun FileHandle.renameOrMove(dest: FileHandle) {
         // Gdx tries a java rename for Absolute and External, but NOT for Local - rectify that
         if (type() == Files.FileType.Local) {
+            // See #5346: renameTo 'unpacks' a source folder if the destination exists and is an
+            // empty folder, dropping the name of the source entirely.
+            // Safer to ask for a move to the not-yet-existing full resulting path instead.
             if (isDirectory)
                 if (file().renameTo(dest.child(name()).file())) return
             else
