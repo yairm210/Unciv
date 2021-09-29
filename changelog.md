@@ -1,3 +1,23 @@
+## 3.17.3
+
+Added game name to turn notification  - By GGGuenni
+
+By xlenstra:
+- Added the Byzantine empire
+- First step into unifying strength bonuses using conditionals
+
+By SimonCeder:
+- Fix Polynesian vision when embarked
+- Proper great general points
+
+By SomeTroglodyte:
+- Civilopedia category icons & keyboard navigation
+- Allow Deciv Redux start with >0 City States
+- Fix era of Wonders without tech in Wonder overview
+- Double movement unique parameterized
+
+Change NationIcon for 4 nation  - By AdityaMH
+
 ## 3.17.2
 
 Warn modders for uniques located on the wrong objects, and usages of deprecated fields
