@@ -3,21 +3,18 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
-import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.max
+import kotlin.collections.HashSet
 
 object GameStarter {
     // temporary instrumentation while tuning/debugging
@@ -86,7 +83,7 @@ object GameStarter {
 
         if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
             runAndMeasure("assignContinents") {
-                mapGen.assignContinents(tileMap)
+                tileMap.assignContinents()
             }
 
         runAndMeasure("addCivStartingUnits") {
@@ -244,23 +241,21 @@ object GameStarter {
         for (tile in tileMap.values) {
             startScores[tile] = tile.getTileStartScore()
         }
+        val allCivs = gameInfo.civilizations.filter { !it.isBarbarian() }
+        val landTilesInBigEnoughGroup = getCandidateLand(allCivs.size, tileMap, startScores)
 
         // First we get start locations for the major civs, on the second pass the city states (without predetermined starts) can squeeze in wherever
-        // I hear copying code is good
         val civNamesWithStartingLocations = tileMap.startingLocationsByNation.keys
-        val bestCivs = gameInfo.civilizations.filter { !it.isBarbarian() && (!it.isCityState() || it.civName in civNamesWithStartingLocations) }
-        val bestLocations = getStartingLocations(bestCivs, tileMap, startScores)
+        val bestCivs = allCivs.filter { !it.isCityState() || it.civName in civNamesWithStartingLocations }
+        val bestLocations = getStartingLocations(bestCivs, tileMap, landTilesInBigEnoughGroup, startScores)
         for ((civ, tile) in bestLocations) {
-            if (civ.civName in civNamesWithStartingLocations)  // Already have explicit starting locations
-                continue
-
+            // A nation can have multiple marked starting locations, of which the first pass may have chosen one
+            tileMap.removeStartingLocations(civ.civName)
             // Mark the best start locations so we remember them for the second pass
             tileMap.addStartingLocation(civ.civName, tile)
         }
 
-        val startingLocations = getStartingLocations(
-                gameInfo.civilizations.filter { !it.isBarbarian() },
-                tileMap, startScores)
+        val startingLocations = getStartingLocations(allCivs, tileMap, landTilesInBigEnoughGroup, startScores)
 
         val settlerLikeUnits = ruleSet.units.filter {
             it.value.uniqueObjects.any { unique -> unique.placeholderText == Constants.settlerUnique }
@@ -349,70 +344,66 @@ object GameStarter {
         }
     }
 
+    private fun getCandidateLand(
+        civCount: Int,
+        tileMap: TileMap,
+        startScores: HashMap<TileInfo, Float>
+    ): Map<TileInfo, Float> {
+        if (tileMap.continentSizes.isEmpty()) tileMap.assignContinents()
 
-    private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap, startScores: HashMap<TileInfo, Float>): HashMap<CivilizationInfo, TileInfo> {
-        val landTilesInBigEnoughGroup = tileMap.landTilesInBigEnoughGroup
-        if (landTilesInBigEnoughGroup.isEmpty()) {
-            // Worst case - a pre-made map with continent data. This means we didn't re-run assignContinents,
-            // so we don't have a cached landTilesInBigEnoughGroup. So we need to do it the hard way.
-            var landTiles = tileMap.values
-                // Games starting on snow might as well start over...
-                .filter { it.isLand && !it.isImpassible() && it.baseTerrain != Constants.snow }
-            while (landTiles.any()) {
-                val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
-                bfs.stepToEnd()
-                val tilesInGroup = bfs.getReachedTiles()
-                landTiles = landTiles.filter { it !in tilesInGroup }
-                if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
-                    landTilesInBigEnoughGroup.addAll(tilesInGroup)
-            }
+        // We want to  distribute starting locations fairly, and thus not place anybody on a small island
+        // - unless necessary. Old code would only consider landmasses >= 20 tiles.
+        // Instead, take continents until >=75% total area or everybody can get their own island
+        val orderedContinents = tileMap.continentSizes.asSequence().sortedByDescending { it.value }.toList()
+        val totalArea = tileMap.continentSizes.values.sum()
+        var candidateArea = 0
+        val candidateContinents = HashSet<Int>()
+        for ((index, continentSize) in orderedContinents.withIndex()) {
+            candidateArea += continentSize.value
+            candidateContinents.add(continentSize.key)
+            if (candidateArea * 4 >= totalArea * 3) break
+            if (index >= civCount) break
         }
+
+        return startScores.filter { it.key.getContinent() in candidateContinents }
+    }
+
+    private fun getStartingLocations(
+        civs: List<CivilizationInfo>,
+        tileMap: TileMap,
+        landTilesInBigEnoughGroup: Map<TileInfo, Float>,
+        startScores: HashMap<TileInfo, Float>
+    ): HashMap<CivilizationInfo, TileInfo> {
 
         val civsOrderedByAvailableLocations = civs.shuffled()   // Order should be random since it determines who gets best start
             .sortedBy { civ ->
             when {
                 civ.civName in tileMap.startingLocationsByNation -> 1 // harshest requirements
-                civ.nation.startBias.contains("Tundra") -> 2    // Tundra starts are hard to find, so let's do them first
-                civ.nation.startBias.isNotEmpty() -> 3 // less harsh
-                else -> 4  // no requirements
+                civ.nation.startBias.any { it in tileMap.naturalWonders } -> 2
+                civ.nation.startBias.contains("Tundra") -> 3    // Tundra starts are hard to find, so let's do them first
+                civ.nation.startBias.isNotEmpty() -> 4 // less harsh
+                else -> 5  // no requirements
             }
         }
 
-        for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 4 downTo 0) {
-            val freeTiles = landTilesInBigEnoughGroup
-                    .filter {
-                        HexMath.getDistanceFromEdge(it.position, tileMap.mapParameters) >=
-                                (minimumDistanceBetweenStartingLocations * 2) /3
-                    }.toMutableList()
+        for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 6 downTo 0) {
+            val freeTiles = landTilesInBigEnoughGroup.asSequence()
+                .filter {
+                    HexMath.getDistanceFromEdge(it.key.position, tileMap.mapParameters) >=
+                            (minimumDistanceBetweenStartingLocations * 2) / 3
+                }.sortedBy { it.value }
+                .map { it.key }
+                .toMutableList()
 
             val startingLocations = HashMap<CivilizationInfo, TileInfo>()
             for (civ in civsOrderedByAvailableLocations) {
-                var startingLocation: TileInfo
-                val presetStartingLocation = tileMap.startingLocationsByNation[civ.civName]?.randomOrNull()  // in case map editor is extended to allow alternate starting locations for a nation
-                var distanceToNext = minimumDistanceBetweenStartingLocations
-
-                if (presetStartingLocation != null) startingLocation = presetStartingLocation
+                val distanceToNext = minimumDistanceBetweenStartingLocations /
+                        (if (civ.isCityState()) 2 else 1) // We allow city states to squeeze in tighter
+                val presetStartingLocation = tileMap.startingLocationsByNation[civ.civName]?.randomOrNull()
+                val startingLocation = if (presetStartingLocation != null) presetStartingLocation
                 else {
                     if (freeTiles.isEmpty()) break // we failed to get all the starting tiles with this minimum distance
-                    if (civ.isCityState())
-                        distanceToNext = minimumDistanceBetweenStartingLocations / 2 // We allow random city states to squeeze in tighter
-
-                    freeTiles.sortBy { startScores[it] }
-
-                    var preferredTiles = freeTiles.toList()
-
-                    for (startBias in civ.nation.startBias) {
-                        preferredTiles = when {
-                            startBias.startsWith("Avoid [") -> {
-                                val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
-                                preferredTiles.filter { !it.matchesTerrainFilter(tileToAvoid) }
-                            }
-                            startBias == Constants.coast -> preferredTiles.filter { it.isCoastalTile() }
-                            else -> preferredTiles.filter { it.matchesTerrainFilter(startBias) }
-                        }
-                    }
-
-                    startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.last() else freeTiles.last()
+                    getOneStartingLocation(civ, tileMap, freeTiles, startScores)
                 }
                 startingLocations[civ] = startingLocation
                 freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, distanceToNext))
@@ -422,6 +413,36 @@ object GameStarter {
             return startingLocations
         }
         throw Exception("Didn't manage to get starting tiles even with distance of 1?")
+    }
+
+    private fun getOneStartingLocation(
+        civ: CivilizationInfo,
+        tileMap: TileMap,
+        freeTiles: MutableList<TileInfo>,
+        startScores: HashMap<TileInfo, Float>
+    ): TileInfo {
+        if (civ.nation.startBias.any { it in tileMap.naturalWonders }) {
+            // startPref wants Natural wonder neighbor: Rare and very likely to be outside getDistanceFromEdge
+            val wonderNeighbor = tileMap.values.asSequence()
+                .filter { it.isNaturalWonder() && it.naturalWonder!! in civ.nation.startBias }
+                .sortedByDescending { startScores[it] }
+                .firstOrNull()
+            if (wonderNeighbor != null) return wonderNeighbor
+        }
+
+        var preferredTiles = freeTiles.toList()
+        for (startBias in civ.nation.startBias) {
+            preferredTiles = when {
+                startBias.startsWith("Avoid [") -> {
+                    val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
+                    preferredTiles.filter { !it.matchesTerrainFilter(tileToAvoid) }
+                }
+                startBias == Constants.coast -> preferredTiles.filter { it.isCoastalTile() }
+                startBias in tileMap.naturalWonders -> preferredTiles  // passthrough: already failed
+                else -> preferredTiles.filter { it.matchesTerrainFilter(startBias) }
+            }
+        }
+        return preferredTiles.lastOrNull() ?: freeTiles.last()
     }
 
     private fun addConsolationPrize(gameInfo: GameInfo, spawn: TileInfo, points: Int) {

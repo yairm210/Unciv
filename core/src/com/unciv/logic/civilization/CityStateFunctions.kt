@@ -49,7 +49,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         // Mercantile bonus resources
         if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateUniqueLuxury) }
             || (fallback && cityStateType == CityStateType.Mercantile)) { // Fallback for badly defined Eras.json
-            civInfo.cityStateResource = allMercantileResources.random()
+            civInfo.cityStateResource = allMercantileResources.randomOrNull()
         }
 
         // Unique unit for militaristic city-states

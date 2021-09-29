@@ -536,7 +536,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [Eye of Horus](https://thenounproject.com/search/?q=eye%20of%20horus&i=92471) By Lilit Kalachyan for Egypt
 * [Russia](https://thenounproject.com/search/?q=russia&i=64137) By Eugen Belyakoff
-* [Yin Yang](https://thenounproject.com/search/?q=tao&i=1023129) By andriwidodo for China
+* [Dragon Head](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/China.png) By Ravignir for China
 * [Lion](https://thenounproject.com/search/?q=lion&i=912735) By parkjisun for Babylon
 * [Omega](https://thenounproject.com/search/?q=omega&i=1925519) By icon 54 for Greece
 * [Shield](https://thenounproject.com/search/?q=American%20shield&i=5825) By Nathan Driskell for America
@@ -552,13 +552,15 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Two [Sword](https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) Scimitars by Those Icons for Persia
 * [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
 * [Dharmachakra](https://thenounproject.com/search/?q=dharmachakra&i=740796) by Parkjisun for Siam
-* [Sun](https://thenounproject.com/search/?q=inca&i=910770) by Made x Made for Inca
+* [Inca](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/Inca.png) by Ravignir for Inca
 * [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for The Huns
 * [Lion](https://thenounproject.com/search/?q=lion&i=76154) by Nikki Rodriguez for The Netherlands
 * [Three Crowns](https://thenounproject.com/search/?q=three+crowns&i=1155972) by Daniel Falk for Sweden
 * [Flag of Austria](https://thenounproject.com/term/flag-of-austria/3292053/) by Olena Panasovska, UA for Austria. The original work has been modified.
 * [Elephant](https://thenounproject.com/term/elephant/564421/) by Hea Poh Lin for Carthage. The original work has been modified.
 * [Orthodox Cross](https://thenounproject.com/search/?q=orthodox&i=2069822) by Avana Vana for Byzantium
+* [Iroquois](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/Iroquois.png) by Ravignir for Iroquois
+* [Songhai](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/Songhai.png) by Ravignir for Songhai
 
 
 ## Promotions

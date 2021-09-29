@@ -92,14 +92,11 @@ enum class UniqueParameterType(val parameterName:String) {
     },
     /** Used by NaturalWonderGenerator, only tests base terrain or a feature */
     SimpleTerrain("simpleTerrain") {
+        private val knownValues = setOf("Elevated", "Water", "Land")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if (parameterText == "Elevated") return null
-            if (ruleset.terrains.values.any {
-                it.name == parameterText &&
-                (it.type.isBaseTerrain || it.type == TerrainType.TerrainFeature) 
-            })
-                return null
+            if (parameterText in knownValues) return null
+            if (ruleset.terrains.containsKey(parameterText)) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },

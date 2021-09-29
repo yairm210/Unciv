@@ -115,7 +115,7 @@ class WonderOverviewTable(
         val wonderEraMap: Map<String, Era> =
             ruleSet.buildings.values.asSequence()
             .filter { it.isWonder }
-            .map { it.name to ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()]!! }
+            .map { it.name to (ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] ?: viewingPlayer.getEra()) }
             .toMap()
 
         // Maps all World Wonders by their position in sort order to their name

@@ -80,7 +80,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Improvement),
 
-
     @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs"), // No conditional support
     @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
@@ -88,6 +87,20 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.WARNING)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
 
+    Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
+    
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
+    StrengthPlus("+[amount]% Strength"),
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
+    StrengthMin("-[amount]% Strength"),
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [unitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
+    StrengthPlusVs("+[amount]% Strength vs [combatantFilter]"),
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [unitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
+    StrengthMinVs("-[amount]% Strength vs [combatantFilter]"),
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
+    CombatBonus("+[amount]% Combat Strength"),
+    
+    
     // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
     ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
@@ -103,13 +116,16 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
 
-    NaturalWonderNeighborCount("Must be adjacent to [amount] [terrainFilter] tiles", UniqueTarget.Terrain),
-    NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [terrainFilter] tiles", UniqueTarget.Terrain),
-    NaturalWonderLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
+    NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
+    NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
+    NaturalWonderSmallerLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
+    NaturalWonderLargerLandmass("Must be on [amount] largest landmasses", UniqueTarget.Terrain),
     NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain),
     NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain),
     NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain),
-    NaturalWonderConvertNeighborsExcept("Neighboring tiles except [terrainFilter] will convert to [baseTerrain]", UniqueTarget.Terrain),
+  
+    // The "Except [terrainFilter]" could theoretically be implemented with a conditional
+    NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain),
 
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
 
@@ -131,12 +147,18 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
 
 
-    ///// CONDITIONALS
+    // Conditionals
 
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
+    ConditionalVsCity("vs cities", UniqueTarget.Conditional),
+    ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
+//    ConditionalInTiles("fighting in [tileFilter] tiles", UniqueTarget.Conditional),
+//    ConditionalAttacking("when attacking", UniqueTarget.Conditional),
+//    ConditionalDefending("when defending", UniqueTarget.Conditional),
+//    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

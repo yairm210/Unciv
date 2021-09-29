@@ -2,7 +2,6 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
@@ -78,9 +77,6 @@ class TileMap {
 
     @Transient
     val startingLocationsByNation = HashMap<String,HashSet<TileInfo>>()
-
-    @Transient
-    val landTilesInBigEnoughGroup = ArrayList<TileInfo>() // cached at map gen
 
     //endregion
     //region Constructors
@@ -546,10 +542,41 @@ class TileMap {
         // we do not clean up an empty startingLocationsByNation[nationName] set - not worth it
     }
 
+    /** Removes all starting positions for [nationName], maintaining the transients */
+    fun removeStartingLocations(nationName: String) {
+        if (startingLocationsByNation[nationName] == null) return
+        for (tile in startingLocationsByNation[nationName]!!) {
+            startingLocations.remove(StartingLocation(tile.position, nationName))
+        }
+        startingLocationsByNation[nationName]!!.clear()
+    }
+
     /** Clears starting positions, e.g. after GameStarter is done with them. Does not clear the pseudo-improvements. */
     fun clearStartingLocations() {
         startingLocations.clear()
         startingLocationsByNation.clear()
+    }
+
+    /** Set a continent id for each tile, so we can quickly see which tiles are connected.
+     *  Can also be called on saved maps.
+     *  @throws Exception when any land tile already has a continent ID
+     */
+    fun assignContinents() {
+        var landTiles = values.filter { it.isLand && !it.isImpassible() }
+        var currentContinent = 0
+
+        while (landTiles.any()) {
+            val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
+            bfs.stepToEnd()
+            bfs.getReachedTiles().forEach {
+                it.setContinent(currentContinent)
+            }
+            val continent = bfs.getReachedTiles()
+            continentSizes[currentContinent] = continent.size
+
+            currentContinent++
+            landTiles = landTiles.filter { it !in continent }
+        }
     }
 
     //endregion

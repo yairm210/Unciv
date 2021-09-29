@@ -54,6 +54,15 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
     private fun Unique.getIntParam(index: Int) = params[index].toInt()
 
     private fun spawnSpecificWonder(tileMap: TileMap, wonder: Terrain): Boolean {
+        val continentsRelevant = wonder.hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
+                wonder.hasUnique(UniqueType.NaturalWonderSmallerLandmass)
+        val sortedContinents = if (continentsRelevant)
+                tileMap.continentSizes.asSequence()
+                .sortedByDescending { it.value }
+                .map { it.key }
+                .toList()
+            else listOf()
+
         val suitableLocations = tileMap.values.filter { tile->
             tile.resource == null &&
             wonder.occursOn.contains(tile.getLastTerrain().name) &&
@@ -71,12 +80,11 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
                         }
                         count in unique.getIntParam(0)..unique.getIntParam(1)
                     }
-                    UniqueType.NaturalWonderLandmass -> {
-                        val sortedContinents = tileMap.continentSizes.asSequence()
-                            .sortedByDescending { it.value }
-                            .map { it.key }
-                            .toList()
+                    UniqueType.NaturalWonderSmallerLandmass -> {
                         tile.getContinent() !in sortedContinents.take(unique.getIntParam(0))
+                    }
+                    UniqueType.NaturalWonderLargerLandmass -> {
+                        tile.getContinent() in sortedContinents.take(unique.getIntParam(0))
                     }
                     UniqueType.NaturalWonderLatitude -> {
                         val lower = tileMap.maxLatitude * unique.getIntParam(0) * 0.01f
@@ -168,7 +176,9 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
     private fun TileInfo.matchesWonderFilter(filter: String) = when (filter) {
         "Elevated" -> baseTerrain == Constants.mountain || isHill()
         "Water" -> isWater
+        "Land" -> isLand
         "Hill" -> isHill()
+        naturalWonder -> true
         in allTerrainFeatures -> getLastTerrain().name == filter
         else -> baseTerrain == filter
     }

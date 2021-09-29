@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
@@ -228,9 +229,12 @@ class MapUnit {
         tempUniques.asSequence().filter { it.placeholderText == placeholderText } + 
             civInfo.getMatchingUniques(placeholderText)
 
-    fun getMatchingUniques(uniqueType: UniqueType): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.type == uniqueType } +
-            civInfo.getMatchingUniques(uniqueType)
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = sequence {
+        yieldAll(tempUniques.asSequence()
+            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals)}
+        )
+        yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
+    }
 
     fun hasUnique(unique: String): Boolean {
         return tempUniques.any { it.placeholderText == unique } || civInfo.hasUnique(unique)
@@ -324,11 +328,16 @@ class MapUnit {
      * @return Maximum distance of tiles this unit may possibly see
      */
     private fun getVisibilityRange(): Int {
-        if (isEmbarked() && !hasUnique("Normal vision when embarked"))
-            return 1
-
         var visibilityRange = 2
 
+        if (isEmbarked() && !hasUnique("Normal vision when embarked")) {
+            visibilityRange = 1
+            for (unique in getMatchingUniques("[] Sight for all [] units"))
+                if (unique.params[1] == "Embarked") // only count bonuses explicitly for embarked units
+                    visibilityRange += unique.params[0].toInt()
+            return visibilityRange
+        }
+        
         for (unique in getMatchingUniques("[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
