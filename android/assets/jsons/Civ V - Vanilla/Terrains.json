@@ -158,7 +158,7 @@
 		"movementCost": 2,
 		"unbuildable": true,
 		"defenceBonus": -0.15,
-		"uniques": ["No Improvements can be built here"]
+		"uniques": ["No improvements except Roads may be built on this tile"]
 	},
 	{
 		"name": "Oasis",
@@ -169,7 +169,7 @@
 		"unbuildable": true,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"],
-		"uniques": ["Fresh water", "Rare feature", "No Improvements can be built here"]
+		"uniques": ["Fresh water", "Rare feature", "No improvements except Roads may be built on this tile"]
 	},
 	{
 		"name": "Flood plains",
