@@ -39,13 +39,13 @@ class ModOptions : IHasUniques {
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
     var nationsToRemove = HashSet<String>()
-    
+
 
     var lastUpdated = ""
     var modUrl = ""
     var author = ""
     var modSize = 0
-    
+ 
     val maxXPfromBarbarians = 30
 
     override var uniques = ArrayList<String>()
@@ -265,7 +265,14 @@ class Ruleset {
     }
 
     fun hasReligion() = beliefs.any() && modWithReligionLoaded
-    
+
+    /** Used for displaying a RuleSet's name */
+    override fun toString() = when {
+        name.isNotEmpty() -> name
+        mods.isEmpty() -> BaseRuleset.Civ_V_Vanilla.fullName  //todo differentiate once more than 1 BaseRuleset
+        else -> "Combined RuleSet"
+    }
+
     fun getSummary(): String {
         val stringList = ArrayList<String>()
         if (modOptions.isBaseRuleset) stringList += "Base Ruleset"
@@ -320,10 +327,10 @@ class Ruleset {
 
 
     class RulesetError(val text:String, val errorSeverityToReport: RulesetErrorSeverity)
-    enum class RulesetErrorSeverity{
+    enum class RulesetErrorSeverity {
         OK,
-        Warning,
         WarningOptionsOnly,
+        Warning,
         Error,
     }
 
@@ -336,13 +343,17 @@ class Ruleset {
             add(RulesetError(text, errorSeverityToReport))
         }
 
-        fun getFinalSeverity(): RulesetErrorSeverity {
+        private fun getFinalSeverity(): RulesetErrorSeverity {
             if (isEmpty()) return RulesetErrorSeverity.OK
             return this.maxOf { it.errorSeverityToReport }
         }
 
+        /** @return `true` means severe errors make the mod unplayable */
         fun isError() = getFinalSeverity() == RulesetErrorSeverity.Error
+        /** @return `true` means problems exist, Options screen mod checker or unit tests for vanilla ruleset should complain */
         fun isNotOK() = getFinalSeverity() != RulesetErrorSeverity.OK
+        /** @return `true` means at least errors impacting gameplay exist, new game screen should warn or block */
+        fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
 
         fun getErrorText() =
             filter { it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
@@ -383,7 +394,7 @@ class Ruleset {
             checkUniques(building, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
 
         }
-        
+
         for (nation in nations.values) {
             if (nation.cities.isEmpty() && !nation.isSpectator() && !nation.isBarbarian()) {
                 lines += "${nation.name} can settle cities, but has no city names!"
@@ -516,7 +527,7 @@ class Ruleset {
         if (eras.isEmpty()) {
             lines += "Eras file is empty! This will likely lead to crashes. Ask the mod maker to update this mod!"
         }
-        
+
         for (era in eras.values) {
             for (wonder in era.startingObsoleteWonders)
                 if (wonder !in buildings)

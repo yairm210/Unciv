@@ -34,7 +34,7 @@ import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
  * The Options (Settings) Popup
- * @param previousScreen Tha caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
+ * @param previousScreen The caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
  */
 //region Fields
 class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousScreen) {
@@ -275,13 +275,13 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             val lines = ArrayList<FormattedLine>()
             var noProblem = true
             for (mod in RulesetCache.values.sortedBy { it.name }) {
-                val label = if (mod.name.isEmpty()) BaseRuleset.Civ_V_Vanilla.fullName else mod.name
-                lines += FormattedLine("$label{}", starred = true, header = 3)
+                // Appending {} is a dirty trick to deactivate the automatic translation which would drop [] from unique messages
+                lines += FormattedLine("$mod{}", starred = true, header = 3)
 
                 val modLinks =
                     if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
                     else mod.checkModLinks()
-                for (error in modLinks) {
+                for (error in modLinks.sortedByDescending { it.errorSeverityToReport }) {
                     val color = when (error.errorSeverityToReport) {
                         Ruleset.RulesetErrorSeverity.OK -> "#0F0"
                         Ruleset.RulesetErrorSeverity.Warning,
