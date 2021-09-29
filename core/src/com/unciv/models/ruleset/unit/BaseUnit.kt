@@ -556,7 +556,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         (
             isRanged()
             && (uniqueObjects + getType().uniqueObjects)
-                .any { it.placeholderText == "+[]% Strength vs []" && it.params[1] == "City" }
+                .any { it.isOfType(UniqueType.Strength)
+                    && it.params[0].toInt() > 0    
+                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) } 
+                }
         )
 
     fun getForceEvaluation(): Int {
@@ -593,10 +596,18 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (unique in uniqueObjects) {
 
             when {
-                unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
-                    -> power += (power * unique.params[0].toInt()) / 200
-                unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
-                    -> power += (power * unique.params[0].toInt()) / 400
+                unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
+                    if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) })
+                        power += (power * unique.params[0].toInt()) / 200
+                    else if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) })
+                        power += (power * unique.params[0].toInt()) / 400
+                }
+                // Deprecated since 3.17.3
+                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
+                        -> power += (power * unique.params[0].toInt()) / 400
+                //
                 unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
                     -> power += (power * unique.params[0].toInt()) / 200
                 unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus
@@ -614,10 +625,18 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (promotionName in promotions) {
             for (unique in ruleset.unitPromotions[promotionName]!!.uniqueObjects) {
                 when {
+                    unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
+                        if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) })
+                            power += (power * unique.params[0].toInt()) / 200
+                        else if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) })
+                            power += (power * unique.params[0].toInt()) / 400
+                    }
+                    // Deprecated since 3.17.3
                     unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
                     unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
                         -> power += (power * unique.params[0].toInt()) / 400
+                    //
                     unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
                     unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus

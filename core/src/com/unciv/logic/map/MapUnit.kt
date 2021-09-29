@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
@@ -228,9 +229,12 @@ class MapUnit {
         tempUniques.asSequence().filter { it.placeholderText == placeholderText } + 
             civInfo.getMatchingUniques(placeholderText)
 
-    fun getMatchingUniques(uniqueType: UniqueType): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.type == uniqueType } +
-            civInfo.getMatchingUniques(uniqueType)
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = sequence {
+        yieldAll(tempUniques.asSequence()
+            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals)}
+        )
+        yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
+    }
 
     fun hasUnique(unique: String): Boolean {
         return tempUniques.any { it.placeholderText == unique } || civInfo.hasUnique(unique)
