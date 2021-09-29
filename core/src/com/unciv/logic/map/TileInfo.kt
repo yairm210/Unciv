@@ -203,7 +203,8 @@ open class TileInfo {
 
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
-            || getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true)
+            || getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
+            || getAllTerrains().any { it.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) } )
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
@@ -220,6 +221,20 @@ open class TileInfo {
                 stats = terrainFeatureBase.clone()
             else
                 stats.add(terrainFeatureBase)
+        }
+
+        if (naturalWonder != null) {
+            val wonder = getNaturalWonder().clone()
+
+            // Spain doubles tile yield
+            if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+                wonder.timesInPlace(2f)
+            }
+
+            if (getNaturalWonder().overrideStats)
+                stats = wonder
+            else
+                stats.add(wonder)
         }
 
         if (city != null) {
@@ -245,15 +260,6 @@ open class TileInfo {
                     stats.add(unique.stats)
         }
 
-        if (naturalWonder != null) {
-            val wonder = getNaturalWonder()
-            stats.add(wonder)
-
-            // Spain doubles tile yield
-            if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
-                stats.add(wonder)
-            }
-        }
         // resource base
         if (hasViewableResource(observingCiv)) stats.add(getTileResource())
 
