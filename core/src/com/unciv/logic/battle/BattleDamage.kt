@@ -18,14 +18,14 @@ class BattleDamageModifier(val vs:String, val modificationAmount:Float){
 
 object BattleDamage {
 
-    private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): Counter<String> {
+    private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction): Counter<String> {
         val modifiers = Counter<String>()
 
         val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
             for (unique in combatant.unit.getMatchingUniques(
                 UniqueType.Strength,
-                StateForConditionals(civInfo, defender = enemy))
+                StateForConditionals(civInfo, defender = enemy, combatAction = combatAction))
             ) {
                 modifiers.add("${unique.sourceObjectName} (${unique.sourceObjectType})", unique.params[0].toInt())
             }
@@ -124,14 +124,16 @@ object BattleDamage {
         attacker: ICombatant,
         defender: ICombatant
     ): Counter<String> {
-        val modifiers = getGeneralModifiers(attacker, defender)
+        val modifiers = getGeneralModifiers(attacker, defender, CombatAction.Attack)
 
         if (attacker is MapUnitCombatant) {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
-            for (unique in attacker.unit.getMatchingUniques("+[]% Strength when attacking")) {
-                modifiers.add("Attacker Bonus", unique.params[0].toInt())
-            }
+            // Deprecated since 3.17.4
+                for (unique in attacker.unit.getMatchingUniques("+[]% Strength when attacking")) {
+                    modifiers.add("Attacker Bonus", unique.params[0].toInt())
+                }
+            //
 
             if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Eliminates combat penalty for attacking from the sea"))
                 modifiers["Landing"] = -50
@@ -192,7 +194,7 @@ object BattleDamage {
     }
 
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): Counter<String> {
-        val modifiers = getGeneralModifiers(defender, attacker)
+        val modifiers = getGeneralModifiers(defender, attacker, CombatAction.Defend)
         val tile = defender.getTile()
     
         if (defender is MapUnitCombatant) {
@@ -215,14 +217,16 @@ object BattleDamage {
             )
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
-            for (unique in defender.unit.getMatchingUniques("[]% Strength when defending vs [] units")) {
-                if (attacker.matchesCategory(unique.params[1]))
-                    modifiers.add("defence vs [${unique.params[1]}] ", unique.params[0].toInt())
-            }
-
-            for (unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
-                modifiers.add("Defender Bonus", unique.params[0].toInt())
-            }
+            // Deprecated since 3.17.4
+                for (unique in defender.unit.getMatchingUniques("[]% Strength when defending vs [] units")) {
+                    if (attacker.matchesCategory(unique.params[1]))
+                        modifiers.add("defence vs [${unique.params[1]}] ", unique.params[0].toInt())
+                }
+    
+                for (unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
+                    modifiers.add("Defender Bonus", unique.params[0].toInt())
+                }
+            //
 
             for (unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
                 if (tile.matchesFilter(unique.params[1]))
@@ -341,4 +345,10 @@ object BattleDamage {
         val randomCenteredAround30 = 24 + 12 * Random().nextFloat()
         return randomCenteredAround30 * ratioModifier
     }
+}
+
+enum class CombatAction {
+    Attack,
+    Defend,
+    Intercept,
 }

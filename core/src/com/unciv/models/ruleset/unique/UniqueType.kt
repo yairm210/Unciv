@@ -155,10 +155,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
-//    ConditionalInTiles("fighting in [tileFilter] tiles", UniqueTarget.Conditional),
-//    ConditionalAttacking("when attacking", UniqueTarget.Conditional),
-//    ConditionalDefending("when defending", UniqueTarget.Conditional),
+    ConditionalAttacking("when attacking", UniqueTarget.Conditional),
+    ConditionalDefending("when defending", UniqueTarget.Conditional),
 //    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
+//    ConditionalInTiles("fighting in [tileFilter] tiles", UniqueTarget.Conditional),
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
