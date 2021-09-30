@@ -7,11 +7,14 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.GameSpeed
 import java.util.*
+import kotlin.collections.HashMap
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.system.measureNanoTime
 
 class BarbarianManager {
-    val camps = ArrayList<Encampment>()
+    val camps = HashMap<Vector2, Encampment>()
 
     @Transient
     lateinit var gameInfo: GameInfo
@@ -21,7 +24,8 @@ class BarbarianManager {
 
     fun clone(): BarbarianManager {
         val toReturn = BarbarianManager()
-        toReturn.camps.addAll(camps.map { it.clone() } )
+        for (camp in camps.values.map { it.clone() })
+            toReturn.camps[camp.position] = camp
         return toReturn
     }
 
@@ -32,23 +36,22 @@ class BarbarianManager {
         // Add any preexisting camps as Encampment objects
         for (tile in tileMap.values) {
             if (tile.improvement == Constants.barbarianEncampment
-                && camps.none { it.position == tile.position }) {
+                && camps[tile.position] == null) {
                 val newCamp = Encampment()
                 newCamp.position = tile.position
-                newCamp.gameInfo = gameInfo
-                camps.add(newCamp)
+                camps[newCamp.position] = newCamp
             }
         }
 
-        for (camp in camps)
+        for (camp in camps.values)
             camp.gameInfo = gameInfo
     }
 
     fun updateEncampments() {
         // Check if camps were destroyed
-        for (camp in camps.toList()) {
-            if (tileMap[camp.position].improvement != Constants.barbarianEncampment) {
-                camps.remove(camp)
+        for (position in camps.keys.toList()) {
+            if (tileMap[position].improvement != Constants.barbarianEncampment) {
+                camps.remove(position)
             }
         }
 
@@ -56,14 +59,14 @@ class BarbarianManager {
         placeBarbarianEncampment()
 
         // Update all existing camps
-        for (camp in camps) {
+        for (camp in camps.values) {
             camp.update()
         }
     }
 
     /** Called when an encampment was attacked, will speed up time to next spawn */
     fun campAttacked(position: Vector2) {
-        camps.firstOrNull { it.position == position }?.wasAttacked()
+        camps[position]?.wasAttacked()
     }
 
     fun placeBarbarianEncampment() {
@@ -72,7 +75,7 @@ class BarbarianManager {
             return
 
         // Barbarians will only spawn in places that no one can see
-        val allViewableTiles = gameInfo.civilizations.filterNot { it.isBarbarian() || it.isSpectator() }
+        val allViewableTiles = gameInfo.civilizations.asSequence().filterNot { it.isBarbarian() || it.isSpectator() }
             .flatMap { it.viewableTiles }.toHashSet()
         val fogTiles = tileMap.values.filter { it.isLand && it !in allViewableTiles }
 
@@ -84,6 +87,7 @@ class BarbarianManager {
         // First turn of the game add 1/3 of all possible camps
         if (gameInfo.turns == 1) {
             campsToAdd /= 3
+            campsToAdd = max(campsToAdd, 1) // At least 1 on first turn
         } else if (campsToAdd > 0)
             campsToAdd = 1
 
@@ -93,12 +97,12 @@ class BarbarianManager {
         val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() || it.isCityState() }
             .flatMap { it.getCapital().getCenterTile().getTilesInDistance(4) }.toSet()
         val tooCloseToCamps = camps
-            .flatMap { tileMap[it.position].getTilesInDistance(7) }.toSet()
+            .flatMap { tileMap[it.key].getTilesInDistance(7) }.toSet()
 
         val viableTiles = fogTiles.filter {
             !it.isImpassible()
                     && it.resource == null
-                    && it.terrainFeatures.none { feature -> gameInfo.ruleSet.terrains[feature]!!.hasUnique("No improvements except Roads may be built on this tile") }
+                    && it.terrainFeatures.none { feature -> gameInfo.ruleSet.terrains[feature]!!.hasUnique("Only [] improvements may be built on this tile") }
                     && it.neighbors.any { neighbor -> neighbor.isLand }
                     && it !in tooCloseToCapitals
                     && it !in tooCloseToCamps
@@ -125,7 +129,7 @@ class BarbarianManager {
             val newCamp = Encampment()
             newCamp.position = tile.position
             newCamp.gameInfo = gameInfo
-            camps.add(newCamp)
+            camps[newCamp.position] = newCamp
             notifyCivsOfBarbarianEncampment(tile)
             addedCamps++
 

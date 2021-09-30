@@ -168,7 +168,7 @@
 		"unbuildable": true,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"],
-		"uniques": ["Fresh water", "Rare feature", "No improvements except Roads may be built on this tile"]
+		"uniques": ["Fresh water", "Rare feature", "Only [All Road] improvements may be built on this tile"]
 	},
 	{
 		"name": "Flood plains",

@@ -412,9 +412,9 @@ open class TileInfo {
             RoadStatus.values().none { it.name == improvement.name || it.removeAction == improvement.name }
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
-            // Terrain blocks all improvements except roads
-            getAllTerrains().any { it.hasUnique("No improvements except Roads may be built on this tile") } &&
-                    RoadStatus.values().none { it.name == improvement.name || it.removeAction == improvement.name } -> false
+            // Terrain blocks most improvements
+            getAllTerrains().any { it.getMatchingUniques("Only [] improvements may be built on this tile")
+                .any { unique -> !improvement.matchesFilter(unique.params[0]) } } -> false
 
             // Decide cancelImprovementOrder earlier, otherwise next check breaks it
             improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)
