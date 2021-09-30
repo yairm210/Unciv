@@ -21,15 +21,17 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import kotlin.collections.ArrayList
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
+class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() {
 
     private val leftSideTable = Table().apply { defaults().pad(10f) }
     private val rightSideTable = Table()
@@ -694,6 +696,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (promisesTable != null) diplomacyTable.add(promisesTable).row()
         }
 
+        UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
+            if (viewingCiv.isAtWarWith(otherCiv)) "War" else "Peace",
+            MusicTrackChooserFlags.setSelectNation)
+
         return diplomacyTable
     }
 
@@ -831,6 +837,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
+                UncivGame.Current.musicController.chooseTrack(otherCiv.civName, "War", MusicTrackChooserFlags.setSelectSpecific)
             }, this).open()
         }
         return declareWarButton

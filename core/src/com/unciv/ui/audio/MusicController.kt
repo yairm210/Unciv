@@ -216,9 +216,10 @@ class MusicController {
 
     /** This tells the music controller about active mods - all are allowed to provide tracks */
     fun setModList ( newMods: HashSet<String> ) {
-        //todo: Ensure this gets updated where appropriate.
-        // loadGame; newGame: Choose Map with Mods?; map editor...
-        // check against "ImageGetter.ruleset=" ?
+        // This is hooked in most places where ImageGetter.setNewRuleset is called.
+        // Changes in permanent audiovisual mods are effective without this notification.
+        // Only the map editor isn't hooked, so if we wish to play mod-nation-specific tunes in the
+        // editor when e.g. a starting location is picked, that will have to be added.
         mods = newMods
     }
 
@@ -227,14 +228,15 @@ class MusicController {
      * Called without parameters it will choose a new ambient music track and start playing it with fade-in/out.
      * Will do nothing when no music files exist or the master volume is zero.
      * 
-     * @param prefix file name prefix, meant to represent **Context** - in most cases a Civ name or default "Ambient"
-     * @param suffix file name suffix, meant to represent **Mood** - e.g. Peace, War, Theme...
+     * @param prefix file name prefix, meant to represent **Context** - in most cases a Civ name
+     * @param suffix file name suffix, meant to represent **Mood** - e.g. Peace, War, Theme, Defeat, Ambient
+     * (Ambient is the default when a track ends and exists so War Peace and the others are not chosen in that case)
      * @param flags a set of optional flags to tune the choice and playback.
      * @return `true` = success, `false` = no match, no playback change
      */
     fun chooseTrack (
         prefix: String = "",
-        suffix: String = "", 
+        suffix: String = "Ambient", 
         flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
     ): Boolean {
         if (baseVolume == 0f) return false
@@ -288,6 +290,17 @@ class MusicController {
             }
 
         return true
+    }
+    /** Variant of [chooseTrack] that tries several moods ([suffixes]) until a match is chosen */
+    fun chooseTrack (
+        prefix: String = "",
+        suffixes: List<String>,
+        flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
+    ): Boolean {
+        for (suffix in suffixes) {
+            if (chooseTrack(prefix, suffix, flags)) return true
+        }
+        return false
     }
 
     /**
