@@ -203,12 +203,22 @@ Uniques that support conditionals will be denoted with a "©" sign for now.
 
 \<if this city has at least [amount] specialists\> - Can only be used on things that exist in a city or relate to a specific city
 
+\<while the empire is happy\>
+
+\<vs [unitFilter] units\>
+
+\<vs cities\>
+
 
 ## General uniques
 
 ### Stat uniques
 
+"[stats]" ©
+
 "[stats] [cityFilter]" © - for example "[+3 Culture] [in capital]", "[+2 Food] [in all cities]". "[stats] in capital", "[stats] in all cities" are to be deprecated and should not be used.
+
+"[amount]% [Stat]" ©
 
 "+[amount]% [Stat] [cityFilter]" - For example, "+[25]% [Culture] [in all cities]"
 
@@ -459,6 +469,9 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "[amount]% of excess happiness converted to [Stat]"
 
+"May choose [amount] additional [beliefType] beliefs when [param] a religion" - param may be "founding" or "enhancing", beleifType may be "Pantheon", "Follower", "Founder", "Enhancer"
+
+"May choose [amount] additional beliefs of any type when [param] a religion"
 
 
 ## Buildings-only
@@ -501,7 +514,9 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "[unitFilter] units built [cityFilter] can [unitAction] [amount] extra times" - "unitAction" may be one of: "Spread Religion", "Remove Foreign religions from your own cities"
 
-"Provides a free [buildingName] [cityFilter]" - Provides a maintenance-free copy of the 'building' in all cities of the owner of this building in all cities matching 'cityFilter'. If the city having this building is captured, all free buildings previously provided are removed, and are added to cities of its new owner instead.
+"Provides a free [buildingName] [cityFilter]" © - Provides a maintenance-free copy of the 'building' in all cities of the owner of this building in all cities matching 'cityFilter'. If the city having this building is captured, all free buildings previously provided are removed, and are added to cities of its new owner instead.
+
+"Gain a free [buildingName] [cityFilter]" © - Will be merged with "Provides a free [buildingName] [cityFilter]" sometime in the future
 
 ### Stat uniques
 
@@ -580,6 +595,7 @@ Follower uniques are uniques applied to each city following a religion which inc
 "Provides a random bonus when entered" - Effectively makes this improvement ancient ruins, including it being removed when it is entered.
 
 "Consumes [amount] [resource]" - The AI does _not_ consider this unique when deciding which improvement to build
+
 
 
 ## Unit uniques
@@ -671,6 +687,7 @@ May be added in promotions or ancient ruins equivalents
 
 "May enter foreign tiles without open borders"
 
+
 ### Healing
 
 "Heal this unit by [amount] HP" - Only for promotions
@@ -687,7 +704,10 @@ May be added in promotions or ancient ruins equivalents
 
 "May heal outside of friendly territory" - For water units mostly
 
+
 ### Combat bonuses
+
+"[amount]% Strength" ©
 
 "No defensive terrain bonus"
 
@@ -696,8 +716,6 @@ May be added in promotions or ancient ruins equivalents
 "+[amount]% Strength when defending"
 
 "[amount]% Strength when defending vs [unitFilter]"
-
-"+[amount]% Strength vs [unitFilter]"
 
 "+[amount]% Strength in [tileFilter]"
 
@@ -938,3 +956,9 @@ These uniques have been recently deprecated. While they are still supported, the
 "[stats] if this city has at least [amount] specialists" - Repalaced with "[stats] <if this city has at least [amount] specialists>" ©
 
 "-[amount]% unit upkeep costs" - Replaced with "[-amount]% maintenance costs for [all] units"
+
+"+[amount]% [Stat] while the empire is happy" - Replaced with "[amount]% [Stat] <while the empire is happy>"
+
+"+[amount]% Strength vs [unitFilter]" - Replaced with "[amount]% Strength <vs [unitFilter] units>" or "[amount]% Strength <vs cities>"
+
+"+[amount]% Combat Strength" - Replaced with "[amount]% Strength"
