@@ -20,11 +20,9 @@ enum class MusicTrackChooserFlags {
         /** EnumSet.of([PlayDefaultFile], [PlaySingle]) */
         val setPlayDefault: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PlayDefaultFile, PlaySingle)
         /** EnumSet.of([PrefixMustMatch], [PlaySingle]) */
-        val setSelectNation: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch, PlaySingle)
+        val setSelectNation: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch)
         /** EnumSet.of([PrefixMustMatch], [SuffixMustMatch]) */
         val setSpecific: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch, SuffixMustMatch)
-        /** EnumSet.of([PrefixMustMatch], [SuffixMustMatch], [PlaySingle]) */
-        val setSelectSpecific: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch, SuffixMustMatch, PlaySingle)
         /** EnumSet.of([PrefixMustMatch], [SlowFade]) */
         val setNextTurn: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch, SlowFade)
     }

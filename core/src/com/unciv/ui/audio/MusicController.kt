@@ -29,7 +29,7 @@ class MusicController {
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
         private val fileExtensions = listOf("mp3", "ogg")   // flac, opus, m4a... blocked by Gdx, `wav` we don't want
 
-        internal const val consoleLog = false
+        internal const val consoleLog = true
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -98,9 +98,10 @@ class MusicController {
         fireOnChange()
     }
     private fun fireOnChange() {
+        if (onTrackChangeListener == null) return
         val fileName = currentlyPlaying()
         if (fileName.isEmpty()) {
-            onTrackChangeListener?.invoke(fileName)
+            fireOnChange(fileName)
             return
         }
         val fileNameParts = fileName.split('/')
@@ -108,7 +109,16 @@ class MusicController {
         var trackName = fileNameParts[if (fileNameParts.size > 3 && fileNameParts[2] == "music") 3 else 1]
         for (extension in fileExtensions)
             trackName = trackName.removeSuffix(".$extension")
-        onTrackChangeListener?.invoke(modName + (if (modName.isEmpty()) "" else ": ") + trackName)
+        fireOnChange(modName + (if (modName.isEmpty()) "" else ": ") + trackName)
+    }
+    private fun fireOnChange(trackLabel: String) {
+        try {
+            onTrackChangeListener?.invoke(trackLabel)
+        } catch (ex: Throwable) {
+            if (consoleLog)
+                println("onTrackChange event invoke failed: ${ex.message}")
+            onTrackChangeListener = null
+        }
     }
 
     /**
@@ -201,14 +211,17 @@ class MusicController {
                 (!flags.contains(MusicTrackChooserFlags.PrefixMustMatch) || it.nameWithoutExtension().startsWith(prefix))
                         && (!flags.contains(MusicTrackChooserFlags.SuffixMustMatch) || it.nameWithoutExtension().endsWith(suffix))
             }
-            // sort them by prefix match / suffix match / not last played / random
+            // randomize
+            .shuffled()
+            // sort them by prefix match / suffix match / not last played
             .sortedWith(compareBy(
                 { if (it.nameWithoutExtension().startsWith(prefix)) 0 else 1 }
                 , { if (it.nameWithoutExtension().endsWith(suffix)) 0 else 1 }
                 , { if (it.path() in musicHistory) 1 else 0 }
-                , { Random().nextInt() }))
             // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
-            .firstOrNull()
+            )).firstOrNull()
+        // Note: shuffled().sortedWith(), ***not*** .sortedWith(.., Random)
+        // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive. 
     }
 
     //endregion
@@ -359,7 +372,7 @@ class MusicController {
     private fun shutdown() {
         state = ControllerState.Idle
         fireOnChange()
-        onTrackChangeListener = null
+        // keep onTrackChangeListener! OptionsPopup will want to know when we start up again
         if (musicTimer != null) {
             musicTimer!!.cancel()
             musicTimer = null

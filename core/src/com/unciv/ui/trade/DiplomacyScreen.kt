@@ -837,7 +837,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
-                UncivGame.Current.musicController.chooseTrack(otherCiv.civName, "War", MusicTrackChooserFlags.setSelectSpecific)
+                UncivGame.Current.musicController.chooseTrack(otherCiv.civName, "War", MusicTrackChooserFlags.setSpecific)
             }, this).open()
         }
         return declareWarButton

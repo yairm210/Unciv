@@ -466,6 +466,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
                 label.setText("Currently playing: [$it]".tr())
             }
         }
+        label.onClick { previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setNextTurn) }
     }
 
     private fun Table.addDownloadMusic() {
