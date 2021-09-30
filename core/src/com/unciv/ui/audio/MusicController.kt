@@ -78,12 +78,38 @@ class MusicController {
     /** Keeps paths of recently played track to reduce repetition */
     private val musicHistory = ArrayDeque<String>(musicHistorySize)
 
+    /** One potential listener gets notified when track changes */
+    private var onTrackChangeListener: ((String)->Unit)? = null
+
     //endregion
     //region Pure functions
 
     /** @return the path of the playing track or null if none playing */
-    fun currentlyPlaying() = if (state != ControllerState.Playing && state != ControllerState.PlaySingle) null
+    private fun currentlyPlaying(): String = if (state != ControllerState.Playing && state != ControllerState.PlaySingle) ""
         else musicHistory.peekLast()
+
+    /** Registers a callback that will be called with the new track name every time it changes.
+     *  The track name will be prettified ("Modname: Track" instead of "mods/Modname/music/Track.ogg").
+     *
+     *  Will be called on a background thread, so please decouple UI access on the receiving side.
+     */
+    fun onChange(listener: ((String)->Unit)?) {
+        onTrackChangeListener = listener
+        fireOnChange()
+    }
+    private fun fireOnChange() {
+        val fileName = currentlyPlaying()
+        if (fileName.isEmpty()) {
+            onTrackChangeListener?.invoke(fileName)
+            return
+        }
+        val fileNameParts = fileName.split('/')
+        val modName = if (fileNameParts.size > 1 && fileNameParts[0] == "mods") fileNameParts[1] else ""
+        var trackName = fileNameParts[if (fileNameParts.size > 3 && fileNameParts[2] == "music") 3 else 1]
+        for (extension in fileExtensions)
+            trackName = trackName.removeSuffix(".$extension")
+        onTrackChangeListener?.invoke(modName + (if (modName.isEmpty()) "" else ": ") + trackName)
+    }
 
     /**
      * Determines whether any music tracks are available for the options menu
@@ -112,12 +138,15 @@ class MusicController {
                         // no music to play - begin silence or shut down
                         ticksOfSilence = 0
                         state = if (state == ControllerState.PlaySingle) ControllerState.Shutdown else ControllerState.Silence
+                        fireOnChange()
                     } else if (next!!.state.canPlay) {
                         // Next track - if top slot empty and a next exists, move it to top and start
                         current = next
                         next = null
                         if (!current!!.play())
                             state = ControllerState.Shutdown
+                        else
+                            fireOnChange()
                     } // else wait for the thread of next.load() to finish
                 } else if (!current!!.isPlaying()) {
                     // normal end of track
@@ -133,10 +162,13 @@ class MusicController {
                     ticksOfSilence = 0
                     chooseTrack()
                 }
-            ControllerState.Shutdown, ControllerState.Idle -> {
-                state = ControllerState.Idle
-                shutdown()
+            ControllerState.Shutdown -> {
+                // Fade out first, when all queue entries are idle set up for real shutdown
+                if (current?.shutdownTick() != false && next?.shutdownTick() != false)
+                    state = ControllerState.Idle
             }
+            ControllerState.Idle ->
+                shutdown()  // stops timer so this will not repeat
             ControllerState.Pause ->
                 current?.timerTick()
         }
@@ -311,8 +343,10 @@ class MusicController {
     }
 
     /** Forceful shutdown of music playback and timers - see [gracefulShutdown] */
-    fun shutdown() {
+    private fun shutdown() {
         state = ControllerState.Idle
+        fireOnChange()
+        onTrackChangeListener = null
         if (musicTimer != null) {
             musicTimer!!.cancel()
             musicTimer = null

@@ -99,14 +99,17 @@ class MusicTrackController(private var volume: Float) {
     }
     private fun fadeOutStep() {
         // fade-out: linearly ramp fadeVolume to 0.0, then act according to Status (Playing->Silence/Pause/Shutdown)
+        // This needs to guard against the music backend breaking mid-fade away during game shutdown
         fadeVolume -= fadeStep
-        if (fadeVolume >= 0.001f && music != null && music!!.isPlaying) {
-            music!!.volume = volume * fadeVolume
-            return
-        }
-        fadeVolume = 0f
-        music!!.volume = 0f
-        music!!.pause()
+        try {
+            if (fadeVolume >= 0.001f && music != null && music!!.isPlaying) {
+                music!!.volume = volume * fadeVolume
+                return
+            }
+            fadeVolume = 0f
+            music!!.volume = 0f
+            music!!.pause()
+        } catch (_: Throwable) {}
         state = State.Idle
     }
 
@@ -119,6 +122,19 @@ class MusicTrackController(private var volume: Float) {
         if (!state.canPlay) return
         if (fadeStep > 0f) fadeStep = step
         state = fade
+    }
+
+    /** Graceful shutdown tick event - fade out then report Idle
+     *  @return `true` shutdown can proceed, `false` still fading out
+     */
+    fun shutdownTick(): Boolean {
+        if (!state.canPlay) state = State.Idle
+        if (state == State.Idle) return true
+        if (state != State.FadeOut) {
+            state = State.FadeOut
+            fadeStep = MusicController.defaultFadingStep
+        }
+        return timerTick() == State.Idle
     }
 
     /** @return [Music.isPlaying] (Gdx music stream is playing) unless [state] says it won't make sense */
