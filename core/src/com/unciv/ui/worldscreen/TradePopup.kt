@@ -11,6 +11,7 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.trade.LeaderIntroTable
@@ -45,7 +46,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         val music = UncivGame.Current.musicController
 
         if (isPeaceTreaty)
-            music.chooseTrack(nation.name, "Peace", MusicTrackChooserFlags.setSpecific)
+            music.chooseTrack(nation.name, MusicMood.Peace, MusicTrackChooserFlags.setSpecific)
 
         val leaderIntroTable = LeaderIntroTable(requestingCiv)
         add(leaderIntroTable)
@@ -103,7 +104,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20) // offer again in 20 turns
             if (isPeaceTreaty) {
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
-                music.chooseTrack(nation.name, "War", MusicTrackChooserFlags.setSpecific)
+                music.chooseTrack(nation.name, MusicMood.War, MusicTrackChooserFlags.setSpecific)
             }
 
             close()

@@ -21,6 +21,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.tilegroups.CityButton
@@ -697,8 +698,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
         }
 
         UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
-            if (viewingCiv.isAtWarWith(otherCiv)) "War" else "Peace",
-            MusicTrackChooserFlags.setSelectNation)
+            MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)), MusicTrackChooserFlags.setSelectNation)
 
         return diplomacyTable
     }
@@ -837,7 +837,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
-                UncivGame.Current.musicController.chooseTrack(otherCiv.civName, "War", MusicTrackChooserFlags.setSpecific)
+                UncivGame.Current.musicController.chooseTrack(otherCiv.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
             }, this).open()
         }
         return declareWarButton

@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.*
@@ -62,14 +63,14 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 responseTable.add(getCloseButton("You'll pay for this!"))
                 responseTable.add(getCloseButton("Very well."))
                 add(responseTable)
-                music.chooseTrack(civInfo.civName, "War", MusicTrackChooserFlags.setSpecific)
+                music.chooseTrack(civInfo.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
             }
             AlertType.Defeated -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(civInfo)
                 addGoodSizedLabel(civInfo.nation.defeated).row()
                 add(getCloseButton("Farewell."))
-                music.chooseTrack(civInfo.civName, "Defeat", EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
+                music.chooseTrack(civInfo.civName, MusicMood.Defeat, EnumSet.of(MusicTrackChooserFlags.SuffixMustMatch))
             }
             AlertType.FirstContact -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
@@ -81,7 +82,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 } else {
                     addGoodSizedLabel(nation.introduction).row()
                     add(getCloseButton("A pleasure to meet you."))
-                    music.chooseTrack(civInfo.civName, listOf("Theme", "Peace"), MusicTrackChooserFlags.setSpecific)
+                    music.chooseTrack(civInfo.civName, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSpecific)
                 }
             }
             AlertType.CityConquered -> {
@@ -97,7 +98,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         city.liberateCity(conqueringCiv)
                         worldScreen.shouldUpdate = true
                         close()
-                    }        
+                    }
                     addLiberateOption(city.foundingCiv, liberateAction)
                     addSeparator()
                 }

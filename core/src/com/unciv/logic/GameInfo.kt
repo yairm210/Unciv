@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
 
@@ -197,7 +198,7 @@ class GameInfo {
 
         if (turns % 5 == 0)
             UncivGame.Current.musicController.chooseTrack(currentPlayerCiv.civName,
-                if (currentPlayerCiv.isAtWar()) "War" else "Peace", MusicTrackChooserFlags.setNextTurn)
+                MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn)
 
         // Start our turn immediately before the player can make decisions - affects
         // whether our units can commit automated actions and then be attacked immediately etc.

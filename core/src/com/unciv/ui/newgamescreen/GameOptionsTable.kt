@@ -6,6 +6,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.utils.*
 
@@ -186,8 +187,8 @@ class GameOptionsTable(
                 if (modNations != null && modNations.size > 0) desiredCiv = modNations.keys.first()
 
                 val music = UncivGame.Current.musicController
-                if (!music.chooseTrack(it,"Theme", MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())
-                    music.chooseTrack(desiredCiv, listOf("Theme", "Peace"), MusicTrackChooserFlags.setSelectNation)
+                if (!music.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())
+                    music.chooseTrack(desiredCiv, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
             }
 
             updatePlayerPickerTable(desiredCiv)
