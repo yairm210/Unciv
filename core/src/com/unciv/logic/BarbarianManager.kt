@@ -173,15 +173,13 @@ class Encampment {
     }
 
     fun update() {
-        if (countdown <= 0) {
-            // Try spawning a unit
-            if (spawnBarbarian()) {
-                // Successful
-                spawnedUnits++
-                resetCountdown()
-            }
-        } else
+        if (countdown > 0) // Not yet
             countdown--
+        else if (spawnBarbarian()) { // Countdown at 0, try to spawn a barbarian
+            // Successful
+            spawnedUnits++
+            resetCountdown()
+        }
     }
 
     fun wasAttacked() {
@@ -190,13 +188,11 @@ class Encampment {
 
     /** Attempts to spawn a Barbarian from this encampment. Returns true if a unit was spawned. */
     private fun spawnBarbarian(): Boolean {
-        val barbarianCiv = gameInfo.getBarbarianCivilization()
         val tile = gameInfo.tileMap[position]
 
         // Empty camp - spawn a defender
         if (tile.militaryUnit == null) {
-            val spawnedUnit = tile.tileMap.placeUnitNearTile(tile.position, chooseBarbarianUnit(naval = false), barbarianCiv)
-            return (spawnedUnit != null)
+            return spawnOnTile(tile) // Try spawning a unit on this tile, return false if unsuccessful
         }
 
         // Don't spawn wandering barbs too early
@@ -204,6 +200,7 @@ class Encampment {
             return false
 
         // Too many barbarians around already?
+        val barbarianCiv = gameInfo.getBarbarianCivilization()
         if (tile.getTilesInDistance(4).count { it.militaryUnit?.civInfo == barbarianCiv } > 2)
             return false
 
@@ -216,13 +213,18 @@ class Encampment {
                     || (it.hasUnique("Fresh water") && it.isWater) // No Lakes
         }
         if (validTiles.isEmpty()) return false
-        val spawnTile = validTiles.random()
 
-        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(spawnTile.position, chooseBarbarianUnit(spawnTile.isWater), barbarianCiv)
+        return spawnOnTile(validTiles.random()) // Attempt to spawn a barbarian on a valid tile
+    }
+
+    /** Attempts to spawn a barbarian on [tile], returns true if successful and false if unsuccessful. */
+    private fun spawnOnTile(tile: TileInfo): Boolean {
+        val unitToSpawn = chooseBarbarianUnit(tile.isWater) ?: return false // return false if we didn't find a unit
+        val spawnedUnit = gameInfo.tileMap.placeUnitNearTile(tile.position, unitToSpawn, gameInfo.getBarbarianCivilization())
         return (spawnedUnit != null)
     }
 
-    private fun chooseBarbarianUnit(naval: Boolean): String {
+    private fun chooseBarbarianUnit(naval: Boolean): String? {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = gameInfo.ruleSet.technologies.keys.toMutableList()
@@ -241,9 +243,9 @@ class Encampment {
             unitList.filter { it.isLandUnit() }.randomOrNull()
 
         if (unit == null) // Didn't find a unit for preferred domain
-            unit = unitList.random() // Pick another, or crash the game vOv
+            unit = unitList.randomOrNull() // Try picking another
 
-        return unit.name
+        return unit?.name // Could still be null in case of mad modders
     }
 
     /** When a barbarian is spawned, seed the counter for next spawn */
