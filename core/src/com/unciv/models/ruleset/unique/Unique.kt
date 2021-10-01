@@ -30,7 +30,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     fun conditionalsApply(civInfo: CivilizationInfo? = null, city: CityInfo? = null): Boolean {
         return conditionalsApply(StateForConditionals(civInfo, city))
     }
-    
+
     fun conditionalsApply(state: StateForConditionals?): Boolean {
         if (state == null) return conditionals.isEmpty() 
         for (condition in conditionals) {
@@ -38,22 +38,33 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
         return true
     }
-    
+
     private fun conditionalApplies(
         condition: Unique,
         state: StateForConditionals
     ): Boolean {
-        return when (condition.placeholderText) {
-            UniqueType.ConditionalNotWar.placeholderText -> state.civInfo?.isAtWar() == false
-            UniqueType.ConditionalWar.placeholderText -> state.civInfo?.isAtWar() == true
-            UniqueType.ConditionalSpecialistCount.placeholderText -> 
+        return when (condition.type) {
+            UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
+            UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
+            UniqueType.ConditionalSpecialistCount -> 
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
-            UniqueType.ConditionalHappy.placeholderText -> 
+            UniqueType.ConditionalHappy -> 
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
-            UniqueType.ConditionalVsCity.placeholderText ->
+            UniqueType.ConditionalVsCity ->
                 state.defender != null && state.defender.matchesCategory("City")
-            UniqueType.ConditionalVsUnits.placeholderText ->
+            UniqueType.ConditionalVsUnits ->
                 state.defender != null && state.defender.matchesCategory(condition.params[0])
+            UniqueType.ConditionalNeighborTiles ->
+                state.cityInfo != null &&
+                state.cityInfo.getCenterTile().neighbors.count {
+                    it.matchesFilter(condition.params[2], state.civInfo)
+                } in (condition.params[0].toInt())..(condition.params[1].toInt())
+            UniqueType.ConditionalNeighborTilesAnd ->
+                state.cityInfo != null &&
+                        state.cityInfo.getCenterTile().neighbors.count {
+                            it.matchesFilter(condition.params[2], state.civInfo) &&
+                            it.matchesFilter(condition.params[3], state.civInfo)
+                        } in (condition.params[0].toInt())..(condition.params[1].toInt())
             else -> false
         }
     }
@@ -62,16 +73,15 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 }
 
 
-class UniqueMap:HashMap<String, ArrayList<Unique>>() {
+class UniqueMap: HashMap<String, ArrayList<Unique>>() {
+    //todo Once all untyped Uniques are converted, this should be  HashMap<UniqueType, *>
     fun addUnique(unique: Unique) {
         if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
         this[unique.placeholderText]!!.add(unique)
     }
 
     fun getUniques(placeholderText: String): Sequence<Unique> {
-        val result = this[placeholderText]
-        if (result == null) return sequenceOf()
-        else return result.asSequence()
+        return this[placeholderText]?.asSequence() ?: sequenceOf()
     }
 
     fun getUniques(uniqueType: UniqueType) = getUniques(uniqueType.placeholderText)

@@ -88,7 +88,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
 
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
-    
+
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
     StrengthPlus("+[amount]% Strength"),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
@@ -99,8 +99,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     StrengthMinVs("-[amount]% Strength vs [combatantFilter]"),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
     CombatBonus("+[amount]% Combat Strength"),
-    
-    
+
+
     // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
     ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
@@ -123,7 +123,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain),
     NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain),
     NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain),
-  
+
     // The "Except [terrainFilter]" could theoretically be implemented with a conditional
     NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain),
 
@@ -159,6 +159,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 //    ConditionalAttacking("when attacking", UniqueTarget.Conditional),
 //    ConditionalDefending("when defending", UniqueTarget.Conditional),
 //    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
+
+    ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

@@ -7,7 +7,6 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -222,10 +221,10 @@ class CityStats(val cityInfo: CityInfo) {
             if (unique.isOfType(UniqueType.Stats) && unique.conditionalsApply(cityInfo.civInfo, cityInfo)) {
                 stats.add(unique.stats)
             }
-            
+
             if (unique.isOfType(UniqueType.StatsPerCity) 
                 && cityInfo.matchesFilter(unique.params[1]) 
-                && unique.conditionalsApply(cityInfo.civInfo)
+                && unique.conditionalsApply(cityInfo.civInfo, cityInfo)
             ) {
                 stats.add(unique.stats)
             }

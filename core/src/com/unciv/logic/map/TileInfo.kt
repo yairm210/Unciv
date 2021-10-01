@@ -444,7 +444,7 @@ open class TileInfo {
     fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
         if (improvement != null && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
-        return false
+        return improvement == null && filter == "unimproved"
     }
 
     fun matchesTerrainFilter(filter: String, observingCiv: CivilizationInfo? = null): Boolean {
