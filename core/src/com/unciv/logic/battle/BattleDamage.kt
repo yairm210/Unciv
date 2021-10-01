@@ -3,6 +3,8 @@ package com.unciv.logic.battle
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.toPercent
 import java.util.*
@@ -17,6 +19,14 @@ class BattleDamageModifier(val vs:String, val modificationAmount:Float){
 }
 
 object BattleDamage {
+    
+    private fun getModifierStringFromUnique(unique: Unique): String {
+        return when (unique.sourceObjectType) {
+            UniqueTarget.Unit -> "Unit ability"
+            UniqueTarget.Nation -> "National ability"
+            else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
+        }
+    }
 
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction): Counter<String> {
         val modifiers = Counter<String>()
@@ -27,7 +37,7 @@ object BattleDamage {
                 UniqueType.Strength,
                 StateForConditionals(civInfo, defender = enemy, combatAction = combatAction))
             ) {
-                modifiers.add("${unique.sourceObjectName} (${unique.sourceObjectType})", unique.params[0].toInt())
+                modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
             
             // Deprecated since 3.17.3
