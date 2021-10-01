@@ -211,15 +211,6 @@ object TranslationFileWriter {
     private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
         // build maps identifying parameters as certain types of filters - unitFilter etc
         val ruleset = RulesetCache.getBaseRuleset()
-        val tileFilterMap = ruleset.terrains.keys.toMutableSet().apply { addAll(sequenceOf(
-            "Friendly Land",
-            "Foreign Land",
-            "Fresh water",
-            "non-fresh water",
-            "Open Terrain",
-            "Rough Terrain",
-            "Natural Wonder"
-        )) }
         val tileImprovementMap = ruleset.tileImprovements.keys.toMutableSet().apply { add("Great Improvement") }
         val buildingMap = ruleset.buildings.keys.toMutableSet().apply { addAll(sequenceOf(
             "Wonders",
@@ -259,25 +250,22 @@ object TranslationFileWriter {
                 val existingParameterNames = HashSet<String>()
                 if (unique.params.isNotEmpty()) {
                     for ((index,parameter) in unique.params.withIndex()) {
+                        val uniqueType = UniqueParameterType.values().firstOrNull {
+                            it.getErrorSeverity(parameter, ruleset) == null
+                        }
                         var parameterName = when {
                             unique.type != null -> {
                                 val possibleParameterTypes = unique.type.parameterTypeMap[index]
                                 // for multiple types. will look like "[unitName/buildingName]"
                                 possibleParameterTypes.joinToString("/") { it.parameterName }
                             }
-                            parameter.toFloatOrNull() != null -> "amount"
-                            Stat.values().any { it.name == parameter } -> "stat"
-                            parameter in tileFilterMap -> "tileFilter"
-                            ruleset.units.containsKey(parameter) -> "unit"
-                            parameter in tileImprovementMap -> "tileImprovement"
-                            ruleset.tileResources.containsKey(parameter) -> "resource"
-                            ruleset.technologies.containsKey(parameter) -> "tech"
-                            ruleset.unitPromotions.containsKey(parameter) -> "promotion"
-                            parameter in buildingMap -> "building"
-                            parameter in unitTypeMap -> "unitType"
-                            Stats.isStats(parameter) -> "stats"
-                            parameter in UniqueParameterType.cityFilterStrings -> "cityFilter"
-                            else -> "param"
+                            ruleset.units.containsKey(parameter) -> "unit"  // drop line to get "baseUnitFilter"
+                            parameter in tileImprovementMap -> "tileImprovement"  // with Celts changes to UniqueParameterType could become "tileFilter"
+                            ruleset.tileResources.containsKey(parameter) -> "resource"  // drop line to get "terrainFilter"
+                            parameter in buildingMap -> "building"  // drop line to get "buildingName"
+                            parameter in unitTypeMap -> "unitType"  // drop line to get "baseUnitFilter"
+                            uniqueType != null -> uniqueType.parameterName
+                            else -> ""  // "param" already covered via uniqueType
                         }
                         if (parameterName in existingParameterNames) {
                             var i = 2

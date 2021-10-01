@@ -100,6 +100,13 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
+    Technology("tech") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                in ruleset.technologies -> null
+                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            }
+    },
     Promotion("promotion") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
@@ -107,16 +114,16 @@ enum class UniqueParameterType(val parameterName:String) {
                 else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             }
     },
-    /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
-    Comment("comment") {
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = null
-    },
     Unknown("param") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             return null
         }
+    },
+    /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
+    Comment("comment") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = null
     };
 
     abstract fun getErrorSeverity(parameterText:String, ruleset: Ruleset): UniqueType.UniqueComplianceErrorSeverity?
