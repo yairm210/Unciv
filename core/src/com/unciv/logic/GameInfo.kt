@@ -196,7 +196,7 @@ class GameInfo {
         currentPlayerCiv = getCivilization(currentPlayer)
         if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
 
-        if (turns % 5 == 0)
+        if (turns % 10 == 0) //todo measuring actual play time might be nicer
             UncivGame.Current.musicController.chooseTrack(currentPlayerCiv.civName,
                 MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn)
 

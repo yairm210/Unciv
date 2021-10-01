@@ -153,10 +153,13 @@ class MusicController {
                         // Next track - if top slot empty and a next exists, move it to top and start
                         current = next
                         next = null
-                        if (!current!!.play())
-                            state = ControllerState.Shutdown
-                        else
+                        if (!current!!.play()) {
+                            // Retry another track if playback start fails, after an extended pause
+                            ticksOfSilence = -silenceLengthInTicks - 1000
+                            state = ControllerState.Silence
+                        } else {
                             fireOnChange()
+                        }
                     } // else wait for the thread of next.load() to finish
                 } else if (!current!!.isPlaying()) {
                     // normal end of track

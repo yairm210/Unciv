@@ -148,9 +148,9 @@ class MusicTrackController(private var volume: Float) {
         if (!state.canPlay || music == null) {
             throw IllegalStateException("MusicTrackController.play called on uninitialized instance")
         }
-        // From time to time Gdx.Music fails with "Unable to allocate audio buffers. AL Error: 40964(AL_INVALID_OPERATION)"
-        if (tryPlay(music!!)) return true
-        if (tryPlay(music!!)) return true
+        // Unexplained observed exception: Gdx.Music.play fails with
+        // "Unable to allocate audio buffers. AL Error: 40964" (AL_INVALID_OPERATION)
+        // Approach: This track dies, parent controller will enter state Silence thus retry after a while.
         if (tryPlay(music!!)) return true
         state = State.Error
         return false
