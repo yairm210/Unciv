@@ -218,10 +218,12 @@ open class TileInfo {
         var stats = getBaseTerrain().clone()
 
         for (terrainFeatureBase in getTerrainFeatures()) {
-            if (terrainFeatureBase.overrideStats)
-                stats = terrainFeatureBase.clone()
-            else
-                stats.add(terrainFeatureBase)
+            when {
+                terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
+                    return terrainFeatureBase.clone()
+                terrainFeatureBase.overrideStats -> stats = terrainFeatureBase.clone()
+                else -> stats.add(terrainFeatureBase)
+            }
         }
 
         if (naturalWonder != null) {
