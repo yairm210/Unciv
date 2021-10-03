@@ -6,6 +6,8 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.utils.*
 
 class GameOptionsTable(
@@ -44,7 +46,8 @@ class GameOptionsTable(
         addVictoryTypeCheckboxes()
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
-        checkboxTable.addBarbariansCheckbox()
+        checkboxTable.addNoBarbariansCheckbox()
+        checkboxTable.addRagingBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
@@ -63,9 +66,13 @@ class GameOptionsTable(
         add(checkbox).colspan(2).row()
     }
 
-    private fun Table.addBarbariansCheckbox() =
+    private fun Table.addNoBarbariansCheckbox() =
             addCheckbox("No Barbarians", gameParameters.noBarbarians)
             { gameParameters.noBarbarians = it }
+
+    private fun Table.addRagingBarbariansCheckbox() =
+        addCheckbox("Raging Barbarians", gameParameters.ragingBarbarians)
+        { gameParameters.ragingBarbarians = it }
 
     private fun Table.addOneCityChallengeCheckbox() =
             addCheckbox("One City Challenge", gameParameters.oneCityChallenge)
@@ -182,9 +189,11 @@ class GameOptionsTable(
             var desiredCiv = ""
             if (gameParameters.mods.contains(it)) {
                 val modNations = RulesetCache[it]?.nations
-                if (modNations != null && modNations.size > 0) {
-                    desiredCiv = modNations.keys.first()
-                }
+                if (modNations != null && modNations.size > 0) desiredCiv = modNations.keys.first()
+
+                val music = UncivGame.Current.musicController
+                if (!music.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())
+                    music.chooseTrack(desiredCiv, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
             }
 
             updatePlayerPickerTable(desiredCiv)

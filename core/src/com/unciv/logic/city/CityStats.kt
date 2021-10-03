@@ -45,7 +45,9 @@ class CityStats(val cityInfo: CityInfo) {
         val stats = Stats()
         for (cell in cityInfo.tilesInRange
                 .filter { cityInfo.location == it.position || cityInfo.isWorked(it) ||
-                        it.getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation)==true && it.owningCity == cityInfo })
+                        it.owningCity == cityInfo && (it.getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true ||
+                            it.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
+                })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }

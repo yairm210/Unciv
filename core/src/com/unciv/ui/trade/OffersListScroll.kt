@@ -56,9 +56,10 @@ class OffersListScroll(
 
         for (offerType in values()) {
             val offersOfType = offersToDisplay.filter { it.type == offerType }
-                    .sortedWith(compareBy({
-                        if (UncivGame.Current.settings.orderTradeOffersByAmount) -it.amount else 0},
-                            {if (it.type==City) it.getOfferText() else it.name.tr()}))
+                .sortedWith(compareBy(
+                    { if (UncivGame.Current.settings.orderTradeOffersByAmount) -it.amount else 0 },
+                    { if (it.type==City) it.getOfferText() else it.name.tr() }
+                ))
 
             if (expanderTabs.containsKey(offerType)) {
                 expanderTabs[offerType]!!.innerTable.clear()
@@ -67,6 +68,15 @@ class OffersListScroll(
 
             for (offer in offersOfType) {
                 val tradeButton = offer.getOfferText(untradableOffers.filter { it.resource.name == offer.name }.sumOf { it.amount }).toTextButton()
+                tradeButton.labelCell.pad(5f)
+                when (offer.type) {
+                    Luxury_Resource, Strategic_Resource ->
+                        tradeButton.add(ImageGetter.getResourceImage(offer.name, 30f))
+                    WarDeclaration ->
+                        tradeButton.add(ImageGetter.getNationIndicator(UncivGame.Current.gameInfo.ruleSet.nations[offer.name]!!, 30f))
+                    else -> Unit // Remove warning
+                }
+                
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1

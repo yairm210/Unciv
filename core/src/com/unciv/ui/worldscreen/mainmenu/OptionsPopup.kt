@@ -13,7 +13,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -420,7 +419,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             val music = previousScreen.game.musicController
             music.setVolume(it)
             if (!music.isPlaying())
-                music.chooseTrack(flags = EnumSet.of(MusicTrackChooserFlags.PlayDefaultFile, MusicTrackChooserFlags.PlaySingle))
+                music.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
         }
         add(musicVolumeSlider).pad(5f).row()
     }
@@ -467,6 +466,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
                 label.setText("Currently playing: [$it]".tr())
             }
         }
+        label.onClick { previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setNextTurn) }
     }
 
     private fun Table.addDownloadMusic() {
@@ -486,7 +486,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
                     previousScreen.game.musicController.downloadDefaultFile()
                     Gdx.app.postRunnable {
                         tabs.replacePage("Sound", getSoundTab())
-                        previousScreen.game.musicController.chooseTrack(flags = EnumSet.of(MusicTrackChooserFlags.PlayDefaultFile, MusicTrackChooserFlags.PlaySingle))
+                        previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                     }
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {

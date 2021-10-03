@@ -15,6 +15,7 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.MusicController
+import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
@@ -111,7 +112,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
             // This stuff needs to run on the main thread because it needs the GL context
             Gdx.app.postRunnable {
-                musicController.chooseTrack()
+                musicController.chooseTrack(suffix = MusicMood.Menu)
 
                 ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
 

@@ -194,7 +194,8 @@ open class TileInfo {
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
-    fun hasUnique(unique: String) = getAllTerrains().any { it.uniques.contains(unique) }
+    fun hasUnique(unique: String) = getAllTerrains().any { it.hasUnique(unique) }
+    fun hasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner() ?: return null
@@ -203,7 +204,8 @@ open class TileInfo {
 
     fun isWorked(): Boolean = getWorkingCity() != null
     fun providesYield() = getCity() != null && (isCityCenter() || isWorked()
-            || getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true)
+            || getTileImprovement()?.hasUnique(UniqueType.TileProvidesYieldWithoutPopulation) == true
+            || hasUnique(UniqueType.TileProvidesYieldWithoutPopulation))
 
     fun isLocked(): Boolean {
         val workingCity = getWorkingCity()
@@ -220,6 +222,20 @@ open class TileInfo {
                 stats = terrainFeatureBase.clone()
             else
                 stats.add(terrainFeatureBase)
+        }
+
+        if (naturalWonder != null) {
+            val wonder = getNaturalWonder().clone()
+
+            // Spain doubles tile yield
+            if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+                wonder.timesInPlace(2f)
+            }
+
+            if (getNaturalWonder().overrideStats)
+                stats = wonder
+            else
+                stats.add(wonder)
         }
 
         if (city != null) {
@@ -245,15 +261,6 @@ open class TileInfo {
                     stats.add(unique.stats)
         }
 
-        if (naturalWonder != null) {
-            val wonder = getNaturalWonder()
-            stats.add(wonder)
-
-            // Spain doubles tile yield
-            if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
-                stats.add(wonder)
-            }
-        }
         // resource base
         if (hasViewableResource(observingCiv)) stats.add(getTileResource())
 
@@ -411,6 +418,10 @@ open class TileInfo {
             // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
             RoadStatus.values().none { it.name == improvement.name || it.removeAction == improvement.name }
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
+
+            // Terrain blocks most improvements
+            getAllTerrains().any { it.getMatchingUniques("Only [] improvements may be built on this tile")
+                .any { unique -> !improvement.matchesFilter(unique.params[0]) } } -> false
 
             // Decide cancelImprovementOrder earlier, otherwise next check breaks it
             improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)

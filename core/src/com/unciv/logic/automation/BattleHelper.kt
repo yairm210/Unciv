@@ -11,9 +11,9 @@ import com.unciv.models.AttackableTile
 
 object BattleHelper {
 
-    fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
+    fun tryAttackNearbyEnemy(unit: MapUnit, stayOnTile: Boolean = false): Boolean {
         if (unit.hasUnique("Cannot attack")) return false
-        val attackableEnemies = getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+        val attackableEnemies = getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile=stayOnTile)
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
@@ -33,7 +33,8 @@ object BattleHelper {
     fun getAttackableEnemies(
             unit: MapUnit,
             unitDistanceToTiles: PathsToTilesWithinTurn,
-            tilesToCheck: List<TileInfo>? = null
+            tilesToCheck: List<TileInfo>? = null,
+            stayOnTile: Boolean = false
     ): ArrayList<AttackableTile> {
         val tilesWithEnemies = (tilesToCheck ?: unit.civInfo.viewableTiles)
                 .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
@@ -48,7 +49,7 @@ object BattleHelper {
         // Silly floats, basically
 
         val unitMustBeSetUp = unit.hasUnique("Must set up to ranged attack")
-        val tilesToAttackFrom = if (unit.baseUnit.movesLikeAirUnits()) sequenceOf(unit.currentTile)
+        val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits()) sequenceOf(unit.currentTile)
         else
             unitDistanceToTiles.asSequence()
                     .filter {
