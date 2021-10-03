@@ -100,6 +100,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
 * [Bayonet](https://thenounproject.com/term/bayonet/3101681/) By food lover for Carolean
+* [soldier](https://thenounproject.com/term/soldier/2096497/) by ProSymbols for Mehal Sefari
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
 * [horse racing](https://thenounproject.com/antimso/uploads/?i=2427932) By Sergio Morozov for Cossack
 * [Marching Band](https://thenounproject.com/term/marching-band/871426/) by Darrin Loeliger, US for Hussar. The original work has been modified.
@@ -217,6 +218,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Block](https://thenounproject.com/term/block/1711553/) By Monjin Friends for Stone Works
 * [korean palace](https://thenounproject.com/term/korean-palace/1797542/) By 1516 for Palace
 * [Obelisk](https://thenounproject.com/term/obelisk/749104/) By Eliricon for Monument
+* [obelisk](https://thenounproject.com/term/obelisk/3520415/) By IconMark for Stele
 * [Cross swords](https://thenounproject.com/term/cross-swords/965398/) By  Creaticca Creative Agency for Barracks
 * [Fortress](https://thenounproject.com/search/?q=fortress&i=146989) By Creative Stall for Krepost
 * [Paper](https://thenounproject.com/term/paper/1443472/) By anam
@@ -564,7 +566,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Iroquois](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/Iroquois.png) by Ravignir for Iroquois
 * [Songhai](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/Songhai.png) by Ravignir for Songhai
 * [Celtic Knot](https://thenounproject.com/term/celtic/168483/) by Ervin Bolat for the Celts
-
+* Ethiopian Icon created in Gimp by Unciv team from the following:
+    * [Lion](https://thenounproject.com/term/lion/4074339/) by IronSV
+    * [royal crown](https://thenounproject.com/term/royal-crown/2054222/) by Vectors Market
+    * [Spear](https://thenounproject.com/term/spear/3930020/) by Firza Alamsyah
+    * [pennant](https://thenounproject.com/term/pennant/194797/) by Sara Jeffries
 
 ## Promotions
 
@@ -598,6 +604,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
 * [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
 * [Shamrock](https://thenounproject.com/term/shamrock/358507/) By P Thanga Vignesh for Pictish Courage
+* [home sweet home](https://thenounproject.com/term/home-sweet-home/3817166/) By Silviu Ojog for Home Sweet Home
 
 
 ## Religions
