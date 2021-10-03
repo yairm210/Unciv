@@ -1,3 +1,20 @@
+## 3.17.4
+
+By SimonCeder:
+- Barbarian spawning and camp placements
+- Fixed Fountain of Youth
+
+By xlenstra:
+- Added default values for supply to fix almost all mods being broken
+- Fixed bugs with pentagon, "mandate of heaven", and fallout
+- Added icons to resource trades & war declarations
+
+By SomeTroglodyte:
+- The Celtic People Rebooted
+- Music moddability and visual improvements
+
+Add looping minimap viewport if worldwrap enabled  - By Thyrum
+
 ## 3.17.3
 
 Added game name to turn notification  - By GGGuenni
