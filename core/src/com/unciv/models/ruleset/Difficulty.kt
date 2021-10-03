@@ -12,12 +12,13 @@ class Difficulty: INamed, ICivilopediaText {
     var extraHappinessPerLuxury: Float = 0f
     var researchCostModifier:Float = 1f
     var unitCostModifier:Float = 1f
-    var unitSupplyBase: Int = 0
-    var unitSupplyPerCity: Int = 0
+    var unitSupplyBase: Int = 5
+    var unitSupplyPerCity: Int = 2
     var buildingCostModifier:Float = 1f
     var policyCostModifier:Float = 1f
     var unhappinessModifier:Float = 1f
     var barbarianBonus:Float = 0f
+    var barbarianSpawnDelay: Int = 0
     var playerBonusStartingUnits = ArrayList<String>()
 
     var aiCityGrowthModifier:Float = 1f
@@ -54,6 +55,7 @@ class Difficulty: INamed, ICivilopediaText {
         lines += FormattedLine("{Policy cost modifier}: ${policyCostModifier.toPercent()}% ${Fonts.culture}", indent = 1)
         lines += FormattedLine("{Unhappiness modifier}: ${unhappinessModifier.toPercent()}%", indent = 1)
         lines += FormattedLine("{Bonus vs. Barbarians}: ${barbarianBonus.toPercent()}% ${Fonts.strength}", indent = 1)
+        lines += FormattedLine("{Barbarian spawning delay}: ${barbarianSpawnDelay}", indent = 1)
 
         if (playerBonusStartingUnits.isNotEmpty()) {
             lines += FormattedLine()

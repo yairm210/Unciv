@@ -22,8 +22,8 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         // 1 - trying to upgrade
         if (UnitAutomation.tryUpgradeUnit(unit)) return
 
-        // 2 - trying to attack somebody
-        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
+        // 2 - trying to attack somebody - but don't leave the encampment
+        if (BattleHelper.tryAttackNearbyEnemy(unit, stayOnTile = true)) return
 
         // 3 - at least fortifying
         unit.fortifyIfCan()

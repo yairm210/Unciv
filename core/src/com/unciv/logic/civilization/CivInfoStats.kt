@@ -202,7 +202,8 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         if (civInfo.getHappiness() > 0) {
             val excessHappinessConversion = Stats()
             for (unique in civInfo.getMatchingUniques("[]% of excess happiness converted to []")) {
-                excessHappinessConversion.add(Stat.valueOf(unique.params[1]), (unique.params[0].toInt() / 100 * civInfo.getHappiness()).toFloat())
+                
+                excessHappinessConversion.add(Stat.valueOf(unique.params[1]), (unique.params[0].toFloat() / 100f * civInfo.getHappiness()))
             }
             statMap.add("Policies", excessHappinessConversion)
         }
