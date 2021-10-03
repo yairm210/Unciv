@@ -117,6 +117,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
+    StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit),
 
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
     StrengthPlus("+[amount]% Strength", UniqueTarget.Unit),
