@@ -86,6 +86,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CityStateCanBeBoughtForGold("Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns.", UniqueTarget.Global),
     CityStateTerritoryAlwaysFriendly("City-State territory always counts as friendly territory", UniqueTarget.Global),
 
+    CityStateDeprecated("Will not be chosen for new games", UniqueTarget.Nation), // implemented for CS only for now
 
     /////// Other global uniques
 

@@ -78,6 +78,10 @@ class UncivSlider (
     var isDisabled: Boolean
         get() = slider.isDisabled
         set(value) { slider.isDisabled = value }
+    fun setRange(min: Float, max: Float) {
+        slider.setRange(min, max)
+        setPlusMinusEnabled()
+    }
 
     // Value tip format
     var tipFormat = "%.1f"
@@ -125,7 +129,7 @@ class UncivSlider (
                 if (vertical) padTop(padding) else padRight(padding)
             }
         } else plusButton = null
-        
+
         row()
         value = initial  // set initial value late so the tooltip can work with the layout 
 
@@ -157,7 +161,10 @@ class UncivSlider (
         tipHideTask.cancel()
         if (!permanentTip)
             Timer.schedule(tipHideTask, hideDelay)
+        setPlusMinusEnabled()
+    }
 
+    private fun setPlusMinusEnabled() {
         val enableMinus = slider.value > slider.minValue
         minusButton?.touchable = if(enableMinus) Touchable.enabled else Touchable.disabled
         minusButton?.apply {circle.color.a = if(enableMinus) 1f else 0.5f}
@@ -165,7 +172,7 @@ class UncivSlider (
         plusButton?.touchable = if(enablePlus) Touchable.enabled else Touchable.disabled
         plusButton?.apply {circle.color.a = if(enablePlus) 1f else 0.5f}
     }
-    
+
     private fun stepChanged() {
         tipFormat = when {
             stepSize > 0.99f -> "%.0f"
@@ -208,7 +215,7 @@ class UncivSlider (
             killedCaptureListeners.remove(widget)
         }
     }
-    
+
     // Helpers to manage the light-weight "tooltip" showing the value
     private fun showTip() {
         if (tipContainer.hasParent()) return
