@@ -157,7 +157,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
     
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
-    NullifyYields("Nullifies all other stats anything on this tile provides", UniqueTarget.Terrain),
+    NullifyYields("Nullifies all other stats this tile provides", UniqueTarget.Terrain),
     
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain),
 
