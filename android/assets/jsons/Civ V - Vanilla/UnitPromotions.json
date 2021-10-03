@@ -174,13 +174,13 @@
 	},
 	{
 		"name": "Survivalism I",
-		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "+[25]% Strength when defending"],
+		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "[+25]% Strength <when defending>"],
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Survivalism II",
 		"prerequisites": ["Survivalism I"],
-		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "+[25]% Strength when defending"],
+		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "[+25]% Strength <when defending>"],
 		"unitTypes": ["Scout"]
 	},
 	{
@@ -250,38 +250,38 @@
 	// Submarine
 	{
 		"name": "Wolfpack I",
-		"uniques": ["+[25]% Strength when attacking"],
+		"uniques": ["[+25]% Strength <when attacking>"],
 		"unitTypes": ["Submarine"]
 	},
 	{
 		"name": "Wolfpack II",
 		"prerequisites": ["Wolfpack I"],
-		"uniques": ["+[25]% Strength when attacking"],
+		"uniques": ["[+25]% Strength <when attacking>"],
 		"unitTypes": ["Submarine"]
 	},
 	{
 		"name": "Wolfpack III",
 		"prerequisites": ["Wolfpack II"],
-		"uniques": ["+[25]% Strength when attacking"],
+		"uniques": ["[+25]% Strength <when attacking>"],
 		"unitTypes": ["Submarine"]
 	},
 
 	// Aircraft Carrier
 	{
 		"name": "Armor Plating I",
-		"uniques": ["+[25]% Strength when defending"],
+		"uniques": ["[+25]% Strength <when defending>"],
 		"unitTypes": ["Aircraft Carrier"]
 	},
 	{
 		"name": "Armor Plating II",
 		"prerequisites": ["Armor Plating I"],
-		"uniques": ["+[25]% Strength when defending"],
+		"uniques": ["[+25]% Strength <when defending>"],
 		"unitTypes": ["Aircraft Carrier"]
 	},
 	{
 		"name": "Armor Plating III",
 		"prerequisites": ["Armor Plating II"],
-		"uniques": ["+[25]% Strength when defending"],
+		"uniques": ["[+25]% Strength <when defending>"],
 		"unitTypes": ["Aircraft Carrier"]
 	},
 	{
@@ -433,13 +433,13 @@
 	// Mixed
 	{
 		"name": "Cover I",
-		"uniques": ["[+33]% Strength when defending vs [Ranged] units"],
+		"uniques": ["[+33]% Strength <vs [Ranged] units> <when defending>"],
 		"unitTypes": ["Sword","Gunpowder","Archery","Ranged Gunpowder","Siege"]
 	},
 	{
 		"name": "Cover II",
 		"prerequisites": ["Cover I"],
-		"uniques": ["[+33]% Strength when defending vs [Ranged] units"],
+		"uniques": ["[+33]% Strength <vs [Ranged] units> <when defending>"],
 		"unitTypes": ["Sword","Gunpowder","Archery","Ranged Gunpowder","Siege"]
 	},
 

@@ -315,7 +315,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["[+300]% Strength <vs cities>", "No defensive terrain bonus", "+[-33]% Strength when defending",
+		"uniques": ["[+300]% Strength <vs cities>", "No defensive terrain bonus", "[-33]% Strength <when defending>",
 		"-[1] Visibility Range", "Can only attack [City] units"],
 		"promotions":  ["Cover I"],
 		"attackSound": "throw"
@@ -838,7 +838,7 @@
 		"requiredTech": "Gunpowder",
 		"upgradesTo": "Rifleman",
 		"obsoleteTech": "Rifling",
-		"uniques": ["Heals [50] damage if it kills a unit", "+[25]% Strength when attacking"],
+		"uniques": ["Heals [50] damage if it kills a unit", "[+25]% Strength <when attacking>"],
 		"attackSound": "shot"
 	},
 	{
@@ -1132,7 +1132,7 @@
 		"cost": 325,
 		"requiredTech": "Refrigeration",
 		"upgradesTo": "Nuclear Submarine",
-		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles"],
+		"uniques": ["[+75]% Strength <when attacking>", "Can only attack [Water] tiles"],
 		"attackSound": "torpedo"
 	},
 	{
@@ -1490,7 +1490,7 @@
 		"rangedStrength": 85,
 		"cost": 425,
 		"requiredTech": "Telecommunications",
-		"uniques": ["+[75]% Strength when attacking", "Can only attack [Water] tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"],
+		"uniques": ["[+75]% Strength <when attacking>", "Can only attack [Water] tiles", "[+1] Visibility Range", "Can carry [2] [Missile] units"],
 		"attackSound": "torpedo"
 	},
 	{
