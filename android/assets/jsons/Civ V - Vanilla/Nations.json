@@ -865,19 +865,18 @@
 	},
 
 
-
-	//City-States
+	// City-States sorted by cityStateType, name
 	{
-		"name": "Milan",
-		"adjective": ["Milanese"],
+		"name": "Brussels",
+		"adjective": ["Bruxellois"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "You fiend! History shall remember this!",
+		"defeated": "I guess you weren't here for the sprouts after all...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [185,132,66],
-		"cities": ["Milan"]
+		"innerColor": [153,255,51],
+		"cities": ["Brussels"]
 	},
 	{
 		"name": "Florence",
@@ -892,106 +891,16 @@
 		"cities": ["Florence"]
 	},
 	{
-		"name": "Rio de Janeiro",
-		"adjective": ["Carioca"],
-		"cityStateType": "Maritime",
-		"startBias": ["Coast"],
-
-		"declaringWar": "I have to do this, for the sake of progress if nothing else. You must be opposed!",
-		"attacked": "You can see how fruitless this will be for you... right?",
-		"defeated": "May God grant me these last wishes - peace and prosperity for Brazil.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [211, 220, 103],
-		"cities": ["Rio de Janeiro"]
-	},
-	{
-		"name": "Antwerp",
-		"adjective": ["Antwerp"],
-		"cityStateType": "Mercantile",
-		"startBias": ["Coast"],
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "They will write songs of this.... pray that they shall be in your favor.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [194,97,255],
-		"cities": ["Antwerp"]
-	},
-	{
-		"name": "Dublin",
-		"adjective": ["Dubliner"],
-		"cityStateType": "Militaristic",
-
-		"declaringWar": "War lingers in our hearts. Why carry on with a false peace?",
-		"attacked": "You gormless radger! You'll dine on your own teeth before you set foot in Ireland!",
-		"defeated": "A lonely wind blows through the highlands today. A dirge for Ireland. Can you hear it?",
-		"outerColor": [0, 0, 0],
-		"innerColor": [211,180,113],
-		"cities": ["Dublin"]
-	},
-	{
-		"name": "Tyre",
-		"adjective": ["Tyrian"],
-		"cityStateType": "Mercantile",
-		"startBias": ["Coast"],
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "We never fully trusted you from the start.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [255,97,255],
-		"cities": ["Tyre"]
-	},
-	{
-		"name": "Ur",
-		"adjective": ["Ur"],
-		"cityStateType": "Maritime",
-		"startBias": ["Coast"],
-
-		"declaringWar": "I will enjoy hearing your last breath as you witness the destruction of your realm!",
-		"attacked": "Why do we fight? Because Inanna demands it. Now, witness the power of the Sumerians!",
-		"defeated": "What treachery has struck us? No, what evil?",
-		"outerColor": [0, 0, 0],
-		"innerColor": [255,69,0],
-		"cities": ["Ur"]
-	},
-	{
-		"name": "Genoa",
-		"adjective": ["Genoese"],
-		"cityStateType": "Mercantile",
-		"startBias": ["Coast"],
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "How barbaric. Those who live by the sword shall perish by the sword.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [45,255,86],
-		"cities": ["Genoa"]
-	},
-	{
-		"name": "Venice",
-		"adjective": ["Venetian"],
-		"cityStateType": "Maritime",
-		"startBias": ["Coast"],
-
-		"declaringWar": "You have revealed your purposes a bit too early, my friend...",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "A wrong calculation, on my part.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [153,204,255],
-		"cities": ["Venice"]
-	},
-	{
-		"name": "Brussels",
-		"adjective": ["Bruxellois"],
+		"name": "Hanoi",
+		"adjective": ["Hanoi"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "I guess you weren't here for the sprouts after all...",
+		"defeated": "So this is how it feels to die...",
 		"outerColor": [0, 0, 0],
-		"innerColor": [153,255,51],
-		"cities": ["Brussels"]
+		"innerColor": [0,0,255],
+		"cities": ["Hanoi"]
 	},
 	{
 		"name": "Kabul",
@@ -1006,138 +915,6 @@
 		"cities": ["Kabul"]
 	},
 	{
-		"name": "Sidon",
-		"adjective": ["Sidon"],
-		"cityStateType": "Militaristic",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "What a fine battle! Sidon is willing to serve you!",
-		"outerColor": [0, 0, 0],
-		"innerColor": [250,128,114],
-		"cities": ["Sidon"]
-	},
-	{
-		"name": "Almaty",
-		"adjective": ["Almaty"],
-		"cityStateType": "Militaristic",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "How could we fall to the likes of you?!",
-		"outerColor": [0, 0, 0],
-		"innerColor": [152,0,241],
-		"cities": ["Almaty"]
-	},
-	{
-		"name": "Edinburgh",
-		"adjective": ["Edinburghensian"],
-		"cityStateType": "Militaristic",
-
-		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen - we ride to war!",
-		"attacked": "Traitorous man! The Celtic peoples will not stand for such wanton abuse and slander - I shall have your head!",
-		"defeated": "Vile ruler, know that you 'won' this war in name only!",
-		"outerColor": [0, 0, 0],
-		"innerColor": [0,102,102],
-		"cities": ["Edinburgh"]
-	},
-	{
-		"name": "Singapore",
-		"adjective": ["Singaporean"],
-		"cityStateType": "Mercantile",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "Perhaps, in another world, we could have been friends...",
-		"outerColor": [0, 0, 0],
-		"innerColor": [255,255,0],
-		"cities": ["Singapore"]
-	},
-	{
-		"name": "Zanzibar",
-		"adjective": ["Zanzibar"],
-		"cityStateType": "Mercantile",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "May the Heavens forgive you for inflicting this humiliation to our people.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [255,153,255],
-		"cities": ["Zanzibar"]
-	},
-	{
-		"name": "Sydney",
-		"adjective": ["Sydney"],
-		"cityStateType": "Maritime",
-
-		"declaringWar": "After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself, for war is upon us.",
-		"attacked": "We will mobilize every means of resistance to stop this transgression against our nation!",
-		"defeated": "The principles for which we have fought will survive longer than any nation you could ever build.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [255,204,204],
-		"cities": ["Sydney"]
-	},
-	{
-		"name": "Cape Town",
-		"adjective": ["Cape Town"],
-		"cityStateType": "Maritime",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "I have failed. May you, at least, know compassion towards our people.",
-		"outerColor": [0, 0, 0],
-		"innerColor": [255,153,153],
-		"cities": ["Cape Town"]
-	},
-	{
-		"name": "Kathmandu",
-		"adjective": ["Kathmandu"],
-		"cityStateType": "Mercantile",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "We... defeated? No... we had so much work to do!",
-		"outerColor": [0, 0, 0],
-		"innerColor": [151,125,0],
-		"cities": ["Kathmandu"]
-	},
-	{
-		"name": "Hanoi",
-		"adjective": ["Hanoi"],
-		"cityStateType": "Cultured",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "So this is how it feels to die...",
-		"outerColor": [0, 0, 0],
-		"innerColor": [0,0,255],
-		"cities": ["Hanoi"]
-	},
-	{
-		"name": "Quebec City",
-		"adjective": ["Québécois"],
-		"cityStateType": "Cultured",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "We were too weak to protect ourselves...",
-		"outerColor": [0, 0, 0],
-		"innerColor": [51,102,0],
-		"cities": ["Quebec City"]
-	},
-	{
-		"name": "Helsinki",
-		"adjective": ["Helsinki"],
-		"cityStateType": "Maritime",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "The day of judgement has come to us. But rest assured, the same will go for you!",
-		"outerColor": [0, 0, 0],
-		"innerColor": [255,178,102],
-		"cities": ["Helsinki"]
-	},
-	{
 		"name": "Kuala Lumpur",
 		"adjective": ["KLite"],
 		"cityStateType": "Cultured",
@@ -1148,18 +925,6 @@
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,102,102],
 		"cities": ["Kuala Lumpur"]
-	},
-	{
-		"name": "Manila",
-		"adjective": ["Manilan"],
-		"cityStateType": "Maritime",
-
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "Ah, Gods! Why have you forsaken us?",
-		"outerColor": [0, 0, 0],
-		"innerColor": [96,96,96],
-		"cities": ["Manila"]
 	},
 	{
 		"name": "Lhasa",
@@ -1175,6 +940,117 @@
 		"cities": ["Lhasa"]
 	},
 	{
+		"name": "Milan",
+		"adjective": ["Milanese"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "You fiend! History shall remember this!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [185,132,66],
+		"cities": ["Milan"]
+	},
+	{
+		"name": "Quebec City",
+		"adjective": ["Québécois"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We were too weak to protect ourselves...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [51,102,0],
+		"cities": ["Quebec City"]
+	},
+
+	{
+		"name": "Cape Town",
+		"adjective": ["Cape Town"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "I have failed. May you, at least, know compassion towards our people.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,153,153],
+		"cities": ["Cape Town"]
+	},
+	{
+		"name": "Helsinki",
+		"adjective": ["Helsinki"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "The day of judgement has come to us. But rest assured, the same will go for you!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,178,102],
+		"cities": ["Helsinki"]
+	},
+	{
+		"name": "Manila",
+		"adjective": ["Manilan"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "Ah, Gods! Why have you forsaken us?",
+		"outerColor": [0, 0, 0],
+		"innerColor": [96,96,96],
+		"cities": ["Manila"]
+	},
+	{
+		"name": "Mogadishu",
+		"adjective": ["Mogadishu"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "Congratulations, conqueror. This tribe serves you now.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [224,224,224],
+		"cities": ["Mogadishu"]
+	},
+	{
+		"name": "Rio de Janeiro",
+		"adjective": ["Carioca"],
+		"cityStateType": "Maritime",
+		"startBias": ["Coast"],
+
+		"declaringWar": "I have to do this, for the sake of progress if nothing else. You must be opposed!",
+		"attacked": "You can see how fruitless this will be for you... right?",
+		"defeated": "May God grant me these last wishes - peace and prosperity for Brazil.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [211, 220, 103],
+		"cities": ["Rio de Janeiro"]
+	},
+	{
+		"name": "Sydney",
+		"adjective": ["Sydney"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself, for war is upon us.",
+		"attacked": "We will mobilize every means of resistance to stop this transgression against our nation!",
+		"defeated": "The principles for which we have fought will survive longer than any nation you could ever build.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,204,204],
+		"cities": ["Sydney"]
+	},
+	{
+		"name": "Ur",
+		"adjective": ["Ur"],
+		"cityStateType": "Maritime",
+		"startBias": ["Coast"],
+
+		"declaringWar": "I will enjoy hearing your last breath as you witness the destruction of your realm!",
+		"attacked": "Why do we fight? Because Inanna demands it. Now, witness the power of the Sumerians!",
+		"defeated": "What treachery has struck us? No, what evil?",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,69,0],
+		"cities": ["Ur"]
+	},
+	{
 		"name": "Vancouver",
 		"translatedName": "Vancouver",
 		"adjective": ["Vancouverite"],
@@ -1186,6 +1062,146 @@
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,255,128],
 		"cities": ["Vancouver"]
+	},
+	{
+		"name": "Venice",
+		"adjective": ["Venetian"],
+		"cityStateType": "Maritime",
+		"startBias": ["Coast"],
+
+		"declaringWar": "You have revealed your purposes a bit too early, my friend...",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "A wrong calculation, on my part.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [153,204,255],
+		"cities": ["Venice"]
+	},
+
+	{
+		"name": "Antwerp",
+		"adjective": ["Antwerp"],
+		"cityStateType": "Mercantile",
+		"startBias": ["Coast"],
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "They will write songs of this.... pray that they shall be in your favor.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [194,97,255],
+		"cities": ["Antwerp"]
+	},
+	{
+		"name": "Genoa",
+		"adjective": ["Genoese"],
+		"cityStateType": "Mercantile",
+		"startBias": ["Coast"],
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "How barbaric. Those who live by the sword shall perish by the sword.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [45,255,86],
+		"cities": ["Genoa"]
+	},
+	{
+		"name": "Kathmandu",
+		"adjective": ["Kathmandu"],
+		"cityStateType": "Mercantile",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We... defeated? No... we had so much work to do!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [151,125,0],
+		"cities": ["Kathmandu"]
+	},
+	{
+		"name": "Singapore",
+		"adjective": ["Singaporean"],
+		"cityStateType": "Mercantile",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "Perhaps, in another world, we could have been friends...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,255,0],
+		"cities": ["Singapore"]
+	},
+	{
+		"name": "Tyre",
+		"adjective": ["Tyrian"],
+		"cityStateType": "Mercantile",
+		"startBias": ["Coast"],
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "We never fully trusted you from the start.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,97,255],
+		"cities": ["Tyre"]
+	},
+	{
+		"name": "Zanzibar",
+		"adjective": ["Zanzibar"],
+		"cityStateType": "Mercantile",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "May the Heavens forgive you for inflicting this humiliation to our people.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,153,255],
+		"cities": ["Zanzibar"]
+	},
+
+	{
+		"name": "Almaty",
+		"adjective": ["Almaty"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"defeated": "How could we fall to the likes of you?!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [152,0,241],
+		"cities": ["Almaty"]
+	},
+	{
+		"name": "Belgrade",
+		"adjective": ["Belgrade"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "Let's have a nice little War, shall we?",
+		"attacked": "If you need your nose bloodied, we'll happily serve.",
+		"defeated": "The serbian guerilla will never stop haunting you!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [211,180,113],
+		"cities": ["Belgrade"]
+	},
+	{
+		"name": "Dublin",
+		"adjective": ["Dubliner"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "War lingers in our hearts. Why carry on with a false peace?",
+		"attacked": "You gormless radger! You'll dine on your own teeth before you set foot in Ireland!",
+		"defeated": "A lonely wind blows through the highlands today. A dirge for Ireland. Can you hear it?",
+		"outerColor": [0, 0, 0],
+		"innerColor": [211,180,113],
+		"cities": ["Dublin"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games"]
+	},
+	{
+		"name": "Edinburgh",
+		"adjective": ["Edinburghensian"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen - we ride to war!",
+		"attacked": "Traitorous man! The Celtic peoples will not stand for such wanton abuse and slander - I shall have your head!",
+		"defeated": "Vile ruler, know that you 'won' this war in name only!",
+		"outerColor": [0, 0, 0],
+		"innerColor": [0,102,102],
+		"cities": ["Edinburgh"],
+		"uniques": ["Will not be displayed in Civilopedia", "Will not be chosen for new games"]
 	},
 	{
 		"name": "M'Banza-Kongo",
@@ -1200,17 +1216,30 @@
 		"cities": ["M'Banza-Kongo"]
 	},
 	{
-		"name": "Mogadishu",
-		"adjective": ["Mogadishu"],
-		"cityStateType": "Maritime",
+		"name": "Sidon",
+		"adjective": ["Sidon"],
+		"cityStateType": "Militaristic",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
-		"defeated": "Congratulations, conqueror. This tribe serves you now.",
+		"defeated": "What a fine battle! Sidon is willing to serve you!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [224,224,224],
-		"cities": ["Mogadishu"]
+		"innerColor": [250,128,114],
+		"cities": ["Sidon"]
 	},
+	{
+		"name": "Valletta",
+		"adjective": ["maltese"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "We don't like your face. To arms!",
+		"attacked": "You will see you have just bitten off more than you can chew.",
+		"defeated": "This ship may sink, but our spirits will linger.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [0,102,102],
+		"cities": ["Valletta"]
+	},
+
 	{
 		"name": "Bratislava",
 		"adjective": ["Bratislava"],
