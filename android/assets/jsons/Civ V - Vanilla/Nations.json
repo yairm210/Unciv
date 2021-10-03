@@ -890,8 +890,8 @@
 		"hateNo": ["That is unacceptable.","You are not sure about it.","Please repeat for me."],
 		"hateYes": ["Fine, in my understanding.","It is clear.","It is clear."],
 
-		"outerColor": [52,128,42],
-		"innerColor": [255,33,33],
+		"outerColor": [19,70,24],
+		"innerColor": [255,46,46],
 		"uniqueName": "Spirit of Adwa",
 		"uniques": ["[+20]% Strength <when fighting units from a Civilization with more Cities than you>"],
 		"cities": ["Addis Ababa","Harar","Adwa","Lalibela","Gondar","Axum","Dire Dawa","Bahir Dar","Adama",

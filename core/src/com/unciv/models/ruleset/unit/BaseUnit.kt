@@ -6,14 +6,11 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
 import kotlin.collections.ArrayList
@@ -601,15 +598,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (unique in allUniques) {
             when {
                 unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
-                    when {
+                    power += (power * unique.params[0].toInt()) / when {
                         unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) } ->
-                            power += (power * unique.params[0].toInt()) / 200
+                            200
                         unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) } ->
-                            power += (power * unique.params[0].toInt()) / 400
+                            400
                         unique.conditionals.any() -> // e.g. ConditionalVsLargerCiv
-                            power += (power * unique.params[0].toInt()) / 200
+                            200
                         else ->
-                            power += (power * unique.params[0].toInt()) / 100
+                            100
                     }
                 }
                 unique.isOfType(UniqueType.StrengthNearCapital) && unique.params[0].toInt() > 0 ->
