@@ -12,8 +12,8 @@ class Difficulty: INamed, ICivilopediaText {
     var extraHappinessPerLuxury: Float = 0f
     var researchCostModifier:Float = 1f
     var unitCostModifier:Float = 1f
-    var unitSupplyBase: Int = 0
-    var unitSupplyPerCity: Int = 0
+    var unitSupplyBase: Int = 5
+    var unitSupplyPerCity: Int = 2
     var buildingCostModifier:Float = 1f
     var policyCostModifier:Float = 1f
     var unhappinessModifier:Float = 1f
