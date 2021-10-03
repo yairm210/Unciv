@@ -408,7 +408,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
     }
 
     private fun getDiplomaticMarriageButton(otherCiv: CivilizationInfo): TextButton? {
-        if (!viewingCiv.hasUnique("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns."))
+        if (!viewingCiv.hasUnique(UniqueType.CityStateCanBeBoughtForGold))
             return null
 
         val diplomaticMarriageButton =

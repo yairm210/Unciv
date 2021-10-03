@@ -48,13 +48,13 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         // Mercantile bonus resources
         if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateUniqueLuxury) }
-            || (fallback && cityStateType == CityStateType.Mercantile)) { // Fallback for badly defined Eras.json
+            || fallback && cityStateType == CityStateType.Mercantile) { // Fallback for badly defined Eras.json
             civInfo.cityStateResource = allMercantileResources.randomOrNull()
         }
 
         // Unique unit for militaristic city-states
         if (allPossibleBonuses.any { it.isOfType(UniqueType.CityStateMilitaryUnits) }
-            || (fallback && cityStateType == CityStateType.Militaristic) // Fallback for badly defined Eras.json
+            || fallback && cityStateType == CityStateType.Militaristic // Fallback for badly defined Eras.json
         ) {
 
             val possibleUnits = ruleset.units.values.filter { it.requiredTech != null
@@ -74,7 +74,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
 
         var giftableUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }
-        if (!civInfo.gameInfo.isReligionEnabled()) giftableUnits = giftableUnits.filterNot { it.uniques.contains("Hidden when religion is disabled")}
+        if (!civInfo.gameInfo.isReligionEnabled()) giftableUnits = giftableUnits
+            .filterNot { it.uniques.contains("Hidden when religion is disabled")}
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
         val giftedUnit = giftableUnits.random()
@@ -103,7 +104,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         militaryUnit.addConstructionBonuses(placedUnit, civInfo.getCapital().cityConstructions)
 
         // Siam gets +10 XP for all CS units
-        for (unique in receivingCiv.getMatchingUniques("Military Units gifted from City-States start with [] XP")) {
+        for (unique in receivingCiv.getMatchingUniques(UniqueType.CityStateGiftedUnitsStartWithXp)) {
             placedUnit.promotions.XP += unique.params[0].toInt()
         }
 
@@ -125,7 +126,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             GameSpeed.Epic -> 0.75f
             GameSpeed.Marathon -> 0.67f
         }
-        for (unique in donorCiv.getMatchingUniques("Gifts of Gold to City-States generate []% more Influence"))
+        for (unique in donorCiv.getMatchingUniques(UniqueType.CityStateGoldGiftsProvideMoreInfluence))
             influenceGained *= 1f + unique.params[0].toFloat() / 100f
 
         // Bonus due to "Invest" quests
@@ -229,7 +230,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 else newAllyCiv.addNotification(text, civInfo.civName, NotificationIcon.Diplomacy)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
-                for (unique in newAllyCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns."))
+                for (unique in newAllyCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold))
                     newAllyCiv.getDiplomacyManager(civInfo.civName).setFlag(DiplomacyFlags.MarriageCooldown, unique.params[0].toInt())
 
                 // Join the wars of our new ally - loop through all civs they are at war with
@@ -273,7 +274,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 && civInfo.isCityState()
                 && civInfo.getDiplomacyManager(otherCiv).relationshipLevel() == RelationshipLevel.Ally
                 && !otherCiv.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.MarriageCooldown)
-                && otherCiv.getMatchingUniques("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.").any()
+                && otherCiv.getMatchingUniques(UniqueType.CityStateCanBeBoughtForGold).any()
                 && otherCiv.gold >= getDiplomaticMarriageCost())
 
     }
@@ -447,7 +448,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
             if (civInfo.isAtWarWith(otherCiv)) continue
-            if (otherCiv.hasUnique("City-State territory always counts as friendly territory")) continue
+            if (otherCiv.hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)) continue
             val diplomacy = civInfo.getDiplomacyManager(otherCiv)
             if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion)) continue // They recently helped us
 

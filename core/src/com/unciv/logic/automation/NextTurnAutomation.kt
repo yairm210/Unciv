@@ -20,6 +20,7 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -126,8 +127,7 @@ object NextTurnAutomation {
 
     /** allow AI to spend money to purchase city-state friendship, buildings & unit */
     private fun useGold(civInfo: CivilizationInfo) {
-        if (civInfo.getHappiness() > 0
-        && civInfo.hasUnique("Can spend Gold to annex or puppet a City-State that has been your ally for [] turns.")) {
+        if (civInfo.getHappiness() > 0 && civInfo.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
             for (cityState in civInfo.getKnownCivs().filter { it.isCityState() } ) {
                 if (cityState.canBeMarriedBy(civInfo))
                     cityState.diplomaticMarriage(civInfo)
