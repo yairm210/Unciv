@@ -58,9 +58,9 @@ enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
 enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     //////////////////////////////////////// GLOBAL UNIQUES ////////////////////////////////////////
-    
+
     /////// Stat providing uniques
-    
+
     Stats("[stats]", UniqueTarget.Global),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.WARNING)
@@ -68,7 +68,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     StatPercentBonus("[amount]% [Stat]", UniqueTarget.Global),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
-    
+
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
 
     /////// City-State related uniques
@@ -86,16 +86,17 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CityStateCanBeBoughtForGold("Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns.", UniqueTarget.Global),
     CityStateTerritoryAlwaysFriendly("City-State territory always counts as friendly territory", UniqueTarget.Global),
 
-    
+    CityStateDeprecated("Will not be chosen for new games", UniqueTarget.Nation), // implemented for CS only for now
+
     /////// Other global uniques
-    
+
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
     @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UniqueTarget.Global),
     @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UniqueTarget.Global),
-    
+
     ConsumesResources("Consumes [amount] [resource]",
         UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
     ProvidesResources("Provides [amount] [resource]",
@@ -115,7 +116,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
 
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
-    
+
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
 
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
@@ -147,7 +148,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
 
     //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
-    
+
     NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
     NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
     NaturalWonderSmallerLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
@@ -155,15 +156,15 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain),
     NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain),
     NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain),
-  
+
     // The "Except [terrainFilter]" could theoretically be implemented with a conditional
     NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain),
 
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
-    
+
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
     NullifyYields("Nullifies all other stats this tile provides", UniqueTarget.Terrain),
-    
+
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain),
 
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////

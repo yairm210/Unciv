@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.UniqueType
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -200,8 +201,11 @@ object GameStarter {
         // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
         //   and then all the other City-States in a random order! Because the sortedBy function is stable!
         availableCityStatesNames.addAll( ruleset.nations
-            .filter { it.value.isCityState() && (it.value.cityStateType != CityStateType.Religious || newGameParameters.religionEnabled) }
-            .keys
+            .filter {
+                it.value.isCityState() &&
+                (it.value.cityStateType != CityStateType.Religious || newGameParameters.religionEnabled) &&
+                !it.value.hasUnique(UniqueType.CityStateDeprecated)
+            }.keys
             .shuffled()
             .sortedByDescending { it in civNamesWithStartingLocations } )
 
@@ -213,7 +217,7 @@ object GameStarter {
 
         val unusedMercantileResources = Stack<String>()
         unusedMercantileResources.addAll(allMercantileResources.shuffled())
-        
+
         var addedCityStates = 0
         // Keep trying to add city states until we reach the target number.
         while (addedCityStates < newGameParameters.numberOfCityStates) {
