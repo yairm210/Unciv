@@ -16,6 +16,8 @@ import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
 import kotlin.math.min
@@ -199,8 +201,12 @@ class GameInfo {
         currentPlayerCiv = getCivilization(currentPlayer)
         if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
 
+        if (turns % 10 == 0) //todo measuring actual play time might be nicer
+            UncivGame.Current.musicController.chooseTrack(currentPlayerCiv.civName,
+                MusicMood.peaceOrWar(currentPlayerCiv.isAtWar()), MusicTrackChooserFlags.setNextTurn)
 
-        // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
+        // Start our turn immediately before the player can make decisions - affects
+        // whether our units can commit automated actions and then be attacked immediately etc.
         notifyOfCloseEnemyUnits(thisPlayer)
     }
 

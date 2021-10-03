@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.trade.TradeEvaluation
@@ -10,6 +11,8 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.*
@@ -34,22 +37,27 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
     val viewingCiv = worldScreen.viewingCiv
     val tradeRequest = viewingCiv.tradeRequests.first()
 
-    init{
+    init {
         val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
         val nation = requestingCiv.nation
+        val trade = tradeRequest.trade
+        val isPeaceTreaty = trade.ourOffers.any { it.type == TradeType.Treaty && it.name == Constants.peaceTreaty }
+        val ourResources = viewingCiv.getCivResourcesByName()
+        val music = UncivGame.Current.musicController
+
+        if (isPeaceTreaty)
+            music.chooseTrack(nation.name, MusicMood.Peace, MusicTrackChooserFlags.setSpecific)
 
         val leaderIntroTable = LeaderIntroTable(requestingCiv)
         add(leaderIntroTable)
         addSeparator()
 
-        val trade = tradeRequest.trade
         val tradeOffersTable = Table().apply { defaults().pad(10f) }
         tradeOffersTable.add("[${nation.name}]'s trade offer".toLabel())
         // empty column to separate offers columns better
         tradeOffersTable.add().pad(0f, 15f)
         tradeOffersTable.add("Our trade offer".toLabel())
         tradeOffersTable.row()
-        val ourResources = viewingCiv.getCivResourcesByName()
 
         fun getOfferText(offer:TradeOffer): String {
             var tradeText = offer.getOfferText()
@@ -90,12 +98,14 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
 
         addButton("Not this time.", 'n') {
             val diplomacyManager = requestingCiv.getDiplomacyManager(viewingCiv)
-            if(trade.ourOffers.all { it.type == TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
+            if (trade.ourOffers.all { it.type == TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20) // offer again in 20 turns
-            if(trade.ourOffers.any { it.name == Constants.researchAgreement })
+            if (trade.ourOffers.any { it.name == Constants.researchAgreement })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20) // offer again in 20 turns
-            if(trade.ourOffers.any { it.type == TradeType.Treaty && it.name == Constants.peaceTreaty })
-                diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace,5)
+            if (isPeaceTreaty) {
+                diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
+                music.chooseTrack(nation.name, MusicMood.War, MusicTrackChooserFlags.setSpecific)
+            }
 
             close()
             requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", viewingCiv.civName, NotificationIcon.Trade)
@@ -119,14 +129,14 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         viewingCiv.tradeRequests.remove(tradeRequest)
         super.close()
     }
-    
+
     class TradeThanksPopup(leaderIntroTable: LeaderIntroTable, worldScreen: WorldScreen): Popup(worldScreen) {
         init {
             add(leaderIntroTable)
             addSeparator().padBottom(15f)
             addGoodSizedLabel("Excellent!").row()
             addCloseButton("Farewell.", KeyCharAndCode.SPACE) {
-                worldScreen.shouldUpdate=true
+                worldScreen.shouldUpdate = true
                 // in all cases, worldScreen.shouldUpdate should be set to true when we remove the last of the popups
                 // in order for the next trade to appear immediately
             }

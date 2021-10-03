@@ -1,5 +1,7 @@
 package com.unciv.ui.audio
 
+import java.util.*
+
 enum class MusicTrackChooserFlags {
     /** Makes prefix parameter a mandatory match */
     PrefixMustMatch,
@@ -11,4 +13,17 @@ enum class MusicTrackChooserFlags {
     PlaySingle,
     /** directly choose the 'fallback' file for playback */
     PlayDefaultFile,
+    ;
+
+    companion object {
+        // EnumSet factories
+        /** EnumSet.of([PlayDefaultFile], [PlaySingle]) */
+        val setPlayDefault: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PlayDefaultFile, PlaySingle)
+        /** EnumSet.of([PrefixMustMatch], [PlaySingle]) */
+        val setSelectNation: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch)
+        /** EnumSet.of([PrefixMustMatch], [SuffixMustMatch]) */
+        val setSpecific: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch, SuffixMustMatch)
+        /** EnumSet.of([PrefixMustMatch], [SlowFade]) */
+        val setNextTurn: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch, SlowFade)
+    }
 }

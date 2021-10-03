@@ -29,7 +29,7 @@ class MusicController {
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
         private val fileExtensions = listOf("mp3", "ogg")   // flac, opus, m4a... blocked by Gdx, `wav` we don't want
 
-        internal const val consoleLog = false
+        internal const val consoleLog = true
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -98,9 +98,10 @@ class MusicController {
         fireOnChange()
     }
     private fun fireOnChange() {
+        if (onTrackChangeListener == null) return
         val fileName = currentlyPlaying()
         if (fileName.isEmpty()) {
-            onTrackChangeListener?.invoke(fileName)
+            fireOnChange(fileName)
             return
         }
         val fileNameParts = fileName.split('/')
@@ -108,7 +109,16 @@ class MusicController {
         var trackName = fileNameParts[if (fileNameParts.size > 3 && fileNameParts[2] == "music") 3 else 1]
         for (extension in fileExtensions)
             trackName = trackName.removeSuffix(".$extension")
-        onTrackChangeListener?.invoke(modName + (if (modName.isEmpty()) "" else ": ") + trackName)
+        fireOnChange(modName + (if (modName.isEmpty()) "" else ": ") + trackName)
+    }
+    private fun fireOnChange(trackLabel: String) {
+        try {
+            onTrackChangeListener?.invoke(trackLabel)
+        } catch (ex: Throwable) {
+            if (consoleLog)
+                println("onTrackChange event invoke failed: ${ex.message}")
+            onTrackChangeListener = null
+        }
     }
 
     /**
@@ -143,10 +153,13 @@ class MusicController {
                         // Next track - if top slot empty and a next exists, move it to top and start
                         current = next
                         next = null
-                        if (!current!!.play())
-                            state = ControllerState.Shutdown
-                        else
+                        if (!current!!.play()) {
+                            // Retry another track if playback start fails, after an extended pause
+                            ticksOfSilence = -silenceLengthInTicks - 1000
+                            state = ControllerState.Silence
+                        } else {
                             fireOnChange()
+                        }
                     } // else wait for the thread of next.load() to finish
                 } else if (!current!!.isPlaying()) {
                     // normal end of track
@@ -201,14 +214,17 @@ class MusicController {
                 (!flags.contains(MusicTrackChooserFlags.PrefixMustMatch) || it.nameWithoutExtension().startsWith(prefix))
                         && (!flags.contains(MusicTrackChooserFlags.SuffixMustMatch) || it.nameWithoutExtension().endsWith(suffix))
             }
-            // sort them by prefix match / suffix match / not last played / random
+            // randomize
+            .shuffled()
+            // sort them by prefix match / suffix match / not last played
             .sortedWith(compareBy(
                 { if (it.nameWithoutExtension().startsWith(prefix)) 0 else 1 }
                 , { if (it.nameWithoutExtension().endsWith(suffix)) 0 else 1 }
                 , { if (it.path() in musicHistory) 1 else 0 }
-                , { Random().nextInt() }))
             // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
-            .firstOrNull()
+            )).firstOrNull()
+        // Note: shuffled().sortedWith(), ***not*** .sortedWith(.., Random)
+        // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive. 
     }
 
     //endregion
@@ -216,9 +232,10 @@ class MusicController {
 
     /** This tells the music controller about active mods - all are allowed to provide tracks */
     fun setModList ( newMods: HashSet<String> ) {
-        //todo: Ensure this gets updated where appropriate.
-        // loadGame; newGame: Choose Map with Mods?; map editor...
-        // check against "ImageGetter.ruleset=" ?
+        // This is hooked in most places where ImageGetter.setNewRuleset is called.
+        // Changes in permanent audiovisual mods are effective without this notification.
+        // Only the map editor isn't hooked, so if we wish to play mod-nation-specific tunes in the
+        // editor when e.g. a starting location is picked, that will have to be added.
         mods = newMods
     }
 
@@ -227,14 +244,15 @@ class MusicController {
      * Called without parameters it will choose a new ambient music track and start playing it with fade-in/out.
      * Will do nothing when no music files exist or the master volume is zero.
      * 
-     * @param prefix file name prefix, meant to represent **Context** - in most cases a Civ name or default "Ambient"
-     * @param suffix file name suffix, meant to represent **Mood** - e.g. Peace, War, Theme...
+     * @param prefix file name prefix, meant to represent **Context** - in most cases a Civ name
+     * @param suffix file name suffix, meant to represent **Mood** - e.g. Peace, War, Theme, Defeat, Ambient
+     * (Ambient is the default when a track ends and exists so War Peace and the others are not chosen in that case)
      * @param flags a set of optional flags to tune the choice and playback.
      * @return `true` = success, `false` = no match, no playback change
      */
     fun chooseTrack (
         prefix: String = "",
-        suffix: String = "", 
+        suffix: String = "Ambient", 
         flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
     ): Boolean {
         if (baseVolume == 0f) return false
@@ -288,6 +306,17 @@ class MusicController {
             }
 
         return true
+    }
+    /** Variant of [chooseTrack] that tries several moods ([suffixes]) until a match is chosen */
+    fun chooseTrack (
+        prefix: String = "",
+        suffixes: List<String>,
+        flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
+    ): Boolean {
+        for (suffix in suffixes) {
+            if (chooseTrack(prefix, suffix, flags)) return true
+        }
+        return false
     }
 
     /**
@@ -346,7 +375,7 @@ class MusicController {
     private fun shutdown() {
         state = ControllerState.Idle
         fireOnChange()
-        onTrackChangeListener = null
+        // keep onTrackChangeListener! OptionsPopup will want to know when we start up again
         if (musicTimer != null) {
             musicTimer!!.cancel()
             musicTimer = null
