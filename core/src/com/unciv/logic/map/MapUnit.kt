@@ -813,8 +813,9 @@ class MapUnit {
         if (civInfo.isMajorCiv() 
             && tile.improvement != null
             && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
-        )
+        ) {
             getAncientRuinBonus(tile)
+        }
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 
