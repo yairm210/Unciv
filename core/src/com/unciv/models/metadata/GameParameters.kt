@@ -18,6 +18,7 @@ class GameParameters { // Default values are the default new game
     var numberOfCityStates = 6
 
     var noBarbarians = false
+    var ragingBarbarians = false
     var oneCityChallenge = false
     var godMode = false
     var nuclearWeaponsEnabled = true
@@ -38,6 +39,7 @@ class GameParameters { // Default values are the default new game
         parameters.players = ArrayList(players)
         parameters.numberOfCityStates = numberOfCityStates
         parameters.noBarbarians = noBarbarians
+        parameters.ragingBarbarians = ragingBarbarians
         parameters.oneCityChallenge = oneCityChallenge
         parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
         parameters.religionEnabled = religionEnabled
@@ -57,6 +59,7 @@ class GameParameters { // Default values are the default new game
             yield("$numberOfCityStates CS")
             if (isOnlineMultiplayer) yield("Online Multiplayer")
             if (noBarbarians) yield("No barbs")
+            if (ragingBarbarians) yield("Raging barbs")
             if (oneCityChallenge) yield("OCC")
             if (!nuclearWeaponsEnabled) yield("No nukes")
             if (religionEnabled) yield("Religion")
