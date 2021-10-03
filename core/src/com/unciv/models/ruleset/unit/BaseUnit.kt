@@ -598,13 +598,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             when {
                 unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
                     if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) } ) { // Bonus vs some units - a quarter of the bonus
-                        power *= (unique.params[0].toPercent()) / 4f
+                        power *= (unique.params[0].toInt() / 4f).toPercent()
                     } else if (
                         unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) } || // City Attack - half the bonus
                         unique.conditionals.any { it.isOfType(UniqueType.ConditionalAttacking) } || // Attack - half the bonus
                         unique.conditionals.any { it.isOfType(UniqueType.ConditionalDefending) } // Defense - half the bonus
                     ) {
-                        power *= (unique.params[0].toPercent()) / 2f
+                        power *= (unique.params[0].toInt() / 2f).toPercent()
                     }
                 }
                 // Deprecated since 3.17.3
@@ -634,13 +634,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 when {
                     unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
                         if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) } ) { // Bonus vs some units - a quarter of the bonus
-                            power *= (unique.params[0].toPercent()) / 4f
+                            power *= (unique.params[0].toInt() / 4f).toPercent()
                         } else if (
                             unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) } || // City Attack - half the bonus
                             unique.conditionals.any { it.isOfType(UniqueType.ConditionalAttacking) } || // Attack - half the bonus
                             unique.conditionals.any { it.isOfType(UniqueType.ConditionalDefending) } // Defense - half the bonus
                         ) {
-                            power *= (unique.params[0].toPercent()) / 2f
+                            power *= (unique.params[0].toInt() / 2f).toPercent() 
                         }
                     }
                     // Deprecated since 3.17.3
