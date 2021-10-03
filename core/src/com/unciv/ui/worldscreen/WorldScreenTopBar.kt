@@ -215,7 +215,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         val year = getYear(civInfo.gameInfo.gameParameters.gameSpeed, getEquivalentTurn(civInfo.gameInfo)).toInt()
 
-        val yearText = "[" + abs(year) + "] " + if (year < 0) "BC" else "AD"
+        val yearText = if (true) MayaCalendar.yearToMayaDate(year)
+            else "[" + abs(year) + "] " + if (year < 0) "BC" else "AD"
         turnsLabel.setText(Fonts.turn + "" + civInfo.gameInfo.turns + " | " + yearText.tr())
 
         val nextTurnStats = civInfo.statsForNextTurn

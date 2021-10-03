@@ -932,6 +932,46 @@
 			"Nekemte","Asella","Dila","Adigrat","Debre Markos","Kombolcha","Debre Tabor","Sebeta",
 			"Shire","Ambo","Negele Arsi","Gambela","Ziway","Weldiya"]
 	},
+	{
+		"name": "The Maya",
+		"leaderName": "Pacal",
+		"adjective": ["mayan"],
+		"startBias": ["Jungle"],
+		"preferredVictoryType": "Scientific",
+
+		"startIntroPart1": "Your people kneel before you, exalted King Pacal the Great, favored son of the gods and shield to the citizens of the Palenque domain. After years of strife at the hands of your neighboring rivals, you struck back at the enemies of your people, sacrificing their leaders in retribution for the insults dealt to your predecessors. The glory of Palenque was restored only by the guidance afforded by your wisdom, as you orchestrated vast reconstruction efforts within the city, creating some of the greatest monuments and architecture your people - and the world - have ever known.",
+		"startIntroPart2": "Illustrious King, your people once again look to you for leadership and counsel in the coming days. Will you channel the will of the gods and restore your once proud kingdom to its greatest heights? Will you build new monuments to forever enshrine the memories of your people? Can you build a civilization that will stand the test of time?",
+
+		"declaringWar": "A sacrifice unlike all others must be made!",
+		"attacked": "Muahahahahahaha!",
+		"defeated": "Today comes a great searing pain. With you comes the path to the black storm.",
+		"introduction": "Greetings, wayward one. I am known as Pacal.",
+		"tradeRequest": "Friend, I believe I may have found a way to save us all! Look, look and accept my offering!",
+
+		"neutralHello": "A fine day, it helps you.",
+		/* Not used by Unciv, and uncertain
+                "afterPeace": "",
+        
+                "neutralLetsHearIt": ["If you must show me."],
+                "neutralNo": ["No no, too much trouble.","No!","Not good enough."],
+                "neutralYes": ["Okay.","Fine.","Accepted."],
+        
+                "hateHello": "You.",
+                "hateLetsHearIt": ["Talk.","So?","Speak!"],
+                "hateNo": ["That's unacceptable!","A thousand times no!","Never!"],
+                "hateYes": ["Oh… Fine, okay."],
+        */
+		"outerColor": [198,141,99], // color picker: cf9f75
+		"innerColor": [24,63,66], // color picker: 1f4a4d
+		"uniqueName": "The Long Count",
+		"uniques": ["Receive a bonus Great Person at the end of every [Maya Long Count calendar cycle] (every [394] years), starting after researching [Theology]. (Each bonus person can only be chosen once.)",
+			"Once [The Long Count] activates, the year counter displays as the traditional Mayan Long Count."],
+		// Parameters: tech, comment, amount, comment. Compare "Free [Great General] appears" as used by policies
+		"cities": ["Palenque","Tikal","Chichen Itza","Uxmal","Tulum","Copan","Coba","El Mirador","Calakmul",
+			"Edzna","Lamanai","Izapa","Uaxactun","Comalcalco","Piedras Negras","Cancuen","Yaxha","Quirigua",
+			"Q'umarkaj","Nakbe","Cerros","Xunantunich","Takalik Abaj","Cival","San Bartolo","Altar de Sacrificios","Seibal",
+			"Caracol","Naranjo","Dos Pilas","Mayapan","Ixinche","Zaculeu","Kabah"]
+	},
 
 	// City-States sorted by cityStateType, name
 	{

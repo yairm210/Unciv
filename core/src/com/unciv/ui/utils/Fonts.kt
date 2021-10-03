@@ -98,6 +98,10 @@ class NativeBitmapFontData(
             Fonts.culture -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Culture").region)
             Fonts.faith -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Faith").region)
             Fonts.happiness -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Happiness").region)
+            MayaCalendar.tun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("MayaCalendar/Tun").region)
+            MayaCalendar.katun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("MayaCalendar/Katun").region)
+            MayaCalendar.baktun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("MayaCalendar/Baktun").region)
+            in MayaCalendar.zero..MayaCalendar.nineteen -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("MayaCalendar/" + MayaCalendar.digitName(ch)).region)
             else -> fontImplementation.getCharPixmap(ch)
         }
     }
@@ -166,7 +170,7 @@ object Fonts {
     const val culture = '♪'             // U+266A 'eighth note' (🎵 U+1F3B5 'musical note')
     const val happiness = '⌣'           // U+2323 'smile' (😀 U+1F600 'grinning face')
     const val faith = '☮'               // U+262E 'peace symbol' (🕊 U+1F54A 'dove of peace')
-    
+
     fun statToChar(stat: Stat): Char {
         return when (stat) {
             Stat.Food -> food
