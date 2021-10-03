@@ -7,6 +7,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
+import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.MapParametersTable
@@ -17,11 +18,26 @@ import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** New map generation screen */
-class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerScreen() {
+class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : PickerScreen() {
 
     private val ruleset = RulesetCache.getBaseRuleset()
     private var generatedMap: TileMap? = null
     private val mapParametersTable: MapParametersTable
+
+    companion object {
+        private fun getDefaultParameters(): MapParameters {
+            val lastSetup = UncivGame.Current.settings.lastGameSetup
+                ?: return MapParameters()
+            return lastSetup.mapParameters.clone().apply { reseed() }
+        }
+        private fun saveDefaultParameters(parameters: MapParameters) {
+            val settings = UncivGame.Current.settings
+            val lastSetup = settings.lastGameSetup
+                ?: GameSetupInfo().also { settings.lastGameSetup = it }
+            lastSetup.mapParameters = parameters.clone()
+            settings.save()
+        }
+    }
 
     init {
         setDefaultCloseAction(MainMenuScreen())
@@ -47,7 +63,6 @@ class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerS
         topTable.apply {
             add(ScrollPane(newMapScreenOptionsTable).apply { setOverscroll(false, false) })
             pack()
-//            setFillParent(true)
         }
 
         rightButtonSetEnabled(true)
@@ -73,12 +88,14 @@ class NewMapScreen(val mapParameters: MapParameters = MapParameters()) : PickerS
                     generatedMap = MapGenerator(ruleset).generateMap(mapParameters)
 
                     Gdx.app.postRunnable {
+                        saveDefaultParameters(mapParameters)
                         val mapEditorScreen = MapEditorScreen(generatedMap!!)
                         mapEditorScreen.ruleset = ruleset
                         game.setScreen(mapEditorScreen)
                     }
 
                 } catch (exception: Exception) {
+                    println("Map generator exception: ${exception.message}")
                     Gdx.app.postRunnable {
                         rightButtonSetEnabled(true)
                         val cantMakeThatMapPopup = Popup(this)
