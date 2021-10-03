@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
@@ -54,6 +55,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.defender != null && state.defender.matchesCategory("City")
             UniqueType.ConditionalVsUnits ->
                 state.defender != null && state.defender.matchesCategory(condition.params[0])
+            UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
+            UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.defender?.getCivInfo()?.cities?.size ?: 0
