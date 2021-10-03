@@ -236,23 +236,20 @@ object UnitActions {
     }
 
     private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
-        val paradropUniques = unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
+        val paradropUniques =
+            unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
         if (!paradropUniques.any() || unit.isEmbarked()) return
         unit.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
         actionList += UnitAction(UnitActionType.Paradrop,
-                isCurrentAction = unit.isPreparingParadrop(),
-                action = {
-                    if (unit.isPreparingParadrop()) {
-                        unit.action = null
-                    } else {
-                        unit.action = UnitActionType.Paradrop.value
-                    }
-                }.takeIf {
-                    unit.currentMovement == unit.getMaxMovement().toFloat() &&
-                    unit.currentTile.isFriendlyTerritory(unit.civInfo) &&
-                    !unit.isEmbarked()
-                })
-
+            isCurrentAction = unit.isPreparingParadrop(),
+            action = {
+                if (unit.isPreparingParadrop()) unit.action = null
+                else unit.action = UnitActionType.Paradrop.value
+            }.takeIf {
+                unit.currentMovement == unit.getMaxMovement().toFloat() &&
+                        unit.currentTile.isFriendlyTerritory(unit.civInfo) &&
+                        !unit.isEmbarked()
+            })
     }
 
     private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {

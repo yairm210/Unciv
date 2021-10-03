@@ -72,6 +72,12 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
 
+    StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.16", ReplaceWith("[stats] from every specialist [in all cities]"), DeprecationLevel.WARNING)
+    StatsFromSpecialistDeprecated("[stats] from every specialist", UniqueTarget.Global),
+
+    StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global),
+
     /////// City-State related uniques
 
     // I don't like the fact that currently "city state bonuses" are separate from the "global bonuses",
