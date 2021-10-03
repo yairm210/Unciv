@@ -159,6 +159,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 //    ConditionalAttacking("when attacking", UniqueTarget.Conditional),
 //    ConditionalDefending("when defending", UniqueTarget.Conditional),
 //    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
+
+    ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

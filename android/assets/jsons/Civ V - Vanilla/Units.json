@@ -301,7 +301,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
-		"uniques": ["[+50]% Strength <vs [Mounted] units>","[+10] HP when healing"],
+		"uniques": ["[+50]% Strength <vs [Mounted] units>", "[+10] HP when healing"],
 		"attackSound": "metalhit"
 	},
 	{
@@ -319,7 +319,22 @@
 		"-[1] Visibility Range", "Can only attack [City] units"],
 		"promotions":  ["Cover I"],
 		"attackSound": "throw"
-	}
+	},
+	{
+		"name": "Pictish Warrior",
+		"unitType": "Sword",
+		"replaces": "Spearman",
+		"uniqueTo": "Celts",
+		"movement": 2,
+		"strength": 11,
+		"cost": 56,
+		"requiredTech": "Bronze Working",
+		"obsoleteTech": "Civil Service",
+		"upgradesTo": "Pikeman",
+		"uniques": ["Earn [50]% of killed [Military] unit's [Strength] as [Faith]"],
+		"promotions": ["Pictish Courage"],
+		"attackSound": "metalhit"
+	},
 	/*
 	{
 		"name": "Spearman",
