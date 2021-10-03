@@ -140,7 +140,7 @@ object BattleDamage {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
             // Deprecated since 3.17.4
-                for (unique in attacker.unit.getMatchingUniques("+[]% Strength when attacking")) {
+                for (unique in attacker.unit.getMatchingUniques(UniqueType.StrengthAttacking)) {
                     modifiers.add("Attacker Bonus", unique.params[0].toInt())
                 }
             //
@@ -228,12 +228,12 @@ object BattleDamage {
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
             // Deprecated since 3.17.4
-                for (unique in defender.unit.getMatchingUniques("[]% Strength when defending vs [] units")) {
+                for (unique in defender.unit.getMatchingUniques(UniqueType.StrengthDefendingUnitFilter)) {
                     if (attacker.matchesCategory(unique.params[1]))
                         modifiers.add("defence vs [${unique.params[1]}] ", unique.params[0].toInt())
                 }
     
-                for (unique in defender.unit.getMatchingUniques("+[]% Strength when defending")) {
+                for (unique in defender.unit.getMatchingUniques(UniqueType.StrengthDefending)) {
                     modifiers.add("Defender Bonus", unique.params[0].toInt())
                 }
             //

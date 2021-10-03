@@ -573,8 +573,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             return
         }
 
-        var power = strength.toFloat().pow(1.5f).toInt()
-        var rangedPower = rangedStrength.toFloat().pow(1.45f).toInt()
+        var power = strength.toFloat().pow(1.5f)
+        var rangedPower = rangedStrength.toFloat().pow(1.45f)
 
         // Value ranged naval units less
         if (isWaterUnit()) {
@@ -585,7 +585,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         // Replicates the formula from civ V, which is a lower multiplier than probably intended, because math
         // They did fix it in BNW so it was completely bugged and always 1, again math
-        power = (power * movement.toFloat().pow(0.3f)).toInt()
+        power = (power * movement.toFloat().pow(0.3f))
 
         if (uniqueObjects.any { it.placeholderText =="Self-destructs when attacking" } )
             power /= 2
@@ -598,25 +598,25 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             when {
                 unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
                     if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) } ) { // Bonus vs some units - a quarter of the bonus
-                        power += (power * unique.params[0].toInt()) / 400
+                        power *= (unique.params[0].toPercent()) / 4f
                     } else if (
                         unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) } || // City Attack - half the bonus
                         unique.conditionals.any { it.isOfType(UniqueType.ConditionalAttacking) } || // Attack - half the bonus
                         unique.conditionals.any { it.isOfType(UniqueType.ConditionalDefending) } // Defense - half the bonus
                     ) {
-                        power += (power * unique.params[0].toInt()) / 200
+                        power *= (unique.params[0].toPercent()) / 2f
                     }
                 }
                 // Deprecated since 3.17.3
-                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
+                    unique.isOfType(UniqueType.StrengthPlusVs) && unique.params[1] == "City" // City Attack - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
-                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
+                    unique.isOfType(UniqueType.StrengthPlusVs) && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
                         -> power += (power * unique.params[0].toInt()) / 400
                 //
                 // Deprecated since 3.17.4
-                    unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
+                    unique.isOfType(UniqueType.StrengthAttacking) // Attack - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
-                    unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus
+                    unique.isOfType(UniqueType.StrengthDefending) // Defense - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
                 //
                 unique.placeholderText == "May Paradrop up to [] tiles from inside friendly territory" // Paradrop - 25% bonus
@@ -634,25 +634,25 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 when {
                     unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
                         if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) } ) { // Bonus vs some units - a quarter of the bonus
-                            power += (power * unique.params[0].toInt()) / 400
+                            power *= (unique.params[0].toPercent()) / 4f
                         } else if (
                             unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) } || // City Attack - half the bonus
                             unique.conditionals.any { it.isOfType(UniqueType.ConditionalAttacking) } || // Attack - half the bonus
                             unique.conditionals.any { it.isOfType(UniqueType.ConditionalDefending) } // Defense - half the bonus
                         ) {
-                            power += (power * unique.params[0].toInt()) / 200
+                            power *= (unique.params[0].toPercent()) / 2f
                         }
                     }
                     // Deprecated since 3.17.3
-                        unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
+                        unique.isOfType(UniqueType.StrengthPlusVs) && unique.params[1] == "City" // City Attack - half the bonus
                             -> power += (power * unique.params[0].toInt()) / 200
-                        unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
+                        unique.isOfType(UniqueType.StrengthPlusVs) && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
                             -> power += (power * unique.params[0].toInt()) / 400
                     //
                     // Deprecated since 3.17.4
-                        unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
+                        unique.isOfType(UniqueType.StrengthAttacking) // Attack - half the bonus
                             -> power += (power * unique.params[0].toInt()) / 200
-                        unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus
+                        unique.isOfType(UniqueType.StrengthDefending) // Defense - half the bonus
                             -> power += (power * unique.params[0].toInt()) / 200
                     //
                     unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 20% bonus per extra attack
@@ -663,6 +663,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             }
 
         }
-        cachedForceEvaluation = power
+        cachedForceEvaluation = power.toInt()
     }
 }

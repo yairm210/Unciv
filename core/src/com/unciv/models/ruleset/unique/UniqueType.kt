@@ -123,12 +123,18 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     StrengthPlus("+[amount]% Strength", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
     StrengthMin("-[amount]% Strength", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [unitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
     StrengthPlusVs("+[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [unitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
     StrengthMinVs("-[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
     CombatBonus("+[amount]% Combat Strength", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when attacking>"), DeprecationLevel.WARNING)
+    StrengthAttacking("+[amount]% Strength when attacking", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <shen defending>"), DeprecationLevel.WARNING)
+    StrengthDefending("+[amount]% Strength when defending", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when defending> <vs [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    StrengthDefendingUnitFilter("[amount]% Strength when defending vs [mapUnitFilter] units", UniqueTarget.Unit),
 
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
