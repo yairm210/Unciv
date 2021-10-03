@@ -90,6 +90,15 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
     },
+    TileFilter("tileFilter") {
+        private val knownValues = setOf("unimproved", "All Road", "Great Improvement")
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
+            if (ruleset.tileImprovements.containsKey(parameterText)) return null
+            return TerrainFilter.getErrorSeverity(parameterText, ruleset)
+        }
+    },
     /** Used by NaturalWonderGenerator, only tests base terrain or a feature */
     SimpleTerrain("simpleTerrain") {
         private val knownValues = setOf("Elevated", "Water", "Land")

@@ -53,6 +53,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 * [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger
+* [warrior](https://thenounproject.com/term/warrior/988830/) By DinosoftLab for Pictish Warrior (combined with Shamrock, see Promotions)
 
 ### Classical Era
 
@@ -290,6 +291,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Mansion](https://www.flaticon.com/free-icon/mansion_509903#term=persian&page=1&position=19) by Freepik for Satrap's Court
 * [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Arsenal
 * [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
+* [Ceilidh](https://thenounproject.com/term/ceilidh/403422/) By P Thanga Vignesh for Ceilidh Hall
 
 ### Industrial Era
 
@@ -561,6 +563,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Orthodox Cross](https://thenounproject.com/search/?q=orthodox&i=2069822) by Avana Vana for Byzantium
 * [Iroquois](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/Iroquois.png) by Ravignir for Iroquois
 * [Songhai](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/Songhai.png) by Ravignir for Songhai
+* [Celtic Knot](https://thenounproject.com/term/celtic/168483/) by Ervin Bolat for the Celts
 
 
 ## Promotions
@@ -594,6 +597,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger Withdraw
 * [Anchor](https://thenounproject.com/term/anchor/676586) by Gregor Cresnar for Amphibious
 * [survival knife](https://thenounproject.com/search/?q=survival&i=2663392) by b faris for Survivalism
+* [Shamrock](https://thenounproject.com/term/shamrock/358507/) By P Thanga Vignesh for Pictish Courage
+
 
 ## Religions
 

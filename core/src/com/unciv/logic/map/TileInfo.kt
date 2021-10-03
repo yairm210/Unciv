@@ -218,10 +218,12 @@ open class TileInfo {
         var stats = getBaseTerrain().clone()
 
         for (terrainFeatureBase in getTerrainFeatures()) {
-            if (terrainFeatureBase.overrideStats)
-                stats = terrainFeatureBase.clone()
-            else
-                stats.add(terrainFeatureBase)
+            when {
+                terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
+                    return terrainFeatureBase.clone()
+                terrainFeatureBase.overrideStats -> stats = terrainFeatureBase.clone()
+                else -> stats.add(terrainFeatureBase)
+            }
         }
 
         if (naturalWonder != null) {
@@ -455,7 +457,7 @@ open class TileInfo {
     fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
         if (improvement != null && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
-        return false
+        return improvement == null && filter == "unimproved"
     }
 
     fun matchesTerrainFilter(filter: String, observingCiv: CivilizationInfo? = null): Boolean {

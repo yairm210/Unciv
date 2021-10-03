@@ -152,12 +152,13 @@
 	{
 		"name": "Fallout",
 		"type": "TerrainFeature",
-		"food": -3,
-		"production": -3,
-		"gold": -3,
 		"movementCost": 2,
 		"unbuildable": true,
-		"defenceBonus": -0.15,
+		"uniques": ["Nullifies all other stats this tile provides", "Doesn't generate naturally"],
+		// For map editor only - the generator won't place it without code or enabling uniques
+		// If the map generator is ever updated to always take these into account, it should also take the "Doesn't generate naturally" unique into account
+		"occursOn": ["Grassland","Plains","Desert","Tundra","Snow","Forest","Jungle","Hill","Flood plains","Marsh","Oasis"]
+		"defenceBonus": -0.15
 	},
 	{
 		"name": "Oasis",

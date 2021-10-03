@@ -534,5 +534,9 @@
 	{
 		"name": "Ignore terrain cost",
 		"uniques": ["Ignores terrain cost"]
+	},
+	{
+		"name": "Pictish Courage", // only for Pictish Warrior and subsequent upgrades
+		"uniques": ["No movement cost to pillage", "+[20]% Strength in [Foreign Land]"]
 	}
 ]

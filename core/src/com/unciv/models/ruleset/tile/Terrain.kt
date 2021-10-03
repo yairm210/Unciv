@@ -6,6 +6,7 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.colorFromRGB
 
@@ -75,7 +76,7 @@ class Terrain : RulesetStatsObject() {
             textList += FormattedLine("$stats")
         }
 
-        if (occursOn.isNotEmpty()) {
+        if (occursOn.isNotEmpty() && !hasUnique(UniqueType.NoNaturalGeneration)) {
             textList += FormattedLine()
             if (occursOn.size == 1) {
                 with (occursOn[0]) {
