@@ -360,7 +360,7 @@ object Battle {
         } else { // ranged attack
             addXp(attacker, 2, defender)
             addXp(defender, 2, attacker)
-        }
+        } // we really shoouldn't hardcode this
     }
 
     private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant) {
@@ -442,7 +442,7 @@ object Battle {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
         } else {
-            city.puppetCity(attackerCiv)
+            city.puppetCity(attackerCiv) // the ai razes a city if its less than 4 pop? is this even in civ 5?
             if (city.population.population < 4 && city.canBeDestroyed(justCaptured = true)) {
                 city.annexCity()
                 city.isBeingRazed = true
