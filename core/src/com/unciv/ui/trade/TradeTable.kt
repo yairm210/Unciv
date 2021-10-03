@@ -7,17 +7,18 @@ import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen): Table(CameraStageBaseScreen.skin){
+class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen): Table(CameraStageBaseScreen.skin) {
     val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     var tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }
-    var offerColumnsTableWrapper = Table() // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
+    // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
+    var offerColumnsTableWrapper = Table() 
     val offerButton = "Offer trade".toTextButton()
 
-    fun isTradeOffered() = otherCivilization.tradeRequests.any{it.requestingCiv==currentPlayerCiv.civName}
+    fun isTradeOffered() = otherCivilization.tradeRequests.any { it.requestingCiv == currentPlayerCiv.civName }
 
     fun retractOffer(){
-        otherCivilization.tradeRequests.removeAll { it.requestingCiv==currentPlayerCiv.civName }
+        otherCivilization.tradeRequests.removeAll { it.requestingCiv == currentPlayerCiv.civName }
         currentPlayerCiv.updateDetailedCivResources()
         offerButton.setText("Offer trade".tr())
     }
@@ -28,7 +29,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen
 
         val lowerTable = Table().apply { defaults().pad(10f) }
 
-        val existingOffer = otherCivilization.tradeRequests.firstOrNull{it.requestingCiv==currentPlayerCiv.civName}
+        val existingOffer = otherCivilization.tradeRequests.firstOrNull { it.requestingCiv == currentPlayerCiv.civName }
         if (existingOffer != null){
             tradeLogic.currentTrade.set(existingOffer.trade.reverse())
             offerColumnsTable.update()

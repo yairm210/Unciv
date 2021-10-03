@@ -648,13 +648,15 @@ class MapUnit {
             .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             amountToHealBy += maxAdjacentHealingBonus
-        if (hasUnique("All healing effects doubled"))
-            amountToHealBy *= 2
+
         healBy(amountToHealBy)
     }
 
     fun healBy(amount: Int) {
-        health += amount
+        health += if (hasUnique("All healing effects doubled"))
+                amount * 2
+            else
+                amount
         if (health > 100) health = 100
     }
 

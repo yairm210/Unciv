@@ -78,7 +78,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.WARNING)
     GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
 
-    TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Improvement),
+    TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
 
     @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs"), // No conditional support
@@ -88,26 +88,26 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
 
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
-    
+
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
-    StrengthPlus("+[amount]% Strength"),
+    StrengthPlus("+[amount]% Strength", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
-    StrengthMin("-[amount]% Strength"),
+    StrengthMin("-[amount]% Strength", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [unitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
-    StrengthPlusVs("+[amount]% Strength vs [combatantFilter]"),
+    StrengthPlusVs("+[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [unitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
-    StrengthMinVs("-[amount]% Strength vs [combatantFilter]"),
+    StrengthMinVs("-[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
-    CombatBonus("+[amount]% Combat Strength"),
-    
-    
+    CombatBonus("+[amount]% Combat Strength", UniqueTarget.Unit),
+
+
     // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
     ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
-    
+
     // I don't like the fact that currently "city state bonuses" are separate from the "global bonuses",
     // todo: merge city state bonuses into global bonuses
     CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
@@ -123,7 +123,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain),
     NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain),
     NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain),
-  
+
     // The "Except [terrainFilter]" could theoretically be implemented with a conditional
     NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain),
 

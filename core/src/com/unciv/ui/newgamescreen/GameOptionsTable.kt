@@ -46,7 +46,8 @@ class GameOptionsTable(
         addVictoryTypeCheckboxes()
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
-        checkboxTable.addBarbariansCheckbox()
+        checkboxTable.addNoBarbariansCheckbox()
+        checkboxTable.addRagingBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
@@ -65,9 +66,13 @@ class GameOptionsTable(
         add(checkbox).colspan(2).row()
     }
 
-    private fun Table.addBarbariansCheckbox() =
+    private fun Table.addNoBarbariansCheckbox() =
             addCheckbox("No Barbarians", gameParameters.noBarbarians)
             { gameParameters.noBarbarians = it }
+
+    private fun Table.addRagingBarbariansCheckbox() =
+        addCheckbox("Raging Barbarians", gameParameters.ragingBarbarians)
+        { gameParameters.ragingBarbarians = it }
 
     private fun Table.addOneCityChallengeCheckbox() =
             addCheckbox("One City Challenge", gameParameters.oneCityChallenge)
