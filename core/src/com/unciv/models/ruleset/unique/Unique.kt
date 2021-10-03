@@ -54,6 +54,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.defender != null && state.defender.matchesCategory("City")
             UniqueType.ConditionalVsUnits ->
                 state.defender != null && state.defender.matchesCategory(condition.params[0])
+            UniqueType.ConditionalVsLargerCiv -> {
+                val yourCities = state.civInfo?.cities?.size ?: 1
+                val theirCities = state.defender?.getCivInfo()?.cities?.size ?: 0
+                yourCities < theirCities
+            }
             UniqueType.ConditionalNeighborTiles ->
                 state.cityInfo != null &&
                 state.cityInfo.getCenterTile().neighbors.count {
