@@ -23,7 +23,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
     // 50 normal button height + 2*10 topTable padding + 2 Separator + 2*5 centerTable padding
     // Since a resize recreates this screen this should be fine as a val
     internal val centerAreaHeight = stage.height - 82f
-    
+
     private object ButtonDecorations {
         data class IconAndKey (val icon: String, val key: Char = Char.MIN_VALUE)
         val keyIconMap: HashMap<String,IconAndKey> = hashMapOf(
@@ -33,7 +33,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             Pair("Units", IconAndKey("OtherIcons/Shield", 'U')),
             Pair("Diplomacy", IconAndKey("OtherIcons/DiplomacyW", 'D')),
             Pair("Resources", IconAndKey("StatIcons/Happiness", 'R')),
-            Pair("Religion", IconAndKey("StatIcons/Faith", 'F'))
+            Pair("Religion", IconAndKey("StatIcons/Faith", 'F')),
+            Pair("Wonders", IconAndKey("OtherIcons/Wonders", 'W'))
         )
     }
 
@@ -79,8 +80,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             else game.settings.lastOverviewPage
 
         onBackButtonClicked { game.setWorldScreen() }
-        
-        addCategory("Cities", CityOverviewTable(viewingPlayer, this), viewingPlayer.cities.none())
+
+        addCategory("Cities", CityOverviewTable(viewingPlayer, this), viewingPlayer.cities.isEmpty())
         addCategory("Stats", StatsOverviewTable(viewingPlayer, this))
         addCategory("Trades", TradesOverviewTable(viewingPlayer, this), viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
         addCategory("Units", UnitOverviewTable(viewingPlayer, this), viewingPlayer.getCivUnits().none())
@@ -88,6 +89,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         addCategory("Resources", ResourcesOverviewTable(viewingPlayer, this), viewingPlayer.detailedCivResources.isEmpty())
         if (viewingPlayer.gameInfo.isReligionEnabled())
             addCategory("Religion", ReligionOverviewTable(viewingPlayer, this), viewingPlayer.gameInfo.religions.isEmpty())
+        addCategory("Wonders", WonderOverviewTable(viewingPlayer, this), viewingPlayer.naturalWonders.isEmpty() && viewingPlayer.cities.isEmpty())
 
         val closeButton = Constants.close.toTextButton().apply {
             setColor(0.75f, 0.1f, 0.1f, 1f)

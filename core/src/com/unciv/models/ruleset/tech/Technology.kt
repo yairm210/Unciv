@@ -4,36 +4,24 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.models.stats.INamed
-import com.unciv.ui.civilopedia.ICivilopediaText
+import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import java.util.*
 
-class Technology: INamed, ICivilopediaText, IHasUniques {
-
-    override lateinit var name: String
+class Technology: RulesetObject() {
 
     var cost: Int = 0
     var prerequisites = HashSet<String>()
-    override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Tech, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Tech
 
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0
     var quote = ""
-
-    override var civilopediaText = listOf<FormattedLine>()
-
-
-    // Debug helper
-    override fun toString() = name
 
     fun era(): String = column!!.era
 

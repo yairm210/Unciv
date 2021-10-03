@@ -13,6 +13,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.*
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.ModOptionsConstants
@@ -22,7 +23,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
-import com.unciv.ui.pickerscreens.BeliefContainer
 import com.unciv.ui.victoryscreen.RankingType
 import kotlin.math.min
 
@@ -339,35 +339,26 @@ object NextTurnAutomation {
         )
     }
 
-    private fun chooseBeliefs(civInfo: CivilizationInfo, beliefContainer: BeliefContainer): HashSet<Belief> {
+    private fun chooseBeliefs(civInfo: CivilizationInfo, beliefsToChoose: Counter<BeliefType>): HashSet<Belief> {
         val chosenBeliefs = hashSetOf<Belief>()
         // The `continue`s should never be reached, but just in case I'd rather have the AI have a
         // belief less than make the game crash. The `continue`s should only be reached whenever
         // there are not enough beliefs to choose, but there should be, as otherwise we could
         // not have used a great prophet to found/enhance our religion.
-        for (counter in 0 until beliefContainer.pantheonBeliefCount)
-            chosenBeliefs.add(
-                chooseBeliefOfType(civInfo, BeliefType.Pantheon, chosenBeliefs) ?: continue
-            )
-        for (counter in 0 until beliefContainer.followerBeliefCount)
-            chosenBeliefs.add(
-                chooseBeliefOfType(civInfo, BeliefType.Follower, chosenBeliefs) ?: continue
-            )
-        for (counter in 0 until beliefContainer.founderBeliefCount)
-            chosenBeliefs.add(
-                chooseBeliefOfType(civInfo, BeliefType.Founder, chosenBeliefs) ?: continue
-            )
-        for (counter in 0 until beliefContainer.enhancerBeliefCount)
-            chosenBeliefs.add(
-                chooseBeliefOfType(civInfo, BeliefType.Enhancer, chosenBeliefs) ?: continue
-            )
+        for (belief in BeliefType.values()) {
+            if (belief == BeliefType.None) continue
+            for (counter in 0 until (beliefsToChoose[belief] ?: 0))
+                chosenBeliefs.add(
+                    chooseBeliefOfType(civInfo, belief, chosenBeliefs) ?: continue
+                )
+        }
         return chosenBeliefs
     }
 
     private fun chooseBeliefOfType(civInfo: CivilizationInfo, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
         return civInfo.gameInfo.ruleSet.beliefs
             .filter { 
-                it.value.type == beliefType 
+                (it.value.type == beliefType || beliefType == BeliefType.Any) 
                 && !additionalBeliefsToExclude.contains(it.value)
                 && !civInfo.gameInfo.religions.values
                     .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value) 

@@ -4,7 +4,8 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.map.BFS
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
@@ -13,7 +14,9 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.randomWeighted
+import com.unciv.ui.utils.toPercent
 import kotlin.math.max
 import kotlin.random.Random
 
@@ -54,6 +57,18 @@ class QuestManager {
 
     /** Returns true if [civInfo] have active quests for [challenger] */
     fun haveQuestsFor(challenger: CivilizationInfo): Boolean = assignedQuests.any { it.assignee == challenger.civName }
+
+    /** Returns true if [civInfo] has asked anyone to conquer [target] */
+    fun wantsDead(target: String): Boolean = assignedQuests.any { it.questName == QuestName.ConquerCityState.value && it.data1 == target }
+
+    /** Returns the influence multiplier for [donor] from a Investment quest that [civInfo] might have (assumes only one) */
+    fun getInvestmentMultiplier(donor: String): Float {
+        val investmentQuest = assignedQuests.firstOrNull { it.questName == QuestName.Invest.value && it.assignee == donor }
+        return if (investmentQuest == null)
+            1f
+        else
+            investmentQuest.data1.toPercent()
+    }
 
     fun clone(): QuestManager {
         val toReturn = QuestManager()
@@ -247,6 +262,8 @@ class QuestManager {
 
         for (assignee in assignees) {
 
+            val playerReligion = civInfo.gameInfo.religions.values.firstOrNull { it.foundingCivName == assignee.civName && it.isMajorReligion() }
+
             var data1 = ""
             var data2 = ""
 
@@ -261,6 +278,17 @@ class QuestManager {
                 QuestName.GreatPerson.value -> data1 = getGreatPersonForQuest(assignee)!!.name
                 QuestName.FindPlayer.value -> data1 = getCivilizationToFindForQuest(assignee)!!.civName
                 QuestName.FindNaturalWonder.value -> data1 = getNaturalWonderToFindForQuest(assignee)!!
+                QuestName.ConquerCityState.value -> data1 = getCityStateTarget(assignee)!!.civName
+                QuestName.BullyCityState.value -> data1 = getCityStateTarget(assignee)!!.civName
+                QuestName.PledgeToProtect.value -> data1 = getMostRecentBully()!!
+                QuestName.GiveGold.value -> data1 = getMostRecentBully()!!
+                QuestName.DenounceCiv.value -> data1 = getMostRecentBully()!!
+                QuestName.SpreadReligion.value -> { data1 = playerReligion!!.getReligionDisplayName() // For display
+                                                    data2 = playerReligion.name } // To check completion
+                QuestName.ContestCulture.value -> data1 = assignee.totalCultureForContests.toString()
+                QuestName.ContestFaith.value -> data1 = assignee.totalFaithForContests.toString()
+                QuestName.ContestTech.value -> data1 = assignee.tech.getNumberOfTechsResearched().toString()
+                QuestName.Invest.value -> data1 = quest.description.getPlaceholderParameters().first()
             }
 
             val newQuest = AssignedQuest(
@@ -294,22 +322,33 @@ class QuestManager {
             return false
         if (assignedQuests.any { it.assignee == challenger.civName && it.questName == quest.name })
             return false
+        if (quest.isIndividual() && civInfo.getDiplomacyManager(challenger).hasFlag(DiplomacyFlags.Bullied))
+            return false
+
+        val mostRecentBully = getMostRecentBully()
+        val playerReligion = civInfo.gameInfo.religions.values.firstOrNull() { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
 
         return when (quest.name) {
             QuestName.ClearBarbarianCamp.value -> getBarbarianEncampmentForQuest() != null
-            QuestName.Route.value -> {
-                if (challenger.cities.none() || !civInfo.hasEverBeenFriendWith(challenger)
-                        || civInfo.isCapitalConnectedToCity(challenger.getCapital())) return false
-
-                val bfs = BFS(civInfo.getCapital().getCenterTile()) { it.isLand && !it.isImpassible() }
-                bfs.stepUntilDestination(challenger.getCapital().getCenterTile())
-                bfs.hasReachedTile(challenger.getCapital().getCenterTile())
-            }
-            QuestName.ConnectResource.value -> civInfo.hasEverBeenFriendWith(challenger) && getResourceForQuest(challenger) != null
-            QuestName.ConstructWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getWonderToBuildForQuest(challenger) != null
-            QuestName.GreatPerson.value -> civInfo.hasEverBeenFriendWith(challenger) && getGreatPersonForQuest(challenger) != null
-            QuestName.FindPlayer.value -> civInfo.hasEverBeenFriendWith(challenger) && getCivilizationToFindForQuest(challenger) != null
-            QuestName.FindNaturalWonder.value -> civInfo.hasEverBeenFriendWith(challenger) && getNaturalWonderToFindForQuest(challenger) != null
+            QuestName.Route.value -> !challenger.cities.none()
+                    && !civInfo.isCapitalConnectedToCity(challenger.getCapital())
+                    // Need to have a city within 7 tiles on the same continent
+                    && challenger.cities.any { it.getCenterTile().aerialDistanceTo(civInfo.getCapital().getCenterTile()) <= 7
+                        && it.getCenterTile().getContinent() == civInfo.getCapital().getCenterTile().getContinent() }
+            QuestName.ConnectResource.value -> getResourceForQuest(challenger) != null
+            QuestName.ConstructWonder.value -> getWonderToBuildForQuest(challenger) != null
+            QuestName.GreatPerson.value -> getGreatPersonForQuest(challenger) != null
+            QuestName.FindPlayer.value -> getCivilizationToFindForQuest(challenger) != null
+            QuestName.FindNaturalWonder.value -> getNaturalWonderToFindForQuest(challenger) != null
+            QuestName.PledgeToProtect.value -> mostRecentBully != null && challenger !in civInfo.getProtectorCivs()
+            QuestName.GiveGold.value -> mostRecentBully != null
+            QuestName.DenounceCiv.value -> mostRecentBully != null && challenger.knows(mostRecentBully)
+                                            && !challenger.getDiplomacyManager(mostRecentBully).hasFlag(DiplomacyFlags.Denunciation)
+                                            && challenger.getDiplomacyManager(mostRecentBully).diplomaticStatus != DiplomaticStatus.War
+                                            && !( challenger.playerType == PlayerType.Human && civInfo.gameInfo.getCivilization(mostRecentBully).playerType == PlayerType.Human)
+            QuestName.SpreadReligion.value -> playerReligion != null && civInfo.getCapital().religion.getMajorityReligion()?.name != playerReligion
+            QuestName.ConquerCityState.value -> getCityStateTarget(challenger) != null && civInfo.cityStatePersonality != CityStatePersonality.Friendly
+            QuestName.BullyCityState.value -> getCityStateTarget(challenger) != null
             else -> true
         }
     }
@@ -324,6 +363,9 @@ class QuestManager {
             QuestName.GreatPerson.value -> assignee.getCivGreatPeople().any { it.baseUnit.getReplacedUnit(civInfo.gameInfo.ruleSet).name == assignedQuest.data1 }
             QuestName.FindPlayer.value -> assignee.hasMetCivTerritory(civInfo.gameInfo.getCivilization(assignedQuest.data1))
             QuestName.FindNaturalWonder.value -> assignee.naturalWonders.contains(assignedQuest.data1)
+            QuestName.PledgeToProtect.value -> assignee in civInfo.getProtectorCivs()
+            QuestName.DenounceCiv.value -> assignee.getDiplomacyManager(assignedQuest.data1).hasFlag(DiplomacyFlags.Denunciation)
+            QuestName.SpreadReligion.value -> civInfo.getCapital().religion.getMajorityReligion() == civInfo.gameInfo.religions[assignedQuest.data2]
             else -> false
         }
     }
@@ -335,6 +377,9 @@ class QuestManager {
             QuestName.ClearBarbarianCamp.value -> civInfo.gameInfo.tileMap[assignedQuest.data1.toInt(), assignedQuest.data2.toInt()].improvement != Constants.barbarianEncampment
             QuestName.ConstructWonder.value -> civInfo.gameInfo.getCities().any { it.civInfo != assignee && it.cityConstructions.isBuilt(assignedQuest.data1) }
             QuestName.FindPlayer.value -> civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
+            QuestName.ConquerCityState.value ->  civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
+            QuestName.BullyCityState.value ->  civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
+            QuestName.DenounceCiv.value ->  civInfo.gameInfo.getCivilization(assignedQuest.data1).isDefeated()
             else -> false
         }
     }
@@ -358,11 +403,26 @@ class QuestManager {
 
     /** Returns the score for the [assignedQuest] */
     private fun getScoreForQuest(assignedQuest: AssignedQuest): Int {
-        @Suppress("UNUSED_VARIABLE")  // This is a work in progress
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
         return when (assignedQuest.questName) {
-            // Waiting for contest quests
+            QuestName.ContestCulture.value -> assignee.totalCultureForContests - assignedQuest.data1.toInt()
+            QuestName.ContestFaith.value -> assignee.totalFaithForContests - assignedQuest.data1.toInt()
+            QuestName.ContestTech.value -> assignee.tech.getNumberOfTechsResearched() - assignedQuest.data1.toInt()
             else -> 0
+        }
+    }
+
+    /** Returns a string with the leading civ and their score for [questName] */
+    fun getLeaderStringForQuest(questName: String): String {
+        val leadingQuest = assignedQuests.filter { it.questName == questName }.maxByOrNull { getScoreForQuest(it) }
+        if (leadingQuest == null)
+            return ""
+
+        return when (questName){
+            QuestName.ContestCulture.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} [Culture] generated."
+            QuestName.ContestFaith.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} [Faith] generated."
+            QuestName.ContestTech.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Technologies discovered."
+            else -> ""
         }
     }
 
@@ -379,6 +439,59 @@ class QuestManager {
         val winningQuest = matchingQuests.filter { it.assignee == civInfo.civName }.firstOrNull()
         if (winningQuest != null)
             giveReward(winningQuest)
+
+        assignedQuests.removeAll(matchingQuests)
+    }
+
+    /**
+     * Gets notified the city state [cityState] was just conquered by [attacker].
+     */
+    fun cityStateConquered(cityState: CivilizationInfo, attacker: CivilizationInfo) {
+        val matchingQuests = assignedQuests.asSequence()
+            .filter { it.questName == QuestName.ConquerCityState.value }
+            .filter { it.data1 == cityState.civName && it.assignee == attacker.civName}
+
+        for (quest in matchingQuests)
+            giveReward(quest)
+
+        assignedQuests.removeAll(matchingQuests)
+    }
+
+    /**
+     * Gets notified the city state [cityState] was just bullied by [bully].
+     */
+    fun cityStateBullied(cityState: CivilizationInfo, bully: CivilizationInfo) {
+        val matchingQuests = assignedQuests.asSequence()
+            .filter { it.questName == QuestName.BullyCityState.value }
+            .filter { it.data1 == cityState.civName && it.assignee == bully.civName}
+
+        for (quest in matchingQuests)
+            giveReward(quest)
+
+        assignedQuests.removeAll(matchingQuests)
+
+        // What idiots haha oh wait that's us
+        if (civInfo == cityState) {
+            // Revoke most quest types from the bully
+            val revokedQuests = assignedQuests.asSequence()
+                .filter { it.isIndividual() || it.questName == QuestName.Invest.value }
+            assignedQuests.removeAll(revokedQuests)
+            if (revokedQuests.count() > 0)
+                bully.addNotification("[${civInfo.civName}] cancelled the quests they had given you because you demanded tribute from them.",
+                    DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+        }
+    }
+
+    /**
+     * Gets notified when given gold by [donorCiv].
+     */
+    fun receivedGoldGift(donorCiv: CivilizationInfo) {
+        val matchingQuests = assignedQuests.asSequence()
+            .filter { it.questName == QuestName.GiveGold.value }
+            .filter { it.assignee == donorCiv.civName}
+
+        for (quest in matchingQuests)
+            giveReward(quest)
 
         assignedQuests.removeAll(matchingQuests)
     }
@@ -440,6 +553,56 @@ class QuestManager {
                 if (trait == CityStateType.Militaristic)
                     weight *= 3f
             }
+            QuestName.GiveGold.value -> {
+                when (trait) {
+                    CityStateType.Militaristic -> weight *= 2f
+                    CityStateType.Mercantile -> weight *= 3.5f
+                    else -> weight *= 3f
+                }
+            }
+            QuestName.PledgeToProtect.value -> {
+                when (trait) {
+                    CityStateType.Militaristic -> weight *= 2f
+                    CityStateType.Cultured -> weight *= 3.5f
+                    else -> weight *= 3f
+                }
+            }
+            QuestName.BullyCityState.value -> {
+                when (personality) {
+                    CityStatePersonality.Hostile -> weight *= 2f
+                    CityStatePersonality.Irrational -> weight *= 1.5f
+                    CityStatePersonality.Friendly -> weight *= .3f
+                }
+            }
+            QuestName.DenounceCiv.value -> {
+                when (trait) {
+                    CityStateType.Religious -> weight *= 2.5f
+                    CityStateType.Maritime -> weight *= 2f
+                    else -> weight *= 1.5f
+                }
+            }
+            QuestName.SpreadReligion.value -> {
+                if (trait == CityStateType.Religious)
+                    weight *= 3f
+            }
+            QuestName.ContestCulture.value -> {
+                if (trait == CityStateType.Cultured)
+                    weight *= 2f
+            }
+            QuestName.ContestFaith.value -> {
+                when (trait) {
+                    CityStateType.Religious -> weight *= 2f
+                    else -> weight *= .5f
+                }
+            }
+            QuestName.ContestTech.value -> {
+                if (trait == CityStateType.Religious)
+                    weight *= .5f
+            }
+            QuestName.Invest.value -> {
+                if (trait == CityStateType.Mercantile)
+                    weight *= 1.5f
+            }
         }
         return weight
     }
@@ -486,11 +649,21 @@ class QuestManager {
     }
 
     private fun getWonderToBuildForQuest(challenger: CivilizationInfo): Building? {
+        val startingEra = civInfo.gameInfo.ruleSet.eras[civInfo.gameInfo.gameParameters.startingEra]!!
         val wonders = civInfo.gameInfo.ruleSet.buildings.values
                 .filter { building ->
-                    building.isWonder &&
-                            (building.requiredTech == null || challenger.tech.isResearched(building.requiredTech!!)) &&
-                            civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
+                            // Buildable wonder
+                            building.isWonder
+                            && (building.requiredTech == null || challenger.tech.isResearched(building.requiredTech!!))
+                            && civInfo.gameInfo.getCities().none { it.cityConstructions.isBuilt(building.name) }
+                            // Can't be disabled
+                            && building.name !in startingEra.startingObsoleteWonders
+                            && (civInfo.gameInfo.gameParameters.religionEnabled || !building.hasUnique("Hidden when religion is disabled"))
+                            // Can't be more than 25% built anywhere
+                            && civInfo.gameInfo.getCities().none {
+                        it.cityConstructions.getWorkDone(building.name) * 3 > it.cityConstructions.getRemainingWork(building.name) }
+                            // Can't be a unique wonder
+                            && building.uniqueTo == null
                 }
 
         if (wonders.isNotEmpty())
@@ -544,6 +717,29 @@ class QuestManager {
             return civilizationsToFind.random()
 
         return null
+    }
+
+    /**
+     * Returns a city-state [CivilizationInfo] that [civInfo] wants to target for hostile quests
+     */
+    private fun getCityStateTarget(challenger: CivilizationInfo): CivilizationInfo? {
+        val closestProximity = civInfo.gameInfo.getAliveCityStates()
+            .mapNotNull { civInfo.proximity[it.civName] }.filter { it != Proximity.None }.minByOrNull { it.ordinal }
+
+        if (closestProximity == null || closestProximity == Proximity.Distant) // None close enough
+            return null
+
+        val validTargets = civInfo.getKnownCivs().filter { it.isCityState() && challenger.knows(it)
+                && civInfo.proximity[it.civName] == closestProximity }
+
+        return validTargets.randomOrNull()
+    }
+
+    /** Returns a [CivilizationInfo] of the civ that most recently bullied [civInfo].
+     *  Note: forgets after 20 turns has passed! */
+    private fun getMostRecentBully(): String? {
+        val bullies = civInfo.diplomacy.values.filter { it.hasFlag(DiplomacyFlags.Bullied)}
+        return bullies.maxByOrNull { it.getFlag(DiplomacyFlags.Bullied) }?.otherCivName
     }
     //endregion
 }

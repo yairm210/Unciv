@@ -22,9 +22,7 @@ enum class VictoryType {
     Scientific,
 }
 
-class Nation : INamed, ICivilopediaText, IHasUniques {
-    override lateinit var name: String
-
+class Nation : RulesetObject() {
     var leaderName = ""
     fun getLeaderDisplayName() = if (isCityState()) name
     else "[$leaderName] of [$name]"
@@ -43,8 +41,7 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
 
     lateinit var outerColor: List<Int>
     var uniqueName = ""
-    override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Nation, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Nation
     var uniqueText = ""
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
@@ -55,8 +52,6 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
     /* Properties present in json but not yet implemented:
     var adjective = ArrayList<String>()
      */
-
-    override var civilopediaText = listOf<FormattedLine>()
     
     @Transient
     private lateinit var outerColorObject: Color
@@ -96,104 +91,6 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
 
     var cities: ArrayList<String> = arrayListOf()
 
-
-    /** Used only by NewGame Nation picker */
-    fun getUniqueString(ruleset: Ruleset): String {
-        val textList = ArrayList<String>()
-
-        if (uniqueName != "") textList += uniqueName.tr() + ":"
-        if (uniqueText != "") {
-            textList += " " + uniqueText.tr()
-        } else {
-            textList += "  " + uniques.joinToString(", ") { it.tr() }
-            textList += ""
-        }
-
-        if (startBias.isNotEmpty()) {
-            textList += "Start bias:".tr() + startBias.joinToString(", ", " ") { it.tr() }
-            textList += ""
-        }
-        addUniqueBuildingsText(textList, ruleset)
-        addUniqueUnitsText(textList, ruleset)
-        addUniqueImprovementsText(textList, ruleset)
-
-        return textList.joinToString("\n")
-    }
-
-    private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
-        for (building in ruleset.buildings.values
-                .filter { it.uniqueTo == name && Constants.hideFromCivilopediaUnique !in it.uniques }) {
-            if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
-                val originalBuilding = ruleset.buildings[building.replaces!!]!!
-
-                textList += building.name.tr() + " - " + "Replaces [${originalBuilding.name}]".tr()
-                for ((key, value) in building)
-                    if (value != originalBuilding[key])
-                        textList += "  " + key.name.tr() + " " + "[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr()
-
-                for (unique in building.uniques.filter { it !in originalBuilding.uniques })
-                    textList += "  " + unique.tr()
-                if (building.maintenance != originalBuilding.maintenance)
-                    textList += "  {Maintenance} " + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr()
-                if (building.cost != originalBuilding.cost)
-                    textList += "  {Cost} " + "[${building.cost}] vs [${originalBuilding.cost}]".tr()
-                if (building.cityStrength != originalBuilding.cityStrength)
-                    textList += "  {City strength} " + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr()
-                if (building.cityHealth != originalBuilding.cityHealth)
-                    textList += "  {City health} " + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr()
-                textList += ""
-            } else if (building.replaces != null) {
-                textList += building.name.tr() + " - " + "Replaces [${building.replaces}], which is not found in the ruleset!".tr()
-            } else textList += building.getShortDescription(ruleset)
-        }
-    }
-
-    private fun addUniqueUnitsText(textList: ArrayList<String>, ruleset: Ruleset) {
-        for (unit in ruleset.units.values
-                .filter { it.uniqueTo == name && Constants.hideFromCivilopediaUnique !in it.uniques }) {
-            if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
-                val originalUnit = ruleset.units[unit.replaces!!]!!
-                textList += unit.name.tr() + " - " + "Replaces [${originalUnit.name}]".tr()
-                if (unit.cost != originalUnit.cost)
-                    textList += "  {Cost} " + "[${unit.cost}] vs [${originalUnit.cost}]".tr()
-                if (unit.strength != originalUnit.strength)
-                    textList += "  ${Fonts.strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr()
-                if (unit.rangedStrength != originalUnit.rangedStrength)
-                    textList += "  ${Fonts.rangedStrength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr()
-                if (unit.range != originalUnit.range)
-                    textList += "  ${Fonts.range} " + "[${unit.range}] vs [${originalUnit.range}]".tr()
-                if (unit.movement != originalUnit.movement)
-                    textList += "  ${Fonts.movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
-                for (resource in originalUnit.getResourceRequirements().keys)
-                    if (!unit.getResourceRequirements().containsKey(resource))
-                        textList += "  " + "[$resource] not required".tr()
-                for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
-                    textList += "  " + unique.tr()
-                for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
-                    textList += "  " + "Lost ability".tr() + "(" + "vs [${originalUnit.name}]".tr() + "): " + unique.tr()
-                for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
-                    textList += "  " + promotion.tr() + " (" + ruleset.unitPromotions[promotion]!!.uniquesWithEffect().joinToString(",") { it.tr() } + ")"
-            } else if (unit.replaces != null) {
-                textList += unit.name.tr() + " - " + "Replaces [${unit.replaces}], which is not found in the ruleset!".tr()
-            } else {
-                textList += unit.name.tr()
-                textList += "  " + unit.getDescription().split("\n").joinToString("\n  ")
-            }
-
-            textList += ""
-        }
-    }
-
-    private fun addUniqueImprovementsText(textList: ArrayList<String>, ruleset: Ruleset) {
-        for (improvement in ruleset.tileImprovements.values
-                .filter { it.uniqueTo == name }) {
-
-            textList += improvement.name.tr()
-            textList += "  " + improvement.clone().toString()
-            for (unique in improvement.uniques)
-                textList += "  " + unique.tr()
-        }
-    }
 
     override fun makeLink() = "Nation/$name"
     override fun getSortGroup(ruleset: Ruleset) = when {
@@ -248,8 +145,11 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
         val textList = ArrayList<FormattedLine>()
 
         textList += FormattedLine("Type: [$cityStateType]", header = 4, color = cityStateType!!.color)
-        val viewingCiv = UncivGame.Current.gameInfo.currentPlayerCiv
-        val era = viewingCiv.getEra()
+
+        val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized())
+            UncivGame.Current.gameInfo.currentPlayerCiv.getEra()
+        else
+            ruleset.eras.values.first()
         var showResources = false
 
         val friendBonus = era.friendBonus[cityStateType!!.name]
@@ -290,7 +190,6 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
         return textList
     }
 
-    @JvmName("addUniqueBuildingsText1")  // These overloads are too similar - but I hope to remove the other one soon
     private fun addUniqueBuildingsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values) {
             if (building.uniqueTo != name || Constants.hideFromCivilopediaUnique in building.uniques) continue
@@ -322,7 +221,6 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
         }
     }
 
-    @JvmName("addUniqueUnitsText1")
     private fun addUniqueUnitsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (unit in ruleset.units.values) {
             if (unit.uniqueTo != name || Constants.hideFromCivilopediaUnique in unit.uniques) continue
@@ -371,7 +269,6 @@ class Nation : INamed, ICivilopediaText, IHasUniques {
         }
     }
 
-    @JvmName("addUniqueImprovementsText1")
     private fun addUniqueImprovementsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.uniqueTo != name ) continue

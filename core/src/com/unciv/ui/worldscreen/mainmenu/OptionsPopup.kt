@@ -13,7 +13,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
@@ -34,7 +33,7 @@ import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
  * The Options (Settings) Popup
- * @param previousScreen Tha caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
+ * @param previousScreen The caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
  */
 //region Fields
 class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousScreen) {
@@ -84,6 +83,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         }
 
         addCloseButton {
+            previousScreen.game.musicController.onChange(null)
             previousScreen.game.limitOrientationsHelper?.allowPortrait(settings.allowAndroidPortrait)
             if (previousScreen is WorldScreen)
                 previousScreen.enableNextTurnButtonAfterOptions()
@@ -210,6 +210,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         if (previousScreen.game.musicController.isMusicAvailable()) {
             addMusicVolumeSlider()
             addMusicPauseSlider()
+            addMusicCurrentlyPlaying()
         } else {
             addDownloadMusic()
         }
@@ -275,13 +276,13 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             val lines = ArrayList<FormattedLine>()
             var noProblem = true
             for (mod in RulesetCache.values.sortedBy { it.name }) {
-                val label = if (mod.name.isEmpty()) BaseRuleset.Civ_V_Vanilla.fullName else mod.name
-                lines += FormattedLine("$label{}", starred = true, header = 3)
+                // Appending {} is a dirty trick to deactivate the automatic translation which would drop [] from unique messages
+                lines += FormattedLine("$mod{}", starred = true, header = 3)
 
                 val modLinks =
                     if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
                     else mod.checkModLinks()
-                for (error in modLinks) {
+                for (error in modLinks.sortedByDescending { it.errorSeverityToReport }) {
                     val color = when (error.errorSeverityToReport) {
                         Ruleset.RulesetErrorSeverity.OK -> "#0F0"
                         Ruleset.RulesetErrorSeverity.Warning,
@@ -418,7 +419,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             val music = previousScreen.game.musicController
             music.setVolume(it)
             if (!music.isPlaying())
-                music.chooseTrack(flags = EnumSet.of(MusicTrackChooserFlags.PlayDefaultFile, MusicTrackChooserFlags.PlaySingle))
+                music.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
         }
         add(musicVolumeSlider).pad(5f).row()
     }
@@ -456,6 +457,18 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         add(pauseLengthSlider).pad(5f).row()
     }
 
+    private fun Table.addMusicCurrentlyPlaying() {
+        val label = WrappableLabel("", this.width - 10f, Color(-0x2f5001), 16)
+        label.wrap = true
+        add(label).padTop(20f).colspan(2).fillX().row()
+        previousScreen.game.musicController.onChange {
+            Gdx.app.postRunnable {
+                label.setText("Currently playing: [$it]".tr())
+            }
+        }
+        label.onClick { previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setNextTurn) }
+    }
+
     private fun Table.addDownloadMusic() {
         val downloadMusicButton = "Download music".toTextButton()
         add(downloadMusicButton).colspan(2).row()
@@ -473,7 +486,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
                     previousScreen.game.musicController.downloadDefaultFile()
                     Gdx.app.postRunnable {
                         tabs.replacePage("Sound", getSoundTab())
-                        previousScreen.game.musicController.chooseTrack(flags = EnumSet.of(MusicTrackChooserFlags.PlayDefaultFile, MusicTrackChooserFlags.PlaySingle))
+                        previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                     }
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {

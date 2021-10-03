@@ -1,11 +1,11 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.city.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -25,9 +25,8 @@ import kotlin.math.pow
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
+class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
-    override lateinit var name: String
     var cost: Int = 0
     override var hurryCostModifier: Int = 0
     var movement: Int = 0
@@ -40,8 +39,9 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
     fun getType() = ruleset.unitTypes[unitType]!!
     var requiredTech: String? = null
     private var requiredResource: String? = null
-    override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Unit, name) } }
+
+    override fun getUniqueTarget() = UniqueTarget.Unit
+
     private var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
@@ -61,7 +61,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
 
     lateinit var ruleset: Ruleset
 
-    override var civilopediaText = listOf<FormattedLine>()
 
     fun getShortDescription(): String {
         val infoList = mutableListOf<String>()
@@ -123,8 +122,11 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         if (cost > 0) {
             stats.clear()
             stats += "$cost${Fonts.production}"
-            if (canBePurchasedWithStat(null, Stat.Gold))
-                stats += "${getBaseGoldCost(UncivGame.Current.gameInfo.currentPlayerCiv).toInt() / 10 * 10}${Fonts.gold}"
+            if (canBePurchasedWithStat(null, Stat.Gold)) {
+                // We need what INonPerpetualConstruction.getBaseGoldCost calculates but without any game- or civ-specific modifiers
+                val buyCost = (30.0 * cost.toFloat().pow(0.75f) * hurryCostModifier.toPercent()).toInt() / 10 * 10
+                stats += "$buyCost${Fonts.gold}"
+            }
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
@@ -268,10 +270,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
                 && it.params[2] == stat.name
             }
         ) return true
-        
+
         return super.canBePurchasedWithStat(cityInfo, stat)
     }
-    
+
     private fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
         return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()        
     }
@@ -310,7 +312,7 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
             )
         ).minOrNull()
     }
-    
+
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
@@ -488,8 +490,6 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         return civInfo.getEquivalentUnit(upgradesTo!!)
     }
 
-    override fun toString(): String = name
-
     fun getReplacedUnit(ruleset: Ruleset): BaseUnit {
         return if (replaces == null) this
         else ruleset.units[replaces!!]!!
@@ -556,7 +556,10 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         (
             isRanged()
             && (uniqueObjects + getType().uniqueObjects)
-                .any { it.placeholderText == "+[]% Strength vs []" && it.params[1] == "City" }
+                .any { it.isOfType(UniqueType.Strength)
+                    && it.params[0].toInt() > 0    
+                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) } 
+                }
         )
 
     fun getForceEvaluation(): Int {
@@ -593,10 +596,18 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         for (unique in uniqueObjects) {
 
             when {
-                unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
-                    -> power += (power * unique.params[0].toInt()) / 200
-                unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
-                    -> power += (power * unique.params[0].toInt()) / 400
+                unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
+                    if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) })
+                        power += (power * unique.params[0].toInt()) / 200
+                    else if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) })
+                        power += (power * unique.params[0].toInt()) / 400
+                }
+                // Deprecated since 3.17.3
+                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
+                        -> power += (power * unique.params[0].toInt()) / 200
+                    unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
+                        -> power += (power * unique.params[0].toInt()) / 400
+                //
                 unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
                     -> power += (power * unique.params[0].toInt()) / 200
                 unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus
@@ -614,10 +625,18 @@ class BaseUnit : INamed, INonPerpetualConstruction, ICivilopediaText {
         for (promotionName in promotions) {
             for (unique in ruleset.unitPromotions[promotionName]!!.uniqueObjects) {
                 when {
+                    unique.isOfType(UniqueType.Strength) && unique.params[0].toInt() > 0 -> {
+                        if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) })
+                            power += (power * unique.params[0].toInt()) / 200
+                        else if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) })
+                            power += (power * unique.params[0].toInt()) / 400
+                    }
+                    // Deprecated since 3.17.3
                     unique.placeholderText == "+[]% Strength vs []" && unique.params[1] == "City" // City Attack - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
                     unique.placeholderText == "+[]% Strength vs []" && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
                         -> power += (power * unique.params[0].toInt()) / 400
+                    //
                     unique.placeholderText == "+[]% Strength when attacking" // Attack - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
                     unique.placeholderText == "+[]% Strength when defending" // Defense - half the bonus

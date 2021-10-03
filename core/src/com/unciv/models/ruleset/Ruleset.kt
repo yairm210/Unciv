@@ -39,18 +39,20 @@ class ModOptions : IHasUniques {
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
     var nationsToRemove = HashSet<String>()
-    
+
 
     var lastUpdated = ""
     var modUrl = ""
     var author = ""
     var modSize = 0
-    
+ 
     val maxXPfromBarbarians = 30
 
     override var uniques = ArrayList<String>()
     // If this is delegated with "by lazy", the mod download process crashes and burns
     override var uniqueObjects: List<Unique> = listOf()
+    override fun getUniqueTarget() = UniqueTarget.ModOptions
+
 }
 
 class Ruleset {
@@ -263,7 +265,14 @@ class Ruleset {
     }
 
     fun hasReligion() = beliefs.any() && modWithReligionLoaded
-    
+
+    /** Used for displaying a RuleSet's name */
+    override fun toString() = when {
+        name.isNotEmpty() -> name
+        mods.isEmpty() -> BaseRuleset.Civ_V_Vanilla.fullName  //todo differentiate once more than 1 BaseRuleset
+        else -> "Combined RuleSet"
+    }
+
     fun getSummary(): String {
         val stringList = ArrayList<String>()
         if (modOptions.isBaseRuleset) stringList += "Base Ruleset"
@@ -296,23 +305,32 @@ class Ruleset {
             val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
                 .getAnnotation(Deprecated::class.java)
             if (deprecationAnnotation != null) {
-                val deprecationText = "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                        " replace with \"${deprecationAnnotation.replaceWith.expression}\""
-                val severity = if(deprecationAnnotation.level == DeprecationLevel.WARNING)
+                val deprecationText =
+                    "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
+                            " replace with \"${deprecationAnnotation.replaceWith.expression}\""
+                val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
                     RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
                 else RulesetErrorSeverity.Warning // User visible
 
                 lines.add(deprecationText, severity)
             }
+
+            val acceptableUniqueType = uniqueContainer.getUniqueTarget()
+            if (unique.type.targetTypes.none { acceptableUniqueType.canAcceptUniqueTarget(it) })
+                lines.add(
+                    "$name's unique \"${unique.text}\" cannot be put on this type of object!",
+                    RulesetErrorSeverity.Warning
+                )
+
         }
     }
 
 
     class RulesetError(val text:String, val errorSeverityToReport: RulesetErrorSeverity)
-    enum class RulesetErrorSeverity{
+    enum class RulesetErrorSeverity {
         OK,
-        Warning,
         WarningOptionsOnly,
+        Warning,
         Error,
     }
 
@@ -325,13 +343,17 @@ class Ruleset {
             add(RulesetError(text, errorSeverityToReport))
         }
 
-        fun getFinalSeverity(): RulesetErrorSeverity {
+        private fun getFinalSeverity(): RulesetErrorSeverity {
             if (isEmpty()) return RulesetErrorSeverity.OK
             return this.maxOf { it.errorSeverityToReport }
         }
 
+        /** @return `true` means severe errors make the mod unplayable */
         fun isError() = getFinalSeverity() == RulesetErrorSeverity.Error
+        /** @return `true` means problems exist, Options screen mod checker or unit tests for vanilla ruleset should complain */
         fun isNotOK() = getFinalSeverity() != RulesetErrorSeverity.OK
+        /** @return `true` means at least errors impacting gameplay exist, new game screen should warn or block */
+        fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
 
         fun getErrorText() =
             filter { it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
@@ -372,7 +394,7 @@ class Ruleset {
             checkUniques(building, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
 
         }
-        
+
         for (nation in nations.values) {
             if (nation.cities.isEmpty() && !nation.isSpectator() && !nation.isBarbarian()) {
                 lines += "${nation.name} can settle cities, but has no city names!"
@@ -380,6 +402,16 @@ class Ruleset {
 
             checkUniques(nation, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
         }
+
+        for (promotion in unitPromotions.values)
+            if (promotion.effect != "")
+                lines.add("`Promotion.effect` used in ${promotion.name} is deprecated, please use `uniques` instead",
+                    RulesetErrorSeverity.WarningOptionsOnly)
+
+        for (resource in tileResources.values)
+            if (resource.unique != null)
+                lines.add("`Resource.unique` used in ${resource.name} is deprecated, please use `uniques` instead",
+                    RulesetErrorSeverity.WarningOptionsOnly)
 
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return lines
@@ -495,7 +527,7 @@ class Ruleset {
         if (eras.isEmpty()) {
             lines += "Eras file is empty! This will likely lead to crashes. Ask the mod maker to update this mod!"
         }
-        
+
         for (era in eras.values) {
             for (wonder in era.startingObsoleteWonders)
                 if (wonder !in buildings)

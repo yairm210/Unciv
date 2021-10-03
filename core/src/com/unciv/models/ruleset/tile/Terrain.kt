@@ -3,16 +3,13 @@ package com.unciv.models.ruleset.tile
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.models.ruleset.Belief
-import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.NamedStats
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.colorFromRGB
 
-class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
+class Terrain : RulesetStatsObject() {
 
     lateinit var type: TerrainType
 
@@ -27,9 +24,7 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
     /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
     val turnsInto: String? = null
 
-    /** Uniques (Properties such as Temp/humidity, Fresh water, elevation, rough, defense, Natural Wonder specials) */
-    override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Terrain, name) } }
+    override fun getUniqueTarget() = UniqueTarget.Terrain
 
     /** Natural Wonder weight: probability to be picked */
     var weight = 10
@@ -43,8 +38,6 @@ class Terrain : NamedStats(), ICivilopediaText, IHasUniques {
 
     @Transient
     var damagePerTurn = 0
-
-    override var civilopediaText = listOf<FormattedLine>()
 
     fun isRough(): Boolean = uniques.contains("Rough terrain")
     

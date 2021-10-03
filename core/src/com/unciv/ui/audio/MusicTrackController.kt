@@ -99,14 +99,17 @@ class MusicTrackController(private var volume: Float) {
     }
     private fun fadeOutStep() {
         // fade-out: linearly ramp fadeVolume to 0.0, then act according to Status (Playing->Silence/Pause/Shutdown)
+        // This needs to guard against the music backend breaking mid-fade away during game shutdown
         fadeVolume -= fadeStep
-        if (fadeVolume >= 0.001f && music != null && music!!.isPlaying) {
-            music!!.volume = volume * fadeVolume
-            return
-        }
-        fadeVolume = 0f
-        music!!.volume = 0f
-        music!!.pause()
+        try {
+            if (fadeVolume >= 0.001f && music != null && music!!.isPlaying) {
+                music!!.volume = volume * fadeVolume
+                return
+            }
+            fadeVolume = 0f
+            music!!.volume = 0f
+            music!!.pause()
+        } catch (_: Throwable) {}
         state = State.Idle
     }
 
@@ -121,6 +124,19 @@ class MusicTrackController(private var volume: Float) {
         state = fade
     }
 
+    /** Graceful shutdown tick event - fade out then report Idle
+     *  @return `true` shutdown can proceed, `false` still fading out
+     */
+    fun shutdownTick(): Boolean {
+        if (!state.canPlay) state = State.Idle
+        if (state == State.Idle) return true
+        if (state != State.FadeOut) {
+            state = State.FadeOut
+            fadeStep = MusicController.defaultFadingStep
+        }
+        return timerTick() == State.Idle
+    }
+
     /** @return [Music.isPlaying] (Gdx music stream is playing) unless [state] says it won't make sense */
     fun isPlaying() = state.canPlay && music?.isPlaying == true
 
@@ -132,16 +148,24 @@ class MusicTrackController(private var volume: Float) {
         if (!state.canPlay || music == null) {
             throw IllegalStateException("MusicTrackController.play called on uninitialized instance")
         }
+        // Unexplained observed exception: Gdx.Music.play fails with
+        // "Unable to allocate audio buffers. AL Error: 40964" (AL_INVALID_OPERATION)
+        // Approach: This track dies, parent controller will enter state Silence thus retry after a while.
+        if (tryPlay(music!!)) return true
+        state = State.Error
+        return false
+    }
+
+    private fun tryPlay(music: Music): Boolean {
         return try {
-            music!!.volume = volume
-            if (!music!!.isPlaying)  // for fade-over this could be called by the end of the previous track
-                music!!.play()
+            music.volume = volume
+            if (!music.isPlaying)  // for fade-over this could be called by the end of the previous track
+                music.play()
             true
         } catch (ex: Exception) {
             println("Exception playing music: ${ex.message}")
             if (MusicController.consoleLog)
                 ex.printStackTrace()
-            state = State.Error
             false
         }
     }

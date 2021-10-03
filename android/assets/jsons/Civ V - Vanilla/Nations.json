@@ -787,9 +787,9 @@
 		"attacked": "Fate is against you. You earned the animosity of Carthage in your exploration. Your days are numbered.",
 		"defeated": "The fates became to hate me. This is it? You wouldn't destroy us so without their help.",
 		"introduction": "The Phoenicians welcome you to this most pleasant kingdom. I am Dido, the queen of Carthage and all that belongs to it.",
-		"neutralHello": "It is done.",
+		"neutralHello": "Greetings.",
 		"hateHello": "What is it now?",
-		"tradeRequest": "I had an idea and I realized I should tell it to you!",
+		"tradeRequest": "I just had the marvelous idea, and I think you'll appreciate it too.",
 		"outerColor": [205,205,205],
 		"innerColor": [81,0,137],
 		"uniqueName": "Phoenician Heritage",
@@ -799,6 +799,32 @@
 			"Karalis","Malaca","Leptis Magna","Hippo Diarrhytus","Motya","Sulci","Leptis Parva","Tharros","Soluntum","Lixus",
 			"Oea","Theveste","Ibossim","Thapsus","Aleria","Tingis","Abyla","Sabratha","Rusadir","Baecula",
 			"Saldae"]
+	},
+	{
+		"name": "Byzantium",
+		"leaderName": "Theodora",
+		"adjective": ["Byzantine"],
+		"startBias": ["Coast"],
+		"preferredVictoryType": "Cultural",
+		
+		"startIntroPart1": "All hail the most magnificent and magnanimous Empress Theodora, beloved of Byzantium and of Rome! From the lowly ranks of actress and courtesan you became the most powerful woman in the Roman Empire, consort to Justinian I. Starting in the late 520's AD, you joined your husband in a series of important spiritual and legal reforms, creating many laws which elevated the status of and promoted equal treatment of women in the empire. You also aided in the restoration and construction of many aqueducts, bridges, and churches across Constantinople, culminating in the creation of the Hagia Sophia, one of the most splendid architectural wonders of the world.",
+		"startIntroPart2": "Beautiful Empress, Byzantium is in need of your wisdom and strength - her people are lost without your light to lead them. The Byzantine Empire may have fallen once, but its spirit is still intact waiting to be reborn anew. Can you return Byzantium to the heights of glory it once enjoyed? Can you create a civilization to stand the test of time?",
+		
+		"declaringWar": "It is always a shame to destroy a thing of beauty. Happily, you are not one.",
+		"attacked": "Now darling, tantrums are most unbecoming.  I shall have to teach you a lesson.",
+		"defeated": "Like a child playing with toys you are.  My people will never love you, nor suffer this indignation gracefully.",
+		"introduction": "My, isn't this a pleasant surprise - what may I call you, oh mysterious stranger?  I am Theodora, beloved of Byzantium.",
+		"neutralHello": "Hello again.",
+		"tradeRequest": "I have heard that you adept at certain kinds of ... interactions.  Show me.",
+		"outerColor": [114, 162, 233],
+		"innerColor": [61, 0, 109],
+		"uniqueName": "Patriarchate of Constantinople",
+		"uniques": ["May choose [1] additional belief(s) of any type when [founding] a religion"],
+		
+		"cities": ["Constantinople", "Adrianople", "Nicaea", "Antioch", "Varna", "Ohrid", "Nicomedia", "Trebizond", "Cherson", "Sardica", 
+			"Ani", "Dyrrachium", "Edessa", "Chalcedon", "Naissus", "Bari", "Iconium", "Prilep", "Samosata", "Kars", "Nicopolis", "Theodosiopolis", 
+			"Tyana", "Gaza", "Kerkyra", "Phoenice", "Selymbria", "Sillyon", "Chrysopolis", "Vodena", "Caesarea", "Traianoupoli", "Constantia", "Athens", 
+			"Patra", "Korinthos"]
 	},
 
 

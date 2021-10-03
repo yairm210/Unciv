@@ -18,6 +18,7 @@ import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -162,6 +163,9 @@ class CivilizationInfo {
     // For Aggressor, Warmonger status
     private var numMinorCivsAttacked = 0
 
+    var totalCultureForContests = 0
+    var totalFaithForContests = 0
+
     constructor()
 
     constructor(civName: String) {
@@ -209,6 +213,8 @@ class CivilizationInfo {
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
         toReturn.passableImpassables.addAll(passableImpassables)
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
+        toReturn.totalCultureForContests = totalCultureForContests
+        toReturn.totalFaithForContests = totalFaithForContests
         return toReturn
     }
 
@@ -330,49 +336,48 @@ class CivilizationInfo {
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
+    fun hasUnique(uniqueType: UniqueType) = getMatchingUniques(uniqueType).any()
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
-
-    /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
-    fun getMatchingUniques(uniqueType: UniqueType, cityToIgnore: CityInfo?=null): Sequence<Unique> {
-        val ruleset = gameInfo.ruleSet
-        return nation.uniqueObjects.asSequence().filter { it.matches(uniqueType, ruleset) } +
-                cities.asSequence().filter { it != cityToIgnore }.flatMap { city ->
-                    city.getMatchingUniquesWithNonLocalEffects(uniqueType)
-                } +
-                policies.policyUniques.getUniques(uniqueType) +
-                tech.techUniques.getUniques(uniqueType) +
-                temporaryUniques
-                    .asSequence().map { it.first }
-                    .filter { it.matches(uniqueType, ruleset) } +
-                getEra().getMatchingUniques(uniqueType) +
-                (
-                        if (religionManager.religion != null)
-                            religionManager.religion!!.getFounderUniques()
-                                .filter { it.isOfType(uniqueType) }
-                        else sequenceOf()
-                        )
-    }
-
+        
     // Does not return local uniques, only global ones.
-    fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null): Sequence<Unique> {
-        return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
-                cities.asSequence().filter { it != cityToIgnore}.flatMap {
-                    city -> city.getMatchingUniquesWithNonLocalEffects(uniqueTemplate)
-                } +
-                policies.policyUniques.getUniques(uniqueTemplate) +
-                tech.techUniques.getUniques(uniqueTemplate) +
-                temporaryUniques
-                    .asSequence()
-                    .filter { it.first.placeholderText == uniqueTemplate }.map { it.first } +
-                getEra().getMatchingUniques(uniqueTemplate)
-                    .asSequence() +
-                (
-                    if (religionManager.religion != null) 
-                        religionManager.religion!!.getFounderUniques()
-                            .asSequence()
-                            .filter { it.placeholderText == uniqueTemplate }
-                    else sequenceOf()
-                )
+    /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null, cityToIgnore: CityInfo? = null) = sequence {
+        val ruleset = gameInfo.ruleSet
+        yieldAll(nation.uniqueObjects.asSequence().filter {it.matches(uniqueType, ruleset) })
+        yieldAll(cities.asSequence()
+            .filter { it != cityToIgnore }
+            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType) }
+        )
+        yieldAll(policies.policyUniques.getUniques(uniqueType))
+        yieldAll(tech.techUniques.getUniques(uniqueType))
+        yieldAll(temporaryUniques.asSequence()
+            .map { it.first }
+            .filter { it.matches(uniqueType, ruleset) }
+        )
+        yieldAll(getEra().getMatchingUniques(uniqueType))
+        if (religionManager.religion != null)
+            yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
+    }.filter {
+        it.conditionalsApply(stateForConditionals)
+    }
+    
+    fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null) = sequence {
+        yieldAll(nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate })
+        yieldAll(cities.asSequence()
+            .filter { it != cityToIgnore }
+            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueTemplate) }
+        )
+        yieldAll(policies.policyUniques.getUniques(uniqueTemplate))
+        yieldAll(tech.techUniques.getUniques(uniqueTemplate))
+        yieldAll(temporaryUniques.asSequence()
+            .filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+        )
+        yieldAll(getEra().getMatchingUniques(uniqueTemplate).asSequence())
+        if (religionManager.religion != null)
+            yieldAll(religionManager.religion!!.getFounderUniques()
+                .asSequence()
+                .filter { it.placeholderText == uniqueTemplate }
+            )
     }
 
     //region Units
@@ -730,6 +735,7 @@ class CivilizationInfo {
         val nextTurnStats = statsForNextTurn
 
         policies.endTurn(nextTurnStats.culture.toInt())
+        totalCultureForContests += nextTurnStats.culture.toInt()
 
         if (isCityState())
             questManager.endTurn()
@@ -754,6 +760,7 @@ class CivilizationInfo {
             tech.endTurn(nextTurnStats.science.toInt())
 
         religionManager.endTurn(nextTurnStats.faith.toInt())
+        totalFaithForContests += nextTurnStats.faith.toInt()
 
         if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
@@ -861,10 +868,12 @@ class CivilizationInfo {
 
     fun addStat(stat: Stat, amount: Int) {
         when (stat) {
-            Stat.Culture -> policies.addCulture(amount)
+            Stat.Culture -> { policies.addCulture(amount)
+                              totalCultureForContests += amount }
             Stat.Science -> tech.addScience(amount)
             Stat.Gold -> addGold(amount)
-            Stat.Faith -> religionManager.storedFaith += amount
+            Stat.Faith -> { religionManager.storedFaith += amount
+                            totalFaithForContests += amount }
             else -> {}
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead

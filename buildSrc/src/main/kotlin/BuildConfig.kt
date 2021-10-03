@@ -3,8 +3,8 @@ package com.unciv.build
 object BuildConfig {
     const val kotlinVersion = "1.5.30"
     const val appName = "Unciv"
-    const val appCodeNumber = 629
-    const val appVersion = "3.17.1"
+    const val appCodeNumber = 632
+    const val appVersion = "3.17.3"
 
     const val gdxVersion = "1.10.0"
     const val roboVMVersion = "2.3.1"

@@ -7,15 +7,14 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.ICivilopediaText
-import java.util.ArrayList
+import kotlin.collections.ArrayList
 
-class Belief : INamed, ICivilopediaText, IHasUniques {
-    override var name: String = ""
+class Belief : RulesetObject() {
     var type: BeliefType = BeliefType.None
-    override var uniques = ArrayList<String>()
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it, UniqueTarget.Belief, name) } }
 
-    override var civilopediaText = listOf<FormattedLine>()
+    override fun getUniqueTarget() =
+        if (type == BeliefType.Founder || type == BeliefType.Enhancer)  UniqueTarget.FounderBelief
+        else UniqueTarget.FollowerBelief
 
     override fun makeLink() = "Belief/$name"
     override fun getCivilopediaTextHeader() = FormattedLine(name, icon = makeLink(), header = 2, color = if (type == BeliefType.None) "#e34a2b" else "")
@@ -26,12 +25,12 @@ class Belief : INamed, ICivilopediaText, IHasUniques {
         val textList = ArrayList<FormattedLine>()
         if (type != BeliefType.None)
             textList += FormattedLine("{Type}: $type", color = type.color )
-        uniqueObjects.forEach { 
+        uniqueObjects.forEach {
             textList += FormattedLine(it)
         }
         return textList
     }
-    
+
     companion object {
         // private but potentially reusable, therefore not folded into getCivilopediaTextMatching
         private fun getBeliefsMatching(name: String, ruleset: Ruleset): Sequence<Belief> {
@@ -72,7 +71,8 @@ class Belief : INamed, ICivilopediaText, IHasUniques {
 enum class BeliefType(val color: String) {
     None(""),
     Pantheon("#44c6cc"),
-    Follower("#ccaa44"),
     Founder("#c00000"),
-    Enhancer("#72cc45") 
+    Follower("#ccaa44"),
+    Enhancer("#72cc45"),
+    Any(""),
 }

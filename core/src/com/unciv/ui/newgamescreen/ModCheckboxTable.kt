@@ -80,7 +80,7 @@ class ModCheckboxTable(
 
             // Check over complete combination of selected mods
             val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods)
-            if (complexModLinkCheck.isNotOK()) {
+            if (complexModLinkCheck.isWarnUser()) {
                 lastToast?.close()
                 val toastMessage = (
                         if (complexModLinkCheck.isError()) "The mod combination you selected is incorrectly defined!"

@@ -11,8 +11,11 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.toPercent
@@ -35,7 +38,7 @@ class MapUnit {
 
     @Transient
     val movement = UnitMovementAlgorithms(this)
-    
+
     @Transient
     var isDestroyed = false
 
@@ -50,27 +53,45 @@ class MapUnit {
     // which in turn is a component of getShortestPath and canReach
     @Transient
     var ignoresTerrainCost = false
+        private set
 
     @Transient
     var ignoresZoneOfControl = false
+        private set
 
     @Transient
     var allTilesCosts1 = false
+        private set
 
     @Transient
     var canPassThroughImpassableTiles = false
+        private set
 
     @Transient
     var roughTerrainPenalty = false
+        private set
 
+    /** If set causes an early exit in getMovementCostBetweenAdjacentTiles
+     *  - means no double movement uniques, roughTerrainPenalty or ignoreHillMovementCost */
     @Transient
-    var doubleMovementInCoast = false
+    var noTerrainMovementUniques = false
+        private set
 
+    /** If set causes a second early exit in getMovementCostBetweenAdjacentTiles */
     @Transient
-    var doubleMovementInForestAndJungle = false
+    var noBaseTerrainOrHillDoubleMovementUniques = false
+        private set
 
+    /** If set skips tile.matchesFilter tests for double movement in getMovementCostBetweenAdjacentTiles */
     @Transient
-    var doubleMovementInSnowTundraAndHills = false
+    var noFilteredDoubleMovementUniques = false
+        private set
+
+    /** Used for getMovementCostBetweenAdjacentTiles only, based on order of testing */
+    enum class DoubleMovementTerrainTarget { Feature, Base, Hill, Filter }
+    /** Mod-friendly cache of double-movement terrains */
+    @Transient
+    val doubleMovementInTerrain = HashMap<String, DoubleMovementTerrainTarget>()
 
     @Transient
     var canEnterIceTiles = false
@@ -90,6 +111,7 @@ class MapUnit {
     @Transient
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
 
+    /** civName owning the unit */
     lateinit var owner: String
 
     /**
@@ -207,35 +229,78 @@ class MapUnit {
         tempUniques.asSequence().filter { it.placeholderText == placeholderText } + 
             civInfo.getMatchingUniques(placeholderText)
 
-    fun hasUnique(unique: String): Boolean {
-        return getUniques().any { it.placeholderText == unique } || civInfo.hasUnique(unique)
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = sequence {
+        yieldAll(tempUniques.asSequence()
+            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals)}
+        )
+        yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
-    fun updateUniques() {
+    fun hasUnique(unique: String): Boolean {
+        return tempUniques.any { it.placeholderText == unique } || civInfo.hasUnique(unique)
+    }
+
+    fun hasUnique(uniqueType: UniqueType): Boolean {
+        return tempUniques.any { it.type == uniqueType } || civInfo.hasUnique(uniqueType)
+    }
+
+    fun updateUniques(ruleset: Ruleset) {
         val uniques = ArrayList<Unique>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniqueObjects)
         uniques.addAll(type.uniqueObjects)
 
-        for (promotion in promotions.promotions) {
-            uniques.addAll(currentTile.tileMap.gameInfo.ruleSet.unitPromotions[promotion]!!.uniqueObjects)
+        for (promotion in promotions.getPromotions()) {
+            uniques.addAll(promotion.uniqueObjects)
         }
 
         tempUniques = uniques
 
-        //todo: parameterize [terrainFilter] in 5 to 7 of the following:
+        allTilesCosts1 = hasUnique(UniqueType.AllTilesCost1Move)
+        canPassThroughImpassableTiles = hasUnique(UniqueType.CanPassImpassable)
+        ignoresTerrainCost = hasUnique(UniqueType.IgnoresTerrainCost)
+        ignoresZoneOfControl = hasUnique(UniqueType.IgnoresZOC)
+        roughTerrainPenalty = hasUnique(UniqueType.RoughTerrainPenalty)
 
-        allTilesCosts1 = hasUnique("All tiles cost 1 movement")
-        canPassThroughImpassableTiles = hasUnique("Can pass through impassable tiles")
-        ignoresTerrainCost = hasUnique("Ignores terrain cost")
-        ignoresZoneOfControl = hasUnique("Ignores Zone of Control")
-        roughTerrainPenalty = hasUnique("Rough terrain penalty")
-        doubleMovementInCoast = hasUnique("Double movement in coast")
-        doubleMovementInForestAndJungle = hasUnique("Double movement rate through Forest and Jungle")
-        doubleMovementInSnowTundraAndHills = hasUnique("Double movement in Snow, Tundra and Hills")
-        canEnterIceTiles = hasUnique("Can enter ice tiles")
-        cannotEnterOceanTiles = hasUnique("Cannot enter ocean tiles")
-        cannotEnterOceanTilesUntilAstronomy = hasUnique("Cannot enter ocean tiles until Astronomy")
+        doubleMovementInTerrain.clear()
+        // Cache the deprecated uniques
+        if (hasUnique(UniqueType.DoubleMovementCoast)) {
+            doubleMovementInTerrain[Constants.coast] = DoubleMovementTerrainTarget.Base
+        }
+        if (hasUnique(UniqueType.DoubleMovementForestJungle)) {
+            doubleMovementInTerrain[Constants.forest] = DoubleMovementTerrainTarget.Feature
+            doubleMovementInTerrain[Constants.jungle] = DoubleMovementTerrainTarget.Feature
+        }
+        if (hasUnique(UniqueType.DoubleMovementSnowTundraHill)) {
+            doubleMovementInTerrain[Constants.snow] = DoubleMovementTerrainTarget.Base
+            doubleMovementInTerrain[Constants.tundra] = DoubleMovementTerrainTarget.Base
+            doubleMovementInTerrain[Constants.hill] = DoubleMovementTerrainTarget.Feature
+        }
+        // Now the current unique
+        for (unique in getMatchingUniques(UniqueType.DoubleMovementOnTerrain)) {
+            val param = unique.params[0]
+            val terrain = ruleset.terrains[param]
+            doubleMovementInTerrain[param] = when {
+                terrain == null -> DoubleMovementTerrainTarget.Filter
+                terrain.name == Constants.hill -> DoubleMovementTerrainTarget.Hill
+                terrain.type == TerrainType.TerrainFeature -> DoubleMovementTerrainTarget.Feature
+                terrain.type.isBaseTerrain -> DoubleMovementTerrainTarget.Base
+                else -> DoubleMovementTerrainTarget.Filter
+            }
+        }
+        // Init shortcut flags
+        noTerrainMovementUniques = doubleMovementInTerrain.isEmpty() &&
+            !roughTerrainPenalty && !civInfo.nation.ignoreHillMovementCost
+        noBaseTerrainOrHillDoubleMovementUniques = doubleMovementInTerrain
+            .none { it.value != DoubleMovementTerrainTarget.Feature }
+        noFilteredDoubleMovementUniques = doubleMovementInTerrain
+            .none { it.value == DoubleMovementTerrainTarget.Filter }
+
+        //todo: consider parameterizing [terrainFilter] in some of the following:
+        canEnterIceTiles = hasUnique(UniqueType.CanEnterIceTiles)
+        cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean)
+        cannotEnterOceanTilesUntilAstronomy = hasUnique(UniqueType.CannotEnterOceanUntilAstronomy)
+
         hasUniqueToBuildImprovements = hasUnique(Constants.canBuildImprovements)
         canEnterForeignTerrain =
             hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
@@ -254,7 +319,7 @@ class MapUnit {
 
         newUnit.promotions = promotions.clone()
 
-        newUnit.updateUniques()
+        newUnit.updateUniques(civInfo.gameInfo.ruleSet)
         newUnit.updateVisibleTiles()
     }
 
@@ -263,10 +328,15 @@ class MapUnit {
      * @return Maximum distance of tiles this unit may possibly see
      */
     private fun getVisibilityRange(): Int {
-        if (isEmbarked() && !hasUnique("Normal vision when embarked"))
-            return 1
-        
         var visibilityRange = 2
+
+        if (isEmbarked() && !hasUnique("Normal vision when embarked")) {
+            visibilityRange = 1
+            for (unique in getMatchingUniques("[] Sight for all [] units"))
+                if (unique.params[1] == "Embarked") // only count bonuses explicitly for embarked units
+                    visibilityRange += unique.params[0].toInt()
+            return visibilityRange
+        }
         
         for (unique in getMatchingUniques("[] Sight for all [] units"))
             if (matchesFilter(unique.params[1]))
@@ -453,7 +523,7 @@ class MapUnit {
         baseUnit = ruleset.units[name]
             ?: throw java.lang.Exception("Unit $name is not found!")
 
-        updateUniques()
+        updateUniques(ruleset)
     }
 
     fun useMovementPoints(amount: Float) {
@@ -578,13 +648,15 @@ class MapUnit {
             .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
         if (maxAdjacentHealingBonus != null)
             amountToHealBy += maxAdjacentHealingBonus
-        if (hasUnique("All healing effects doubled"))
-            amountToHealBy *= 2
+
         healBy(amountToHealBy)
     }
 
     fun healBy(amount: Int) {
-        health += amount
+        health += if (hasUnique("All healing effects doubled"))
+                amount * 2
+            else
+                amount
         if (health > 100) health = 100
     }
 
@@ -746,12 +818,14 @@ class MapUnit {
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 
-        if (!hasUnique("All healing effects doubled") && baseUnit.isLandUnit() && baseUnit.isMilitary()) {
-            //todo: Grants [promotion] to adjacent [unitFilter] units for the rest of the game
-            val gainDoubleHealPromotion = tile.neighbors
-                .any { it.hasUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
-            if (gainDoubleHealPromotion && civInfo.gameInfo.ruleSet.unitPromotions.containsKey("Rejuvenation"))
-                promotions.addPromotion("Rejuvenation", true)
+        val promotionUniques = tile.neighbors
+            .flatMap { it.getAllTerrains() }
+            .flatMap { it.getMatchingUniques(UniqueType.TerrainGrantsPromotion) }
+        for (unique in promotionUniques) {
+            if (!this.matchesFilter(unique.params[2])) continue
+            val promotion = unique.params[0]
+            if (promotion in promotions.promotions) continue
+            promotions.addPromotion(promotion, true)
         }
 
         updateVisibleTiles()
@@ -985,7 +1059,7 @@ class MapUnit {
         return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
     }
 
-    /** For the actual value, check the member variable `maxAbilityUses`
+    /** For the actual value, check the member variable [maxAbilityUses]
      */
     fun getBaseMaxActionUses(action: String): Int {
         return getMatchingUniques("Can [] [] times")

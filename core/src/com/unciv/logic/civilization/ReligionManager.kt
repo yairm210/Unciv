@@ -1,10 +1,11 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.ui.pickerscreens.BeliefContainer
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.toPercent
 import kotlin.random.Random
 
@@ -204,10 +205,23 @@ class ReligionManager {
         civInfo.religionManager.foundingCityId = prophet.getTile().getCity()!!.id
     }
 
-    fun getBeliefsToChooseAtFounding(): BeliefContainer {
+    fun getBeliefsToChooseAtFounding(): Counter<BeliefType> {
+        val beliefsToChoose: Counter<BeliefType> = Counter()
+        beliefsToChoose.add(BeliefType.Founder, 1)
+        beliefsToChoose.add(BeliefType.Follower, 1)
         if (shouldChoosePantheonBelief)
-            return BeliefContainer(pantheonBeliefCount = 1, founderBeliefCount = 1, followerBeliefCount = 1)
-        return BeliefContainer(founderBeliefCount = 1, followerBeliefCount = 1)
+            beliefsToChoose.add(BeliefType.Pantheon, 1)
+            
+        for (unique in civInfo.getMatchingUniques(UniqueType.FreeExtraBeliefs)) {
+            if (unique.params[2] != "founding") continue
+            beliefsToChoose.add(BeliefType.valueOf(unique.params[1]), unique.params[0].toInt())
+        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.FreeExtraAnyBeliefs)) {
+            if (unique.params[1] != "founding") continue
+            beliefsToChoose.add(BeliefType.Any, unique.params[0].toInt())
+        }
+        
+        return beliefsToChoose
     }
 
     fun chooseBeliefs(iconName: String?, religionName: String?, beliefs: List<Belief>) {
@@ -288,8 +302,21 @@ class ReligionManager {
         religionState = ReligionState.EnhancingReligion
     }
 
-    fun getBeliefsToChooseAtEnhancing(): BeliefContainer {
-        return BeliefContainer(followerBeliefCount = 1, enhancerBeliefCount = 1)
+    fun getBeliefsToChooseAtEnhancing(): Counter<BeliefType> {
+        val beliefsToChoose: Counter<BeliefType> = Counter()
+        beliefsToChoose.add(BeliefType.Follower, 1)
+        beliefsToChoose.add(BeliefType.Enhancer, 1)
+
+        for (unique in civInfo.getMatchingUniques(UniqueType.FreeExtraBeliefs)) {
+            if (unique.params[2] != "enhancing") continue
+            beliefsToChoose.add(BeliefType.valueOf(unique.params[1]), unique.params[0].toInt())
+        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.FreeExtraAnyBeliefs)) {
+            if (unique.params[1] != "enhancing") continue
+            beliefsToChoose.add(BeliefType.Any, unique.params[0].toInt())
+        }
+        
+        return beliefsToChoose
     }
 
     fun enhanceReligion(beliefs: List<Belief>) {

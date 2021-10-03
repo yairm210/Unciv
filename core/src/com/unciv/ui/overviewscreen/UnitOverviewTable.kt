@@ -101,10 +101,8 @@ class UnitOverviewTable(
                     unit.getTile().getTilesInDistance(3).firstOrNull { it.isCityCenter() }
                 if (closestCity != null) add(closestCity.getCity()!!.name.tr()) else add()
                 val promotionsTable = Table()
-                val promotionsForUnit = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter {
-                    unit.promotions.promotions.contains(it.name)
-                }     // force same sorting as on picker (.sorted() would be simpler code, but...)
-                for (promotion in promotionsForUnit)
+                // getPromotions goes by json order on demand, so this is same sorting as on picker
+                for (promotion in unit.promotions.getPromotions(true))
                     promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
                 if (unit.promotions.canBePromoted()) promotionsTable.add(
                     ImageGetter.getImage("OtherIcons/Star").apply { color = Color.GOLDENROD })

@@ -1,5 +1,6 @@
 package com.unciv.ui.civilopedia
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Container
@@ -11,6 +12,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.surroundWithCircle
 import java.io.File
 
@@ -113,24 +115,89 @@ object CivilopediaImageGetters {
 enum class CivilopediaCategories (
         val label: String,
         val hide: Boolean,      // Omitted on CivilopediaScreen
-        val getImage: ((name: String, size: Float) -> Actor?)?
+        val getImage: ((name: String, size: Float) -> Actor?)?,
+        val key: KeyCharAndCode = KeyCharAndCode.UNKNOWN,
+        val headerIcon: String
     ) {
-    Building ("Buildings", false, CivilopediaImageGetters.construction ),
-    Wonder ("Wonders", false, CivilopediaImageGetters.construction ),
-    Resource ("Resources", false, CivilopediaImageGetters.resource ),
-    Terrain ("Terrains", false, CivilopediaImageGetters.terrain ),
-    Improvement ("Tile Improvements", false, CivilopediaImageGetters.improvement ),
-    Unit ("Units", false, CivilopediaImageGetters.construction ),
-    Nation ("Nations", false, CivilopediaImageGetters.nation ),
-    Technology ("Technologies", false, CivilopediaImageGetters.technology ),
-    Promotion ("Promotions", false, CivilopediaImageGetters.promotion ),
-    Policy ("Policies", false, CivilopediaImageGetters.policy ),
-    Belief("Religions and Beliefs", false, CivilopediaImageGetters.belief ),
-    Tutorial ("Tutorials", false, null ),
-    Difficulty ("Difficulty levels", false, null ),
-    ;
+    Building ("Buildings", false,
+        CivilopediaImageGetters.construction,
+        KeyCharAndCode('B'),
+        "OtherIcons/Cities"
+    ),
+    Wonder ("Wonders", false,
+        CivilopediaImageGetters.construction,
+        KeyCharAndCode('W'),
+        "OtherIcons/Wonders"
+    ),
+    Resource ("Resources", false,
+        CivilopediaImageGetters.resource,
+        KeyCharAndCode('R'),
+        "OtherIcons/Resources"
+    ),
+    Terrain ("Terrains", false,
+        CivilopediaImageGetters.terrain,
+        KeyCharAndCode('T'),
+        "OtherIcons/Terrains"
+    ),
+    Improvement ("Tile Improvements", false,
+        CivilopediaImageGetters.improvement,
+        KeyCharAndCode('T'),
+        "OtherIcons/Improvements"
+    ),
+    Unit ("Units", false,
+        CivilopediaImageGetters.construction,
+        KeyCharAndCode('U'),
+        "OtherIcons/Shield"
+    ),
+    Nation ("Nations", false,
+        CivilopediaImageGetters.nation,
+        KeyCharAndCode('N'),
+        "OtherIcons/Nations"
+    ),
+    Technology ("Technologies", false,
+        CivilopediaImageGetters.technology,
+        KeyCharAndCode('T'),
+        "TechIcons/Philosophy"
+    ),
+    Promotion ("Promotions", false,
+        CivilopediaImageGetters.promotion,
+        KeyCharAndCode('P'),
+        "UnitPromotionIcons/Mobility"
+    ),
+    Policy ("Policies", false,
+        CivilopediaImageGetters.policy,
+        KeyCharAndCode('P'),
+        "PolicyIcons/Constitution"
+    ),
+    Belief("Religions and Beliefs", false,
+        CivilopediaImageGetters.belief,
+        KeyCharAndCode('R'),
+        "ReligionIcons/Religion"
+    ),
+    Tutorial ("Tutorials", false,
+        getImage = null,
+        KeyCharAndCode(Input.Keys.F1),
+        "OtherIcons/ExclamationMark"
+    ),
+    Difficulty ("Difficulty levels", false,
+        getImage = null,
+        KeyCharAndCode('D'),
+        "OtherIcons/Quickstart"
+    );
+
+    fun getByOffset(offset: Int) = values()[(ordinal + count + offset) % count]
+
+    fun nextForKey(key: KeyCharAndCode): CivilopediaCategories {
+        for (i in 1..count) {
+            val next = getByOffset(i)
+            if (next.key == key) return next
+        }
+        return this
+    }
 
     companion object {
+        private val count = values().size
+
         fun fromLink(name: String): CivilopediaCategories? =
             values().firstOrNull { it.name == name }
             ?: values().firstOrNull { it.label == name }

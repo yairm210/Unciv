@@ -21,15 +21,18 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
+import kotlin.collections.ArrayList
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
+class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() {
 
     private val leftSideTable = Table().apply { defaults().pad(10f) }
     private val rightSideTable = Table()
@@ -541,7 +544,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val quest: Quest = viewingCiv.gameInfo.ruleSet.quests[assignedQuest.questName]!!
         val remainingTurns: Int = assignedQuest.getRemainingTurns()
-        val title = "[${quest.name}] (+[${quest.influence.toInt()}] influence)"
+        val title = if (quest.influence > 0)
+            "[${quest.name}] (+[${quest.influence.toInt()}] influence)"
+        else
+            quest.name
         val description = assignedQuest.getDescription()
 
         questTable.add(title.toLabel(fontSize = 24)).row()
@@ -549,6 +555,11 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             .width(stage.width / 2).row()
         if (quest.duration > 0)
             questTable.add("[${remainingTurns}] turns remaining".toLabel()).row()
+        if (quest.isGlobal()) {
+            val leaderString = viewingCiv.gameInfo.getCivilization(assignedQuest.assigner).questManager.getLeaderStringForQuest(assignedQuest.questName)
+            if (leaderString != "")
+                questTable.add(leaderString.toLabel()).row()
+        }
 
         questTable.onClick {
             assignedQuest.onClickAction()
@@ -685,6 +696,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
             if (promisesTable != null) diplomacyTable.add(promisesTable).row()
         }
+
+        UncivGame.Current.musicController.chooseTrack(otherCiv.civName,
+            MusicMood.peaceOrWar(viewingCiv.isAtWarWith(otherCiv)), MusicTrackChooserFlags.setSelectNation)
 
         return diplomacyTable
     }
@@ -823,6 +837,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
+                UncivGame.Current.musicController.chooseTrack(otherCiv.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
             }, this).open()
         }
         return declareWarButton

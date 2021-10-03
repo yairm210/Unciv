@@ -51,6 +51,7 @@ enum class DiplomacyFlags {
     RememberSidedWithProtectedMinor,
     Denunciation,
     WaryOf,
+    Bullied,
 }
 
 enum class DiplomaticModifiers {

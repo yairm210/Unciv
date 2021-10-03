@@ -1,5 +1,6 @@
 package com.unciv.ui.civilopedia
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -11,6 +12,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** Screen displaying the Civilopedia
@@ -44,8 +46,11 @@ class CivilopediaScreen(
     }
 
     private val categoryToEntries = LinkedHashMap<CivilopediaCategories, Collection<CivilopediaEntry>>()
-    private val categoryToButtons = LinkedHashMap<CivilopediaCategories, Button>()
+    private class CategoryButtonInfo(val button: Button, val x: Float, val width: Float)
+    private val categoryToButtons = LinkedHashMap<CivilopediaCategories, CategoryButtonInfo>()
     private val entryIndex = LinkedHashMap<String, CivilopediaEntry>()
+
+    private val buttonTableScroll: ScrollPane
 
     private val entrySelectTable = Table().apply { defaults().pad(6f).left() }
     private val entrySelectScroll: ScrollPane
@@ -53,6 +58,7 @@ class CivilopediaScreen(
 
     private var currentCategory: CivilopediaCategories = CivilopediaCategories.Tutorial
     private var currentEntry: String = ""
+    private val currentEntryPerCategory = HashMap<CivilopediaCategories, String>()
 
     /** Jump to a "link" selecting both category and entry
      *
@@ -87,9 +93,11 @@ class CivilopediaScreen(
         entryIndex.clear()
         flavourTable.clear()
 
-        for (button in categoryToButtons.values) button.color = Color.WHITE
-        if (category !in categoryToButtons) return        // defense against being passed a bad selector
-        categoryToButtons[category]!!.color = Color.BLUE
+        for (button in categoryToButtons.values) button.button.color = Color.WHITE
+        val buttonInfo = categoryToButtons[category]
+            ?: return        // defense against being passed a bad selector
+        buttonInfo.button.color = Color.BLUE
+        buttonTableScroll.scrollX = buttonInfo.x + (buttonInfo.width - buttonTableScroll.width) / 2
 
         if (category !in categoryToEntries) return        // defense, allowing buggy panes to remain empty while others work
         var entries = categoryToEntries[category]!!
@@ -123,6 +131,9 @@ class CivilopediaScreen(
         }
 
         entrySelectScroll.layout()          // necessary for positioning in selectRow to work
+
+        val entry = currentEntryPerCategory[category]
+        if (entry != null) selectEntry(entry)
     }
 
     /** Select a specified entry within the current category. Unknown strings are ignored!
@@ -132,15 +143,14 @@ class CivilopediaScreen(
     fun selectEntry(name: String, noScrollAnimation: Boolean = false) {
         val entry = entryIndex[name] ?: return
         // fails: entrySelectScroll.scrollTo(0f, entry.y, 0f, entry.h, false, true)
-        entrySelectScroll.let {
-            it.scrollY = (entry.y + (entry.height - it.height) / 2).coerceIn(0f, it.maxY)
-        }
+        entrySelectScroll.scrollY = (entry.y + (entry.height - entrySelectScroll.height) / 2)
         if (noScrollAnimation)
             entrySelectScroll.updateVisualScroll()     // snap without animation on fresh pedia open
         selectEntry(entry)
     }
     private fun selectEntry(entry: CivilopediaEntry) {
         currentEntry = entry.name
+        currentEntryPerCategory[currentCategory] = entry.name
         flavourTable.clear()
         if (entry.flavour != null) {
             flavourTable.isVisible = true
@@ -207,17 +217,22 @@ class CivilopediaScreen(
         buttonTable.pad(15f)
         buttonTable.defaults().pad(10f)
 
+        var currentX = 10f  // = padLeft
         for (categoryKey in categoryToEntries.keys) {
-            val button = categoryKey.label.toTextButton()
-            button.style = TextButton.TextButtonStyle(button.style)
-            categoryToButtons[categoryKey] = button
+            val button = Button(skin)
+            if (categoryKey.headerIcon.isNotEmpty())
+                button.add(ImageGetter.getImage(categoryKey.headerIcon)).size(20f).padRight(5f)
+            button.add(categoryKey.label.toLabel())
+            button.addTooltip(categoryKey.key)
+//            button.style = ImageButton.ImageButtonStyle(button.style)
             button.onClick { selectCategory(categoryKey) }
-            buttonTable.add(button)
+            val cell = buttonTable.add(button)
+            categoryToButtons[categoryKey] = CategoryButtonInfo(button, currentX, cell.prefWidth)
+            currentX += cell.prefWidth + 20f
         }
 
         buttonTable.pack()
-        buttonTable.width = stage.width
-        val buttonTableScroll = ScrollPane(buttonTable)
+        buttonTableScroll = ScrollPane(buttonTable)
         buttonTableScroll.setScrollingDisabled(false, true)
 
         val goToGameButton = Constants.close.toTextButton()
@@ -228,8 +243,9 @@ class CivilopediaScreen(
 
         val topTable = Table()
         topTable.add(goToGameButton).pad(10f)
-        topTable.add(buttonTableScroll)
-        topTable.pack()
+        topTable.add(buttonTableScroll).growX()
+        topTable.width = stage.width
+        topTable.layout()
 
         val entryTable = Table()
         val splitPane = SplitPane(topTable, entryTable, true, skin)
@@ -257,6 +273,34 @@ class CivilopediaScreen(
                 selectLink(link)
             else
                 selectEntry(link, noScrollAnimation = true)
+
+        for (categoryKey in CivilopediaCategories.values()) {
+            keyPressDispatcher[categoryKey.key] = { navigateCategories(categoryKey.key) }
+        }
+        keyPressDispatcher[Input.Keys.LEFT] = { selectCategory(currentCategory.getByOffset(-1)) }
+        keyPressDispatcher[Input.Keys.RIGHT] = { selectCategory(currentCategory.getByOffset(1)) }
+        keyPressDispatcher[Input.Keys.UP] = { navigateEntries(-1) }
+        keyPressDispatcher[Input.Keys.DOWN] = { navigateEntries(1) }
+        keyPressDispatcher[Input.Keys.PAGE_UP] = { navigateEntries(-10) }
+        keyPressDispatcher[Input.Keys.PAGE_DOWN] = { navigateEntries(10) }
+        keyPressDispatcher[Input.Keys.HOME] = { navigateEntries(Int.MIN_VALUE) }
+        keyPressDispatcher[Input.Keys.END] = { navigateEntries(Int.MAX_VALUE) }
+    }
+
+    private fun navigateCategories(key: KeyCharAndCode) {
+        selectCategory(currentCategory.nextForKey(key))
+    }
+
+    private fun navigateEntries(direction: Int) {
+        //todo this is abusing a Map as Array - there must be a collection allowing both easy positional and associative access 
+        val index = entryIndex.keys.indexOf(currentEntry)
+        if (index < 0) return selectEntry(entryIndex.keys.first(), true)
+        val newIndex = when (direction) {
+            Int.MIN_VALUE -> 0
+            Int.MAX_VALUE -> entryIndex.size - 1
+            else -> (index + entryIndex.size + direction) % entryIndex.size
+        }
+        selectEntry(entryIndex.keys.drop(newIndex).first())
     }
 
     override fun resize(width: Int, height: Int) {

@@ -1,3 +1,39 @@
+## 3.17.3
+
+Added game name to turn notification  - By GGGuenni
+
+By xlenstra:
+- Added the Byzantine empire
+- First step into unifying strength bonuses using conditionals
+
+By SimonCeder:
+- Fix Polynesian vision when embarked
+- Proper great general points
+
+By SomeTroglodyte:
+- Civilopedia category icons & keyboard navigation
+- Allow Deciv Redux start with >0 City States
+- Fix era of Wonders without tech in Wonder overview
+- Double movement unique parameterized
+
+Change NationIcon for 4 nation  - By AdityaMH
+
+## 3.17.2
+
+Warn modders for uniques located on the wrong objects, and usages of deprecated fields
+
+By SomeTroglodyte:
+- Mini-UI to see Religion info on foreign cities
+- World and Natural Wonders Overview
+- Natural Wonders un-hardcoded
+- Texture pack/load for mods also distributes by Images.
+
+By SimonCeder:
+- Quests fixes and additions
+- Can't trade resources from other trades or city-states
+
+Fix missed sound for Sea Beggar  - By AdityaMH
+
 ## 3.17.1
 
 We now find and report deprecated uniques in the command line!

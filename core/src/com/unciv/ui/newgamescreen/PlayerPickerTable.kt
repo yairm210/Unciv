@@ -18,6 +18,8 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
@@ -323,6 +325,7 @@ private class NationPickerPopup(
         okButton.setPosition(innerTable.width - buttonsOffsetFromEdge, buttonsOffsetFromEdge, Align.bottomRight)
         innerTable.addActor(okButton)
 
+        nationDetailsTable.touchable = Touchable.enabled
         nationDetailsTable.onClick { returnSelected() }
     }
 
@@ -338,7 +341,7 @@ private class NationPickerPopup(
     }
 
     private fun setNationDetails(nation: Nation) {
-        nationDetailsTable.clear()
+        nationDetailsTable.clearChildren()  // .clear() also clears listeners!
 
         nationDetailsTable.add(NationTable(nation, civBlocksWidth, partHeight, ruleset))
         selectedNation = nation
@@ -346,6 +349,9 @@ private class NationPickerPopup(
 
     private fun returnSelected() {
         if (selectedNation == null) return
+
+        UncivGame.Current.musicController.chooseTrack(selectedNation!!.name, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
+
         if (previousScreen is GameParametersScreen)
             previousScreen.mapEditorScreen.tileMap.switchPlayersNation(
                 player,

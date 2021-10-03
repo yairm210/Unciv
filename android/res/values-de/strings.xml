@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">UnCiv</string>
     <string name="Notify_YourTurn_Short">Unciv - Du bist am Zug!</string>
-    <string name="Notify_YourTurn_Long">Deine Freunde warten auf deinen Zug.</string>
+    <string name="Notify_YourTurn_Long">Deine Freunde warten auf deinen Zug in [gameName].</string>
     <string name="Notify_Error_Short">Ein Fehler ist aufgetreten</string>
     <string name="Notify_Error_Long">Multiplayer Zug Benachrichtigungsdienst wurde beendet.</string>
     <string name="Notify_Persist_Short">Letzter online Zugcheck:</string>

@@ -157,7 +157,7 @@
 		"gold": -3,
 		"movementCost": 2,
 		"unbuildable": true,
-		"defenceBonus": -0.15
+		"defenceBonus": -0.15,
 	},
 	{
 		"name": "Oasis",
@@ -168,7 +168,7 @@
 		"unbuildable": true,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"],
-		"uniques": ["Fresh water", "Rare feature"]
+		"uniques": ["Fresh water", "Rare feature", "Only [All Road] improvements may be built on this tile"]
 	},
 	{
 		"name": "Flood plains",
@@ -233,6 +233,7 @@
 		"name": "El Dorado",
 		"type": "NaturalWonder",
 		"culture": 5,
+		"overrideStats": true,
 		"occursOn": ["Plains"],
 		"turnsInto": "Plains",
 		"impassable": true,
@@ -246,12 +247,14 @@
 		"name": "Fountain of Youth",
 		"type": "NaturalWonder",
 		"happiness": 10,
+		"overrideStats": true,
 		"occursOn": ["Plains"],
 		"turnsInto": "Plains",
 		"impassable": true,
 		"unbuildable": true,
 		"uniques": ["Must be adjacent to [0] [Coast] tiles",
-			"Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game"],
+			"Grants [Rejuvenation] ([all healing effects doubled]) to adjacent [{Military} {Land}] units for the rest of the game",
+			"Tile provides yield without assigned population"],
 		"weight": 1
 	},
 	{
@@ -404,13 +407,14 @@
 		"impassable": true,
 		"unbuildable": true,
 		"weight": 10
-	}
-	/*
+	},
+/*
 	// BNW wonders
 	{
 		"name": "King Solomon's Mines",
 		"type": "NaturalWonder",
 		"production": 6,
+		"overrideStats": true,
 		"occursOn": ["Plains","Desert"],
 		"uniques": ["Must be adjacent to [0] [Coast] tiles",
 			"Must be adjacent to [0] to [2] [Mountain] tiles"],
@@ -424,11 +428,10 @@
 		"type": "NaturalWonder",
 		"food": 6,
 		"occursOn": ["Plains"],
-		"uniques": ["Must be adjacent to [0] [Coast] tiles"],
 		"turnsInto": "Mountain",
 		"impassable": true,
 		"unbuildable": true,
-		"uniques": ["Fresh water"],
+		"uniques": ["Fresh water","Must be adjacent to [0] [Coast] tiles"],
 		"weight": 10
 	},
 	{
@@ -443,8 +446,8 @@
 		"uniques": ["Must be adjacent to [0] [Coast] tiles",
 			"Must be adjacent to [2] to [6] [Hill] tiles",
 			"Must be adjacent to [0] to [2] [Mountain] tiles",
-			"Grants Altitude Training (double movement and +10% Strength in hills) to adjacent land units for the rest of the game"], //ToDo
+			"Grants [Altitude Training] ([double movement and +10% Strength in hills]) to adjacent [Land] units for the rest of the game"],
 		"weight": 10
 	}
-	*/
+*/
 ]
