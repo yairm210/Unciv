@@ -191,32 +191,7 @@ class MapUnit {
         DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
 
     fun getTile(): TileInfo = currentTile
-    fun getMaxMovement(): Int {
-        var movement = 
-            if (isEmbarked()) 2
-            else baseUnit.movement
-
-        movement += getMatchingUniques("[] Movement").sumOf { it.params[0].toInt() }
-
-        for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
-            if (matchesFilter(unique.params[1]))
-                movement += unique.params[0].toInt()
-
-        if (civInfo.goldenAges.isGoldenAge() &&
-            civInfo.hasUnique("+1 Movement for all units during Golden Age")
-        )
-            movement += 1
-
-        // Deprecated since 3.16.11
-            if (isEmbarked()) {
-                movement += civInfo.getMatchingUniques("Increases embarked movement +1").count()
-                if (civInfo.hasUnique("+1 Movement for all embarked units")) movement += 1
-            }
-        //
-
-        return movement
-    }
-
+    
 
     // This SHOULD NOT be a HashSet, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
     //  will not get counted twice!
@@ -240,8 +215,9 @@ class MapUnit {
         return tempUniques.any { it.placeholderText == unique } || civInfo.hasUnique(unique)
     }
 
-    fun hasUnique(uniqueType: UniqueType): Boolean {
-        return tempUniques.any { it.type == uniqueType } || civInfo.hasUnique(uniqueType)
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Boolean {
+        return tempUniques.any { it.type == uniqueType && it.conditionalsApply(stateForConditionals) } 
+            || civInfo.hasUnique(uniqueType, stateForConditionals)
     }
 
     fun updateUniques(ruleset: Ruleset) {
@@ -323,6 +299,38 @@ class MapUnit {
         newUnit.updateVisibleTiles()
     }
 
+
+    fun getMaxMovement(): Int {
+        var movement =
+            if (isEmbarked()) 2
+            else baseUnit.movement
+
+        movement += getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this))
+            .sumOf { it.params[0].toInt() }
+
+        // Deprecated since 3.17.5
+            for (unique in civInfo.getMatchingUniques(UniqueType.MovementUnits))
+                if (matchesFilter(unique.params[1]))
+                    movement += unique.params[0].toInt()
+    
+            if (civInfo.goldenAges.isGoldenAge() &&
+                civInfo.hasUnique(UniqueType.MovementGoldenAge)
+            )
+                movement += 1
+        //
+
+        // Deprecated since 3.16.11
+            if (isEmbarked()) {
+                movement += civInfo.getMatchingUniques("Increases embarked movement +1").count()
+                if (civInfo.hasUnique("+1 Movement for all embarked units")) movement += 1
+            }
+        //
+        
+        if (movement < 1) movement = 1
+
+        return movement
+    }
+    
     /**
      * Determines this (land or sea) unit's current maximum vision range from unit properties, civ uniques and terrain.
      * @return Maximum distance of tiles this unit may possibly see
@@ -331,22 +339,25 @@ class MapUnit {
         var visibilityRange = 2
 
         if (isEmbarked() && !hasUnique("Normal vision when embarked")) {
-            visibilityRange = 1
-            for (unique in getMatchingUniques("[] Sight for all [] units"))
-                if (unique.params[1] == "Embarked") // only count bonuses explicitly for embarked units
-                    visibilityRange += unique.params[0].toInt()
-            return visibilityRange
+            return 1
         }
         
-        for (unique in getMatchingUniques("[] Sight for all [] units"))
-            if (matchesFilter(unique.params[1]))
-                visibilityRange += unique.params[0].toInt()
+        visibilityRange += getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
+            .sumOf { it.params[0].toInt() }
+        
+        // Deprecated since 3.17.5
+            for (unique in getMatchingUniques(UniqueType.SightUnits))
+                if (matchesFilter(unique.params[1]))
+                    visibilityRange += unique.params[0].toInt()
+        
+        
+            visibilityRange += getMatchingUniques(UniqueType.VisibilityRange).sumOf { it.params[0].toInt() }
+        //
 
-        // TODO: This should be replaced with "Sight" like others, for naming consistency
-        visibilityRange += getMatchingUniques("[] Visibility Range").sumOf { it.params[0].toInt() }
-
+        // Should this be consolidated as "[-1] Sight"?
         if (hasUnique("Limited Visibility")) visibilityRange -= 1
 
+        // Maybe add the uniques of the tile a unit is standing on to the tempUniques of the unit?
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
             if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
                 visibilityRange += unique.params[0].toInt()
@@ -355,7 +366,7 @@ class MapUnit {
 
         return visibilityRange
     }
-
+    
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
@@ -1084,9 +1095,15 @@ class MapUnit {
 
     fun getPressureAddedFromSpread(): Int {
         var pressureAdded = baseUnit.religiousStrength.toFloat()
-        for (unique in civInfo.getMatchingUniques("[]% Spread Religion Strength for [] units"))
-            if (matchesFilter(unique.params[0]))
-                pressureAdded *= unique.params[0].toPercent()
+        
+        // Deprecated since 3.17.5
+            for (unique in civInfo.getMatchingUniques(UniqueType.SpreadReligionStrengthUnits))
+                if (matchesFilter(unique.params[0]))
+                    pressureAdded *= unique.params[0].toPercent()
+        //
+        
+        for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, StateForConditionals(civInfo = civInfo, unit = this)))
+            pressureAdded *= unique.params[0].toPercent()
 
         return pressureAdded.toInt()
     }

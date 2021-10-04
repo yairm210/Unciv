@@ -35,7 +35,7 @@ object BattleDamage {
         if (combatant is MapUnitCombatant) {
             for (unique in combatant.unit.getMatchingUniques(
                 UniqueType.Strength,
-                StateForConditionals(civInfo, defender = enemy, combatAction = combatAction))
+                StateForConditionals(civInfo, defender = enemy, attacker = combatant, combatAction = combatAction))
             ) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
@@ -68,11 +68,13 @@ object BattleDamage {
                     -90
                 ) // otherwise it could exceed -100% and start healing enemy units...
 
-            for (unique in civInfo.getMatchingUniques("[] units deal +[]% damage")) {
-                if (combatant.matchesCategory(unique.params[0])) {
-                    modifiers.add(unique.params[0], unique.params[1].toInt())
+            // Deprecated since 3.17.5
+                for (unique in civInfo.getMatchingUniques(UniqueType.DamageForUnits)) {
+                    if (combatant.matchesCategory(unique.params[0])) {
+                        modifiers.add(unique.params[0], unique.params[1].toInt())
+                    }
                 }
-            }
+            // 
 
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
             
@@ -113,8 +115,10 @@ object BattleDamage {
                     modifiers["Stacked with [${unique.params[1]}]"] = stackedUnitsBonus
             }
 
-            if (civInfo.goldenAges.isGoldenAge() && civInfo.hasUnique("+10% Strength for all units during Golden Age"))
-                modifiers["Golden Age"] = 10
+            // Deprecated since 3.17.5
+                if (civInfo.goldenAges.isGoldenAge() && civInfo.hasUnique(UniqueType.StrengthGoldenAge))
+                    modifiers["Golden Age"] = 10
+            //
 
             if (enemy.getCivInfo()
                     .isCityState() && civInfo.hasUnique("+30% Strength when fighting City-State units and cities")
