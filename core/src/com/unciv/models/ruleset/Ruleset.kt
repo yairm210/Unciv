@@ -302,6 +302,11 @@ class Ruleset {
                             " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
             }
 
+            if (severityToReport != UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+                // If we don't filter these messages will be listed twice as this function is called twice on most objects
+                // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
+                continue
+
             val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
                 .getAnnotation(Deprecated::class.java)
             if (deprecationAnnotation != null) {
@@ -355,8 +360,8 @@ class Ruleset {
         /** @return `true` means at least errors impacting gameplay exist, new game screen should warn or block */
         fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
 
-        fun getErrorText() =
-            filter { it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
+        fun getErrorText(unfiltered: Boolean = false) =
+            filter { unfiltered || it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
                 .sortedByDescending { it.errorSeverityToReport }
                 .joinToString("\n") { it.errorSeverityToReport.name + ": " + it.text }
     }

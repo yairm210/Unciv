@@ -59,15 +59,15 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     //////////////////////////////////////// GLOBAL UNIQUES ////////////////////////////////////////
 
-    
+
     /////// Stat providing uniques
 
-    Stats("[stats]", UniqueTarget.Global),
+    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.WARNING)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
 
-    StatPercentBonus("[amount]% [Stat]", UniqueTarget.Global),
+    StatPercentBonus("[amount]% [stat]", UniqueTarget.Global),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
@@ -103,7 +103,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ProvidesResources("Provides [amount] [resource]",
             UniqueTarget.Improvement, UniqueTarget.Building),
 
-    GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global),
+    GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter]"), DeprecationLevel.WARNING)
     GrowthPercentBonusPositive("+[amount]% growth [cityFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.WARNING)
@@ -115,10 +115,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
-    
+
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
-    
+
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit),
 
@@ -150,7 +150,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     StrengthUnitsTiles("[amount]% Strength for [mapUnitFilter] units in [tileFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[+15]% Strength <for [All] units> <vs cities> <when attacking>"))
     StrengthVsCities("+15% Combat Strength for all units when attacking Cities", UniqueTarget.Global),
-    
+
 
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global),
@@ -188,10 +188,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
-    
+
     //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
 
-    
+
     NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
     NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
     NaturalWonderSmallerLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
@@ -272,7 +272,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     // todo: remove forced sign
     TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns", UniqueTarget.Global),  // used in Policy
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
-    FreeSpecificBuildings("Provides a [building] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
+    FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
