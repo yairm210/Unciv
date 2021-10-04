@@ -7,7 +7,9 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import java.util.*
@@ -309,6 +311,10 @@ class TechManager {
         for (unique in civInfo.getMatchingUniques("Receive free [] when you discover []")) {
             if (unique.params[1] != techName) continue
             civInfo.addUnit(unique.params[0])
+        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
+            if (unique.params[1] != techName) continue
+            civInfo.addNotification("You have unlocked [The Long Count]!", MayaCalendar.baktunIcon)
         }
     }
 

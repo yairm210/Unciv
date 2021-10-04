@@ -18,10 +18,8 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
-import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
-import kotlin.math.min
-import kotlin.math.pow
+
 
 class UncivShowableException(missingMods: String) : Exception(missingMods)
 
@@ -145,6 +143,48 @@ class GameInfo {
             || ruleSet.modOptions.uniques.contains(ModOptionsConstants.disableReligion)
         ) return false
         return gameParameters.religionEnabled
+    }
+
+    private fun getEquivalentTurn(): Int {
+        val totalTurns = 500f * gameParameters.gameSpeed.modifier
+        val startPercent = ruleSet.eras[gameParameters.startingEra]!!.startPercent
+        return turns + ((totalTurns * startPercent).toInt() / 100)
+    }
+    private class YearsToTurn(
+        // enum class with lists for each value group potentially more efficient?
+        val toTurn: Int,
+        val yearInterval: Float
+    ) {
+        companion object {
+            // Best to initialize these once only
+            val marathon = listOf(YearsToTurn(100, 15f), YearsToTurn(400, 10f), YearsToTurn(570, 5f), YearsToTurn(771, 2f), YearsToTurn(900, 1f), YearsToTurn(1080, 0.5f), YearsToTurn(1344, 0.25f), YearsToTurn(1500, 0.083333f))
+            val epic     = listOf(YearsToTurn(140, 25f), YearsToTurn(230, 15f), YearsToTurn(270, 10f), YearsToTurn(360, 5f), YearsToTurn(430, 2f), YearsToTurn(530, 1f), YearsToTurn(1500, 0.5f))
+            val standard = listOf(YearsToTurn(75, 40f), YearsToTurn(135, 25f), YearsToTurn(160, 20f), YearsToTurn(210, 10f), YearsToTurn(270, 5f), YearsToTurn(320, 2f), YearsToTurn(440, 1f), YearsToTurn(500, 0.5f))
+            val quick    = listOf(YearsToTurn(50, 60f), YearsToTurn(80, 40f), YearsToTurn(100, 30f), YearsToTurn(130, 20f), YearsToTurn(155, 10f), YearsToTurn(195, 5f), YearsToTurn(260, 2f), YearsToTurn(310, 1f))
+            fun getList(gameSpeed: GameSpeed) = when (gameSpeed) {
+                GameSpeed.Marathon -> marathon
+                GameSpeed.Epic -> epic
+                GameSpeed.Standard -> standard
+                GameSpeed.Quick -> quick
+            }
+        }
+    }
+ 
+    fun getYear(turnOffset: Int = 0): Int {
+        val turn = getEquivalentTurn() + turnOffset
+        val yearToTurnList = YearsToTurn.getList(gameParameters.gameSpeed)
+        var year: Float = -4000f
+        var i = 0
+        var yearsPerTurn: Float
+ 
+        // if macros are ever added to kotlin, this is one hell of a place for em'
+        while (i < turn) {
+            yearsPerTurn = yearToTurnList.firstOrNull { i < it.toTurn }?.yearInterval ?: 0.5f
+            year += yearsPerTurn
+            ++i
+        }
+
+        return year.toInt()
     }
 
     //endregion

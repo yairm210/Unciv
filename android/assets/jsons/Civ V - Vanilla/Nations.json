@@ -949,30 +949,31 @@
 		"tradeRequest": "Friend, I believe I may have found a way to save us all! Look, look and accept my offering!",
 
 		"neutralHello": "A fine day, it helps you.",
-		/* Not used by Unciv, and uncertain
-                "afterPeace": "",
-        
-                "neutralLetsHearIt": ["If you must show me."],
-                "neutralNo": ["No no, too much trouble.","No!","Not good enough."],
-                "neutralYes": ["Okay.","Fine.","Accepted."],
-        
-                "hateHello": "You.",
-                "hateLetsHearIt": ["Talk.","So?","Speak!"],
-                "hateNo": ["That's unacceptable!","A thousand times no!","Never!"],
-                "hateYes": ["Oh… Fine, okay."],
-        */
+/* Not used by Unciv, and uncertain
+		"afterPeace": "",
+
+		"neutralLetsHearIt": ["If you must show me."],
+		"neutralNo": ["No no, too much trouble.","No!","Not good enough."],
+		"neutralYes": ["Okay.","Fine.","Accepted."],
+
+		"hateHello": "You.",
+		"hateLetsHearIt": ["Talk.","So?","Speak!"],
+		"hateNo": ["That's unacceptable!","A thousand times no!","Never!"],
+		"hateYes": ["Oh… Fine, okay."],
+*/
 		"outerColor": [198,141,99], // color picker: cf9f75
 		"innerColor": [24,63,66], // color picker: 1f4a4d
 		"uniqueName": "The Long Count",
-		"uniques": ["Receive a bonus Great Person at the end of every [Maya Long Count calendar cycle] (every [394] years), starting after researching [Theology]. (Each bonus person can only be chosen once.)",
-			"Once [The Long Count] activates, the year counter displays as the traditional Mayan Long Count."],
-		// Parameters: tech, comment, amount, comment. Compare "Free [Great General] appears" as used by policies
+		"uniques": ["Receive a free Great Person at the end of every [Maya Long Count calendar cycle] (every 394 years), after researching [Theology]. (Each bonus person can only be chosen once.)",
+			"Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count."],
+ 		// Parameters: tech, comment, amount, comment. Compare "Free [Great General] appears" as used by policies
 		"cities": ["Palenque","Tikal","Chichen Itza","Uxmal","Tulum","Copan","Coba","El Mirador","Calakmul",
 			"Edzna","Lamanai","Izapa","Uaxactun","Comalcalco","Piedras Negras","Cancuen","Yaxha","Quirigua",
 			"Q'umarkaj","Nakbe","Cerros","Xunantunich","Takalik Abaj","Cival","San Bartolo","Altar de Sacrificios","Seibal",
 			"Caracol","Naranjo","Dos Pilas","Mayapan","Ixinche","Zaculeu","Kabah"]
 	},
 
+	
 	// City-States sorted by cityStateType, name
 	{
 		"name": "Brussels",

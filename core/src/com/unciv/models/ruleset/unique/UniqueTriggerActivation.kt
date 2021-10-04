@@ -112,17 +112,25 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            OneTimeFreeGreatPerson -> {
+            OneTimeFreeGreatPerson, MayanGainGreatPerson -> {
                 if (civInfo.isSpectator()) return false
+                val greatPeople = civInfo.getGreatPeople()
+                if (unique.type == MayanGainGreatPerson) {
+                    if (civInfo.greatPeople.longCountGPPool.isEmpty())
+                        // replenish maya GP pool when dry
+                        civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
+                }
                 if (civInfo.isPlayerCivilization()) {
                     civInfo.greatPeople.freeGreatPeople++
+                    if (unique.type == MayanGainGreatPerson) civInfo.greatPeople.mayaLimitedFreeGP++
                     if (notification != null)
                         civInfo.addNotification(notification) // Anyone an idea for a good icon?
                     return true
                 } else {
-                    val greatPeople = civInfo.getGreatPeople()
+                    if (unique.type == MayanGainGreatPerson)
+                        greatPeople.removeAll { it.name !in civInfo.greatPeople.longCountGPPool }
                     if (greatPeople.isEmpty()) return false
-                    var greatPerson = civInfo.getGreatPeople().random()
+                    var greatPerson = greatPeople.random()
 
                     val preferredVictoryType = civInfo.victoryType()
                     if (preferredVictoryType == VictoryType.Cultural) {
@@ -136,6 +144,8 @@ object UniqueTriggerActivation {
                         if (scientificGP != null) greatPerson = scientificGP
                     }
 
+                    if (unique.type == MayanGainGreatPerson)
+                        civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
                     return civInfo.addUnit(greatPerson.name, chosenCity) != null
                 }
             }

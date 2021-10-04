@@ -98,10 +98,10 @@ class NativeBitmapFontData(
             Fonts.culture -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Culture").region)
             Fonts.faith -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Faith").region)
             Fonts.happiness -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Happiness").region)
-            MayaCalendar.tun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("MayaCalendar/Tun").region)
-            MayaCalendar.katun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("MayaCalendar/Katun").region)
-            MayaCalendar.baktun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("MayaCalendar/Baktun").region)
-            in MayaCalendar.zero..MayaCalendar.nineteen -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("MayaCalendar/" + MayaCalendar.digitName(ch)).region)
+            MayaCalendar.tun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.tunIcon).region)
+            MayaCalendar.katun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.katunIcon).region)
+            MayaCalendar.baktun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.baktunIcon).region)
+            in MayaCalendar.digits -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.digitIcon(ch)).region)
             else -> fontImplementation.getCharPixmap(ch)
         }
     }
