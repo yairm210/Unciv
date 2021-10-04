@@ -7,9 +7,12 @@ import com.unciv.UncivGameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueParameterType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getPlaceholderParameters
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -81,10 +84,40 @@ class BasicTests {
 
     @Test
     fun baseRulesetHasNoBugs() {
-        ruleset.modOptions.isBaseRuleset=true
+        ruleset.modOptions.isBaseRuleset = true
         val modCheck = ruleset.checkModLinks()
-        if(modCheck.isNotOK()) println(modCheck)
+        if (modCheck.isNotOK())
+            println(modCheck.getErrorText())
         Assert.assertFalse(modCheck.isNotOK())
+    }
+
+    @Test
+    fun uniqueTypesHaveNoUnknownParameters() {
+        var noUnknownParameters = true
+        for (uniqueType in UniqueType.values()) {
+            for (entry in uniqueType.parameterTypeMap.withIndex()) {
+                for (paramType in entry.value) {
+                    if (paramType == UniqueParameterType.Unknown) {
+                        val badParam = uniqueType.text.getPlaceholderParameters()[entry.index]
+                        println("${uniqueType.name} param[${entry.index}] type \"$badParam\" is unknown")
+                        noUnknownParameters = false
+                    }
+                }
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all UniqueTypes have all their placeholder parameters mapped to a known UniqueParameterType", noUnknownParameters)
+    }
+
+    @Test
+    fun allUniqueTypesHaveAtLeastOneTarget() {
+        var allOK = true
+        for (uniqueType in UniqueType.values()) {
+            if (uniqueType.targetTypes.isEmpty()) {
+                println("${uniqueType.name} has no targets.")
+                allOK = false
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all UniqueTypes have at least one UniqueTarget", allOK)
     }
 
     //@Test  // commented so github doesn't run this
