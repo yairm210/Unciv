@@ -863,7 +863,42 @@
 			"St. Austell","Saint-Malo","Onchan","Dundee","Londonderry","Llanfairpwllgwyngyll","Falmouth","Lorient"]
 		// Llanfairpwllgwyngyll should actually be Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch
 	},
+	{
+		"name": "Ethiopia",
+		"leaderName": "Haile Selassie",
+		"adjective": ["ethiopian"],
+		"startBias": ["Jungle"],
+		"preferredVictoryType": "Cultural",
 
+		"startIntroPart1": "Blessings be upon you, honorable and righteous Emperor of Ethiopia, Haile Selassie. Your legacy as one of Ethiopia's greatest rulers, and as the spiritual leader to the Rastafarian movement, is outshone only by the influence you had on diplomacy and political cooperation throughout the world. In introducing Ethiopia's first written constitution, you planted the seeds of democracy that would take root over the coming years, and your infinitely wise grasp of global affairs secured Ethiopia's place as a charter member of the United Nations. Spearheading efforts to reform and modernize the nation during your reign, you changed the course of Ethiopian history forever",
+		"startIntroPart2": "Revered king, your composed demeanor once protected the people from the many conflicts that plague the nations of men, and the kingdom looks to you to assure peace once again. Will you lead the people with courage and authority, moving forward into a new age? Will you build a civilization that stands the test of time?",
+
+		"declaringWar": "I have tried all other avenues, but yet you persist in this madness. I hope, for your sake, your end is swift.",
+		"attacked": "It is silence that allows evil to triumph. We will not stand mute and allow you to continue on this mad quest unchecked.",
+		"defeated": "God and history will remember your actions this day. I hope you are ready for your impending judgment.",
+		"introduction": "A thousand welcomes to our fair nation. I am Selassie, the Ras Tafari Makonnen and Emperor of Ethiopia, your humble servant.",
+		"tradeRequest": "I request that you consider this offer between our two peoples. I believe it will do us both good.",
+		"afterPeace": "Today is the day on which we defeated our enemy. However, we shall only rejoice in our hearts, and in the spirit of heaven.",
+
+		"neutralHello": "Welcome.",
+		"neutralLetsHearIt": ["Continue.","I am listening.","Yes?"],
+		"neutralNo": ["It is not right.","We oppose because it is not right.","But I feel the agreement is done."],
+		"neutralYes": ["Great.","An agreement has been reached.","Our heart and soul is very much satisfied."],
+
+		"hateHello": "What do you want?",
+		"hateLetsHearIt": ["You said it.","What?","Continue."],
+		"hateNo": ["That is unacceptable.","You are not sure about it.","Please repeat for me."],
+		"hateYes": ["Fine, in my understanding.","It is clear.","It is clear."],
+
+		"outerColor": [19,70,24],
+		"innerColor": [255,46,46],
+		"uniqueName": "Spirit of Adwa",
+		"uniques": ["[+20]% Strength <when fighting units from a Civilization with more Cities than you>"],
+		"cities": ["Addis Ababa","Harar","Adwa","Lalibela","Gondar","Axum","Dire Dawa","Bahir Dar","Adama",
+			"Mek'ele","Awasa","Jimma","Jijiga","Dessie","Debre Berhan","Shashamane","Debre Zeyit","Sodo","Hosaena",
+			"Nekemte","Asella","Dila","Adigrat","Debre Markos","Kombolcha","Debre Tabor","Sebeta",
+			"Shire","Ambo","Negele Arsi","Gambela","Ziway","Weldiya"]
+	},
 
 	// City-States sorted by cityStateType, name
 	{

@@ -1049,6 +1049,20 @@
 		"attackSound": "shot"
 	},
 	{
+		"name": "Mehal Sefari",
+		"unitType": "Gunpowder",
+		"replaces": "Rifleman",
+		"uniqueTo": "Ethiopia",
+		"movement": 2,
+		"strength": 34,
+		"cost": 200,
+		"requiredTech": "Rifling",
+		"obsoleteTech": "Replaceable Parts",
+		"upgradesTo": "Great War Infantry",
+		"promotions": ["Drill I","Home Sweet Home"],
+		"attackSound": "shot"
+	},
+	{
 		"name": "Cavalry",
 		"unitType": "Mounted",
 		"movement": 4,

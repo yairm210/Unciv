@@ -5,6 +5,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.unique.UniqueType.*
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
@@ -22,14 +23,14 @@ object UniqueTriggerActivation {
         tile: TileInfo? = null,
         notification: String? = null
     ): Boolean {
-        val chosenCity =
-            if (cityInfo != null) cityInfo
-            else civInfo.cities.firstOrNull { it.isCapital() }
+        val chosenCity = cityInfo ?: civInfo.cities.firstOrNull { it.isCapital() }
         val tileBasedRandom =
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
-        when (unique.placeholderText) {
-            "Free [] appears" -> {
+
+        @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
+        when (unique.type) {
+            OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val unit = civInfo.gameInfo.ruleSet.units[unitName]
                 if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger()))
@@ -45,7 +46,7 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            "[] free [] units appear" -> {
+            OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
                 val unit = civInfo.gameInfo.ruleSet.units[unitName]
                 if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger()))
@@ -66,8 +67,7 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
-            "Free [] found in the ruins" -> {
+            OneTimeFreeUnitRuins -> {
                 val unit = civInfo.getEquivalentUnit(unique.params[0])
                 val placingTile =
                     tile ?: civInfo.cities.random().getCenterTile()
@@ -88,8 +88,8 @@ object UniqueTriggerActivation {
                 return placedUnit != null
             }
 
-            // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game gets stuck on the policy picker screen
-            "Free Social Policy" -> {
+            OneTimeFreePolicy -> {
+                // spectators get all techs at start of game, and if (in a mod) a tech gives a free policy, the game gets stuck on the policy picker screen
                 if (civInfo.isSpectator()) return false
                 civInfo.policies.freePolicies++
                 if (notification != null) {
@@ -97,7 +97,7 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            "[] Free Social Policies" -> {
+            OneTimeAmountFreePolicies -> {
                 if (civInfo.isSpectator()) return false
                 civInfo.policies.freePolicies += unique.params[0].toInt()
                 if (notification != null) {
@@ -105,14 +105,14 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            "Empire enters golden age" -> {
+            OneTimeEnterGoldenAge -> {
                 civInfo.goldenAges.enterGoldenAge()
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationIcon.Happiness)
                 }
                 return true
             }
-            "Free Great Person" -> {
+            OneTimeFreeGreatPerson -> {
                 if (civInfo.isSpectator()) return false
                 if (civInfo.isPlayerCivilization()) {
                     civInfo.greatPeople.freeGreatPeople++
@@ -139,7 +139,7 @@ object UniqueTriggerActivation {
                     return civInfo.addUnit(greatPerson.name, chosenCity) != null
                 }
             }
-            "[] population []" -> {
+            OneTimeGainPopulation -> {
                 val citiesWithPopulationChanged: MutableList<Vector2> = mutableListOf()
                 for (city in civInfo.cities) {
                     if (city.matchesFilter(unique.params[1])) {
@@ -155,7 +155,7 @@ object UniqueTriggerActivation {
                     )
                 return citiesWithPopulationChanged.isNotEmpty()
             }
-            "[] population in a random city" -> {
+            OneTimeGainPopulationRandomCity -> {
                 if (civInfo.cities.isEmpty()) return false
                 val randomCity = civInfo.cities.random(tileBasedRandom)
                 randomCity.population.addPopulation(unique.params[0].toInt())
@@ -173,7 +173,7 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            "Free Technology" -> {
+            OneTimeFreeTech -> {
                 if (civInfo.isSpectator()) return false
                 civInfo.tech.freeTechs += 1
                 if (notification != null) {
@@ -181,7 +181,7 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            "[] Free Technologies" -> {
+            OneTimeAmountFreeTechs -> {
                 if (civInfo.isSpectator()) return false
                 civInfo.tech.freeTechs += unique.params[0].toInt()
                 if (notification != null) {
@@ -189,7 +189,7 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            "[] free random researchable Tech(s) from the []" -> {
+            OneTimeFreeTechRuins -> {
                 val researchableTechsFromThatEra = civInfo.gameInfo.ruleSet.technologies.values
                     .filter {
                         (it.column!!.era == unique.params[1] || unique.params[1] == "any era")
@@ -214,7 +214,7 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            "Quantity of strategic resources produced by the empire increased by 100%" -> {
+            StrategicResourcesIncrease -> {
                 civInfo.updateDetailedCivResources()
                 if (notification != null) {
                     civInfo.addNotification(
@@ -224,7 +224,8 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            "+[]% attack strength to all [] Units for [] turns" -> {
+
+            TimedAttackStrength -> {
                 civInfo.temporaryUniques.add(Pair(unique, unique.params[2].toInt()))
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationIcon.War)
@@ -232,7 +233,7 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            "Reveals the entire map" -> {
+            OneTimeRevealEntireMap -> {
                 if (notification != null) {
                     civInfo.addNotification(notification, "UnitIcons/Scout")
                 }
@@ -240,7 +241,7 @@ object UniqueTriggerActivation {
                     civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
             }
 
-            "[] units gain the [] promotion" -> {
+            UnitsGainPromotion -> {
                 val filter = unique.params[0]
                 val promotion = unique.params[1]
 
@@ -266,7 +267,7 @@ object UniqueTriggerActivation {
                 return promotedUnitLocations.isNotEmpty()
             }
 
-            "Allied City-States will occasionally gift Great People" -> {
+            CityStateCanGiftGreatPeople -> {
                 civInfo.addFlag(
                     CivFlags.CityStateGreatPersonGift.name,
                     civInfo.turnsForGreatPersonFromCityState() / 2
@@ -292,7 +293,7 @@ object UniqueTriggerActivation {
             // Note that the way this is implemented now, this unique does NOT stack
             // I could parametrize the [Allied], but eh.
 
-            "Gain [] []" -> {
+            OneTimeGainStat -> {
                 if (Stat.values().none { it.name == unique.params[1] }) return false
                 val stat = Stat.valueOf(unique.params[1])
 
@@ -305,7 +306,7 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(notification, stat.notificationIcon)
                 return true
             }
-            "Gain []-[] []" -> {
+            OneTimeGainStatRange -> {
                 if (Stat.values().none { it.name == unique.params[2] }) return false
                 val stat = Stat.valueOf(unique.params[2])
 
@@ -334,7 +335,7 @@ object UniqueTriggerActivation {
 
                 return true
             }
-            "Gain enough Faith for a Pantheon" -> {
+            OneTimeGainPantheon -> {
                 if (civInfo.religionManager.religionState != ReligionState.None) return false
                 val gainedFaith = civInfo.religionManager.faithForPantheon(2)
                 if (gainedFaith == 0) return false
@@ -351,7 +352,7 @@ object UniqueTriggerActivation {
 
                 return true
             }
-            "Gain enough Faith for []% of a Great Prophet" -> {
+            OneTimeGainProphet -> {
                 if (civInfo.religionManager.getGreatProphetEquivalent() == null) return false
                 val gainedFaith =
                     (civInfo.religionManager.faithForNextGreatProphet() * (unique.params[0].toFloat() / 100f)).toInt()
@@ -370,14 +371,13 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            "Reveal up to [] [] within a [] tile radius" -> {
+            OneTimeRevealSpecificMapTiles -> {
                 if (tile == null) return false
                 val nearbyRevealableTiles = tile
                     .getTilesInDistance(unique.params[2].toInt())
                     .filter {
-                        !civInfo.exploredTiles.contains(it.position) && it.matchesFilter(
-                            unique.params[1]
-                        )
+                        !civInfo.exploredTiles.contains(it.position) &&
+                        it.matchesFilter(unique.params[1])
                     }
                     .map { it.position }
                 if (nearbyRevealableTiles.none()) return false
@@ -397,13 +397,13 @@ object UniqueTriggerActivation {
 
                 return true
             }
-            "From a randomly chosen tile [] tiles away from the ruins, reveal tiles up to [] tiles away with []% chance" -> {
+            OneTimeRevealCrudeMap -> {
                 if (tile == null) return false
                 val revealCenter = tile.getTilesAtDistance(unique.params[0].toInt())
                     .filter { it.position !in civInfo.exploredTiles }
                     .toList()
                     .randomOrNull(tileBasedRandom)
-                if (revealCenter == null) return false
+                    ?: return false
                 val tilesToReveal = revealCenter
                     .getTilesInDistance(unique.params[1].toInt())
                     .map { it.position }
@@ -417,7 +417,8 @@ object UniqueTriggerActivation {
                         "ImprovementIcons/Ancient ruins"
                     )
             }
-            "Triggers voting for the Diplomatic Victory" -> {
+
+            OneTimeTriggerVoting -> {
                 for (civ in civInfo.gameInfo.civilizations)
                     if (!civ.isBarbarian() && !civ.isSpectator())
                         civ.addFlag(
@@ -429,8 +430,7 @@ object UniqueTriggerActivation {
                 return true
             }
 
-            "Provides the cheapest [] building in your first [] cities for free",
-            "Provides a [] in your first [] cities for free" ->
+            FreeStatBuildings, FreeSpecificBuildings ->
                 civInfo.civConstructions.tryAddFreeBuildings()
         }
         return false
@@ -442,21 +442,22 @@ object UniqueTriggerActivation {
         unit: MapUnit,
         notification: String? = null
     ): Boolean {
-        when (unique.placeholderText) {
-            "Heal this unit by [] HP" -> {
+        @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
+        when (unique.type) {
+            OneTimeUnitHeal -> {
                 unit.healBy(unique.params[0].toInt())
                 if (notification != null)
                     unit.civInfo.addNotification(notification, unit.getTile().position) // Do we have a heal icon?
                 return true
             }
-            "This Unit gains [] XP" -> {
+            OneTimeUnitGainXP -> {
                 if (!unit.baseUnit.isMilitary()) return false
                 unit.promotions.XP += unique.params[0].toInt()
                 if (notification != null)
                     unit.civInfo.addNotification(notification, unit.getTile().position)
                 return true
             }
-            "This Unit upgrades for free" -> {
+            OneTimeUnitUpgrade -> {
                 val upgradeAction = UnitActions.getUpgradeAction(unit, true)
                     ?: return false
                 upgradeAction.action!!()
@@ -464,7 +465,7 @@ object UniqueTriggerActivation {
                     unit.civInfo.addNotification(notification, unit.getTile().position)
                 return true
             }
-            "This Unit upgrades for free including special upgrades" -> {
+            OneTimeUnitSpecialUpgrade -> {
                 val upgradeAction = UnitActions.getAncientRuinsUpgradeAction(unit)
                     ?: return false
                 upgradeAction.action!!()
@@ -472,9 +473,10 @@ object UniqueTriggerActivation {
                     unit.civInfo.addNotification(notification, unit.getTile().position)
                 return true
             }
-            "This Unit gains the [] promotion" -> {
-                val promotion = unit.civInfo.gameInfo.ruleSet.unitPromotions.keys.firstOrNull { it == unique.params[0] }
-                if (promotion == null) return false
+            OneTimeUnitGainPromotion -> {
+                val promotion = unit.civInfo.gameInfo.ruleSet.unitPromotions.keys
+                    .firstOrNull { it == unique.params[0] }
+                    ?: return false
                 unit.promotions.addPromotion(promotion, true)
                 if (notification != null)
                     unit.civInfo.addNotification(notification, unit.name)

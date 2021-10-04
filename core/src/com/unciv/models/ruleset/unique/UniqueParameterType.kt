@@ -15,6 +15,11 @@ enum class UniqueParameterType(val parameterName:String) {
             else null
         }
     },
+    // todo potentially remove if OneTimeRevealSpecificMapTiles changes
+    KeywordAll("'all'") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
+            if (parameterText == "All") null else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+    },
     MapUnitFilter("mapUnitFilter"){
         private val knownValues = setOf("Wounded", "Barbarians", "City-State", "Embarked", "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -116,6 +121,13 @@ enum class UniqueParameterType(val parameterName:String) {
                 else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             }
     },
+    Era("era") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            in ruleset.eras -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -166,6 +178,8 @@ enum class UniqueParameterType(val parameterName:String) {
             "in City-State cities",
             "in cities following this religion",
         )
+
+        fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param } ?: Unknown
     }
 }
 
