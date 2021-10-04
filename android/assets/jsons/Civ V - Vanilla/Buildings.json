@@ -915,7 +915,6 @@
 		"requiredBuilding": "Bank",
 		"requiredTech": "Electricity"
 	},
-	/* This works and even has icon but AI cannot manage its Aluminum at this moment
 	{
 		"name": "Hydro Plant",
 		"requiredResource": "Aluminum",
@@ -924,7 +923,6 @@
 		"uniques": ["Must be on [River]","[+1 Production] from [River] tiles [in this city]"],
 		"requiredTech": "Electricity"
 	},
-	*/
 
 	// Modern Era
 

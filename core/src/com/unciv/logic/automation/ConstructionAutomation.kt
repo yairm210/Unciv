@@ -286,7 +286,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addProductionBuildingChoice() {
         val productionBuilding = buildableNotWonders.asSequence()
-            .filter { it.isStatRelated(Stat.Production) }
+            .filter { it.isStatRelated(Stat.Production) && Automation.allowSpendingResource(civInfo, it) }
             .minByOrNull { it.cost }
         if (productionBuilding != null) {
             addChoice(relativeCostEffectiveness, productionBuilding.name, 1.5f)
