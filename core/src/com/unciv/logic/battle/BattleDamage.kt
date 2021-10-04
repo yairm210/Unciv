@@ -39,7 +39,15 @@ object BattleDamage {
             ) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
-            
+            for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthNearCapital)) {
+                if (civInfo.cities.isEmpty()) break
+                val distance = combatant.getTile().aerialDistanceTo(civInfo.getCapital().getCenterTile())
+                // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287
+                val effect = unique.params[0].toInt() - 3 * distance
+                if (effect <= 0) continue
+                modifiers.add("${unique.sourceObjectName} (${unique.sourceObjectType})", effect)
+            }
+
             // Deprecated since 3.17.3
                 for (unique in 
                         combatant.unit.getMatchingUniques("+[]% Strength vs []")
@@ -52,11 +60,11 @@ object BattleDamage {
                     if (enemy.matchesCategory(unique.params[1]))
                         modifiers.add("vs [${unique.params[1]}]", -unique.params[0].toInt())
                 }
-            
+
                 for (unique in combatant.unit.getMatchingUniques("+[]% Combat Strength"))
                     modifiers.add("Combat Strength", unique.params[0].toInt())
             //
-            
+
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val civHappiness = if (civInfo.isCityState() && civInfo.getAllyCiv() != null)
                 // If we are a city state with an ally we are vulnerable to their unhappiness.
@@ -77,7 +85,7 @@ object BattleDamage {
             // 
 
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
-            
+
             for (unique in civInfo.getMatchingUniques("[]% Strength for [] units which have another [] unit in an adjacent tile")) {
                 if (combatant.matchesCategory(unique.params[1])
                     && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) } 
@@ -85,7 +93,7 @@ object BattleDamage {
                     modifiers.add("Adjacent units", unique.params[0].toInt())
                 }
             }
-            
+
             for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
                 .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
                 if (combatant.matchesCategory(unique.params[1]) && combatant.getTile().matchesFilter(unique.params[2]))

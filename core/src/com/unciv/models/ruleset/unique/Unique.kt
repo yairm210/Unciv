@@ -51,10 +51,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
-            
+
             UniqueType.ConditionalSpecialistCount -> 
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
-            
+
             UniqueType.ConditionalVsCity ->
                 state.defender != null && state.defender.matchesCategory("City")
             UniqueType.ConditionalVsUnits ->
@@ -64,7 +64,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 || (state.unit != null && state.unit.matchesFilter(condition.params[0]))
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
-            
+            UniqueType.ConditionalVsLargerCiv -> {
+                val yourCities = state.civInfo?.cities?.size ?: 1
+                val theirCities = state.defender?.getCivInfo()?.cities?.size ?: 0
+                yourCities < theirCities
+            }
+
             UniqueType.ConditionalNeighborTiles ->
                 state.cityInfo != null &&
                 state.cityInfo.getCenterTile().neighbors.count {

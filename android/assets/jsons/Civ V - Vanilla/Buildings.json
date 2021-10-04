@@ -21,6 +21,17 @@
 		"maintenance": 1,
 		"uniques": ["Destroyed when the city is captured"]
 	},
+	{
+		"name": "Stele",
+		"replaces": "Monument",
+		"uniqueTo": "Ethiopia",
+		"culture": 2,
+		"faith": 2,
+		"cost": 40,
+		"hurryCostModifier": 40,
+		"maintenance": 1,
+		"uniques": ["Destroyed when the city is captured"] //"Hidden when religion is disabled"
+	},
 	// Column 1
 	{
 		"name": "Granary",
