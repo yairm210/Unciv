@@ -181,7 +181,7 @@ object BattleDamage {
                 }
             }
 
-            for (unique in attacker.getCivInfo().getMatchingUniques("+[]% attack strength to all [] units for [] turns")) {
+            for (unique in attacker.getCivInfo().getMatchingUniques(UniqueType.TimedAttackStrength)) {
                 if (attacker.matchesCategory(unique.params[1])) {
                     modifiers.add("Temporary Bonus", unique.params[0].toInt())
                 }

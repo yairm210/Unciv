@@ -80,12 +80,12 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
     CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
-
     CityStateGiftedUnitsStartWithXp("Military Units gifted from City-States start with [amount] XP", UniqueTarget.Global),
     CityStateGoldGiftsProvideMoreInfluence("Gifts of Gold to City-States generate [amount]% more Influence", UniqueTarget.Global),
     CityStateCanBeBoughtForGold("Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns.", UniqueTarget.Global),
     CityStateTerritoryAlwaysFriendly("City-State territory always counts as friendly territory", UniqueTarget.Global),
 
+    CityStateCanGiftGreatPeople("Allied City-States will occasionally gift Great People", UniqueTarget.Global),  // used in Policy
     CityStateDeprecated("Will not be chosen for new games", UniqueTarget.Nation), // implemented for CS only for now
 
     /////// Other global uniques
@@ -115,7 +115,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
 
-    
+
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
@@ -140,25 +140,25 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     DamageForUnits("[mapUnitFilter] units deal +[amount]% damage", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[+10]% Strength <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
     StrengthGoldenAge("+10% Strength for all units during Golden Age", UniqueTarget.Global),
-    
+
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global),
     SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
-    
+
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     MovementUnits("+[amount] Movement for all [mapUnitFilter] units", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
     MovementGoldenAge("+1 Movement for all units during Golden Age", UniqueTarget.Global),
-    
+
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Sight <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     SightUnits("[amount] Sight for all [mapUnitFilter] units", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Sight"), DeprecationLevel.WARNING)
     VisibilityRange("[amount] Visibility Range", UniqueTarget.Unit),
-    
+
     @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Spread Religion Strength <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     SpreadReligionStrengthUnits("[amount]% Spread Religion Strength for [mapUnitFilter] units", UniqueTarget.Global),
-    
-    
+
+
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
@@ -176,7 +176,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
 
-    
+
     //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
 
     NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
@@ -204,10 +204,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
-    
+
     // city conditionals
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
-    
+
     // unit conditionals
     ConditionalOurUnit("for [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
@@ -220,6 +220,43 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     // tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
+
+    ///////////////////////////////////////// TRIGGERED ONE-TIME /////////////////////////////////////////
+
+    OneTimeFreeUnit("Free [baseUnitFilter] appears", UniqueTarget.Global),  // used in Policies, Buildings
+    OneTimeAmountFreeUnits("[amount] free [baseUnitFilter] units appear", UniqueTarget.Global), // used in Buildings
+    OneTimeFreeUnitRuins("Free [] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
+    OneTimeFreePolicy("Free Social Policy", UniqueTarget.Global), // used in Buildings
+    OneTimeAmountFreePolicies("[amount] Free Social Policies", UniqueTarget.Global),  // Not used in Vanilla
+    OneTimeEnterGoldenAge("Empire enters golden age", UniqueTarget.Global),  // used in Policies, Buildings
+    OneTimeFreeGreatPerson("Free Great Person", UniqueTarget.Global),  // used in Policies, Buildings
+    OneTimeGainPopulation("[amount] population [cityFilter]", UniqueTarget.Global),  // used in CN tower
+    OneTimeGainPopulationRandomCity("[] population in a random city", UniqueTarget.Ruins),
+    OneTimeFreeTech("Free Technology", UniqueTarget.Global),  // used in Buildings
+    OneTimeAmountFreeTechs("[amount] Free Technologies", UniqueTarget.Global),  // used in Policy
+    OneTimeFreeTechRuins("[amount] free random researchable Tech(s) from the [era]", UniqueTarget.Ruins),  // todo: Not picked up by TranslationFileWriter?
+    OneTimeRevealEntireMap("Reveals the entire map", UniqueTarget.Global),  // used in tech
+    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Ruins),
+    OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Ruins),
+    OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Ruins),
+    OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Ruins),
+    OneTimeRevealSpecificMapTiles("Reveal up to [amountOrAll] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
+    OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
+    OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Global),  // used in Building
+
+    OneTimeUnitHeal("Heal this unit by [] HP", UniqueTarget.Promotion),
+    OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins),
+    OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.Global),  // Not used in Vanilla
+    OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.Ruins),
+    OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.Global),  // Not used in Vanilla
+
+    UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Global),  // Not used in Vanilla
+    // todo: remove forced sign
+    StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[amount]%", UniqueTarget.Global),  // used in Policy
+    // todo: remove forced sign
+    TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns", UniqueTarget.Global),  // used in Policy
+    FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
+    FreeSpecificBuildings("Provides a [building] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

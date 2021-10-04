@@ -319,7 +319,7 @@ class CivilizationInfo {
             if (unique.params[0] == resource.name)
                 resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
-            resourceModifier *= 1f + getMatchingUniques("Quantity of strategic resources produced by the empire +[]%")
+            resourceModifier *= 1f + getMatchingUniques(UniqueType.StrategicResourcesIncrease)
                 .map { it.params[0].toFloat() / 100f }.sum()
 
         }

@@ -15,6 +15,10 @@ enum class UniqueParameterType(val parameterName:String) {
             else null
         }
     },
+    NumberOrAll("amountOrAll") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
+            if (parameterText == "All") null else Number.getErrorSeverity(parameterText, ruleset)
+    },
     MapUnitFilter("mapUnitFilter"){
         private val knownValues = setOf("Wounded", "Barbarians", "City-State", "Embarked", "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -115,6 +119,13 @@ enum class UniqueParameterType(val parameterName:String) {
                 in ruleset.unitPromotions -> null
                 else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             }
+    },
+    Era("era") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            in ruleset.eras -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
     },
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment") {

@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -71,7 +72,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             availablePromotionsGroup.row()
         }
         for (promotion in promotionsForUnitType) {
-            if (promotion.uniqueObjects.any { it.placeholderText == "Heal this unit by [] HP" } && unit.health == 100) continue
+            if (promotion.hasUnique(UniqueType.OneTimeUnitHeal) && unit.health == 100) continue
             val isPromotionAvailable = promotion in unitAvailablePromotions
             val unitHasPromotion = unit.promotions.promotions.contains(promotion.name)
 
