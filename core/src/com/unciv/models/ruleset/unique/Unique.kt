@@ -56,11 +56,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
             
             UniqueType.ConditionalVsCity ->
-                state.defender != null && state.defender.matchesCategory("City")
+                state.theirCombatant != null && state.theirCombatant.matchesCategory("City")
             UniqueType.ConditionalVsUnits ->
-                state.defender != null && state.defender.matchesCategory(condition.params[0])
+                state.theirCombatant != null && state.theirCombatant.matchesCategory(condition.params[0])
             UniqueType.ConditionalOurUnit ->
-                (state.attacker != null && state.attacker.matchesCategory(condition.params[0]))
+                (state.ourCombatant != null && state.ourCombatant.matchesCategory(condition.params[0]))
                 || (state.unit != null && state.unit.matchesFilter(condition.params[0]))
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend

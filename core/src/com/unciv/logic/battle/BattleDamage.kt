@@ -35,7 +35,7 @@ object BattleDamage {
         if (combatant is MapUnitCombatant) {
             for (unique in combatant.unit.getMatchingUniques(
                 UniqueType.Strength,
-                StateForConditionals(civInfo, defender = enemy, attacker = combatant, combatAction = combatAction))
+                StateForConditionals(civInfo, theirCombatant = enemy, ourCombatant = combatant, combatAction = combatAction))
             ) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }

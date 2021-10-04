@@ -59,6 +59,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     //////////////////////////////////////// GLOBAL UNIQUES ////////////////////////////////////////
 
+    
     /////// Stat providing uniques
 
     Stats("[stats]", UniqueTarget.Global),
@@ -114,10 +115,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
-
     
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
+    
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
 
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
@@ -175,10 +176,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
-
     
     //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
 
+    
     NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
     NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
     NaturalWonderSmallerLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
@@ -199,6 +200,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
+    
     // civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
