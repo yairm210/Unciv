@@ -240,7 +240,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Ruins),
     OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Ruins),
     OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Ruins),
-    OneTimeRevealSpecificMapTiles("Reveal up to [amountOrAll] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
+    // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
+    OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Global),  // used in Building
 
@@ -266,10 +267,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     init {
         for (placeholder in text.getPlaceholderParameters()) {
-            val matchingParameterType =
-                UniqueParameterType.values().firstOrNull { it.parameterName == placeholder }
-                    ?: UniqueParameterType.Unknown
-            parameterTypeMap.add(listOf(matchingParameterType))
+            val matchingParameterTypes = placeholder
+                .split('/')
+                .map { UniqueParameterType.safeValueOf(it) }
+            parameterTypeMap.add(matchingParameterTypes)
         }
         targetTypes.addAll(targets)
     }

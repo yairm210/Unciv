@@ -15,9 +15,10 @@ enum class UniqueParameterType(val parameterName:String) {
             else null
         }
     },
-    NumberOrAll("amountOrAll") {
+    // todo potentially remove if OneTimeRevealSpecificMapTiles changes
+    KeywordAll("'all'") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
-            if (parameterText == "All") null else Number.getErrorSeverity(parameterText, ruleset)
+            if (parameterText == "All") null else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
     },
     MapUnitFilter("mapUnitFilter"){
         private val knownValues = setOf("Wounded", "Barbarians", "City-State", "Embarked", "Non-City")
@@ -177,6 +178,8 @@ enum class UniqueParameterType(val parameterName:String) {
             "in City-State cities",
             "in cities following this religion",
         )
+
+        fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param } ?: Unknown
     }
 }
 
