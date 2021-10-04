@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.abs
 
 /** An Unciv map with all properties as produced by the [map editor][com.unciv.ui.mapeditor.MapEditorScreen]
@@ -442,12 +443,12 @@ class TileMap {
         for (promotion in unit.baseUnit.promotions)
             unit.promotions.addPromotion(promotion, true)
 
-        for (unique in civInfo.getMatchingUniques("[] units gain the [] promotion")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitsGainPromotion)) {
             if (unit.matchesFilter(unique.params[0])) {
                 unit.promotions.addPromotion(unique.params[1], true)
             }
         }
-        
+
         // And update civ stats, since the new unit changes both unit upkeep and resource consumption
         civInfo.updateStatsForNextTurn()
         civInfo.updateDetailedCivResources()
