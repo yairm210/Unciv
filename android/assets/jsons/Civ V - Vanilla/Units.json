@@ -66,7 +66,7 @@
 		"strength": 8,
 		"cost": 40,
 		"obsoleteTech": "Metal Casting",
-		"uniques": ["[+33]% Strength <in [Forest] tiles>", "[+33]% Strength <in [Jungle] tiles>", "Heals [25] damage if it kills a unit"],
+		"uniques": ["[+33]% Strength <for combat in [Forest] tiles>", "[+33]% Strength <for combat in [Jungle] tiles>", "Heals [25] damage if it kills a unit"],
 		"promotions": ["Woodsman"],
 		"upgradesTo": "Swordsman",
 		"attackSound": "nonmetalhit"
@@ -500,7 +500,7 @@
 		"upgradesTo": "Longswordsman",
 		"obsoleteTech": "Gunpowder",
 		"hurryCostModifier": 20,
-		"uniques": ["[+33]% Strength <in [Forest] tiles>", "[+33]% Strength <in [Jungle] tiles>"],
+		"uniques": ["[+33]% Strength <for combat in [Forest] tiles>", "[+33]% Strength <for combat in [Jungle] tiles>"],
 		"attackSound": "metalhit"
 	},
 	/*
@@ -1026,9 +1026,9 @@
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Great War Infantry",
-		"uniques": ["[+25]% Strength <in [Snow] tiles>",
-			"[+25]% Strength <in [Tundra] tiles>",
-			"[+25]% Strength <in [Hill] tiles>",
+		"uniques": ["[+25]% Strength <for combat in [Snow] tiles>",
+			"[+25]% Strength <for combat in [Tundra] tiles>",
+			"[+25]% Strength <for combat in [Hill] tiles>",
 			"Double movement in [Snow]",
 			"Double movement in [Tundra]",
 			"Double movement in [Hill]"],
@@ -1157,7 +1157,7 @@
 		"requiredTech": "Replaceable Parts",
 		"upgradesTo": "Infantry",
 		"obsoleteTech": "Plastics",
-		"uniques": ["[+20]% Strength <in [Foreign Land] tiles>"],
+		"uniques": ["[+20]% Strength <for combat in [Foreign Land] tiles>"],
 		"attackSound": "shot"
 	},
 	{

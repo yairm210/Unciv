@@ -141,11 +141,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     DamageForUnits("[mapUnitFilter] units deal +[amount]% damage", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[+10]% Strength <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
     StrengthGoldenAge("+10% Strength for all units during Golden Age", UniqueTarget.Global),
-    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <in [tileFilter] tiles> <when defending>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <for combat in [tileFilter] tiles> <when defending>"), DeprecationLevel.WARNING)
     StrengthDefenseTiles("+[amount]% defence in [tileFilter] tiles", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <in [tileFilter] tiles>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <for combat in [tileFilter] tiles>"), DeprecationLevel.WARNING)
     StrengthIn("+[amount]% Strength in [tileFilter]", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units> <in [tileFilter] tiles>"))
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units> <for combat in [tileFilter] tiles>"))
     StrengthUnitsTiles("[amount]% Strength for [mapUnitFilter] units in [tileFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[+15]% Strength <for [All] units> <vs cities> <when attacking>"))
     StrengthVsCities("+15% Combat Strength for all units when attacking Cities", UniqueTarget.Global),
@@ -227,8 +227,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),
+    ConditionalInTiles("for combat in [tileFilter] tiles", UniqueTarget.Conditional),
 //    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
-    ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional),
 
     // tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
