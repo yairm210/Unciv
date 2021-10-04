@@ -225,13 +225,13 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     OneTimeFreeUnit("Free [baseUnitFilter] appears", UniqueTarget.Global),  // used in Policies, Buildings
     OneTimeAmountFreeUnits("[amount] free [baseUnitFilter] units appear", UniqueTarget.Global), // used in Buildings
-    OneTimeFreeUnitRuins("Free [] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
+    OneTimeFreeUnitRuins("Free [baseUnitFilter] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
     OneTimeFreePolicy("Free Social Policy", UniqueTarget.Global), // used in Buildings
     OneTimeAmountFreePolicies("[amount] Free Social Policies", UniqueTarget.Global),  // Not used in Vanilla
     OneTimeEnterGoldenAge("Empire enters golden age", UniqueTarget.Global),  // used in Policies, Buildings
     OneTimeFreeGreatPerson("Free Great Person", UniqueTarget.Global),  // used in Policies, Buildings
     OneTimeGainPopulation("[amount] population [cityFilter]", UniqueTarget.Global),  // used in CN tower
-    OneTimeGainPopulationRandomCity("[] population in a random city", UniqueTarget.Ruins),
+    OneTimeGainPopulationRandomCity("[amount] population in a random city", UniqueTarget.Ruins),
     OneTimeFreeTech("Free Technology", UniqueTarget.Global),  // used in Buildings
     OneTimeAmountFreeTechs("[amount] Free Technologies", UniqueTarget.Global),  // used in Policy
     OneTimeFreeTechRuins("[amount] free random researchable Tech(s) from the [era]", UniqueTarget.Ruins),  // todo: Not picked up by TranslationFileWriter?
@@ -244,7 +244,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
     OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Global),  // used in Building
 
-    OneTimeUnitHeal("Heal this unit by [] HP", UniqueTarget.Promotion),
+    OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.Promotion),
     OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins),
     OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.Global),  // Not used in Vanilla
     OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.Ruins),
