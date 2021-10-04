@@ -14,6 +14,6 @@ data class StateForConditionals(
 
     val ourCombatant: ICombatant? = null,
     val theirCombatant: ICombatant? = null,
-//    val attackedTile: TileInfo? = null,
+    val attackedTile: TileInfo? = null,
     val combatAction: CombatAction? = null,
 )

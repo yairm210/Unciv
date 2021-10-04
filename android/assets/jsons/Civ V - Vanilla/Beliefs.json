@@ -248,7 +248,7 @@
     {
         "name": "Defender of the Faith",
         "type": "Enhancer",
-        "uniques": ["[+20]% Strength for [All] units in [Friendly Land]"],
+        "uniques": ["[+20]% Strength <for [All] units> <in [Friendly Land] tiles>"],
         // ToDo: Should only be friendly territory of cities that follow this religion
     },
     {
@@ -264,7 +264,7 @@
     {
         "name": "Just War",
         "type": "Enhancer",
-        "uniques": ["[+20]% Strength for [Non-City] units in [Enemy Land]"],
+        "uniques": ["[+20]% Strength <for [All] units> <in [Enemy Land] tiles>"],
         // ToDo: Should only be enemy territory of cities that follow this religion
     },
     {

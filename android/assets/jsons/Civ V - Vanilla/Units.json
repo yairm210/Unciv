@@ -66,7 +66,7 @@
 		"strength": 8,
 		"cost": 40,
 		"obsoleteTech": "Metal Casting",
-		"uniques": ["+[33]% Strength in [Forest]", "+[33]% Strength in [Jungle]", "Heals [25] damage if it kills a unit"],
+		"uniques": ["[+33]% Strength <in [Forest] tiles>", "[+33]% Strength <in [Jungle] tiles>", "Heals [25] damage if it kills a unit"],
 		"promotions": ["Woodsman"],
 		"upgradesTo": "Swordsman",
 		"attackSound": "nonmetalhit"
@@ -315,7 +315,7 @@
 		"requiredTech": "Bronze Working",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["[+300]% Strength <vs cities>", "No defensive terrain bonus", "[-33]% Strength <when defending>",
+		"uniques": ["[+300]% Strength <vs cities> <when attacking>", "No defensive terrain bonus", "[-33]% Strength <when defending>",
 		"[-1] Sight", "Can only attack [City] units"],
 		"promotions":  ["Cover I"],
 		"attackSound": "throw"
@@ -425,7 +425,7 @@
 		"requiredTech": "Mathematics",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["[+200]% Strength <vs cities>", "No defensive terrain bonus",
+		"uniques": ["[+200]% Strength <vs cities> <when attacking>", "No defensive terrain bonus",
 			"Must set up to ranged attack", "Limited Visibility"],
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
@@ -442,7 +442,7 @@
 		"requiredTech": "Mathematics",
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
-		"uniques": ["[+200]% Strength <vs cities>", "No defensive terrain bonus",
+		"uniques": ["[+200]% Strength <vs cities> <when attacking>", "No defensive terrain bonus",
 			"Must set up to ranged attack", "Limited Visibility"],
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
@@ -500,7 +500,7 @@
 		"upgradesTo": "Longswordsman",
 		"obsoleteTech": "Gunpowder",
 		"hurryCostModifier": 20,
-		"uniques": ["+[33]% Strength in [Forest]", "+[33]% Strength in [Jungle]"],
+		"uniques": ["[+33]% Strength <in [Forest] tiles>", "[+33]% Strength <in [Jungle] tiles>"],
 		"attackSound": "metalhit"
 	},
 	/*
@@ -709,7 +709,7 @@
 		"requiredTech": "Physics",
 		"obsoleteTech": "Chemistry",
 		"upgradesTo": "Cannon",
-		"uniques": ["[+200]% Strength <vs cities>","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
+		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
 		"attackSound": "throw"
 	},
 	{
@@ -985,7 +985,7 @@
 		"requiredTech": "Chemistry",
 		"upgradesTo": "Artillery",
 		"obsoleteTech": "Dynamite",
-		"uniques": ["[+200]% Strength <vs cities>","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
+		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
 		"attackSound": "cannon"
 	},
 
@@ -1026,9 +1026,9 @@
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Great War Infantry",
-		"uniques": ["+[25]% Strength in [Snow]",
-			"+[25]% Strength in [Tundra]",
-			"+[25]% Strength in [Hill]",
+		"uniques": ["[+25]% Strength <in [Snow] tiles>",
+			"[+25]% Strength <in [Tundra] tiles>",
+			"[+25]% Strength <in [Hill] tiles>",
 			"Double movement in [Snow]",
 			"Double movement in [Tundra]",
 			"Double movement in [Hill]"],
@@ -1116,7 +1116,7 @@
 		"cost": 320,
 		"requiredTech": "Dynamite",
 		"upgradesTo": "Rocket Artillery",
-		"uniques": ["[+200]% Strength <vs cities>","No defensive terrain bonus",
+		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus",
 			"Must set up to ranged attack","Limited Visibility","Ranged attacks may be performed over obstacles"],
 		"attackSound": "artillery"
 	},
@@ -1157,7 +1157,7 @@
 		"requiredTech": "Replaceable Parts",
 		"upgradesTo": "Infantry",
 		"obsoleteTech": "Plastics",
-		"uniques": ["+[20]% Strength in [Foreign Land]"],
+		"uniques": ["[+20]% Strength <in [Foreign Land] tiles>"],
 		"attackSound": "shot"
 	},
 	{
@@ -1426,7 +1426,7 @@
 		"cost": 425,
 		"requiredTech": "Rocketry",
 		"requiredResource": "Aluminum",
-		"uniques": ["[+200]% Strength <vs cities>","No defensive terrain bonus",
+		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus",
 			"Limited Visibility","Ranged attacks may be performed over obstacles"],
 		"attackSound": "artillery"
 	},
