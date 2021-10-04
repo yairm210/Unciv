@@ -164,6 +164,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     SightUnits("[amount] Sight for all [mapUnitFilter] units", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Sight"), DeprecationLevel.WARNING)
     VisibilityRange("[amount] Visibility Range", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[-1] Sight"), DeprecationLevel.WARNING)
+    LimitedVisibility("Limited Visibility", UniqueTarget.Unit),
     
     @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Spread Religion Strength <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     SpreadReligionStrengthUnits("[amount]% Spread Religion Strength for [mapUnitFilter] units", UniqueTarget.Global),
