@@ -68,7 +68,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0])
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
-                val theirCities = state.defender?.getCivInfo()?.cities?.size ?: 0
+                val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
 
@@ -78,11 +78,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                     it.matchesFilter(condition.params[2], state.civInfo)
                 } in (condition.params[0].toInt())..(condition.params[1].toInt())
             UniqueType.ConditionalNeighborTilesAnd ->
-                state.cityInfo != null &&
-                        state.cityInfo.getCenterTile().neighbors.count {
-                            it.matchesFilter(condition.params[2], state.civInfo) &&
-                            it.matchesFilter(condition.params[3], state.civInfo)
-                        } in (condition.params[0].toInt())..(condition.params[1].toInt())
+                state.cityInfo != null 
+                && state.cityInfo.getCenterTile().neighbors.count {
+                    it.matchesFilter(condition.params[2], state.civInfo) &&
+                    it.matchesFilter(condition.params[3], state.civInfo)
+                } in (condition.params[0].toInt())..(condition.params[1].toInt())
             else -> false
         }
     }

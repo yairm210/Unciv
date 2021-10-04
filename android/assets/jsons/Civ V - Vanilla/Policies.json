@@ -432,7 +432,7 @@
 		},
 		{
 			"name": "Nationalism",
-			"uniques": ["[+15]% Strength <for [All] units> <for combat in [Friendly Land] tiles>"],
+			"uniques": ["[+15]% Strength <for [All] units> <when fighting in [Friendly Land] tiles>"],
 			"row": 1,
 			"column": 5
 		},
