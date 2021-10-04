@@ -45,16 +45,23 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         state: StateForConditionals
     ): Boolean {
         return when (condition.type) {
-            UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
-            UniqueType.ConditionalSpecialistCount -> 
-                state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
+            UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalHappy -> 
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
+            UniqueType.ConditionalGoldenAge ->
+                state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
+
+            UniqueType.ConditionalSpecialistCount -> 
+                state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
+
             UniqueType.ConditionalVsCity ->
                 state.defender != null && state.defender.matchesCategory("City")
             UniqueType.ConditionalVsUnits ->
                 state.defender != null && state.defender.matchesCategory(condition.params[0])
+            UniqueType.ConditionalOurUnit ->
+                (state.attacker != null && state.attacker.matchesCategory(condition.params[0]))
+                || (state.unit != null && state.unit.matchesFilter(condition.params[0]))
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
             UniqueType.ConditionalVsLargerCiv -> {
@@ -62,6 +69,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 val theirCities = state.defender?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
+
             UniqueType.ConditionalNeighborTiles ->
                 state.cityInfo != null &&
                 state.cityInfo.getCenterTile().neighbors.count {

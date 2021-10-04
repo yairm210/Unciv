@@ -115,6 +115,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
 
+    
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
@@ -136,7 +137,29 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     StrengthDefending("+[amount]% Strength when defending", UniqueTarget.Unit),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when defending> <vs [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     StrengthDefendingUnitFilter("[amount]% Strength when defending vs [mapUnitFilter] units", UniqueTarget.Unit),
-
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    DamageForUnits("[mapUnitFilter] units deal +[amount]% damage", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[+10]% Strength <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
+    StrengthGoldenAge("+10% Strength for all units during Golden Age", UniqueTarget.Global),
+    
+    Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
+    Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global),
+    SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
+    
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    MovementUnits("+[amount] Movement for all [mapUnitFilter] units", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
+    MovementGoldenAge("+1 Movement for all units during Golden Age", UniqueTarget.Global),
+    
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount] Sight <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    SightUnits("[amount] Sight for all [mapUnitFilter] units", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount] Sight"), DeprecationLevel.WARNING)
+    VisibilityRange("[amount] Visibility Range", UniqueTarget.Unit),
+    
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Spread Religion Strength <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    SpreadReligionStrengthUnits("[amount]% Spread Religion Strength for [mapUnitFilter] units", UniqueTarget.Global),
+    
+    
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
@@ -154,6 +177,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
 
+    
     //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
 
     NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
@@ -176,10 +200,17 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
+    // civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
-    ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
+    ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
+    
+    // city conditionals
+    ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
+    
+    // unit conditionals
+    ConditionalOurUnit("for [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
@@ -188,6 +219,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 //    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
 //    ConditionalInTiles("fighting in [tileFilter] tiles", UniqueTarget.Conditional),
 
+    // tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
     ;
