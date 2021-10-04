@@ -352,10 +352,9 @@ class MapUnit {
         
         
             visibilityRange += getMatchingUniques(UniqueType.VisibilityRange).sumOf { it.params[0].toInt() }
+        
+            if (hasUnique(UniqueType.LimitedVisibility)) visibilityRange -= 1
         //
-
-        // Should this be consolidated as "[-1] Sight"?
-        if (hasUnique("Limited Visibility")) visibilityRange -= 1
 
         // Maybe add the uniques of the tile a unit is standing on to the tempUniques of the unit?
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })

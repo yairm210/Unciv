@@ -9,37 +9,37 @@
 	// Ranged+Siege
 	{
 		"name": "Accuracy I",
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 	{
 		"name": "Accuracy II",
 		"prerequisites": ["Accuracy I"],
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 	{
 		"name": "Accuracy III",
 		"prerequisites": ["Accuracy II"],
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 
 	{
 		"name": "Barrage I",
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 	{
 		"name": "Barrage II",
 		"prerequisites": ["Barrage I"],
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 	{
 		"name": "Barrage III",
 		"prerequisites": ["Barrage II"],
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 
@@ -65,37 +65,37 @@
 	// Melee, Mounted+Armor
 	{
 		"name": "Shock I",
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
 		"name": "Shock II",
 		"prerequisites": ["Shock I"],
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
 		"name": "Shock III",
 		"prerequisites": ["Shock II"],
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 
 	{
 		"name": "Drill I",
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
 		"name": "Drill II",
 		"prerequisites": ["Drill I"],
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
 		"name": "Drill III",
 		"prerequisites": ["Drill II"],
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
@@ -537,7 +537,7 @@
 	},
 	{
 		"name": "Pictish Courage", // only for Pictish Warrior and subsequent upgrades
-		"uniques": ["No movement cost to pillage", "+[20]% Strength in [Foreign Land]"]
+		"uniques": ["No movement cost to pillage", "[+20]% Strength <when fighting in [Foreign Land] tiles>"]
 	},
 	{
 		"name": "Home Sweet Home", // only for Mehal Sefari and subsequent upgrades

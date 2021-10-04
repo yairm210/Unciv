@@ -59,6 +59,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     //////////////////////////////////////// GLOBAL UNIQUES ////////////////////////////////////////
 
+    
     /////// Stat providing uniques
 
     Stats("[stats]", UniqueTarget.Global),
@@ -114,10 +115,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
-
-
+    
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
+    
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit),
 
@@ -141,6 +142,15 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     DamageForUnits("[mapUnitFilter] units deal +[amount]% damage", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[+10]% Strength <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
     StrengthGoldenAge("+10% Strength for all units during Golden Age", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when fighting in [tileFilter] tiles> <when defending>"), DeprecationLevel.WARNING)
+    StrengthDefenseTiles("+[amount]% defence in [tileFilter] tiles", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when fighting in [tileFilter] tiles>"), DeprecationLevel.WARNING)
+    StrengthIn("+[amount]% Strength in [tileFilter]", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units> <when fighting in [tileFilter] tiles>"))
+    StrengthUnitsTiles("[amount]% Strength for [mapUnitFilter] units in [tileFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[+15]% Strength <for [All] units> <vs cities> <when attacking>"))
+    StrengthVsCities("+15% Combat Strength for all units when attacking Cities", UniqueTarget.Global),
+    
 
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global),
@@ -155,6 +165,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     SightUnits("[amount] Sight for all [mapUnitFilter] units", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Sight"), DeprecationLevel.WARNING)
     VisibilityRange("[amount] Visibility Range", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[-1] Sight"), DeprecationLevel.WARNING)
+    LimitedVisibility("Limited Visibility", UniqueTarget.Unit),
 
     @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Spread Religion Strength <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     SpreadReligionStrengthUnits("[amount]% Spread Religion Strength for [mapUnitFilter] units", UniqueTarget.Global),
@@ -176,10 +188,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
-
-
+    
     //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
 
+    
     NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
     NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
     NaturalWonderSmallerLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
@@ -200,6 +212,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
+    
     // civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
@@ -216,8 +229,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),
+    ConditionalInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
 //    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
-//    ConditionalInTiles("fighting in [tileFilter] tiles", UniqueTarget.Conditional),
 
     // tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
