@@ -157,6 +157,8 @@ class ReligionManager {
             civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnitName, 1)
         }
     }
+    
+    fun amountOfFoundableReligions() = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
 
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
@@ -172,7 +174,7 @@ class ReligionManager {
             it.religionManager.religion != null && it.religionManager.religionState >= ReligionState.Religion
         }
 
-        if (foundedReligionsCount >= civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1) 
+        if (foundedReligionsCount >= amountOfFoundableReligions())
             return false // Too bad, too many religions have already been founded
         
         if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.religions.count())

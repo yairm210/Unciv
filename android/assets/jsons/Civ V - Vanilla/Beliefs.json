@@ -46,7 +46,7 @@
         "name": "God of War",
         "type": "Pantheon",
         "uniques": ["Earn [50]% of [Military] unit's [Strength] as [Faith] when killed within 4 tiles of a city following this religion"]
-    }
+    },
     {
         "name": "Goddess of Festivals",
         "type": "Pantheon",
@@ -82,6 +82,8 @@
         //"uniques": ["[+15]% Production when constructing [{Ancient Era} {Wonders}]",
         // "[+15]% Production when constructing [{Classical Era} {Wonders}]"]
         // For now this feels like overkill, but I'll leave this here for the future
+        
+        // Alternatively, we could approximate this with "[+15]% Production when constructing [Wonders] <during the [Ancient era]>"
     },
     {
         "name": "One with Nature",
@@ -248,7 +250,7 @@
     {
         "name": "Defender of the Faith",
         "type": "Enhancer",
-        "uniques": ["[+20]% Strength for [All] units in [Friendly Land]"],
+        "uniques": ["[+20]% Strength for [All] units in [Friendly Land]"]
         // ToDo: Should only be friendly territory of cities that follow this religion
     },
     {
@@ -264,13 +266,13 @@
     {
         "name": "Just War",
         "type": "Enhancer",
-        "uniques": ["[+20]% Strength for [Non-City] units in [Enemy Land]"],
+        "uniques": ["[+20]% Strength for [All] units in [Enemy Land]"]
         // ToDo: Should only be enemy territory of cities that follow this religion
     },
     {
         "name": "Messiah",
         "type": "Enhancer",
-        "uniques": ["[+25]% Spread Religion Strength <for [Great Prophet] units>", "[-25]% Faith cost of generating Great Prophet equivalents"]
+        "uniques": ["[+25]% Spread Religion Strength <for [Great Prophet] units>", "[-25]% Faith cost of generating Great Prophet equivalents", "[Faith] cost for [Great Prophet] units [-25]%"]
     },
     {
         "name": "Missionary Zeal",
