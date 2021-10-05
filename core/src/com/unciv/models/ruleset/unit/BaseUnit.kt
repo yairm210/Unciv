@@ -403,7 +403,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 })
             }
 
-        if (uniques.contains(Constants.settlerUnique) &&
+        if (hasUnique(UniqueType.FoundCity) &&
             (civInfo.isCityState() || civInfo.isOneCityChallenger())
         )
             rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)

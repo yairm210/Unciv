@@ -653,12 +653,12 @@ object NextTurnAutomation {
         if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
 
         val settlerUnits = civInfo.gameInfo.ruleSet.units.values
-                .filter { it.uniques.contains(Constants.settlerUnique) && it.isBuildable(civInfo) }
+                .filter { it.hasUnique(UniqueType.FoundCity) && it.isBuildable(civInfo) }
         if (settlerUnits.isEmpty()) return
-        if (civInfo.getCivUnits().none { it.hasUnique(Constants.settlerUnique) }
+        if (civInfo.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }
                 && civInfo.cities.none {
                     val currentConstruction = it.cityConstructions.getCurrentConstruction()
-                    currentConstruction is BaseUnit && currentConstruction.uniques.contains(Constants.settlerUnique)
+                    currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
                 }) {
 
             val bestCity = civInfo.cities.maxByOrNull { it.cityStats.currentCityStats.production }!!

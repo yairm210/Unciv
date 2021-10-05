@@ -128,7 +128,7 @@ object UnitActions {
 
     fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (!tile.isWater || !unit.hasUnique(Constants.workBoatsUnique) || tile.resource == null) return null
+        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
 
         val improvementName = tile.getTileResource().improvement ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
@@ -161,9 +161,11 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
-        if (!unit.hasUnique("Founds a new city") || tile.isWater || tile.isImpassible()) return null
+        if (!unit.hasUnique(UniqueType.FoundCity) || tile.isWater || tile.isImpassible()) return null
 
-        if (unit.currentMovement <= 0 || tile.getTilesInDistance(3).any { it.isCityCenter() })
+        if (unit.currentMovement <= 0 ||
+                tile.getTilesInDistance(2).any { it.isCityCenter() } ||
+                tile.getTilesAtDistance(3).any { it.isCityCenter() && it.getContinent() == tile.getContinent() })
             return UnitAction(UnitActionType.FoundCity, action = null)
 
         val foundAction = {
