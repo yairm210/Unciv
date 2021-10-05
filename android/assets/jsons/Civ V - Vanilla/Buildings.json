@@ -287,6 +287,29 @@
 		"uniques": ["Hidden when religion is disabled", "Destroyed when the city is captured"]
 	},
 	{
+		"name": "Burial Tomb",
+		"replaces": "Temple",
+		"uniqueTo": "Egypt",
+		"maintenance": 0,
+		"uniques": ["Doubles Gold given to enemy if city is captured"],
+		"faith": 2,
+		"happiness": 2,
+		"requiredBuilding": "Shrine",
+		"hurryCostModifier": 25,
+		"requiredTech": "Philosophy"
+	},
+	{
+		"name": "Mud Pyramid Mosque",
+		"replaces": "Temple",
+		"uniqueTo": "Songhai",
+		"maintenance": 0,
+		"hurryCostModifier": 25,
+		"culture": 2,
+		"faith": 2,
+		"requiredBuilding": "Shrine",
+		"requiredTech": "Philosophy"
+	},
+	{
 		"name": "National College",
 		"cost": 125,
 		"science": 3,
@@ -314,55 +337,6 @@
 		"hurryCostModifier": 25,
 		"uniques": ["Destroyed when the city is captured"],
 		"requiredTech": "Drama and Poetry"
-	},
-	{
-		"name": "Burial Tomb",
-		"replaces": "Amphitheater",
-		"uniqueTo": "Egypt",
-		"uniques": ["Doubles Gold given to enemy if city is captured"],
-		"culture": 2,
-		"happiness": 2,
-		"specialistSlots": {"Artist": 1},
-		"requiredBuilding": "Monument",
-		"hurryCostModifier": 25,
-		"requiredTech": "Drama and Poetry"
-		// In Vanilla, this replaces Temple and requires Philosophy and a Monument.
-		// In G&K, this still replaces Temple and requires Philosophy, but becomes a faith building
-		// (alongside Temple) and thus requires a Shrine instead of a Monument.
-		// Since faith is not yet implemented, but G&K's Drama and Poetry (which provides the
-		// Amphiteater, a building with the properties of the vanilla Temple) is, this building
-		// temporarily replaces Drama and Poetry and requires a Monument while having its Vanilla
-		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
-		// implemented.
-
-		// Further edit: Temples are now implemented. However, due to Religion still being in
-		// its alpha stages, these buildings are still the culture variant. When religion is finally
-		// fully released, this building should be replaced with amphitheatres in existing save files,
-		// and then later the G&K faith version can be added
-	},
-	{
-		"name": "Mud Pyramid Mosque",
-		"replaces": "Amphitheater",
-		"uniqueTo": "Songhai",
-		"maintenance": 0,
-		"specialistSlots": {"Artist": 1},
-		"hurryCostModifier": 25,
-		"culture": 4,
-		"requiredBuilding": "Monument",
-		"requiredTech": "Drama and Poetry"
-		// In Vanilla, this replaces Temple and requires Philosophy and a Monument.
-		// In G&K, this still replaces Temple and requires Philosophy, but becomes a faith building
-		// (alongside Temple) and thus requires a Shrine instead of a Monument.
-		// Since faith is not yet implemented, but G&K's Drama and Poetry (which provides the
-		// Amphiteater, a building with the properties of the vanilla Temple) is, this building
-		// temporarily replaces Drama and Poetry and requires a Monument while having its Vanilla
-		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
-		// implemented.
-
-		// Further edit: Temples are now implemented. However, due to Religion still being in
-		// its alpha stages, these buildings are still the culture variant. When religion is finally
-		// fully released, this building should be replaced with amphitheatres in existing save files,
-		// and then later the G&K faith version can be added
 	},
 	{
 		"name": "National Epic",
