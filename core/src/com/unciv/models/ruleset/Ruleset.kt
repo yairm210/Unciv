@@ -80,7 +80,7 @@ class Ruleset {
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val unitTypes = LinkedHashMap<String, UnitType>()
-    
+
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
 
@@ -302,6 +302,11 @@ class Ruleset {
                             " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
             }
 
+            if (severityToReport != UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+                // If we don't filter these messages will be listed twice as this function is called twice on most objects
+                // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
+                continue
+
             val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
                 .getAnnotation(Deprecated::class.java)
             if (deprecationAnnotation != null) {
@@ -355,10 +360,10 @@ class Ruleset {
         /** @return `true` means at least errors impacting gameplay exist, new game screen should warn or block */
         fun isWarnUser() = getFinalSeverity() >= RulesetErrorSeverity.Warning
 
-        fun getErrorText() =
-            filter { it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
+        fun getErrorText(unfiltered: Boolean = false) =
+            filter { unfiltered || it.errorSeverityToReport != RulesetErrorSeverity.WarningOptionsOnly }
                 .sortedByDescending { it.errorSeverityToReport }
-                .joinToString { it.errorSeverityToReport.name + ": " + it.text }
+                .joinToString("\n") { it.errorSeverityToReport.name + ": " + it.text }
     }
 
     fun checkModLinks(): RulesetErrorList {
@@ -403,15 +408,25 @@ class Ruleset {
             checkUniques(nation, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
         }
 
-        for (promotion in unitPromotions.values)
+        for (promotion in unitPromotions.values) {
             if (promotion.effect != "")
-                lines.add("`Promotion.effect` used in ${promotion.name} is deprecated, please use `uniques` instead",
-                    RulesetErrorSeverity.WarningOptionsOnly)
+                lines.add(
+                    "`Promotion.effect` used in ${promotion.name} is deprecated, please use `uniques` instead",
+                    RulesetErrorSeverity.WarningOptionsOnly
+                )
 
-        for (resource in tileResources.values)
+            checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
+        }
+
+        for (resource in tileResources.values) {
             if (resource.unique != null)
-                lines.add("`Resource.unique` used in ${resource.name} is deprecated, please use `uniques` instead",
-                    RulesetErrorSeverity.WarningOptionsOnly)
+                lines.add(
+                    "`Resource.unique` used in ${resource.name} is deprecated, please use `uniques` instead",
+                    RulesetErrorSeverity.WarningOptionsOnly
+                )
+
+            checkUniques(resource, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
+        }
 
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return lines
@@ -542,6 +557,38 @@ class Ruleset {
             if (era.settlerPopulation <= 0)
                 lines += "Population in cities from settlers must be strictly positive! Found value ${era.settlerPopulation} for era ${era.name}"
             checkUniques(era, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        }
+
+        for (belief in beliefs.values) {
+            checkUniques(belief, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        }
+        for (nation in nations.values) {
+            checkUniques(nation, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        }
+        for (policy in policies.values) {
+            if (policy.requires != null)
+                for (prereq in policy.requires!!)
+                    if (!policies.containsKey(prereq))
+                        lines += "${policy.name} requires policy $prereq which does not exist!"
+            checkUniques(policy, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        }
+        for (reward in ruinRewards.values) {
+            for (difficulty in reward.excludedDifficulties)
+                if (!difficulties.containsKey(difficulty))
+                    lines += "${reward.name} references difficulty ${difficulty}, which does not exist!"
+            checkUniques(reward, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        }
+        for (promotion in unitPromotions.values) {
+            for (prereq in promotion.prerequisites)
+                if (!unitPromotions.containsKey(prereq))
+                    lines += "${promotion.name} requires promotion $prereq which does not exist!"
+            for (unitType in promotion.unitTypes)
+                if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unitType)))
+                    lines += "${promotion.name} references unit type ${unitType}, which does not exist!"
+            checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        }
+        for (unitType in unitTypes.values) {
+            checkUniques(unitType, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
         return lines

@@ -56,17 +56,19 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
 
             UniqueType.ConditionalVsCity ->
-                state.defender != null && state.defender.matchesCategory("City")
+                state.theirCombatant != null && state.theirCombatant.matchesCategory("City")
             UniqueType.ConditionalVsUnits ->
-                state.defender != null && state.defender.matchesCategory(condition.params[0])
+                state.theirCombatant != null && state.theirCombatant.matchesCategory(condition.params[0])
             UniqueType.ConditionalOurUnit ->
-                (state.attacker != null && state.attacker.matchesCategory(condition.params[0]))
+                (state.ourCombatant != null && state.ourCombatant.matchesCategory(condition.params[0]))
                 || (state.unit != null && state.unit.matchesFilter(condition.params[0]))
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
+            UniqueType.ConditionalInTiles -> 
+                state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0])
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
-                val theirCities = state.defender?.getCivInfo()?.cities?.size ?: 0
+                val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
 
@@ -76,11 +78,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                     it.matchesFilter(condition.params[2], state.civInfo)
                 } in (condition.params[0].toInt())..(condition.params[1].toInt())
             UniqueType.ConditionalNeighborTilesAnd ->
-                state.cityInfo != null &&
-                        state.cityInfo.getCenterTile().neighbors.count {
-                            it.matchesFilter(condition.params[2], state.civInfo) &&
-                            it.matchesFilter(condition.params[3], state.civInfo)
-                        } in (condition.params[0].toInt())..(condition.params[1].toInt())
+                state.cityInfo != null 
+                && state.cityInfo.getCenterTile().neighbors.count {
+                    it.matchesFilter(condition.params[2], state.civInfo) &&
+                    it.matchesFilter(condition.params[3], state.civInfo)
+                } in (condition.params[0].toInt())..(condition.params[1].toInt())
             else -> false
         }
     }

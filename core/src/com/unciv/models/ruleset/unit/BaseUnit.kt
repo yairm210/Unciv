@@ -601,9 +601,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsUnits) } ) { // Bonus vs some units - a quarter of the bonus
                         power *= (unique.params[0].toInt() / 4f).toPercent()
                     } else if (
-                        unique.conditionals.any { it.isOfType(UniqueType.ConditionalVsCity) } || // City Attack - half the bonus
-                        unique.conditionals.any { it.isOfType(UniqueType.ConditionalAttacking) } || // Attack - half the bonus
-                        unique.conditionals.any { it.isOfType(UniqueType.ConditionalDefending) } // Defense - half the bonus
+                        unique.conditionals.any {
+                            it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
+                            || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
+                            || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus 
+                            || it.isOfType(UniqueType.ConditionalInTiles) } // Bonus in terrain or feature - half the bonus
                     ) {
                         power *= (unique.params[0].toInt() / 2f).toPercent()
                     }
@@ -629,8 +631,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     -> power -= power / 5
                 unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 20% bonus per extra attack
                     -> power += (power * unique.params[0].toInt()) / 5
-                unique.placeholderText == "+[]% Strength in []" // Bonus in terrain or feature - half the bonus
-                    -> power += (power * unique.params[0].toInt()) / 200
+                // Deprecated since 3.17.5
+                unique.isOfType(UniqueType.StrengthIn) // Bonus in terrain or feature - half the bonus
+                -> power += (power * unique.params[0].toInt()) / 200
+                //
             }
         }
 
