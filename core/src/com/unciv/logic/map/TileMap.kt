@@ -34,7 +34,6 @@ class TileMap {
     var mapParameters = MapParameters()
 
     private var tileList = ArrayList<TileInfo>()
-    val continentSizes = HashMap<Int, Int>()    // Continent ID, Continent size
 
     /** Structure geared for simple serialization by Gdx.Json (which is a little blind to kotlin collections, especially HashSet)
      * @param position [Vector2] of the location
@@ -78,6 +77,9 @@ class TileMap {
 
     @Transient
     val startingLocationsByNation = HashMap<String,HashSet<TileInfo>>()
+
+    @Transient
+    val continentSizes = HashMap<Int, Int>()    // Continent ID, Continent size
 
     //endregion
     //region Constructors
@@ -124,7 +126,6 @@ class TileMap {
         toReturn.startingLocations.clear()
         toReturn.startingLocations.ensureCapacity(startingLocations.size)
         toReturn.startingLocations.addAll(startingLocations)
-        toReturn.continentSizes.putAll(continentSizes)
         return toReturn
     }
 
@@ -347,6 +348,7 @@ class TileMap {
     }
 
     fun isWaterMap(): Boolean {
+        assignContinents(AssignContinentsMode.Ensure)
         val bigIslands = continentSizes.count { it.value > 20 }
         val players = gameInfo.gameParameters.players.count()
         return bigIslands >= players
@@ -558,13 +560,41 @@ class TileMap {
         startingLocationsByNation.clear()
     }
 
+    /** Behaviour of [assignContinents] */
+    enum class AssignContinentsMode { Assign, Reassign, Ensure, Clear }
+
     /** Set a continent id for each tile, so we can quickly see which tiles are connected.
      *  Can also be called on saved maps.
-     *  @throws Exception when any land tile already has a continent ID
+     *  @param mode As follows:
+     *  [Assign][AssignContinentsMode.Assign] = initial assign, throw if tiles have continents.
+     *  [Reassign][AssignContinentsMode.Reassign] = clear continent data and redo for map editor.
+     *  [Ensure][AssignContinentsMode.Ensure] = regenerate continent sizes from tile data, and if that is empty, Assign. 
+     *  @throws Exception when `mode==Assign` and any land tile already has a continent ID
+     *  @return A map of continent sizes (continent ID to tile count)
      */
-    fun assignContinents() {
+    fun assignContinents(mode: AssignContinentsMode) {
+        if (mode == AssignContinentsMode.Clear) {
+            values.forEach { it.clearContinent() }
+            continentSizes.clear()
+            return
+        }
+
+        if (mode == AssignContinentsMode.Ensure) {
+            if (continentSizes.isNotEmpty()) return
+            for (tile in values) {
+                val continent = tile.getContinent()
+                if (continent == -1) continue
+                continentSizes[continent] = 1 + (continentSizes[continent] ?: 0)
+            }
+            if (continentSizes.isNotEmpty()) return
+        }
+
         var landTiles = values.filter { it.isLand && !it.isImpassible() }
         var currentContinent = 0
+        continentSizes.clear()
+
+        if (mode == AssignContinentsMode.Reassign)
+            values.forEach { it.clearContinent() }
 
         while (landTiles.any()) {
             val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }

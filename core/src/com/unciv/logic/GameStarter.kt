@@ -84,7 +84,7 @@ object GameStarter {
 
         if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
             runAndMeasure("assignContinents") {
-                tileMap.assignContinents()
+                tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
             }
 
         runAndMeasure("addCivStartingUnits") {
@@ -353,7 +353,7 @@ object GameStarter {
         tileMap: TileMap,
         startScores: HashMap<TileInfo, Float>
     ): Map<TileInfo, Float> {
-        if (tileMap.continentSizes.isEmpty()) tileMap.assignContinents()
+        tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
 
         // We want to  distribute starting locations fairly, and thus not place anybody on a small island
         // - unless necessary. Old code would only consider landmasses >= 20 tiles.
