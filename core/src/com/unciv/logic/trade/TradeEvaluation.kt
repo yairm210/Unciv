@@ -191,6 +191,11 @@ class TradeEvaluation {
                 else 500 // you want to take away our last lux of this type?!
             }
             TradeType.Strategic_Resource -> {
+                if (civInfo.gameInfo.spaceResources.contains(offer.name) &&
+                    (civInfo.hasUnique("Enables construction of Spaceship parts") ||
+                    tradePartner.hasUnique("Enables construction of Spaceship parts")))
+                        return 10000 // We'd rather win the game, thanks
+
                 if (!civInfo.isAtWar()) return 50 * offer.amount
 
                 val canUseForUnits = civInfo.gameInfo.ruleSet.units.values
