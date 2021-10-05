@@ -963,6 +963,7 @@
 */
 		"outerColor": [198,141,99], // color picker: cf9f75
 		"innerColor": [24,63,66], // color picker: 1f4a4d
+		"favoredReligion": "Christianity",
 		"uniqueName": "The Long Count",
 		"uniques": ["Receive a free Great Person at the end of every [Maya Long Count calendar cycle] (every 394 years), after researching [Theology]. (Each bonus person can only be chosen once.)",
 			"Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count."],
