@@ -13,7 +13,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.victoryscreen.RankingType
 import kotlin.math.max
 import kotlin.math.sqrt
-import kotlin.system.measureNanoTime
 
 object Automation {
 

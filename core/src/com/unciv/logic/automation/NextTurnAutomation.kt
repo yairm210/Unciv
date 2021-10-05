@@ -302,7 +302,7 @@ object NextTurnAutomation {
     }
 
     /** If we are able to build a spaceship but have already spent our resources, try disbanding
-     *  a unit and selling a building to make room. */
+     *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: CivilizationInfo) {
         // Can't build spaceships
         if (!civInfo.hasUnique("Enables construction of Spaceship parts"))

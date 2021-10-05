@@ -690,6 +690,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null)[stat] > 0) return true
         if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats[stat] > 0 }) return true
+        if (uniqueObjects.any { it.placeholderText == "[] from [] tiles []" && it.stats[stat] > 0 }) return true
         return false
     }
 
