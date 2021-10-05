@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
@@ -20,7 +21,15 @@ enum class UniqueParameterType(val parameterName:String) {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset) =
             if (parameterText == "All") null else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
     },
-    MapUnitFilter("mapUnitFilter"){
+    CombatantFilter("combatantFilter") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText == "City") return null
+            return MapUnitFilter.getErrorSeverity(parameterText, ruleset)
+        }
+
+    },
+    MapUnitFilter("mapUnitFilter") {
         private val knownValues = setOf("Wounded", "Barbarians", "City-State", "Embarked", "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
@@ -32,7 +41,7 @@ enum class UniqueParameterType(val parameterName:String) {
             return BaseUnitFilter.getErrorSeverity(parameterText, ruleset)
         }
     },
-    BaseUnitFilter("baseUnitFilter"){
+    BaseUnitFilter("baseUnitFilter") {
         // As you can see there is a difference between these and what's in unitTypeStrings (for translation) -
         // the goal is to unify, but for now this is the "real" list
         private val knownValues = setOf("All", "Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
@@ -49,7 +58,7 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
     },
-    Stats("stats"){
+    Stats("stats") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (!com.unciv.models.stats.Stats.isStats(parameterText))
@@ -57,14 +66,14 @@ enum class UniqueParameterType(val parameterName:String) {
             return null
         }
     },
-    StatName("stat"){
+    StatName("stat") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (Stat.values().any { it.name == parameterText }) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
     },
-    CityFilter("cityFilter"){
+    CityFilter("cityFilter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText !in cityFilterStrings)
@@ -114,6 +123,14 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
+    /** Used by NaturalWonderGenerator, only tests base terrain */
+    BaseTerrain("baseTerrain") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (ruleset.terrains[parameterText]?.type?.isBaseTerrain == true) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
     Promotion("promotion") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
             UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
@@ -123,9 +140,31 @@ enum class UniqueParameterType(val parameterName:String) {
     },
     Era("era") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                in ruleset.eras -> null
+                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            }
+    },
+    Resource("resource") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                in ruleset.tileResources -> null
+                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            }
+    },
+    BeliefTypeName("beliefType") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+                in BeliefType.values().map { it.name } -> null
+                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            }
+    },
+    FoundingOrEnhancing("foundingOrEnhancing") {
+        private val knownValues = setOf("founding", "enhancing")
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
-            in ruleset.eras -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            in knownValues -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
     },
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
@@ -135,9 +174,7 @@ enum class UniqueParameterType(val parameterName:String) {
     },
     Unknown("param") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? {
-            return null
-        }
+                UniqueType.UniqueComplianceErrorSeverity? = null
     };
 
     abstract fun getErrorSeverity(parameterText:String, ruleset: Ruleset): UniqueType.UniqueComplianceErrorSeverity?
