@@ -314,10 +314,8 @@ object NextTurnAutomation {
         // line 4426 through 4870.
         // This is way too much work for now, so I'll just choose a random pantheon instead.
         // Should probably be changed later, but it works for now.
-        val availablePantheons = civInfo.gameInfo.ruleSet.beliefs.values
-            .filter { civInfo.religionManager.isPickablePantheonBelief(it) }
-        if (availablePantheons.isEmpty()) return // panic!
-        val chosenPantheon = availablePantheons.random() // Why calculate stuff?
+        val chosenPantheon = chooseBeliefOfType(civInfo, BeliefType.Pantheon)
+            ?: return // panic!
         civInfo.religionManager.choosePantheonBelief(chosenPantheon)
     }
 
@@ -364,7 +362,7 @@ object NextTurnAutomation {
                     .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value) 
             }
             .map { it.value }
-            .randomOrNull() // ToDo: Better algorithm
+            .maxByOrNull { ChooseBeliefsAutomation.rateBelief(civInfo, it) }
     }
 
     private fun potentialLuxuryTrades(civInfo: CivilizationInfo, otherCivInfo: CivilizationInfo): ArrayList<Trade> {
