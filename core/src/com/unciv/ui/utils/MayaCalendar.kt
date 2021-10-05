@@ -1,13 +1,16 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import kotlin.math.abs
 
 object MayaCalendar {
     // Glyphs / icons
     private const val iconFolder = "MayaCalendar/"
+    const val notificationIcon = "MayaCalendar/Maya"
     const val tunIcon = "MayaCalendar/Tun"
     const val katunIcon = "MayaCalendar/Katun"
     const val baktunIcon = "MayaCalendar/Baktun"
@@ -63,19 +66,19 @@ object MayaCalendar {
         }
     }
 
-    // User interface
+    // User interface to explain changed year display
     fun openPopup(previousScreen: CameraStageBaseScreen, civInfo: CivilizationInfo, year: Int) {
         Popup(previousScreen).apply {
             name = "MayaCalendar"
             addGoodSizedLabel("The Mayan Long Count", 24).apply {
                 actor.color = civInfo.nation.getOuterColor()
             }.row()
-            addSeparator(color = civInfo.nation.getInnerColor())
-            addGoodSizedLabel("Your scientists and theologians have devised a systematic approach to measuring long timespans - the Long Count. During the festivities whenever the current b'ak'tun ends, a Great Person will join you.").row()
-            val yearText = "[" + abs(year) + "] " + (if (year < 0) "BC" else "AD")
+            addSeparator(color = Color.DARK_GRAY)
+            addGoodSizedLabel("Your scientists and theologians have devised a systematic approach to measuring long time spans - the Long Count. During the festivities whenever the current b'ak'tun ends, a Great Person will join you.").row()
+            val yearText = ("[" + abs(year) + "] " + (if (year < 0) "BC" else "AD")).tr()
             addGoodSizedLabel("While the rest of the world calls the current year [$yearText], in the Maya Calendar that is:").padTop(10f).row()
             val mayaYear = MayaYear(year)
-            addGoodSizedLabel(mayaYear.toString()).row()
+            addGoodSizedLabel(mayaYear.toString(), 42).row()
             addGoodSizedLabel("[${mayaYear.baktuns}] b'ak'tun, [${mayaYear.katuns}] k'atun, [${mayaYear.tuns}] tun").padBottom(10f).row()
             addCloseButton()
         }.open(true)

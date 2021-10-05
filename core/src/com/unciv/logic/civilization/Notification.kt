@@ -8,6 +8,7 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
 object NotificationIcon {
+    // Remember: The typical white-on-transparency icon will not be visible on Notifications
     const val Culture = "StatIcons/Culture"
     const val Construction = "StatIcons/Production"
     const val Growth = "StatIcons/Population"
@@ -21,7 +22,7 @@ object NotificationIcon {
     const val Citadel = "ImprovementIcons/Citadel"
     const val Happiness = "StatIcons/Happiness"
     const val Population = "StatIcons/Population"
-    const val CityState = "NationIcons/CityState"
+    const val CityState = "OtherIcons/CityState"
     const val Production = "StatIcons/Production"
     const val Food = "StatIcons/Food"
     const val Faith = "StatIcons/Faith"

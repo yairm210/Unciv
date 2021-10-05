@@ -314,7 +314,7 @@ class TechManager {
         }
         for (unique in civInfo.getMatchingUniques(UniqueType.MayanGainGreatPerson)) {
             if (unique.params[1] != techName) continue
-            civInfo.addNotification("You have unlocked [The Long Count]!", MayaCalendar.baktunIcon)
+            civInfo.addNotification("You have unlocked [The Long Count]!", MayaCalendar.notificationIcon)
         }
     }
 

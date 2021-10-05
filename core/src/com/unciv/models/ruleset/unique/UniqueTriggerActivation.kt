@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
+import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.random.Random
 
@@ -122,9 +123,13 @@ object UniqueTriggerActivation {
                 }
                 if (civInfo.isPlayerCivilization()) {
                     civInfo.greatPeople.freeGreatPeople++
-                    if (unique.type == MayanGainGreatPerson) civInfo.greatPeople.mayaLimitedFreeGP++
-                    if (notification != null)
-                        civInfo.addNotification(notification) // Anyone an idea for a good icon?
+                    if (unique.type == MayanGainGreatPerson) {
+                        civInfo.greatPeople.mayaLimitedFreeGP++
+                        civInfo.addNotification(notification!!, MayaCalendar.notificationIcon) // Anyone an idea for a good icon?
+                    } else {
+                        if (notification != null)
+                            civInfo.addNotification(notification) // Anyone an idea for a good icon?
+                    }
                     return true
                 } else {
                     if (unique.type == MayanGainGreatPerson)
