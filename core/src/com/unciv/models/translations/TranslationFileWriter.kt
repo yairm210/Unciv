@@ -218,7 +218,8 @@ object TranslationFileWriter {
             "non-fresh water",
             "Open Terrain",
             "Rough Terrain",
-            "Natural Wonder"
+            "Natural Wonder",
+            "unimproved"
         )) }
         val tileImprovementMap = ruleset.tileImprovements.keys.toMutableSet().apply { add("Great Improvement") }
         val buildingMap = ruleset.buildings.keys.toMutableSet().apply { addAll(sequenceOf(

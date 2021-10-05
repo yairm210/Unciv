@@ -2,10 +2,14 @@ package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.audio.MusicMood
+import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.utils.*
 
 class GameOptionsTable(
@@ -27,6 +31,7 @@ class GameOptionsTable(
     }
 
     private fun getGameOptionsTable() {
+        val cityStateSlider: UncivSlider?
         top()
         defaults().pad(5f)
 
@@ -38,17 +43,18 @@ class GameOptionsTable(
             addEraSelectBox()
             // align left and right edges with other SelectBoxes but allow independent dropdown width
             add(Table().apply {
-                addCityStatesSlider()
+                cityStateSlider = addCityStatesSlider()
             }).colspan(2).fillX().row()
         }).row()
         addVictoryTypeCheckboxes()
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
-        checkboxTable.addBarbariansCheckbox()
+        checkboxTable.addNoBarbariansCheckbox()
+        checkboxTable.addRagingBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        checkboxTable.addReligionCheckbox()
+        checkboxTable.addReligionCheckbox(cityStateSlider)
         add(checkboxTable).center().row()
 
         if (!withoutMods)
@@ -63,9 +69,13 @@ class GameOptionsTable(
         add(checkbox).colspan(2).row()
     }
 
-    private fun Table.addBarbariansCheckbox() =
+    private fun Table.addNoBarbariansCheckbox() =
             addCheckbox("No Barbarians", gameParameters.noBarbarians)
             { gameParameters.noBarbarians = it }
+
+    private fun Table.addRagingBarbariansCheckbox() =
+        addCheckbox("Raging Barbarians", gameParameters.ragingBarbarians)
+        { gameParameters.ragingBarbarians = it }
 
     private fun Table.addOneCityChallengeCheckbox() =
             addCheckbox("One City Challenge", gameParameters.oneCityChallenge)
@@ -82,23 +92,32 @@ class GameOptionsTable(
                 gameParameters.isOnlineMultiplayer = it
                 updatePlayerPickerTable("")
             }
-    
-    private fun Table.addReligionCheckbox() =
-            addCheckbox("Enable Religion", gameParameters.religionEnabled)
-            { gameParameters.religionEnabled = it }
 
-    private fun Table.addCityStatesSlider() {
-        val numberOfCityStates = ruleset.nations.filter { it.value.isCityState() }.size
-        if (numberOfCityStates == 0) return
+    private fun numberOfCityStates() = ruleset.nations.values.count {
+        it.isCityState() &&
+                (it.cityStateType != CityStateType.Religious || gameParameters.religionEnabled) &&
+                !it.hasUnique(UniqueType.CityStateDeprecated)
+    }
+
+    private fun Table.addReligionCheckbox(cityStateSlider: UncivSlider?) =
+        addCheckbox("Enable Religion", gameParameters.religionEnabled) {
+            gameParameters.religionEnabled = it
+            cityStateSlider?.run { setRange(0f, numberOfCityStates().toFloat()) }
+        }
+
+    private fun Table.addCityStatesSlider(): UncivSlider? {
+        val maxCityStates = numberOfCityStates()
+        if (maxCityStates == 0) return null
 
         add("{Number of City-States}:".toLabel()).left().expandX()
-        val slider = UncivSlider(0f,numberOfCityStates.toFloat(),1f) {
+        val slider = UncivSlider(0f, maxCityStates.toFloat(), 1f) {
             gameParameters.numberOfCityStates = it.toInt()
         }
         slider.permanentTip = true
         slider.isDisabled = locked
         add(slider).padTop(10f).row()
         slider.value = gameParameters.numberOfCityStates.toFloat()
+        return slider
     }
 
     private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {
@@ -182,9 +201,11 @@ class GameOptionsTable(
             var desiredCiv = ""
             if (gameParameters.mods.contains(it)) {
                 val modNations = RulesetCache[it]?.nations
-                if (modNations != null && modNations.size > 0) {
-                    desiredCiv = modNations.keys.first()
-                }
+                if (modNations != null && modNations.size > 0) desiredCiv = modNations.keys.first()
+
+                val music = UncivGame.Current.musicController
+                if (!music.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())
+                    music.chooseTrack(desiredCiv, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
             }
 
             updatePlayerPickerTable(desiredCiv)

@@ -218,10 +218,12 @@ open class TileInfo {
         var stats = getBaseTerrain().clone()
 
         for (terrainFeatureBase in getTerrainFeatures()) {
-            if (terrainFeatureBase.overrideStats)
-                stats = terrainFeatureBase.clone()
-            else
-                stats.add(terrainFeatureBase)
+            when {
+                terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
+                    return terrainFeatureBase.clone()
+                terrainFeatureBase.overrideStats -> stats = terrainFeatureBase.clone()
+                else -> stats.add(terrainFeatureBase)
+            }
         }
 
         if (naturalWonder != null) {
@@ -419,6 +421,10 @@ open class TileInfo {
             RoadStatus.values().none { it.name == improvement.name || it.removeAction == improvement.name }
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
+            // Terrain blocks most improvements
+            getAllTerrains().any { it.getMatchingUniques("Only [] improvements may be built on this tile")
+                .any { unique -> !improvement.matchesFilter(unique.params[0]) } } -> false
+
             // Decide cancelImprovementOrder earlier, otherwise next check breaks it
             improvement.name == Constants.cancelImprovementOrder -> (this.improvementInProgress != null)
             // Tiles with no terrains, and no turns to build, are like great improvements - they're placeable
@@ -451,7 +457,7 @@ open class TileInfo {
     fun matchesFilter(filter: String, civInfo: CivilizationInfo? = null): Boolean {
         if (matchesTerrainFilter(filter, civInfo)) return true
         if (improvement != null && ruleset.tileImprovements[improvement]!!.matchesFilter(filter)) return true
-        return false
+        return improvement == null && filter == "unimproved"
     }
 
     fun matchesTerrainFilter(filter: String, observingCiv: CivilizationInfo? = null): Boolean {

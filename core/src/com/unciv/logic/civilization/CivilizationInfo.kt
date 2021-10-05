@@ -325,7 +325,7 @@ class CivilizationInfo {
             if (unique.params[0] == resource.name)
                 resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
-            resourceModifier *= 1f + getMatchingUniques("Quantity of strategic resources produced by the empire +[]%")
+            resourceModifier *= 1f + getMatchingUniques(UniqueType.StrategicResourcesIncrease)
                 .map { it.params[0].toFloat() / 100f }.sum()
 
         }
@@ -342,7 +342,7 @@ class CivilizationInfo {
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
-    fun hasUnique(uniqueType: UniqueType) = getMatchingUniques(uniqueType).any()
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = getMatchingUniques(uniqueType, stateForConditionals).any()
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
         
     // Does not return local uniques, only global ones.
