@@ -53,6 +53,8 @@ class Nation : RulesetObject() {
     var adjective = ArrayList<String>()
      */
     
+    var favoredReligion: String? = null
+    
     @Transient
     private lateinit var outerColorObject: Color
     fun getOuterColor(): Color = outerColorObject

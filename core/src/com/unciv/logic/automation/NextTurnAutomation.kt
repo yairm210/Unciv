@@ -321,10 +321,12 @@ object NextTurnAutomation {
 
     private fun foundReligion(civInfo: CivilizationInfo) {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
-        val religionIcon = civInfo.gameInfo.ruleSet.religions
+        val availableReligionIcons = civInfo.gameInfo.ruleSet.religions
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
-            .randomOrNull()
-            ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
+        val religionIcon = 
+            if (civInfo.nation.favoredReligion in availableReligionIcons) civInfo.nation.favoredReligion
+            else availableReligionIcons.randomOrNull()
+                ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
         val chosenBeliefs = chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtFounding()).toList()
         civInfo.religionManager.chooseBeliefs(religionIcon, religionIcon, chosenBeliefs)
     }
