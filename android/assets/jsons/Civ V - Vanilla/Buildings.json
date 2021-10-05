@@ -21,6 +21,17 @@
 		"maintenance": 1,
 		"uniques": ["Destroyed when the city is captured"]
 	},
+	{
+		"name": "Stele",
+		"replaces": "Monument",
+		"uniqueTo": "Ethiopia",
+		"culture": 2,
+		"faith": 2,
+		"cost": 40,
+		"hurryCostModifier": 40,
+		"maintenance": 1,
+		"uniques": ["Destroyed when the city is captured"] //"Hidden when religion is disabled"
+	},
 	// Column 1
 	{
 		"name": "Granary",
@@ -183,7 +194,7 @@
 		"name": "Statue of Zeus",
 		"culture": 1,
 		"isWonder": true,
-		"uniques": ["+15% Combat Strength for all units when attacking Cities"],
+		"uniques": ["[+15]% Strength <for [All] units> <vs Cities> <when attacking>"],
 		"requiredTech": "Bronze Working",
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
 		// "Requires [Honor]" in BNW
@@ -207,8 +218,8 @@
 		"culture": 1,
 		"greatPersonPoints": {"Great Merchant": 1},
 		"isWonder": true,
-		"uniques": ["Must be next to [Coast]", "+[1] Movement for all [{Military} {Water}] units",
-			"[+1] Sight for all [{Military} {Water}] units", "Provides a free [Lighthouse] [in this city]"],
+		"uniques": ["Must be next to [Coast]", "[+1] Movement <for [{Military} {Water}] units>",
+			"[+1] Sight <for [{Military} {Water}] units>", "Provides a free [Lighthouse] [in this city]"],
 		"requiredTech": "Optics",
 		"quote": "'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24"
 	},
@@ -276,6 +287,29 @@
 		"uniques": ["Hidden when religion is disabled", "Destroyed when the city is captured"]
 	},
 	{
+		"name": "Burial Tomb",
+		"replaces": "Temple",
+		"uniqueTo": "Egypt",
+		"maintenance": 0,
+		"uniques": ["Doubles Gold given to enemy if city is captured"],
+		"faith": 2,
+		"happiness": 2,
+		"requiredBuilding": "Shrine",
+		"hurryCostModifier": 25,
+		"requiredTech": "Philosophy"
+	},
+	{
+		"name": "Mud Pyramid Mosque",
+		"replaces": "Temple",
+		"uniqueTo": "Songhai",
+		"maintenance": 0,
+		"hurryCostModifier": 25,
+		"culture": 2,
+		"faith": 2,
+		"requiredBuilding": "Shrine",
+		"requiredTech": "Philosophy"
+	},
+	{
 		"name": "National College",
 		"cost": 125,
 		"science": 3,
@@ -303,55 +337,6 @@
 		"hurryCostModifier": 25,
 		"uniques": ["Destroyed when the city is captured"],
 		"requiredTech": "Drama and Poetry"
-	},
-	{
-		"name": "Burial Tomb",
-		"replaces": "Amphitheater",
-		"uniqueTo": "Egypt",
-		"uniques": ["Doubles Gold given to enemy if city is captured"],
-		"culture": 2,
-		"happiness": 2,
-		"specialistSlots": {"Artist": 1},
-		"requiredBuilding": "Monument",
-		"hurryCostModifier": 25,
-		"requiredTech": "Drama and Poetry"
-		// In Vanilla, this replaces Temple and requires Philosophy and a Monument.
-		// In G&K, this still replaces Temple and requires Philosophy, but becomes a faith building
-		// (alongside Temple) and thus requires a Shrine instead of a Monument.
-		// Since faith is not yet implemented, but G&K's Drama and Poetry (which provides the
-		// Amphiteater, a building with the properties of the vanilla Temple) is, this building
-		// temporarily replaces Drama and Poetry and requires a Monument while having its Vanilla
-		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
-		// implemented.
-
-		// Further edit: Temples are now implemented. However, due to Religion still being in
-		// its alpha stages, these buildings are still the culture variant. When religion is finally
-		// fully released, this building should be replaced with amphitheatres in existing save files,
-		// and then later the G&K faith version can be added
-	},
-	{
-		"name": "Mud Pyramid Mosque",
-		"replaces": "Amphitheater",
-		"uniqueTo": "Songhai",
-		"maintenance": 0,
-		"specialistSlots": {"Artist": 1},
-		"hurryCostModifier": 25,
-		"culture": 4,
-		"requiredBuilding": "Monument",
-		"requiredTech": "Drama and Poetry"
-		// In Vanilla, this replaces Temple and requires Philosophy and a Monument.
-		// In G&K, this still replaces Temple and requires Philosophy, but becomes a faith building
-		// (alongside Temple) and thus requires a Shrine instead of a Monument.
-		// Since faith is not yet implemented, but G&K's Drama and Poetry (which provides the
-		// Amphiteater, a building with the properties of the vanilla Temple) is, this building
-		// temporarily replaces Drama and Poetry and requires a Monument while having its Vanilla
-		// stats, so it's a mish-mash of vanilla and G&K. It should be changed when faith is
-		// implemented.
-
-		// Further edit: Temples are now implemented. However, due to Religion still being in
-		// its alpha stages, these buildings are still the culture variant. When religion is finally
-		// fully released, this building should be replaced with amphitheatres in existing save files,
-		// and then later the G&K faith version can be added
 	},
 	{
 		"name": "National Epic",
@@ -670,6 +655,19 @@
 		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
+		"name": "Ceilidh Hall",
+		"replaces": "Opera House",
+		"uniqueTo": "Celts",
+		"culture": 4,
+		"happiness": 3,
+		"specialistSlots": {"Artist": 1},
+		"hurryCostModifier": 10,
+		"requiredBuilding": "Amphitheater",
+		"maintenance": 2,
+		"requiredTech": "Acoustics",
+		"uniques": ["Destroyed when the city is captured"]
+	},
+	{
 		"name": "Sistine Chapel",
 		"culture": 1,
 		"isWonder": true,
@@ -743,7 +741,7 @@
 		"culture": 3,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"uniques": ["+[15]% Strength for [Non-City] units fighting in [Friendly Land]",
+		"uniques": ["[+15]% Strength <for [All] units> <when fighting in [Friendly Land] tiles>",
 			"Provides a free [Castle] [in this city]"],
 		"requiredTech": "Gunpowder",
 		"quote": "'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.' - Yamamoto Tsunetomo"
@@ -1025,7 +1023,7 @@
 		"isWonder": true,
 		"culture": 3,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"uniques": ["Gold cost of upgrading military units reduced by 33%"],
+		"uniques": ["Gold cost of upgrading [Military] units reduced by [33]%"],
 		"requiredTech": "Combined Arms",
 		"quote": "'In preparing for battle I have always found that plans are useless, but planning is indispensable.' - Dwight D. Eisenhower"
 	},

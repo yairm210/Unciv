@@ -57,57 +57,23 @@ enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
 
 enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
-    Stats("[stats]", UniqueTarget.Global),
+    //////////////////////////////////////// GLOBAL UNIQUES ////////////////////////////////////////
+
+
+    /////// Stat providing uniques
+
+    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.WARNING)
+    StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
 
-    StatPercentBonus("[amount]% [Stat]", UniqueTarget.Global),
-
-    ConsumesResources("Consumes [amount] [resource]",
-        UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit), // No conditional support as of yet
-    ProvidesResources("Provides [amount] [resource]",
-            UniqueTarget.Improvement, UniqueTarget.Building),
-
-    FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
-    UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
+    StatPercentBonus("[amount]% [stat]", UniqueTarget.Global),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
+
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
 
-    GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter]"), DeprecationLevel.WARNING)
-    GrowthPercentBonusPositive("+[amount]% growth [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.WARNING)
-    GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
+    /////// City-State related uniques
 
-    TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
-
-    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
-    DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs"), // No conditional support
-    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
-    DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs"), // No conditional support
-    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.WARNING)
-    StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists"), // No conditional support
-
-    Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
-    
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
-    StrengthPlus("+[amount]% Strength"),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
-    StrengthMin("-[amount]% Strength"),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [unitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
-    StrengthPlusVs("+[amount]% Strength vs [combatantFilter]"),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [unitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
-    StrengthMinVs("-[amount]% Strength vs [combatantFilter]"),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
-    CombatBonus("+[amount]% Combat Strength"),
-    
-    
-    // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
-    ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
-    GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
-
-    FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
-    FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
-    
     // I don't like the fact that currently "city state bonuses" are separate from the "global bonuses",
     // todo: merge city state bonuses into global bonuses
     CityStateStatsPerTurn("Provides [stats] per turn", UniqueTarget.CityState), // Should not be Happiness!
@@ -115,19 +81,96 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CityStateHappiness("Provides [amount] Happiness", UniqueTarget.CityState),
     CityStateMilitaryUnits("Provides military units every ≈[amount] turns", UniqueTarget.CityState), // No conditional support as of yet
     CityStateUniqueLuxury("Provides a unique luxury", UniqueTarget.CityState), // No conditional support as of yet
+    CityStateGiftedUnitsStartWithXp("Military Units gifted from City-States start with [amount] XP", UniqueTarget.Global),
+    CityStateGoldGiftsProvideMoreInfluence("Gifts of Gold to City-States generate [amount]% more Influence", UniqueTarget.Global),
+    CityStateCanBeBoughtForGold("Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns.", UniqueTarget.Global),
+    CityStateTerritoryAlwaysFriendly("City-State territory always counts as friendly territory", UniqueTarget.Global),
 
-    NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
-    NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
-    NaturalWonderSmallerLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
-    NaturalWonderLargerLandmass("Must be on [amount] largest landmasses", UniqueTarget.Terrain),
-    NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain),
-    NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain),
-    NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain),
-  
-    // The "Except [terrainFilter]" could theoretically be implemented with a conditional
-    NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain),
+    CityStateCanGiftGreatPeople("Allied City-States will occasionally gift Great People", UniqueTarget.Global),  // used in Policy
+    CityStateDeprecated("Will not be chosen for new games", UniqueTarget.Nation), // implemented for CS only for now
 
-    TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
+    /////// Other global uniques
+
+    FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
+    UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
+    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
+    DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UniqueTarget.Global),
+    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
+    DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UniqueTarget.Global),
+
+    ConsumesResources("Consumes [amount] [resource]",
+        UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
+    ProvidesResources("Provides [amount] [resource]",
+            UniqueTarget.Improvement, UniqueTarget.Building),
+
+    GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter]"), DeprecationLevel.WARNING)
+    GrowthPercentBonusPositive("+[amount]% growth [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.WARNING)
+    GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
+
+    // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
+    ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
+    GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
+
+    FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
+    FreeExtraAnyBeliefs("May choose [amount] additional of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
+
+    ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
+
+
+    Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
+    StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit),
+
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
+    StrengthPlus("+[amount]% Strength", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
+    StrengthMin("-[amount]% Strength", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
+    StrengthPlusVs("+[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
+    StrengthMinVs("-[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
+    CombatBonus("+[amount]% Combat Strength", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when attacking>"), DeprecationLevel.WARNING)
+    StrengthAttacking("+[amount]% Strength when attacking", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <shen defending>"), DeprecationLevel.WARNING)
+    StrengthDefending("+[amount]% Strength when defending", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when defending> <vs [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    StrengthDefendingUnitFilter("[amount]% Strength when defending vs [mapUnitFilter] units", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    DamageForUnits("[mapUnitFilter] units deal +[amount]% damage", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[+10]% Strength <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
+    StrengthGoldenAge("+10% Strength for all units during Golden Age", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when fighting in [tileFilter] tiles> <when defending>"), DeprecationLevel.WARNING)
+    StrengthDefenseTiles("+[amount]% defence in [tileFilter] tiles", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when fighting in [tileFilter] tiles>"), DeprecationLevel.WARNING)
+    StrengthIn("+[amount]% Strength in [tileFilter]", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units> <when fighting in [tileFilter] tiles>"))
+    StrengthUnitsTiles("[amount]% Strength for [mapUnitFilter] units in [tileFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[+15]% Strength <for [All] units> <vs cities> <when attacking>"))
+    StrengthVsCities("+15% Combat Strength for all units when attacking Cities", UniqueTarget.Global),
+
+
+    Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
+    Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global),
+    SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
+
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    MovementUnits("+[amount] Movement for all [mapUnitFilter] units", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
+    MovementGoldenAge("+1 Movement for all units during Golden Age", UniqueTarget.Global),
+
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount] Sight <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    SightUnits("[amount] Sight for all [mapUnitFilter] units", UniqueTarget.Global),
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount] Sight"), DeprecationLevel.WARNING)
+    VisibilityRange("[amount] Visibility Range", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.5", ReplaceWith("[-1] Sight"), DeprecationLevel.WARNING)
+    LimitedVisibility("Limited Visibility", UniqueTarget.Unit),
+
+    @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Spread Religion Strength <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    SpreadReligionStrengthUnits("[amount]% Spread Religion Strength for [mapUnitFilter] units", UniqueTarget.Global),
+
 
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
@@ -146,19 +189,90 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
 
+    //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
 
-    // Conditionals
 
+    NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
+    NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
+    NaturalWonderSmallerLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain),
+    NaturalWonderLargerLandmass("Must be on [amount] largest landmasses", UniqueTarget.Terrain),
+    NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain),
+    NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain),
+    NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain),
+
+    // The "Except [terrainFilter]" could theoretically be implemented with a conditional
+    NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain),
+
+    TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
+
+    TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
+    NullifyYields("Nullifies all other stats this tile provides", UniqueTarget.Terrain),
+
+    NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain),
+
+    ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
+
+    
+    // civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
-    ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
+    ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
+
+    // city conditionals
+    ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
+
+    // unit conditionals
+    ConditionalOurUnit("for [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
-//    ConditionalInTiles("fighting in [tileFilter] tiles", UniqueTarget.Conditional),
-//    ConditionalAttacking("when attacking", UniqueTarget.Conditional),
-//    ConditionalDefending("when defending", UniqueTarget.Conditional),
+    ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
+    ConditionalAttacking("when attacking", UniqueTarget.Conditional),
+    ConditionalDefending("when defending", UniqueTarget.Conditional),
+    ConditionalInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
 //    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
+
+    // tile conditionals
+    ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
+
+    ///////////////////////////////////////// TRIGGERED ONE-TIME /////////////////////////////////////////
+
+    OneTimeFreeUnit("Free [baseUnitFilter] appears", UniqueTarget.Global),  // used in Policies, Buildings
+    OneTimeAmountFreeUnits("[amount] free [baseUnitFilter] units appear", UniqueTarget.Global), // used in Buildings
+    OneTimeFreeUnitRuins("Free [baseUnitFilter] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
+    OneTimeFreePolicy("Free Social Policy", UniqueTarget.Global), // used in Buildings
+    OneTimeAmountFreePolicies("[amount] Free Social Policies", UniqueTarget.Global),  // Not used in Vanilla
+    OneTimeEnterGoldenAge("Empire enters golden age", UniqueTarget.Global),  // used in Policies, Buildings
+    OneTimeFreeGreatPerson("Free Great Person", UniqueTarget.Global),  // used in Policies, Buildings
+    OneTimeGainPopulation("[amount] population [cityFilter]", UniqueTarget.Global),  // used in CN tower
+    OneTimeGainPopulationRandomCity("[amount] population in a random city", UniqueTarget.Ruins),
+    OneTimeFreeTech("Free Technology", UniqueTarget.Global),  // used in Buildings
+    OneTimeAmountFreeTechs("[amount] Free Technologies", UniqueTarget.Global),  // used in Policy
+    OneTimeFreeTechRuins("[amount] free random researchable Tech(s) from the [era]", UniqueTarget.Ruins),  // todo: Not picked up by TranslationFileWriter?
+    OneTimeRevealEntireMap("Reveals the entire map", UniqueTarget.Global),  // used in tech
+    OneTimeGainStat("Gain [amount] [stat]", UniqueTarget.Ruins),
+    OneTimeGainStatRange("Gain [amount]-[amount] [stat]", UniqueTarget.Ruins),
+    OneTimeGainPantheon("Gain enough Faith for a Pantheon", UniqueTarget.Ruins),
+    OneTimeGainProphet("Gain enough Faith for [amount]% of a Great Prophet", UniqueTarget.Ruins),
+    // todo: The "up to [All]" used in vanilla json is not nice to read. Split?
+    OneTimeRevealSpecificMapTiles("Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius", UniqueTarget.Ruins),
+    OneTimeRevealCrudeMap("From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance", UniqueTarget.Ruins),
+    OneTimeTriggerVoting("Triggers voting for the Diplomatic Victory", UniqueTarget.Global),  // used in Building
+
+    OneTimeUnitHeal("Heal this unit by [amount] HP", UniqueTarget.Promotion),
+    OneTimeUnitGainXP("This Unit gains [amount] XP", UniqueTarget.Ruins),
+    OneTimeUnitUpgrade("This Unit upgrades for free", UniqueTarget.Global),  // Not used in Vanilla
+    OneTimeUnitSpecialUpgrade("This Unit upgrades for free including special upgrades", UniqueTarget.Ruins),
+    OneTimeUnitGainPromotion("This Unit gains the [promotion] promotion", UniqueTarget.Global),  // Not used in Vanilla
+
+    UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Global),  // Not used in Vanilla
+    // todo: remove forced sign
+    StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[amount]%", UniqueTarget.Global),  // used in Policy
+    // todo: remove forced sign
+    TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns", UniqueTarget.Global),  // used in Policy
+    FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
+    FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
@@ -168,10 +282,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     init {
         for (placeholder in text.getPlaceholderParameters()) {
-            val matchingParameterType =
-                UniqueParameterType.values().firstOrNull { it.parameterName == placeholder }
-                    ?: UniqueParameterType.Unknown
-            parameterTypeMap.add(listOf(matchingParameterType))
+            val matchingParameterTypes = placeholder
+                .split('/')
+                .map { UniqueParameterType.safeValueOf(it) }
+            parameterTypeMap.add(matchingParameterTypes)
         }
         targetTypes.addAll(targets)
     }

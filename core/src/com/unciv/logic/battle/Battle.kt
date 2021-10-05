@@ -157,7 +157,7 @@ object Battle {
         // CS friendship from killing barbarians
         if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
             for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
-                if (defeatedUnit.unit.threatensCiv(cityState)) {
+                if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
                     cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
             }
@@ -304,14 +304,19 @@ object Battle {
     }
 
     private fun postBattleNationUniques(defender: ICombatant, attackedTile: TileInfo, attacker: ICombatant) {
-        // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
-        if (defender.isDefeated() && defender.getCivInfo().isBarbarian()
-                && attackedTile.improvement == Constants.barbarianEncampment
-                && attacker.getCivInfo().hasUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
-                && Random().nextDouble() < 0.67) {
-            attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
-            attacker.getCivInfo().addGold(25)
-            attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, defender.getName())
+
+        // Barbarians reduce spawn countdown after their camp was attacked "kicking the hornet's nest"
+        if (defender.getCivInfo().isBarbarian() && attackedTile.improvement == Constants.barbarianEncampment) {
+            defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
+
+            // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
+            if (defender.isDefeated()
+                    && attacker.getCivInfo().hasUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
+                    && Random().nextDouble() < 0.67) {
+                attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
+                attacker.getCivInfo().addGold(25)
+                attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, defender.getName())
+            }
         }
 
         // Similarly, Ottoman unique

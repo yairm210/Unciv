@@ -9,37 +9,37 @@
 	// Ranged+Siege
 	{
 		"name": "Accuracy I",
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 	{
 		"name": "Accuracy II",
 		"prerequisites": ["Accuracy I"],
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 	{
 		"name": "Accuracy III",
 		"prerequisites": ["Accuracy II"],
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 
 	{
 		"name": "Barrage I",
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 	{
 		"name": "Barrage II",
 		"prerequisites": ["Barrage I"],
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 	{
 		"name": "Barrage III",
 		"prerequisites": ["Barrage II"],
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles> <when attacking>"],
 		"unitTypes": ["Siege","Archery","Ranged Gunpowder"]
 	},
 
@@ -65,37 +65,37 @@
 	// Melee, Mounted+Armor
 	{
 		"name": "Shock I",
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
 		"name": "Shock II",
 		"prerequisites": ["Shock I"],
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
 		"name": "Shock III",
 		"prerequisites": ["Shock II"],
-		"uniques": ["+[15]% Strength in [Open terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Open terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 
 	{
 		"name": "Drill I",
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
 		"name": "Drill II",
 		"prerequisites": ["Drill I"],
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
 		"name": "Drill III",
 		"prerequisites": ["Drill II"],
-		"uniques": ["+[15]% Strength in [Rough terrain]"],
+		"uniques": ["[+15]% Strength <when fighting in [Rough terrain] tiles>"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Armored"]
 	},
 	{
@@ -157,13 +157,13 @@
 	// Scout
 	{
 		"name": "Scouting I",
-		"uniques": ["[+1] Visibility Range"],
+		"uniques": ["[+1] Sight"],
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Scouting II",
 		"prerequisites": ["Scouting I"],
-		"uniques": ["[+1] Visibility Range"],
+		"uniques": ["[+1] Sight"],
 		"unitTypes": ["Scout"]
 	},
 	{
@@ -174,13 +174,13 @@
 	},
 	{
 		"name": "Survivalism I",
-		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "+[25]% Strength when defending"],
+		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "[+25]% Strength <when defending>"],
 		"unitTypes": ["Scout"]
 	},
 	{
 		"name": "Survivalism II",
 		"prerequisites": ["Survivalism I"],
-		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "+[25]% Strength when defending"],
+		"uniques": ["[+5] HP when healing in [Foreign Land] tiles", "[+25]% Strength <when defending>"],
 		"unitTypes": ["Scout"]
 	},
 	{
@@ -206,7 +206,7 @@
 	{
 		"name": "Boarding Party III",
 		"prerequisites": ["Boarding Party II"],
-		"uniques": ["+[15]% Strength <vs [Water] units>"],
+		"uniques": ["[+15]% Strength <vs [Water] units>"],
 		"unitTypes": ["Melee Water"]
 	},
 
@@ -250,38 +250,38 @@
 	// Submarine
 	{
 		"name": "Wolfpack I",
-		"uniques": ["+[25]% Strength when attacking"],
+		"uniques": ["[+25]% Strength <when attacking>"],
 		"unitTypes": ["Submarine"]
 	},
 	{
 		"name": "Wolfpack II",
 		"prerequisites": ["Wolfpack I"],
-		"uniques": ["+[25]% Strength when attacking"],
+		"uniques": ["[+25]% Strength <when attacking>"],
 		"unitTypes": ["Submarine"]
 	},
 	{
 		"name": "Wolfpack III",
 		"prerequisites": ["Wolfpack II"],
-		"uniques": ["+[25]% Strength when attacking"],
+		"uniques": ["[+25]% Strength <when attacking>"],
 		"unitTypes": ["Submarine"]
 	},
 
 	// Aircraft Carrier
 	{
 		"name": "Armor Plating I",
-		"uniques": ["+[25]% Strength when defending"],
+		"uniques": ["[+25]% Strength <when defending>"],
 		"unitTypes": ["Aircraft Carrier"]
 	},
 	{
 		"name": "Armor Plating II",
 		"prerequisites": ["Armor Plating I"],
-		"uniques": ["+[25]% Strength when defending"],
+		"uniques": ["[+25]% Strength <when defending>"],
 		"unitTypes": ["Aircraft Carrier"]
 	},
 	{
 		"name": "Armor Plating III",
 		"prerequisites": ["Armor Plating II"],
-		"uniques": ["+[25]% Strength when defending"],
+		"uniques": ["[+25]% Strength <when defending>"],
 		"unitTypes": ["Aircraft Carrier"]
 	},
 	{
@@ -375,7 +375,7 @@
 
 	{
 		"name": "Air Targeting I",
-		"prerequisites": ["Interception I","Dogfighting I", "Siege I","Bombardment I"],
+		"prerequisites": ["Interception I","Siege I","Bombardment I"],  // "Dogfighting I"
 		"uniques": ["[+33]% Strength <vs [Water] units>"],
 		"unitTypes": ["Fighter","Bomber"]
 	},
@@ -388,7 +388,7 @@
 
 	{
 		"name": "Sortie",
-		"prerequisites": ["Interception II", "Dogfighting II"],
+		"prerequisites": ["Interception II"],  // "Dogfighting II"
 		"uniques": ["[1] extra interceptions may be made per turn"],
 		"unitTypes": ["Fighter"]
 	},
@@ -433,13 +433,13 @@
 	// Mixed
 	{
 		"name": "Cover I",
-		"uniques": ["[+33]% Strength when defending vs [Ranged] units"],
+		"uniques": ["[+33]% Strength <vs [Ranged] units> <when defending>"],
 		"unitTypes": ["Sword","Gunpowder","Archery","Ranged Gunpowder","Siege"]
 	},
 	{
 		"name": "Cover II",
 		"prerequisites": ["Cover I"],
-		"uniques": ["[+33]% Strength when defending vs [Ranged] units"],
+		"uniques": ["[+33]% Strength <vs [Ranged] units> <when defending>"],
 		"unitTypes": ["Sword","Gunpowder","Archery","Ranged Gunpowder","Siege"]
 	},
 
@@ -459,7 +459,7 @@
 	{
 		"name": "Sentry",
 		"prerequisites": ["Accuracy I","Barrage I","Shock II","Drill II","Bombardment I","Targeting I","Boarding Party I","Coastal Raider I"],
-		"uniques": ["[+1] Visibility Range"],
+		"uniques": ["[+1] Sight"],
 		"unitTypes": ["Sword","Gunpowder","Mounted","Ranged Water","Armored","Melee Water"]
 	},
 	{
@@ -534,5 +534,13 @@
 	{
 		"name": "Ignore terrain cost",
 		"uniques": ["Ignores terrain cost"]
+	},
+	{
+		"name": "Pictish Courage", // only for Pictish Warrior and subsequent upgrades
+		"uniques": ["No movement cost to pillage", "[+20]% Strength <when fighting in [Foreign Land] tiles>"]
+	},
+	{
+		"name": "Home Sweet Home", // only for Mehal Sefari and subsequent upgrades
+		"uniques": ["[+30]% Strength decreasing with distance from the capital"]
 	}
 ]

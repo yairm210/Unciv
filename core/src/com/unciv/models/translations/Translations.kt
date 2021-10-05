@@ -212,7 +212,8 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals   
-        const val englishConditionalOrderingString = "<if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy>"
+        const val englishConditionalOrderingString = 
+            "<for [mapUnitFilter] units> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
     }

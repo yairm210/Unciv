@@ -27,7 +27,7 @@ import kotlin.math.min
 class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
     private val allTiles = Group()
     private val tileImages = HashMap<TileInfo, Image>()
-    private val scrollPositionIndicator = ClippingImage(ImageGetter.getDrawable("OtherIcons/Camera"))
+    private val scrollPositionIndicators = ArrayList<ClippingImage>()
 
     init {
         isTransform = false // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
@@ -81,8 +81,17 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
         // so we zero out the starting position of the whole board so they will be displayed as well
         allTiles.setSize(topX - bottomX, topY - bottomY)
 
-        scrollPositionIndicator.touchable = Touchable.disabled
-        allTiles.addActor(scrollPositionIndicator)
+        scrollPositionIndicators.add(ClippingImage(ImageGetter.getDrawable("OtherIcons/Camera")))
+        // If we are continuous scrolling (world wrap), add another 2 scrollPositionIndicators which
+        // get drawn at proper offsets to simulate looping
+        if (mapHolder.continuousScrollingX) {
+          scrollPositionIndicators.add(ClippingImage(ImageGetter.getDrawable("OtherIcons/Camera")))
+          scrollPositionIndicators.add(ClippingImage(ImageGetter.getDrawable("OtherIcons/Camera")))
+        }
+        for (indicator in scrollPositionIndicators) {
+          indicator.touchable = Touchable.disabled
+          allTiles.addActor(indicator)
+        }
 
         add(allTiles)
         layout()
@@ -111,7 +120,15 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
         val worldViewport = Vector2(mapHolder.scrollX, mapHolder.scrollY).centeredRectangle(worldVisibleArea)
         val miniViewport = worldViewport.invertY(mapHolder.maxY) * worldToMiniFactor
         // This _could_ place parts of the 'camera' icon outside the minimap if it were a standard Image, thus the ClippingImage helper class
-        scrollPositionIndicator.setViewport(miniViewport)
+        scrollPositionIndicators[0].setViewport(miniViewport)
+        
+        // If world wrap enabled, draw another 2 viewports at proper offset to simulate wrapping
+        if (scrollPositionIndicators.size != 1) {
+          miniViewport.x -= allTiles.width
+          scrollPositionIndicators[1].setViewport(miniViewport)
+          miniViewport.x += allTiles.width * 2
+          scrollPositionIndicators[2].setViewport(miniViewport)
+        }
     }
 
     private class CivAndImage(val civInfo: CivilizationInfo, val image: IconCircleGroup)
