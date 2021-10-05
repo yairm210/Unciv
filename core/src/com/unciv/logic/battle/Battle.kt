@@ -479,12 +479,12 @@ object Battle {
         val capturedUnitTile = capturedUnit.getTile()
 
         when {
-            // Uncapturable units are destroyed (units captured by barbarians also - for now)
-            defender.unit.hasUnique("Uncapturable") || attacker.getCivInfo().isBarbarian() -> {
+            // Uncapturable units are destroyed
+            defender.unit.hasUnique("Uncapturable") -> {
                 capturedUnit.destroy()
             }
-            // Captured settlers are converted to workers.
-            capturedUnit.name == Constants.settler -> {
+            // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
+            capturedUnit.name == Constants.settler && !attacker.getCivInfo().isBarbarian() -> {
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile

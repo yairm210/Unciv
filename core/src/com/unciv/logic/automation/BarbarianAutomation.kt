@@ -15,6 +15,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
 
     private fun automateUnit(unit: MapUnit) {
         if (unit.currentTile.improvement == Constants.barbarianEncampment) automateUnitOnEncampment(unit)
+        else if (unit.isCivilian()) automateCapturedCivilian(unit)
         else automateCombatUnit(unit)
     }
 
@@ -27,6 +28,17 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
 
         // 3 - at least fortifying
         unit.fortifyIfCan()
+    }
+
+    private fun automateCapturedCivilian(unit: MapUnit) {
+        val gameInfo = unit.civInfo.gameInfo
+        val campTiles = gameInfo.barbarians.camps.map { gameInfo.tileMap[it.key] }
+            .sortedBy { unit.currentTile.aerialDistanceTo(it) }
+        val bestCamp = campTiles.firstOrNull { it.civilianUnit == null && unit.movement.canReach(it)}
+        if (bestCamp != null)
+            unit.movement.headTowards(bestCamp) // 1 - Head towards an encampment
+        else
+            UnitAutomation.wander(unit) // 2 - Can't find a reachable encampment, wander aimlessly
     }
 
     private fun automateCombatUnit(unit: MapUnit) {
