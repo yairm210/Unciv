@@ -184,6 +184,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
         // different stacking order of the same nations in the same editing session
         val nations = tileInfo.tileMap.startingLocationsByNation.asSequence()
             .filter { tileInfo in it.value }
+            .filter { it.key in tileInfo.tileMap.ruleset!!.nations } // Ignore missing nations
             .map { it.key to tileInfo.tileMap.ruleset!!.nations[it.key]!! }
             .sortedWith(compareBy({ it.second.isCityState() }, { it.first }))
             .toList()

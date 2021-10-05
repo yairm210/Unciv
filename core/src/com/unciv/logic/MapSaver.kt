@@ -33,6 +33,7 @@ object MapSaver {
         }
     }
     fun mapToSavedString(tileMap: TileMap): String {
+        tileMap.assignContinents(TileMap.AssignContinentsMode.Reassign)
         val mapJson = json().toJson(tileMap)
         return if (saveZipped) Gzip.zip(mapJson) else mapJson
     }

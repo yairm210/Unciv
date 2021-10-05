@@ -804,5 +804,8 @@ open class TileInfo {
         this.continent = continent
     }
 
+    /** Clear continent ID, for map editor */
+    fun clearContinent() { continent = -1 }
+
     //endregion
 }

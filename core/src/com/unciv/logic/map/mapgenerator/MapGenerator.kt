@@ -74,7 +74,7 @@ class MapGenerator(val ruleset: Ruleset) {
             spawnIce(map)
         }
         runAndMeasure("assignContinents") {
-            map.assignContinents()
+            map.assignContinents(TileMap.AssignContinentsMode.Assign)
         }
         runAndMeasure("NaturalWonderGenerator") {
             NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
