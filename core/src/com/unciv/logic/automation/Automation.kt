@@ -13,6 +13,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.victoryscreen.RankingType
 import kotlin.math.max
 import kotlin.math.sqrt
+import kotlin.system.measureNanoTime
 
 object Automation {
 
@@ -62,16 +63,11 @@ object Automation {
     fun chooseMilitaryUnit(city: CityInfo): String? {
         var militaryUnits =
             city.cityConstructions.getConstructableUnits().filter { !it.isCivilian() }
+                .filter { allowSpendingResource(city.civInfo, it) }
         if (militaryUnits.map { it.name }
                 .contains(city.cityConstructions.currentConstructionFromQueue))
             return city.cityConstructions.currentConstructionFromQueue
 
-        // This is so that the AI doesn't use all its aluminum on units and have none left for spaceship parts
-        /*val aluminum = city.civInfo.getCivResourcesByName()["Aluminum"]
-        if (aluminum != null && aluminum < 2) // mods may have no aluminum
-            militaryUnits.filter { !it.getResourceRequirements().containsKey("Aluminum") }*/
-
-        militaryUnits.filter { allowSpendingResource(city.civInfo, it) }
 
         val findWaterConnectedCitiesAndEnemies =
             BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
@@ -104,6 +100,7 @@ object Automation {
         return chosenUnit.name
     }
 
+
     /** Determines whether the AI should be willing to spend strategic resources to build
      *  [construction] in [city], assumes that we are actually able to do so. */
     fun allowSpendingResource(civInfo: CivilizationInfo, construction: INonPerpetualConstruction): Boolean {
@@ -115,7 +112,6 @@ object Automation {
         if (construction.hasUnique("Spaceship part"))
             return true
 
-        val ruleSet = civInfo.gameInfo.ruleSet
         val requiredResources = construction.getResourceRequirements()
         // Does it even require any resources?
         if (requiredResources.isEmpty())
@@ -124,13 +120,9 @@ object Automation {
         val civResources = civInfo.getCivResourcesByName()
         val spaceRequired = if (civInfo.nation.preferredVictoryType == VictoryType.Scientific) 3 else 2
 
-        val spaceshipResources = ruleSet.buildings.values.filter { it.hasUnique("Spaceship part") }
-            .flatMap { it.getResourceRequirements().keys }.toSet()
-
         // Rule of thumb: reserve 2-3 for spaceship, then reserve half each for buildings and units
         // Assume that no buildings provide any resources
         for ((resource, amount) in requiredResources) {
-            println("${civInfo.civName}: Can we use $amount $resource to build ${construction.name}?")
 
             // Also count things under construction
             var futureForUnits = 0
@@ -145,19 +137,18 @@ object Automation {
             }
 
             // Make sure we have some for space
-            if (resource in spaceshipResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits < spaceRequired) {
-                println("no, we need it for space")
+            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits < spaceRequired) {
                 return false
             }
 
-            val neededForBuilding = ruleSet.buildings.values.any { resource in it.getResourceRequirements().keys }
-            // Don't care about obsolete units
-            val neededForUnits = ruleSet.units.values.any { (it.obsoleteTech == null || !civInfo.tech.isResearched(it.obsoleteTech!!))
-                    && resource in it.getResourceRequirements().keys }
+            // Assume buildings remain useful
+            val neededForBuilding = civInfo.lastEraResourceUsedForBuilding[resource] != null
+            // Don't care about old units
+            val neededForUnits = civInfo.lastEraResourceUsedForUnit[resource] != null
+                    && civInfo.lastEraResourceUsedForUnit[resource]!! >= civInfo.getEraNumber()
 
-            // No need to save for one or the other
+            // No need to save for both
             if (!neededForBuilding || !neededForUnits) {
-                println("yeah, it's not needed for anything else currently")
                 continue
             }
 
@@ -167,18 +158,15 @@ object Automation {
             if (construction is Building) {
                 // Will more than half the total resources be used for buildings after this construction?
                 if (civResources[resource]!! + usedForUnits < usedForBuildings + amount + futureForBuildings) {
-                    println("No, let's save half for units")
                     return false
                 }
             } else {
                 // Will more than half the total resources be used for units after this construction?
                 if (civResources[resource]!! + usedForBuildings < usedForUnits + amount + futureForUnits) {
-                    println("No, let's save half for buildings")
                     return false
                 }
             }
         }
-        println("...sure")
         return true
     }
 

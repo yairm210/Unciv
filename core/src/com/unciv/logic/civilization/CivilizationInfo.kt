@@ -106,6 +106,12 @@ class CivilizationInfo {
     @Transient
     var nonStandardTerrainDamage = false
 
+    @Transient
+    var lastEraResourceUsedForBuilding = HashMap<String, Int>()
+
+    @Transient
+    val lastEraResourceUsedForUnit = HashMap<String, Int>()
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -681,6 +687,20 @@ class CivilizationInfo {
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.
         nonStandardTerrainDamage = getMatchingUniques("Units ending their turn on [] tiles take [] damage")
             .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
+
+        // Cache the last era each resource is used for buildings or units respectively for AI building evaluation
+        for (resource in gameInfo.ruleSet.tileResources.values.filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
+            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { getEquivalentBuilding(it) == it && it.getResourceRequirements().containsKey(resource) }.toMutableList()
+            val applicableUnits = gameInfo.ruleSet.units.values.filter { getEquivalentUnit(it) == it && it.getResourceRequirements().containsKey(resource) }.toMutableList()
+
+            val lastEraForBuilding = applicableBuildings.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
+            val lastEraForUnit = applicableUnits.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
+
+            if (lastEraForBuilding != null)
+                lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
+            if (lastEraForUnit != null)
+                lastEraResourceUsedForUnit[resource] = lastEraForUnit
+        }
     }
 
     fun updateSightAndResources() {

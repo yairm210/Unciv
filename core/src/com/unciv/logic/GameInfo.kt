@@ -70,6 +70,9 @@ class GameInfo {
     @Transient
     var simulateUntilWin = false
 
+    @Transient
+    var spaceResources = HashSet<String>()
+
     //endregion
     //region Pure functions
 
@@ -374,6 +377,9 @@ class GameInfo {
                 civInfo.hasEverOwnedOriginalCapital = civInfo.cities.any { it.isOriginalCapital }
             }
         }
+
+        spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique("Spaceship part") }
+            .flatMap { it.getResourceRequirements().keys } )
     }
 
     //endregion
