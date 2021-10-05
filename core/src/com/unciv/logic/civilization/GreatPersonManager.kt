@@ -1,9 +1,11 @@
 package com.unciv.logic.civilization
 
 import com.unciv.models.Counter
-import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import java.util.HashSet
+
+// todo: Great Admiral?
+// todo: Free GP from policies and wonders should increase threshold according to the wiki
+// todo: GP from Maya long count should increase threshold as well - implement together
 
 class GreatPersonManager {
     var pointsForNextGreatPerson = 100
