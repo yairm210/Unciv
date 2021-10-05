@@ -3,8 +3,10 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Vector2
 import com.unciv.models.stats.Stat
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
+import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.worldscreen.WorldScreen
 
 object NotificationIcon {
@@ -83,10 +85,18 @@ data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
     }
 }
 
+/** enter diplomacy screen */
 data class DiplomacyAction(val otherCivName: String = ""): NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val screen = DiplomacyScreen(worldScreen.viewingCiv)
         screen.updateRightSide(worldScreen.gameInfo.getCivilization(otherCivName))
         worldScreen.game.setScreen(screen)
+    }
+}
+
+/** enter Maya Long Count popup */
+class MayaLongCountAction() : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        MayaCalendar.openPopup(worldScreen, worldScreen.selectedCiv, worldScreen.gameInfo.getYear())
     }
 }

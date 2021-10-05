@@ -125,7 +125,7 @@ object UniqueTriggerActivation {
                     civInfo.greatPeople.freeGreatPeople++
                     if (unique.type == MayanGainGreatPerson) {
                         civInfo.greatPeople.mayaLimitedFreeGP++
-                        civInfo.addNotification(notification!!, MayaCalendar.notificationIcon) // Anyone an idea for a good icon?
+                        civInfo.addNotification(notification!!, MayaLongCountAction(), MayaCalendar.notificationIcon)
                     } else {
                         if (notification != null)
                             civInfo.addNotification(notification) // Anyone an idea for a good icon?
