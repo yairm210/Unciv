@@ -690,8 +690,8 @@ class CivilizationInfo {
 
         // Cache the last era each resource is used for buildings or units respectively for AI building evaluation
         for (resource in gameInfo.ruleSet.tileResources.values.filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
-            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { getEquivalentBuilding(it) == it && it.getResourceRequirements().containsKey(resource) }.toMutableList()
-            val applicableUnits = gameInfo.ruleSet.units.values.filter { getEquivalentUnit(it) == it && it.getResourceRequirements().containsKey(resource) }.toMutableList()
+            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { getEquivalentBuilding(it) == it && it.requiresResource(resource) }
+            val applicableUnits = gameInfo.ruleSet.units.values.filter { getEquivalentUnit(it) == it && it.requiresResource(resource) }
 
             val lastEraForBuilding = applicableBuildings.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
             val lastEraForUnit = applicableUnits.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
