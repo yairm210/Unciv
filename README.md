@@ -29,9 +29,9 @@ Is this order:
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
     * UI+UX improvements (suggestions welcome!)
     * Better automation, AI etc. in-game
-* Missing features from Vanilla - Natural wonders , city-state quests, missing civs etc. - mostly done!
-* G&K mechanics - religion, faith etc.
-* BNW mechanics - trade routes etc.
+* Finishing off Vanilla mechanics - Time Victory, Air sweep action - mostly done!
+* G&K mechanics - espionage, the Maya's, etc.
+* BNW mechanics - trade routes, world congress, etc.
 
 # Contributing
 
