@@ -118,7 +118,6 @@ object Automation {
             return true
 
         val civResources = civInfo.getCivResourcesByName()
-        val spaceRequired = if (civInfo.nation.preferredVictoryType == VictoryType.Scientific) 3 else 2
 
         // Rule of thumb: reserve 2-3 for spaceship, then reserve half each for buildings and units
         // Assume that no buildings provide any resources
@@ -137,7 +136,8 @@ object Automation {
             }
 
             // Make sure we have some for space
-            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits < spaceRequired) {
+            if (resource in civInfo.gameInfo.spaceResources && civResources[resource]!! - amount - futureForBuildings - futureForUnits
+                < getReservedSpaceResourceAmount(civInfo)) {
                 return false
             }
 
@@ -168,6 +168,10 @@ object Automation {
             }
         }
         return true
+    }
+
+    fun getReservedSpaceResourceAmount(civInfo: CivilizationInfo): Int {
+        return if (civInfo.nation.preferredVictoryType == VictoryType.Scientific) 3 else 2
     }
 
     fun threatAssessment(assessor: CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {
