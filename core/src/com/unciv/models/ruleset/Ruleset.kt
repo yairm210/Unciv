@@ -312,7 +312,7 @@ class Ruleset {
             if (deprecationAnnotation != null) {
                 val deprecationText =
                     "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                            " replace with \"${deprecationAnnotation.replaceWith.expression}\""
+                            if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${deprecationAnnotation.replaceWith.expression}\"" else ""
                 val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
                     RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
                 else RulesetErrorSeverity.Warning // User visible

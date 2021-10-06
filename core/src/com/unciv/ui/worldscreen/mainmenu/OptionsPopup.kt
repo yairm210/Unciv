@@ -277,28 +277,39 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
             var noProblem = true
             for (mod in RulesetCache.values.sortedBy { it.name }) {
                 // Appending {} is a dirty trick to deactivate the automatic translation which would drop [] from unique messages
-                lines += FormattedLine("$mod{}", starred = true, header = 3)
+                lines += FormattedLine("$mod", starred = true, header = 3)
 
                 val modLinks =
                     if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
                     else mod.checkModLinks()
                 for (error in modLinks.sortedByDescending { it.errorSeverityToReport }) {
                     val color = when (error.errorSeverityToReport) {
-                        Ruleset.RulesetErrorSeverity.OK -> "#0F0"
+                        Ruleset.RulesetErrorSeverity.OK -> "#00FF00"
                         Ruleset.RulesetErrorSeverity.Warning,
-                        Ruleset.RulesetErrorSeverity.WarningOptionsOnly -> "#FF0"
-                        Ruleset.RulesetErrorSeverity.Error -> "#F00"
+                        Ruleset.RulesetErrorSeverity.WarningOptionsOnly -> "#FFFF00"
+                        Ruleset.RulesetErrorSeverity.Error -> "#FF0000"
                     }
                     lines += FormattedLine(error.text, color = color)
                 }
                 if (modLinks.isNotOK()) noProblem = false
                 lines += FormattedLine()
             }
-            if (noProblem) lines += FormattedLine("{No problems found}.")
+            if (noProblem) lines += FormattedLine("{No problems found}.",)
 
             Gdx.app.postRunnable {
-                val result = SimpleCivilopediaText(lines).renderCivilopediaText(tabs.prefWidth - 25f)
-                modCheckResultCell?.setActor(result)
+                // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
+                // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
+                // Instead, some manual work needs to be put in.
+                val resultTable = Table().apply { defaults().align(Align.left) }
+                for (line in lines) {
+                    val label = if (line.starred) Label(line.text+"\n", CameraStageBaseScreen.skin)
+                        .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
+                    else Label(line.text+"\n", CameraStageBaseScreen.skin)
+                        .apply { if (line.color != "") color = Color.valueOf(line.color) }
+                    label.wrap = true
+                    resultTable.add(label).width(stage.width/2).row()
+                }
+                modCheckResultCell?.setActor(resultTable)
                 modCheckCheckBox!!.enable()
             }
         }
