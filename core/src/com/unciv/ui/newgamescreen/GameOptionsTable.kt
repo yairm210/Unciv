@@ -103,9 +103,6 @@ class GameOptionsTable(
         addCheckbox("Enable Religion", gameParameters.religionEnabled) {
             gameParameters.religionEnabled = it
             cityStateSlider?.run { setRange(0f, numberOfCityStates().toFloat()) }
-            with(cityStateSlider) {
-                
-            }
         }
 
     private fun Table.addCityStatesSlider(): UncivSlider? {
