@@ -1034,6 +1034,7 @@ class MapUnit {
         if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
             return filter.removePrefix("{").removeSuffix("}").split("} {")
                 .all { matchesFilter(it) }
+        
         return when (filter) {
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"

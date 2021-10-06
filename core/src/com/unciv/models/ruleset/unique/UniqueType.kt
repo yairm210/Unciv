@@ -98,10 +98,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.WARNING)
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UniqueTarget.Global),
 
-    ConsumesResources("Consumes [amount] [resource]",
-        UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
-    ProvidesResources("Provides [amount] [resource]",
-            UniqueTarget.Improvement, UniqueTarget.Building),
+    ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
+    ProvidesResources("Provides [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building),
 
     GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter]"), DeprecationLevel.WARNING)
@@ -115,6 +113,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
+    
+    BuyUnitsByProductionCost("May buy [mapUnitFilter] units with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
 
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
@@ -189,7 +189,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
 
-    //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
+    ///////////////////////////////////////// TILE UNIQUES /////////////////////////////////////////
 
 
     NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain),
@@ -218,6 +218,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
+    
+    ConditionalDuringEra("during the [era]", UniqueTarget.Conditional),
+    ConditionalBeforeEra("before the [era]", UniqueTarget.Conditional),
+    ConditionalStartingFromEra("starting from the [era]", UniqueTarget.Conditional),
 
     // city conditionals
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
@@ -238,6 +242,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     ///////////////////////////////////////// TRIGGERED ONE-TIME /////////////////////////////////////////
 
+    
     OneTimeFreeUnit("Free [baseUnitFilter] appears", UniqueTarget.Global),  // used in Policies, Buildings
     OneTimeAmountFreeUnits("[amount] free [baseUnitFilter] units appear", UniqueTarget.Global), // used in Buildings
     OneTimeFreeUnitRuins("Free [baseUnitFilter] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city

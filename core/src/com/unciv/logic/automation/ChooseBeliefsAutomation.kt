@@ -150,6 +150,8 @@ object ChooseBeliefsAutomation {
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
                     else civInfo.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
+                "May buy [] units with [] for [] times their normal Production cost" ->
+                    15f * if (civInfo.victoryType() == VictoryType.Domination) 2f else 1f
                 "when a city adopts this religion for the first time (modified by game speed)" -> // Modified by personality
                     unique.stats.values.sum() * 10f
                 "When spreading religion to a city, gain [] times the amount of followers of other religions as []" ->
@@ -160,7 +162,7 @@ object ChooseBeliefsAutomation {
                     unique.params[0].toInt() / 7f
                 "[] for each global city following this religion" ->
                     50f / unique.stats.values.sum()
-                "whenever a Great Person is expended" ->
+                "[] whenever a Great Person is expended" ->
                     unique.stats.values.sum() / 2f
                 "[]% Natural religion spread to []" ->
                     unique.params[0].toFloat() / 4f
