@@ -10,6 +10,8 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaCategories
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
@@ -193,7 +195,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
         val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)
         selectedCivIconHolder.actor = selectedCivIcon
-        selectedCivIconHolder.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+        selectedCivLabel.onClick { worldScreen.game.setScreen(CivilopediaScreen( worldScreen.selectedCiv.gameInfo.ruleSet, CivilopediaCategories.Nation, worldScreen.selectedCiv.civName)) }
 
         selectedCivTable.add(selectedCivLabel).padRight(10f)
         selectedCivTable.add(selectedCivIconHolder)
