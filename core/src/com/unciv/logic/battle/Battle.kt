@@ -82,8 +82,17 @@ object Battle {
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities"))
-            conquerCity(defender.city, attacker)
+                && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities")) {
+            // Barbarians can't capture cities
+            if (attacker.unit.civInfo.isBarbarian()) {
+                defender.takeDamage(-1) // Back to 2 HP
+                val ransom = min(200, defender.city.civInfo.gold)
+                defender.city.civInfo.addGold(-ransom)
+                defender.city.civInfo.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationIcon.War)
+                attacker.unit.destroy() // Remove the barbarian
+            } else
+                conquerCity(defender.city, attacker)
+        }
 
         // Exploring units surviving an attack should "wake up"
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
@@ -270,6 +279,8 @@ object Battle {
                     NotificationIcon.War to " was destroyed while attacking"
                 !defender.isDefeated() ->
                     NotificationIcon.War to " has attacked"
+                defender.isCity() && attacker.isMelee() && attacker.getCivInfo().isBarbarian() ->
+                    NotificationIcon.War to " has raided"
                 defender.isCity() && attacker.isMelee() ->
                     NotificationIcon.War to " has captured"
                 else ->
@@ -468,12 +479,12 @@ object Battle {
         val capturedUnitTile = capturedUnit.getTile()
 
         when {
-            // Uncapturable units are destroyed (units captured by barbarians also - for now)
-            defender.unit.hasUnique("Uncapturable") || attacker.getCivInfo().isBarbarian() -> {
+            // Uncapturable units are destroyed
+            defender.unit.hasUnique("Uncapturable") -> {
                 capturedUnit.destroy()
             }
-            // Captured settlers are converted to workers.
-            capturedUnit.name == Constants.settler -> {
+            // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
+            capturedUnit.name == Constants.settler && !attacker.getCivInfo().isBarbarian() -> {
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
