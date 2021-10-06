@@ -344,7 +344,7 @@ class MapUnit {
         
         visibilityRange += getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
             .sumOf { it.params[0].toInt() }
-        
+
         // Deprecated since 3.17.5
             for (unique in getMatchingUniques(UniqueType.SightUnits))
                 if (matchesFilter(unique.params[1]))

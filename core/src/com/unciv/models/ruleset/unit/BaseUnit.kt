@@ -343,7 +343,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
-        
+
         return (cost / 10f).toInt() * 10
     }
 
