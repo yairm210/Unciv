@@ -75,7 +75,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         // Great Prophets can't be gotten from CS
         val giftableUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.isGreatPerson()
-                && !it.hasUnique("May found a religion") }
+                && !it.hasUnique(UniqueType.MayFoundReligion) }
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
         val giftedUnit = giftableUnits.random()

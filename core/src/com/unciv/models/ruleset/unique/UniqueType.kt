@@ -161,6 +161,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global),
     SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
+    MayFoundReligion("May found a religion", UniqueTarget.Unit),
+    MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
 
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     MovementUnits("+[amount] Movement for all [mapUnitFilter] units", UniqueTarget.Global),

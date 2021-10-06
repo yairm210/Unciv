@@ -481,7 +481,7 @@ object UnitActions {
     }
 
     private fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique("May found a religion")) return 
+        if (!unit.hasUnique(UniqueType.MayFoundReligion)) return
         if (!unit.civInfo.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.FoundReligion,
             action = getFoundReligionAction(unit).takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
@@ -497,7 +497,7 @@ object UnitActions {
     }
 
     private fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique("May enhance a religion")) return
+        if (!unit.hasUnique(UniqueType.MayEnhanceReligion)) return
         if (!unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.EnhanceReligion,
             title = "Enhance [${unit.civInfo.religionManager.religion!!.getReligionDisplayName()}]",
