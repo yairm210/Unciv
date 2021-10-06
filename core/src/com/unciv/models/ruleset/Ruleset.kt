@@ -579,12 +579,13 @@ class Ruleset {
             checkUniques(reward, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
         for (promotion in unitPromotions.values) {
+            // These are warning as of 3.17.5 to not break existing mods and give them time to correct, should be upgraded to error in the future
             for (prereq in promotion.prerequisites)
                 if (!unitPromotions.containsKey(prereq))
-                    lines += "${promotion.name} requires promotion $prereq which does not exist!"
+                    lines.add("${promotion.name} requires promotion $prereq which does not exist!", RulesetErrorSeverity.Warning)
             for (unitType in promotion.unitTypes)
                 if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unitType)))
-                    lines += "${promotion.name} references unit type ${unitType}, which does not exist!"
+                    lines.add("${promotion.name} references unit type ${unitType}, which does not exist!", RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
         for (unitType in unitTypes.values) {
