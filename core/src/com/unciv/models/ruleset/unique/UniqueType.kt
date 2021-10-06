@@ -114,7 +114,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     
-    BuyUnitsByProductionCost("May buy [mapUnitFilter] units with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
+    BuyUnitsByProductionCost("May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
 
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
