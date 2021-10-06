@@ -77,6 +77,9 @@ class GameInfo {
     @Transient
     var simulateUntilWin = false
 
+    @Transient
+    var spaceResources = HashSet<String>()
+
     //endregion
     //region Pure functions
 
@@ -312,6 +315,9 @@ class GameInfo {
             }
         }
 
+        spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique("Spaceship part") }
+            .flatMap { it.getResourceRequirements().keys } )
+        
         barbarians.setTransients(this)
     }
 

@@ -523,6 +523,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     /** A city state was attacked. What are its protectors going to do about it??? Also checks for Wary */
     fun cityStateAttacked(attacker: CivilizationInfo) {
         if (!civInfo.isCityState()) return // What are we doing here?
+        if (attacker.isCityState()) return // City states can't be upset with each other
 
         // We might become wary!
         if (attacker.isMinorCivWarmonger()) { // They've attacked a lot of city-states

@@ -136,6 +136,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             
             faithLabel.onClick(invokeFaithOverview)
             faithImage.onClick(invokeFaithOverview)
+        } else {
+            statsTable.add("Religion: Off".toLabel()).padLeft(20f)
         }
 
         statsTable.pack()

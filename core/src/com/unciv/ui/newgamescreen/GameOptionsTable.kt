@@ -150,8 +150,7 @@ class GameOptionsTable(
 
     private fun Table.addEraSelectBox() {
         if (ruleset.technologies.isEmpty()) return // mod with no techs
-        // Should eventually be changed to use eras.json, but we'll keep it like this for now for mod compatibility
-        val eras = ruleset.technologies.values.filter { !it.uniques.contains("Starting tech") }.map { it.era() }.distinct()
+        val eras = ruleset.eras.keys
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it }
     }
