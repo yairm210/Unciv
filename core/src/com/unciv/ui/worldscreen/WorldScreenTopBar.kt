@@ -7,9 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.GameSpeed
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaCategories
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
@@ -190,7 +193,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         selectedCivTable.x = getMenuButton().width + 20f
 
         selectedCivLabel.setFontSize(25)
-        selectedCivLabel.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+        selectedCivLabel.onClick { worldScreen.game.setScreen(CivilopediaScreen( worldScreen.selectedCiv.gameInfo.ruleSet, CivilopediaCategories.Nation, worldScreen.selectedCiv.civName)) }
 
         val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
         val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)
