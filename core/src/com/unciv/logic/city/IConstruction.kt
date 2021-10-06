@@ -13,6 +13,7 @@ interface IConstruction : INamed {
     fun isBuildable(cityConstructions: CityConstructions): Boolean
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
     fun getResourceRequirements(): HashMap<String,Int>
+    fun requiresResource(resource: String): Boolean
 }
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
@@ -207,5 +208,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
             throw Exception("Impossible!")
 
     override fun getResourceRequirements(): HashMap<String, Int> = hashMapOf()
+
+    override fun requiresResource(resource: String) = false
 
 }
