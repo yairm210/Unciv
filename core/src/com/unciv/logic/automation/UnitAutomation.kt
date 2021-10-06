@@ -101,7 +101,7 @@ object UnitAutomation {
         if (unit.isCivilian()) {
             if (tryRunAwayIfNeccessary(unit)) return
             
-            if (unit.hasUnique(Constants.settlerUnique))
+            if (unit.hasUnique(UniqueType.FoundCity))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
             if (unit.hasUniqueToBuildImprovements)
@@ -119,7 +119,7 @@ object UnitAutomation {
             )
                 return SpecificUnitAutomation.enhanceReligion(unit)
 
-            if (unit.hasUnique(Constants.workBoatsUnique))
+            if (unit.hasUnique(UniqueType.CreateWaterImprovements))
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
             if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
@@ -311,7 +311,7 @@ object UnitAutomation {
             .firstOrNull {
                 val tile = it.currentTile
                 it.isCivilian() &&
-                        (it.hasUnique(Constants.settlerUnique) || unit.isGreatPerson())
+                        (it.hasUnique(UniqueType.FoundCity) || unit.isGreatPerson())
                         && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
             } ?: return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)

@@ -72,9 +72,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         // And so, sequences to the rescue!
         val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles() }
         newViewableTiles.addAll(ownedTiles)
-        val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.filter { it.getOwner() != civInfo } }
+        val neighboringUnownedTiles = ownedTiles.flatMap { tile -> tile.neighbors.filter { it.getOwner() != civInfo } }
         newViewableTiles.addAll(neighboringUnownedTiles)
-        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { it.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
+        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { unit -> unit.viewableTiles.asSequence().filter { it.getOwner() != civInfo } })
 
         if (!civInfo.isCityState()) {
             for (otherCiv in civInfo.getKnownCivs()) {
@@ -110,9 +110,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             }
 
             if (civInfo.hasUnique("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)")) {
-                if (!discoveredNaturalWonders.contains(tile.naturalWonder!!))
-                    goldGained += 500
-                else goldGained += 100
+                goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) 100 else 500
             }
 
             if (goldGained > 0) {
