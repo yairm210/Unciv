@@ -114,6 +114,9 @@ class MapUnit {
     /** civName owning the unit */
     lateinit var owner: String
 
+    /** civName of original owner - relevant for returning captured workers from barbarians */
+    lateinit var originalOwner: String
+
     /**
      * Name key of the unit, used for serialization
      */
@@ -169,6 +172,7 @@ class MapUnit {
         toReturn.name = name
         toReturn.civInfo = civInfo
         toReturn.owner = owner
+        toReturn.originalOwner = originalOwner
         toReturn.instanceName = instanceName
         toReturn.currentMovement = currentMovement
         toReturn.health = health
@@ -913,6 +917,17 @@ class MapUnit {
         owner = civInfo.civName
         this.civInfo = civInfo
         civInfo.addUnit(this, updateCivInfo)
+    }
+
+    fun capturedBy(captor: CivilizationInfo) {
+        civInfo.removeUnit(this)
+        assignOwner(captor)
+        currentMovement = 0f
+        // It's possible that the unit can no longer stand on the tile it was captured on.
+        // For example, because it's embarked and the capturing civ cannot embark units yet.
+        if (!movement.canPassThrough(getTile())) {
+            movement.teleportToClosestMoveableTile()
+        }
     }
 
     fun canIntercept(attackedTile: TileInfo): Boolean {

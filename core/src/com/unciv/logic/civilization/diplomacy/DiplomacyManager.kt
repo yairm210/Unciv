@@ -81,6 +81,7 @@ enum class DiplomaticModifiers {
     AttackedProtectedMinor,
     BulliedProtectedMinor,
     SidedWithProtectedMinor,
+    ReturnedCapturedUnits,
 }
 
 class DiplomacyManager() {

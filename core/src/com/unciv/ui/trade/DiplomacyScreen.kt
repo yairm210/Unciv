@@ -759,6 +759,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
                 AttackedProtectedMinor -> "You attacked City States that were under our protection!"
                 BulliedProtectedMinor -> "You demanded tribute from City States that were under our protection!"
                 SidedWithProtectedMinor -> "You sided with a City State over us"
+                ReturnedCapturedUnits -> "You returned captured units to us"
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"

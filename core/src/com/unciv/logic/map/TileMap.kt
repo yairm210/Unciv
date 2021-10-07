@@ -410,6 +410,8 @@ class TileMap {
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
+        // remember our first owner
+        unit.originalOwner = civInfo.civName
 
         var unitToPlaceTile: TileInfo? = null
         // try to place at the original point (this is the most probable scenario)
