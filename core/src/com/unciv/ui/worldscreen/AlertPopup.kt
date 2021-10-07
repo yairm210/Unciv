@@ -334,7 +334,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addSeparator()
                 addGoodSizedLabel("The [${capturedUnit.name}] we liberated originally belonged to [${originalOwner.civName}]. They will be grateful if we return it to them.").row()
                 val responseTable = Table()
-                responseTable.defaults().pad(0f, 5f)
+                responseTable.defaults().pad(0f, 30f) // Small buttons, plenty of pad so we don't fat-finger it
                 responseTable.add(getCloseButton("Yes", 'y') {
                     // Return it to original owner
                     val unitName = capturedUnit.baseUnit.name
