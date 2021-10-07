@@ -277,7 +277,7 @@ class MapUnit {
         cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean)
         cannotEnterOceanTilesUntilAstronomy = hasUnique(UniqueType.CannotEnterOceanUntilAstronomy)
 
-        hasUniqueToBuildImprovements = hasUnique(Constants.canBuildImprovements)
+        hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
         canEnterForeignTerrain =
             hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
                     || hasUnique("May enter foreign tiles without open borders")
@@ -1051,7 +1051,7 @@ class MapUnit {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
-        val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
+        val matchingUniques = getMatchingUniques(UniqueType.BuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 

@@ -72,6 +72,12 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
 
+    StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.16", ReplaceWith("[stats] from every specialist [in all cities]"), DeprecationLevel.WARNING)
+    StatsFromSpecialistDeprecated("[stats] from every specialist", UniqueTarget.Global),
+
+    StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global),
+
     /////// City-State related uniques
 
     // I don't like the fact that currently "city state bonuses" are separate from the "global bonuses",
@@ -121,7 +127,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
-
+    FoundCity("Founds a new city", UniqueTarget.Unit),
+    BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
+    CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
+    
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit),
 
@@ -129,9 +138,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     StrengthPlus("+[amount]% Strength", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
     StrengthMin("-[amount]% Strength", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"), DeprecationLevel.WARNING)
     StrengthPlusVs("+[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units> OR [amount]% Strength <vs cities>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"), DeprecationLevel.WARNING)
     StrengthMinVs("-[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
     CombatBonus("+[amount]% Combat Strength", UniqueTarget.Unit),
@@ -158,6 +167,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global),
     SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
+    MayFoundReligion("May found a religion", UniqueTarget.Unit),
+    MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
 
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     MovementUnits("+[amount] Movement for all [mapUnitFilter] units", UniqueTarget.Global),

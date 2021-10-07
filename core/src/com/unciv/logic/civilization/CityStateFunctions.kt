@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.unciv.Constants
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
@@ -23,7 +22,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     /** Attempts to initialize the city state, returning true if successful. */
     fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>): Boolean {
         val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
-        if (cityStateType == null)  return false
+            ?: return false
 
         val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
         for (tech in startingTechs)
@@ -73,14 +72,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
     /** Gain a random great person from the city state */
     fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
 
-        var giftableUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.isGreatPerson() }
-        if (!civInfo.gameInfo.isReligionEnabled()) giftableUnits = giftableUnits
-            .filterNot { it.uniques.contains("Hidden when religion is disabled")}
+        // Great Prophets can't be gotten from CS
+        val giftableUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.isGreatPerson()
+                && !it.hasUnique(UniqueType.MayFoundReligion) }
         if (giftableUnits.isEmpty()) // For badly defined mods that don't have great people but do have the policy that makes city states grant them
             return
         val giftedUnit = giftableUnits.random()
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
-        val placedUnit = receivingCiv.addUnit(giftedUnit.name, cities.city1)
+        val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
         val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
@@ -406,9 +405,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!civInfo.isCityState()) throw Exception("You can only demand workers from City-States!")
 
         val buildableWorkerLikeUnits = civInfo.gameInfo.ruleSet.units.filter {
-            it.value.uniqueObjects.any { unique -> unique.placeholderText == Constants.canBuildImprovements }
-                    && it.value.isCivilian()
-                    && it.value.isBuildable(civInfo)
+            it.value.hasUnique(UniqueType.BuildImprovements) &&
+                it.value.isCivilian() && it.value.isBuildable(civInfo)
         }
         if (buildableWorkerLikeUnits.isEmpty()) return  // Bad luck?
         demandingCiv.placeUnitNearTile(civInfo.getCapital().location, buildableWorkerLikeUnits.keys.random())

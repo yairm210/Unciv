@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 object UnitAutomation {
@@ -100,25 +101,25 @@ object UnitAutomation {
         if (unit.isCivilian()) {
             if (tryRunAwayIfNeccessary(unit)) return
             
-            if (unit.hasUnique(Constants.settlerUnique))
+            if (unit.hasUnique(UniqueType.FoundCity))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
             if (unit.hasUniqueToBuildImprovements)
                 return WorkerAutomation.automateWorkerAction(unit)
 
-            if (unit.hasUnique("May found a religion")
+            if (unit.hasUnique(UniqueType.MayFoundReligion)
                 && unit.civInfo.religionManager.religionState < ReligionState.Religion
                 && unit.civInfo.religionManager.mayFoundReligionAtAll(unit)
             )
                 return SpecificUnitAutomation.foundReligion(unit)
 
-            if (unit.hasUnique("May enhance a religion")
+            if (unit.hasUnique(UniqueType.MayEnhanceReligion)
                 && unit.civInfo.religionManager.religionState < ReligionState.EnhancedReligion
                 && unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)
             )
                 return SpecificUnitAutomation.enhanceReligion(unit)
 
-            if (unit.hasUnique(Constants.workBoatsUnique))
+            if (unit.hasUnique(UniqueType.CreateWaterImprovements))
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
             if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
@@ -310,7 +311,7 @@ object UnitAutomation {
             .firstOrNull {
                 val tile = it.currentTile
                 it.isCivilian() &&
-                        (it.hasUnique(Constants.settlerUnique) || unit.isGreatPerson())
+                        (it.hasUnique(UniqueType.FoundCity) || unit.isGreatPerson())
                         && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
             } ?: return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)

@@ -1,6 +1,5 @@
 package com.unciv.logic.automation
 
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
@@ -10,8 +9,8 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.models.translations.equalsPlaceholderText
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -105,7 +104,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
 
             val civilianUnit = cityInfo.getCenterTile().civilianUnit
-            if (civilianUnit != null && civilianUnit.hasUnique(Constants.settlerUnique)
+            if (civilianUnit != null && civilianUnit.hasUnique(UniqueType.FoundCity)
                     && cityInfo.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civInfo == civInfo })
                 modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
@@ -115,10 +114,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkBoatChoice() {
         val buildableWorkboatUnits = cityInfo.cityConstructions.getConstructableUnits()
-                .filter { it.uniques.contains(Constants.workBoatsUnique)
+                .filter { it.hasUnique(UniqueType.CreateWaterImprovements)
                         && Automation.allowSpendingResource(civInfo, it) }
         val canBuildWorkboat = buildableWorkboatUnits.any()
-                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique(Constants.workBoatsUnique) == true }
+                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true }
         if (!canBuildWorkboat) return
         val tilesThatNeedWorkboat = cityInfo.getTiles()
                 .filter { it.isWater && it.hasViewableResource(civInfo) && it.improvement == null }.toList()
@@ -139,9 +138,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkerChoice() {
         val workerEquivalents = civInfo.gameInfo.ruleSet.units.values
-                .filter { it.uniques.any {
-                        unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements)
-                } && it.isBuildable(cityConstructions)
+            .filter {
+                it.hasUnique(UniqueType.BuildImprovements)
+                && it.isBuildable(cityConstructions)
                 && Automation.allowSpendingResource(civInfo, it) }
         if (workerEquivalents.isEmpty()) return // for mods with no worker units
         if (civInfo.getIdleUnits().any { it.isAutomated() && it.hasUniqueToBuildImprovements })

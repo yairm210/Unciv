@@ -1,3 +1,22 @@
+## 3.17.5
+
+Better unique and mod checking
+
+By SimonCeder:
+- Barbarians capture civilians and take gold from cities
+- AI rationing of strategic resources; Hydro Plant re-enabled
+- prevent city states from taunting you
+
+By xlenstra:
+- Fixed Byzantine not applying
+- Advanced AI choosing of beliefs
+- Combat uniques converted to conditionals
+- Nations now have a favoured religion
+
+By SomeTroglodyte:
+- Added Ethiopia Nation
+- New map for map editor shares settings storage
+
 ## 3.17.4
 
 By SimonCeder:

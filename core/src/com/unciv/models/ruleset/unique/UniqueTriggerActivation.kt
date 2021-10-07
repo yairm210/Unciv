@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
@@ -34,7 +35,7 @@ object UniqueTriggerActivation {
             OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val unit = civInfo.gameInfo.ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val placedUnit = civInfo.addUnit(unitName, chosenCity)
@@ -50,7 +51,7 @@ object UniqueTriggerActivation {
             OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
                 val unit = civInfo.gameInfo.ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()

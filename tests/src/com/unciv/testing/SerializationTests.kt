@@ -14,6 +14,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.unique.UniqueType
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -68,7 +69,7 @@ class SerializationTests {
 
         // Found a city otherwise too many classes have no instance and are not tested
         val civ = game.getCurrentPlayerCivilization()
-        val unit = civ.getCivUnits().first { it.hasUnique(Constants.settlerUnique) }
+        val unit = civ.getCivUnits().first { it.hasUnique(UniqueType.FoundCity) }
         val tile = unit.getTile()
         unit.civInfo.addCity(tile.position)
         if (tile.ruleset.tileImprovements.containsKey("City center"))
