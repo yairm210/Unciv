@@ -132,7 +132,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             lines += stats.toString()
 
         for ((stat, value) in getStatPercentageBonuses(cityInfo))
-            if (value != 0f) lines += "+${value.toInt()}% {${stat.name}}\n"
+            if (value != 0f) lines += "+${value.toInt()}% $stat\n"
 
         for ((greatPersonName, value) in greatPersonPoints)
             lines += "+$value " + "[$greatPersonName] points".tr()
@@ -145,7 +145,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (cityStrength != 0) lines += "{City strength} +$cityStrength"
         if (cityHealth != 0) lines += "{City health} +$cityHealth"
-        if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
+        if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance ${Stat.Gold}"
         return lines.joinToString("\n") { it.tr() }.trim()
     }
 
@@ -296,7 +296,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityStrength != 0 || cityHealth != 0 || maintenance != 0) textList += FormattedLine()
         if (cityStrength != 0) textList +=  FormattedLine("{City strength} +$cityStrength")
         if (cityHealth != 0) textList +=  FormattedLine("{City health} +$cityHealth")
-        if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance {Gold}")
+        if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance ${Stat.Gold}")
 
         val seeAlso = ArrayList<FormattedLine>()
         for (building in ruleset.buildings.values) {

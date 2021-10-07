@@ -2,6 +2,7 @@ package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.EventListener
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
@@ -83,9 +84,11 @@ class TabbedPager(
 
     private val header = Table(BaseScreen.skin)
     private val headerScroll = AutoScrollPane(header)
-    private var headerHeight = 0f
+    var headerHeight = 0f
+        private set
 
     private val contentScroll = AutoScrollPane(null)
+    private var savedScrollListener: EventListener? = null
 
     private val deferredSecretPages = ArrayDeque<PageState>(0)
     private var askPasswordLock = false
@@ -312,6 +315,19 @@ class TabbedPager(
         }).open(true)
     }
 
+    /** Disable/Enable built-in ScrollPane for content pages, including focus stealing prevention */
+    fun setScrollDisabled(disabled: Boolean) {
+        if (disabled == contentScroll.isScrollingDisabledY) return
+        contentScroll.setScrollingDisabled(disabled, disabled)
+        if (disabled) {
+            savedScrollListener = contentScroll.captureListeners.first()
+            contentScroll.captureListeners.clear()
+        } else {
+            if (savedScrollListener != null)
+                contentScroll.addCaptureListener(savedScrollListener)
+        }
+    }
+
     //endregion
     //region Helper routines
 
@@ -363,4 +379,6 @@ class TabbedPager(
             addAndShowPage(page, -1)
         }
     }
+
+    //endregion
 }

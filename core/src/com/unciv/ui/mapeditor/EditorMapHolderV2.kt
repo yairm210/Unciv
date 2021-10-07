@@ -16,7 +16,7 @@ import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 
 class EditorMapHolderV2(
-    private val parentScreen: CameraStageBaseScreen,
+    parentScreen: CameraStageBaseScreen,
     internal val tileMap: TileMap,
     private val ruleset: Ruleset,
     private val onTileClick: (TileInfo) -> Unit
