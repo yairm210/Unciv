@@ -53,6 +53,9 @@ class Religion() : INamed {
     }
     
     fun getBeliefs(beliefType: BeliefType): Sequence<Belief> {
+        if (beliefType == BeliefType.Any)
+            return mapToExistingBeliefs((founderBeliefs + followerBeliefs).toHashSet()).asSequence()
+        
         val beliefs = 
             when (beliefType) {
                 BeliefType.Pantheon -> followerBeliefs
