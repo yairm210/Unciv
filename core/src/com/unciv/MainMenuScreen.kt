@@ -162,6 +162,11 @@ class MainMenuScreen: BaseScreen() {
 
             val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
 
+            add(screen.getMenuButton("Test", "OtherIcons/SecretOptions") {
+                screen.game.setScreen(MapEditorScreenV2())
+                screen.dispose()
+            }.apply { background=tableBackground }).row()
+
             val newMapAction = {
                 val newMapScreen = NewMapScreen()
                 newMapScreen.setDefaultCloseAction(MainMenuScreen())

@@ -31,7 +31,8 @@ import kotlin.math.min
  * always report the same as pref-W/H.
  */
 //region Fields and initialization
-@Suppress("MemberVisibilityCanBePrivate", "unused")  // All member are part of our API
+@Suppress("MemberVisibilityCanBePrivate", "unused")
+open  // All member are part of our API
 class TabbedPager(
     private val minimumWidth: Float = 0f,
     private var maximumWidth: Float = Float.MAX_VALUE,
@@ -44,6 +45,13 @@ class TabbedPager(
     private val headerPadding: Float = 10f,
     capacity: Int = 4
 ) : Table() {
+    /** Pages added via [addPage] can implement this to get notified when they are [activated] or [deactivated].
+     *  Alternative to [addPage.onActivation], which is better for handlers outside the TabbedPager.
+     */
+    interface IPageActivation {
+        fun activated(index: Int)
+        fun deactivated(newIndex: Int) {}
+    }
 
     private class PageState(
         var content: Actor,
@@ -133,6 +141,7 @@ class TabbedPager(
         if (index >= 0 && pages[index].disabled) return false
         if (activePage != -1) {
             pages[activePage].apply {
+                (content as? IPageActivation)?.deactivated(index)
                 button.color = Color.WHITE
                 scrollX = contentScroll.scrollX
                 scrollY = contentScroll.scrollY
@@ -153,6 +162,7 @@ class TabbedPager(
                 headerScroll.let {
                     it.scrollX = (buttonX + (buttonW - it.width) / 2).coerceIn(0f, it.maxX)
                 }
+                (content as? IPageActivation)?.activated(index)
                 onActivation?.invoke(index, button.name)
             }
         }
@@ -219,7 +229,8 @@ class TabbedPager(
      * @param insertBefore -1 to add at the end or index of existing page to insert this before
      * @param secret Marks page as 'secret'. A password is asked once per [TabbedPager] and if it does not match the has passed in the constructor the page and all subsequent secret pages are dropped.
      * @param disabled Initial disabled state. Disabled pages cannot be selected even with [selectPage], their button is dimmed.
-     * @param onActivation _Optional_ callback called when this page is shown (per actual change to this page, not per header click). Lambda arguments are page index and caption.
+     * @param onActivation _Optional_ callback called when this page is shown (per actual change to this page, not only header click).
+     *      Lambda arguments are page index and caption. Alternative: implement [IPageActivation] in [content].
      * @return The new page's index or -1 if it could not be immediately added (secret).
      */
     fun addPage(
