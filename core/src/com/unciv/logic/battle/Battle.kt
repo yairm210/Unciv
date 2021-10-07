@@ -480,7 +480,10 @@ object Battle {
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         val capturedUnitTile = capturedUnit.getTile()
-        val originalOwner = capturedUnit.civInfo.gameInfo.getCivilization(capturedUnit.originalOwner)
+        val originalOwner = if (capturedUnit.originalOwner != null)
+            capturedUnit.civInfo.gameInfo.getCivilization(capturedUnit.originalOwner!!)
+            else null
+
 
         when {
             // Uncapturable units are destroyed
@@ -498,6 +501,7 @@ object Battle {
             }
             // Return captured civilian to its original owner?
             defender.getCivInfo().isBarbarian()
+                    && originalOwner != null
                     && !originalOwner.isBarbarian()
                     && attacker.getCivInfo() != originalOwner
                     && attacker.getCivInfo().knows(originalOwner)

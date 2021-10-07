@@ -115,7 +115,7 @@ class MapUnit {
     lateinit var owner: String
 
     /** civName of original owner - relevant for returning captured workers from barbarians */
-    lateinit var originalOwner: String
+    var originalOwner: String? = null
 
     /**
      * Name key of the unit, used for serialization

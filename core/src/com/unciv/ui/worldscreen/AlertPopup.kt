@@ -327,7 +327,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val position = Vector2.Zero.fromString(popupAlert.value)
                 val tile = worldScreen.gameInfo.tileMap[position]
                 val capturedUnit = tile.civilianUnit!! // This has got to be it
-                val originalOwner = worldScreen.gameInfo.getCivilization(capturedUnit.originalOwner)
+                val originalOwner = worldScreen.gameInfo.getCivilization(capturedUnit.originalOwner!!)
                 val captor = worldScreen.viewingCiv
 
                 addGoodSizedLabel("Return [${capturedUnit.name}] to [${originalOwner.civName}]?")
