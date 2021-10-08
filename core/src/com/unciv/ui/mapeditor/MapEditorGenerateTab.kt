@@ -5,9 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
-import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.MapParametersTable
 import com.unciv.ui.utils.*
@@ -16,8 +15,6 @@ import kotlin.concurrent.thread
 class MapEditorGenerateTab(
     private val editorScreen: MapEditorScreenV2
 ): TabbedPager(capacity = 2) {
-
-    private var mapParameters = getDefaultParameters()
     private val newTab = MapEditorNewMapTab(this)
     private val partialTab = MapEditorGenerateStepsTab(this)
 
@@ -40,6 +37,7 @@ class MapEditorGenerateTab(
     }
 
     private fun generate(step: MapGeneratorSteps) {
+        val mapParameters = editorScreen.newMapParameters
         val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
         if (message != null) {
             Gdx.app.postRunnable {
@@ -53,6 +51,11 @@ class MapEditorGenerateTab(
             return
         }
 
+        if (step == MapGeneratorSteps.Landmass && mapParameters.type == MapType.empty) {
+            ToastPopup("Please don't use step 'Landmass' with map type 'Empty', create a new empty map instead.", editorScreen)
+            return
+        }
+
         Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
         setButtonsEnabled(false)
 
@@ -63,7 +66,7 @@ class MapEditorGenerateTab(
                     val generatedMap = MapGenerator(editorScreen.ruleset).generateMap(mapParameters)
 
                     Gdx.app.postRunnable {
-                        saveDefaultParameters(mapParameters)
+                        MapEditorScreenV2.saveDefaultParameters(mapParameters)
                         editorScreen.loadMap(generatedMap)
                         editorScreen.isDirty = true
                         setButtonsEnabled(true)
@@ -98,14 +101,14 @@ class MapEditorGenerateTab(
         private val parent: MapEditorGenerateTab
     ): Table(CameraStageBaseScreen.skin) {
         val generateButton = "".toTextButton()
-        val mapParametersTable = MapParametersTable(parent.mapParameters, isEmptyMapAllowed = true)
+        val mapParametersTable = MapParametersTable(parent.editorScreen.newMapParameters, isEmptyMapAllowed = true)
 
         init {
             top()
             pad(10f)
             add("Map Options".toLabel(fontSize = 24)).row()
             add(mapParametersTable).row()
-            add(generateButton).row()
+            add(generateButton).padTop(15f).row()
             generateButton.onClick { parent.generate(MapGeneratorSteps.All) }
         }
     }
@@ -134,21 +137,6 @@ class MapEditorGenerateTab(
             }
             add(generateButton).padTop(15f).row()
             generateButton.onClick { parent.generate(choice) }
-        }
-    }
-
-    companion object {
-        private fun getDefaultParameters(): MapParameters {
-            val lastSetup = UncivGame.Current.settings.lastGameSetup
-                ?: return MapParameters()
-            return lastSetup.mapParameters.clone().apply { reseed() }
-        }
-        private fun saveDefaultParameters(parameters: MapParameters) {
-            val settings = UncivGame.Current.settings
-            val lastSetup = settings.lastGameSetup
-                ?: GameSetupInfo().also { settings.lastGameSetup = it }
-            lastSetup.mapParameters = parameters.clone()
-            settings.save()
         }
     }
 }

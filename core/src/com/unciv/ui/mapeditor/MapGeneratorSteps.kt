@@ -3,7 +3,7 @@ package com.unciv.ui.mapeditor
 enum class MapGeneratorSteps(val label: String) {
     None(""),
     All("All"),
-    Landmass("Landmass"),
+    Landmass("Generate landmass"),
     Elevation("Raise mountains and hills"),
     HumidityAndTemperature("Humidity and temperature"),
     LakesAndCoast("Lakes and coastline"),

@@ -8,14 +8,13 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.*
+import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-//todo View Tab complete info: Yield
 //todo 2-Level nested Tabbed controls
-//todo Tab for map generation
-//todo Tab for map generator single routines
 //todo Tab for base terrains
 //todo Tab for terrain features
 //todo Flood-fill for base terrain or features
@@ -26,22 +25,29 @@ import com.unciv.ui.utils.*
 //todo Tab for Improvements
 //todo Group Improvements into 2 tabs?
 //todo Tab for Starting Locations
-//todo Tab for mod selection
 //todo Brushes
 //todo Mode: Apply only to fitting tiles / force tile to fit 
-//todo Save prompt / dirty flag
-//todo Map statistics tab
+//todo Dirty flag on all edits
 //todo Tab for Units
 //todo allow loading maps from mods (but not saving)
 //todo copy/paste tile areas?
+//todo should the single step generator routines invalidate/overwrite tileMap's parameters?
+//todo Nat Wonder step generator: *New* wonders
 
 class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
-    var mapHolder: EditorMapHolderV2
-    val tabs: TabbedPager
+    /** The map being edited, with mod list for that map */
     var tileMap: TileMap
+    /** Flag indicating the map should be saved */
     var isDirty = false
+    /** RuleSet corresponding to [tileMap]'s mod list */
     var ruleset = RulesetCache.getBaseRuleset()
 
+    /** The parameters to use for new maps, and the UI-shown mod list (which can be applied to the active map) */
+    var newMapParameters = getDefaultParameters()
+
+    // UI
+    var mapHolder: EditorMapHolderV2
+    val tabs: TabbedPager
     var tileClickHandler: ((tile: TileInfo)->Unit)? = null
 
     init {
@@ -53,6 +59,21 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         MapEditorToolsDrawer(tabs, stage)
 
         keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
+    }
+
+    companion object {
+        private fun getDefaultParameters(): MapParameters {
+            val lastSetup = UncivGame.Current.settings.lastGameSetup
+                ?: return MapParameters()
+            return lastSetup.mapParameters.clone().apply { reseed() }
+        }
+        fun saveDefaultParameters(parameters: MapParameters) {
+            val settings = UncivGame.Current.settings
+            val lastSetup = settings.lastGameSetup
+                ?: GameSetupInfo().also { settings.lastGameSetup = it }
+            lastSetup.mapParameters = parameters.clone()
+            settings.save()
+        }
     }
 
     private fun newMapHolder(): EditorMapHolderV2 {
@@ -81,6 +102,15 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
             // Doing this directly freezes the game, despite already running under postRunnable
             tabs.selectPage(0)
         }
+    }
+
+    fun applyRuleset(newRuleset: Ruleset) {
+        tileMap.mapParameters.mods = newRuleset.mods
+        tileMap.ruleset = newRuleset
+        ruleset = newRuleset
+        ImageGetter.setNewRuleset(newRuleset)
+        UncivGame.Current.translations.translationActiveMods = ruleset.mods
+        isDirty = true
     }
 
     internal fun closeEditor() {

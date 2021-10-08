@@ -50,7 +50,9 @@ class MapEditorSaveTab(
         buttonTable.pack()
 
         val fileTableHeight = editorScreen.stage.height - headerHeight - mapNameTextField.prefHeight - buttonTable.height - 22f
-        add(AutoScrollPane(mapFiles, skin)).height(fileTableHeight).row()
+        val scrollPane = AutoScrollPane(mapFiles, skin)
+        scrollPane.setOverscroll(false, true)
+        add(scrollPane).height(fileTableHeight).fillX().row()
         add(buttonTable).row()
     }
 

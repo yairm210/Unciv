@@ -39,7 +39,9 @@ class MapEditorLoadTab(
         buttonTable.pack()
 
         val fileTableHeight = editorScreen.stage.height - headerHeight - buttonTable.height - 2f
-        add(AutoScrollPane(mapFiles, skin)).height(fileTableHeight).row()
+        val scrollPane = AutoScrollPane(mapFiles, skin)
+        scrollPane.setOverscroll(false, true)
+        add(scrollPane).height(fileTableHeight).fillX().row()
         add(buttonTable).row()
     }
 
@@ -67,7 +69,7 @@ class MapEditorLoadTab(
     }
 
     override fun activated(index: Int) {
-        //editorScreen.tabs.setScrollDisabled(true)
+        editorScreen.tabs.setScrollDisabled(true)
         mapFiles.update()
         editorScreen.keyPressDispatcher[KeyCharAndCode.RETURN] = this::loadHandler
         editorScreen.keyPressDispatcher[KeyCharAndCode.DEL] = this::deleteHandler
@@ -80,7 +82,7 @@ class MapEditorLoadTab(
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.RETURN)
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.DEL)
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.ctrl('v'))
-        //editorScreen.tabs.setScrollDisabled(false)
+        editorScreen.tabs.setScrollDisabled(false)
     }
 
     fun selectFile(file: FileHandle?) {

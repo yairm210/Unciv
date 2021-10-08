@@ -14,7 +14,7 @@ class MapEditorMainTabs(editorScreen: MapEditorScreenV2) : TabbedPager(headerFon
             MapEditorGenerateTab(editorScreen),
             ImageGetter.getImage("OtherIcons/New"), 25f)
         addPage("Edit",
-            Table(),
+            MapEditorEditTab(editorScreen),
             ImageGetter.getImage("OtherIcons/Terrains"), 25f)
         addPage("Load",
             MapEditorLoadTab(editorScreen, headerHeight),
@@ -24,10 +24,10 @@ class MapEditorMainTabs(editorScreen: MapEditorScreenV2) : TabbedPager(headerFon
             MapEditorSaveTab(editorScreen, headerHeight),
             ImageGetter.getImage("OtherIcons/Checkmark"), 25f)
         addPage("Mods",
-            Table(),
+            MapEditorModsTab(editorScreen),
             ImageGetter.getImage("OtherIcons/Mods"), 25f)
         addPage("Options",
-            Table(),
+            MapEditorOptionsTab(editorScreen),
             ImageGetter.getImage("OtherIcons/Settings"), 25f)
         selectPage(0)
     }

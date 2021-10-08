@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Nation
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
@@ -23,6 +24,7 @@ class MapEditorViewTab(
     private val mockCiv = CivilizationInfo()
 
     init {
+        top()
         defaults().pad(5f, 20f)
         update()
     }
@@ -41,9 +43,9 @@ class MapEditorViewTab(
             gameInfo = GameInfo()
         }
         gameInfo.ruleSet = editorScreen.ruleset
-        if (tech.researchedTechnologies.isEmpty()) {
+        if (tech.techsResearched.isEmpty()) {
             // show yields of strategic resources too
-            tech.researchedTechnologies.addAll(editorScreen.ruleset.technologies.values)
+            tech.techsResearched.addAll(editorScreen.ruleset.technologies.keys)
         }
     }
 
@@ -65,9 +67,21 @@ class MapEditorViewTab(
         add(mapParameterLabel.apply { wrap = true }).row()
 
         tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
-        val statsText = "Area: ${tileMap.values.size} tiles, ${tileMap.continentSizes.size} continents/islands, ${tileMap.naturalWonders.size} Natural Wonders"
+        val statsText = "Area: ${tileMap.values.size} tiles, ${tileMap.continentSizes.size} continents/islands"
         val statsLabel = WrappableLabel(statsText, labelWidth)
         add(statsLabel.apply { wrap = true }).row()
+
+        if (tileMap.naturalWonders.isNotEmpty()) {
+            val collator = UncivGame.Current.settings.getCollatorFromLocale()
+            val naturalWonders = sequenceOf(FormattedLine("Natural Wonders", header = 3, color = "#228b22")) +
+                tileMap.naturalWonders.asSequence()
+                .sortedWith(compareBy(collator, { it.tr() }))
+                .map { FormattedLine(it, link = "Terrain/$it") }
+            add(MarkupRenderer.render(naturalWonders.toList(), iconDisplay = IconDisplay.NoLink) {
+                scrollToWonder(it)
+            }).row()
+        }
+
         addSeparator()
 
         tileDataCell = add(Table()).fillX()
@@ -96,7 +110,14 @@ class MapEditorViewTab(
 
         lines.addAll(tile.toMarkup(null))
 
-        val stats = tile.getTileStats(null, mockCiv)
+        val stats = try {
+            tile.getTileStats(null, mockCiv)
+        } catch (ex: Exception) {
+            // Maps aren't always fixed to remove dead references... like resource "Gold"
+            if (ex.message != null)
+                ToastPopup(ex.message!!, editorScreen)
+            Stats()
+        }
         if (!stats.isEmpty()) {
             lines += FormattedLine()
             lines += FormattedLine(stats.toString())
@@ -114,5 +135,13 @@ class MapEditorViewTab(
         }
 
         tileDataCell?.setActor(MarkupRenderer.render(lines, iconDisplay = IconDisplay.NoLink))
+    }
+
+    private fun scrollToWonder(link: String) {
+        val name = link.split('/')[1]
+        val tile = editorScreen.tileMap.values.filter {
+            it.naturalWonder == name
+        }.randomOrNull() ?: return
+        editorScreen.mapHolder.setCenterPosition(tile.position)
     }
 }

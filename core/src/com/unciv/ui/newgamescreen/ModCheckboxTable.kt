@@ -7,6 +7,15 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
+/**
+ * A widget containing two expanders, one for base mods, one for extension mods.
+ * 
+ * @param mods In/out set of active mods, modified in place
+ * @param baseRuleset The selected base Ruleset //todo clarify
+ * @param screen Parent screen, used only to show [ToastPopup]s
+ * @param isPortrait Used only for minor layout tweaks, arrangement is always vertical
+ * @param onUpdate Callback, parameter is the mod name, called after any checks that may prevent mod selection succeed.
+ */
 class ModCheckboxTable(
     private val mods: LinkedHashSet<String>,
     private var baseRuleset: String,
@@ -19,12 +28,10 @@ class ModCheckboxTable(
     private val extensionRulesetModButtons = ArrayList<CheckBox>()
 
     init {
-
         for (mod in modRulesets.sortedBy { it.name }) {
             val checkBox = mod.name.toCheckBox(mod.name in mods)
             checkBox.onChange {
                 if (checkBoxChanged(checkBox, mod)) {
-                    //todo: persist ExpanderTab states here
                     onUpdate(mod.name)
                 }
             }

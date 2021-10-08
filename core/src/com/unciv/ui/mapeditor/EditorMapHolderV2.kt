@@ -22,7 +22,7 @@ class EditorMapHolderV2(
     private val onTileClick: (TileInfo) -> Unit
 ): ZoomableScrollPane() {
     val tileGroups = HashMap<TileInfo, List<TileGroup>>()
-    lateinit var tileGroupMap: TileGroupMap<TileGroup>
+    private lateinit var tileGroupMap: TileGroupMap<TileGroup>
     private val allTileGroups = ArrayList<TileGroup>()
 
     init {
@@ -98,5 +98,11 @@ class EditorMapHolderV2(
         val rounded = HexMath.roundHexCoords(hexPosition)
 
         return if (rounded in tileMap) tileMap[rounded] else null
+    }
+
+    fun setCenterPosition(vector: Vector2) {
+        val tileGroup = allTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return
+        scrollX = tileGroup.x + tileGroup.width / 2 - width / 2
+        scrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
     }
 }
