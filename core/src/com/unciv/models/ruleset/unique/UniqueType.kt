@@ -223,6 +223,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
     NullifyYields("Nullifies all other stats this tile provides", UniqueTarget.Terrain),
+    VisibilityElevation("Has an elevation of [amount] for visibility calculations", UniqueTarget.Terrain),
 
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain),
 

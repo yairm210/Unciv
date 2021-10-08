@@ -157,11 +157,13 @@ open class TileInfo {
     // We have to .toList() so that the values are stored together once for caching,
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
-    fun getHeight(): Int {
-        return getAllTerrains().flatMap { it.uniqueObjects }
-            .filter { it.placeholderText == "Has an elevation of [] for visibility calculations" }
+    @delegate:Transient
+    val height : Int by lazy {
+        getAllTerrains().flatMap { it.uniqueObjects }
+            .filter { it.isOfType(UniqueType.VisibilityElevation) }
             .map { it.params[0].toInt() }.sum()
     }
+
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
