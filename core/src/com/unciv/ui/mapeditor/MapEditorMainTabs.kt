@@ -5,7 +5,7 @@ import com.unciv.logic.MapSaver
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.TabbedPager
 
-class MapEditorMainTabs(editorScreen: MapEditorScreenV2) : TabbedPager(capacity = 7) {
+class MapEditorMainTabs(editorScreen: MapEditorScreenV2) : TabbedPager(headerFontSize = 24, capacity = 7) {
     init {
         addPage("View",
             MapEditorViewTab(editorScreen),

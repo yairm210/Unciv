@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import kotlin.math.*
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.mapeditor.MapGeneratorSteps
 import kotlin.random.Random
 
 
@@ -101,6 +102,30 @@ class MapGenerator(val ruleset: Ruleset) {
             spreadAncientRuins(map)
         }
         return map
+    }
+
+    fun generateSingleStep(map: TileMap, step: MapGeneratorSteps) {
+        if (map.mapParameters.seed == 0L)
+            map.mapParameters.seed = System.currentTimeMillis()
+
+        randomness.seedRNG(map.mapParameters.seed)
+
+        when(step) {
+            MapGeneratorSteps.None -> return
+            MapGeneratorSteps.All -> throw IllegalArgumentException("MapGeneratorSteps.All cannot be used in generateSingleStep")
+            MapGeneratorSteps.Landmass -> MapLandmassGenerator(ruleset, randomness).generateLand(map)
+            MapGeneratorSteps.Elevation -> raiseMountainsAndHills(map)
+            MapGeneratorSteps.HumidityAndTemperature -> applyHumidityAndTemperature(map)
+            MapGeneratorSteps.LakesAndCoast -> spawnLakesAndCoasts(map)
+            MapGeneratorSteps.Vegetation -> spawnVegetation(map)
+            MapGeneratorSteps.RareFeatures -> spawnRareFeatures(map)
+            MapGeneratorSteps.Ice -> spawnIce(map)
+            MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Assign)
+            MapGeneratorSteps.NaturalWonders -> NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
+            MapGeneratorSteps.Rivers ->  RiverGenerator(map, randomness).spawnRivers()
+            MapGeneratorSteps.Resources -> spreadResources(map)
+            MapGeneratorSteps.AncientRuins -> spreadAncientRuins(map)
+        }
     }
 
     private fun runAndMeasure(text: String, action: ()->Unit) {

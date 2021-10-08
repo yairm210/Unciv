@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.MainMenuScreen
+import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -21,13 +23,33 @@ class MapEditorViewTab(
     private val mockCiv = CivilizationInfo()
 
     init {
-        mockCiv.nation = Nation().apply { name = "Test" }
         defaults().pad(5f, 20f)
         update()
     }
 
+    private fun CivilizationInfo.updateMockCiv() {
+        // This crappy construct exists only to allow us to call TileInfo.getTileStats
+        try {
+            val dummy = nation
+        } catch (ex: UninitializedPropertyAccessException) {
+            nation = Nation()
+            nation.name = "Test"
+        }
+        try {
+            val dummy = gameInfo
+        } catch (ex: UninitializedPropertyAccessException) {
+            gameInfo = GameInfo()
+        }
+        gameInfo.ruleSet = editorScreen.ruleset
+        if (tech.researchedTechnologies.isEmpty()) {
+            // show yields of strategic resources too
+            tech.researchedTechnologies.addAll(editorScreen.ruleset.technologies.values)
+        }
+    }
+
     private fun update() {
         clear()
+        mockCiv.updateMockCiv()
 
         val tileMap = editorScreen.tileMap
         val labelWidth = editorScreen.stage.width * 0.33f
@@ -37,11 +59,13 @@ class MapEditorViewTab(
             add(mapNameLabel).padBottom(15f).row()
         }
 
-        val mapParameterLabel = WrappableLabel(tileMap.mapParameters.toString(), labelWidth)
+        val mapParameterText = tileMap.mapParameters.toString()
+            .replace("\"${tileMap.mapParameters.name}\" ", "")
+        val mapParameterLabel = WrappableLabel(mapParameterText, labelWidth)
         add(mapParameterLabel.apply { wrap = true }).row()
 
         tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
-        val statsText = "Area: ${tileMap.values.size} tiles, ${tileMap.continentSizes.size} continents, ${tileMap.naturalWonders.size} Natural Wonders"
+        val statsText = "Area: ${tileMap.values.size} tiles, ${tileMap.continentSizes.size} continents/islands, ${tileMap.naturalWonders.size} Natural Wonders"
         val statsLabel = WrappableLabel(statsText, labelWidth)
         add(statsLabel.apply { wrap = true }).row()
         addSeparator()
@@ -50,11 +74,7 @@ class MapEditorViewTab(
         row()
 
         addSeparator()
-        val closeAction = {
-            editorScreen.game.setScreen(MainMenuScreen())
-        }
-        editorScreen.keyPressDispatcher[KeyCharAndCode.BACK] = closeAction
-        add("Exit map editor".toTextButton().apply { onClick(closeAction) }).row()
+        add("Exit map editor".toTextButton().apply { onClick(editorScreen::closeEditor) }).row()
     }
 
     override fun activated(index: Int) {
@@ -71,7 +91,7 @@ class MapEditorViewTab(
 
         val lines = ArrayList<FormattedLine>()
 
-        lines += FormattedLine("Position: ${tile.position.toString().replace(".0","")}", centered = true)
+        lines += FormattedLine("Position: ${tile.position.toString().replace(".0","")}")
         lines += FormattedLine()
 
         lines.addAll(tile.toMarkup(null))
@@ -79,7 +99,7 @@ class MapEditorViewTab(
         val stats = tile.getTileStats(null, mockCiv)
         if (!stats.isEmpty()) {
             lines += FormattedLine()
-            lines += FormattedLine(stats.toString(), centered = true)
+            lines += FormattedLine(stats.toString())
         }
 
         val nations = tile.tileMap.startingLocationsByNation.asSequence()
@@ -90,7 +110,7 @@ class MapEditorViewTab(
             .joinToString { it.first.tr() }
         if (nations.isNotEmpty()) {
             lines += FormattedLine()
-            lines += FormattedLine("Starting location(s): [$nations]", centered = true)
+            lines += FormattedLine("Starting location(s): [$nations]")
         }
 
         tileDataCell?.setActor(MarkupRenderer.render(lines, iconDisplay = IconDisplay.NoLink))

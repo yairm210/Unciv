@@ -101,7 +101,7 @@ class MapEditorSaveTab(
         mapNameTextField.setSelection(Int.MAX_VALUE, Int.MAX_VALUE)  // sets caret to end of text
         saveButton.isEnabled = true
         deleteButton.isEnabled = (file != null)
-        deleteButton.color = if (file != null) Color.FIREBRICK else Color.RED
+        deleteButton.color = if (file != null) Color.SCARLET else Color.BROWN
     }
 
     private fun saverThread() {
@@ -112,6 +112,7 @@ class MapEditorSaveTab(
             Gdx.app.postRunnable {
                 ToastPopup("Map saved successfully", editorScreen)
             }
+            editorScreen.isDirty = false
         } catch (ex: Exception) {
             ex.printStackTrace()
             Gdx.app.postRunnable {

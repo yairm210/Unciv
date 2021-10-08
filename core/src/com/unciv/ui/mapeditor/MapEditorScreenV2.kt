@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.*
@@ -38,6 +39,7 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
     var mapHolder: EditorMapHolderV2
     val tabs: TabbedPager
     var tileMap: TileMap
+    var isDirty = false
     var ruleset = RulesetCache.getBaseRuleset()
 
     var tileClickHandler: ((tile: TileInfo)->Unit)? = null
@@ -49,6 +51,8 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
 
         tabs = MapEditorMainTabs(this)
         MapEditorToolsDrawer(tabs, stage)
+
+        keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
     }
 
     private fun newMapHolder(): EditorMapHolderV2 {
@@ -72,7 +76,18 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         checkAndFixMapSize()
         ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods)
         mapHolder = newMapHolder()
-        tabs.selectPage(0)
+        isDirty = false
+        Gdx.app.postRunnable {
+            // Doing this directly freezes the game, despite already running under postRunnable
+            tabs.selectPage(0)
+        }
+    }
+
+    internal fun closeEditor() {
+        if (!isDirty) return game.setScreen(MainMenuScreen())
+        YesNoPopup("Do you want to leave without saving the recent changes?", action = {
+            game.setScreen(MainMenuScreen())
+        }, this).open()
     }
 
     private fun checkAndFixMapSize() {

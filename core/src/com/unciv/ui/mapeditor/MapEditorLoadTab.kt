@@ -67,7 +67,7 @@ class MapEditorLoadTab(
     }
 
     override fun activated(index: Int) {
-        editorScreen.tabs.setScrollDisabled(true)
+        //editorScreen.tabs.setScrollDisabled(true)
         mapFiles.update()
         editorScreen.keyPressDispatcher[KeyCharAndCode.RETURN] = this::loadHandler
         editorScreen.keyPressDispatcher[KeyCharAndCode.DEL] = this::deleteHandler
@@ -80,14 +80,14 @@ class MapEditorLoadTab(
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.RETURN)
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.DEL)
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.ctrl('v'))
-        editorScreen.tabs.setScrollDisabled(false)
+        //editorScreen.tabs.setScrollDisabled(false)
     }
 
     fun selectFile(file: FileHandle?) {
         chosenMap = file
         loadButton.isEnabled = (file != null)
         deleteButton.isEnabled = (file != null)
-        deleteButton.color = if (file != null) Color.FIREBRICK else Color.RED
+        deleteButton.color = if (file != null) Color.SCARLET else Color.BROWN
     }
 
     fun loaderThread() {
@@ -121,7 +121,7 @@ class MapEditorLoadTab(
                     needPopup = false
                     popup?.close()
                     println("Error displaying map \"$chosenMap\": ${ex.localizedMessage}")
-                    Gdx.input.inputProcessor = stage
+                    Gdx.input.inputProcessor = editorScreen.stage
                     ToastPopup("Error loading map!", editorScreen)
                 }
             }
