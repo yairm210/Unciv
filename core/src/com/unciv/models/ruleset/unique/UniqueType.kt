@@ -183,6 +183,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     SpreadReligionStrengthUnits("[amount]% Spread Religion Strength for [mapUnitFilter] units", UniqueTarget.Global),
 
 
+    CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),
+    CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit),
+    CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
+
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)

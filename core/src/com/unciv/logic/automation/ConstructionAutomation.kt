@@ -46,7 +46,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     fun chooseNextConstruction() {
         if (!UncivGame.Current.settings.autoAssignCityProduction
-                && civInfo.playerType== PlayerType.Human && !cityInfo.isPuppet)
+            && civInfo.playerType == PlayerType.Human && !cityInfo.isPuppet
+        )
             return
         if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
 
@@ -61,33 +62,37 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addSpaceshipPartChoice()
         addOtherBuildingChoice()
 
-        if(!cityInfo.isPuppet) {
+        if (!cityInfo.isPuppet) {
             addWondersChoice()
             addWorkerChoice()
             addWorkBoatChoice()
             addMilitaryUnitChoice()
         }
-        
+
         val production = cityInfo.cityStats.currentCityStats.production
 
-        val theChosenOne: String
-        if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
-            // add science!
-            if (PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched)
-                theChosenOne = "Science"
-            else if (PerpetualConstruction.gold.isBuildable(cityConstructions))
-                theChosenOne = "Gold"
-            else theChosenOne = "Nothing"
-        } else if (relativeCostEffectiveness.any { it.remainingWork < production * 30 }) {
-            relativeCostEffectiveness.removeAll { it.remainingWork >= production * 30 }
-            theChosenOne = relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier }!!.choice
-        }
-        // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
-        // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
-        else theChosenOne = relativeCostEffectiveness.minByOrNull { it.remainingWork }!!.choice
+        val chosenConstruction: String =
+            if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
+                // add science!
+                when {
+                    PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science.name
+                    PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold.name
+                    else -> PerpetualConstruction.idle.name
+                }
+            } else if (relativeCostEffectiveness.any { it.remainingWork < production * 30 }) {
+                relativeCostEffectiveness.removeAll { it.remainingWork >= production * 30 }
+                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier }!!.choice
+            }
+            // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
+            // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
+            else relativeCostEffectiveness.minByOrNull { it.remainingWork }!!.choice
 
-        civInfo.addNotification("Work has started on [$theChosenOne]",  CityAction(cityInfo.location), NotificationIcon.Construction)
-        cityConstructions.currentConstructionFromQueue = theChosenOne
+        civInfo.addNotification(
+            "Work has started on [$chosenConstruction]",
+            CityAction(cityInfo.location),
+            NotificationIcon.Construction
+        )
+        cityConstructions.currentConstructionFromQueue = chosenConstruction
     }
 
     private fun addMilitaryUnitChoice() {

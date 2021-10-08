@@ -936,12 +936,12 @@ class MapUnit {
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
         if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
-        return getMatchingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
+        return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
     private fun carryCapacity(unit: MapUnit): Int {
-        return (getMatchingUniques("Can carry [] [] units")
-                + getMatchingUniques("Can carry [] extra [] units"))
+        return (getMatchingUniques(UniqueType.CarryAirUnits)
+                + getMatchingUniques(UniqueType.CarryExtraAirUnits))
             .filter { unit.matchesFilter(it.params[1]) }
             .sumOf { it.params[0].toInt() }
     }
