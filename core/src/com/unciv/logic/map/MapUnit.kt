@@ -201,23 +201,20 @@ class MapUnit {
     fun getUniques(): ArrayList<Unique> = tempUniques
 
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.placeholderText == placeholderText } + 
-            civInfo.getMatchingUniques(placeholderText)
+        tempUniques.asSequence().filter { it.placeholderText == placeholderText }
 
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = sequence {
         yieldAll(tempUniques.asSequence()
-            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals)}
+            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
         )
-        yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun hasUnique(unique: String): Boolean {
-        return tempUniques.any { it.placeholderText == unique } || civInfo.hasUnique(unique)
+        return tempUniques.any { it.placeholderText == unique }
     }
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Boolean {
-        return tempUniques.any { it.type == uniqueType && it.conditionalsApply(stateForConditionals) } 
-            || civInfo.hasUnique(uniqueType, stateForConditionals)
+        return tempUniques.any { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
     }
 
     fun updateUniques(ruleset: Ruleset) {

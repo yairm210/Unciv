@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.unique.UniqueType
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
@@ -10,20 +11,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     fun updateViewableTiles() {
         setNewViewableTiles()
 
-        val newViewableInvisibleTiles = HashSet<TileInfo>()
-        newViewableInvisibleTiles.addAll(civInfo.getCivUnits()
-            .filter { attacker -> attacker.hasUnique("Can see invisible [] units")  }
-            .flatMap { attacker ->
-                attacker.viewableTiles
-                    .asSequence()
-                    .filter { tile ->
-                        tile.militaryUnit != null
-                                && attacker.getMatchingUniques("Can see invisible [] units")
-                            .any { unique -> tile.militaryUnit!!.matchesFilter(unique.params[0]) }
-                    }
-            }
-        )
-        civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
+        updateViewableInvisibleTiles()
 
 
         // updating the viewable tiles also affects the explored tiles, obviously.
@@ -54,6 +42,23 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
             discoverNaturalWonders()
         }
+    }
+
+    private fun updateViewableInvisibleTiles() {
+        val newViewableInvisibleTiles = HashSet<TileInfo>()
+        for (unit in civInfo.getCivUnits()) {
+            val invisibleUnitUniques = unit.getMatchingUniques(UniqueType.CanSeeInvisibleUnits)
+            if (invisibleUnitUniques.none()) continue
+            val visibleUnitTypes = invisibleUnitUniques.map { it.params[0] }
+                .toList() // save this, it'll be seeing a lot of use
+            for (tile in unit.viewableTiles) {
+                if (tile.militaryUnit == null) continue
+                if (visibleUnitTypes.any { tile.militaryUnit!!.matchesFilter(it) })
+                    newViewableInvisibleTiles.add(tile)
+            }
+        }
+
+        civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
     }
 
     private fun setNewViewableTiles() {
