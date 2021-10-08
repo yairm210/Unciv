@@ -324,7 +324,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }).row()
             }
             AlertType.RecapturedCivilian -> {
-                val position = Vector2.Zero.fromString(popupAlert.value)
+                val position = Vector2().fromString(popupAlert.value)
                 val tile = worldScreen.gameInfo.tileMap[position]
                 val capturedUnit = tile.civilianUnit!! // This has got to be it
                 val originalOwner = worldScreen.gameInfo.getCivilization(capturedUnit.originalOwner!!)
