@@ -408,8 +408,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     private fun clearBorders() {
-        for (imageList in borderSegments.values)
-            for (image in imageList.images)
+        for (borderSegment in borderSegments.values)
+            for (image in borderSegment.images)
                 image.remove()
 
         borderSegments.clear()
@@ -444,6 +444,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 val leftSharedNeighbor = tileInfo.getLeftSharedNeighbor(neighbor)
                 val rightSharedNeighbor = tileInfo.getRightSharedNeighbor(neighbor)
 
+                // If a shared neighbor doesn't exist (because it's past a map edge), we act as if it's our tile for border concave/convex-ity purposes.
+                // This is because we do not draw borders against non-existing tiles either.
                 borderSegmentShouldBeLeftConcave = leftSharedNeighbor == null || leftSharedNeighbor.getOwner() == tileOwner
                 borderSegmentShouldBeRightConcave = rightSharedNeighbor == null || rightSharedNeighbor.getOwner() == tileOwner
 

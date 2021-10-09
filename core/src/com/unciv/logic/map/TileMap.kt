@@ -262,7 +262,7 @@ class TileMap {
     }
 
     private val clockPositionToHexVectorMap: Map<Int, Vector2> = mapOf(
-        0 to Vector2(1f, 1f), // Adding this alias of "12" makes clock modulo logic easier
+        0 to Vector2(1f, 1f), // This alias of 12 makes clock modulo logic easier
         12 to Vector2(1f, 1f),
         2 to Vector2(0f, 1f),
         4 to Vector2(-1f, 0f),
@@ -271,6 +271,7 @@ class TileMap {
         10 to Vector2(1f, 0f)
     )
 
+    /** Returns the hex-space distance corresponding to [clockPosition] */
     private fun clockPositionToHexVector(clockPosition: Int): Vector2 {
         return clockPositionToHexVectorMap[clockPosition]?: Vector2.Zero
     }
