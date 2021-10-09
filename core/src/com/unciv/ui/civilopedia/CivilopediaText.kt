@@ -189,6 +189,7 @@ class FormattedLine (
                     result[it.second] = it.first
                     //println("  ${it.second} is a ${it.first}")
                 }
+            result["Maya Long Count calendar cycle"] = CivilopediaCategories.Tutorial
 
             //println("allObjectNamesCategoryMap took ${System.nanoTime()-startTime}ns to initialize")
             rulesetCachedInNameMap = ruleSet

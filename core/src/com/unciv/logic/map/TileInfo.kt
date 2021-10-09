@@ -167,11 +167,13 @@ open class TileInfo {
         return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) + 2) % 12)
     }
 
-    fun getHeight(): Int {
-        return getAllTerrains().flatMap { it.uniqueObjects }
-            .filter { it.placeholderText == "Has an elevation of [] for visibility calculations" }
+    @delegate:Transient
+    val height : Int by lazy {
+        getAllTerrains().flatMap { it.uniqueObjects }
+            .filter { it.isOfType(UniqueType.VisibilityElevation) }
             .map { it.params[0].toInt() }.sum()
     }
+
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
 

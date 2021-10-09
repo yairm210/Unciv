@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 object UnitAutomation {
@@ -30,7 +31,7 @@ object UnitAutomation {
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it) }
         if (explorableTilesThisTurn.any()) {
             val bestTile = explorableTilesThisTurn
-                .sortedByDescending { it.getHeight() }  // secondary sort is by 'how far can you see'
+                .sortedByDescending { it.height }  // secondary sort is by 'how far can you see'
                 .maxByOrNull { it.aerialDistanceTo(unit.currentTile) }!! // primary sort is by 'how far can you go'
             unit.movement.headTowards(bestTile)
             return true
@@ -61,14 +62,15 @@ object UnitAutomation {
     }
 
     @JvmStatic
-    fun wander(unit: MapUnit) {
+    fun wander(unit: MapUnit, stayInTerritory: Boolean = false) {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val reachableTiles = unitDistanceToTiles
                 .filter { unit.movement.canMoveTo(it.key) && unit.movement.canReach(it.key) }
 
         val reachableTilesMaxWalkingDistance = reachableTiles
                 .filter { it.value.totalDistance == unit.currentMovement
-                        && unit.getDamageFromTerrain(it.key) <= 0 } // Don't end turn on damaging terrain for no good reason
+                        && unit.getDamageFromTerrain(it.key) <= 0 // Don't end turn on damaging terrain for no good reason
+                        && (!stayInTerritory || it.key.getOwner() == unit.civInfo) }
         if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
         else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
     }
@@ -77,6 +79,11 @@ object UnitAutomation {
         if (unit.baseUnit.upgradesTo == null) return false
         val upgradedUnit = unit.getUnitToUpgradeTo()
         if (!upgradedUnit.isBuildable(unit.civInfo)) return false // for resource reasons, usually
+
+        if (upgradedUnit.getResourceRequirements().keys.any { !unit.baseUnit.requiresResource(it) }) {
+            // The upgrade requires new resource types, so check if we are willing to invest them
+            if (!Automation.allowSpendingResource(unit.civInfo, upgradedUnit)) return false
+        }
 
         val upgradeAction = UnitActions.getUpgradeAction(unit)
             ?: return false
@@ -95,25 +102,25 @@ object UnitAutomation {
         if (unit.isCivilian()) {
             if (tryRunAwayIfNeccessary(unit)) return
             
-            if (unit.hasUnique(Constants.settlerUnique))
+            if (unit.hasUnique(UniqueType.FoundCity))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
             if (unit.hasUniqueToBuildImprovements)
                 return WorkerAutomation.automateWorkerAction(unit)
 
-            if (unit.hasUnique("May found a religion")
+            if (unit.hasUnique(UniqueType.MayFoundReligion)
                 && unit.civInfo.religionManager.religionState < ReligionState.Religion
                 && unit.civInfo.religionManager.mayFoundReligionAtAll(unit)
             )
                 return SpecificUnitAutomation.foundReligion(unit)
 
-            if (unit.hasUnique("May enhance a religion")
+            if (unit.hasUnique(UniqueType.MayEnhanceReligion)
                 && unit.civInfo.religionManager.religionState < ReligionState.EnhancedReligion
                 && unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)
             )
                 return SpecificUnitAutomation.enhanceReligion(unit)
 
-            if (unit.hasUnique(Constants.workBoatsUnique))
+            if (unit.hasUnique(UniqueType.CreateWaterImprovements))
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
             if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
@@ -176,6 +183,10 @@ object UnitAutomation {
 
         // else, try to go to unreached tiles
         if (tryExplore(unit)) return
+
+        // Idle CS units should wander so they don't obstruct players so much
+        if (unit.civInfo.isCityState())
+            wander(unit, stayInTerritory = true)
     }
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
@@ -305,7 +316,7 @@ object UnitAutomation {
             .firstOrNull {
                 val tile = it.currentTile
                 it.isCivilian() &&
-                        (it.hasUnique(Constants.settlerUnique) || unit.isGreatPerson())
+                        (it.hasUnique(UniqueType.FoundCity) || unit.isGreatPerson())
                         && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
             } ?: return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)

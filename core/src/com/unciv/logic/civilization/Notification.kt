@@ -3,11 +3,14 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Vector2
 import com.unciv.models.stats.Stat
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
+import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.worldscreen.WorldScreen
 
 object NotificationIcon {
+    // Remember: The typical white-on-transparency icon will not be visible on Notifications
     const val Culture = "StatIcons/Culture"
     const val Construction = "StatIcons/Production"
     const val Growth = "StatIcons/Population"
@@ -21,7 +24,7 @@ object NotificationIcon {
     const val Citadel = "ImprovementIcons/Citadel"
     const val Happiness = "StatIcons/Happiness"
     const val Population = "StatIcons/Population"
-    const val CityState = "NationIcons/CityState"
+    const val CityState = "OtherIcons/CityState"
     const val Production = "StatIcons/Production"
     const val Food = "StatIcons/Food"
     const val Faith = "StatIcons/Faith"
@@ -82,10 +85,18 @@ data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
     }
 }
 
+/** enter diplomacy screen */
 data class DiplomacyAction(val otherCivName: String = ""): NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val screen = DiplomacyScreen(worldScreen.viewingCiv)
         screen.updateRightSide(worldScreen.gameInfo.getCivilization(otherCivName))
         worldScreen.game.setScreen(screen)
+    }
+}
+
+/** enter Maya Long Count popup */
+class MayaLongCountAction() : NotificationAction {
+    override fun execute(worldScreen: WorldScreen) {
+        MayaCalendar.openPopup(worldScreen, worldScreen.selectedCiv, worldScreen.gameInfo.getYear())
     }
 }

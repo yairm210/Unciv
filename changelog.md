@@ -1,3 +1,36 @@
+## 3.17.6
+
+Considerable optimizations for "next turn" performance
+
+Unit maintenance discount corrected
+
+Fixed conditionals display when locating mod errors, which ws broken due to translation reordering all conditional-like text
+
+Fixed crash when AI is picking religions  - By xlenstra
+
+Minimum city distance across continents  - By SomeTroglodyte
+
+Fix Educated Elite  - By SimonCeder
+
+## 3.17.5
+
+Better unique and mod checking
+
+By SimonCeder:
+- Barbarians capture civilians and take gold from cities
+- AI rationing of strategic resources; Hydro Plant re-enabled
+- prevent city states from taunting you
+
+By xlenstra:
+- Fixed Byzantine not applying
+- Advanced AI choosing of beliefs
+- Combat uniques converted to conditionals
+- Nations now have a favoured religion
+
+By SomeTroglodyte:
+- Added Ethiopia Nation
+- New map for map editor shares settings storage
+
 ## 3.17.4
 
 By SimonCeder:

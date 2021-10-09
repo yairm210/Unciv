@@ -139,7 +139,7 @@ class ReligionManager {
     }
     
     fun getGreatProphetEquivalent(): String? {
-        return civInfo.gameInfo.ruleSet.units.values.firstOrNull { it.hasUnique("May found a religion") }?.name
+        return civInfo.gameInfo.ruleSet.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }?.name
     }
 
     private fun generateProphet() {

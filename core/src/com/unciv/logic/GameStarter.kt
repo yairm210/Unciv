@@ -262,7 +262,7 @@ object GameStarter {
         val startingLocations = getStartingLocations(allCivs, tileMap, landTilesInBigEnoughGroup, startScores)
 
         val settlerLikeUnits = ruleSet.units.filter {
-            it.value.uniqueObjects.any { unique -> unique.placeholderText == Constants.settlerUnique }
+            it.value.hasUnique(UniqueType.FoundCity)
         }
 
         // no starting units for Barbarians and Spectators
@@ -315,9 +315,8 @@ object GameStarter {
                 }
                 if (unit == "Worker" && "Worker" !in ruleSet.units) {
                     val buildableWorkerLikeUnits = ruleSet.units.filter {
-                        it.value.uniqueObjects.any { unique -> unique.placeholderText == Constants.canBuildImprovements }
-                                && it.value.isBuildable(civ)
-                                && it.value.isCivilian()
+                        it.value.hasUnique(UniqueType.BuildImprovements) &&
+                            it.value.isBuildable(civ) && it.value.isCivilian()
                     }
                     if (buildableWorkerLikeUnits.isEmpty()) return null // No workers in this mod
                     return civ.getEquivalentUnit(buildableWorkerLikeUnits.keys.random()).name

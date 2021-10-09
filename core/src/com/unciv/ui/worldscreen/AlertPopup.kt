@@ -1,11 +1,13 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -320,6 +322,49 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     }
                     cityState.removeProtectorCiv(player, forced = true)
                 }).row()
+            }
+            AlertType.RecapturedCivilian -> {
+                val position = Vector2().fromString(popupAlert.value)
+                val tile = worldScreen.gameInfo.tileMap[position]
+                val capturedUnit = tile.civilianUnit!! // This has got to be it
+                val originalOwner = worldScreen.gameInfo.getCivilization(capturedUnit.originalOwner!!)
+                val captor = worldScreen.viewingCiv
+
+                addGoodSizedLabel("Return [${capturedUnit.name}] to [${originalOwner.civName}]?")
+                addSeparator()
+                addGoodSizedLabel("The [${capturedUnit.name}] we liberated originally belonged to [${originalOwner.civName}]. They will be grateful if we return it to them.").row()
+                val responseTable = Table()
+                responseTable.defaults().pad(0f, 30f) // Small buttons, plenty of pad so we don't fat-finger it
+                responseTable.add(getCloseButton("Yes", 'y') {
+                    // Return it to original owner
+                    val unitName = capturedUnit.baseUnit.name
+                    capturedUnit.destroy()
+                    val closestCity = originalOwner.cities.minByOrNull { it.getCenterTile().aerialDistanceTo(tile) }
+                    if (closestCity != null) {
+                        // Attempt to place the unit near their nearest city
+                        originalOwner.placeUnitNearTile(closestCity.location, unitName)
+                    }
+
+                    if (originalOwner.isCityState()) {
+                        originalOwner.getDiplomacyManager(captor).addInfluence(45f)
+                    } else if (originalOwner.isMajorCiv()) {
+                        // No extra bonus from doing it several times
+                        originalOwner.getDiplomacyManager(captor).setModifier(DiplomaticModifiers.ReturnedCapturedUnits, 20f)
+                    }
+                })
+                responseTable.add(getCloseButton("No", 'n') {
+                    // Take it for ourselves
+                    // Settlers become workers at this point
+                    if (capturedUnit.hasUnique("Founds a new city")) {
+                        capturedUnit.destroy()
+                        // This is so that future checks which check if a unit has been captured are caught give the right answer
+                        //  For example, in postBattleMoveToAttackedTile
+                        capturedUnit.civInfo = captor
+                        captor.placeUnitNearTile(tile.position, Constants.worker)
+                    } else
+                        capturedUnit.capturedBy(captor)
+                }).row()
+                add(responseTable)
             }
         }
     }

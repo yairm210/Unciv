@@ -16,6 +16,7 @@ enum class AlertType {
     DiplomaticMarriage,
     BulliedProtectedMinor,
     AttackedProtectedMinor,
+    RecapturedCivilian,
 }
 
 class PopupAlert {

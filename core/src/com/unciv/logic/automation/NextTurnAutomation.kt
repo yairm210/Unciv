@@ -46,6 +46,7 @@ object NextTurnAutomation {
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
             adoptPolicy(civInfo)  // todo can take a second - why?
+            freeUpSpaceResources(civInfo)
         } else {
             civInfo.getFreeTechForCityState()
             civInfo.updateDiplomaticRelationshipForCityState()
@@ -297,6 +298,39 @@ object NextTurnAutomation {
 
             val policyToAdopt = preferredPolicies.random()
             civInfo.policies.adopt(policyToAdopt)
+        }
+    }
+
+    /** If we are able to build a spaceship but have already spent our resources, try disbanding
+     *  a unit and selling a building to make room. Can happen due to trades etc */
+    private fun freeUpSpaceResources(civInfo: CivilizationInfo) {
+        // Can't build spaceships
+        if (!civInfo.hasUnique("Enables construction of Spaceship parts"))
+            return
+
+        for (resource in civInfo.gameInfo.spaceResources) {
+            // Have enough resources already
+            if (civInfo.getCivResourcesByName()[resource]!! >= Automation.getReservedSpaceResourceAmount(civInfo))
+                continue
+
+            val unitToDisband = civInfo.getCivUnits()
+                .filter { it.baseUnit.requiresResource(resource) }
+                .minByOrNull { it.getForceEvaluation() }
+            if (unitToDisband != null) {
+                unitToDisband.disband()
+            }
+
+            for (city in civInfo.cities) {
+                if (city.hasSoldBuildingThisTurn)
+                    continue
+                val buildingToSell = civInfo.gameInfo.ruleSet.buildings.values.filter {
+                        it.name in city.cityConstructions.builtBuildings
+                        && it.requiresResource(resource) }.randomOrNull()
+                if (buildingToSell != null) {
+                    city.sellBuilding(buildingToSell.name)
+                    break
+                }
+            }
         }
     }
 
@@ -655,12 +689,12 @@ object NextTurnAutomation {
         if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
 
         val settlerUnits = civInfo.gameInfo.ruleSet.units.values
-                .filter { it.uniques.contains(Constants.settlerUnique) && it.isBuildable(civInfo) }
+                .filter { it.hasUnique(UniqueType.FoundCity) && it.isBuildable(civInfo) }
         if (settlerUnits.isEmpty()) return
-        if (civInfo.getCivUnits().none { it.hasUnique(Constants.settlerUnique) }
+        if (civInfo.getCivUnits().none { it.hasUnique(UniqueType.FoundCity) }
                 && civInfo.cities.none {
                     val currentConstruction = it.cityConstructions.getCurrentConstruction()
-                    currentConstruction is BaseUnit && currentConstruction.uniques.contains(Constants.settlerUnique)
+                    currentConstruction is BaseUnit && currentConstruction.hasUnique(UniqueType.FoundCity)
                 }) {
 
             val bestCity = civInfo.cities.maxByOrNull { it.cityStats.currentCityStats.production }!!
