@@ -482,7 +482,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
                 
-                val innerBorderImage = ImageGetter.getImage("OtherIcons/Border${borderShapeString}Inner")
+                val innerBorderImage = ImageGetter.getImage("BorderImages/${borderShapeString}Inner")
                 if (isConcaveConvex) {
                     innerBorderImage.scaleX = -innerBorderImage.scaleX
                 }
@@ -495,7 +495,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 miscLayerGroup.addActor(innerBorderImage)
                 images.add(innerBorderImage)
 
-                val outerBorderImage = ImageGetter.getImage("OtherIcons/Border${borderShapeString}Outer")
+                val outerBorderImage = ImageGetter.getImage("BorderImages/${borderShapeString}Outer")
                 if (isConcaveConvex) {
                     outerBorderImage.scaleX = -outerBorderImage.scaleX
                 }

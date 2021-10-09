@@ -4,6 +4,48 @@ size: 2048, 2048
 format: RGBA8888
 filter: MipMapLinearLinear, MipMapLinearLinear
 repeat: none
+BorderImages/ConcaveInner
+  rotate: false
+  xy: 4, 55
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+BorderImages/ConcaveOuter
+  rotate: false
+  xy: 190, 1429
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+BorderImages/ConvexConcaveInner
+  rotate: false
+  xy: 220, 85
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+BorderImages/ConvexConcaveOuter
+  rotate: false
+  xy: 328, 115
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+BorderImages/ConvexInner
+  rotate: false
+  xy: 976, 1057
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+BorderImages/ConvexOuter
+  rotate: false
+  xy: 1084, 1165
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
 EmojiIcons/Culture
   rotate: false
   xy: 818, 698
@@ -527,48 +569,6 @@ OtherIcons/Border-outer
   xy: 436, 1411
   size: 31, 15
   orig: 31, 15
-  offset: 0, 0
-  index: -1
-OtherIcons/BorderConcaveInner
-  rotate: false
-  xy: 4, 55
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-OtherIcons/BorderConcaveOuter
-  rotate: false
-  xy: 190, 1429
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-OtherIcons/BorderConvexConcaveInner
-  rotate: false
-  xy: 220, 85
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-OtherIcons/BorderConvexConcaveOuter
-  rotate: false
-  xy: 328, 115
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-OtherIcons/BorderConvexInner
-  rotate: false
-  xy: 976, 1057
-  size: 81, 15
-  orig: 81, 15
-  offset: 0, 0
-  index: -1
-OtherIcons/BorderConvexOuter
-  rotate: false
-  xy: 1084, 1165
-  size: 81, 15
-  orig: 81, 15
   offset: 0, 0
   index: -1
 OtherIcons/Camera
