@@ -3,13 +3,13 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -21,7 +21,7 @@ class MapEditorViewTab(
     private val editorScreen: MapEditorScreenV2
 ): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
     private var tileDataCell: Cell<Table>? = null
-    private val mockCiv = CivilizationInfo()
+    private val mockCiv = createMockCiv(editorScreen.ruleset)
 
     init {
         top()
@@ -29,9 +29,21 @@ class MapEditorViewTab(
         update()
     }
 
-    private fun CivilizationInfo.updateMockCiv() {
+    private fun createMockCiv(ruleset: Ruleset) = CivilizationInfo().apply {
         // This crappy construct exists only to allow us to call TileInfo.getTileStats
+        nation = Nation()
+        nation.name = "Test"
+        gameInfo = GameInfo()
+        gameInfo.ruleSet = ruleset
+        // show yields of strategic resources too
+        tech.techsResearched.addAll(ruleset.technologies.keys)
+    }
+
+    private fun CivilizationInfo.updateMockCiv(ruleset: Ruleset) {
+        if (gameInfo.ruleSet === ruleset) return
+/*
         try {
+            @Suppress("unused_variable")  // we need only test isInitialized which is not accessible here
             val dummy = nation
         } catch (ex: UninitializedPropertyAccessException) {
             nation = Nation()
@@ -42,16 +54,14 @@ class MapEditorViewTab(
         } catch (ex: UninitializedPropertyAccessException) {
             gameInfo = GameInfo()
         }
-        gameInfo.ruleSet = editorScreen.ruleset
-        if (tech.techsResearched.isEmpty()) {
-            // show yields of strategic resources too
-            tech.techsResearched.addAll(editorScreen.ruleset.technologies.keys)
-        }
+*/
+        gameInfo.ruleSet = ruleset
+        tech.techsResearched.addAll(ruleset.technologies.keys)
     }
 
     private fun update() {
         clear()
-        mockCiv.updateMockCiv()
+        mockCiv.updateMockCiv(editorScreen.ruleset)
 
         val tileMap = editorScreen.tileMap
         val labelWidth = editorScreen.stage.width * 0.33f
@@ -76,7 +86,7 @@ class MapEditorViewTab(
             val naturalWonders = sequenceOf(FormattedLine("Natural Wonders", header = 3, color = "#228b22")) +
                 tileMap.naturalWonders.asSequence()
                 .sortedWith(compareBy(collator, { it.tr() }))
-                .map { FormattedLine(it, link = "Terrain/$it") }
+                .map { FormattedLine(it, it, "Terrain/$it") }
             add(MarkupRenderer.render(naturalWonders.toList(), iconDisplay = IconDisplay.NoLink) {
                 scrollToWonder(it)
             }).row()
@@ -137,8 +147,7 @@ class MapEditorViewTab(
         tileDataCell?.setActor(MarkupRenderer.render(lines, iconDisplay = IconDisplay.NoLink))
     }
 
-    private fun scrollToWonder(link: String) {
-        val name = link.split('/')[1]
+    private fun scrollToWonder(name: String) {
         val tile = editorScreen.tileMap.values.filter {
             it.naturalWonder == name
         }.randomOrNull() ?: return

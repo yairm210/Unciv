@@ -607,6 +607,12 @@ class TileMap {
         startingLocationsByNation[nationName]!!.clear()
     }
 
+    /** Removes all starting positions for [position], rebuilding the transients */
+    fun removeStartingLocations(position: Vector2) {
+        startingLocations.removeAll(startingLocations.filter { it.position == position })
+        setStartingLocationsTransients()
+    }
+
     /** Clears starting positions, e.g. after GameStarter is done with them. Does not clear the pseudo-improvements. */
     fun clearStartingLocations() {
         startingLocations.clear()

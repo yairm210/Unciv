@@ -14,25 +14,25 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-//todo 2-Level nested Tabbed controls
-//todo Tab for base terrains
-//todo Tab for terrain features
+//todo Changing mod selection does not enable button
+//todo height of the resources+improvement scroller wrong
+//todo generating a map then going to view won't update the top part
+//todo Nat Wonder step generator: *New* wonders - reseed always? button?
+//todo Implement the actual drawing
 //todo Flood-fill for base terrain or features
-//todo Tab for natural wonders
-//todo Tab for Resources
 //todo Tab for Rivers
-//todo Tool River->to
-//todo Tab for Improvements
+//todo Tool River from->to
 //todo Group Improvements into 2 tabs?
-//todo Tab for Starting Locations
 //todo Brushes
-//todo Mode: Apply only to fitting tiles / force tile to fit 
+//todo Mode: Apply only to fitting tiles / force tile to fit / lax 
 //todo Dirty flag on all edits
 //todo Tab for Units
 //todo allow loading maps from mods (but not saving)
 //todo copy/paste tile areas?
 //todo should the single step generator routines invalidate/overwrite tileMap's parameters?
-//todo Nat Wonder step generator: *New* wonders
+//todo TabbedPager page scroll disabling goes into Widget
+//todo check: will UI map parameters properly go into their backing storage?
+//todo view: wrap stats line
 
 class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
     /** The map being edited, with mod list for that map */

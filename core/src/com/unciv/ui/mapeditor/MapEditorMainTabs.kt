@@ -14,7 +14,7 @@ class MapEditorMainTabs(editorScreen: MapEditorScreenV2) : TabbedPager(headerFon
             MapEditorGenerateTab(editorScreen),
             ImageGetter.getImage("OtherIcons/New"), 25f)
         addPage("Edit",
-            MapEditorEditTab(editorScreen),
+            MapEditorEditTab(editorScreen, headerHeight),
             ImageGetter.getImage("OtherIcons/Terrains"), 25f)
         addPage("Load",
             MapEditorLoadTab(editorScreen, headerHeight),
