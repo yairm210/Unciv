@@ -195,7 +195,7 @@
         "The religion a city follows depends on the total pressure each religion has within the city.",
         "Followers are allocated in the same proportions as these pressures, and these followers can be viewed in the city screen.",
         "Based on this, you can get a feel for which religions have a lot of pressure built up in the city, and which have almost none.",
-        "The city follows a religion if a majority of its population follows that religion, and will only then receive the effects of Follower and Pantheon beliefs of that religion.",
+        "The city follows a religion if a majority of its population follows that religion, and will only then receive the effects of Follower and Pantheon beliefs of that religion."
     ],
     "Spreading_Religion": [
         "Spreading religion happens naturally, but can be sped up using missionaries or great prophets.",
@@ -213,8 +213,7 @@
         "This pressure can also be seen in the city screen, and gives you an idea of how religions in your cities will evolve if you don't do anything.",
         "Holy cities also provide +30 pressure of the religion founded there to themselves, making it very difficult to effectively convert a holy city.",
         "Lastly, before founding a religion, new cities you settle will start with 200 pressure for your pantheon.",
-        "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet.",
-        
+        "This way, all your cities will starting following your pantheon as long as you haven't founded a religion yet."
     ],
     "Inquisitors": [
         "Inquisitors are the last religious unit, and their strength is removing other religions.",
@@ -222,5 +221,12 @@
         "Great prophets also have this ability, and remove all other religions in the city when spreading their religion.",
         "Often this results in the city immediately converting to their religion",
         "Additionally, when an inquisitor is stationed in or directly next to a city center, units of other religions cannot spread their faith there, though natural spread is uneffected."
+    ],
+    "Maya_Long_Count_calendar_cycle": [
+      "The Mayan unique ability, 'The Long Count', comes with a side effect:",
+      "Once active, the game's year display will use mayan notation.",
+      "",
+      "The Maya measured time in days from what we would call 11th of August, 3114 BCE. A day is called K'in, 20 days are a Winal, 18 Winals are a Tun, 20 Tuns are a K'atun, 20 K'atuns are a B'ak'tun, 20 B'ak'tuns a Piktun, and so on.",
+      "Unciv only displays ය B'ak'tuns, ඹ K'atuns and ම Tuns (from left to right) since that is enough to approximate gregorian calendar years. The Maya numerals are pretty obvious to understand. Have fun deciphering them!"
     ]
 }

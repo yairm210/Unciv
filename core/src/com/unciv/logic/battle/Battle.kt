@@ -347,17 +347,20 @@ object Battle {
 
     private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
         if (attacker.isMelee()
-                && (defender.isDefeated() || defender.getCivInfo() == attacker.getCivInfo())
-                // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
-                && (attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
+                && (defender.isDefeated() || defender.getCivInfo() == attacker.getCivInfo())) {
             // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
+            // this has to be checked before canMoveTo, otherwise it will return false
             if (attackedTile.civilianUnit != null && attackedTile.civilianUnit!!.civInfo != attacker.getCivInfo())
                 captureCivilianUnit(attacker, MapUnitCombatant(attackedTile.civilianUnit!!))
-            // Units that can move after attacking are not affected by zone of control if the
-            // movement is caused by killing a unit. Effectively, this means that attack movements
-            // are exempt from zone of control, since units that cannot move after attacking already
-            // lose all remaining movement points anyway.
-            attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
+
+            // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
+            if ((attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
+                // Units that can move after attacking are not affected by zone of control if the
+                // movement is caused by killing a unit. Effectively, this means that attack movements
+                // are exempt from zone of control, since units that cannot move after attacking already
+                // lose all remaining movement points anyway.
+                attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
+            }
         }
     }
 
@@ -477,14 +480,40 @@ object Battle {
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         val capturedUnitTile = capturedUnit.getTile()
+        val originalOwner = if (capturedUnit.originalOwner != null)
+            capturedUnit.civInfo.gameInfo.getCivilization(capturedUnit.originalOwner!!)
+            else null
+
 
         when {
             // Uncapturable units are destroyed
             defender.unit.hasUnique("Uncapturable") -> {
                 capturedUnit.destroy()
             }
+            // City states can never capture settlers at all
+            capturedUnit.hasUnique("Founds a new city") && attacker.getCivInfo().isCityState() -> {
+                capturedUnit.destroy()
+            }
+            // Is it our old unit?
+            attacker.getCivInfo() == originalOwner -> {
+                // Then it is recaptured without converting settlers to workers
+                capturedUnit.capturedBy(attacker.getCivInfo())
+            }
+            // Return captured civilian to its original owner?
+            defender.getCivInfo().isBarbarian()
+                    && originalOwner != null
+                    && !originalOwner.isBarbarian()
+                    && attacker.getCivInfo() != originalOwner
+                    && attacker.getCivInfo().knows(originalOwner)
+                    && originalOwner.isAlive()
+                    && !attacker.getCivInfo().isAtWarWith(originalOwner)
+                    && attacker.getCivInfo().playerType == PlayerType.Human // Only humans get the choice
+                -> {
+                capturedUnit.capturedBy(attacker.getCivInfo())
+                attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.RecapturedCivilian, capturedUnitTile.position.toString()))
+            }
             // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
-            capturedUnit.name == Constants.settler && !attacker.getCivInfo().isBarbarian() -> {
+            capturedUnit.hasUnique("Founds a new city") && !attacker.getCivInfo().isBarbarian() -> {
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
@@ -492,14 +521,7 @@ object Battle {
                 attacker.getCivInfo().placeUnitNearTile(capturedUnitTile.position, Constants.worker)
             }
             else -> {
-                capturedUnit.civInfo.removeUnit(capturedUnit)
-                capturedUnit.assignOwner(attacker.getCivInfo())
-                capturedUnit.currentMovement = 0f
-                // It's possible that the unit can no longer stand on the tile it was captured on.
-                // For example, because it's embarked and the capturing civ cannot embark units yet.
-                if (!capturedUnit.movement.canPassThrough(capturedUnitTile)) {
-                    capturedUnit.movement.teleportToClosestMoveableTile()
-                }
+                capturedUnit.capturedBy(attacker.getCivInfo())
             }
         }
 

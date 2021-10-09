@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -25,6 +26,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
@@ -171,6 +173,9 @@ class CivilizationInfo {
 
     var totalCultureForContests = 0
     var totalFaithForContests = 0
+
+    @Transient
+    var hasLongCountDisplayUnique = false
 
     constructor()
 
@@ -623,8 +628,10 @@ class CivilizationInfo {
 
     fun getGreatPeople(): HashSet<BaseUnit> {
         val greatPeople = gameInfo.ruleSet.units.values.asSequence()
-            .filter { it.isGreatPerson() }.map { getEquivalentUnit(it.name) }
-        return if (!gameInfo.isReligionEnabled()) greatPeople.filter { !it.uniques.contains("Hidden when religion is disabled")}.toHashSet()
+            .filter { it.isGreatPerson() }
+            .map { getEquivalentUnit(it.name) }
+        return if (!gameInfo.isReligionEnabled())
+            greatPeople.filter { !it.hasUnique(Constants.hiddenWithoutReligionUnique) }.toHashSet()
         else greatPeople.toHashSet()
     }
 
@@ -633,6 +640,13 @@ class CivilizationInfo {
 
     fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
     fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4
+
+    fun isLongCountActive(): Boolean {
+        val unique = getMatchingUniques(UniqueType.MayanGainGreatPerson).firstOrNull()
+            ?: return false
+        return tech.isResearched(unique.params[1])
+    }
+    fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
     //endregion
 
@@ -701,6 +715,8 @@ class CivilizationInfo {
             if (lastEraForUnit != null)
                 lastEraResourceUsedForUnit[resource] = lastEraForUnit
         }
+
+        hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
     }
 
     fun updateSightAndResources() {
@@ -729,6 +745,8 @@ class CivilizationInfo {
             val greatPerson = greatPeople.getNewGreatPerson()
             if (greatPerson != null && gameInfo.ruleSet.units.containsKey(greatPerson)) addUnit(greatPerson)
             religionManager.startTurn()
+            if (isLongCountActive())
+                MayaCalendar.startTurnForMaya(this)
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better

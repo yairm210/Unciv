@@ -40,6 +40,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Spiked Club](https://thenounproject.com/search/?q=spiked%20club&i=831793) by Hamish
 * [Bow And Arrow](https://thenounproject.com/search/?q=Bow%20and%20Arrow&i=338261) By Viktor Ostrovsky for Archer
 * [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain for Bowman
+* [Javelin](https://thenounproject.com/term/javelin-thrower/2118369/) By WEBTECHOPS LLP for Atlatlist
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Quinquereme. The original work has been modified.
@@ -213,6 +214,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [Storehouse](https://thenounproject.com/term/storehouse/966786/) By Pedro Santos for Granary
 * [Shinto Gate](https://thenounproject.com/search/?q=shrine&i=253325) by Alexander Skowalsky for Shrine
+* [Pyramid](https://thenounproject.com/term/pyramid/17225/) by Oscar Yáñez for Mayan Pyramid
 * [Great Wall Of China](https://thenounproject.com/term/great-wall-of-china/146039/) By Arthur Shlain for Walls
 * [Markadan Tower](https://thenounproject.com/search/?q=fortification&i=2107694) by Vectors Market for Walls of Babylon
 * [Block](https://thenounproject.com/term/block/1711553/) By Monjin Friends for Stone Works
@@ -571,6 +573,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
     * [royal crown](https://thenounproject.com/term/royal-crown/2054222/) by Vectors Market
     * [Spear](https://thenounproject.com/term/spear/3930020/) by Firza Alamsyah
     * [pennant](https://thenounproject.com/term/pennant/194797/) by Sara Jeffries
+* [Maya civilization](https://thenounproject.com/term/maya-civilization/1715786/) by Olena Panasovska for The Maya
 
 ## Promotions
 
@@ -662,6 +665,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [tick](https://thenounproject.com/term/tick/3968142/) by Adrien Coquet on Nation picker
 * [people](https://thenounproject.com/term/people/458671) by Wilson Joseph as base for Civilopedia category Nations
 * [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains
+* [File:Maya.svg](https://en.wikipedia.org/wiki/File:Maya.svg) for Mayan numerals
+* [East side of stela C, Quirigua](https://en.wikipedia.org/wiki/File:East_side_of_stela_C,_Quirigua.PNG) for Mayan calendar symbols
 
 ## Main menu
 

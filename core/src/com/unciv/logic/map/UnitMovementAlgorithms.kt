@@ -441,6 +441,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // Cache this in case something goes wrong
 
         var lastReachedEnterableTile = unit.getTile()
+        var previousTile = unit.getTile() 
+        var passingMovementSpent = 0f // Movement points spent since last tile we could end our turn on
 
         unit.removeFromTile()
 
@@ -456,23 +458,29 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             }
             unit.moveThroughTile(tile)
 
+            // This fixes a bug where tiles in the fog of war would always only cost 1 mp
+            if (!unit.civInfo.gameInfo.gameParameters.godMode)
+                passingMovementSpent += getMovementCostBetweenAdjacentTiles(previousTile, tile, unit.civInfo)
+            
             // In case something goes wrong, cache the last tile we were able to end on
             // We can assume we can pass through this tile, as we would have broken earlier
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
                 lastReachedEnterableTile = tile
+                unit.currentMovement -= passingMovementSpent
+                passingMovementSpent = 0f
             }
 
-            if (unit.isDestroyed) break
+
+            previousTile = tile
+            
+            if (unit.isDestroyed || unit.currentMovement - passingMovementSpent < Constants.minimumMovementEpsilon) {
+                unit.currentMovement = passingMovementSpent // silly floats which are "almost zero"
+                break
+            }
         }
 
         if (!unit.isDestroyed)
             unit.putInTile(lastReachedEnterableTile)
-
-        if (!unit.civInfo.gameInfo.gameParameters.godMode) {
-            unit.currentMovement -= distanceToTiles[lastReachedEnterableTile]!!.totalDistance
-            if (unit.currentMovement < Constants.minimumMovementEpsilon) 
-                unit.currentMovement = 0f // silly floats which are "almost zero"
-        }
 
         // The .toList() here is because we have a sequence that's running on the units in the tile,
         // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list

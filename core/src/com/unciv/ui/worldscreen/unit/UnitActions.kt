@@ -128,7 +128,7 @@ object UnitActions {
 
     fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        if (!tile.isWater || !unit.hasUnique(Constants.workBoatsUnique) || tile.resource == null) return null
+        if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
 
         val improvementName = tile.getTileResource().improvement ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
@@ -161,9 +161,11 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
-        if (!unit.hasUnique("Founds a new city") || tile.isWater || tile.isImpassible()) return null
+        if (!unit.hasUnique(UniqueType.FoundCity) || tile.isWater || tile.isImpassible()) return null
 
-        if (unit.currentMovement <= 0 || tile.getTilesInDistance(3).any { it.isCityCenter() })
+        if (unit.currentMovement <= 0 ||
+                tile.getTilesInDistance(2).any { it.isCityCenter() } ||
+                tile.getTilesAtDistance(3).any { it.isCityCenter() && it.getContinent() == tile.getContinent() })
             return UnitAction(UnitActionType.FoundCity, action = null)
 
         val foundAction = {
@@ -280,7 +282,7 @@ object UnitActions {
                     tile.improvement = null
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
-                    val freePillage = unit.hasUnique("No movement cost to pillage") ||
+                    val freePillage = unit.hasUnique("No movement cost to pillage") || unit.civInfo.hasUnique("No movement cost to pillage")
                             (unit.baseUnit.isMelee() && unit.civInfo.hasUnique("Melee units pay no movement cost to pillage"))
                     if (!freePillage) unit.useMovementPoints(1f)
 
@@ -481,7 +483,7 @@ object UnitActions {
     }
 
     private fun addFoundReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique("May found a religion")) return 
+        if (!unit.hasUnique(UniqueType.MayFoundReligion)) return
         if (!unit.civInfo.religionManager.mayFoundReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.FoundReligion,
             action = getFoundReligionAction(unit).takeIf { unit.civInfo.religionManager.mayFoundReligionNow(unit) }
@@ -497,7 +499,7 @@ object UnitActions {
     }
 
     private fun addEnhanceReligionAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique("May enhance a religion")) return
+        if (!unit.hasUnique(UniqueType.MayEnhanceReligion)) return
         if (!unit.civInfo.religionManager.mayEnhanceReligionAtAll(unit)) return
         actionList += UnitAction(UnitActionType.EnhanceReligion,
             title = "Enhance [${unit.civInfo.religionManager.religion!!.getReligionDisplayName()}]",

@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
@@ -10,6 +11,7 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.hasPlaceholderParameters
+import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.random.Random
 
@@ -33,7 +35,7 @@ object UniqueTriggerActivation {
             OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
                 val unit = civInfo.gameInfo.ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val placedUnit = civInfo.addUnit(unitName, chosenCity)
@@ -49,7 +51,7 @@ object UniqueTriggerActivation {
             OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
                 val unit = civInfo.gameInfo.ruleSet.units[unitName]
-                if (chosenCity == null || unit == null || (unit.uniques.contains("Founds a new city") && civInfo.isOneCityChallenger()))
+                if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
                 val tilesUnitsWerePlacedOn: MutableList<Vector2> = mutableListOf()
@@ -112,17 +114,29 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
-            OneTimeFreeGreatPerson -> {
+            OneTimeFreeGreatPerson, MayanGainGreatPerson -> {
                 if (civInfo.isSpectator()) return false
+                val greatPeople = civInfo.getGreatPeople()
+                if (unique.type == MayanGainGreatPerson) {
+                    if (civInfo.greatPeople.longCountGPPool.isEmpty())
+                        // replenish maya GP pool when dry
+                        civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
+                }
                 if (civInfo.isPlayerCivilization()) {
                     civInfo.greatPeople.freeGreatPeople++
-                    if (notification != null)
-                        civInfo.addNotification(notification) // Anyone an idea for a good icon?
+                    if (unique.type == MayanGainGreatPerson) {
+                        civInfo.greatPeople.mayaLimitedFreeGP++
+                        civInfo.addNotification(notification!!, MayaLongCountAction(), MayaCalendar.notificationIcon)
+                    } else {
+                        if (notification != null)
+                            civInfo.addNotification(notification) // Anyone an idea for a good icon?
+                    }
                     return true
                 } else {
-                    val greatPeople = civInfo.getGreatPeople()
+                    if (unique.type == MayanGainGreatPerson)
+                        greatPeople.removeAll { it.name !in civInfo.greatPeople.longCountGPPool }
                     if (greatPeople.isEmpty()) return false
-                    var greatPerson = civInfo.getGreatPeople().random()
+                    var greatPerson = greatPeople.random()
 
                     val preferredVictoryType = civInfo.victoryType()
                     if (preferredVictoryType == VictoryType.Cultural) {
@@ -136,6 +150,8 @@ object UniqueTriggerActivation {
                         if (scientificGP != null) greatPerson = scientificGP
                     }
 
+                    if (unique.type == MayanGainGreatPerson)
+                        civInfo.greatPeople.longCountGPPool.remove(greatPerson.name)
                     return civInfo.addUnit(greatPerson.name, chosenCity) != null
                 }
             }

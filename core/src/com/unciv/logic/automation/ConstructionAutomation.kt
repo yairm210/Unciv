@@ -1,6 +1,5 @@
 package com.unciv.logic.automation
 
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.PerpetualConstruction
@@ -10,8 +9,8 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.models.translations.equalsPlaceholderText
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -47,7 +46,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     fun chooseNextConstruction() {
         if (!UncivGame.Current.settings.autoAssignCityProduction
-                && civInfo.playerType== PlayerType.Human && !cityInfo.isPuppet)
+            && civInfo.playerType == PlayerType.Human && !cityInfo.isPuppet
+        )
             return
         if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
 
@@ -62,33 +62,37 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addSpaceshipPartChoice()
         addOtherBuildingChoice()
 
-        if(!cityInfo.isPuppet) {
+        if (!cityInfo.isPuppet) {
             addWondersChoice()
             addWorkerChoice()
             addWorkBoatChoice()
             addMilitaryUnitChoice()
         }
-        
+
         val production = cityInfo.cityStats.currentCityStats.production
 
-        val theChosenOne: String
-        if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
-            // add science!
-            if (PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched)
-                theChosenOne = "Science"
-            else if (PerpetualConstruction.gold.isBuildable(cityConstructions))
-                theChosenOne = "Gold"
-            else theChosenOne = "Nothing"
-        } else if (relativeCostEffectiveness.any { it.remainingWork < production * 30 }) {
-            relativeCostEffectiveness.removeAll { it.remainingWork >= production * 30 }
-            theChosenOne = relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier }!!.choice
-        }
-        // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
-        // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
-        else theChosenOne = relativeCostEffectiveness.minByOrNull { it.remainingWork }!!.choice
+        val chosenConstruction: String =
+            if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
+                // add science!
+                when {
+                    PerpetualConstruction.science.isBuildable(cityConstructions) && !allTechsAreResearched -> PerpetualConstruction.science.name
+                    PerpetualConstruction.gold.isBuildable(cityConstructions) -> PerpetualConstruction.gold.name
+                    else -> PerpetualConstruction.idle.name
+                }
+            } else if (relativeCostEffectiveness.any { it.remainingWork < production * 30 }) {
+                relativeCostEffectiveness.removeAll { it.remainingWork >= production * 30 }
+                relativeCostEffectiveness.minByOrNull { it.remainingWork / it.choiceModifier }!!.choice
+            }
+            // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
+            // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
+            else relativeCostEffectiveness.minByOrNull { it.remainingWork }!!.choice
 
-        civInfo.addNotification("Work has started on [$theChosenOne]",  CityAction(cityInfo.location), NotificationIcon.Construction)
-        cityConstructions.currentConstructionFromQueue = theChosenOne
+        civInfo.addNotification(
+            "Work has started on [$chosenConstruction]",
+            CityAction(cityInfo.location),
+            NotificationIcon.Construction
+        )
+        cityConstructions.currentConstructionFromQueue = chosenConstruction
     }
 
     private fun addMilitaryUnitChoice() {
@@ -105,7 +109,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
 
             val civilianUnit = cityInfo.getCenterTile().civilianUnit
-            if (civilianUnit != null && civilianUnit.hasUnique(Constants.settlerUnique)
+            if (civilianUnit != null && civilianUnit.hasUnique(UniqueType.FoundCity)
                     && cityInfo.getCenterTile().getTilesInDistance(5).none { it.militaryUnit?.civInfo == civInfo })
                 modifier = 5f // there's a settler just sitting here, doing nothing - BAD
 
@@ -115,10 +119,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkBoatChoice() {
         val buildableWorkboatUnits = cityInfo.cityConstructions.getConstructableUnits()
-                .filter { it.uniques.contains(Constants.workBoatsUnique)
+                .filter { it.hasUnique(UniqueType.CreateWaterImprovements)
                         && Automation.allowSpendingResource(civInfo, it) }
         val canBuildWorkboat = buildableWorkboatUnits.any()
-                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique(Constants.workBoatsUnique) == true }
+                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true }
         if (!canBuildWorkboat) return
         val tilesThatNeedWorkboat = cityInfo.getTiles()
                 .filter { it.isWater && it.hasViewableResource(civInfo) && it.improvement == null }.toList()
@@ -139,9 +143,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkerChoice() {
         val workerEquivalents = civInfo.gameInfo.ruleSet.units.values
-                .filter { it.uniques.any {
-                        unique -> unique.equalsPlaceholderText(Constants.canBuildImprovements)
-                } && it.isBuildable(cityConstructions)
+            .filter {
+                it.hasUnique(UniqueType.BuildImprovements)
+                && it.isBuildable(cityConstructions)
                 && Automation.allowSpendingResource(civInfo, it) }
         if (workerEquivalents.isEmpty()) return // for mods with no worker units
         if (civInfo.getIdleUnits().any { it.isAutomated() && it.hasUniqueToBuildImprovements })

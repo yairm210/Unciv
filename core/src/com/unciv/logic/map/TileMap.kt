@@ -280,7 +280,7 @@ class TileMap {
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
     fun getViewableTiles(position: Vector2, sightDistance: Int): List<TileInfo> {
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
-        val currentTileHeight = get(position).getHeight()
+        val currentTileHeight = get(position).height
 
         for (i in 1..sightDistance) { // in each layer,
             // This is so we don't use tiles in the same distance to "see over",
@@ -288,7 +288,7 @@ class TileMap {
             val tilesToAddInDistanceI = ArrayList<TileInfo>()
 
             for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
-                val cTileHeight = cTile.getHeight()
+                val cTileHeight = cTile.height
 
                 /*
             Okay so, if we're looking at a tile from a to c with b in the middle,
@@ -307,7 +307,7 @@ class TileMap {
 
                 val containsViewableNeighborThatCanSeeOver = cTile.neighbors.any {
                         bNeighbor: TileInfo ->
-                    val bNeighborHeight = bNeighbor.getHeight()
+                    val bNeighborHeight = bNeighbor.height
                     viewableTiles.contains(bNeighbor) && (
                             currentTileHeight > bNeighborHeight // a>b
                                     || cTileHeight > bNeighborHeight // c>b
@@ -410,6 +410,8 @@ class TileMap {
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
+        // remember our first owner
+        unit.originalOwner = civInfo.civName
 
         var unitToPlaceTile: TileInfo? = null
         // try to place at the original point (this is the most probable scenario)

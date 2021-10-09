@@ -2,10 +2,7 @@ package com.unciv
 
 object Constants {
     const val worker = "Worker"
-    const val canBuildImprovements = "Can build [] improvements on tiles"
-    const val workBoatsUnique = "May create improvements on water resources"
     const val settler = "Settler"
-    const val settlerUnique = "Founds a new city"
     const val eraSpecificUnit = "Era Starting Unit"
     const val spreadReligionAbilityCount = "Spread Religion"
     const val removeHeresyAbilityCount = "Remove Foreign religions from your own cities"

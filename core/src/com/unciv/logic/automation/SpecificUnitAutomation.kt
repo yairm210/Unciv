@@ -159,17 +159,23 @@ object SpecificUnitAutomation {
             && !unit.civInfo.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
             && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
 
-        val tilesNearCities = unit.civInfo.gameInfo.getCities().asSequence()
-                .flatMap {
-                    val distanceAwayFromCity =
-                            if (unit.civInfo.knows(it.civInfo)
-                                    // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                                    && it.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs))
-                                6
-                            else 3
-                    it.getCenterTile().getTilesInDistance(distanceAwayFromCity)
+        val tilesNearCities = sequence {
+            for (city in unit.civInfo.gameInfo.getCities()) {
+                val center = city.getCenterTile()
+                if (unit.civInfo.knows(city.civInfo) &&
+                            // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
+                            city.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
+                        ) {
+                    yieldAll(center.getTilesInDistance(6))
+                    continue
                 }
-                .toSet()
+                for (tile in center.getTilesAtDistance(3)) {
+                    if (tile.getContinent() == center.getContinent())
+                        yield(tile)
+                }
+                yieldAll(center.getTilesInDistance(2))
+            }
+        }.toSet()
 
         // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)
