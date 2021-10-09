@@ -302,11 +302,13 @@ class MapUnit {
             if (isEmbarked()) 2
             else baseUnit.movement
 
-        movement += getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this))
+        movement += (getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this)) +
+             civInfo.getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this)))
             .sumOf { it.params[0].toInt() }
 
         // Deprecated since 3.17.5
-            for (unique in civInfo.getMatchingUniques(UniqueType.MovementUnits))
+            for (unique in civInfo.getMatchingUniques(UniqueType.MovementUnits)
+                    + getMatchingUniques(UniqueType.MovementUnits))
                 if (matchesFilter(unique.params[1]))
                     movement += unique.params[0].toInt()
     
@@ -335,12 +337,14 @@ class MapUnit {
     private fun getVisibilityRange(): Int {
         var visibilityRange = 2
 
-        if (isEmbarked() && !hasUnique("Normal vision when embarked")) {
+        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked)
+            && !civInfo.hasUnique(UniqueType.NormalVisionWhenEmbarked)) {
             return 1
         }
         
-        visibilityRange += getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
-            .sumOf { it.params[0].toInt() }
+        visibilityRange += (getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
+                + civInfo.getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
+                ).sumOf { it.params[0].toInt() }
         
         // Deprecated since 3.17.5
             for (unique in getMatchingUniques(UniqueType.SightUnits))
@@ -1098,7 +1102,8 @@ class MapUnit {
                     pressureAdded *= unique.params[0].toPercent()
         //
         
-        for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, StateForConditionals(civInfo = civInfo, unit = this)))
+        for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, StateForConditionals(civInfo = civInfo, unit = this))
+                + civInfo.getMatchingUniques(UniqueType.SpreadReligionStrength, StateForConditionals(civInfo = civInfo, unit = this)))
             pressureAdded *= unique.params[0].toPercent()
 
         return pressureAdded.toInt()
