@@ -104,6 +104,8 @@ class QuestManager {
 
         tryStartNewGlobalQuest()
         tryStartNewIndividualQuests()
+
+        tryBarbarianInvasion()
     }
 
     private fun decrementQuestCountdowns() {
@@ -197,6 +199,22 @@ class QuestManager {
                 assignNewQuest(quest, assignees)
                 break
             }
+        }
+    }
+
+    private fun tryBarbarianInvasion() {
+        if ((civInfo.getTurnsTillCallForBarbHelp() == null || civInfo.getTurnsTillCallForBarbHelp() == 0)
+            && civInfo.getNumThreateningBarbarians() >= 2) {
+
+            for (otherCiv in civInfo.getKnownCivs().filter {
+                    it.isMajorCiv()
+                    && it.isAlive()
+                    && !it.isAtWarWith(civInfo)
+                    && it.getProximity(civInfo) <= Proximity.Far }) {
+                otherCiv.addNotification("[${civInfo.civName}] is being invaded by Barbarians and calls for help! Each Barbarian killed will earn you Influence with them.",
+                    LocationAction(listOf(civInfo.getCapital().location)), civInfo.civName, NotificationIcon.War)
+            }
+            civInfo.addFlag(CivFlags.TurnsTillCallForBarbHelp.name, 30)
         }
     }
 

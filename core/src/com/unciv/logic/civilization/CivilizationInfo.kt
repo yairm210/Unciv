@@ -857,6 +857,7 @@ class CivilizationInfo {
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
     fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
+    fun getTurnsTillCallForBarbHelp() = flagsCountdown[CivFlags.TurnsTillCallForBarbHelp.name]
 
     fun mayVoteForDiplomaticVictory() =
         getTurnsTillNextDiplomaticVote() == 0 
@@ -1151,6 +1152,7 @@ class CivilizationInfo {
     fun getFreeTechForCityState() {
         cityStateFunctions.getFreeTechForCityState()
     }
+    fun getNumThreateningBarbarians() = cityStateFunctions.getNumThreateningBarbarians()
     fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
         cityStateFunctions.threateningBarbarianKilledBy(otherCiv)
     }
@@ -1181,5 +1183,6 @@ enum class CivFlags {
     TurnsTillNextDiplomaticVote,
     ShowDiplomaticVotingResults,
     ShouldResetDiplomaticVotes,
-    RecentlyBullied
+    RecentlyBullied,
+    TurnsTillCallForBarbHelp,
 }

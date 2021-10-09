@@ -473,7 +473,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         return
     }
 
-    private fun getNumThreateningBarbarians(): Int {
+    fun getNumThreateningBarbarians(): Int {
         if (civInfo.gameInfo.gameParameters.noBarbarians) return 0
         val barbarianCiv = civInfo.gameInfo.civilizations.firstOrNull { it.isBarbarian() }
             ?: return 0
@@ -482,6 +482,8 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
         val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+        if (diplomacy.diplomaticStatus == DiplomaticStatus.War) return // No reward for enemies
+
         diplomacy.addInfluence(12f)
         if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion))
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
