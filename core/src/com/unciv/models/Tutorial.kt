@@ -1,7 +1,7 @@
 package com.unciv.models
 
 enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.startsWith("_")) {
-    
+
     Introduction("Introduction"),
     NewGame("New_Game"),
     SlowStart("_Slow_Start"),
@@ -42,6 +42,7 @@ enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.start
     Beliefs("Beliefs"),
     SpreadingReligion("Spreading_Religion"),
     Inquisitors("Inquisitors"),
+    MayanCalendar("Maya_Long_Count_calendar_cycle"),
     ;
 
     companion object {

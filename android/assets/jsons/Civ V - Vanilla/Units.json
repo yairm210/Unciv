@@ -124,6 +124,20 @@
 		"promotions": ["Slinger Withdraw"],
 		"attackSound": "arrow"
 	},
+	{
+		"name": "Atlatlist",
+		"unitType": "Archery",
+		"movement": 2,
+		"strength": 5,
+		"rangedStrength": 7,
+		"cost": 36,
+		"requiredTech": "Agriculture",
+		"obsoleteTech": "Machinery",
+		"replaces": "Archer",
+		"uniqueTo": "The Maya",
+		"upgradesTo": "Composite Bowman",
+		"attackSound": "arrow"
+	},
 	/*
 	{
 		"name": "Archer",
