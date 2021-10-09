@@ -223,7 +223,7 @@ class TileMap {
     }
 
     /**
-     * Returns the clockPosition of [otherTile] seen from [tile]'s position
+     * Returns the clock position of [otherTile] seen from [tile]'s position
      * Returns -1 if not neighbors
      */
     fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int {
@@ -247,6 +247,32 @@ class TileMap {
             yDifference == -1f || yWrapDifferenceTop == -1f -> 2 // otherTile is top-right
             else -> -1
         }
+    }
+
+    /**
+     * Returns the neighbor tile of [tile] at [clockPosition], if it exists.
+     * Takes world wrap into account
+     * Returns null if there is no such neighbor tile or if [clockPosition] is not a valid clock position
+     */
+    fun getClockPositionNeighborTile(tile: TileInfo, clockPosition: Int): TileInfo? {
+        val difference = clockPositionToHexVector(clockPosition)
+        if (difference == Vector2.Zero) return null
+        val possibleNeighborPosition = tile.position.cpy().add(difference)
+        return getIfTileExistsOrNull(possibleNeighborPosition.x.toInt(), possibleNeighborPosition.y.toInt())
+    }
+
+    private val clockPositionToHexVectorMap: Map<Int, Vector2> = mapOf(
+        0 to Vector2(1f, 1f), // Adding this alias of "12" makes clock modulo logic easier
+        12 to Vector2(1f, 1f),
+        2 to Vector2(0f, 1f),
+        4 to Vector2(-1f, 0f),
+        6 to Vector2(-1f, -1f),
+        8 to Vector2(0f, -1f),
+        10 to Vector2(1f, 0f)
+    )
+
+    private fun clockPositionToHexVector(clockPosition: Int): Vector2 {
+        return clockPositionToHexVectorMap[clockPosition]?: Vector2.Zero
     }
 
     /** Convert relative direction of [otherTile] seen from [tile]'s position into a vector

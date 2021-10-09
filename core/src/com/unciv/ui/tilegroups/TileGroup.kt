@@ -430,22 +430,44 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         val civOuterColor = tileInfo.getOwner()!!.nation.getOuterColor()
         val civInnerColor = tileInfo.getOwner()!!.nation.getInnerColor()
         for (neighbor in tileInfo.neighbors) {
+            var shouldRemoveBorderSegment = false
+            var shouldAddBorderSegment = false
+
+            var borderSegmentShouldBeLeftConcave = false
+            var borderSegmentShouldBeRightConcave = false
+
             val neighborOwner = neighbor.getOwner()
-            if (neighborOwner == tileOwner && borderSegments.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
-            {
+            if (neighborOwner == tileOwner && borderSegments.containsKey(neighbor)) { // the neighbor used to not belong to us, but now it's ours
+                shouldRemoveBorderSegment = true
+            }
+            else if (neighborOwner != tileOwner) {
+                val leftSharedNeighbor = tileInfo.getLeftSharedNeighbor(neighbor)
+                val rightSharedNeighbor = tileInfo.getRightSharedNeighbor(neighbor)
+
+                borderSegmentShouldBeLeftConcave = leftSharedNeighbor == null || leftSharedNeighbor.getOwner() == tileOwner
+                borderSegmentShouldBeRightConcave = rightSharedNeighbor == null || rightSharedNeighbor.getOwner() == tileOwner
+
+                if (!borderSegments.containsKey(neighbor)) { // there should be a border here but there isn't
+                    shouldAddBorderSegment = true
+                }
+                else if (
+                    borderSegmentShouldBeLeftConcave != borderSegments[neighbor]!!.isLeftConcave ||
+                    borderSegmentShouldBeRightConcave != borderSegments[neighbor]!!.isRightConcave
+                ) { // the concave/convex-ity of the border here is wrong
+                    shouldRemoveBorderSegment = true
+                    shouldAddBorderSegment = true
+                }
+            }
+
+            if (shouldRemoveBorderSegment) {
                 for (image in borderSegments[neighbor]!!.images)
                     image.remove()
                 borderSegments.remove(neighbor)
             }
-            if (neighborOwner != tileOwner && !borderSegments.containsKey(neighbor)) { // there should be a border here but there isn't
-
+            if (shouldAddBorderSegment) {
                 val images = mutableListOf<Image>()
-                val borderSegment = BorderSegment(images)
+                val borderSegment = BorderSegment(images, borderSegmentShouldBeLeftConcave, borderSegmentShouldBeRightConcave)
                 borderSegments[neighbor] = borderSegment
-
-                //todo find convex/concave
-                borderSegment.isLeftConcave = false
-                borderSegment.isRightConcave = false
 
                 val borderShapeString = when {
                     borderSegment.isLeftConcave && borderSegment.isRightConcave -> "Concave"
