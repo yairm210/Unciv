@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
+import com.unciv.logic.automation.UnitAutomation.wander
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
@@ -171,6 +172,10 @@ class WorkerAutomation(
         if (WorkerAutomationConst.consoleOutput)
             println("WorkerAutomation: ${unit.label()} -> nothing to do")
         unit.civInfo.addNotification("${unit.shortDisplayName()} has no work to do.", currentTile.position, unit.name, "OtherIcons/Sleep")
+
+        // Idle CS units should wander so they don't obstruct players so much
+        if (unit.civInfo.isCityState())
+            wander(unit, stayInTerritory = true)
     }
 
     /**

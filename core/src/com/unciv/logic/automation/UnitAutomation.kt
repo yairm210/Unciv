@@ -62,14 +62,15 @@ object UnitAutomation {
     }
 
     @JvmStatic
-    fun wander(unit: MapUnit) {
+    fun wander(unit: MapUnit, stayInTerritory: Boolean = false) {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val reachableTiles = unitDistanceToTiles
                 .filter { unit.movement.canMoveTo(it.key) && unit.movement.canReach(it.key) }
 
         val reachableTilesMaxWalkingDistance = reachableTiles
                 .filter { it.value.totalDistance == unit.currentMovement
-                        && unit.getDamageFromTerrain(it.key) <= 0 } // Don't end turn on damaging terrain for no good reason
+                        && unit.getDamageFromTerrain(it.key) <= 0 // Don't end turn on damaging terrain for no good reason
+                        && (!stayInTerritory || it.key.getOwner() == unit.civInfo) }
         if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
         else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
     }
@@ -182,6 +183,10 @@ object UnitAutomation {
 
         // else, try to go to unreached tiles
         if (tryExplore(unit)) return
+
+        // Idle CS units should wander so they don't obstruct players so much
+        if (unit.civInfo.isCityState())
+            wander(unit, stayInTerritory = true)
     }
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
