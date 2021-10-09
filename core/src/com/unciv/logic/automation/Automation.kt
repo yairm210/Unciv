@@ -4,10 +4,12 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.ui.victoryscreen.RankingType
@@ -59,6 +61,26 @@ object Automation {
             city.cityConstructions.currentConstructionFromQueue = chosenUnitName
     }
 
+    fun providesUnneededCarryingSlots(baseUnit: BaseUnit, civInfo: CivilizationInfo): Boolean {
+        // Simplified, will not work for crazy mods with more than one carrying filter for a unit
+        val carryUnique = baseUnit.getMatchingUniques(UniqueType.CarryAirUnits).first()
+        val carryFilter = carryUnique.params[1]
+
+        fun getCarryAmount(mapUnit: MapUnit): Int {
+            val mapUnitCarryUnique =
+                mapUnit.getMatchingUniques(UniqueType.CarryAirUnits).firstOrNull() ?: return 0
+            if (mapUnitCarryUnique.params[1] != carryFilter) return 0 //Carries a different type of unit
+            return mapUnitCarryUnique.params[0].toInt() +
+                    mapUnit.getMatchingUniques(UniqueType.CarryExtraAirUnits)
+                        .filter { it.params[1] == carryFilter }.sumOf { it.params[0].toInt() }
+        }
+
+        val totalCarriableUnits =
+            civInfo.getCivUnits().count { it.matchesFilter(carryFilter) }
+        val totalCarryingSlots = civInfo.getCivUnits().sumOf { getCarryAmount(it) }
+        return totalCarriableUnits < totalCarryingSlots
+    }
+
     fun chooseMilitaryUnit(city: CityInfo): String? {
         var militaryUnits =
             city.cityConstructions.getConstructableUnits().filter { !it.isCivilian() }
@@ -66,7 +88,6 @@ object Automation {
         if (militaryUnits.map { it.name }
                 .contains(city.cityConstructions.currentConstructionFromQueue))
             return city.cityConstructions.currentConstructionFromQueue
-
 
         val findWaterConnectedCitiesAndEnemies =
             BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
@@ -77,8 +98,15 @@ object Automation {
             }) // there is absolutely no reason for you to make water units on this body of water.
             militaryUnits = militaryUnits.filter { !it.isWaterUnit() }
 
+
+        val carryingUnits = militaryUnits.filter { it.hasUnique(UniqueType.CarryAirUnits) }.toList()
+
+        for (unit in carryingUnits)
+            if (providesUnneededCarryingSlots(unit, city.civInfo))
+                militaryUnits = militaryUnits.filterNot { it == unit }
+
         val chosenUnit: BaseUnit
-        if (!city.civInfo.isAtWar() 
+        if (!city.civInfo.isAtWar()
             && city.civInfo.cities.any { it.getCenterTile().militaryUnit == null }
             && militaryUnits.any { it.isRanged() } // this is for city defence so get a ranged unit if we can
         ) {
