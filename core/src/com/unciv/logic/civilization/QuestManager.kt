@@ -227,7 +227,7 @@ class QuestManager {
                     && it.isAlive()
                     && !it.isAtWarWith(civInfo)
                     && it.getProximity(civInfo) <= Proximity.Far }) {
-                otherCiv.addNotification("[${civInfo.civName}] is being invaded by Barbarians and calls for help! Each Barbarian killed will earn you Influence with them.",
+                otherCiv.addNotification("[${civInfo.civName}] is being invaded by Barbarians! Each Barbarian killed near their territory will earn you Influence.",
                     LocationAction(listOf(civInfo.getCapital().location)), civInfo.civName, NotificationIcon.War)
             }
             civInfo.addFlag(CivFlags.TurnsTillCallForBarbHelp.name, 30)

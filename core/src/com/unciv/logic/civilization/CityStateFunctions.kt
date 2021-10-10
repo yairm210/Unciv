@@ -485,10 +485,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (diplomacy.diplomaticStatus == DiplomaticStatus.War) return // No reward for enemies
 
         diplomacy.addInfluence(12f)
+        
         if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion))
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
         else
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
+        
+        otherCiv.addNotification("[${civInfo.civName}] is grateful that you killed a Barbarian that was threatening them!",
+            DiplomacyAction(civInfo.civName), civInfo.civName)
     }
 
     /** A city state was bullied. What are its protectors going to do about it??? */
