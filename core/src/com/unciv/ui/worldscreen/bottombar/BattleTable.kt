@@ -228,31 +228,17 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
-        var canNuke = true
-        val defenderNameWrapper = Table()
+        
+        val canNuke = Battle.mayUseNuke(attacker, targetTile)
+
         val blastRadius =
             if (!attacker.unit.hasUnique("Blast radius []")) 2
             else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+        
+        val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
-
-            //To make sure we dont nuke civilisations we cant declare war with
-            val attackerCiv = attacker.getCivInfo()
-            val defenderTileCiv = tile.getCity()?.civInfo
-
-            if(defenderTileCiv != null && defenderTileCiv.knows(attackerCiv)) {
-                val canAttackDefenderCiv = attackerCiv.getDiplomacyManager(defenderTileCiv).canAttack()
-                canNuke = canNuke && canAttackDefenderCiv
-            }
             val defender = tryGetDefenderAtTile(tile, true) ?: continue
-
-            val defenderUnitCiv = defender.getCivInfo()
-
-            if( defenderUnitCiv.knows(attackerCiv))
-            {
-                val canAttackDefenderUnitCiv = attackerCiv.getDiplomacyManager(defenderUnitCiv).canAttack()
-                canNuke = canNuke && canAttackDefenderUnitCiv
-            }
-
+            
             val defenderLabel = Label(defender.getName().tr(), skin)
             when (defender) {
                 is MapUnitCombatant ->
@@ -271,7 +257,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         addSeparator().pad(0f)
         row().pad(5f)
 
-        val attackButton = "NUKE".toTextButton().apply { color= Color.RED }
+        val attackButton = "NUKE".toTextButton().apply { color = Color.RED }
 
         val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
 
