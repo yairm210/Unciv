@@ -13,6 +13,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -232,8 +233,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val canNuke = Battle.mayUseNuke(attacker, targetTile)
 
         val blastRadius =
-            if (!attacker.unit.hasUnique("Blast radius []")) 2
-            else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
+            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
         
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {

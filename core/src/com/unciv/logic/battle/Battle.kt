@@ -11,6 +11,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.toPercent
@@ -541,8 +542,8 @@ object Battle {
     
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: TileInfo): Boolean {
         val blastRadius =
-            if (!nuke.unit.hasUnique("Blast radius []")) 2
-            else nuke.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+            if (!nuke.unit.hasUnique(UniqueType.BlastRadius)) 2
+            else nuke.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
 
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()
@@ -575,8 +576,8 @@ object Battle {
         }
 
         val blastRadius =
-            if (!attacker.unit.hasUnique("Blast radius []")) 2
-            else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
+            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
 
         val strength = when {
             (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->
