@@ -184,9 +184,24 @@ object HexMath {
             (abs(relativeX) + abs(relativeY)).toInt()
     }
 
+    private val clockPositionToHexVectorMap: Map<Int, Vector2> = mapOf(
+        0 to Vector2(1f, 1f), // This alias of 12 makes clock modulo logic easier
+        12 to Vector2(1f, 1f),
+        2 to Vector2(0f, 1f),
+        4 to Vector2(-1f, 0f),
+        6 to Vector2(-1f, -1f),
+        8 to Vector2(0f, -1f),
+        10 to Vector2(1f, 0f)
+    )
+
+    /** Returns the hex-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
+    fun getClockPositionToHexVector(clockPosition: Int): Vector2 {
+        return clockPositionToHexVectorMap[clockPosition]?: Vector2.Zero
+    }
+
     // Statically allocate the Vectors (in World coordinates)
     // of the 6 clock directions for border and road drawing in TileGroup 
-    private val clockToWorldVectors: Map<Int,Vector2> = mapOf(
+    private val clockPositionToWorldVectorMap: Map<Int,Vector2> = mapOf(
         2 to hex2WorldCoords(Vector2(0f, -1f)),
         4 to hex2WorldCoords(Vector2(1f, 0f)),
         6 to hex2WorldCoords(Vector2(1f, 1f)),
@@ -194,8 +209,9 @@ object HexMath {
         10 to hex2WorldCoords(Vector2(-1f, 0f)),
         12 to hex2WorldCoords(Vector2(-1f, -1f)) )
 
-    fun getClockDirectionToWorldVector(clockDirection: Int): Vector2 =
-        clockToWorldVectors[clockDirection] ?: Vector2.Zero
+    /** Returns the world/screen-space distance corresponding to [clockPosition], or a zero vector if [clockPosition] is invalid */
+    fun getClockPositionToWorldVector(clockPosition: Int): Vector2 =
+        clockPositionToWorldVectorMap[clockPosition] ?: Vector2.Zero
 
     fun getDistanceFromEdge(vector: Vector2, mapParameters: MapParameters): Int {
         val x = vector.x.toInt()
