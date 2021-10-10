@@ -636,7 +636,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         for (thirdCiv in civInfo.getKnownCivs().filter {
                 it != attacker && it.isAlive() && it.knows(attacker) && !it.isAtWarWith(attacker) }) {
-            thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}] and might be conquered! They ask all major civilizations to help them out by gifting them military units.",
+            thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}] and ask all major civilizations to help them out by gifting them military units.",
                 civInfo.getCapital().location, civInfo.civName, "OtherIcons/Present")
         }
     }

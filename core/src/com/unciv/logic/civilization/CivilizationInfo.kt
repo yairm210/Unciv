@@ -503,6 +503,8 @@ class CivilizationInfo {
         }
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
+        
+        questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {

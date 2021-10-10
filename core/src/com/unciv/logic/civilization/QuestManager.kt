@@ -526,9 +526,9 @@ class QuestManager {
         // Ask for assistance
         for (thirdCiv in civInfo.getKnownCivs().filter { it.isAlive() && !it.isAtWarWith(civInfo) }) {
             if (location != null)
-                thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}] and call for help! If you are able to kill [$unitsToKill] of the attacker's military units, they will be immensely grateful.",
+                thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
                     location, civInfo.civName, "OtherIcons/Quest")
-            else thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}] and call for help! If you are able to kill [$unitsToKill] of the attacker's military units, they will be immensely grateful.",
+            else thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
                 civInfo.civName, "OtherIcons/Quest")
         }
     }
@@ -557,9 +557,26 @@ class QuestManager {
             endWarWithMajorQuest(killed)
         }
     }
+    
+    /** Called when a major civ meets the city-state for the first time. Mainly for war with major pseudo-quest. */
+    fun justMet(otherCiv: CivilizationInfo) {
+        val location = if (civInfo.cities.isEmpty()) null
+            else civInfo.getCapital().location
+        
+        for ((attackerName, unitsToKill) in unitsToKillForCiv) {
+            if (location != null)
+                otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
+                    location, civInfo.civName, "OtherIcons/Quest")
+            else otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
+                civInfo.civName, "OtherIcons/Quest")
+        }
+    }
 
     /** Ends War with Major pseudo-quests that aren't relevant any longer */
     private fun tryEndWarWithMajorQuests() {
+        val location = if (civInfo.cities.isEmpty()) null
+            else civInfo.getCapital().location
+        
         for (attacker in unitsToKillForCiv.keys.map { civInfo.gameInfo.getCivilization(it) }) {
             if (civInfo.isDefeated()
                 || attacker.isDefeated()
