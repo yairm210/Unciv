@@ -187,7 +187,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
             val locations = randomness.chooseSpreadOutLocations(resourcesPerType, suitableTiles, mapRadius)
 
-            for (location in locations) location.resource = resource.name
+            for (location in locations) location.setTileResource(resource)
         }
     }
 
@@ -211,11 +211,10 @@ class MapGenerator(val ruleset: Ruleset) {
         for (tile in locations) {
             val possibleResources = resourcesOfType
                     .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) }
-                    .map { it.name }
             if (possibleResources.isEmpty()) continue
-            val resourceWithLeastAssignments = possibleResources.minByOrNull { resourceToNumber[it]!! }!!
-            resourceToNumber.add(resourceWithLeastAssignments, 1)
-            tile.resource = resourceWithLeastAssignments
+            val resourceWithLeastAssignments = possibleResources.minByOrNull { resourceToNumber[it.name]!! }!!
+            resourceToNumber.add(resourceWithLeastAssignments.name, 1)
+            tile.setTileResource(resourceWithLeastAssignments)
         }
     }
 

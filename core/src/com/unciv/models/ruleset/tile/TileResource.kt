@@ -16,6 +16,9 @@ class TileResource : RulesetStatsObject() {
     var revealedBy: String? = null
     @Deprecated("As of 3.16.16 - replaced by uniques")
     var unique: String? = null
+    var majorDepositAmount: HashMap<String, Int> = HashMap()
+    var minorDepositAmount: HashMap<String, Int> = HashMap()
+    
     override fun getUniqueTarget() = UniqueTarget.Resource
 
 
