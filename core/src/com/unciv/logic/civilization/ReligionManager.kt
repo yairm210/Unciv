@@ -251,7 +251,7 @@ class ReligionManager {
         )
         newReligion.founderBeliefs.addAll(
             beliefs
-                .filter { it.type == BeliefType.Founder }
+                .filter { it.type == BeliefType.Founder || it.type == BeliefType.Enhancer }
                 .map { it.name }
         )
 
@@ -322,8 +322,8 @@ class ReligionManager {
     }
 
     fun enhanceReligion(beliefs: List<Belief>) {
-        religion!!.followerBeliefs.addAll(beliefs.filter { it.type == BeliefType.Follower}.map { it.name })
-        religion!!.founderBeliefs.addAll(beliefs.filter { it.type == BeliefType.Enhancer}.map { it.name })
+        religion!!.followerBeliefs.addAll(beliefs.filter { it.type == BeliefType.Follower || it.type == BeliefType.Pantheon }.map { it.name })
+        religion!!.founderBeliefs.addAll(beliefs.filter { it.type == BeliefType.Enhancer || it.type == BeliefType.Founder }.map { it.name })
         religionState = ReligionState.EnhancedReligion
     }
 
