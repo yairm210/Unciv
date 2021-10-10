@@ -691,12 +691,6 @@ open class TileInfo {
     fun setTransients() {
         setTerrainTransients()
         setUnitTransients(true)
-
-        // Old save or bad mapgen?
-        if (resource != null && getTileResource().resourceType == ResourceType.Strategic && resourceAmount == 0) {
-            // Let's assume it's a small deposit
-            setTileResource(getTileResource(), majorDeposit = false)
-        }
     }
 
     fun setTerrainTransients() {
@@ -708,6 +702,12 @@ open class TileInfo {
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
+
+        // Resource amounts missing - Old save or bad mapgen?
+        if (resource != null && getTileResource().resourceType == ResourceType.Strategic && resourceAmount == 0) {
+            // Let's assume it's a small deposit
+            setTileResource(getTileResource(), majorDeposit = false)
+        }
     }
 
     fun setUnitTransients(unitCivTransients: Boolean) {
