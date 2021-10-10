@@ -1,6 +1,8 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -15,7 +17,9 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.randomWeighted
+import com.unciv.ui.utils.toLabel
 import com.unciv.ui.utils.toPercent
 import kotlin.math.max
 import kotlin.random.Random
@@ -535,8 +539,7 @@ class QuestManager {
 
     /** Gets notified when [killed]'s military unit was killed by [killer], for war with major pseudo-quest */
     fun militaryUnitKilledBy(killer: CivilizationInfo, killed: CivilizationInfo) {
-        // this guy was not attacking us
-        if (unitsToKillForCiv[killed.civName] ?: 0 == 0) return
+        if (!warWithMajorActive(killed)) return
 
         // No credit if we're at war or haven't met
         if (!civInfo.knows(killer) || civInfo.isAtWarWith(killer))  return
@@ -551,7 +554,7 @@ class QuestManager {
 
         // Quest complete?
         if (updatedKillCount >= unitsToKillForCiv[killed.civName]!!) {
-            killer.addNotification("[${civInfo.civName}] is deeply grateful for you assistance in the war against [${killed.civName}]!",
+            killer.addNotification("[${civInfo.civName}] is deeply grateful for your assistance in the war against [${killed.civName}]!",
                 DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
             civInfo.getDiplomacyManager(killer).addInfluence(100f) // yikes
             endWarWithMajorQuest(killed)
@@ -574,9 +577,6 @@ class QuestManager {
 
     /** Ends War with Major pseudo-quests that aren't relevant any longer */
     private fun tryEndWarWithMajorQuests() {
-        val location = if (civInfo.cities.isEmpty()) null
-            else civInfo.getCapital().location
-        
         for (attacker in unitsToKillForCiv.keys.map { civInfo.gameInfo.getCivilization(it) }) {
             if (civInfo.isDefeated()
                 || attacker.isDefeated()
@@ -588,11 +588,26 @@ class QuestManager {
 
     private fun endWarWithMajorQuest(attacker: CivilizationInfo) {
         for (thirdCiv in civInfo.getKnownCivs().filterNot { it.isDefeated() || it == attacker || it.isAtWarWith(civInfo) }) {
+            if (unitsKilledSoFar(attacker, thirdCiv) >= unitsToKill(attacker)) // Don't show the notification to the one who won the quest
+                continue
             thirdCiv.addNotification("[${civInfo.civName}] no longer needs your assistance against [${attacker.civName}].",
                 DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
         }
         unitsToKillForCiv.remove(attacker.civName)
         unitsKilledFromCiv.remove(attacker.civName)
+    }
+    
+    fun warWithMajorActive(target: CivilizationInfo): Boolean {
+        return unitsToKillForCiv.containsKey(target.civName)
+    }
+    
+    fun unitsToKill(target: CivilizationInfo): Int {
+        return unitsToKillForCiv[target.civName] ?: 0
+    }
+    
+    fun unitsKilledSoFar(target: CivilizationInfo, viewingCiv: CivilizationInfo): Int {
+        val killMap = unitsKilledFromCiv[target.civName] ?: return 0
+        return killMap[viewingCiv.civName] ?: 0
     }
 
     /**
