@@ -564,20 +564,6 @@ OtherIcons/Banner
   orig: 100, 100
   offset: 0, 0
   index: -1
-OtherIcons/Border-inner
-  rotate: false
-  xy: 267, 4
-  size: 31, 15
-  orig: 31, 15
-  offset: 0, 0
-  index: -1
-OtherIcons/Border-outer
-  rotate: false
-  xy: 436, 1411
-  size: 31, 15
-  orig: 31, 15
-  offset: 0, 0
-  index: -1
 OtherIcons/Camera
   rotate: false
   xy: 1092, 690
