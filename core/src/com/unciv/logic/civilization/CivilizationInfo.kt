@@ -531,14 +531,25 @@ class CivilizationInfo {
     }
 
     fun getEra(): Era {
-        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty()) 
+        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty())
             return Era()
-        val eraName = tech.researchedTechnologies
-                .asSequence()
-                .map { it.column!! }
-                .maxByOrNull { it.columnNumber }!!
-                .era
-        return gameInfo.ruleSet.eras[eraName]!!
+        val maxEraName = tech.researchedTechnologies
+            .asSequence()
+            .map { it.column!! }
+            .maxByOrNull { it.columnNumber }!!
+            .era
+        val maxEra = gameInfo.ruleSet.eras[maxEraName]!!
+
+        val minEraName = gameInfo.ruleSet.technologies.values
+            .asSequence()
+            .filter { it !in tech.researchedTechnologies }
+            .map { it.column!! }
+            .minByOrNull { it.columnNumber }!!
+            .era
+        val minEra = gameInfo.ruleSet.eras[minEraName]!!
+
+        return if (minEra.eraNumber > maxEra.eraNumber) minEra
+            else maxEra
     }
 
     fun getEraNumber(): Int = getEra().eraNumber
