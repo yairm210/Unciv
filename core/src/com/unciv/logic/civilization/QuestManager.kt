@@ -55,6 +55,12 @@ class QuestManager {
     /** Number of turns left before this city state can start a new individual quest */
     private var individualQuestCountdown: HashMap<String, Int> = HashMap()
 
+    /** Target number of units to kill for this war, for war with major pseudo-quest */
+    private var unitsToKillForCiv: HashMap<String, Int> = HashMap()
+
+    /** For this attacker, number of units killed by each civ */
+    private var unitsKilledFromCiv: HashMap<String, HashMap<String, Int>> = HashMap()
+
     /** Returns true if [civInfo] have active quests for [challenger] */
     fun haveQuestsFor(challenger: CivilizationInfo): Boolean = assignedQuests.any { it.assignee == challenger.civName }
 
@@ -75,6 +81,11 @@ class QuestManager {
         toReturn.globalQuestCountdown = globalQuestCountdown
         toReturn.individualQuestCountdown.putAll(individualQuestCountdown)
         toReturn.assignedQuests.addAll(assignedQuests)
+        toReturn.unitsToKillForCiv.putAll(unitsToKillForCiv)
+        for ((attacker, unitsKilled) in unitsKilledFromCiv) {
+            toReturn.unitsKilledFromCiv[attacker] = HashMap()
+            toReturn.unitsKilledFromCiv[attacker]!!.putAll(unitsKilled)
+        }
         return toReturn
     }
 
@@ -104,8 +115,9 @@ class QuestManager {
 
         tryStartNewGlobalQuest()
         tryStartNewIndividualQuests()
-
+        
         tryBarbarianInvasion()
+        tryEndWarWithMajorQuests()
     }
 
     private fun decrementQuestCountdowns() {
@@ -498,6 +510,72 @@ class QuestManager {
                 bully.addNotification("[${civInfo.civName}] cancelled the quests they had given you because you demanded tribute from them.",
                     DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
         }
+    }
+
+    /** Gets notified when we are attacked, for war with major pseudo-quest */
+    fun wasAttackedBy(attacker: CivilizationInfo) {
+        // Set target number units to kill
+        val totalMilitaryUnits = attacker.getCivUnits().count { !it.isCivilian() }
+        val unitsToKill = max(3, totalMilitaryUnits / 4)
+        unitsToKillForCiv[attacker.civName] = unitsToKill
+        
+
+        val location = if (civInfo.cities.isEmpty()) null
+            else civInfo.getCapital().location
+
+        // Ask for assistance
+        for (thirdCiv in civInfo.getKnownCivs().filter { it.isAlive() && !it.isAtWarWith(civInfo) }) {
+            if (location != null)
+                thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}] and call for help! If you are able to kill [$unitsToKill] of the attacker's military units, they will be immensely grateful.",
+                    location, civInfo.civName, "OtherIcons/Quest")
+            else thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}] and call for help! If you are able to kill [$unitsToKill] of the attacker's military units, they will be immensely grateful.",
+                civInfo.civName, "OtherIcons/Quest")
+        }
+    }
+
+    /** Gets notified when [killed]'s military unit was killed by [killer], for war with major pseudo-quest */
+    fun militaryUnitKilledBy(killer: CivilizationInfo, killed: CivilizationInfo) {
+        // this guy was not attacking us
+        if (unitsToKillForCiv[killed.civName] ?: 0 == 0) return
+
+        // No credit if we're at war or haven't met
+        if (!civInfo.knows(killer) || civInfo.isAtWarWith(killer))  return
+
+        // Make the map if we haven't already
+        if (unitsKilledFromCiv[killed.civName] == null)
+            unitsKilledFromCiv[killed.civName] = HashMap()
+
+        // Update kill count
+        val updatedKillCount = 1 + (unitsKilledFromCiv[killed.civName]!![killer.civName] ?: 0)
+        unitsKilledFromCiv[killed.civName]!![killer.civName] = updatedKillCount
+
+        // Quest complete?
+        if (updatedKillCount >= unitsToKillForCiv[killed.civName]!!) {
+            killer.addNotification("[${civInfo.civName}] is deeply grateful for you assistance in the war against [${killed.civName}]!",
+                DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+            civInfo.getDiplomacyManager(killer).addInfluence(100f) // yikes
+            endWarWithMajorQuest(killed)
+        }
+    }
+
+    /** Ends War with Major pseudo-quests that aren't relevant any longer */
+    private fun tryEndWarWithMajorQuests() {
+        for (attacker in unitsToKillForCiv.keys.map { civInfo.gameInfo.getCivilization(it) }) {
+            if (civInfo.isDefeated()
+                || attacker.isDefeated()
+                || !civInfo.isAtWarWith(attacker)) {
+                    endWarWithMajorQuest(attacker)
+            }
+        }
+    }
+
+    private fun endWarWithMajorQuest(attacker: CivilizationInfo) {
+        for (thirdCiv in civInfo.getKnownCivs().filterNot { it.isDefeated() || it == attacker || it.isAtWarWith(civInfo) }) {
+            thirdCiv.addNotification("[${civInfo.civName}] no longer needs your assistance against [${attacker.civName}].",
+                DiplomacyAction(civInfo.civName), civInfo.civName, "OtherIcons/Quest")
+        }
+        unitsToKillForCiv.remove(attacker.civName)
+        unitsKilledFromCiv.remove(attacker.civName)
     }
 
     /**

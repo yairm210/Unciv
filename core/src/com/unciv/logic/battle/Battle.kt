@@ -171,6 +171,11 @@ object Battle {
                 }
             }
         }
+
+        // CS war with major pseudo-quest
+        for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+            cityState.questManager.militaryUnitKilledBy(civUnit.getCivInfo(), defeatedUnit.getCivInfo())
+        }
     }
 
     private fun tryCaptureUnit(attacker: MapUnitCombatant, defender: MapUnitCombatant): Boolean {

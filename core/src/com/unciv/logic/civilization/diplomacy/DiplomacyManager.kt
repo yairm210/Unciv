@@ -52,6 +52,7 @@ enum class DiplomacyFlags {
     Denunciation,
     WaryOf,
     Bullied,
+    RecentlyAttacked,
 }
 
 enum class DiplomaticModifiers {
@@ -506,6 +507,9 @@ class DiplomacyManager() {
                     }
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
+                    }
+                    DiplomacyFlags.RecentlyAttacked.name -> {
+                        civInfo.cityStateFunctions.askForUnitGifts(otherCiv())
                     }
                     // These modifiers don't tick down normally, instead there is a threshold number of turns
                     DiplomacyFlags.RememberDestroyedProtectedMinor.name -> {    // 125
