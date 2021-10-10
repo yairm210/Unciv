@@ -1,8 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
@@ -17,9 +15,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.randomWeighted
-import com.unciv.ui.utils.toLabel
 import com.unciv.ui.utils.toPercent
 import kotlin.math.max
 import kotlin.random.Random
