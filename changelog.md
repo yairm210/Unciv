@@ -1,3 +1,22 @@
+## 3.17.7
+
+Mayas nation - By SomeTroglodyte
+
+Better AI choice for constructing carriers
+
+By xlenstra:
+- Solved bugs with unit movement through fog of war
+- Fixed multiple small bugs
+- Made it impossible to cut short peace treaties
+- Fixed a bug where religious units would be expelled when an open borders agreement ended
+- Fixed bug with byzantine unique
+
+Civ icon redirects to civilopedia  - By logicminimal
+
+By SimonCeder:
+- Return Civilians captured by Barbarians to original owner
+- cs units wander
+
 ## 3.17.6
 
 Considerable optimizations for "next turn" performance

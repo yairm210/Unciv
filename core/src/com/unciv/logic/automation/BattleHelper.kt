@@ -14,12 +14,12 @@ object BattleHelper {
     fun tryAttackNearbyEnemy(unit: MapUnit, stayOnTile: Boolean = false): Boolean {
         if (unit.hasUnique("Cannot attack")) return false
         val attackableEnemies = getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile=stayOnTile)
-                // Only take enemies we can fight without dying
-                .filter {
-                    BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
-                            it.tileToAttackFrom,
-                            Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
-                }
+            // Only take enemies we can fight without dying
+            .filter {
+                BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
+                it.tileToAttackFrom,
+                Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+            }
 
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 
