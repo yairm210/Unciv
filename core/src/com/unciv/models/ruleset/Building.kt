@@ -463,7 +463,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (civInfo.tech.isResearched(unique.params[0])) 
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
 
-                Constants.hiddenWithoutReligionUnique -> 
+                "Hidden when religion is disabled" -> 
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
             }

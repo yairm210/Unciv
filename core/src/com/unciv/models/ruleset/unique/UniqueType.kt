@@ -209,6 +209,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
+    
+    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins),
 
     //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
 

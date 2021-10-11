@@ -642,7 +642,7 @@ class CivilizationInfo {
             .filter { it.isGreatPerson() }
             .map { getEquivalentUnit(it.name) }
         return if (!gameInfo.isReligionEnabled())
-            greatPeople.filter { !it.hasUnique(Constants.hiddenWithoutReligionUnique) }.toHashSet()
+            greatPeople.filter { !it.hasUnique(UniqueType.HiddenWithoutReligion) }.toHashSet()
         else greatPeople.toHashSet()
     }
 

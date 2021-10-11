@@ -9,6 +9,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -175,7 +176,7 @@ class CivilopediaScreen(
             val uniques = uniqueObjects.map { it.placeholderText }
 
             return Constants.hideFromCivilopediaUnique !in uniques
-                    && !(hideReligionItems && Constants.hiddenWithoutReligionUnique in uniques)
+                    && !(hideReligionItems && uniqueObjects.any { it.isOfType(UniqueType.HiddenWithoutReligion) } )
                     && !(uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
                     unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
             })

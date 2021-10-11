@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.toPercent
@@ -172,7 +173,7 @@ class TileImprovement : RulesetStatsObject() {
             ruleset.ruinRewards.values.asSequence()
                 .filter { reward ->
                     difficulty !in reward.excludedDifficulties &&
-                    (religionEnabled || Constants.hiddenWithoutReligionUnique !in reward.uniques)
+                    (religionEnabled || !reward.hasUnique(UniqueType.HiddenWithoutReligion))
                 }
                 .forEach { reward ->
                     textList += FormattedLine(reward.name, starred = true, color = reward.color)

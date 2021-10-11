@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -107,7 +108,7 @@ class Technology: RulesetObject() {
                 predicate(it)   // expected to be the most selective, thus tested first
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentBuilding(it) == it)
                 && (nuclearWeaponsEnabled || "Enables nuclear weapon" !in it.uniques)
-                && (religionEnabled || Constants.hiddenWithoutReligionUnique !in it.uniques)
+                && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
                 && Constants.hideFromCivilopediaUnique !in it.uniques
             }
     }
@@ -126,7 +127,7 @@ class Technology: RulesetObject() {
                 it.requiredTech == name
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentUnit(it) == it)
                 && (nuclearWeaponsEnabled || it.uniqueObjects.none { unique -> unique.placeholderText == "Nuclear weapon of Strength []" })
-                && (religionEnabled || Constants.hiddenWithoutReligionUnique !in it.uniques)
+                && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
                 && Constants.hideFromCivilopediaUnique !in it.uniques
             }
     }

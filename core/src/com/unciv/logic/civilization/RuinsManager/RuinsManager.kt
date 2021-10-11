@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.RuinReward
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
 
 class RuinsManager {
@@ -41,7 +42,7 @@ class RuinsManager {
         
         for (possibleReward in possibleRewards) {
             if (civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties) continue
-            if (Constants.hiddenWithoutReligionUnique in possibleReward.uniques && !civInfo.gameInfo.isReligionEnabled()) continue
+            if (possibleReward.hasUnique(UniqueType.HiddenWithoutReligion) && !civInfo.gameInfo.isReligionEnabled()) continue
             if ("Hidden after generating a Great Prophet" in possibleReward.uniques 
                 && civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0 > 0
             ) continue
