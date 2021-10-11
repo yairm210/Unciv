@@ -157,6 +157,16 @@ open class TileInfo {
     // We have to .toList() so that the values are stored together once for caching,
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
+    /** Returns the left shared neighbor of [this] and [neighbor] (relative to the view direction [this]->[neighbor]), or null if there is no such tile. */
+    fun getLeftSharedNeighbor(neighbor: TileInfo): TileInfo? {
+        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) - 2) % 12)
+    }
+
+    /** Returns the right shared neighbor [this] and [neighbor] (relative to the view direction [this]->[neighbor]), or null if there is no such tile. */
+    fun getRightSharedNeighbor(neighbor: TileInfo): TileInfo? {
+        return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) + 2) % 12)
+    }
+
     @delegate:Transient
     val height : Int by lazy {
         getAllTerrains().flatMap { it.uniqueObjects }

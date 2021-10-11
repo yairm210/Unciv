@@ -223,7 +223,7 @@ class TileMap {
     }
 
     /**
-     * Returns the clockPosition of [otherTile] seen from [tile]'s position
+     * Returns the clock position of [otherTile] seen from [tile]'s position
      * Returns -1 if not neighbors
      */
     fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int {
@@ -249,12 +249,24 @@ class TileMap {
         }
     }
 
+    /**
+     * Returns the neighbor tile of [tile] at [clockPosition], if it exists.
+     * Takes world wrap into account
+     * Returns null if there is no such neighbor tile or if [clockPosition] is not a valid clock position
+     */
+    fun getClockPositionNeighborTile(tile: TileInfo, clockPosition: Int): TileInfo? {
+        val difference = HexMath.getClockPositionToHexVector(clockPosition)
+        if (difference == Vector2.Zero) return null
+        val possibleNeighborPosition = tile.position.cpy().add(difference)
+        return getIfTileExistsOrNull(possibleNeighborPosition.x.toInt(), possibleNeighborPosition.y.toInt())
+    }
+
     /** Convert relative direction of [otherTile] seen from [tile]'s position into a vector
      * in world coordinates of length sqrt(3), so that it can be used to go from tile center to
      * the edge of the hex in that direction (meaning the center of the border between the hexes)
      */
     fun getNeighborTilePositionAsWorldCoords(tile: TileInfo, otherTile: TileInfo): Vector2 =
-        HexMath.getClockDirectionToWorldVector(getNeighborTileClockPosition(tile, otherTile))
+        HexMath.getClockPositionToWorldVector(getNeighborTileClockPosition(tile, otherTile))
 
     /**
      * Returns the closest position to (0, 0) outside the map which can be wrapped
