@@ -109,7 +109,7 @@
 		"production": 1,
 		"improvement": "Oil well",
 		"improvementStats": {"production": 3},
-		"uniques": ["Deposits on [Water] tiles always have quantity [4]"],
+		"uniques": ["Deposits in [Water] tiles always provide [4] resources"],
 		"majorDepositAmount": {"sparse": 5, "default": 7, "abundant": 9},
 		"minorDepositAmount": {"sparse": 2, "default": 3, "abundant": 3}
 	},

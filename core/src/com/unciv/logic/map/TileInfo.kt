@@ -554,10 +554,10 @@ open class TileInfo {
         lineList += baseTerrain
         for (terrainFeature in terrainFeatures) lineList += terrainFeature
         if (resource != null) {
-            lineList += resource!!
-            if (getTileResource().resourceType == ResourceType.Strategic) {
-                lineList += "Amount: $resourceAmount"
-            }
+            lineList += if (getTileResource().resourceType == ResourceType.Strategic)
+                    "{$resourceAmount} {$resource}"
+                else
+                    resource!!
         }
         if (naturalWonder != null) lineList += naturalWonder!!
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name
@@ -728,19 +728,18 @@ open class TileInfo {
         
         if (newResource.resourceType != ResourceType.Strategic) return
         
-        for (unique in newResource.getMatchingUniques("Deposits on [] tiles always have quantity []")) {
+        for (unique in newResource.getMatchingUniques(UniqueType.OverrideDepositAmountOnTileFilter)) {
             if (matchesTerrainFilter(unique.params[0])) {
                 resourceAmount = unique.params[1].toInt()
                 return
             }
         }
         
-        val resourceDensity = "default" // For now
+        // Stick to default for now
         resourceAmount = if (majorDeposit)
-            newResource.majorDepositAmount[resourceDensity] ?: 4
+            newResource.majorDepositAmount.default
         else
-            newResource.minorDepositAmount[resourceDensity] ?: 2
-                
+            newResource.minorDepositAmount.default
     }
 
 
