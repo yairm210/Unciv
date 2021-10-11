@@ -463,6 +463,7 @@
 	},
 	{
 		"name": "Grand Temple",
+		"cost": 125,
 		"culture": 1,
 		"faith": 8,
 		"uniques": ["Requires a [Temple] in all cities", "Cost increases by [30] per owned city",
