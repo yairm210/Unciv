@@ -350,6 +350,7 @@ class QuestManager {
             QuestName.SpreadReligion.value -> playerReligion != null && civInfo.getCapital().religion.getMajorityReligion()?.name != playerReligion
             QuestName.ConquerCityState.value -> getCityStateTarget(challenger) != null && civInfo.cityStatePersonality != CityStatePersonality.Friendly
             QuestName.BullyCityState.value -> getCityStateTarget(challenger) != null
+            QuestName.ContestFaith.value -> civInfo.gameInfo.isReligionEnabled()
             else -> true
         }
     }
@@ -697,7 +698,9 @@ class QuestManager {
         val greatPeople = challenger.getGreatPeople()
                 .map { it.getReplacedUnit(ruleSet) }
                 .distinct()
-                .filter { !challengerGreatPeople.contains(it) && !cityStateGreatPeople.contains(it) }
+                .filterNot { challengerGreatPeople.contains(it)
+                        || cityStateGreatPeople.contains(it)
+                        || (it.hasUnique(UniqueType.HiddenWithoutReligion) && !civInfo.gameInfo.isReligionEnabled()) }
                 .toList()
 
         if (greatPeople.isNotEmpty())
