@@ -325,7 +325,10 @@ object NextTurnAutomation {
                     continue
                 val buildingToSell = civInfo.gameInfo.ruleSet.buildings.values.filter {
                         it.name in city.cityConstructions.builtBuildings
-                        && it.requiresResource(resource) }.randomOrNull()
+                        && it.requiresResource(resource)
+                        && it.isSellable()
+                        && it.name !in civInfo.civConstructions.getFreeBuildings(city.id) }
+                    .randomOrNull()
                 if (buildingToSell != null) {
                     city.sellBuilding(buildingToSell.name)
                     break
