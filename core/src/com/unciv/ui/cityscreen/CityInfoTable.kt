@@ -63,11 +63,13 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
     private fun addBuildingInfo(building: Building, destinationTable: Table) {
         val icon = ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f)
-        val buildingNameAndIconTable = ExpanderTab(building.name, 18, icon, false, 5f) {
+        val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
+        val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
+        val buildingNameAndIconTable = ExpanderTab(displayName, 18, icon, false, 5f) {
             val detailsString = building.getDescription(cityScreen.city, cityScreen.city.getRuleset())
             it.add(detailsString.toLabel().apply { wrap = true })
                 .width(cityScreen.stage.width / 4 - 2 * pad).row() // when you set wrap, then you need to manually set the size of the label
-            if (building.isSellable()) {
+            if (building.isSellable() && !isFree) {
                 val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
                 val sellBuildingButton = "Sell for [$sellAmount] gold".toTextButton()
                 it.add(sellBuildingButton).pad(5f).row()
