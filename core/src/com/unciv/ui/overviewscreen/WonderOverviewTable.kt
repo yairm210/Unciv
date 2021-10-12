@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.QuestName
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -85,7 +86,7 @@ class WonderOverviewTable(
 
     private fun shouldBeDisplayed(wonder: Building, wonderEra: Int) = when {
         Constants.hideFromCivilopediaUnique in wonder.uniques -> false
-        Constants.hiddenWithoutReligionUnique in wonder.uniques && hideReligionItems -> false
+        wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
         wonder.name in startingObsolete -> false
         wonder.uniqueObjects.filter { unique ->
                 unique.placeholderText == "Hidden when [] Victory is disabled"
