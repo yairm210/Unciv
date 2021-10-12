@@ -544,8 +544,10 @@ class CivilizationInfo {
             .asSequence()
             .filter { it !in tech.researchedTechnologies }
             .map { it.column!! }
-            .minByOrNull { it.columnNumber }!!
-            .era
+            .minByOrNull { it.columnNumber }
+            ?.era
+            ?: return maxEra
+        
         val minEra = gameInfo.ruleSet.eras[minEraName]!!
 
         return if (minEra.eraNumber > maxEra.eraNumber) minEra
