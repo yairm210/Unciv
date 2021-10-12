@@ -234,6 +234,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain),
 
+    OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
+
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
     

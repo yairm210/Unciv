@@ -356,14 +356,12 @@ class CityInfo {
             // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
             || resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement()
         ) {
-            var amountToAdd = 1
-            if (resource.resourceType == ResourceType.Strategic) {
-                amountToAdd = 2
-            }
+            var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
+                else 1
             if (resource.resourceType == ResourceType.Luxury
                 && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City")
             )
-                amountToAdd *= 2
+                amountToAdd += 1
 
             return amountToAdd
         }

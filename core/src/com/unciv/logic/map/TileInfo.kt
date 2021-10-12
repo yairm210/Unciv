@@ -59,6 +59,7 @@ open class TileInfo {
 
     var naturalWonder: String? = null
     var resource: String? = null
+    var resourceAmount: Int = 0
     var improvement: String? = null
     var improvementInProgress: String? = null
 
@@ -88,6 +89,7 @@ open class TileInfo {
         toReturn.terrainFeatures.addAll(terrainFeatures)
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
+        toReturn.resourceAmount = resourceAmount
         toReturn.improvement = improvement
         toReturn.improvementInProgress = improvementInProgress
         toReturn.roadStatus = roadStatus
@@ -561,7 +563,12 @@ open class TileInfo {
         if (isCityCenter()) lineList += getCity()!!.name
         lineList += baseTerrain
         for (terrainFeature in terrainFeatures) lineList += terrainFeature
-        if (resource != null) lineList += resource!!
+        if (resource != null) {
+            lineList += if (getTileResource().resourceType == ResourceType.Strategic)
+                    "{$resourceAmount} {$resource}"
+                else
+                    resource!!
+        }
         if (naturalWonder != null) lineList += naturalWonder!!
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.name
         if (improvement != null) lineList += improvement!!
@@ -619,7 +626,10 @@ open class TileInfo {
         for (terrainFeature in terrainFeatures)
             lineList += FormattedLine(terrainFeature, link="Terrain/$terrainFeature")
         if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv)))
-            lineList += FormattedLine(resource!!, link="Resource/$resource")
+            lineList += if (getTileResource().resourceType == ResourceType.Strategic)
+                    FormattedLine("{$resource} ($resourceAmount)", link="Resource/$resource")
+                else
+                    FormattedLine(resource!!, link="Resource/$resource")
         if (naturalWonder != null)
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
         if (roadStatus !== RoadStatus.None && !isCityCenter())
@@ -702,6 +712,12 @@ open class TileInfo {
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
+
+        // Resource amounts missing - Old save or bad mapgen?
+        if (resource != null && getTileResource().resourceType == ResourceType.Strategic && resourceAmount == 0) {
+            // Let's assume it's a small deposit
+            setTileResource(getTileResource(), majorDeposit = false)
+        }
     }
 
     fun setUnitTransients(unitCivTransients: Boolean) {
@@ -715,6 +731,25 @@ open class TileInfo {
 
     fun stripUnits() {
         for (unit in this.getUnits()) removeUnit(unit)
+    }
+    
+    fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
+        resource = newResource.name
+        
+        if (newResource.resourceType != ResourceType.Strategic) return
+        
+        for (unique in newResource.getMatchingUniques(UniqueType.OverrideDepositAmountOnTileFilter)) {
+            if (matchesTerrainFilter(unique.params[0])) {
+                resourceAmount = unique.params[1].toInt()
+                return
+            }
+        }
+        
+        // Stick to default for now
+        resourceAmount = if (majorDeposit)
+            newResource.majorDepositAmount.default
+        else
+            newResource.minorDepositAmount.default
     }
 
 
