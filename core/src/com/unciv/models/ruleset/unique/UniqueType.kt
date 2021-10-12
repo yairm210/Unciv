@@ -114,7 +114,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     GrowthPercentBonusPositive("+[amount]% growth [cityFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.WARNING)
     GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
-    
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
