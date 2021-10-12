@@ -59,7 +59,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val unitTable = worldScreen.bottomUnitTable
         return if (unitTable.selectedUnit != null
                 && !unitTable.selectedUnit!!.isCivilian()
-                && !unitTable.selectedUnit!!.hasUnique("Cannot attack"))
+                && !unitTable.selectedUnit!!.hasUnique(UniqueType.CannotAttack))
                     MapUnitCombatant(unitTable.selectedUnit!!)
         else if (unitTable.selectedCity != null)
             CityCombatant(unitTable.selectedCity!!)

@@ -377,7 +377,7 @@ class Ruleset {
                 lines += "${unit.name} upgrades to itself!"
             if (!unit.isCivilian() && unit.strength == 0)
                 lines += "${unit.name} is a military unit but has no assigned strength!"
-            if (unit.isRanged() && unit.rangedStrength == 0 && "Cannot attack" !in unit.uniques)
+            if (unit.isRanged() && unit.rangedStrength == 0 && !unit.hasUnique(UniqueType.CannotAttack))
                 lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
 
             checkUniques(unit, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)

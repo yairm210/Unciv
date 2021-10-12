@@ -13,8 +13,6 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.ui.victoryscreen.RankingType
-import kotlin.math.max
-import kotlin.math.sqrt
 
 object Automation {
 
@@ -99,9 +97,10 @@ object Automation {
             militaryUnits = militaryUnits.filter { !it.isWaterUnit() }
 
 
-        val carryingUnits = militaryUnits.filter { it.hasUnique(UniqueType.CarryAirUnits) }.toList()
+        val carryingOnlyUnits = militaryUnits.filter { it.hasUnique(UniqueType.CarryAirUnits)
+                && it.hasUnique(UniqueType.CannotAttack) }.toList()
 
-        for (unit in carryingUnits)
+        for (unit in carryingOnlyUnits)
             if (providesUnneededCarryingSlots(unit, city.civInfo))
                 militaryUnits = militaryUnits.filterNot { it == unit }
 
