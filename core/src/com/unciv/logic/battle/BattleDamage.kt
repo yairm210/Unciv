@@ -36,11 +36,15 @@ object BattleDamage {
             val attackedTile =
                 if (combatAction == CombatAction.Attack) enemy.getTile()
                 else combatant.getTile()
+
+            val conditionalState = StateForConditionals(
+                civInfo, theirCombatant = enemy, ourCombatant = combatant,
+                combatAction = combatAction, attackedTile = attackedTile
+            )
+
             for (unique in combatant.unit.getMatchingUniques(
-                UniqueType.Strength,
-                StateForConditionals(
-                    civInfo, theirCombatant = enemy, ourCombatant = combatant, combatAction = combatAction, attackedTile = attackedTile)
-                )
+                UniqueType.Strength, conditionalState)
+                    + civInfo.getMatchingUniques(UniqueType.Strength, conditionalState)
             ) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
