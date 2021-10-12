@@ -164,8 +164,8 @@ class CityInfo {
         for (unique in getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(civInfo, this))) {
             val freeBuildingName = unique.params[0]
             if (matchesFilter(unique.params[1])) {
-                if (!cityConstructions.isBuilt(freeBuildingName))
-                    cityConstructions.addBuilding(freeBuildingName)
+                civInfo.civConstructions.addFreeBuilding(id, freeBuildingName)
+                (cityConstructions.getConstruction(freeBuildingName) as INonPerpetualConstruction).postBuildEvent(cityConstructions)
             }
         }
     }

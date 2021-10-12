@@ -101,7 +101,7 @@ class CivConstructions {
         return toReturn
     }
 
-    private fun addFreeBuilding(cityId: String, building: String) {
+    fun addFreeBuilding(cityId: String, building: String) {
         if (!freeBuildings.containsKey(cityId))
             freeBuildings[cityId] = hashSetOf()
         freeBuildings[cityId]!!.add(building)
