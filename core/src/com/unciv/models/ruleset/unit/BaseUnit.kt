@@ -321,11 +321,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     UniqueType.BuyUnitsByProductionCost, 
                     stateForConditionals = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
                 ).filter {
-                    println("Filtering production cost")
                     matchesFilter(it.params[0])
                     && it.params[1] == stat.name
                 }.map {
-                    println("Finding production cost")
                     getProductionCost(cityInfo.civInfo) * it.params[2].toInt()
                 }
             )
