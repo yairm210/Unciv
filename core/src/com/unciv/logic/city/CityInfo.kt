@@ -160,14 +160,7 @@ class CityInfo {
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()
-
-        for (unique in getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(civInfo, this))) {
-            val freeBuildingName = unique.params[0]
-            if (matchesFilter(unique.params[1])) {
-                if (!cityConstructions.isBuilt(freeBuildingName))
-                    cityConstructions.addBuilding(freeBuildingName)
-            }
-        }
+        cityConstructions.addFreeBuildings()
     }
 
     private fun setNewCityName(civInfo: CivilizationInfo) {
@@ -489,6 +482,7 @@ class CityInfo {
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         cityConstructions.constructIfEnough()
         cityConstructions.addFreeBuildings()
+        
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
