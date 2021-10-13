@@ -114,6 +114,7 @@ object UniqueTriggerActivation {
                 }
                 return true
             }
+
             OneTimeFreeGreatPerson, MayanGainGreatPerson -> {
                 if (civInfo.isSpectator()) return false
                 val greatPeople = civInfo.getGreatPeople()
@@ -155,18 +156,21 @@ object UniqueTriggerActivation {
                     return civInfo.addUnit(greatPerson.name, chosenCity) != null
                 }
             }
+
             OneTimeGainPopulation -> {
                 val citiesWithPopulationChanged: MutableList<Vector2> = mutableListOf()
-                for (city in civInfo.cities) {
-                    if (city.matchesFilter(unique.params[1])) {
-                        city.population.addPopulation(unique.params[0].toInt())
-                        citiesWithPopulationChanged.add(city.location)
-                    }
+                val applicableCities = when (unique.params[1]) {
+                    "in this city" -> listOf(cityInfo!!)
+                    "in other cities" -> civInfo.cities.filter { it != cityInfo }
+                    else -> civInfo.cities.filter { it.matchesFilter(unique.params[1]) }
                 }
-                if (notification != null && citiesWithPopulationChanged.isNotEmpty())
+                for (city in applicableCities) {
+                    city.population.addPopulation(unique.params[0].toInt())
+                }
+                if (notification != null && applicableCities.isNotEmpty())
                     civInfo.addNotification(
                         notification,
-                        LocationAction(citiesWithPopulationChanged),
+                        LocationAction(applicableCities.map { it.location }),
                         NotificationIcon.Population
                     )
                 return citiesWithPopulationChanged.isNotEmpty()
