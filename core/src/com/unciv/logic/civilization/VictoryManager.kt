@@ -52,11 +52,12 @@ class VictoryManager {
     
     fun hasEnoughVotesForDiplomaticVictory(): Boolean {
         val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
-        val bestCiv = results.maxByOrNull { it.value }
-        if (bestCiv == null) return false
+        val bestCiv = results.maxByOrNull { it.value } ?: return false
 
         // If we don't have the highest score, we have not won anyway
         if (bestCiv.key != civInfo.civName) return false
+        
+        if (bestCiv.value < votesNeededForDiplomaticVictory()) return false
         
         // If there's a tie, we haven't won either
         return (results.none { it != bestCiv && it.value == bestCiv.value }) 
