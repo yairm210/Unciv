@@ -1,3 +1,22 @@
+## 3.17.8
+
+By avdstaaij:
+- Fixed the visual gaps in territory borders
+- Fixed the base cost of the Grand Temple
+
+Strength bonuses apply from civ bonuses as well
+
+By SimonCeder:
+- Disable religious quest with religion disabled
+- Variable resource quantities
+- Free buildings are truly free
+
+By xlenstra:
+- Fixed a bug where "[+amount] population [in this city]" did not work
+- Fixed bugs with diplomatic victory
+- Free buildings provided in other cities are also free
+- Fixed crashes from era
+
 ## 3.17.7
 
 Mayas nation - By SomeTroglodyte
