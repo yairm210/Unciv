@@ -115,13 +115,17 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getDescription(cityInfo: CityInfo?, ruleset: Ruleset): String {
         val stats = getStats(cityInfo)
         val lines = ArrayList<String>()
+        val isFree = if (cityInfo == null) false
+            else (name in cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id))
         if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
             else "Unique to [$uniqueTo], replaces [$replaces]"
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
-        for ((resource, amount) in getResourceRequirements()) {
-            lines += if (amount == 1) "Consumes 1 [$resource]" // For now, to keep the existing translations
-            else "Consumes [$amount] [$resource]"
+        if (!isFree) {
+            for ((resource, amount) in getResourceRequirements()) {
+                lines += if (amount == 1) "Consumes 1 [$resource]" // For now, to keep the existing translations
+                else "Consumes [$amount] [$resource]"
+            }
         }
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") lines += replacementTextForUniques
@@ -144,7 +148,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (cityStrength != 0) lines += "{City strength} +$cityStrength"
         if (cityHealth != 0) lines += "{City health} +$cityHealth"
-        if (maintenance != 0) lines += "{Maintenance cost}: $maintenance {Gold}"
+        if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
         return lines.joinToString("\n") { it.tr() }.trim()
     }
 
@@ -463,7 +467,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (civInfo.tech.isResearched(unique.params[0])) 
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
 
-                Constants.hiddenWithoutReligionUnique -> 
+                "Hidden when religion is disabled" -> 
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
             }
@@ -690,6 +694,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null)[stat] > 0) return true
         if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats[stat] > 0 }) return true
+        if (uniqueObjects.any { it.placeholderText == "[] from [] tiles []" && it.stats[stat] > 0 }) return true
         return false
     }
 
@@ -709,5 +714,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (unique.isOfType(UniqueType.ConsumesResources))
                 resourceRequirements[unique.params[1]] = unique.params[0].toInt()
         return resourceRequirements
+    }
+
+    override fun requiresResource(resource: String): Boolean {
+        if (requiredResource == resource) return true
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources)) {
+            if (unique.params[1] == resource) return true
+        }
+        return false
     }
 }

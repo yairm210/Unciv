@@ -312,7 +312,7 @@ class Ruleset {
             if (deprecationAnnotation != null) {
                 val deprecationText =
                     "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                            " replace with \"${deprecationAnnotation.replaceWith.expression}\""
+                            if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${deprecationAnnotation.replaceWith.expression}\"" else ""
                 val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
                     RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
                 else RulesetErrorSeverity.Warning // User visible
@@ -377,7 +377,7 @@ class Ruleset {
                 lines += "${unit.name} upgrades to itself!"
             if (!unit.isCivilian() && unit.strength == 0)
                 lines += "${unit.name} is a military unit but has no assigned strength!"
-            if (unit.isRanged() && unit.rangedStrength == 0 && "Cannot attack" !in unit.uniques)
+            if (unit.isRanged() && unit.rangedStrength == 0 && !unit.hasUnique(UniqueType.CannotAttack))
                 lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
 
             checkUniques(unit, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
@@ -582,12 +582,13 @@ class Ruleset {
             checkUniques(reward, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
         for (promotion in unitPromotions.values) {
+            // These are warning as of 3.17.5 to not break existing mods and give them time to correct, should be upgraded to error in the future
             for (prereq in promotion.prerequisites)
                 if (!unitPromotions.containsKey(prereq))
-                    lines += "${promotion.name} requires promotion $prereq which does not exist!"
+                    lines.add("${promotion.name} requires promotion $prereq which does not exist!", RulesetErrorSeverity.Warning)
             for (unitType in promotion.unitTypes)
                 if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unitType)))
-                    lines += "${promotion.name} references unit type ${unitType}, which does not exist!"
+                    lines.add("${promotion.name} references unit type ${unitType}, which does not exist!", RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
         for (unitType in unitTypes.values) {

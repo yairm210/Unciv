@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -25,6 +26,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
@@ -106,6 +108,12 @@ class CivilizationInfo {
     @Transient
     var nonStandardTerrainDamage = false
 
+    @Transient
+    var lastEraResourceUsedForBuilding = HashMap<String, Int>()
+
+    @Transient
+    val lastEraResourceUsedForUnit = HashMap<String, Int>()
+
     var playerType = PlayerType.AI
 
     /** Used in online multiplayer for human players */
@@ -165,6 +173,9 @@ class CivilizationInfo {
 
     var totalCultureForContests = 0
     var totalFaithForContests = 0
+
+    @Transient
+    var hasLongCountDisplayUnique = false
 
     constructor()
 
@@ -520,14 +531,27 @@ class CivilizationInfo {
     }
 
     fun getEra(): Era {
-        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty()) 
+        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty())
             return Era()
-        val eraName = tech.researchedTechnologies
-                .asSequence()
-                .map { it.column!! }
-                .maxByOrNull { it.columnNumber }!!
-                .era
-        return gameInfo.ruleSet.eras[eraName]!!
+        val maxEraName = tech.researchedTechnologies
+            .asSequence()
+            .map { it.column!! }
+            .maxByOrNull { it.columnNumber }!!
+            .era
+        val maxEra = gameInfo.ruleSet.eras[maxEraName]!!
+
+        val minEraName = gameInfo.ruleSet.technologies.values
+            .asSequence()
+            .filter { it !in tech.researchedTechnologies }
+            .map { it.column!! }
+            .minByOrNull { it.columnNumber }
+            ?.era
+            ?: return maxEra
+        
+        val minEra = gameInfo.ruleSet.eras[minEraName]!!
+
+        return if (minEra.eraNumber > maxEra.eraNumber) minEra
+            else maxEra
     }
 
     fun getEraNumber(): Int = getEra().eraNumber
@@ -617,8 +641,10 @@ class CivilizationInfo {
 
     fun getGreatPeople(): HashSet<BaseUnit> {
         val greatPeople = gameInfo.ruleSet.units.values.asSequence()
-            .filter { it.isGreatPerson() }.map { getEquivalentUnit(it.name) }
-        return if (!gameInfo.isReligionEnabled()) greatPeople.filter { !it.uniques.contains("Hidden when religion is disabled")}.toHashSet()
+            .filter { it.isGreatPerson() }
+            .map { getEquivalentUnit(it.name) }
+        return if (!gameInfo.isReligionEnabled())
+            greatPeople.filter { !it.hasUnique(UniqueType.HiddenWithoutReligion) }.toHashSet()
         else greatPeople.toHashSet()
     }
 
@@ -627,6 +653,13 @@ class CivilizationInfo {
 
     fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
     fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4
+
+    fun isLongCountActive(): Boolean {
+        val unique = getMatchingUniques(UniqueType.MayanGainGreatPerson).firstOrNull()
+            ?: return false
+        return tech.isResearched(unique.params[1])
+    }
+    fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
     //endregion
 
@@ -681,6 +714,22 @@ class CivilizationInfo {
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.
         nonStandardTerrainDamage = getMatchingUniques("Units ending their turn on [] tiles take [] damage")
             .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
+
+        // Cache the last era each resource is used for buildings or units respectively for AI building evaluation
+        for (resource in gameInfo.ruleSet.tileResources.values.filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
+            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { getEquivalentBuilding(it) == it && it.requiresResource(resource) }
+            val applicableUnits = gameInfo.ruleSet.units.values.filter { getEquivalentUnit(it) == it && it.requiresResource(resource) }
+
+            val lastEraForBuilding = applicableBuildings.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
+            val lastEraForUnit = applicableUnits.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
+
+            if (lastEraForBuilding != null)
+                lastEraResourceUsedForBuilding[resource] = lastEraForBuilding
+            if (lastEraForUnit != null)
+                lastEraResourceUsedForUnit[resource] = lastEraForUnit
+        }
+
+        hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
     }
 
     fun updateSightAndResources() {
@@ -709,6 +758,8 @@ class CivilizationInfo {
             val greatPerson = greatPeople.getNewGreatPerson()
             if (greatPerson != null && gameInfo.ruleSet.units.containsKey(greatPerson)) addUnit(greatPerson)
             religionManager.startTurn()
+            if (isLongCountActive())
+                MayaCalendar.startTurnForMaya(this)
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
@@ -784,11 +835,10 @@ class CivilizationInfo {
 
     private fun startTurnFlags() {
         for (flag in flagsCountdown.keys.toList()) {
-            // There are cases where we remove flags while iterating, like ShowDiplomaticVotingResults
+            // In case we remove flags while iterating
             if (!flagsCountdown.containsKey(flag)) continue
 
-            // the "ignoreCase = true" is to catch 'cityStateGreatPersonGift' instead of 'CityStateGreatPersonGift' being in old save files 
-            if (flag == CivFlags.CityStateGreatPersonGift.name || flag.equals(CivFlags.CityStateGreatPersonGift.name, ignoreCase = true)) {
+            if (flag == CivFlags.CityStateGreatPersonGift.name) {
                 val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }
 
                 if (cityStateAllies.any()) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
@@ -806,31 +856,35 @@ class CivilizationInfo {
 
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-
-            if (flagsCountdown[flag]!! != 0) continue
-
-            when (flag) {
-                CivFlags.TurnsTillNextDiplomaticVote.name -> addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
-                CivFlags.ShouldResetDiplomaticVotes.name -> {
-                    gameInfo.diplomaticVictoryVotesCast.clear()
-                    removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
-                    removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
-                }
-                CivFlags.ShowDiplomaticVotingResults.name -> {
-
-                    if (gameInfo.civilizations.any { it.victoryManager.hasWon() } )
-                        // We have either already done this calculation, or it doesn't matter anymore, 
-                        // so don't waste resources doing it
-                        continue
-
-                    addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
-                }
+            
+        }
+        handleDiplomaticVictoryFlags()
+    }
+    
+    private fun handleDiplomaticVictoryFlags() {
+        if (flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
+            gameInfo.diplomaticVictoryVotesCast.clear()
+            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
+            removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
+        }
+        
+        if (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0) {
+            if (gameInfo.civilizations.any { it.victoryManager.hasWon() } ) {
+                removeFlag(CivFlags.TurnsTillNextDiplomaticVote.name)
+            } else {
+                addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
+                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
             }
+        }
+        
+        if (flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name] == 0) {
+            addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
         }
     }
 
-    fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
-    fun removeFlag(flag: String) { flagsCountdown.remove(flag) }
+    fun addFlag(flag: String, count: Int) = flagsCountdown.set(flag, count)
+    
+    fun removeFlag(flag: String) = flagsCountdown.remove(flag)
 
     fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
 
@@ -844,7 +898,6 @@ class CivilizationInfo {
 
     fun diplomaticVoteForCiv(chosenCivName: String?) {
         if (chosenCivName != null) gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
-        addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
     }
 
     fun shouldShowDiplomaticVotingResults() =

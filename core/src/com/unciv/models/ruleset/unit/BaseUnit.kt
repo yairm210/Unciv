@@ -423,7 +423,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 })
             }
 
-        if (uniques.contains(Constants.settlerUnique) &&
+        if (hasUnique(UniqueType.FoundCity) &&
             (civInfo.isCityState() || civInfo.isOneCityChallenger())
         )
             rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
@@ -561,6 +561,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (unique.isOfType(UniqueType.ConsumesResources))
                 resourceRequirements[unique.params[1]] = unique.params[0].toInt()
         return resourceRequirements
+    }
+
+    override fun requiresResource(resource: String): Boolean {
+        if (requiredResource == resource) return true
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources)) {
+            if (unique.params[1] == resource) return true
+        }
+        return false
     }
 
     fun isRanged() = rangedStrength > 0

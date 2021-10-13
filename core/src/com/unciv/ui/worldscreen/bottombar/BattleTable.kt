@@ -13,6 +13,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -58,7 +59,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val unitTable = worldScreen.bottomUnitTable
         return if (unitTable.selectedUnit != null
                 && !unitTable.selectedUnit!!.isCivilian()
-                && !unitTable.selectedUnit!!.hasUnique("Cannot attack"))
+                && !unitTable.selectedUnit!!.hasUnique(UniqueType.CannotAttack))
                     MapUnitCombatant(unitTable.selectedUnit!!)
         else if (unitTable.selectedCity != null)
             CityCombatant(unitTable.selectedCity!!)
@@ -228,31 +229,17 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
-        var canNuke = true
-        val defenderNameWrapper = Table()
+        
+        val canNuke = Battle.mayUseNuke(attacker, targetTile)
+
         val blastRadius =
-            if (!attacker.unit.hasUnique("Blast radius []")) 2
-            else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
+            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+        
+        val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
-
-            //To make sure we dont nuke civilisations we cant declare war with
-            val attackerCiv = attacker.getCivInfo()
-            val defenderTileCiv = tile.getCity()?.civInfo
-
-            if(defenderTileCiv != null && defenderTileCiv.knows(attackerCiv)) {
-                val canAttackDefenderCiv = attackerCiv.getDiplomacyManager(defenderTileCiv).canAttack()
-                canNuke = canNuke && canAttackDefenderCiv
-            }
             val defender = tryGetDefenderAtTile(tile, true) ?: continue
-
-            val defenderUnitCiv = defender.getCivInfo()
-
-            if( defenderUnitCiv.knows(attackerCiv))
-            {
-                val canAttackDefenderUnitCiv = attackerCiv.getDiplomacyManager(defenderUnitCiv).canAttack()
-                canNuke = canNuke && canAttackDefenderUnitCiv
-            }
-
+            
             val defenderLabel = Label(defender.getName().tr(), skin)
             when (defender) {
                 is MapUnitCombatant ->
@@ -271,7 +258,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         addSeparator().pad(0f)
         row().pad(5f)
 
-        val attackButton = "NUKE".toTextButton().apply { color= Color.RED }
+        val attackButton = "NUKE".toTextButton().apply { color = Color.RED }
 
         val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
 

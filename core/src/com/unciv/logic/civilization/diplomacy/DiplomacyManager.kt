@@ -81,6 +81,7 @@ enum class DiplomaticModifiers {
     AttackedProtectedMinor,
     BulliedProtectedMinor,
     SidedWithProtectedMinor,
+    ReturnedCapturedUnits,
 }
 
 class DiplomacyManager() {
@@ -356,26 +357,45 @@ class DiplomacyManager() {
 
     //region state-changing functions
     fun removeUntenableTrades() {
-
         for (trade in trades.toList()) {
 
             // Every cancelled trade can change this - if 1 resource is missing,
             // don't cancel all trades of that resource, only cancel one (the first one, as it happens, since they're added chronologically)
             val negativeCivResources = civInfo.getCivResources()
-                    .filter { it.amount < 0 }.map { it.resource.name }
+                .filter { it.amount < 0 }.map { it.resource.name }
 
             for (offer in trade.ourOffers) {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
-                        && (offer.name in negativeCivResources || !civInfo.gameInfo.ruleSet.tileResources.containsKey(offer.name))) {
+                    && (offer.name in negativeCivResources || !civInfo.gameInfo.ruleSet.tileResources.containsKey(offer.name))
+                ) {
+                    
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll { it.equals(trade.reverse()) }
+
+                    // Can't cut short peace treaties!
+                    if (trade.theirOffers.any { it.name == Constants.peaceTreaty }) {
+                        remakePeaceTreaty(trade.theirOffers.first { it.name == Constants.peaceTreaty }.duration)
+                    }
+                    
                     civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationIcon.Trade, otherCivName)
                     otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationIcon.Trade, civInfo.civName)
                     civInfo.updateDetailedCivResources()
                 }
             }
         }
+    }
+    
+    private fun remakePeaceTreaty(durationLeft: Int) {
+        val treaty = Trade()
+        treaty.ourOffers.add(
+            TradeOffer(Constants.peaceTreaty, TradeType.Treaty, duration = durationLeft)
+        )
+        treaty.theirOffers.add(
+            TradeOffer(Constants.peaceTreaty, TradeType.Treaty, duration = durationLeft)
+        )
+        trades.add(treaty)
+        otherCiv().getDiplomacyManager(civInfo).trades.add(treaty)
     }
 
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
@@ -645,6 +665,7 @@ class DiplomacyManager() {
         }
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs, -20f)
+        otherCivDiplomacy.removeModifier(DiplomaticModifiers.ReturnedCapturedUnits)
         if (otherCiv.isCityState()) {
             otherCivDiplomacy.setInfluence(-60f)
             civInfo.changeMinorCivsAttacked(1)

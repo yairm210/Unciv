@@ -81,8 +81,19 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
 
     var resourceImage: Actor? = null
     var resource: String? = null
+
+    class RoadImage {
+        var roadStatus: RoadStatus = RoadStatus.None
+        var image: Image? = null
+    }
+    data class BorderSegment(
+        var images: List<Image>,
+        var isLeftConcave: Boolean = false,
+        var isRightConcave: Boolean = false,
+    )
+
     private val roadImages = HashMap<TileInfo, RoadImage>()
-    private val borderImages = HashMap<TileInfo, List<Image>>() // map of neighboring tile to border images
+    private val borderSegments = HashMap<TileInfo, BorderSegment>() // map of neighboring tile to border segments
 
     @Suppress("LeakingThis")    // we trust TileGroupIcons not to use our `this` in its constructor except storing it for later
     val icons = TileGroupIcons(this)
@@ -109,11 +120,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
 
     var showEntireMap = UncivGame.Current.viewEntireMapForDebug
     var forMapEditorIcon = false
-
-    class RoadImage {
-        var roadStatus: RoadStatus = RoadStatus.None
-        var image: Image? = null
-    }
 
     init {
         this.setSize(groupSize, groupSize)
@@ -290,7 +296,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             updatePixelMilitaryUnit(false)
             updatePixelCivilianUnit(false)
 
-            if (borderImages.isNotEmpty()) clearBorders()
+            if (borderSegments.isNotEmpty()) clearBorders()
 
             icons.update(false,false ,false, false, null)
 
@@ -402,11 +408,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     }
 
     private fun clearBorders() {
-        for (images in borderImages.values)
-            for (image in images)
+        for (borderSegment in borderSegments.values)
+            for (image in borderSegment.images)
                 image.remove()
 
-        borderImages.clear()
+        borderSegments.clear()
     }
 
     private var previousTileOwner: CivilizationInfo? = null
@@ -416,7 +422,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         // removing all the border images and putting them back again!
         val tileOwner = tileInfo.getOwner()
 
-
         if (previousTileOwner != tileOwner) clearBorders()
 
         previousTileOwner = tileOwner
@@ -425,25 +430,65 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         val civOuterColor = tileInfo.getOwner()!!.nation.getOuterColor()
         val civInnerColor = tileInfo.getOwner()!!.nation.getInnerColor()
         for (neighbor in tileInfo.neighbors) {
+            var shouldRemoveBorderSegment = false
+            var shouldAddBorderSegment = false
+
+            var borderSegmentShouldBeLeftConcave = false
+            var borderSegmentShouldBeRightConcave = false
+
             val neighborOwner = neighbor.getOwner()
-            if (neighborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
-            {
-                for (image in borderImages[neighbor]!!)
-                    image.remove()
-                borderImages.remove(neighbor)
+            if (neighborOwner == tileOwner && borderSegments.containsKey(neighbor)) { // the neighbor used to not belong to us, but now it's ours
+                shouldRemoveBorderSegment = true
             }
-            if (neighborOwner != tileOwner && !borderImages.containsKey(neighbor)) { // there should be a border here but there isn't
+            else if (neighborOwner != tileOwner) {
+                val leftSharedNeighbor = tileInfo.getLeftSharedNeighbor(neighbor)
+                val rightSharedNeighbor = tileInfo.getRightSharedNeighbor(neighbor)
+
+                // If a shared neighbor doesn't exist (because it's past a map edge), we act as if it's our tile for border concave/convex-ity purposes.
+                // This is because we do not draw borders against non-existing tiles either.
+                borderSegmentShouldBeLeftConcave = leftSharedNeighbor == null || leftSharedNeighbor.getOwner() == tileOwner
+                borderSegmentShouldBeRightConcave = rightSharedNeighbor == null || rightSharedNeighbor.getOwner() == tileOwner
+
+                if (!borderSegments.containsKey(neighbor)) { // there should be a border here but there isn't
+                    shouldAddBorderSegment = true
+                }
+                else if (
+                    borderSegmentShouldBeLeftConcave != borderSegments[neighbor]!!.isLeftConcave ||
+                    borderSegmentShouldBeRightConcave != borderSegments[neighbor]!!.isRightConcave
+                ) { // the concave/convex-ity of the border here is wrong
+                    shouldRemoveBorderSegment = true
+                    shouldAddBorderSegment = true
+                }
+            }
+
+            if (shouldRemoveBorderSegment) {
+                for (image in borderSegments[neighbor]!!.images)
+                    image.remove()
+                borderSegments.remove(neighbor)
+            }
+            if (shouldAddBorderSegment) {
+                val images = mutableListOf<Image>()
+                val borderSegment = BorderSegment(images, borderSegmentShouldBeLeftConcave, borderSegmentShouldBeRightConcave)
+                borderSegments[neighbor] = borderSegment
+
+                val borderShapeString = when {
+                    borderSegment.isLeftConcave && borderSegment.isRightConcave -> "Concave"
+                    !borderSegment.isLeftConcave && !borderSegment.isRightConcave -> "Convex"
+                    else -> "ConvexConcave"
+                }
+                val isConcaveConvex = borderSegment.isLeftConcave && !borderSegment.isRightConcave
 
                 val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
 
                 // This is some crazy voodoo magic so I'll explain.
-                val images = mutableListOf<Image>()
-                borderImages[neighbor] = images
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
                 
-                val innerBorderImage = ImageGetter.getImage("OtherIcons/Border-inner")
-                innerBorderImage.width = 38f
+                val innerBorderImage = ImageGetter.getImage("BorderImages/${borderShapeString}Inner")
+                if (isConcaveConvex) {
+                    innerBorderImage.scaleX = -innerBorderImage.scaleX
+                }
+                innerBorderImage.width = hexagonImageWidth
                 innerBorderImage.setOrigin(Align.center) // THEN the origin is correct,
                 innerBorderImage.rotateBy(angle) // and the rotation works.
                 innerBorderImage.center(this) // move to center of tile
@@ -452,8 +497,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 miscLayerGroup.addActor(innerBorderImage)
                 images.add(innerBorderImage)
 
-                val outerBorderImage = ImageGetter.getImage("OtherIcons/Border-outer")
-                outerBorderImage.width = 38f
+                val outerBorderImage = ImageGetter.getImage("BorderImages/${borderShapeString}Outer")
+                if (isConcaveConvex) {
+                    outerBorderImage.scaleX = -outerBorderImage.scaleX
+                }
+                outerBorderImage.width = hexagonImageWidth
                 outerBorderImage.setOrigin(Align.center) // THEN the origin is correct,
                 outerBorderImage.rotateBy(angle) // and the rotation works.
                 outerBorderImage.center(this) // move to center of tile

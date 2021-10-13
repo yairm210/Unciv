@@ -114,6 +114,9 @@ class MapUnit {
     /** civName owning the unit */
     lateinit var owner: String
 
+    /** civName of original owner - relevant for returning captured workers from barbarians */
+    var originalOwner: String? = null
+
     /**
      * Name key of the unit, used for serialization
      */
@@ -169,6 +172,7 @@ class MapUnit {
         toReturn.name = name
         toReturn.civInfo = civInfo
         toReturn.owner = owner
+        toReturn.originalOwner = originalOwner
         toReturn.instanceName = instanceName
         toReturn.currentMovement = currentMovement
         toReturn.health = health
@@ -201,23 +205,20 @@ class MapUnit {
     fun getUniques(): ArrayList<Unique> = tempUniques
 
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
-        tempUniques.asSequence().filter { it.placeholderText == placeholderText } + 
-            civInfo.getMatchingUniques(placeholderText)
+        tempUniques.asSequence().filter { it.placeholderText == placeholderText }
 
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = sequence {
         yieldAll(tempUniques.asSequence()
-            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals)}
+            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
         )
-        yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun hasUnique(unique: String): Boolean {
-        return tempUniques.any { it.placeholderText == unique } || civInfo.hasUnique(unique)
+        return tempUniques.any { it.placeholderText == unique }
     }
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Boolean {
-        return tempUniques.any { it.type == uniqueType && it.conditionalsApply(stateForConditionals) } 
-            || civInfo.hasUnique(uniqueType, stateForConditionals)
+        return tempUniques.any { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
     }
 
     fun updateUniques(ruleset: Ruleset) {
@@ -277,7 +278,7 @@ class MapUnit {
         cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean)
         cannotEnterOceanTilesUntilAstronomy = hasUnique(UniqueType.CannotEnterOceanUntilAstronomy)
 
-        hasUniqueToBuildImprovements = hasUnique(Constants.canBuildImprovements)
+        hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
         canEnterForeignTerrain =
             hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
                     || hasUnique("May enter foreign tiles without open borders")
@@ -305,11 +306,13 @@ class MapUnit {
             if (isEmbarked()) 2
             else baseUnit.movement
 
-        movement += getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this))
+        movement += (getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this)) +
+             civInfo.getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this)))
             .sumOf { it.params[0].toInt() }
 
         // Deprecated since 3.17.5
-            for (unique in civInfo.getMatchingUniques(UniqueType.MovementUnits))
+            for (unique in civInfo.getMatchingUniques(UniqueType.MovementUnits)
+                    + getMatchingUniques(UniqueType.MovementUnits))
                 if (matchesFilter(unique.params[1]))
                     movement += unique.params[0].toInt()
     
@@ -338,12 +341,14 @@ class MapUnit {
     private fun getVisibilityRange(): Int {
         var visibilityRange = 2
 
-        if (isEmbarked() && !hasUnique("Normal vision when embarked")) {
+        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked)
+            && !civInfo.hasUnique(UniqueType.NormalVisionWhenEmbarked)) {
             return 1
         }
         
-        visibilityRange += getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
-            .sumOf { it.params[0].toInt() }
+        visibilityRange += (getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
+                + civInfo.getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
+                ).sumOf { it.params[0].toInt() }
 
         // Deprecated since 3.17.5
             for (unique in getMatchingUniques(UniqueType.SightUnits))
@@ -823,8 +828,9 @@ class MapUnit {
         if (civInfo.isMajorCiv() 
             && tile.improvement != null
             && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
-        )
+        ) {
             getAncientRuinBonus(tile)
+        }
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 
@@ -915,6 +921,17 @@ class MapUnit {
         civInfo.addUnit(this, updateCivInfo)
     }
 
+    fun capturedBy(captor: CivilizationInfo) {
+        civInfo.removeUnit(this)
+        assignOwner(captor)
+        currentMovement = 0f
+        // It's possible that the unit can no longer stand on the tile it was captured on.
+        // For example, because it's embarked and the capturing civ cannot embark units yet.
+        if (!movement.canPassThrough(getTile())) {
+            movement.teleportToClosestMoveableTile()
+        }
+    }
+
     fun canIntercept(attackedTile: TileInfo): Boolean {
         if (!canIntercept()) return false
         if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
@@ -936,12 +953,12 @@ class MapUnit {
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         // Currently, only missiles and airplanes can be carried
         if (!mapUnit.baseUnit.movesLikeAirUnits()) return false
-        return getMatchingUniques("Can carry [] [] units").any { mapUnit.matchesFilter(it.params[1]) }
+        return getMatchingUniques(UniqueType.CarryAirUnits).any { mapUnit.matchesFilter(it.params[1]) }
     }
 
     private fun carryCapacity(unit: MapUnit): Int {
-        return (getMatchingUniques("Can carry [] [] units")
-                + getMatchingUniques("Can carry [] extra [] units"))
+        return (getMatchingUniques(UniqueType.CarryAirUnits)
+                + getMatchingUniques(UniqueType.CarryExtraAirUnits))
             .filter { unit.matchesFilter(it.params[1]) }
             .sumOf { it.params[0].toInt() }
     }
@@ -949,7 +966,7 @@ class MapUnit {
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques("Cannot be carried by [] units").any{matchesFilter(it.params[0])}) return false
+        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any{matchesFilter(it.params[0])}) return false
         if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }
@@ -1052,7 +1069,7 @@ class MapUnit {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
-        val matchingUniques = getMatchingUniques(Constants.canBuildImprovements)
+        val matchingUniques = getMatchingUniques(UniqueType.BuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
@@ -1102,7 +1119,8 @@ class MapUnit {
                     pressureAdded *= unique.params[0].toPercent()
         //
         
-        for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, StateForConditionals(civInfo = civInfo, unit = this)))
+        for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, StateForConditionals(civInfo = civInfo, unit = this))
+                + civInfo.getMatchingUniques(UniqueType.SpreadReligionStrength, StateForConditionals(civInfo = civInfo, unit = this)))
             pressureAdded *= unique.params[0].toPercent()
 
         return pressureAdded.toInt()

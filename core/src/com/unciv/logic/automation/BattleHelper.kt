@@ -8,18 +8,19 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
+import com.unciv.models.ruleset.unique.UniqueType
 
 object BattleHelper {
 
     fun tryAttackNearbyEnemy(unit: MapUnit, stayOnTile: Boolean = false): Boolean {
-        if (unit.hasUnique("Cannot attack")) return false
+        if (unit.hasUnique(UniqueType.CannotAttack)) return false
         val attackableEnemies = getAttackableEnemies(unit, unit.movement.getDistanceToTiles(), stayOnTile=stayOnTile)
-                // Only take enemies we can fight without dying
-                .filter {
-                    BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
-                            it.tileToAttackFrom,
-                            Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
-                }
+            // Only take enemies we can fight without dying
+            .filter {
+                BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
+                it.tileToAttackFrom,
+                Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+            }
 
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 

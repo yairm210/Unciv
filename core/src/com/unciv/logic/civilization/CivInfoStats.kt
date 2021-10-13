@@ -41,7 +41,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 numberOfUnitsToPayFor,
                 unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
             )
-            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
+            numberOfUnitsToPayFor += numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
         }
 
         for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedUnitMaintenanceCostsByFilter)) {

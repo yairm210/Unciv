@@ -197,10 +197,10 @@ class CityStats(val cityInfo: CityInfo) {
             ?: return Stats()
         val stats = specialist.clone()
         // Deprecated since 3.16.11
-            for (unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
+            for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.StatsFromSpecialistDeprecated))
                 stats.add(unique.stats)
         //
-        for (unique in cityInfo.getMatchingUniques("[] from every specialist []"))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromSpecialist))
             if (cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
         for (unique in cityInfo.civInfo.getMatchingUniques("[] from every []"))
@@ -232,7 +232,7 @@ class CityStats(val cityInfo: CityInfo) {
             }
 
             // "[stats] per [amount] population [cityFilter]"
-            if (unique.placeholderText == "[] per [] population []" && cityInfo.matchesFilter(unique.params[2])) {
+            if (unique.isOfType(UniqueType.StatsPerPopulation) && cityInfo.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(unique.stats.times(amountOfEffects))
             }
@@ -251,11 +251,6 @@ class CityStats(val cityInfo: CityInfo) {
                     && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt()
                 )
                     stats.add(unique.stats)
-            //
-
-            // Deprecated since a very long time ago, moved here from another code section
-                if (unique.placeholderText == "+2 Culture per turn from cities before discovering Steam Power" && !cityInfo.civInfo.tech.isResearched("Steam Power"))
-                    stats.culture += 2
             //
 
             if (unique.placeholderText == "[] per turn from cities before []" && !cityInfo.civInfo.hasTechOrPolicy(unique.params[1]))

@@ -223,7 +223,7 @@ class TileMap {
     }
 
     /**
-     * Returns the clockPosition of [otherTile] seen from [tile]'s position
+     * Returns the clock position of [otherTile] seen from [tile]'s position
      * Returns -1 if not neighbors
      */
     fun getNeighborTileClockPosition(tile: TileInfo, otherTile: TileInfo): Int {
@@ -249,12 +249,24 @@ class TileMap {
         }
     }
 
+    /**
+     * Returns the neighbor tile of [tile] at [clockPosition], if it exists.
+     * Takes world wrap into account
+     * Returns null if there is no such neighbor tile or if [clockPosition] is not a valid clock position
+     */
+    fun getClockPositionNeighborTile(tile: TileInfo, clockPosition: Int): TileInfo? {
+        val difference = HexMath.getClockPositionToHexVector(clockPosition)
+        if (difference == Vector2.Zero) return null
+        val possibleNeighborPosition = tile.position.cpy().add(difference)
+        return getIfTileExistsOrNull(possibleNeighborPosition.x.toInt(), possibleNeighborPosition.y.toInt())
+    }
+
     /** Convert relative direction of [otherTile] seen from [tile]'s position into a vector
      * in world coordinates of length sqrt(3), so that it can be used to go from tile center to
      * the edge of the hex in that direction (meaning the center of the border between the hexes)
      */
     fun getNeighborTilePositionAsWorldCoords(tile: TileInfo, otherTile: TileInfo): Vector2 =
-        HexMath.getClockDirectionToWorldVector(getNeighborTileClockPosition(tile, otherTile))
+        HexMath.getClockPositionToWorldVector(getNeighborTileClockPosition(tile, otherTile))
 
     /**
      * Returns the closest position to (0, 0) outside the map which can be wrapped
@@ -280,7 +292,7 @@ class TileMap {
     /** @return List of tiles visible from location [position] for a unit with sight range [sightDistance] */
     fun getViewableTiles(position: Vector2, sightDistance: Int): List<TileInfo> {
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
-        val currentTileHeight = get(position).getHeight()
+        val currentTileHeight = get(position).height
 
         for (i in 1..sightDistance) { // in each layer,
             // This is so we don't use tiles in the same distance to "see over",
@@ -288,7 +300,7 @@ class TileMap {
             val tilesToAddInDistanceI = ArrayList<TileInfo>()
 
             for (cTile in getTilesAtDistance(position, i)) { // for each tile in that layer,
-                val cTileHeight = cTile.getHeight()
+                val cTileHeight = cTile.height
 
                 /*
             Okay so, if we're looking at a tile from a to c with b in the middle,
@@ -307,7 +319,7 @@ class TileMap {
 
                 val containsViewableNeighborThatCanSeeOver = cTile.neighbors.any {
                         bNeighbor: TileInfo ->
-                    val bNeighborHeight = bNeighbor.getHeight()
+                    val bNeighborHeight = bNeighbor.height
                     viewableTiles.contains(bNeighbor) && (
                             currentTileHeight > bNeighborHeight // a>b
                                     || cTileHeight > bNeighborHeight // c>b
@@ -410,6 +422,8 @@ class TileMap {
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
+        // remember our first owner
+        unit.originalOwner = civInfo.civName
 
         var unitToPlaceTile: TileInfo? = null
         // try to place at the original point (this is the most probable scenario)

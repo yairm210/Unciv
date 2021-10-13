@@ -11,6 +11,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.toPercent
@@ -82,8 +83,17 @@ object Battle {
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities"))
-            conquerCity(defender.city, attacker)
+                && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities")) {
+            // Barbarians can't capture cities
+            if (attacker.unit.civInfo.isBarbarian()) {
+                defender.takeDamage(-1) // Back to 2 HP
+                val ransom = min(200, defender.city.civInfo.gold)
+                defender.city.civInfo.addGold(-ransom)
+                defender.city.civInfo.addNotification("Barbarians raided [${defender.city.name}] and stole [$ransom] Gold from your treasury!", defender.city.location, NotificationIcon.War)
+                attacker.unit.destroy() // Remove the barbarian
+            } else
+                conquerCity(defender.city, attacker)
+        }
 
         // Exploring units surviving an attack should "wake up"
         if (!defender.isDefeated() && defender is MapUnitCombatant && defender.unit.isExploring())
@@ -270,6 +280,8 @@ object Battle {
                     NotificationIcon.War to " was destroyed while attacking"
                 !defender.isDefeated() ->
                     NotificationIcon.War to " has attacked"
+                defender.isCity() && attacker.isMelee() && attacker.getCivInfo().isBarbarian() ->
+                    NotificationIcon.War to " has raided"
                 defender.isCity() && attacker.isMelee() ->
                     NotificationIcon.War to " has captured"
                 else ->
@@ -336,17 +348,20 @@ object Battle {
 
     private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
         if (attacker.isMelee()
-                && (defender.isDefeated() || defender.getCivInfo() == attacker.getCivInfo())
-                // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
-                && (attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
+                && (defender.isDefeated() || defender.getCivInfo() == attacker.getCivInfo())) {
             // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
+            // this has to be checked before canMoveTo, otherwise it will return false
             if (attackedTile.civilianUnit != null && attackedTile.civilianUnit!!.civInfo != attacker.getCivInfo())
                 captureCivilianUnit(attacker, MapUnitCombatant(attackedTile.civilianUnit!!))
-            // Units that can move after attacking are not affected by zone of control if the
-            // movement is caused by killing a unit. Effectively, this means that attack movements
-            // are exempt from zone of control, since units that cannot move after attacking already
-            // lose all remaining movement points anyway.
-            attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
+
+            // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
+            if ((attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
+                // Units that can move after attacking are not affected by zone of control if the
+                // movement is caused by killing a unit. Effectively, this means that attack movements
+                // are exempt from zone of control, since units that cannot move after attacking already
+                // lose all remaining movement points anyway.
+                attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
+            }
         }
     }
 
@@ -466,14 +481,40 @@ object Battle {
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         val capturedUnitTile = capturedUnit.getTile()
+        val originalOwner = if (capturedUnit.originalOwner != null)
+            capturedUnit.civInfo.gameInfo.getCivilization(capturedUnit.originalOwner!!)
+            else null
+
 
         when {
-            // Uncapturable units are destroyed (units captured by barbarians also - for now)
-            defender.unit.hasUnique("Uncapturable") || attacker.getCivInfo().isBarbarian() -> {
+            // Uncapturable units are destroyed
+            defender.unit.hasUnique("Uncapturable") -> {
                 capturedUnit.destroy()
             }
-            // Captured settlers are converted to workers.
-            capturedUnit.name == Constants.settler -> {
+            // City states can never capture settlers at all
+            capturedUnit.hasUnique("Founds a new city") && attacker.getCivInfo().isCityState() -> {
+                capturedUnit.destroy()
+            }
+            // Is it our old unit?
+            attacker.getCivInfo() == originalOwner -> {
+                // Then it is recaptured without converting settlers to workers
+                capturedUnit.capturedBy(attacker.getCivInfo())
+            }
+            // Return captured civilian to its original owner?
+            defender.getCivInfo().isBarbarian()
+                    && originalOwner != null
+                    && !originalOwner.isBarbarian()
+                    && attacker.getCivInfo() != originalOwner
+                    && attacker.getCivInfo().knows(originalOwner)
+                    && originalOwner.isAlive()
+                    && !attacker.getCivInfo().isAtWarWith(originalOwner)
+                    && attacker.getCivInfo().playerType == PlayerType.Human // Only humans get the choice
+                -> {
+                capturedUnit.capturedBy(attacker.getCivInfo())
+                attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.RecapturedCivilian, capturedUnitTile.position.toString()))
+            }
+            // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
+            capturedUnit.hasUnique("Founds a new city") && !attacker.getCivInfo().isBarbarian() -> {
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
@@ -481,14 +522,7 @@ object Battle {
                 attacker.getCivInfo().placeUnitNearTile(capturedUnitTile.position, Constants.worker)
             }
             else -> {
-                capturedUnit.civInfo.removeUnit(capturedUnit)
-                capturedUnit.assignOwner(attacker.getCivInfo())
-                capturedUnit.currentMovement = 0f
-                // It's possible that the unit can no longer stand on the tile it was captured on.
-                // For example, because it's embarked and the capturing civ cannot embark units yet.
-                if (!capturedUnit.movement.canPassThrough(capturedUnitTile)) {
-                    capturedUnit.movement.teleportToClosestMoveableTile()
-                }
+                capturedUnit.capturedBy(attacker.getCivInfo())
             }
         }
 
@@ -505,6 +539,28 @@ object Battle {
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }
+    
+    fun mayUseNuke(nuke: MapUnitCombatant, targetTile: TileInfo): Boolean {
+        val blastRadius =
+            if (!nuke.unit.hasUnique(UniqueType.BlastRadius)) 2
+            else nuke.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+
+        var canNuke = true
+        val attackerCiv = nuke.getCivInfo()
+        for (tile in targetTile.getTilesInDistance(blastRadius)) {
+            val defendingTileCiv = tile.getCity()?.civInfo
+            if (defendingTileCiv != null && attackerCiv.knows(defendingTileCiv)) {
+                canNuke = canNuke && attackerCiv.getDiplomacyManager(defendingTileCiv).canAttack()
+            }
+
+            val defender = getMapCombatantOfTile(tile) ?: continue
+            val defendingUnitCiv = defender.getCivInfo()
+            if (attackerCiv.knows(defendingUnitCiv)) {
+                canNuke = canNuke && attackerCiv.getDiplomacyManager(defendingUnitCiv).canAttack()
+            }
+        }
+        return canNuke
+    }
 
     @Suppress("FunctionName")   // Yes we want this name to stand out
     fun NUKE(attacker: MapUnitCombatant, targetTile: TileInfo) {
@@ -520,8 +576,8 @@ object Battle {
         }
 
         val blastRadius =
-            if (!attacker.unit.hasUnique("Blast radius []")) 2
-            else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
+            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
 
         val strength = when {
             (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->
