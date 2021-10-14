@@ -5,8 +5,17 @@ import com.unciv.logic.MapSaver
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.TabbedPager
 
-class MapEditorMainTabs(editorScreen: MapEditorScreenV2) : TabbedPager(headerFontSize = 24, capacity = 7) {
+class MapEditorMainTabs(
+    editorScreen: MapEditorScreenV2
+) : TabbedPager(
+    minimumHeight = editorScreen.stage.height,
+    maximumHeight = editorScreen.stage.height,
+    headerFontSize = 24,
+    capacity = 7
+) {
     init {
+        prefWidth = 0.4f * editorScreen.stage.width
+
         addPage("View",
             MapEditorViewTab(editorScreen),
             ImageGetter.getImage("OtherIcons/Search"), 25f)

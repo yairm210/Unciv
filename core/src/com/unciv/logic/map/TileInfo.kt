@@ -717,6 +717,7 @@ open class TileInfo {
             lineList += FormattedLine("[$defencePercentString] to unit defence")
         }
         if (isImpassible()) lineList += FormattedLine(Constants.impassable)
+        if (isAdjacentToFreshwater) lineList += FormattedLine("Fresh water")
 
         return lineList
     }

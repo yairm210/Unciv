@@ -1,5 +1,7 @@
 package com.unciv.ui.mapeditor
 
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -11,16 +13,21 @@ import com.unciv.ui.utils.*
 class MapEditorModsTab(
     private val editorScreen: MapEditorScreenV2
 ): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
-    // take from saved settings instead
-    private val mods = editorScreen.newMapParameters.mods
-    private val modsTable = ModCheckboxTable(mods, editorScreen, false) {}
+    private var mods = editorScreen.newMapParameters.mods
+    private var modsTable: ModCheckboxTable
+    private val modsTableCell: Cell<ModCheckboxTable>
     private val applyButton = "Change ruleset".toTextButton()
 
     init {
+        modsTable = ModCheckboxTable(mods, editorScreen, false) {
+            enableApplyButton()
+        }
+
         top()
         pad(5f)
         add(applyButton).pad(10f).row()
-        add(modsTable).row()
+        modsTableCell = add(modsTable)
+        row()
 
         applyButton.onClick {
             val newRuleset = RulesetCache.getComplexRuleset(mods)
@@ -36,8 +43,17 @@ class MapEditorModsTab(
         }
     }
 
-    override fun activated(index: Int) {
+    private fun enableApplyButton() {
         applyButton.isEnabled = editorScreen.tileMap.mapParameters.mods != mods
+    }
+    override fun activated(index: Int) {
+        enableApplyButton()
+        if (!editorScreen.modsTabNeedsRefresh) return
+        mods = editorScreen.tileMap.mapParameters.mods
+        modsTable = ModCheckboxTable(mods, editorScreen, false) {
+            enableApplyButton()
+        }
+        modsTableCell.setActor(modsTable)
     }
 
     private fun getIncompatibilities(newRuleset: Ruleset): List<String> {

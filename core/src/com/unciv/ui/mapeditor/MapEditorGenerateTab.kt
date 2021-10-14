@@ -18,6 +18,11 @@ class MapEditorGenerateTab(
     private val newTab = MapEditorNewMapTab(this)
     private val partialTab = MapEditorGenerateStepsTab(this)
 
+    // Since we allow generation components to be run repeatedly, it might surprise the user that
+    // the outcome stays the same when repeated - due to them operating on the same seed.
+    // So we change the seed behind the scenes if already used for a certain step...
+    private val seedUsedForStep = mutableSetOf<MapGeneratorSteps>()
+
     init {
         top()
         addPage("New map", newTab,
@@ -56,6 +61,12 @@ class MapEditorGenerateTab(
             return
         }
 
+        if (step in seedUsedForStep) {
+            mapParameters.reseed()
+        } else {
+            seedUsedForStep += step
+        }
+
         Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
         setButtonsEnabled(false)
 
@@ -77,6 +88,7 @@ class MapEditorGenerateTab(
 
                     Gdx.app.postRunnable {
                         editorScreen.isDirty = true
+                        if (step == MapGeneratorSteps.NaturalWonders) editorScreen.naturalWondersNeedRefresh = true
                         editorScreen.mapHolder.updateTileGroups()
                         setButtonsEnabled(true)
                         Gdx.input.inputProcessor = editorScreen.stage
@@ -118,7 +130,10 @@ class MapEditorGenerateTab(
     ): Table(CameraStageBaseScreen.skin) {
         private val optionGroup = ButtonGroup<CheckBox>()
         val generateButton = "".toTextButton()
-        var choice = MapGeneratorSteps.None
+        private var choice = MapGeneratorSteps.None
+        private val newMapParameters = parent.editorScreen.newMapParameters
+        private val tileMap = parent.editorScreen.tileMap
+        private val actualMapParameters = tileMap.mapParameters
 
         init {
             top()
@@ -136,7 +151,10 @@ class MapEditorGenerateTab(
                 optionGroup.add(checkBox)
             }
             add(generateButton).padTop(15f).row()
-            generateButton.onClick { parent.generate(choice) }
+            generateButton.onClick {
+                parent.generate(choice)
+                choice.copyParameters?.invoke(newMapParameters, actualMapParameters)
+            }
         }
     }
 }

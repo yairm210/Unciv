@@ -205,6 +205,10 @@ class MapParameters {
         (if (worldWrap) "w" else "")
     }
 
+    // Human readable float representation akin to .net "0.###" - round to N digits but without redundant trailing zeroes
+    private fun Float.niceToString(maxPrecision: Int) =
+        "%.${maxPrecision}f".format(this).trimEnd('0').trimEnd('.')
+
     // For debugging and MapGenerator console output
     override fun toString() = sequence {
         if (name.isNotEmpty()) yield("\"$name\" ")
@@ -216,13 +220,13 @@ class MapParameters {
         yield(")")
         if (name.isEmpty()) return@sequence
         yield("\n$type, {Seed} $seed")
-        yield(", {Map Height}=%.2f".format(elevationExponent))
-        yield(", {Temperature extremeness}=%.2f".format(temperatureExtremeness))
-        yield(", {Resource richness}=%.3f".format(resourceRichness))
-        yield(", {Vegetation richness}=%.2f".format(vegetationRichness))
-        yield(", {Rare features richness}=%.3f".format(rareFeaturesRichness))
+        yield(", {Map Height}=" + elevationExponent.niceToString(2))
+        yield(", {Temperature extremeness}=" + temperatureExtremeness.niceToString(2))
+        yield(", {Resource richness}=" + resourceRichness.niceToString(3))
+        yield(", {Vegetation richness}=" + vegetationRichness.niceToString(2))
+        yield(", {Rare features richness}=" + rareFeaturesRichness.niceToString(3))
         yield(", {Max Coast extension}=$maxCoastExtension")
         yield(", {Biome areas extension}=$tilesPerBiomeArea")
-        yield(", {Water level}=%.2f".format(waterThreshold))
+        yield(", {Water level}=" + waterThreshold.niceToString(2))
     }.joinToString("")
 }

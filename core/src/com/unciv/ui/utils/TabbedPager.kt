@@ -110,13 +110,13 @@ class TabbedPager(
     // The following are part of the Widget interface and serve dynamic sizing
     override fun getPrefWidth() = preferredWidth
     fun setPrefWidth(width: Float) {
-        if (width !in minimumWidth..maximumWidth) throw IllegalArgumentException()
+        if (width !in minimumWidth..limitWidth) throw IllegalArgumentException("TabbedPager.prefWidth out of bounds")
         preferredWidth = width
         invalidateHierarchy()
     }
     override fun getPrefHeight() = preferredHeight + headerHeight
     fun setPrefHeight(height: Float) {
-        if (height - headerHeight !in minimumHeight..maximumHeight) throw IllegalArgumentException()
+        if (height - headerHeight !in minimumHeight..limitHeight) throw IllegalArgumentException("TabbedPager.prefHeight out of bounds")
         preferredHeight = height - headerHeight
         invalidateHierarchy()
     }

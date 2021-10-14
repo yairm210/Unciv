@@ -8,6 +8,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.Counter
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stats
@@ -22,6 +23,10 @@ class MapEditorViewTab(
 ): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
     private var tileDataCell: Cell<Table>? = null
     private val mockCiv = createMockCiv(editorScreen.ruleset)
+    private val naturalWonders = Counter<String>()
+    /** Click-locating items with several instances: round robin, for simplicity only a global one */
+    private var roundRobinIndex = 0
+    private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
     init {
         top()
@@ -41,20 +46,6 @@ class MapEditorViewTab(
 
     private fun CivilizationInfo.updateMockCiv(ruleset: Ruleset) {
         if (gameInfo.ruleSet === ruleset) return
-/*
-        try {
-            @Suppress("unused_variable")  // we need only test isInitialized which is not accessible here
-            val dummy = nation
-        } catch (ex: UninitializedPropertyAccessException) {
-            nation = Nation()
-            nation.name = "Test"
-        }
-        try {
-            val dummy = gameInfo
-        } catch (ex: UninitializedPropertyAccessException) {
-            gameInfo = GameInfo()
-        }
-*/
         gameInfo.ruleSet = ruleset
         tech.techsResearched.addAll(ruleset.technologies.keys)
     }
@@ -81,14 +72,47 @@ class MapEditorViewTab(
         val statsLabel = WrappableLabel(statsText, labelWidth)
         add(statsLabel.apply { wrap = true }).row()
 
-        if (tileMap.naturalWonders.isNotEmpty()) {
-            val collator = UncivGame.Current.settings.getCollatorFromLocale()
-            val naturalWonders = sequenceOf(FormattedLine("Natural Wonders", header = 3, color = "#228b22")) +
-                tileMap.naturalWonders.asSequence()
+        // Map editor must not touch tileMap.naturalWonders as it is a by lazy immutable list,
+        // and we wouldn't be able to fix it when the natural wonders change
+        if (editorScreen.naturalWondersNeedRefresh) {
+            naturalWonders.clear()
+            tileMap.values.asSequence()
+                .mapNotNull { it.naturalWonder }
                 .sortedWith(compareBy(collator, { it.tr() }))
-                .map { FormattedLine(it, it, "Terrain/$it") }
-            add(MarkupRenderer.render(naturalWonders.toList(), iconDisplay = IconDisplay.NoLink) {
-                scrollToWonder(it)
+                .forEach {
+                    naturalWonders.add(it, 1)
+                }
+            editorScreen.naturalWondersNeedRefresh = false
+        }
+        if (naturalWonders.isNotEmpty()) {
+            val lines = naturalWonders.map {
+                FormattedLine(if (it.value == 1) it.key else "{${it.key}} (${it.value})", it.key, "Terrain/${it.key}")
+            }
+            add(ExpanderTab(
+                "{Natural Wonders} (${naturalWonders.size})",
+                fontSize = 21,
+                startsOutOpened = false,
+                headerPad = 5f
+            ) {
+                it.add(MarkupRenderer.render(lines, iconDisplay = IconDisplay.NoLink) { name->
+                    scrollToWonder(name)
+                })
+            }).row()
+        }
+
+        // Starting locations not cached like natural wonders - storage is already compact
+        if (tileMap.startingLocationsByNation.isNotEmpty()) {
+            val lines = tileMap.getStartingLocationSummary()
+                .map { FormattedLine(if (it.second == 1) it.first else "{${it.first}} (${it.second})", it.first, "Nation/${it.first}") }
+            add(ExpanderTab(
+                "{Starting locations} (${tileMap.startingLocationsByNation.size})",
+                fontSize = 21,
+                startsOutOpened = false,
+                headerPad = 5f
+            ) {
+                it.add(MarkupRenderer.render(lines.toList(), iconDisplay = IconDisplay.NoLink) { name ->
+                    scrollToStartOfNation(name)
+                })
             }).row()
         }
 
@@ -106,6 +130,7 @@ class MapEditorViewTab(
         update()
     }
     override fun deactivated(newIndex: Int) {
+        editorScreen.hideSelection()
         tileDataCell?.setActor(null)
         editorScreen.tileClickHandler = null
     }
@@ -133,24 +158,45 @@ class MapEditorViewTab(
             lines += FormattedLine(stats.toString())
         }
 
-        val nations = tile.tileMap.startingLocationsByNation.asSequence()
-            .filter { tile in it.value }
-            .filter { it.key in tile.tileMap.ruleset!!.nations } // Ignore missing nations
-            .map { it.key to tile.tileMap.ruleset!!.nations[it.key]!! }
-            .sortedWith(compareBy({ it.second.isCityState() }, { it.first }))
-            .joinToString { it.first.tr() }
+        val nations = tile.tileMap.getTileStartingLocations(tile)
+            .joinToString { it.name.tr() }
         if (nations.isNotEmpty()) {
             lines += FormattedLine()
             lines += FormattedLine("Starting location(s): [$nations]")
         }
 
-        tileDataCell?.setActor(MarkupRenderer.render(lines, iconDisplay = IconDisplay.NoLink))
+        val labelWidth = editorScreen.stage.width * 0.33f
+        tileDataCell?.setActor(MarkupRenderer.render(lines, labelWidth, iconDisplay = IconDisplay.NoLink))
+
+        editorScreen.hideSelection()
+        editorScreen.highlightTile(tile, Color.CORAL)
     }
 
     private fun scrollToWonder(name: String) {
-        val tile = editorScreen.tileMap.values.filter {
-            it.naturalWonder == name
-        }.randomOrNull() ?: return
-        editorScreen.mapHolder.setCenterPosition(tile.position)
+        scrollToNextTileOf(editorScreen.tileMap.values.filter { it.naturalWonder == name })
     }
+    private fun scrollToStartOfNation(name: String) {
+        val tiles = editorScreen.tileMap.startingLocationsByNation[name]
+            ?: return
+        scrollToNextTileOf(tiles.toList())
+    }
+    private fun scrollToNextTileOf(tiles: List<TileInfo>) {
+        if (tiles.isEmpty()) return
+        if (roundRobinIndex >= tiles.size) roundRobinIndex = 0
+        val tile = tiles[roundRobinIndex++]
+        editorScreen.mapHolder.setCenterPosition(tile.position)
+        tileClickHandler(tile)
+    }
+
+    private fun TileMap.getTileStartingLocations(tile: TileInfo?) =
+        startingLocationsByNation.asSequence()
+        .filter { tile == null || tile in it.value }
+        .mapNotNull { ruleset!!.nations[it.key] }
+        .sortedWith(compareBy<Nation>{ it.isCityState() }.thenBy(collator, { it.name.tr() }))
+
+    private fun TileMap.getStartingLocationSummary() =
+        startingLocationsByNation.asSequence()
+        .mapNotNull { if (it.key in ruleset!!.nations) ruleset!!.nations[it.key]!! to it.value.size else null }
+        .sortedWith(compareBy<Pair<Nation,Int>>{ it.first.isCityState() }.thenBy(collator, { it.first.name.tr() }))
+        .map { it.first.name to it.second }
 }

@@ -162,10 +162,13 @@ class MainMenuScreen: BaseScreen() {
 
             val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
 
-            add(screen.getMenuButton("Test", "OtherIcons/SecretOptions") {
+            val testEditorAction = {
                 screen.game.setScreen(MapEditorScreenV2())
                 screen.dispose()
-            }.apply { background=tableBackground }).row()
+            }
+            val testEditorButton = screen.getMenuButton("Test", "OtherIcons/SecretOptions", 't', true, testEditorAction)
+            add(testEditorButton.apply { background=tableBackground }).row()
+            keyPressDispatcher['t'] = testEditorAction
 
             val newMapAction = {
                 val newMapScreen = NewMapScreen()

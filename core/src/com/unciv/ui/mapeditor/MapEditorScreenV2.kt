@@ -2,8 +2,6 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -12,27 +10,24 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
 
-//todo Changing mod selection does not enable button
 //todo height of the resources+improvement scroller wrong
-//todo generating a map then going to view won't update the top part
-//todo Nat Wonder step generator: *New* wonders - reseed always? button?
-//todo Implement the actual drawing
-//todo Flood-fill for base terrain or features
-//todo Tab for Rivers
-//todo Tool River from->to
-//todo Group Improvements into 2 tabs?
-//todo Brushes
-//todo Mode: Apply only to fitting tiles / force tile to fit / lax 
-//todo Dirty flag on all edits
+//todo width of the tabs sometimes derails (brush line getting longer than initial width)
+
+//todo drag painting
+//todo Nat Wonder step generator: *New* wonders?
+//todo ESC mapping gets lost
+//todo Keyboard bindings for most used functions
 //todo Tab for Units
 //todo allow loading maps from mods (but not saving)
-//todo copy/paste tile areas?
-//todo should the single step generator routines invalidate/overwrite tileMap's parameters?
+//todo copy/paste tile areas? (As tool tabs, brush sized, floodfill forbidden, tabs display copied area)
 //todo TabbedPager page scroll disabling goes into Widget
-//todo check: will UI map parameters properly go into their backing storage?
-//todo view: wrap stats line
+//todo Synergy with Civilopedia for drawing loose tiles / terrain icons
+//todo sort nations for starting location edit tab
+//todo sort nations (CS last) for view tab
+
 
 class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
     /** The map being edited, with mod list for that map */
@@ -45,10 +40,19 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
     /** The parameters to use for new maps, and the UI-shown mod list (which can be applied to the active map) */
     var newMapParameters = getDefaultParameters()
 
+    /** Set only by loading a map from file and used only by mods tab */
+    var modsTabNeedsRefresh = false
+    /** Set on load, generate or paint natural wonder - used to read nat wonders for the view tab */
+    var naturalWondersNeedRefresh = true
+    /** Copy of same field in [MapEditorOptionsTab] */
+    var tileMatchFuzziness = MapEditorOptionsTab.TileMatchFuzziness.CompleteMatch
+
     // UI
     var mapHolder: EditorMapHolderV2
     val tabs: TabbedPager
     var tileClickHandler: ((tile: TileInfo)->Unit)? = null
+
+    private val highlightedTileGroups = mutableListOf<TileGroup>()
 
     init {
         tileMap = map ?: TileMap(MapSize.Tiny.radius, ruleset, false)
@@ -59,6 +63,7 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         MapEditorToolsDrawer(tabs, stage)
 
         keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
+        keyPressDispatcher.install(stage)
     }
 
     companion object {
@@ -98,8 +103,10 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods)
         mapHolder = newMapHolder()
         isDirty = false
+        modsTabNeedsRefresh = true
+        naturalWondersNeedRefresh = true
         Gdx.app.postRunnable {
-            // Doing this directly freezes the game, despite already running under postRunnable
+            // Doing this directly freezes the game, despite loadMap already running under postRunnable
             tabs.selectPage(0)
         }
     }
@@ -117,7 +124,27 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         if (!isDirty) return game.setScreen(MainMenuScreen())
         YesNoPopup("Do you want to leave without saving the recent changes?", action = {
             game.setScreen(MainMenuScreen())
-        }, this).open()
+        }, screen = this, restoreDefault = {
+            keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
+        }).open()
+    }
+
+    fun hideSelection() {
+        for (group in highlightedTileGroups)
+            group.hideCircle()
+        highlightedTileGroups.clear()
+    }
+    fun highlightTile(tile: TileInfo, color: Color = Color.WHITE) {
+        for (group in mapHolder.tileGroups[tile] ?: return) {
+            group.showCircle(color)
+            highlightedTileGroups.add(group)
+        }
+    }
+    fun updateAndHighlight(tile: TileInfo, color: Color = Color.WHITE) {
+        mapHolder.tileGroups[tile]!!.forEach {
+            it.update()
+        }
+        highlightTile(tile, color)
     }
 
     private fun checkAndFixMapSize() {
