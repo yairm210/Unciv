@@ -263,7 +263,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         if (!forPopup) {
             val cityReligion = city.religion.getMajorityReligion()
             if (cityReligion != null) {
-                val religionImage = ImageGetter.getReligionImage(cityReligion.getIconName())
+                val religionImage = ImageGetter.getReligionImage(cityReligion.getIconName()).apply { color = city.civInfo.nation.getInnerColor() }
                 iconTable.add(religionImage).size(20f).padLeft(5f).fillY()
             }
         }
