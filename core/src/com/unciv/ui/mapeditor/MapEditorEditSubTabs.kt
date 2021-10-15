@@ -273,12 +273,18 @@ class MapEditorEditRiversTab(
         defaults().pad(10f).left()
         val removeLine = Table().apply {
             add(getRemoveRiverIcon()).padRight(10f)
-            add("Remove rivers".toLabel())
+            add("Remove rivers".toLabel(fontSize = 32))
             onClick {
                 editTab.setBrush("Remove rivers", getRemoveRiverIcon()) { tile ->
                     tile.hasBottomLeftRiver = false
                     tile.hasBottomRightRiver = false
                     tile.hasBottomRiver = false
+                    // User probably expects all six edges to be cleared
+                    val x = tile.position.x.toInt()
+                    val y = tile.position.y.toInt()
+                    tile.tileMap.getIfTileExistsOrNull(x, y + 1)?.hasBottomLeftRiver = false
+                    tile.tileMap.getIfTileExistsOrNull(x + 1, y)?.hasBottomRightRiver = false
+                    tile.tileMap.getIfTileExistsOrNull(x + 1, y + 1)?.hasBottomRiver = false
                 }
             }
         }
@@ -286,7 +292,7 @@ class MapEditorEditRiversTab(
 
         val leftRiverLine = Table().apply {
             add(getRiverIcon(RiverEdge.Left)).padRight(10f)
-            add("Bottom left river".toLabel())
+            add("Bottom left river".toLabel(fontSize = 32))
             onClick {
                 editTab.setBrush("Bottom left river", getTileGroupWithRivers(RiverEdge.Left)) { tile ->
                     tile.hasBottomLeftRiver = !tile.hasBottomLeftRiver
@@ -297,7 +303,7 @@ class MapEditorEditRiversTab(
 
         val bottomRiverLine = Table().apply {
             add(getRiverIcon(RiverEdge.Bottom)).padRight(10f)
-            add("Bottom river".toLabel())
+            add("Bottom river".toLabel(fontSize = 32))
             onClick {
                 editTab.setBrush("Bottom river", getTileGroupWithRivers(RiverEdge.Bottom)) { tile ->
                     tile.hasBottomRiver = !tile.hasBottomRiver
@@ -308,7 +314,7 @@ class MapEditorEditRiversTab(
 
         val rightRiverLine = Table().apply {
             add(getRiverIcon(RiverEdge.Right)).padRight(10f)
-            add("Bottom right river".toLabel())
+            add("Bottom right river".toLabel(fontSize = 32))
             onClick {
                 editTab.setBrush("Bottom right river", getTileGroupWithRivers(RiverEdge.Right)) { tile ->
                     tile.hasBottomRightRiver = !tile.hasBottomRightRiver
@@ -320,7 +326,7 @@ class MapEditorEditRiversTab(
         //todo this needs a better icon
         val spawnRiverLine = Table().apply {
             add(getRiverIcon(RiverEdge.All)).padRight(10f)
-            add("Spawn river from/to".toLabel())
+            add("Spawn river from/to".toLabel(fontSize = 32))
             onClick {
                 editTab.setBrush(
                     BrushHandlerType.River,

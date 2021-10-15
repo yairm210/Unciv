@@ -123,6 +123,11 @@ class MapEditorViewTab(
 
         addSeparator()
         add("Exit map editor".toTextButton().apply { onClick(editorScreen::closeEditor) }).row()
+
+        invalidateHierarchy()  //todo - unsure this helps 
+        validate()
+
+        editorScreen.tabs.setScrollDisabled(false)
     }
 
     override fun activated(index: Int) {
