@@ -18,15 +18,14 @@ import com.unciv.ui.utils.*
 
 //todo drag painting
 //todo Nat Wonder step generator: *New* wonders?
-//todo ESC mapping gets lost
-//todo Keyboard bindings for most used functions
 //todo Tab for Units
 //todo allow loading maps from mods (but not saving)
 //todo copy/paste tile areas? (As tool tabs, brush sized, floodfill forbidden, tabs display copied area)
 //todo TabbedPager page scroll disabling goes into Widget
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
-//todo sort nations for starting location edit tab
-//todo sort nations (CS last) for view tab
+//todo left-align everything so a half-open drawer is more useful
+//todo View: Tile Continent info
+//todo Tab tooltips
 
 
 class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
@@ -49,7 +48,7 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
 
     // UI
     var mapHolder: EditorMapHolderV2
-    val tabs: TabbedPager
+    val tabs: MapEditorMainTabs
     var tileClickHandler: ((tile: TileInfo)->Unit)? = null
 
     private val highlightedTileGroups = mutableListOf<TileGroup>()
@@ -62,8 +61,31 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         tabs = MapEditorMainTabs(this)
         MapEditorToolsDrawer(tabs, stage)
 
+        fun selectGeneratePage(index: Int) { tabs.run { selectPage(1); generate.selectPage(index) } }
+        fun selectEditPage(index: Int) { tabs.run { selectPage(2); edit.selectPage(index) } }
+        keyPressDispatcher[KeyCharAndCode.ctrl('i')] = { tabs.selectPage(0) }
+        keyPressDispatcher[KeyCharAndCode.ctrl('n')] = { selectGeneratePage(0) }
+        keyPressDispatcher[KeyCharAndCode.ctrl('g')] = { selectGeneratePage(1) }
+        keyPressDispatcher[KeyCharAndCode.ctrl('e')] = { tabs.selectPage(2) }
+        keyPressDispatcher['t'] = { selectEditPage(0) }
+        keyPressDispatcher['f'] = { selectEditPage(1) }
+        keyPressDispatcher['w'] = { selectEditPage(2) }
+        keyPressDispatcher['r'] = { selectEditPage(3) }
+        keyPressDispatcher['i'] = { selectEditPage(4) }
+        keyPressDispatcher['v'] = { selectEditPage(5) }
+        keyPressDispatcher['s'] = { selectEditPage(6) }
+        //keyPressDispatcher['u'] = { selectEditPage(7) }
+        keyPressDispatcher[KeyCharAndCode.ctrl('l')] = { tabs.selectPage(3) }
+        keyPressDispatcher[KeyCharAndCode.ctrl('s')] = { tabs.selectPage(4) }
+        keyPressDispatcher[KeyCharAndCode.ctrl('m')] = { tabs.selectPage(5) }
+        keyPressDispatcher[KeyCharAndCode.ctrl('o')] = { tabs.selectPage(6) }
+        keyPressDispatcher['1'] = { tabs.edit.brushSize = 1 }
+        keyPressDispatcher['2'] = { tabs.edit.brushSize = 2 }
+        keyPressDispatcher['3'] = { tabs.edit.brushSize = 3 }
+        keyPressDispatcher['4'] = { tabs.edit.brushSize = 4 }
+        keyPressDispatcher['5'] = { tabs.edit.brushSize = 5 }
+        keyPressDispatcher[KeyCharAndCode.ctrl('f')] = { tabs.edit.brushSize = -1 }
         keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
-        keyPressDispatcher.install(stage)
     }
 
     companion object {
@@ -111,6 +133,11 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         }
     }
 
+    fun getMapCloneForSave() =
+        tileMap.clone().apply {
+            setTransients(setUnitCivTransients = false)
+        }
+
     fun applyRuleset(newRuleset: Ruleset) {
         tileMap.mapParameters.mods = newRuleset.mods
         tileMap.ruleset = newRuleset
@@ -140,10 +167,13 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
             highlightedTileGroups.add(group)
         }
     }
-    fun updateAndHighlight(tile: TileInfo, color: Color = Color.WHITE) {
+    fun updateTile(tile: TileInfo) {
         mapHolder.tileGroups[tile]!!.forEach {
             it.update()
         }
+    }
+    fun updateAndHighlight(tile: TileInfo, color: Color = Color.WHITE) {
+        updateTile(tile)
         highlightTile(tile, color)
     }
 

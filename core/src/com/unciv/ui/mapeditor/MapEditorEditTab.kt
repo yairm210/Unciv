@@ -27,7 +27,7 @@ class MapEditorEditTab(
     private val ruleset = editorScreen.ruleset
     private val randomness = MapGenerationRandomness()  // for auto river
 
-    enum class BrushHandlerType { None, Tile, River, StartLocation }
+    enum class BrushHandlerType { None, Direct, Tile, Road, River, RiverFromTo }
     private var brushHandlerType = BrushHandlerType.None
 
     /** This applies the current brush to one tile **without** validation or transient updates */
@@ -93,6 +93,8 @@ class MapEditorEditTab(
         add(subTabs).left().fillX().row()
     }
 
+    fun selectPage(index: Int) = subTabs.selectPage(index)
+
     fun setBrush(
         name: String,
         icon: String,
@@ -153,28 +155,30 @@ class MapEditorEditTab(
 
         when (brushHandlerType) {
             BrushHandlerType.None -> Unit
-            BrushHandlerType.Tile, BrushHandlerType.StartLocation -> paintTilesWithBrush(tile)
-            BrushHandlerType.River -> paintRiverFromTo(tile)
+            BrushHandlerType.RiverFromTo ->
+                selectRiverFromOrTo(tile)
+            else ->
+                paintTilesWithBrush(tile)
         }
     }
 
-    private fun paintRiverFromTo(tile: TileInfo) {
+    private fun selectRiverFromOrTo(tile: TileInfo) {
         val tilesToHighlight = mutableSetOf(tile)
         if (tile.isLand) {
             // Land means river from. Start the river if we have a 'to', choose a 'to' if not.
             riverStartTile = tile
-            if (riverEndTile != null) return paintRiver()
+            if (riverEndTile != null) return paintRiverFromTo()
             val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness)
             riverEndTile = riverGenerator.getClosestWaterTile(tile)
             if (riverEndTile != null) tilesToHighlight += riverEndTile!!
         } else {
             // Water means river to. Start the river if we have a 'from'
             riverEndTile = tile
-            if (riverStartTile != null) return paintRiver()
+            if (riverStartTile != null) return paintRiverFromTo()
         }
         tilesToHighlight.forEach { editorScreen.highlightTile(it, Color.BLUE) }
     }
-    private fun paintRiver() {
+    private fun paintRiverFromTo() {
         val resultingTiles = mutableSetOf<TileInfo>()
         randomness.seedRNG(editorScreen.newMapParameters.seed)
         try {
@@ -200,37 +204,61 @@ class MapEditorEditTab(
                 tile.getTilesInDistance(brushSize - 1)
             }
         tiles.forEach {
-            if (brushHandlerType == BrushHandlerType.Tile)
-                paintTile(it)
-            else if (brushHandlerType == BrushHandlerType.StartLocation)
-                directPaintTile(it)
+            @Suppress("NON_EXHAUSTIVE_WHEN") // other cases can't reach here
+            when (brushHandlerType) {
+                BrushHandlerType.Direct -> directPaintTile(it)
+                BrushHandlerType.Tile -> paintTile(it)
+                BrushHandlerType.Road -> roadPaintTile(it)
+                BrushHandlerType.River -> riverPaintTile(it)
+            }
         }
     }
 
+    /** Used for starting locations - no temp tile as brushAction needs to access tile.tileMap */ 
     private fun directPaintTile(tile: TileInfo) {
-        // Used for starting locations - no temp tile as brushAction needs to access tile.tileMap 
         brushAction(tile)
         editorScreen.isDirty = true
         editorScreen.updateAndHighlight(tile)
     }
 
-    private fun paintTile(tile: TileInfo) {
+    /** Used for rivers - same as directPaintTile but may need to update 10,12 and 2 o'clock neighbor tiles too */
+    private fun riverPaintTile(tile: TileInfo) {
+        directPaintTile(tile)
+        tile.neighbors.forEach {
+            if (it.position.x > tile.position.x || it.position.y > tile.position.y)
+                editorScreen.updateTile(it)
+        }
+    }
+
+    // Used for roads - same as paintTile but all neighbors need TileGroup.update too
+    private fun roadPaintTile(tile: TileInfo) {
+        if (!paintTile(tile)) return
+        tile.neighbors.forEach { editorScreen.updateTile(it) }
+    }
+
+    /** apply brush to a single tile */
+    private fun paintTile(tile: TileInfo): Boolean {
+        // Approach is "Try - matches - leave or revert" because an off-map simulation would fail some tile filters
+        val savedTile = tile.clone()
         val paintedTile = tile.clone()
         brushAction(paintedTile)
         paintedTile.ruleset = ruleset
         paintedTile.setTerrainTransients()
-        val normalizedTile = paintedTile.clone()
-        normalizedTile.ruleset = ruleset
-        normalizedTile.setTerrainTransients()
-        //todo this will fail for some actions - like placing a moai - some uniques require neighbors
-        normalizedTile.normalizeToRuleset(ruleset)
-        if (!paintedTile.isSimilarEnough(normalizedTile)) return
 
-        editorScreen.isDirty = true
-        if (tile.naturalWonder != normalizedTile.naturalWonder)
+        brushAction(tile)
+        tile.setTerrainTransients()
+        tile.normalizeToRuleset(ruleset)
+        if (!paintedTile.isSimilarEnough(tile)) {
+            // revert tile to original state
+            tile.applyFrom(savedTile)
+            return false
+        }
+
+        if (tile.naturalWonder != savedTile.naturalWonder)
             editorScreen.naturalWondersNeedRefresh = true
-
-        tile.applyFrom(normalizedTile)
+        editorScreen.isDirty = true
+        editorScreen.updateAndHighlight(tile)
+        return true
     }
 
     private fun TileInfo.isSimilarEnough(other: TileInfo) = when {
@@ -260,9 +288,7 @@ class MapEditorEditTab(
         hasBottomLeftRiver = other.hasBottomLeftRiver
         hasBottomRightRiver = other.hasBottomRightRiver
         hasBottomRiver = other.hasBottomRiver
-
         setTerrainTransients()
-        editorScreen.updateAndHighlight(this)
     }
 
     companion object {

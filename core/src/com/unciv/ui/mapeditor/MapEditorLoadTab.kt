@@ -20,7 +20,6 @@ class MapEditorLoadTab(
 
     private val loadButton: TextButton
     private val deleteButton: TextButton
-    private val pasteButton: TextButton
 
     private var chosenMap: FileHandle? = null
 
@@ -33,9 +32,6 @@ class MapEditorLoadTab(
         deleteButton = "Delete map".toTextButton()
         deleteButton.onClick(this::deleteHandler)
         buttonTable.add(deleteButton)
-        pasteButton = "Load copied data".toTextButton()
-        pasteButton.onClick(this::pasteHandler)
-        buttonTable.add(pasteButton)
         buttonTable.pack()
 
         val fileTableHeight = editorScreen.stage.height - headerHeight - buttonTable.height - 2f
@@ -58,30 +54,17 @@ class MapEditorLoadTab(
         }, editorScreen).open()
     }
 
-    private fun pasteHandler() {
-        try {
-            val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-            val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString, checkSizeErrors = false)
-            editorScreen.loadMap(loadedMap)
-        } catch (ex: Exception) {
-            ToastPopup("Could not load map!", editorScreen)
-        }
-    }
-
     override fun activated(index: Int) {
         editorScreen.tabs.setScrollDisabled(true)
         mapFiles.update()
         editorScreen.keyPressDispatcher[KeyCharAndCode.RETURN] = this::loadHandler
         editorScreen.keyPressDispatcher[KeyCharAndCode.DEL] = this::deleteHandler
-        editorScreen.keyPressDispatcher[KeyCharAndCode.ctrl('v')] = this::pasteHandler
-        pasteButton.isEnabled = Gdx.app.clipboard.hasContents()
         selectFile(null)
     }
 
     override fun deactivated(newIndex: Int) {
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.RETURN)
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.DEL)
-        editorScreen.keyPressDispatcher.remove(KeyCharAndCode.ctrl('v'))
         editorScreen.tabs.setScrollDisabled(false)
     }
 

@@ -5,18 +5,21 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.MapSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
 class MapEditorOptionsTab(
     private val editorScreen: MapEditorScreenV2
 ): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
-    private var seedToCopy = ""
-    private val seedLabel = "".toLabel()
+    private val seedLabel = "".toLabel(Color.GOLDENROD)
     private val copySeedButton = "Copy to clipboard".toTextButton()
     private val tileMatchGroup = ButtonGroup<CheckBox>()
+    private val copyMapButton = "Copy to clipboard".toTextButton()
+    private val pasteMapButton = "Load copied data".toTextButton()
+
+    private var seedToCopy = ""
     private var tileMatchFuzziness = TileMatchFuzziness.CompleteMatch
-    //Current map RND seed = [amount]
 
     enum class TileMatchFuzziness(val label: String) {
         CompleteMatch("Complete match"),
@@ -28,27 +31,55 @@ class MapEditorOptionsTab(
     init {
         top()
         defaults().pad(10f)
+
+        add("Tile Matching Criteria".toLabel(Color.GOLDENROD)).row()
+        for (option in TileMatchFuzziness.values()) {
+            val check = option.label.toCheckBox(option == tileMatchFuzziness)
+            { tileMatchFuzziness = option }
+            add(check).row()
+            tileMatchGroup.add(check)
+        }
+        addSeparator(Color.GRAY)
+
         add(seedLabel).row()
         add(copySeedButton).row()
         copySeedButton.onClick {
             Gdx.app.clipboard.contents = seedToCopy
         }
         addSeparator(Color.GRAY)
-        add("Tile Matching Criteria".toLabel()).row()
-        for (option in TileMatchFuzziness.values()) {
-            val check = option.label.toCheckBox(option == tileMatchFuzziness)
-                { tileMatchFuzziness = option }
-            add(check).row()
-            tileMatchGroup.add(check)
+
+        add("Map copy and paste".toLabel(Color.GOLDENROD)).row()
+        copyMapButton.onClick(this::copyHandler)
+        add(copyMapButton).row()
+        pasteMapButton.onClick(this::pasteHandler)
+        add(pasteMapButton).row()
+    }
+
+    private fun copyHandler() {
+        Gdx.app.clipboard.contents = MapSaver.mapToSavedString(editorScreen.getMapCloneForSave())
+    }
+
+    private fun pasteHandler() {
+        try {
+            val clipboardContentsString = Gdx.app.clipboard.contents.trim()
+            val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString, checkSizeErrors = false)
+            editorScreen.loadMap(loadedMap)
+        } catch (ex: Exception) {
+            ToastPopup("Could not load map!", editorScreen)
         }
     }
 
     override fun activated(index: Int) {
         seedToCopy = editorScreen.tileMap.mapParameters.seed.toString()
         seedLabel.setText("Current map RNG seed = [$seedToCopy]".tr())
+        editorScreen.keyPressDispatcher[KeyCharAndCode.ctrl('c')] = this::copyHandler
+        editorScreen.keyPressDispatcher[KeyCharAndCode.ctrl('v')] = this::pasteHandler
+        pasteMapButton.isEnabled = Gdx.app.clipboard.hasContents()
     }
 
     override fun deactivated(newIndex: Int) {
         editorScreen.tileMatchFuzziness = tileMatchFuzziness
+        editorScreen.keyPressDispatcher.remove(KeyCharAndCode.ctrl('c'))
+        editorScreen.keyPressDispatcher.remove(KeyCharAndCode.ctrl('v'))
     }
 }

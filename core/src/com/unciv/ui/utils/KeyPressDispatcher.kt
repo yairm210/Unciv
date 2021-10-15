@@ -88,7 +88,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
  *      keyPressDispatcher['+'] = { zoomIn() }
  *  ```
  *  Optionally use [setCheckpoint] and [revertToCheckPoint] to remember and restore one state.
- *  
+ *
  *  @param name Optional name of the container screen or popup for debugging
  */
 class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (() -> Unit)>() {
@@ -164,20 +164,18 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
      * @param   checkIgnoreKeys An optional lambda - when it returns true all keys are ignored
      */
     fun install(stage: Stage, checkIgnoreKeys: (() -> Boolean)? = null) {
+        if (consoleLog)
+            println("$this: install")
         if (installStage != null) uninstall()
         listener =
             object : InputListener() {
                 override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                    /*
-                    : Boolean {
-                    return super.keyDown(event, keycode)
-                        }(event: InputEvent?, character: Char)
-                     */
-
                     // look for both key code and ascii entries - ascii first as the
                     // Char constructor of KeyCharAndCode generates keyCode based instances
                     // preferentially but we would miss Ctrl- combos otherwise
                     val key = when {
+                        //contains(KeyCharAndCode.ascii(character)) ->
+                        //    KeyCharAndCode.ascii(character)
                         event == null ->
                             KeyCharAndCode.UNKNOWN
                         else ->
@@ -185,9 +183,15 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
                     }
 
                     // see if we want to handle this key, and if not, let it propagate
-                    if (!contains(key) || (checkIgnoreKeys?.invoke() == true))
+                    if (!contains(key) || (checkIgnoreKeys?.invoke() == true)) {
+                        if (consoleLog)
+                            println("${this@KeyPressDispatcher}: NOT handling $key")
                         return super.keyDown(event, keycode)
-                    
+                    }
+
+                    if (consoleLog)
+                        println("${this@KeyPressDispatcher}: handling $key")
+
                     // try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                     try {
                         this@KeyPressDispatcher[key]?.invoke()
@@ -201,6 +205,8 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
 
     /** uninstall our [EventListener] from the stage it was installed on. */
     fun uninstall() {
+        if (consoleLog)
+            println("$this: uninstall")
         checkInstall(forceRemove = true)
         listener = null
         installStage = null
@@ -217,9 +223,13 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
         if (listenerInstalled && (isEmpty() || isPaused || forceRemove)) {
             listenerInstalled = false
             installStage!!.removeListener(listener)
+            if (consoleLog)
+                println("$this: Listener removed")
         } else if (!listenerInstalled && !(isEmpty() || isPaused)) {
             installStage!!.addListener(listener)
             listenerInstalled = true
+            if (consoleLog)
+                println("$this: Listener added")
         }
     }
 
@@ -233,5 +243,7 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
     companion object {
         /** Tests presence of a physical keyboard - static here as convenience shortcut only */
         val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
+
+        private const val consoleLog = true
     }
 }

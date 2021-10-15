@@ -126,8 +126,6 @@ class MapEditorViewTab(
 
         invalidateHierarchy()  //todo - unsure this helps 
         validate()
-
-        editorScreen.tabs.setScrollDisabled(false)
     }
 
     override fun activated(index: Int) {

@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -177,15 +178,22 @@ class MapEditorEditImprovementsTab(
         add(eraser.render(0f).apply { onClick {
             editTab.setBrush("Remove improvement", eraserIcon) { tile ->
                 tile.improvement = null
+                tile.roadStatus = RoadStatus.None
             }
         } }).fillX().left().row()
         add(MarkupRenderer.render(
             getImprovements(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
         ) {
-            editTab.setBrush(it, "Improvement/$it") { tile ->
-                tile.improvement = it
-            }
+            val road = RoadStatus.values().firstOrNull { r -> r.name == it }
+            if (road != null)
+                editTab.setBrush(BrushHandlerType.Road, it, "Improvement/$it") { tile ->
+                    tile.roadStatus = road
+                }
+            else
+                editTab.setBrush(it, "Improvement/$it") { tile ->
+                    tile.improvement = it
+                }
         }).fillX().left().row()
     }
 
@@ -224,7 +232,7 @@ class MapEditorEditStartsTab(
         val eraserIcon = "Nation/${firstNation.name}"
         val eraser = FormattedLine("Remove starting locations", icon = eraserIcon, size = 24, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
-            editTab.setBrush(BrushHandlerType.StartLocation, "Remove starting locations", eraserIcon) { tile ->
+            editTab.setBrush(BrushHandlerType.Direct, "Remove starting locations", eraserIcon) { tile ->
                 tile.tileMap.removeStartingLocations(tile.position)
             }
         } }).fillX().left().row()
@@ -232,7 +240,7 @@ class MapEditorEditStartsTab(
             getNations(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
         ) {
-            editTab.setBrush(BrushHandlerType.StartLocation, it, "Nation/$it") { tile ->
+            editTab.setBrush(BrushHandlerType.Direct, it, "Nation/$it") { tile ->
                 // toggle the starting location here, note this allows
                 // both multiple locations per nation and multiple nations per tile
                 if (!tile.tileMap.addStartingLocation(it, tile))
@@ -275,7 +283,7 @@ class MapEditorEditRiversTab(
             add(getRemoveRiverIcon()).padRight(10f)
             add("Remove rivers".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush("Remove rivers", getRemoveRiverIcon()) { tile ->
+                editTab.setBrush(BrushHandlerType.River,"Remove rivers", getRemoveRiverIcon()) { tile ->
                     tile.hasBottomLeftRiver = false
                     tile.hasBottomRightRiver = false
                     tile.hasBottomRiver = false
@@ -294,7 +302,7 @@ class MapEditorEditRiversTab(
             add(getRiverIcon(RiverEdge.Left)).padRight(10f)
             add("Bottom left river".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush("Bottom left river", getTileGroupWithRivers(RiverEdge.Left)) { tile ->
+                editTab.setBrush(BrushHandlerType.Direct,"Bottom left river", getTileGroupWithRivers(RiverEdge.Left)) { tile ->
                     tile.hasBottomLeftRiver = !tile.hasBottomLeftRiver
                 }
             }
@@ -305,7 +313,7 @@ class MapEditorEditRiversTab(
             add(getRiverIcon(RiverEdge.Bottom)).padRight(10f)
             add("Bottom river".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush("Bottom river", getTileGroupWithRivers(RiverEdge.Bottom)) { tile ->
+                editTab.setBrush(BrushHandlerType.Direct,"Bottom river", getTileGroupWithRivers(RiverEdge.Bottom)) { tile ->
                     tile.hasBottomRiver = !tile.hasBottomRiver
                 }
             }
@@ -316,7 +324,7 @@ class MapEditorEditRiversTab(
             add(getRiverIcon(RiverEdge.Right)).padRight(10f)
             add("Bottom right river".toLabel(fontSize = 32))
             onClick {
-                editTab.setBrush("Bottom right river", getTileGroupWithRivers(RiverEdge.Right)) { tile ->
+                editTab.setBrush(BrushHandlerType.Direct,"Bottom right river", getTileGroupWithRivers(RiverEdge.Right)) { tile ->
                     tile.hasBottomRightRiver = !tile.hasBottomRightRiver
                 }
             }
@@ -329,7 +337,7 @@ class MapEditorEditRiversTab(
             add("Spawn river from/to".toLabel(fontSize = 32))
             onClick {
                 editTab.setBrush(
-                    BrushHandlerType.River,
+                    BrushHandlerType.RiverFromTo,
                     name = "Spawn river from/to",
                     icon = getTileGroupWithRivers(RiverEdge.All),
                     applyAction = {}  // Actual effect done via BrushHandlerType

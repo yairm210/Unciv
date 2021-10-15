@@ -21,7 +21,6 @@ class MapEditorSaveTab(
 
     private val saveButton: TextButton
     private val deleteButton: TextButton
-    private val copyButton: TextButton
     private val mapNameTextField = TextField("", skin)
 
     private var chosenMap: FileHandle? = null
@@ -29,8 +28,8 @@ class MapEditorSaveTab(
     init {
         mapNameTextField.maxLength = 100
         mapNameTextField.textFieldFilter = TextField.TextFieldFilter { _, char -> char != '\\' && char != '/' }
-        editorScreen.stage.keyboardFocus = mapNameTextField
         mapNameTextField.selectAll()
+        // do NOT take the keyboard focus here! We're not even visible.
         add(mapNameTextField).pad(10f).fillX().row()
 
         val buttonTable = Table(skin)
@@ -44,9 +43,6 @@ class MapEditorSaveTab(
         deleteButton = "Delete map".toTextButton()
         deleteButton.onClick(this::deleteHandler)
         buttonTable.add(deleteButton)
-        copyButton = "Copy to clipboard".toTextButton()
-        copyButton.onClick(this::copyHandler)
-        buttonTable.add(copyButton)
         buttonTable.pack()
 
         val fileTableHeight = editorScreen.stage.height - headerHeight - mapNameTextField.prefHeight - buttonTable.height - 22f
@@ -71,29 +67,19 @@ class MapEditorSaveTab(
         }, editorScreen).open()
     }
 
-    private fun copyHandler() {
-        Gdx.app.clipboard.contents = MapSaver.mapToSavedString(getMapCloneForSave())
-    }
-
-    private fun getMapCloneForSave() =
-        editorScreen.tileMap.clone().apply {
-            setTransients(setUnitCivTransients = false)
-        }
-
     override fun activated(index: Int) {
         editorScreen.tabs.setScrollDisabled(true)
         mapFiles.update()
         editorScreen.keyPressDispatcher[KeyCharAndCode.RETURN] = this::saveHandler
         editorScreen.keyPressDispatcher[KeyCharAndCode.DEL] = this::deleteHandler
-        editorScreen.keyPressDispatcher[KeyCharAndCode.ctrl('c')] = this::copyHandler
         selectFile(null)
     }
 
     override fun deactivated(newIndex: Int) {
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.RETURN)
         editorScreen.keyPressDispatcher.remove(KeyCharAndCode.DEL)
-        editorScreen.keyPressDispatcher.remove(KeyCharAndCode.ctrl('c'))
         editorScreen.tabs.setScrollDisabled(false)
+        stage.keyboardFocus = null
     }
 
     fun selectFile(file: FileHandle?) {
@@ -101,6 +87,7 @@ class MapEditorSaveTab(
         mapNameTextField.text = file?.name() ?: editorScreen.tileMap.mapParameters.name
         if (mapNameTextField.text.isBlank()) mapNameTextField.text = "My new map".tr()
         mapNameTextField.setSelection(Int.MAX_VALUE, Int.MAX_VALUE)  // sets caret to end of text
+        stage.keyboardFocus = mapNameTextField
         saveButton.isEnabled = true
         deleteButton.isEnabled = (file != null)
         deleteButton.color = if (file != null) Color.SCARLET else Color.BROWN
@@ -108,7 +95,7 @@ class MapEditorSaveTab(
 
     private fun saverThread() {
         try {
-            val mapToSave = getMapCloneForSave()
+            val mapToSave = editorScreen.getMapCloneForSave()
             mapToSave.assignContinents(TileMap.AssignContinentsMode.Reassign)
             MapSaver.saveMap(mapNameTextField.text, mapToSave)
             Gdx.app.postRunnable {
