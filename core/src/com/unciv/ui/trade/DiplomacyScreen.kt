@@ -139,7 +139,6 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
         diplomacyTable.defaults().pad(2.5f)
 
         diplomacyTable.add(LeaderIntroTable(otherCiv)).padBottom(15f).row()
-
         diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
 
@@ -192,8 +191,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
             diplomacyTable.add(nextLevelString.toLabel()).row()
         }
         diplomacyTable.row().padTop(15f)
-
         val eraInfo = viewingCiv.getEra()
+        diplomacyTable.add("Civ Era: ${if(eraInfo.name != "") eraInfo else "eraInfo.name Absent" }".replace(" era", "").toLabel()).row()
+
+
 
         var friendBonusText = "{When Friends:} ".tr()
         val friendBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
@@ -715,6 +716,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
 
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
+            diplomacyTable.add("Civ Era: ${if(otherCiv.getEra().name != "") otherCiv.getEra().name else "eraInfo.name Absent" }".replace(" era", "").toLabel()).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
             val promisesTable = getPromisesTable(diplomacyManager, otherCivDiplomacyManager)
             if (promisesTable != null) diplomacyTable.add(promisesTable).row()
