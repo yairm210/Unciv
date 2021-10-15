@@ -202,7 +202,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
         val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)
         selectedCivIconHolder.actor = selectedCivIcon
-        selectedCivLabel.onClick { worldScreen.game.setScreen(CivilopediaScreen( worldScreen.selectedCiv.gameInfo.ruleSet, CivilopediaCategories.Nation, worldScreen.selectedCiv.civName)) }
 
         selectedCivTable.add(selectedCivLabel).padRight(10f)
         selectedCivTable.add(selectedCivIconHolder)
