@@ -160,14 +160,7 @@ class CityInfo {
         }
 
         civInfo.civConstructions.tryAddFreeBuildings()
-
-        for (unique in getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(civInfo, this))) {
-            val freeBuildingName = unique.params[0]
-            if (matchesFilter(unique.params[1])) {
-                if (!cityConstructions.isBuilt(freeBuildingName))
-                    cityConstructions.addBuilding(freeBuildingName)
-            }
-        }
+        cityConstructions.addFreeBuildings()
     }
 
     private fun setNewCityName(civInfo: CivilizationInfo) {
@@ -310,6 +303,9 @@ class CityInfo {
         }
         
         for (building in cityConstructions.getBuiltBuildings()) {
+            // Free buildings cost no resources
+            if (building.name in civInfo.civConstructions.getFreeBuildings(id))
+                continue
             for ((resourceName, amount) in building.getResourceRequirements()) {
                 val resource = getRuleset().tileResources[resourceName]!!
                 cityResources.add(resource, -amount, "Buildings")
@@ -353,14 +349,12 @@ class CityInfo {
             // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
             || resource.resourceType == ResourceType.Strategic && tileInfo.containsGreatImprovement()
         ) {
-            var amountToAdd = 1
-            if (resource.resourceType == ResourceType.Strategic) {
-                amountToAdd = 2
-            }
+            var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
+                else 1
             if (resource.resourceType == ResourceType.Luxury
                 && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City")
             )
-                amountToAdd *= 2
+                amountToAdd += 1
 
             return amountToAdd
         }
@@ -488,6 +482,7 @@ class CityInfo {
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         cityConstructions.constructIfEnough()
         cityConstructions.addFreeBuildings()
+        
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false

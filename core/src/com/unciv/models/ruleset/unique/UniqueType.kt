@@ -115,9 +115,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.WARNING)
     GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
 
-    // TODO: Unify these (I'm in favor of "gain a free" above "provides" because it fits more cases)
-    ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.17.7", ReplaceWith("Gain a free [buildingName] [cityFilter]"), DeprecationLevel.WARNING)
+    ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
@@ -171,6 +171,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
+    CannotAttack("Cannot attack", UniqueTarget.Unit),
 
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     MovementUnits("+[amount] Movement for all [mapUnitFilter] units", UniqueTarget.Global),
@@ -187,6 +188,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Spread Religion Strength <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     SpreadReligionStrengthUnits("[amount]% Spread Religion Strength for [mapUnitFilter] units", UniqueTarget.Global),
 
+    BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
 
     CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit),
@@ -208,6 +210,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
+    
+    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins),
 
     //////////////////////////////////////// TERRAIN UNIQUES ////////////////////////////////////////
 
@@ -230,6 +234,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     VisibilityElevation("Has an elevation of [amount] for visibility calculations", UniqueTarget.Terrain),
 
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain),
+
+    OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
 
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 

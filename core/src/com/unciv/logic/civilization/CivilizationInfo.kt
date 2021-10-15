@@ -531,14 +531,27 @@ class CivilizationInfo {
     }
 
     fun getEra(): Era {
-        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty()) 
+        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty())
             return Era()
-        val eraName = tech.researchedTechnologies
-                .asSequence()
-                .map { it.column!! }
-                .maxByOrNull { it.columnNumber }!!
-                .era
-        return gameInfo.ruleSet.eras[eraName]!!
+        val maxEraName = tech.researchedTechnologies
+            .asSequence()
+            .map { it.column!! }
+            .maxByOrNull { it.columnNumber }!!
+            .era
+        val maxEra = gameInfo.ruleSet.eras[maxEraName]!!
+
+        val minEraName = gameInfo.ruleSet.technologies.values
+            .asSequence()
+            .filter { it !in tech.researchedTechnologies }
+            .map { it.column!! }
+            .minByOrNull { it.columnNumber }
+            ?.era
+            ?: return maxEra
+        
+        val minEra = gameInfo.ruleSet.eras[minEraName]!!
+
+        return if (minEra.eraNumber > maxEra.eraNumber) minEra
+            else maxEra
     }
 
     fun getEraNumber(): Int = getEra().eraNumber
@@ -631,7 +644,7 @@ class CivilizationInfo {
             .filter { it.isGreatPerson() }
             .map { getEquivalentUnit(it.name) }
         return if (!gameInfo.isReligionEnabled())
-            greatPeople.filter { !it.hasUnique(Constants.hiddenWithoutReligionUnique) }.toHashSet()
+            greatPeople.filter { !it.hasUnique(UniqueType.HiddenWithoutReligion) }.toHashSet()
         else greatPeople.toHashSet()
     }
 
@@ -822,11 +835,10 @@ class CivilizationInfo {
 
     private fun startTurnFlags() {
         for (flag in flagsCountdown.keys.toList()) {
-            // There are cases where we remove flags while iterating, like ShowDiplomaticVotingResults
+            // In case we remove flags while iterating
             if (!flagsCountdown.containsKey(flag)) continue
 
-            // the "ignoreCase = true" is to catch 'cityStateGreatPersonGift' instead of 'CityStateGreatPersonGift' being in old save files 
-            if (flag == CivFlags.CityStateGreatPersonGift.name || flag.equals(CivFlags.CityStateGreatPersonGift.name, ignoreCase = true)) {
+            if (flag == CivFlags.CityStateGreatPersonGift.name) {
                 val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }
 
                 if (cityStateAllies.any()) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
@@ -844,31 +856,35 @@ class CivilizationInfo {
 
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-
-            if (flagsCountdown[flag]!! != 0) continue
-
-            when (flag) {
-                CivFlags.TurnsTillNextDiplomaticVote.name -> addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
-                CivFlags.ShouldResetDiplomaticVotes.name -> {
-                    gameInfo.diplomaticVictoryVotesCast.clear()
-                    removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
-                    removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
-                }
-                CivFlags.ShowDiplomaticVotingResults.name -> {
-
-                    if (gameInfo.civilizations.any { it.victoryManager.hasWon() } )
-                        // We have either already done this calculation, or it doesn't matter anymore, 
-                        // so don't waste resources doing it
-                        continue
-
-                    addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
-                }
+            
+        }
+        handleDiplomaticVictoryFlags()
+    }
+    
+    private fun handleDiplomaticVictoryFlags() {
+        if (flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
+            gameInfo.diplomaticVictoryVotesCast.clear()
+            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
+            removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
+        }
+        
+        if (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0) {
+            if (gameInfo.civilizations.any { it.victoryManager.hasWon() } ) {
+                removeFlag(CivFlags.TurnsTillNextDiplomaticVote.name)
+            } else {
+                addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
+                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
             }
+        }
+        
+        if (flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name] == 0) {
+            addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
         }
     }
 
-    fun addFlag(flag: String, count: Int) { flagsCountdown[flag] = count }
-    fun removeFlag(flag: String) { flagsCountdown.remove(flag) }
+    fun addFlag(flag: String, count: Int) = flagsCountdown.set(flag, count)
+    
+    fun removeFlag(flag: String) = flagsCountdown.remove(flag)
 
     fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
 
@@ -882,7 +898,6 @@ class CivilizationInfo {
 
     fun diplomaticVoteForCiv(chosenCivName: String?) {
         if (chosenCivName != null) gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
-        addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
     }
 
     fun shouldShowDiplomaticVotingResults() =

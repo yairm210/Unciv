@@ -1,3 +1,41 @@
+## 3.17.8
+
+By avdstaaij:
+- Fixed the visual gaps in territory borders
+- Fixed the base cost of the Grand Temple
+
+Strength bonuses apply from civ bonuses as well
+
+By SimonCeder:
+- Disable religious quest with religion disabled
+- Variable resource quantities
+- Free buildings are truly free
+
+By xlenstra:
+- Fixed a bug where "[+amount] population [in this city]" did not work
+- Fixed bugs with diplomatic victory
+- Free buildings provided in other cities are also free
+- Fixed crashes from era
+
+## 3.17.7
+
+Mayas nation - By SomeTroglodyte
+
+Better AI choice for constructing carriers
+
+By xlenstra:
+- Solved bugs with unit movement through fog of war
+- Fixed multiple small bugs
+- Made it impossible to cut short peace treaties
+- Fixed a bug where religious units would be expelled when an open borders agreement ended
+- Fixed bug with byzantine unique
+
+Civ icon redirects to civilopedia  - By logicminimal
+
+By SimonCeder:
+- Return Civilians captured by Barbarians to original owner
+- cs units wander
+
 ## 3.17.6
 
 Considerable optimizations for "next turn" performance

@@ -162,8 +162,11 @@ class CityConstructions {
     }
     
     fun addFreeBuildings() {
-        // "Provides a free [buildingName] [cityFilter]"
-        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.ProvidesFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo))) {
+        // "Gain a free [buildingName] [cityFilter]"
+        val uniqueList = cityInfo.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo)).toMutableList()
+        // Deprecated - "Provides a free [buildingName] [cityFilter]"
+        uniqueList.addAll(cityInfo.getLocalMatchingUniques(UniqueType.ProvidesFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo)))
+        for (unique in uniqueList) {
             val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
             val citiesThatApply = when (unique.params[1]) {
                 "in this city" -> listOf(cityInfo)
@@ -178,6 +181,18 @@ class CityConstructions {
                     freeBuildingsProvidedFromThisCity[city.id] = hashSetOf()
 
                 freeBuildingsProvidedFromThisCity[city.id]!!.add(freeBuildingName)
+            }
+        }
+
+        // Civ-level uniques - for these only add free buildings from each city to itself to avoid weirdness on city conquest
+        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(cityInfo.civInfo, cityInfo))) {
+            val freeBuildingName = unique.params[0]
+            if (cityInfo.matchesFilter(unique.params[1])) {
+                if (cityInfo.id !in freeBuildingsProvidedFromThisCity)
+                    freeBuildingsProvidedFromThisCity[cityInfo.id] = hashSetOf()
+                freeBuildingsProvidedFromThisCity[cityInfo.id]!!.add(freeBuildingName)
+                if (!isBuilt(freeBuildingName))
+                    addBuilding(freeBuildingName)
             }
         }
     }

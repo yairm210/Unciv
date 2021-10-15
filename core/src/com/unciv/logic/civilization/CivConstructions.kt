@@ -96,7 +96,7 @@ class CivConstructions {
     fun getFreeBuildings(cityId: String): HashSet<String> {
         val toReturn = freeBuildings[cityId] ?: hashSetOf()
         for (city in civInfo.cities) {
-            toReturn.addAll(city.cityConstructions.freeBuildingsProvidedFromThisCity[city.id] ?: hashSetOf())
+            toReturn.addAll(city.cityConstructions.freeBuildingsProvidedFromThisCity[cityId] ?: hashSetOf())
         }
         return toReturn
     }

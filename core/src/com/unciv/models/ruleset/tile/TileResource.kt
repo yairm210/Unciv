@@ -16,6 +16,9 @@ class TileResource : RulesetStatsObject() {
     var revealedBy: String? = null
     @Deprecated("As of 3.16.16 - replaced by uniques")
     var unique: String? = null
+    var majorDepositAmount: DepositAmount = DepositAmount()
+    var minorDepositAmount: DepositAmount = DepositAmount()
+    
     override fun getUniqueTarget() = UniqueTarget.Resource
 
 
@@ -82,6 +85,12 @@ class TileResource : RulesetStatsObject() {
         textList += Belief.getCivilopediaTextMatching(name, ruleset)
 
         return textList
+    }
+    
+    class DepositAmount {
+        var sparse: Int = 1
+        var default: Int = 2
+        var abundant: Int = 3
     }
 
 }

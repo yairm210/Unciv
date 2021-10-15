@@ -11,6 +11,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.toPercent
@@ -346,21 +347,21 @@ object Battle {
     }
 
     private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
-        if (attacker.isMelee()
-                && (defender.isDefeated() || defender.getCivInfo() == attacker.getCivInfo())) {
-            // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
-            // this has to be checked before canMoveTo, otherwise it will return false
-            if (attackedTile.civilianUnit != null && attackedTile.civilianUnit!!.civInfo != attacker.getCivInfo())
-                captureCivilianUnit(attacker, MapUnitCombatant(attackedTile.civilianUnit!!))
+        if (!attacker.isMelee()) return
+        if (!defender.isDefeated() && defender.getCivInfo() != attacker.getCivInfo()) return
 
-            // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
-            if ((attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
-                // Units that can move after attacking are not affected by zone of control if the
-                // movement is caused by killing a unit. Effectively, this means that attack movements
-                // are exempt from zone of control, since units that cannot move after attacking already
-                // lose all remaining movement points anyway.
-                attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
-            }
+        // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
+        // this has to be checked before canMoveTo, otherwise it will return false
+        if (attackedTile.civilianUnit != null && attackedTile.civilianUnit!!.civInfo != attacker.getCivInfo())
+            captureCivilianUnit(attacker, MapUnitCombatant(attackedTile.civilianUnit!!))
+
+        // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
+        if ((attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
+            // Units that can move after attacking are not affected by zone of control if the
+            // movement is caused by killing a unit. Effectively, this means that attack movements
+            // are exempt from zone of control, since units that cannot move after attacking already
+            // lose all remaining movement points anyway.
+            attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
         }
     }
 
@@ -538,6 +539,28 @@ object Battle {
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }
+    
+    fun mayUseNuke(nuke: MapUnitCombatant, targetTile: TileInfo): Boolean {
+        val blastRadius =
+            if (!nuke.unit.hasUnique(UniqueType.BlastRadius)) 2
+            else nuke.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+
+        var canNuke = true
+        val attackerCiv = nuke.getCivInfo()
+        for (tile in targetTile.getTilesInDistance(blastRadius)) {
+            val defendingTileCiv = tile.getCity()?.civInfo
+            if (defendingTileCiv != null && attackerCiv.knows(defendingTileCiv)) {
+                canNuke = canNuke && attackerCiv.getDiplomacyManager(defendingTileCiv).canAttack()
+            }
+
+            val defender = getMapCombatantOfTile(tile) ?: continue
+            val defendingUnitCiv = defender.getCivInfo()
+            if (attackerCiv.knows(defendingUnitCiv)) {
+                canNuke = canNuke && attackerCiv.getDiplomacyManager(defendingUnitCiv).canAttack()
+            }
+        }
+        return canNuke
+    }
 
     @Suppress("FunctionName")   // Yes we want this name to stand out
     fun NUKE(attacker: MapUnitCombatant, targetTile: TileInfo) {
@@ -553,8 +576,8 @@ object Battle {
         }
 
         val blastRadius =
-            if (!attacker.unit.hasUnique("Blast radius []")) 2
-            else attacker.unit.getMatchingUniques("Blast radius []").first().params[0].toInt()
+            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
+            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
 
         val strength = when {
             (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->

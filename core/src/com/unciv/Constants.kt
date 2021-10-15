@@ -6,7 +6,6 @@ object Constants {
     const val eraSpecificUnit = "Era Starting Unit"
     const val spreadReligionAbilityCount = "Spread Religion"
     const val removeHeresyAbilityCount = "Remove Foreign religions from your own cities"
-    const val hiddenWithoutReligionUnique = "Hidden when religion is disabled"
     const val hideFromCivilopediaUnique = "Will not be displayed in Civilopedia"
 
     const val impassable = "Impassable"
