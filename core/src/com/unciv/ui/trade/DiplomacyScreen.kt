@@ -139,6 +139,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
         diplomacyTable.defaults().pad(2.5f)
 
         diplomacyTable.add(LeaderIntroTable(otherCiv)).padBottom(15f).row()
+
         diplomacyTable.add("{Type}:  {${otherCiv.cityStateType}}".toLabel()).row()
         diplomacyTable.add("{Personality}:  {${otherCiv.cityStatePersonality}}".toLabel()).row()
 
