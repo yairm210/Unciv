@@ -508,6 +508,8 @@ class CivilizationInfo {
         }
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
+        
+        questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
 
     fun discoverNaturalWonder(naturalWonderName: String) {
@@ -891,6 +893,7 @@ class CivilizationInfo {
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
     fun getRecentBullyingCountdown() = flagsCountdown[CivFlags.RecentlyBullied.name]
+    fun getTurnsTillCallForBarbHelp() = flagsCountdown[CivFlags.TurnsTillCallForBarbHelp.name]
 
     fun mayVoteForDiplomaticVictory() =
         getTurnsTillNextDiplomaticVote() == 0 
@@ -1184,6 +1187,7 @@ class CivilizationInfo {
     fun getFreeTechForCityState() {
         cityStateFunctions.getFreeTechForCityState()
     }
+    fun getNumThreateningBarbarians() = cityStateFunctions.getNumThreateningBarbarians()
     fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
         cityStateFunctions.threateningBarbarianKilledBy(otherCiv)
     }
@@ -1214,5 +1218,6 @@ enum class CivFlags {
     TurnsTillNextDiplomaticVote,
     ShowDiplomaticVotingResults,
     ShouldResetDiplomaticVotes,
-    RecentlyBullied
+    RecentlyBullied,
+    TurnsTillCallForBarbHelp,
 }

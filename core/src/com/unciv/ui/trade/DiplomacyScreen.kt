@@ -369,6 +369,11 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
             diplomacyTable.addSeparator()
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
+        
+        for (target in otherCiv.getKnownCivs().filter { otherCiv.questManager.warWithMajorActive(it) }) {
+            diplomacyTable.addSeparator()
+            diplomacyTable.add(getWarWithMajorTable(target, otherCiv)).row()
+        }
 
         return diplomacyTable
     }
@@ -565,6 +570,24 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
             assignedQuest.onClickAction()
         }
         return questTable
+    }
+
+    private fun getWarWithMajorTable(target: CivilizationInfo, otherCiv: CivilizationInfo): Table {
+        val warTable = Table()
+        warTable.defaults().pad(10f)
+        
+        val title = "War against [${target.civName}]"
+        val description = "We need you to help us defend against [${target.civName}]. Killing [${otherCiv.questManager.unitsToKill(target)}] of their military units would slow their offensive."
+        val progress = if (viewingCiv.knows(target)) "Currently you have killed [${otherCiv.questManager.unitsKilledSoFar(target, viewingCiv)}] of their military units."
+            else "You need to find them first!"
+
+        warTable.add(title.toLabel(fontSize = 24)).row()
+        warTable.add(description.toLabel().apply { wrap = true; setAlignment(Align.center) })
+            .width(stage.width / 2).row()
+        warTable.add(progress.toLabel().apply { wrap = true; setAlignment(Align.center) })
+            .width(stage.width / 2).row()
+  
+        return warTable
     }
 
     private fun getMajorCivDiplomacyTable(otherCiv: CivilizationInfo): Table {
