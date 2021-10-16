@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
@@ -262,12 +261,12 @@ object UniqueTriggerActivation {
             }
 
             UnitsGainPromotion -> {
-                val filter = unique.params[0]
+                val unitFilter = unique.params[0]
                 val promotion = unique.params[1]
 
                 val promotedUnitLocations: MutableList<Vector2> = mutableListOf()
                 for (unit in civInfo.getCivUnits()) {
-                    if (unit.matchesFilter(filter)
+                    if (unit.matchesFilter(unitFilter)
                         && civInfo.gameInfo.ruleSet.unitPromotions.values.any {
                             it.name == promotion && unit.type.name in it.unitTypes
                         }

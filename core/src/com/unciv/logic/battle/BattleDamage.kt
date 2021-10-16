@@ -42,13 +42,14 @@ object BattleDamage {
                 combatAction = combatAction, attackedTile = attackedTile
             )
 
-            for (unique in combatant.unit.getMatchingUniques(
-                UniqueType.Strength, conditionalState)
-                    + civInfo.getMatchingUniques(UniqueType.Strength, conditionalState)
+            for (unique in combatant.unit.getMatchingUniques(UniqueType.Strength, conditionalState)
+                + civInfo.getMatchingUniques(UniqueType.Strength, conditionalState)
             ) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
-            for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthNearCapital)) {
+            for (unique in combatant.unit.getMatchingUniques(UniqueType.StrengthNearCapital) +
+                combatant.getCivInfo().getMatchingUniques(UniqueType.StrengthNearCapital)    
+            ) {
                 if (civInfo.cities.isEmpty()) break
                 val distance = combatant.getTile().aerialDistanceTo(civInfo.getCapital().getCenterTile())
                 // https://steamcommunity.com/sharedfiles/filedetails/?id=326411722#464287

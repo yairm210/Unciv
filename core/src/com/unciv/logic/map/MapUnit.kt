@@ -306,9 +306,10 @@ class MapUnit {
             if (isEmbarked()) 2
             else baseUnit.movement
 
-        movement += (getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this)) +
-             civInfo.getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this)))
-            .sumOf { it.params[0].toInt() }
+        movement += (
+            getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this)) + 
+            civInfo.getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this))
+        ).sumOf { it.params[0].toInt() }
 
         // Deprecated since 3.17.5
             for (unique in civInfo.getMatchingUniques(UniqueType.MovementUnits)
@@ -341,13 +342,15 @@ class MapUnit {
     private fun getVisibilityRange(): Int {
         var visibilityRange = 2
 
-        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked)
-            && !civInfo.hasUnique(UniqueType.NormalVisionWhenEmbarked)) {
+        val conditionalState = StateForConditionals(civInfo = civInfo, unit = this)
+        
+        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)
+            && !civInfo.hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)) {
             return 1
         }
         
-        visibilityRange += (getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
-                + civInfo.getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
+        visibilityRange += (getMatchingUniques(UniqueType.Sight, conditionalState)
+                + civInfo.getMatchingUniques(UniqueType.Sight, conditionalState)
                 ).sumOf { it.params[0].toInt() }
         
         // Deprecated since 3.17.5
