@@ -210,6 +210,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             val gameTable = Table()
             val turnIndicator = Table()
             var currentTurnUser = ""
+            var lastTurnMinutesAgo = 0L
 
             try {
                 turnIndicator.add(ImageGetter.getImage("EmojiIcons/Turn"))
@@ -232,7 +233,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                     //get Minutes since last modified
                     val lastSavedMinutesAgo = (System.currentTimeMillis() - lastModifiedMillis) / 60000
                     var descriptionText = "Last refresh: [$lastSavedMinutesAgo] minutes ago".tr() + "\r\n"
-                    descriptionText += "Current Turn:".tr() + " ${currentTurnUser}\r\n"
+                    descriptionText += "Current Turn:".tr() + " ${currentTurnUser} since $lastTurnMinutesAgo minutes ago\r\n"
                     descriptionLabel.setText(descriptionText)
                 }
 
@@ -260,6 +261,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                         }
                         //set variable so it can be displayed when gameButton.onClick gets called
                         currentTurnUser = game.currentPlayer
+                        lastTurnMinutesAgo = (System.currentTimeMillis() - game.currentTurnStartTime) / 60000
                     }
                 } catch (usx: UncivShowableException) {
                     //Gets thrown when mods are not installed

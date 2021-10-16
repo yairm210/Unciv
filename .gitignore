@@ -139,3 +139,6 @@ android/assets/SaveFiles/
 android/assets/scenarios/
 android/assets/MultiplayerGames/
 android/assets/music/
+
+# Visual Studio Code
+.vscode/
