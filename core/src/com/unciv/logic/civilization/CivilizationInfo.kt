@@ -354,10 +354,10 @@ class CivilizationInfo {
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null, cityToIgnore: CityInfo? = null) = sequence {
         val ruleset = gameInfo.ruleSet
-        yieldAll(nation.uniqueObjects.asSequence().filter {it.matches(uniqueType, ruleset) })
+        yieldAll(nation.uniqueObjects.asSequence().filter { it.matches(uniqueType, ruleset) })
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
-            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType) }
+            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType, stateForConditionals) }
         )
         yieldAll(policies.policyUniques.getUniques(uniqueType))
         yieldAll(tech.techUniques.getUniques(uniqueType))
@@ -365,7 +365,7 @@ class CivilizationInfo {
             .map { it.first }
             .filter { it.matches(uniqueType, ruleset) }
         )
-        yieldAll(getEra().getMatchingUniques(uniqueType))
+        yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
     }.filter {
