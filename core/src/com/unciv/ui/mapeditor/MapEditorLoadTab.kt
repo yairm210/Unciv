@@ -1,6 +1,7 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -16,7 +17,7 @@ class MapEditorLoadTab(
     private val editorScreen: MapEditorScreenV2,
     headerHeight: Float
 ): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
-    private val mapFiles = MapEditorFilesTable(editorScreen.stage.width * 0.3f, this::selectFile)
+    private val mapFiles = MapEditorFilesTable(editorScreen.getToolsWidth() - 40f, this::selectFile)
 
     private val loadButton: TextButton
     private val deleteButton: TextButton
@@ -59,12 +60,13 @@ class MapEditorLoadTab(
         mapFiles.update()
         editorScreen.keyPressDispatcher[KeyCharAndCode.RETURN] = this::loadHandler
         editorScreen.keyPressDispatcher[KeyCharAndCode.DEL] = this::deleteHandler
+        editorScreen.keyPressDispatcher[Input.Keys.UP] = { mapFiles.moveSelection(-1) }
+        editorScreen.keyPressDispatcher[Input.Keys.DOWN] = { mapFiles.moveSelection(1) }
         selectFile(null)
     }
 
     override fun deactivated(newIndex: Int) {
-        editorScreen.keyPressDispatcher.remove(KeyCharAndCode.RETURN)
-        editorScreen.keyPressDispatcher.remove(KeyCharAndCode.DEL)
+        editorScreen.keyPressDispatcher.revertToCheckPoint()
         editorScreen.tabs.setScrollDisabled(false)
     }
 

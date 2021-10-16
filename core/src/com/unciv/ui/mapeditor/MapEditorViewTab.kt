@@ -27,6 +27,7 @@ class MapEditorViewTab(
     /** Click-locating items with several instances: round robin, for simplicity only a global one */
     private var roundRobinIndex = 0
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
+    private val labelWidth = editorScreen.getToolsWidth() - 40f
 
     init {
         top()
@@ -55,7 +56,6 @@ class MapEditorViewTab(
         mockCiv.updateMockCiv(editorScreen.ruleset)
 
         val tileMap = editorScreen.tileMap
-        val labelWidth = editorScreen.stage.width * 0.33f
 
         if (tileMap.mapParameters.name.isNotEmpty()) {
             val mapNameLabel = "${tileMap.mapParameters.name}{}".toLabel(Color.SKY, 24)
@@ -143,7 +143,7 @@ class MapEditorViewTab(
 
         val lines = ArrayList<FormattedLine>()
 
-        lines += FormattedLine("Position: ${tile.position.toString().replace(".0","")}")
+        lines += FormattedLine("Position: [${tile.position.toString().replace(".0","")}]")
         lines += FormattedLine()
 
         lines.addAll(tile.toMarkup(null))
@@ -168,7 +168,12 @@ class MapEditorViewTab(
             lines += FormattedLine("Starting location(s): [$nations]")
         }
 
-        val labelWidth = editorScreen.stage.width * 0.33f
+        val continent = tile.getContinent()
+        if (continent >= 0) {
+            lines += FormattedLine()
+            lines += FormattedLine("Continent: [$continent] ([${tile.tileMap.continentSizes[continent]}] tiles)")
+        }
+
         tileDataCell?.setActor(MarkupRenderer.render(lines, labelWidth, iconDisplay = IconDisplay.NoLink))
 
         editorScreen.hideSelection()

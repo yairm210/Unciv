@@ -48,17 +48,18 @@ class MapEditorEditTab(
 
     private enum class AllEditSubTabs(
         val caption: String,
+        val key: Char,
         val icon: String,
         val instantiate: (MapEditorEditTab, Ruleset)->Actor
     ) {
-        Terrain("Terrain", "OtherIcons/Terrains", { parent, ruleset -> MapEditorEditTerrainTab(parent, ruleset) }),
-        TerrainFeatures("Features", "OtherIcons/Star", { parent, ruleset -> MapEditorEditFeaturesTab(parent, ruleset) }),
-        NaturalWonders("Wonders", "OtherIcons/Star", { parent, ruleset -> MapEditorEditWondersTab(parent, ruleset) }),
-        Resources("Resources", "OtherIcons/Resources", { parent, ruleset -> MapEditorEditResourcesTab(parent, ruleset) }),
-        Improvements("Improvements", "OtherIcons/Improvements", { parent, ruleset -> MapEditorEditImprovementsTab(parent, ruleset) }),
-        Rivers("Rivers", "OtherIcons/Star", { parent, ruleset -> MapEditorEditRiversTab(parent, ruleset) }),
-        StartingLocations("Starting locations", "OtherIcons/Nations", { parent, ruleset -> MapEditorEditStartsTab(parent, ruleset) }),
-        Units("Units", "OtherIcons/Shield", { parent, ruleset -> MapEditorEditUnitsTab(parent, ruleset) }),
+        Terrain("Terrain", 't', "OtherIcons/Terrains", { parent, ruleset -> MapEditorEditTerrainTab(parent, ruleset) }),
+        TerrainFeatures("Features", 'f', "OtherIcons/Star", { parent, ruleset -> MapEditorEditFeaturesTab(parent, ruleset) }),
+        NaturalWonders("Wonders", 'w', "OtherIcons/Star", { parent, ruleset -> MapEditorEditWondersTab(parent, ruleset) }),
+        Resources("Resources", 'r', "OtherIcons/Resources", { parent, ruleset -> MapEditorEditResourcesTab(parent, ruleset) }),
+        Improvements("Improvements", 'i', "OtherIcons/Improvements", { parent, ruleset -> MapEditorEditImprovementsTab(parent, ruleset) }),
+        Rivers("Rivers", 'v', "OtherIcons/Star", { parent, ruleset -> MapEditorEditRiversTab(parent, ruleset) }),
+        StartingLocations("Starting locations", 's', "OtherIcons/Nations", { parent, ruleset -> MapEditorEditStartsTab(parent, ruleset) }),
+        Units("Units", 'u', "OtherIcons/Shield", { parent, ruleset -> MapEditorEditUnitsTab(parent, ruleset) }),
     }
 
     init {
@@ -78,13 +79,15 @@ class MapEditorEditTab(
 
         val subTabsHeight = editorScreen.stage.height - headerHeight - brushTable.prefHeight - 5f
         subTabs = TabbedPager(minimumHeight = subTabsHeight, maximumHeight = subTabsHeight, capacity = 8).apply {
-            prefWidth = editorScreen.stage.width * 0.4f
+            prefWidth = editorScreen.getToolsWidth()
         }
 
         for (page in AllEditSubTabs.values()) {
             val tab = page.instantiate(this, ruleset)
-            val icon = ImageGetter.getImage(page.icon)
-            subTabs.addPage(page.caption, tab, icon, 20f, disabled = (tab as IMapEditorEditSubTabs).isDisabled())
+            subTabs.addPage(page.caption, tab,
+                ImageGetter.getImage(page.icon), 20f,
+                key = KeyCharAndCode(page.key),
+                disabled = (tab as IMapEditorEditSubTabs).isDisabled())
         }
         subTabs.selectPage(0)
 
@@ -105,7 +108,7 @@ class MapEditorEditTab(
         brushCell.setActor(FormattedLine(name, icon = icon, iconCrossed = isRemove).render(0f))
         brushAction = applyAction
     }
-    fun setBrush(
+    private fun setBrush(
         name: String,
         icon: Actor,
         applyAction: (TileInfo)->Unit

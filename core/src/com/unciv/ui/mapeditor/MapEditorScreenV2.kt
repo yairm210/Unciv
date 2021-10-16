@@ -13,19 +13,19 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
 
+//todo normalize properly
 //todo height of the resources+improvement scroller wrong
 //todo width of the tabs sometimes derails (brush line getting longer than initial width)
-
 //todo drag painting
 //todo Nat Wonder step generator: *New* wonders?
 //todo Tab for Units
 //todo allow loading maps from mods (but not saving)
-//todo copy/paste tile areas? (As tool tabs, brush sized, floodfill forbidden, tabs display copied area)
+//todo copy/paste tile areas? (As tool tab, brush sized, floodfill forbidden, tab displays copied area)
 //todo TabbedPager page scroll disabling goes into Widget
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
 //todo left-align everything so a half-open drawer is more useful
 //todo View: Tile Continent info
-//todo Tab tooltips
+//todo combined brush
 
 
 class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
@@ -61,12 +61,13 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         tabs = MapEditorMainTabs(this)
         MapEditorToolsDrawer(tabs, stage)
 
+        // The top level pager assigns its own key bindings, but making nested TabbedPagers bind keys
+        // so all levels select to show the tab in question is too complex. Sub-Tabs need to maintain
+        // the key binding here and the used key in their `addPage`s again for the tooltips.
         fun selectGeneratePage(index: Int) { tabs.run { selectPage(1); generate.selectPage(index) } }
         fun selectEditPage(index: Int) { tabs.run { selectPage(2); edit.selectPage(index) } }
-        keyPressDispatcher[KeyCharAndCode.ctrl('i')] = { tabs.selectPage(0) }
         keyPressDispatcher[KeyCharAndCode.ctrl('n')] = { selectGeneratePage(0) }
         keyPressDispatcher[KeyCharAndCode.ctrl('g')] = { selectGeneratePage(1) }
-        keyPressDispatcher[KeyCharAndCode.ctrl('e')] = { tabs.selectPage(2) }
         keyPressDispatcher['t'] = { selectEditPage(0) }
         keyPressDispatcher['f'] = { selectEditPage(1) }
         keyPressDispatcher['w'] = { selectEditPage(2) }
@@ -74,11 +75,7 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         keyPressDispatcher['i'] = { selectEditPage(4) }
         keyPressDispatcher['v'] = { selectEditPage(5) }
         keyPressDispatcher['s'] = { selectEditPage(6) }
-        //keyPressDispatcher['u'] = { selectEditPage(7) }
-        keyPressDispatcher[KeyCharAndCode.ctrl('l')] = { tabs.selectPage(3) }
-        keyPressDispatcher[KeyCharAndCode.ctrl('s')] = { tabs.selectPage(4) }
-        keyPressDispatcher[KeyCharAndCode.ctrl('m')] = { tabs.selectPage(5) }
-        keyPressDispatcher[KeyCharAndCode.ctrl('o')] = { tabs.selectPage(6) }
+        keyPressDispatcher['u'] = { selectEditPage(7) }
         keyPressDispatcher['1'] = { tabs.edit.brushSize = 1 }
         keyPressDispatcher['2'] = { tabs.edit.brushSize = 2 }
         keyPressDispatcher['3'] = { tabs.edit.brushSize = 3 }
@@ -86,6 +83,7 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
         keyPressDispatcher['5'] = { tabs.edit.brushSize = 5 }
         keyPressDispatcher[KeyCharAndCode.ctrl('f')] = { tabs.edit.brushSize = -1 }
         keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
+        keyPressDispatcher.setCheckpoint()
     }
 
     companion object {
@@ -102,6 +100,8 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
             settings.save()
         }
     }
+
+    fun getToolsWidth() = stage.width * 0.4f
 
     private fun newMapHolder(): EditorMapHolderV2 {
         ImageGetter.setNewRuleset(ruleset)
@@ -179,27 +179,28 @@ class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
 
     private fun checkAndFixMapSize() {
         val areaFromTiles = tileMap.values.size
-        tileMap.mapParameters.run {
-            val areaFromSize = getArea()
-            if (areaFromSize == areaFromTiles) return
-            Gdx.app.postRunnable {
-                val message = ("Invalid map: Area ([$areaFromTiles]) does not match saved dimensions ([" +
-                        displayMapDimensions() + "]).").tr() +
-                        "\n" + "The dimensions have now been fixed for you.".tr()
-                ToastPopup(message, this@MapEditorScreenV2, 4000L )
-            }
-            if (shape == MapShape.hexagonal) {
-                mapSize = MapSizeNew(HexMath.getHexagonalRadiusForArea(areaFromTiles).toInt())
-                return
-            }
+        val params = tileMap.mapParameters
+        val areaFromSize = params.getArea()
+        if (areaFromSize == areaFromTiles) return
 
-            // These mimic tileMap.max* without the abs()
-            val minLatitude = (tileMap.values.map { it.latitude }.minOrNull() ?: 0f).toInt()
-            val minLongitude = (tileMap.values.map { it.longitude }.minOrNull() ?: 0f).toInt()
-            val maxLatitude = (tileMap.values.map { it.latitude }.maxOrNull() ?: 0f).toInt()
-            val maxLongitude = (tileMap.values.map { it.longitude }.maxOrNull() ?: 0f).toInt()
-            mapSize = MapSizeNew((maxLongitude - minLongitude + 1), (maxLatitude - minLatitude + 1) / 2)
+        Gdx.app.postRunnable {
+            val message = ("Invalid map: Area ([$areaFromTiles]) does not match saved dimensions ([" +
+                    params.displayMapDimensions() + "]).").tr() +
+                    "\n" + "The dimensions have now been fixed for you.".tr()
+            ToastPopup(message, this@MapEditorScreenV2, 4000L )
         }
+
+        if (params.shape == MapShape.hexagonal) {
+            params.mapSize = MapSizeNew(HexMath.getHexagonalRadiusForArea(areaFromTiles).toInt())
+            return
+        }
+
+        // These mimic tileMap.max* without the abs()
+        val minLatitude = (tileMap.values.map { it.latitude }.minOrNull() ?: 0f).toInt()
+        val minLongitude = (tileMap.values.map { it.longitude }.minOrNull() ?: 0f).toInt()
+        val maxLatitude = (tileMap.values.map { it.latitude }.maxOrNull() ?: 0f).toInt()
+        val maxLongitude = (tileMap.values.map { it.longitude }.maxOrNull() ?: 0f).toInt()
+        params.mapSize = MapSizeNew((maxLongitude - minLongitude + 1), (maxLatitude - minLatitude + 1) / 2)
     }
 
     override fun resize(width: Int, height: Int) {

@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.EventListener
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.min
 
 /*
@@ -30,11 +31,13 @@ import kotlin.math.min
  * area of added pages and set the reported pref-W/H to their maximum within these bounds. But, if a
  * maximum is not specified, that coordinate will grow with content unlimited, and layout max-W/H will
  * always report the same as pref-W/H.
+ *
+ * @param parentScreen Is used only to assign key bindings to pages.
+ *          If not set, all key parameters to addPage will result in a tooltip but no binding
  */
 //region Fields and initialization
-@Suppress("MemberVisibilityCanBePrivate", "unused")
-open  // All member are part of our API
-class TabbedPager(
+@Suppress("MemberVisibilityCanBePrivate", "unused", "LeakingThis")  // All members are part of our API, and Table.add has no overrides
+open class TabbedPager(
     private val minimumWidth: Float = 0f,
     private var maximumWidth: Float = Float.MAX_VALUE,
     private val minimumHeight: Float = 0f,
@@ -44,10 +47,11 @@ class TabbedPager(
     private val highlightColor: Color = Color.BLUE,
     backgroundColor: Color = ImageGetter.getBlue().lerp(Color.BLACK, 0.5f),
     private val headerPadding: Float = 10f,
+    private val parentScreen: CameraStageBaseScreen? = null,
     capacity: Int = 4
 ) : Table() {
     /** Pages added via [addPage] can implement this to get notified when they are [activated] or [deactivated].
-     *  Alternative to [addPage.onActivation], which is better for handlers outside the TabbedPager.
+     *  Alternative to `addPage.onActivation`, which is better for handlers outside the TabbedPager.
      */
     interface IPageActivation {
         fun activated(index: Int)
@@ -244,6 +248,7 @@ class TabbedPager(
         insertBefore: Int = -1,
         secret: Boolean = false,
         disabled: Boolean = false,
+        key: KeyCharAndCode = KeyCharAndCode.UNKNOWN,
         onActivation: ((Int, String)->Unit)? = null
     ): Int {
         // Build page descriptor and header button
@@ -267,10 +272,14 @@ class TabbedPager(
             }
             add(caption.toLabel(headerFontColor, headerFontSize))
             isEnabled = !disabled
-            onClick {
-                selectPage(page)
-            }
+            val selectAction: ()->Unit = { selectPage(page) }
+            onClick(selectAction)
             pack()
+            if (key != KeyCharAndCode.UNKNOWN) {
+                if (parentScreen != null)
+                    parentScreen.keyPressDispatcher[key] = selectAction
+                addTooltip(key)
+            }
             if (height + 2 * headerPadding > headerHeight) {
                 headerHeight = height + 2 * headerPadding
                 if (activePage >= 0) this@TabbedPager.invalidateHierarchy()

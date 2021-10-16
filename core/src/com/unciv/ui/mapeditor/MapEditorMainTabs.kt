@@ -3,6 +3,7 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.MapSaver
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
 
 class MapEditorMainTabs(
@@ -11,6 +12,7 @@ class MapEditorMainTabs(
     minimumHeight = editorScreen.stage.height,
     maximumHeight = editorScreen.stage.height,
     headerFontSize = 24,
+    parentScreen = editorScreen,
     capacity = 7
 ) {
     val view = MapEditorViewTab(editorScreen)
@@ -22,23 +24,29 @@ class MapEditorMainTabs(
     val options = MapEditorOptionsTab(editorScreen)
 
     init {
-        prefWidth = 0.4f * editorScreen.stage.width
+        prefWidth = editorScreen.getToolsWidth()
 
         addPage("View", view,
-            ImageGetter.getImage("OtherIcons/Search"), 25f)
+            ImageGetter.getImage("OtherIcons/Search"), 25f,
+            key = KeyCharAndCode.ctrl('i'))
         addPage("Generate", generate,
             ImageGetter.getImage("OtherIcons/New"), 25f)
         addPage("Edit", edit,
-            ImageGetter.getImage("OtherIcons/Terrains"), 25f)
+            ImageGetter.getImage("OtherIcons/Terrains"), 25f,
+            key = KeyCharAndCode.ctrl('e'))
         addPage("Load", load,
             ImageGetter.getImage("OtherIcons/Load"), 25f,
+            key = KeyCharAndCode.ctrl('l'),
             disabled = MapSaver.getMaps().isEmpty())
         addPage("Save", save,
-            ImageGetter.getImage("OtherIcons/Checkmark"), 25f)
+            ImageGetter.getImage("OtherIcons/Checkmark"), 25f,
+            key = KeyCharAndCode.ctrl('s'))
         addPage("Mods", mods,
-            ImageGetter.getImage("OtherIcons/Mods"), 25f)
+            ImageGetter.getImage("OtherIcons/Mods"), 25f,
+            key = KeyCharAndCode.ctrl('d'))
         addPage("Options", options,
-            ImageGetter.getImage("OtherIcons/Settings"), 25f)
+            ImageGetter.getImage("OtherIcons/Settings"), 25f,
+            key = KeyCharAndCode.ctrl('o'))
         selectPage(0)
     }
 }

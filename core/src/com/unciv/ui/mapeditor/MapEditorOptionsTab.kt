@@ -12,7 +12,7 @@ import com.unciv.ui.utils.*
 class MapEditorOptionsTab(
     private val editorScreen: MapEditorScreenV2
 ): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
-    private val seedLabel = "".toLabel(Color.GOLDENROD)
+    private val seedLabel = "".toLabel(Color.GOLD)
     private val copySeedButton = "Copy to clipboard".toTextButton()
     private val tileMatchGroup = ButtonGroup<CheckBox>()
     private val copyMapButton = "Copy to clipboard".toTextButton()
@@ -32,7 +32,7 @@ class MapEditorOptionsTab(
         top()
         defaults().pad(10f)
 
-        add("Tile Matching Criteria".toLabel(Color.GOLDENROD)).row()
+        add("Tile Matching Criteria".toLabel(Color.GOLD)).row()
         for (option in TileMatchFuzziness.values()) {
             val check = option.label.toCheckBox(option == tileMatchFuzziness)
             { tileMatchFuzziness = option }
@@ -48,7 +48,7 @@ class MapEditorOptionsTab(
         }
         addSeparator(Color.GRAY)
 
-        add("Map copy and paste".toLabel(Color.GOLDENROD)).row()
+        add("Map copy and paste".toLabel(Color.GOLD)).row()
         copyMapButton.onClick(this::copyHandler)
         add(copyMapButton).row()
         pasteMapButton.onClick(this::pasteHandler)
@@ -79,7 +79,6 @@ class MapEditorOptionsTab(
 
     override fun deactivated(newIndex: Int) {
         editorScreen.tileMatchFuzziness = tileMatchFuzziness
-        editorScreen.keyPressDispatcher.remove(KeyCharAndCode.ctrl('c'))
-        editorScreen.keyPressDispatcher.remove(KeyCharAndCode.ctrl('v'))
+        editorScreen.keyPressDispatcher.revertToCheckPoint()
     }
 }
