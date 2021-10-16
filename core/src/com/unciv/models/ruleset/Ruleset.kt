@@ -564,7 +564,10 @@ class Ruleset {
         }
         for (nation in nations.values) {
             checkUniques(nation, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            if (nation.favoredReligion != null && nation.favoredReligion !in religions)
+                lines += "${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!"
         }
+        
         for (policy in policies.values) {
             if (policy.requires != null)
                 for (prereq in policy.requires!!)

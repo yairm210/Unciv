@@ -151,7 +151,11 @@
         "type": "Follower",
         "uniques": ["[+2 Production] <if this city has at least [1] specialists>"]
     },
-    // ToDo: Holy Warriors (I have to look up the faith costs for these sometime)
+    {
+        "name": "Holy Warriors",
+        "type": "Follower",
+        "uniques": ["May buy [{Military} {Land}] units with [Faith] for [2] times their normal Production cost <before the [Industrial era]>"]
+    },
     {
         "name": "Liturgical Drama",
         "type": "Follower",

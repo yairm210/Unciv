@@ -349,7 +349,7 @@ class MapUnit {
         visibilityRange += (getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
                 + civInfo.getMatchingUniques(UniqueType.Sight, StateForConditionals(civInfo = civInfo, unit = this))
                 ).sumOf { it.params[0].toInt() }
-        
+
         // Deprecated since 3.17.5
             for (unique in getMatchingUniques(UniqueType.SightUnits))
                 if (matchesFilter(unique.params[1]))
@@ -1051,6 +1051,7 @@ class MapUnit {
         if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
             return filter.removePrefix("{").removeSuffix("}").split("} {")
                 .all { matchesFilter(it) }
+        
         return when (filter) {
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"

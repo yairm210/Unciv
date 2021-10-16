@@ -51,6 +51,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
+            UniqueType.ConditionalBeforeEra ->
+                state.civInfo != null && state.civInfo.getEraNumber() < state.civInfo.gameInfo.ruleSet.eras[condition.params[0]]!!.eraNumber
+            UniqueType.ConditionalStartingFromEra ->
+                state.civInfo != null && state.civInfo.getEraNumber() >= state.civInfo.gameInfo.ruleSet.eras[condition.params[0]]!!.eraNumber
+            UniqueType.ConditionalDuringEra ->
+                state.civInfo != null && state.civInfo.getEraNumber() == state.civInfo.gameInfo.ruleSet.eras[condition.params[0]]!!.eraNumber
 
             UniqueType.ConditionalSpecialistCount -> 
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
