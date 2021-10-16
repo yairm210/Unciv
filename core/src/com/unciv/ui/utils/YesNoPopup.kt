@@ -35,9 +35,11 @@ class ExitGamePopup(screen: CameraStageBaseScreen, force: Boolean = false)
     : YesNoPopup (
         question = "Do you want to exit the game?",
         action = { Gdx.app.exit() },
-        screen = screen
+        screen = screen,
+        restoreDefault = { screen.game.musicController.resume() }
     ) {
     init {
+        screen.game.musicController.pause()
         open(force)
     }
 }
