@@ -267,7 +267,7 @@
 			{
 				"name": "Commerce Complete",
 				"uniques": ["[+1 Gold] from every [Trading post]", "Double gold from Great Merchant trade missions",
-					"May buy [Great Merchant] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+					"May buy [Great Merchant] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
 				]
 			}
 		]
@@ -314,7 +314,7 @@
 			{
 				"name": "Rationalism Complete",
 				"uniques": ["[2] Free Technologies",
-					"May buy [Great Scientist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+					"May buy [Great Scientist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
 				]
 			}
 		]
@@ -359,7 +359,7 @@
 			{
 				"name": "Freedom Complete",
 				"uniques": ["+[100]% yield from every [Great Improvement]", "Golden Age length increased by [50]%",
-					"May buy [Great Artist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+					"May buy [Great Artist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
 				]
 			}
 		]
@@ -407,8 +407,8 @@
 			{
 				"name": "Autocracy Complete",
 				"uniques": ["+[25]% attack strength to all [Military] units for [50] turns",
-					"May buy [Great General] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])",
-					"May buy [Great Admiral] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+					"May buy [Great General] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>",
+					"May buy [Great Admiral] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
 				]
 			}
 		]
@@ -453,7 +453,7 @@
         {
             "name": "Order Complete",
 			"uniques": ["[+2 Food, +2 Production, +2 Science, +2 Gold, +2 Culture] [in all cities]",
-				"May buy [Great Engineer] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] starting from the [Industrial era] at an increasing price ([500])"
+				"May buy [Great Engineer] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
 			]
         }
     ]
