@@ -152,7 +152,10 @@ class BarbarianManager {
             it.hasUnique("Notified of new Barbarian encampments")
                     && it.exploredTiles.contains(tile.position)
         }
-            .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War) }
+            .forEach {
+                it.addNotification("A new barbarian encampment has spawned!", tile.position, NotificationIcon.War)
+                it.lastSeenImprovement[tile.position] = Constants.barbarianEncampment
+            }
     }
 }
 

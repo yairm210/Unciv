@@ -445,8 +445,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         for (tileGroup in allWorldTileGroups) {
             tileGroup.update(viewingCiv)
 
-            if (tileGroup.tileInfo.improvement == Constants.barbarianEncampment
-                    && tileGroup.tileInfo.position in viewingCiv.exploredTiles)
+            if (viewingCiv.lastSeenImprovement[tileGroup.tileInfo.position] == Constants.barbarianEncampment)
                 tileGroup.showCircle(Color.RED)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()
@@ -494,8 +493,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         else 0.5f
         for (tile in allWorldTileGroups) {
             if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
-            if (tile.icons.improvementIcon != null && tile.tileInfo.improvement != Constants.barbarianEncampment
-                && tile.tileInfo.getTileImprovement()!!.isAncientRuinsEquivalent())
+
+            val shownImprovement = unit.civInfo.lastSeenImprovement[tile.tileInfo.position]
+            if (tile.icons.improvementIcon != null
+                && shownImprovement != null && shownImprovement != Constants.barbarianEncampment
+                && unit.civInfo.gameInfo.ruleSet.tileImprovements[shownImprovement]!!.isAncientRuinsEquivalent())
                 tile.icons.improvementIcon!!.color.a = fadeout
             if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
         }

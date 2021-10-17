@@ -634,8 +634,11 @@ open class TileInfo {
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
         if (roadStatus !== RoadStatus.None && !isCityCenter())
             lineList += FormattedLine(roadStatus.name, link="Improvement/${roadStatus.name}")
-        if (improvement != null)
-            lineList += FormattedLine(improvement!!, link="Improvement/$improvement")
+        val shownImprovement = if (viewingCiv != null)
+            viewingCiv.lastSeenImprovement[position]
+        else improvement
+        if (shownImprovement != null)
+            lineList += FormattedLine(shownImprovement, link="Improvement/$shownImprovement")
         if (improvementInProgress != null && isViewableToPlayer) {
             val line = "{$improvementInProgress}" +
                 if (turnsToImprovement > 0) " - $turnsToImprovement${Fonts.turn}" else " ({Under construction})"

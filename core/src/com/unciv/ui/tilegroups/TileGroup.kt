@@ -2,6 +2,7 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -9,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.cityscreen.YieldGroup
@@ -180,14 +182,18 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
         if (tileInfo.naturalWonder != null) return listOf(tileSetStrings.getTile(tileInfo.naturalWonder!!))
 
-        val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
+        val shownImprovement = if (viewingCiv != null)
+            viewingCiv.lastSeenImprovement[tileInfo.position]
+        else
+            tileInfo.improvement
+        val shouldShowImprovement = (shownImprovement != null && UncivGame.Current.settings.showPixelImprovements)
 
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tileInfo.resource != null &&
                 (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
 
         var resourceAndImprovementSequence = sequenceOf<String?>()
         if (shouldShowResource) resourceAndImprovementSequence += sequenceOf(tileInfo.resource)
-        if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(tileInfo.improvement)
+        if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(shownImprovement)
         resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
 
         val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()).filterNotNull()
