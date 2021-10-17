@@ -1,3 +1,15 @@
+## 3.17.9
+
+By xlenstra:
+- Fixed bug where denmark's pillaging unique doesn't work
+- Implemented holy warriors follower belief
+- Fixes bug where culture gain from killing units no longer works
+- Choose a better visible color for the religious symbol on the city button
+
+City State Barbarian Invasion and War with Major pseudo-quests  - By SimonCeder
+
+Music pause on "leave game" question, not world screen menu  - By SomeTroglodyte
+
 ## 3.17.8
 
 By avdstaaij:
