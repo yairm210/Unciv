@@ -107,7 +107,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private fun getUniquesStringsWithoutDisablers() = getUniquesStrings()
         .filterNot {
             it.startsWith("Hidden ") && it.endsWith(" disabled") ||
-            it == "Unbuildable" ||
+            it == UniqueType.Unbuildable.text ||
             it == Constants.hideFromCivilopediaUnique
         }
 
@@ -403,7 +403,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.AlreadyBuilt)
         // for buildings that are created as side effects of other things, and not directly built,
         // or for buildings that can only be bought
-        if (uniques.contains("Unbuildable"))
+        if (hasUnique(UniqueType.Unbuildable))
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         for (unique in uniqueObjects) {
@@ -467,7 +467,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (civInfo.tech.isResearched(unique.params[0])) 
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
 
-                "Hidden when religion is disabled" -> 
+                UniqueType.HiddenWithoutReligion.text ->
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
             }

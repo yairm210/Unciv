@@ -90,7 +90,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (replacementTextForUniques != "") lines += replacementTextForUniques
         else for (unique in uniques.filterNot {
-            it.startsWith("Hidden ") && it.endsWith(" disabled") || it == "Unbuildable"
+            it.startsWith("Hidden ") && it.endsWith(" disabled") || it == UniqueType.Unbuildable.text
         })
             lines += unique.tr()
 
@@ -382,7 +382,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val rejectionReasons = RejectionReasons()
         val ruleSet = civInfo.gameInfo.ruleSet
 
-        if (uniques.contains("Unbuildable")) 
+        if (hasUnique(UniqueType.Unbuildable))
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
