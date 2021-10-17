@@ -266,7 +266,7 @@
 			{
 				"name": "Astronomy",
 				"row": 2,
-				"uniques": ["Increases embarked movement +1","Enables embarked units to enter ocean tiles"],
+				"uniques": ["[+1] Movement <for [Embarked] units>","Enables embarked units to enter ocean tiles"],
 				"prerequisites": ["Compass","Education"],
 				"quote": "'Joyfully to the breeze royal Odysseus spread his sail, and with his rudder skillfully he steered.' - Homer"
 			},
@@ -402,7 +402,7 @@
 			{
 				"name": "Steam Power",
 				"row": 6,
-				"uniques": ["Increases embarked movement +1"],
+				"uniques": ["[+1] Movement <for [Embarked] units>"],
 				"prerequisites": ["Industrialization","Scientific Theory","Rifling"],
 				"quote": "'The nations of the West hope that by means of steam communication all the world will become as one family.' - Townsend Harris"
 			},
