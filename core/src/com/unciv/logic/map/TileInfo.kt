@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
@@ -150,6 +151,13 @@ open class TileInfo {
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
+
+    fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
+        return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI)
+            improvement
+        else
+            viewingCiv.lastSeenImprovement[position]
+    }
 
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
@@ -634,7 +642,7 @@ open class TileInfo {
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
         if (roadStatus !== RoadStatus.None && !isCityCenter())
             lineList += FormattedLine(roadStatus.name, link="Improvement/${roadStatus.name}")
-        val shownImprovement = if (viewingCiv != null)
+        val shownImprovement = if (viewingCiv != null && viewingCiv.playerType == PlayerType.Human)
             viewingCiv.lastSeenImprovement[position]
         else improvement
         if (shownImprovement != null)

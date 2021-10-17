@@ -21,6 +21,7 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.*
 import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
@@ -445,7 +446,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         for (tileGroup in allWorldTileGroups) {
             tileGroup.update(viewingCiv)
 
-            if (viewingCiv.lastSeenImprovement[tileGroup.tileInfo.position] == Constants.barbarianEncampment)
+
+            if (tileGroup.tileInfo.getShownImprovement(viewingCiv) == Constants.barbarianEncampment
+                    && tileGroup.tileInfo.position in viewingCiv.exploredTiles)
                 tileGroup.showCircle(Color.RED)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()

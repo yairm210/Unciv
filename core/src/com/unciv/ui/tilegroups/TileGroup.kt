@@ -182,10 +182,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
         if (tileInfo.naturalWonder != null) return listOf(tileSetStrings.getTile(tileInfo.naturalWonder!!))
 
-        val shownImprovement = if (viewingCiv != null)
-            viewingCiv.lastSeenImprovement[tileInfo.position]
-        else
-            tileInfo.improvement
+        val shownImprovement = tileInfo.getShownImprovement(viewingCiv)
         val shouldShowImprovement = (shownImprovement != null && UncivGame.Current.settings.showPixelImprovements)
 
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tileInfo.resource != null &&
