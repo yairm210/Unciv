@@ -716,18 +716,10 @@ class CityInfo {
     // Finds matching uniques provided from both local and non-local sources.
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        // We might have this cached to avoid concurrency problems. If we don't, just get it directly
-        localUniques: Sequence<Unique> = getLocalMatchingUniques(uniqueType),
         stateForConditionals: StateForConditionals? = null,
     ): Sequence<Unique> {
-        // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
-        // The time loss shouldn't be that large I don't think
         return civInfo.getMatchingUniques(uniqueType, stateForConditionals, this) +
-            localUniques.filter {
-                it.isOfType(uniqueType)
-                && it.conditionalsApply(stateForConditionals)
-                && it.params.none { param -> param == "in other cities" }
-            }
+            getLocalMatchingUniques(uniqueType, stateForConditionals)
     }
 
     // Matching uniques provided by sources in the city itself

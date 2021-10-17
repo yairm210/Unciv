@@ -207,10 +207,16 @@ class MapUnit {
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
         tempUniques.asSequence().filter { it.placeholderText == placeholderText }
 
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = sequence {
+    fun getMatchingUniques(
+        uniqueType: UniqueType,
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
+        checkCivInfoUniques:Boolean = false
+    ) = sequence {
         yieldAll(tempUniques.asSequence()
             .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
         )
+        if (checkCivInfoUniques)
+            yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
 
     fun hasUnique(unique: String): Boolean {
@@ -306,14 +312,11 @@ class MapUnit {
             if (isEmbarked()) 2
             else baseUnit.movement
 
-        movement += (
-            getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this)) + 
-            civInfo.getMatchingUniques(UniqueType.Movement, StateForConditionals(civInfo = civInfo, unit = this))
-        ).sumOf { it.params[0].toInt() }
+        movement += getMatchingUniques(UniqueType.Movement, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
 
         // Deprecated since 3.17.5
-            for (unique in civInfo.getMatchingUniques(UniqueType.MovementUnits)
-                    + getMatchingUniques(UniqueType.MovementUnits))
+            for (unique in getMatchingUniques(UniqueType.MovementUnits, checkCivInfoUniques = true))
                 if (matchesFilter(unique.params[1]))
                     movement += unique.params[0].toInt()
     
@@ -349,10 +352,8 @@ class MapUnit {
             return 1
         }
         
-        visibilityRange += (getMatchingUniques(UniqueType.Sight, conditionalState)
-                + civInfo.getMatchingUniques(UniqueType.Sight, conditionalState)
-                ).sumOf { it.params[0].toInt() }
-        
+        visibilityRange += getMatchingUniques(UniqueType.Sight, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
+
         // Deprecated since 3.17.5
             for (unique in getMatchingUniques(UniqueType.SightUnits))
                 if (matchesFilter(unique.params[1]))
@@ -1054,6 +1055,7 @@ class MapUnit {
         if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
             return filter.removePrefix("{").removeSuffix("}").split("} {")
                 .all { matchesFilter(it) }
+        
         return when (filter) {
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
@@ -1114,15 +1116,14 @@ class MapUnit {
 
     fun getPressureAddedFromSpread(): Int {
         var pressureAdded = baseUnit.religiousStrength.toFloat()
-        
+
         // Deprecated since 3.17.5
             for (unique in civInfo.getMatchingUniques(UniqueType.SpreadReligionStrengthUnits))
                 if (matchesFilter(unique.params[0]))
                     pressureAdded *= unique.params[0].toPercent()
         //
-        
-        for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, StateForConditionals(civInfo = civInfo, unit = this))
-                + civInfo.getMatchingUniques(UniqueType.SpreadReligionStrength, StateForConditionals(civInfo = civInfo, unit = this)))
+
+        for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, checkCivInfoUniques = true))
             pressureAdded *= unique.params[0].toPercent()
 
         return pressureAdded.toInt()

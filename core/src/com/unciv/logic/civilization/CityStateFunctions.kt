@@ -473,7 +473,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         return
     }
 
-    private fun getNumThreateningBarbarians(): Int {
+    fun getNumThreateningBarbarians(): Int {
         if (civInfo.gameInfo.gameParameters.noBarbarians) return 0
         val barbarianCiv = civInfo.gameInfo.civilizations.firstOrNull { it.isBarbarian() }
             ?: return 0
@@ -482,11 +482,17 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
     fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
         val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+        if (diplomacy.diplomaticStatus == DiplomaticStatus.War) return // No reward for enemies
+
         diplomacy.addInfluence(12f)
+        
         if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion))
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
         else
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
+        
+        otherCiv.addNotification("[${civInfo.civName}] is grateful that you killed a Barbarian that was threatening them!",
+            DiplomacyAction(civInfo.civName), civInfo.civName)
     }
 
     /** A city state was bullied. What are its protectors going to do about it??? */
@@ -593,6 +599,10 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 protector.popupAlerts.add(PopupAlert(AlertType.AttackedProtectedMinor,
                     attacker.civName + "@" + civInfo.civName))   // we need to pass both civs as argument, hence the horrible chimera
         }
+
+        // Set up war with major pseudo-quest
+        civInfo.questManager.wasAttackedBy(attacker)
+        civInfo.getDiplomacyManager(attacker).setFlag(DiplomacyFlags.RecentlyAttacked, 2) // Reminder to ask for unit gifts in 2 turns
     }
 
     /** A city state was destroyed. Its protectors are going to be upset! */
@@ -619,6 +629,20 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         // Notify all city states that we were killed (for quest completion)
         civInfo.gameInfo.getAliveCityStates()
             .forEach { it.questManager.cityStateConquered(civInfo, attacker) }
+    }
+
+    /** Asks all met majors that haven't yet declared wor on [attacker] to at least give some units */
+    fun askForUnitGifts(attacker: CivilizationInfo) {
+        if (attacker.isDefeated() || civInfo.isDefeated()) // nevermind, someone died
+            return
+        if (civInfo.cities.isEmpty()) // Can't receive units with no cities
+            return
+
+        for (thirdCiv in civInfo.getKnownCivs().filter {
+                it != attacker && it.isAlive() && it.knows(attacker) && !it.isAtWarWith(attacker) }) {
+            thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}] and asks all major civilizations to help them out by gifting them military units.",
+                civInfo.getCapital().location, civInfo.civName, "OtherIcons/Present")
+        }
     }
 
 }

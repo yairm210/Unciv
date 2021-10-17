@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -250,7 +251,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         // May buy [unitFilter] units for [amount] [Stat] [cityFilter] starting from the [eraName] at an increasing price ([amount])
-        if (cityInfo != null && cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
+        if (cityInfo != null && cityInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
             .any { 
                 matchesFilter(it.params[0])
                 && cityInfo.matchesFilter(it.params[3])        
@@ -260,11 +261,20 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         ) return true
         
         // May buy [unitFilter] units for [amount] [Stat] [cityFilter] at an increasing price ([amount])
-        if (cityInfo != null && cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
+        if (cityInfo != null && cityInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
             .any {
                 matchesFilter(it.params[0])
                 && cityInfo.matchesFilter(it.params[3])
                 && it.params[2] == stat.name
+            }
+        ) return true
+        
+        if (cityInfo != null && cityInfo.getMatchingUniques(
+                UniqueType.BuyUnitsByProductionCost, 
+                stateForConditionals = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
+            ).any {
+                matchesFilter(it.params[0])
+                && it.params[1] == stat.name
             }
         ) return true
 
@@ -277,24 +287,26 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
+        val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
         return (
             sequenceOf(super.getBaseBuyCost(cityInfo, stat)).filterNotNull()
-                // May buy [unitFilter] units for [amount] [Stat] starting from the [eraName] at an increasing price ([amount])
-            + (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
-                .filter {
-                    matchesFilter(it.params[0])
-                    && cityInfo.matchesFilter(it.params[3])
-                    && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                    && it.params[2] == stat.name
-                }.map {
-                    getCostForConstructionsIncreasingInPrice(
-                        it.params[1].toInt(),
-                        it.params[5].toInt(),
-                        cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
-                    )
-                }
-            )
-            + (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
+            // Deprecated since 3.17.9
+                + (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
+                    .filter {
+                        matchesFilter(it.params[0])
+                        && cityInfo.matchesFilter(it.params[3])
+                        && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
+                        && it.params[2] == stat.name
+                    }.map {
+                        getCostForConstructionsIncreasingInPrice(
+                            it.params[1].toInt(),
+                            it.params[5].toInt(),
+                            cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
+                        )
+                    }
+                )
+            //
+            + (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .filter {
                     matchesFilter(it.params[0])
                     && cityInfo.matchesFilter(it.params[3])
@@ -305,6 +317,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         it.params[4].toInt(),
                         cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
                     )        
+                }
+            )
+            + (cityInfo.getMatchingUniques(
+                    UniqueType.BuyUnitsByProductionCost, conditionalState
+                ).filter {
+                    it.params[1] == stat.name
+                    && matchesFilter(it.params[0])
+                }.map {
+                    getProductionCost(cityInfo.civInfo) * it.params[2].toInt()
                 }
             )
         ).minOrNull()
@@ -493,6 +514,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     fun matchesFilter(filter: String): Boolean {
+        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            return filter.removePrefix("{").removeSuffix("}").split("} {")
+                .all { matchesFilter(it) }
 
         return when (filter) {
             unitType -> true

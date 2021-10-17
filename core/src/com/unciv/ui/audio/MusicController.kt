@@ -29,7 +29,7 @@ class MusicController {
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
         private val fileExtensions = listOf("mp3", "ogg")   // flac, opus, m4a... blocked by Gdx, `wav` we don't want
 
-        internal const val consoleLog = true
+        internal const val consoleLog = false
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -85,8 +85,11 @@ class MusicController {
     //region Pure functions
 
     /** @return the path of the playing track or null if none playing */
-    private fun currentlyPlaying(): String = if (state != ControllerState.Playing && state != ControllerState.PlaySingle) ""
-        else musicHistory.peekLast()
+    private fun currentlyPlaying(): String = when(state) {
+        ControllerState.Playing, ControllerState.PlaySingle, ControllerState.Pause ->
+            musicHistory.peekLast()
+        else -> ""
+    }
 
     /** Registers a callback that will be called with the new track name every time it changes.
      *  The track name will be prettified ("Modname: Track" instead of "mods/Modname/music/Track.ogg").
@@ -325,6 +328,8 @@ class MusicController {
      * @param speedFactor accelerate (>1) or slow down (<1) the fade-out. Clamped to 1/1000..1000.
      */
     fun pause(speedFactor: Float = 1f) {
+        if (consoleLog)
+            println("MusicTrackController.pause called")
         if ((state != ControllerState.Playing && state != ControllerState.PlaySingle) || current == null) return
         val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
         current!!.startFade(MusicTrackController.State.FadeOut, fadingStep)
@@ -340,6 +345,8 @@ class MusicController {
      * @param speedFactor accelerate (>1) or slow down (<1) the fade-in. Clamped to 1/1000..1000.
      */
     fun resume(speedFactor: Float = 1f) {
+        if (consoleLog)
+            println("MusicTrackController.resume called")
         if (state == ControllerState.Pause && current != null) {
             val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
             current!!.startFade(MusicTrackController.State.FadeIn, fadingStep)

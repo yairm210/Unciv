@@ -135,6 +135,7 @@ object Battle {
 
         if (civUnit is MapUnitCombatant) {
             bonusUniques.addAll(civUnit.getMatchingUniques(bonusUniquePlaceholderText))
+            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
         } else {
             bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
         }
@@ -171,6 +172,11 @@ object Battle {
                     cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
             }
+        }
+
+        // CS war with major pseudo-quest
+        for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
+            cityState.questManager.militaryUnitKilledBy(civUnit.getCivInfo(), defeatedUnit.getCivInfo())
         }
     }
 
