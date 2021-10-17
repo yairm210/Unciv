@@ -328,8 +328,8 @@ class MapUnit {
 
         // Deprecated since 3.16.11
             if (isEmbarked()) {
-                movement += civInfo.getMatchingUniques("Increases embarked movement +1").count()
-                if (civInfo.hasUnique("+1 Movement for all embarked units")) movement += 1
+                movement += civInfo.getMatchingUniques(UniqueType.EmbarkedUnitMovement1).count()
+                if (civInfo.hasUnique(UniqueType.EmbarkedUnitMovement2)) movement += 1
             }
         //
         

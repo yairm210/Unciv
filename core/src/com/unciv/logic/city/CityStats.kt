@@ -420,15 +420,15 @@ class CityStats(val cityInfo: CityInfo) {
             unhappinessFromCitizens *= 2f
 
         // Deprecated since 3.16.11
-            for (unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []%"))
+            for (unique in civInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChangeOld1))
                 unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
 
-            for (unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []% []"))
+            for (unique in civInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChangeOld2))
                 if (cityInfo.matchesFilter(unique.params[1]))
                     unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
         //
 
-        for (unique in cityInfo.getMatchingUniques("[]% unhappiness from population []"))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChange))
             if (cityInfo.matchesFilter(unique.params[1]))
                 unhappinessFromCitizens *= unique.params[0].toPercent()
 

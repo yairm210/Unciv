@@ -71,6 +71,14 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
+    UnhappinessFromPopulationPercentageChange("[amount]% unhappiness from population [cityFilter]", UniqueTarget.Global),
+
+    @Deprecated("As of 3.16.11", ReplaceWith("[amount]% unhappiness from population [cityFilter]"), DeprecationLevel.WARNING)
+    UnhappinessFromPopulationPercentageChangeOld1("Unhappiness from population decreased by [amount]%", UniqueTarget.Global),
+    @Deprecated("As of 3.16.11", ReplaceWith("[amount]% unhappiness from population [cityFilter]"), DeprecationLevel.WARNING)
+    UnhappinessFromPopulationPercentageChangeOld2("Unhappiness from population decreased by [amount]% [cityFilter]", UniqueTarget.Global),
+
+
 
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.16.16", ReplaceWith("[stats] from every specialist [in all cities]"), DeprecationLevel.WARNING)
@@ -178,6 +186,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     CannotAttack("Cannot attack", UniqueTarget.Unit),
 
+    @Deprecated("As of 3.16.11", ReplaceWith("[+1] Movement <for [Embarked] units>"), DeprecationLevel.WARNING)
+    EmbarkedUnitMovement1("Increases embarked movement +1", UniqueTarget.Global),
+    @Deprecated("As of 3.16.11", ReplaceWith("[+1] Movement <for [Embarked] units>"), DeprecationLevel.WARNING)
+    EmbarkedUnitMovement2("+1 Movement for all embarked units", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     MovementUnits("+[amount] Movement for all [mapUnitFilter] units", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
