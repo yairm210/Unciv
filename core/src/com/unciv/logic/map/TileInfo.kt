@@ -642,9 +642,7 @@ open class TileInfo {
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
         if (roadStatus !== RoadStatus.None && !isCityCenter())
             lineList += FormattedLine(roadStatus.name, link="Improvement/${roadStatus.name}")
-        val shownImprovement = if (viewingCiv != null && viewingCiv.playerType == PlayerType.Human)
-            viewingCiv.lastSeenImprovement[position]
-        else improvement
+        val shownImprovement = getShownImprovement(viewingCiv)
         if (shownImprovement != null)
             lineList += FormattedLine(shownImprovement, link="Improvement/$shownImprovement")
         if (improvementInProgress != null && isViewableToPlayer) {
