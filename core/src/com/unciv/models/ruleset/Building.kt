@@ -321,7 +321,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
 
-        for (unique in uniqueObjects.filter { it.placeholderText == "Cost increases by [] per owned city" })
+        for (unique in uniqueObjects.filter { it.isOfType(UniqueType.CostIncreasesPerCity) })
             productionCost += civInfo.cities.count() * unique.params[0].toInt()
 
         if (civInfo.isCityState())
@@ -555,7 +555,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         for (unique in uniqueObjects) when (unique.placeholderText) {
-            "Requires a [] in this city" -> {
+            UniqueType.RequiresAnotherBuilding.text -> {
                 val filter = unique.params[0]
                 if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter) && !cityConstructions.containsBuildingOrEquivalent(filter))
                     rejectionReasons.add(
@@ -602,11 +602,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 )
             }
         }
-        val cannotBeBuiltWith = uniqueObjects
-            .firstOrNull { it.placeholderText == "Cannot be built with []" }
-            ?.params?.get(0)
-        if (cannotBeBuiltWith != null && cityConstructions.isBuilt(cannotBeBuiltWith))
-            rejectionReasons.add(RejectionReason.CannotBeBuiltWith.apply { errorMessage = "Cannot be built with [$cannotBeBuiltWith]" })
+        val cannotBeBuiltWithUnique = uniqueObjects
+            .firstOrNull { it.isOfType(UniqueType.CannotBeBuiltWith) }
+        if (cannotBeBuiltWithUnique != null && cityConstructions.isBuilt(cannotBeBuiltWithUnique.params[0]))
+            rejectionReasons.add(RejectionReason.CannotBeBuiltWith.apply { errorMessage = cannotBeBuiltWithUnique.text })
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
