@@ -140,7 +140,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     ///////////////////////////////////////// BUILDING UNIQUES /////////////////////////////////////////
 
-    Unbuildable("Unbuildable", UniqueTarget.Building),
+    Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit),
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
