@@ -253,16 +253,33 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     // The "Except [terrainFilter]" could theoretically be implemented with a conditional
     NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain),
 
+    DamagesContainingUnits("Units ending their turn on this terrain take [amount] damage", UniqueTarget.Terrain),
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
+    GrantsCityStrength("[amount] Strength for cities built on this terrain", UniqueTarget.Terrain),
+    ProductionBonusWhenRemoved("Provides a one-time Production bonus to the closest city when cut down", UniqueTarget.Terrain),
 
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
     NullifyYields("Nullifies all other stats this tile provides", UniqueTarget.Terrain),
+    RestrictedBuildableImprovements("Only [All Road] improvements may be built on this tile", UniqueTarget.Terrain),
+    
+    BlocksLineOfSightAtSameElevation("Blocks line-of-sight from tiles at same elevation", UniqueTarget.Terrain),
     VisibilityElevation("Has an elevation of [amount] for visibility calculations", UniqueTarget.Terrain),
 
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain),
-
+    TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain),
+    OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain),
+    OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain),
+    RareFeature("Rare feature", UniqueTarget.Terrain),
+    
+    ResistsNukes("Resistant to nukes", UniqueTarget.Terrain),
+    DestroyableByNukes("Can be destroyed by nukes", UniqueTarget.Terrain),
+    
+    FreshWater("Fresh water", UniqueTarget.Terrain),
+    RoughTerrain("Rough terrain", UniqueTarget.Terrain),
+    
+    // Resource uniques
     OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
-
+    
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
     

@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
@@ -223,9 +224,11 @@ class MapGenerator(val ruleset: Ruleset) {
      * [MapParameters.elevationExponent] favors high elevation
      */
     private fun raiseMountainsAndHills(tileMap: TileMap) {
-        val mountain = ruleset.terrains.values.firstOrNull { it.uniques.contains("Occurs in chains at high elevations") }?.name
-        val hill = ruleset.terrains.values.firstOrNull { it.uniques.contains("Occurs in groups around high elevations") }?.name
-        val flat = ruleset.terrains.values.firstOrNull { !it.impassable && it.type == TerrainType.Land && !it.uniques.contains("Rough Terrain") }?.name
+        val mountain = ruleset.terrains.values.firstOrNull { terrain -> terrain.hasUnique(UniqueType.OccursInChains) }?.name
+        val hill = ruleset.terrains.values.firstOrNull { terrain -> terrain.hasUnique(UniqueType.OccursInGroups) }?.name
+        val flat = ruleset.terrains.values.firstOrNull { terrain ->
+            !terrain.impassable && terrain.type == TerrainType.Land && !terrain.hasUnique(UniqueType.RoughTerrain) 
+        }?.name
 
         if (flat == null) {
             println("Ruleset seems to contain no flat terrain - can't generate heightmap")
@@ -358,12 +361,11 @@ class MapGenerator(val ruleset: Ruleset) {
             val tempFrom: Float, val tempTo: Float,
             val humidFrom: Float, val humidTo: Float
         )
+        // List is OK here as it's only sequentially scanned
         val limitsMap: List<TerrainOccursRange> =
-            // List is OK here as it's only sequentially scanned
-            ruleset.terrains.values.flatMap { terrain ->
-                terrain.uniqueObjects.filter {
-                    it.placeholderText == "Occurs at temperature between [] and [] and humidity between [] and []"
-                }.map { unique ->
+            ruleset.terrains.values.flatMap { terrain -> 
+                terrain.getMatchingUniques(UniqueType.TileGenerationConditions)
+                .map { unique ->
                     TerrainOccursRange(terrain,
                         unique.params[0].toFloat(), unique.params[1].toFloat(),
                         unique.params[2].toFloat(), unique.params[3].toFloat())
@@ -432,7 +434,7 @@ class MapGenerator(val ruleset: Ruleset) {
      */
     private fun spawnRareFeatures(tileMap: TileMap) {
         val rareFeatures = ruleset.terrains.values.filter {
-            it.type == TerrainType.TerrainFeature && it.uniques.contains("Rare feature")
+            it.type == TerrainType.TerrainFeature && it.hasUnique(UniqueType.RareFeature)
         }
         for (tile in tileMap.values.asSequence().filter { it.terrainFeatures.isEmpty() }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
