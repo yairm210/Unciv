@@ -224,10 +224,10 @@ class MapGenerator(val ruleset: Ruleset) {
      * [MapParameters.elevationExponent] favors high elevation
      */
     private fun raiseMountainsAndHills(tileMap: TileMap) {
-        val mountain = ruleset.terrains.values.firstOrNull { terrain -> terrain.hasUnique(UniqueType.OccursInChains) }?.name
-        val hill = ruleset.terrains.values.firstOrNull { terrain -> terrain.hasUnique(UniqueType.OccursInGroups) }?.name
-        val flat = ruleset.terrains.values.firstOrNull { terrain ->
-            !terrain.impassable && terrain.type == TerrainType.Land && !terrain.hasUnique(UniqueType.RoughTerrain) 
+        val mountain = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
+        val hill = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInGroups) }?.name
+        val flat = ruleset.terrains.values.firstOrNull { 
+            !it.impassable && it.type == TerrainType.Land && !it.hasUnique(UniqueType.RoughTerrain) 
         }?.name
 
         if (flat == null) {
