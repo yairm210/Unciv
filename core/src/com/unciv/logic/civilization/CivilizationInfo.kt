@@ -343,7 +343,7 @@ class CivilizationInfo {
         cities.asSequence().flatMap {
             city ->
                 if (cityItIsFor != null && city == cityItIsFor)
-                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" } }
+                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" || param == "in all cities" } }
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
