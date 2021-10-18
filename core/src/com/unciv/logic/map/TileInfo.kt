@@ -635,9 +635,9 @@ open class TileInfo {
             if (tileImprovement?.techRequired != null
                 && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
                 lineList += FormattedLine(
-                    "(Requires [${tileImprovement.techRequired}])",
+                    "Requires [${tileImprovement.techRequired}]",
                     link="Technology/${tileImprovement.techRequired}",
-                    color= "#A00"
+                    color= "#FAA"
                 )
             }
         }
