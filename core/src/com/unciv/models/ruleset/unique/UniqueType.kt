@@ -260,7 +260,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
     NullifyYields("Nullifies all other stats this tile provides", UniqueTarget.Terrain),
-    RestrictedBuildableImprovements("Only [All Road] improvements may be built on this tile", UniqueTarget.Terrain),
+    RestrictedBuildableImprovements("Only [improvementFilter] improvements may be built on this tile", UniqueTarget.Terrain),
     
     BlocksLineOfSightAtSameElevation("Blocks line-of-sight from tiles at same elevation", UniqueTarget.Terrain),
     VisibilityElevation("Has an elevation of [amount] for visibility calculations", UniqueTarget.Terrain),
