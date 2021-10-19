@@ -588,7 +588,7 @@ class Ruleset {
                     lines.add("${promotion.name} requires promotion $prereq which does not exist!", RulesetErrorSeverity.Warning)
             for (unitType in promotion.unitTypes)
                 if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unitType)))
-                    lines.add("${promotion.name} references unit type ${unitType}, which does not exist!", RulesetErrorSeverity.Warning)
+                    lines.add("${promotion.name} references unit type $unitType, which does not exist!", RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
         for (unitType in unitTypes.values) {

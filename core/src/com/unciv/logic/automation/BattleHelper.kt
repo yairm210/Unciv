@@ -38,7 +38,7 @@ object BattleHelper {
             stayOnTile: Boolean = false
     ): ArrayList<AttackableTile> {
         val tilesWithEnemies = (tilesToCheck ?: unit.civInfo.viewableTiles)
-                .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
+            .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
 
         val rangeOfAttack = unit.getRange()
 
@@ -50,27 +50,36 @@ object BattleHelper {
         // Silly floats, basically
 
         val unitMustBeSetUp = unit.hasUnique("Must set up to ranged attack")
-        val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits()) sequenceOf(unit.currentTile)
+        val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits())
+            sequenceOf(Pair(unit.currentTile, unit.currentMovement))
         else
             unitDistanceToTiles.asSequence()
-                    .filter {
-                        val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
-                        val movementPointsToExpendHere = if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
-                        val movementPointsToExpendBeforeAttack = if (it.key == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
-                        unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack > 0.1
-                    } // still got leftover movement points after all that, to attack (0.1 is because of Float nonsense, see MapUnit.moveToTile(...)
-                    .map { it.key }
-                    .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
+                .map {
+                    val tile = it.key
+                    val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
+                    val movementPointsToExpendHere =
+                        if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
+                    val movementPointsToExpendBeforeAttack =
+                        if (it.key == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
+                    val movementLeft =
+                        unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack
+                    Pair(tile, movementLeft)
+                }
+                // still got leftover movement points after all that, to attack (0.1 is because of Float nonsense, see MapUnit.moveToTile(...)
+                .filter { it.second > 0.1f }
+                .filter {
+                    it.first == unit.getTile() || unit.movement.canMoveTo(it.first)
+                }
 
-        for (reachableTile in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
+        for ((reachableTile, movementLeft) in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                    if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
-                        reachableTile.getTilesInDistance(rangeOfAttack)
-                    else reachableTile.getViewableTilesList(rangeOfAttack)
-                            .asSequence()
+                if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
+                    reachableTile.getTilesInDistance(rangeOfAttack)
+                else reachableTile.getViewableTilesList(rangeOfAttack)
+                    .asSequence()
 
             attackableTiles += tilesInAttackRange.filter { it in tilesWithEnemies }
-                    .map { AttackableTile(reachableTile, it) }
+                .map { AttackableTile(reachableTile, it, movementLeft) }
         }
         return attackableTiles
     }
