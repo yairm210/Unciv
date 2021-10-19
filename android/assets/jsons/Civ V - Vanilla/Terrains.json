@@ -13,7 +13,8 @@
 		"type": "Water",
 		"food": 1,
 		"movementCost": 1,
-		"RGB": [107,167,193]
+		"RGB": [107,167,193],
+		"uniques": ["[+2] to Fertility for Map Generation"]
 	},
 	{
 		"name": "Grassland",
@@ -28,7 +29,11 @@
 			    "Occurs at temperature between [0.9] and [1] and humidity between [0.2] and [0.9]",
 			    "Occurs at temperature between [0.8] and [0.9] and humidity between [0.6] and [0.9]",
 			    "Occurs at temperature between [0.7] and [0.8] and humidity between [0.7] and [0.9]",
-			    "Occurs at temperature between [0.6] and [0.8] and humidity between [0.4] and [0.6]"]
+			    "Occurs at temperature between [0.6] and [0.8] and humidity between [0.4] and [0.6]",
+				"[+3] to Fertility for Map Generation",
+				"Can act as a Region during Map Generation",
+				"A Region is formed with at least [30]% [Grassland]",
+				"A Region can not contain more [Plains] than [Grassland]"]
 	},
 	{
 		"name": "Plains",
@@ -47,7 +52,11 @@
 			    "Occurs at temperature between [0.8] and [0.9] and humidity between [0.2] and [0.6]",
 			    "Occurs at temperature between [0.7] and [0.8] and humidity between [0.3] and [0.4]",
 			    "Occurs at temperature between [0.6] and [0.8] and humidity between [0.6] and [0.7]",
-			    "Occurs at temperature between [0.5] and [0.7] and humidity between [0.7] and [0.8]"]
+			    "Occurs at temperature between [0.5] and [0.7] and humidity between [0.7] and [0.8]",
+				"[+4] to Fertility for Map Generation",
+				"Can act as a Region during Map Generation",
+				"A Region is formed with at least [30]% [Plains]",
+				"A Region can not contain more [Grassland] than [Plains]"]
 	},
 	{
 		"name": "Tundra",
@@ -59,7 +68,10 @@
 			    "Occurs at temperature between [-0.8] and [-0.5] and humidity between [0.6] and [0.8]",
 			    "Occurs at temperature between [-0.7] and [-0.4] and humidity between [0.4] and [0.6]",
 			    "Occurs at temperature between [-0.6] and [-0.4] and humidity between [0.2] and [0.4]",
-			    "Occurs at temperature between [-0.5] and [-0.4] and humidity between [0] and [0.2]"]
+			    "Occurs at temperature between [-0.5] and [-0.4] and humidity between [0] and [0.2]",
+				"[+2] to Fertility for Map Generation",
+				"Can act as a Region during Map Generation",
+				"A Region is formed with at least [30]% [Tundra] and [Snow]"]
 	},
 	{
 		"name": "Desert",
@@ -70,7 +82,10 @@
 			    "Occurs at temperature between [0.1] and [0.8] and humidity between [0.2] and [0.3]",
 			    "Occurs at temperature between [0.2] and [0.7] and humidity between [0.3] and [0.4]",
 			    "Occurs at temperature between [0.4] and [0.6] and humidity between [0.4] and [0.5]",
-			    "Occurs at temperature between [0.5] and [0.6] and humidity between [0.5] and [0.7]"]
+			    "Occurs at temperature between [0.5] and [0.6] and humidity between [0.5] and [0.7]",
+				"[+1] to Fertility for Map Generation",
+				"Can act as a Region during Map Generation",
+				"A Region is formed with at least [25]% [Desert]"]
 	},
 	{
 		"name": "Lakes",
@@ -86,7 +101,11 @@
 		"impassable": true,
 		"defenceBonus": 0.25,
 		"RGB": [120, 120, 120],
-		"uniques":["Rough terrain", "Has an elevation of [4] for visibility calculations", "Occurs in chains at high elevations", "Units ending their turn on this terrain take [50] damage"]
+		"uniques": ["Rough terrain",
+					"Has an elevation of [4] for visibility calculations",
+					"Occurs in chains at high elevations",
+					"Units ending their turn on this terrain take [50] damage",
+					"Always Fertility [-2] for Map Generation"]
 	},
 	{
 		"name": "Snow",
@@ -97,7 +116,8 @@
 			    "Occurs at temperature between [-0.9] and [-0.8] and humidity between [0] and [0.8]",
 			    "Occurs at temperature between [-0.8] and [-0.7] and humidity between [0] and [0.6]",
 			    "Occurs at temperature between [-0.7] and [-0.6] and humidity between [0] and [0.4]",
-			    "Occurs at temperature between [-0.6] and [-0.5] and humidity between [0] and [0.2]"]
+			    "Occurs at temperature between [-0.6] and [-0.5] and humidity between [0] and [0.2]",
+				"Always Fertility [-1] for Map Generation"]
 	},
 
 	// Terrain features
@@ -110,8 +130,13 @@
 		"defenceBonus": 0.25,
 		"RGB": [105,125,72],
 		"occursOn": ["Tundra","Plains","Grassland","Desert","Snow"],
-		"uniques": ["Rough terrain", "[+5] Strength for cities built on this terrain",
-			"Has an elevation of [2] for visibility calculations", "Occurs in groups around high elevations"]
+		"uniques": ["Rough terrain",
+					"[+5] Strength for cities built on this terrain",
+					"Has an elevation of [2] for visibility calculations",
+					"Occurs in groups around high elevations",
+					"[+1] to Fertility for Map Generation",
+					"Can act as a Region during Map Generation",
+					"A Region is formed with at least [42]% [Hill]"]
 	},
 	{
 		"name": "Forest",
@@ -123,8 +148,14 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"uniques": ["Rough terrain", "Provides a one-time Production bonus to the closest city when cut down", 
-			"Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"],
+		"uniques": ["Rough terrain",
+					"Provides a one-time Production bonus to the closest city when cut down",
+					"Blocks line-of-sight from tiles at same elevation",
+					"Resistant to nukes", "Can be destroyed by nukes",
+					"Can act as a Region during Map Generation",
+					"A Region is formed with at least [30]% [Forest]",
+					"A Region is formed with at least [35]% [Forest] and [Jungle]",
+					"A Region can not contain more [Jungle] than [Forest]"],
 		"civilopediaText": [{"text":"A Camp can be built here without cutting it down", "link":"Improvement/Camp"}]
 	},
 	{
@@ -136,7 +167,14 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Plains","Grassland"],
-		"uniques": ["Rough terrain", "Blocks line-of-sight from tiles at same elevation", "Resistant to nukes", "Can be destroyed by nukes"]
+		"uniques": ["Rough terrain",
+					"Blocks line-of-sight from tiles at same elevation",
+					"Resistant to nukes", "Can be destroyed by nukes",
+					"[-1] to Fertility for Map Generation",
+					"Can act as a Region during Map Generation",
+					"A Region is formed with at least [30]% [Jungle]",
+					"A Region is formed with at least [35]% [Jungle] and [Forest]",
+					"A Region can not contain more [Forest] than [Jungle]"]
 	},
 	{
 		"name": "Marsh",
@@ -146,7 +184,8 @@
 		"unbuildable": true,
 		"defenceBonus": -0.15,
 		"occursOn": ["Grassland"],
-		"uniques": ["Rare feature"],
+		"uniques": ["Rare feature",
+					"[-2] to Fertility for Map Generation"],
 		"civilopediaText": [{"text":"Only Polders can be built here", "link":"Improvement/Polder"}]
 	},
 	{
@@ -169,7 +208,9 @@
 		"unbuildable": true,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"],
-		"uniques": ["Fresh water", "Rare feature", "Only [All Road] improvements may be built on this tile"]
+		"uniques": ["Fresh water", "Rare feature",
+					"Only [All Road] improvements may be built on this tile",
+					"Always Fertility [4] for Map Generation"]
 	},
 	{
 		"name": "Flood plains",
@@ -177,14 +218,16 @@
 		"food": 2,
 		"movementCost": 1,
 		"defenceBonus": -0.1,
-		"occursOn": ["Desert"]
+		"occursOn": ["Desert"],
+		"uniques": ["Always Fertility [5] for Map Generation"]
 	},
 	{
 		"name": "Ice",
 		"type": "TerrainFeature",
 		"impassable": true,
 		"overrideStats": true,
-		"occursOn": ["Ocean", "Coast"]
+		"occursOn": ["Ocean", "Coast"],
+		"uniques": ["[-1] to Fertility for Map Generation"]
 	},
 	{
 		"name": "Atoll",

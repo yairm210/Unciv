@@ -252,6 +252,13 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain),
 
+    OverrideFertility("Always Fertility [amount] for Map Generation", UniqueTarget.Terrain),
+    AddFertility("[amount] to Fertility for Map Generation", UniqueTarget.Terrain),
+
+    IsRegion("Can act as a Region during Map Generation", UniqueTarget.Terrain),
+
+    LuxuryWeighting("Appears in [regionType] regions with weight [amount]", UniqueTarget.Resource),
+    LuxuryWeightingForCityStates("Appears near City States with weight [amount]", UniqueTarget.Resource),
     OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
 
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
