@@ -27,10 +27,10 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
     fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (stat in listOf(Stat.Production, Stat.Happiness)) return false
-        if ("Cannot be purchased" in uniques) return false
+        if (hasUnique(UniqueType.CannotBePurchased)) return false
         if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         // Can be purchased with [Stat] [cityFilter]
-        if (getMatchingUniques("Can be purchased with [] []")
+        if (getMatchingUniques(UniqueType.CanBePurchasedWithStat)
                 .any { it.params[0] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[1])) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
@@ -65,7 +65,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt()
 
         // Can be purchased with [Stat] [cityFilter]
-        if (getMatchingUniques("Can be purchased with [] []")
+        if (getMatchingUniques(UniqueType.CanBePurchasedWithStat)
                 .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1])}
         ) return cityInfo.civInfo.getEra().baseUnitBuyCost
         return null

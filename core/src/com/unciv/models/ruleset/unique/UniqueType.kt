@@ -138,9 +138,17 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     MayanGainGreatPerson("Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.", UniqueTarget.Nation),
     MayanCalendarDisplay("Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.", UniqueTarget.Nation),
 
-    ///////////////////////////////////////// BUILDING UNIQUES /////////////////////////////////////////
+
+    ///////////////////////////////////////// CONSTRUCTION UNIQUES /////////////////////////////////////////
 
     Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit),
+    CannotBePurchased("Cannot be purchased", UniqueTarget.Building, UniqueTarget.Unit),
+    CanBePurchasedWithStat("Can be purchased with [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
+
+
+    ///////////////////////////////////////// BUILDING UNIQUES /////////////////////////////////////////
+
+
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
