@@ -227,19 +227,17 @@ object HexMath {
             return minOf(left, right, top, bottom)
         } else {
             val radius = mapParameters.mapSize.radius
-            if (mapParameters.worldWrap) {
-                // The non-wrapping method holds in the upper two and lower two 'triangles' of the hexagon
-                // but needs special casing for left and right 'wedges', where only distance from the
-                // 'choke points' counts (upper and lower hex at the 'seam' where height is smallest).
-                // These are at (radius,0) and (0,-radius)
-                if (x.sign == y.sign) return radius - getDistance(vector, Vector2.Zero)
-                // left wedge - the 'choke points' are not wrapped relative to us
-                if (x > 0) return min(getDistance(vector, Vector2(radius.toFloat(),0f)), getDistance(vector, Vector2(0f, -radius.toFloat())))
-                // right wedge - compensate wrap by using a hex 1 off along the edge - same result
-                return min(getDistance(vector, Vector2(1f, radius.toFloat())), getDistance(vector, Vector2(-radius.toFloat(), -1f)))
-            } else {
-                return radius - getDistance(vector, Vector2.Zero)
-            }
+            if (!mapParameters.worldWrap) return radius - getDistance(vector, Vector2.Zero)
+
+            // The non-wrapping method holds in the upper two and lower two 'triangles' of the hexagon
+            // but needs special casing for left and right 'wedges', where only distance from the
+            // 'choke points' counts (upper and lower hex at the 'seam' where height is smallest).
+            // These are at (radius,0) and (0,-radius)
+            if (x.sign == y.sign) return radius - getDistance(vector, Vector2.Zero)
+            // left wedge - the 'choke points' are not wrapped relative to us
+            if (x > 0) return min(getDistance(vector, Vector2(radius.toFloat(),0f)), getDistance(vector, Vector2(0f, -radius.toFloat())))
+            // right wedge - compensate wrap by using a hex 1 off along the edge - same result
+            return min(getDistance(vector, Vector2(1f, radius.toFloat())), getDistance(vector, Vector2(-radius.toFloat(), -1f)))
         }
     }
 }

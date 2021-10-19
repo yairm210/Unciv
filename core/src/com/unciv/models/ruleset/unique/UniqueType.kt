@@ -64,7 +64,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
 
     StatPercentBonus("[amount]% [stat]", UniqueTarget.Global),

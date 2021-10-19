@@ -282,7 +282,7 @@ class CityInfo {
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
             for (unique in tileImprovement!!.uniqueObjects) {
-                if (unique.matches(UniqueType.ProvidesResources, getRuleset())) {
+                if (unique.isOfType(UniqueType.ProvidesResources)) {
                     if (!unique.conditionalsApply(civInfo, this)) continue
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(
@@ -291,7 +291,7 @@ class CityInfo {
                         "Improvements"
                     )
                 }
-                if (unique.matches(UniqueType.ConsumesResources, getRuleset())) {
+                if (unique.isOfType(UniqueType.ConsumesResources)) {
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(
                         resource,

@@ -413,7 +413,7 @@ open class TileInfo {
                 matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
             } -> false
             improvement.uniqueObjects.any {
-                it.matches(UniqueType.ConsumesResources, ruleset)
+                it.isOfType(UniqueType.ConsumesResources)
                 && civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))

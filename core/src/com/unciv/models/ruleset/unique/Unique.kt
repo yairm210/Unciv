@@ -24,10 +24,6 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun isOfType(uniqueType: UniqueType) = uniqueType == type
 
-    /** We can't save compliance errors in the unique, since it's ruleset-dependant */
-    fun matches(uniqueType: UniqueType, ruleset: Ruleset) = isOfType(uniqueType)
-        && uniqueType.getComplianceErrors(this, ruleset).isEmpty()
-
     fun conditionalsApply(civInfo: CivilizationInfo? = null, city: CityInfo? = null): Boolean {
         return conditionalsApply(StateForConditionals(civInfo, city))
     }
@@ -112,3 +108,4 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
+

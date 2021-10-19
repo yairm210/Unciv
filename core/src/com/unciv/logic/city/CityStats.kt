@@ -244,14 +244,6 @@ class CityStats(val cityInfo: CityInfo) {
             // "[stats] in cities on [tileFilter] tiles"
             if (unique.placeholderText == "[] in cities on [] tiles" && cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 stats.add(unique.stats)
-            
-            // Deprecated since 3.16.16
-                // "[stats] if this city has at least [amount] specialists"
-                if (unique.matches(UniqueType.StatBonusForNumberOfSpecialists, cityInfo.getRuleset()) 
-                    && cityInfo.population.getNumberOfSpecialists() >= unique.params[1].toInt()
-                )
-                    stats.add(unique.stats)
-            //
 
             if (unique.placeholderText == "[] per turn from cities before []" && !cityInfo.civInfo.hasTechOrPolicy(unique.params[1]))
                 stats.add(unique.stats)

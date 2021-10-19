@@ -595,7 +595,7 @@ object UnitActions {
             
             var resourcesAvailable = true
             if (improvement.uniqueObjects.any { 
-                    it.matches(UniqueType.ConsumesResources, tile.ruleset) && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
+                    it.isOfType(UniqueType.ConsumesResources, tile.ruleset) && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
             }) 
                 resourcesAvailable = false
             
