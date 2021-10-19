@@ -40,7 +40,8 @@ class Terrain : RulesetStatsObject() {
     @Transient
     var damagePerTurn = 0
 
-    fun isRough(): Boolean = uniques.contains("Rough terrain")
+    // Shouldn't this just be a lazy property so it's automatically cached?
+    fun isRough(): Boolean = hasUnique(UniqueType.RoughTerrain)
     
     /** Tests base terrains, features and natural wonders whether they should be treated as Land/Water.
      *  Currently only used for civilopedia display, as other code can test the tile itself.
@@ -141,8 +142,6 @@ class Terrain : RulesetStatsObject() {
     }
 
     fun setTransients() {
-        damagePerTurn = uniqueObjects.sumOf {
-            if (it.placeholderText == "Units ending their turn on this terrain take [] damage") it.params[0].toInt() else 0
-        }
+        damagePerTurn = getMatchingUniques(UniqueType.DamagesContainingUnits).sumOf { it.params[0].toInt() }
     }
 }

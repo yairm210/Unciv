@@ -614,9 +614,7 @@ class MapUnit {
                     tile.roadStatus = RoadStatus.None
                 else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
-                    if (removedFeatureObject != null && removedFeatureObject.uniques
-                            .contains("Provides a one-time Production bonus to the closest city when cut down")
-                    ) {
+                    if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
                         tryProvideProductionToClosestCity(removedFeatureName)
                     }
                     tile.terrainFeatures.remove(removedFeatureName)
@@ -1006,7 +1004,7 @@ class MapUnit {
 
     fun getDamageFromTerrain(tile: TileInfo = currentTile): Int {
         if (civInfo.nonStandardTerrainDamage) {
-            for (unique in getMatchingUniques("Units ending their turn on [] tiles take [] damage")) {
+            for (unique in getMatchingUniques(UniqueType.DamagesContainingUnits)) {
                 if (unique.params[0] in tile.getAllTerrains().map { it.name }) {
                     return unique.params[1].toInt() // Use the damage from the unique
                 }

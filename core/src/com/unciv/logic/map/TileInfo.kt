@@ -436,7 +436,7 @@ open class TileInfo {
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
             // Terrain blocks most improvements
-            getAllTerrains().any { it.getMatchingUniques("Only [] improvements may be built on this tile")
+            getAllTerrains().any { it.getMatchingUniques(UniqueType.RestrictedBuildableImprovements)
                 .any { unique -> !improvement.matchesFilter(unique.params[0]) } } -> false
 
             // Decide cancelImprovementOrder earlier, otherwise next check breaks it
@@ -630,6 +630,17 @@ open class TileInfo {
                     FormattedLine("{$resource} ($resourceAmount)", link="Resource/$resource")
                 else
                     FormattedLine(resource!!, link="Resource/$resource")
+        if (resource != null && viewingCiv != null && hasViewableResource(viewingCiv)) {
+            val tileImprovement = ruleset.tileImprovements[getTileResource().improvement]
+            if (tileImprovement?.techRequired != null
+                && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
+                lineList += FormattedLine(
+                    "Requires [${tileImprovement.techRequired}]",
+                    link="Technology/${tileImprovement.techRequired}",
+                    color= "#FAA"
+                )
+            }
+        }
         if (naturalWonder != null)
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
         if (roadStatus !== RoadStatus.None && !isCityCenter())

@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -343,7 +342,7 @@ class CivilizationInfo {
         cities.asSequence().flatMap {
             city ->
                 if (cityItIsFor != null && city == cityItIsFor)
-                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" } }
+                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" || param == "in all cities" } }
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
@@ -714,7 +713,7 @@ class CivilizationInfo {
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.
-        nonStandardTerrainDamage = getMatchingUniques("Units ending their turn on [] tiles take [] damage")
+        nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
             .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
         // Cache the last era each resource is used for buildings or units respectively for AI building evaluation

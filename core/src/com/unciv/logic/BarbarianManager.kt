@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.GameSpeed
+import com.unciv.models.ruleset.unique.UniqueType
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -210,7 +211,7 @@ class Encampment {
                     || it.isCityCenter()
                     || it.getFirstUnit() != null
                     || (it.isWater && !canSpawnBoats)
-                    || (it.hasUnique("Fresh water") && it.isWater) // No Lakes
+                    || (it.hasUnique(UniqueType.FreshWater) && it.isWater) // No Lakes
         }
         if (validTiles.isEmpty()) return false
 
