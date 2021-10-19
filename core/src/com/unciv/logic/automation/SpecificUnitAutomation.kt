@@ -378,14 +378,18 @@ object SpecificUnitAutomation {
     }
 
     fun foundReligion(unit: MapUnit) {
-        val cityToFoundReligionAt = unit.civInfo.cities.first { !it.isHolyCity() }
+        val cityToFoundReligionAt = unit.civInfo.cities.firstOrNull {
+            !it.isHolyCity()
+                    && unit.movement.canMoveTo(it.getCenterTile())
+                    && unit.movement.canReach(it.getCenterTile())
+        }
+        if (cityToFoundReligionAt == null) return
         if (unit.getTile() != cityToFoundReligionAt.getCenterTile()) {
             unit.movement.headTowards(cityToFoundReligionAt.getCenterTile())
-            return   
+            return
         }
-        
+
         UnitActions.getFoundReligionAction(unit)()
-        
     }
     
     fun enhanceReligion(unit: MapUnit) {
