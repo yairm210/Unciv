@@ -476,7 +476,7 @@ object GameStarter {
         val relevantTiles = spawn.getTilesInDistance(2).shuffled()
 
         for (tile in relevantTiles) {
-            if(tile.resource != null && tile.getTileResource().resourceType == ResourceType.Luxury)
+            if(tile.resource != null && tile.tileResource.resourceType == ResourceType.Luxury)
                 return  // At least one luxury; all set
         }
 

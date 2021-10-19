@@ -273,7 +273,7 @@ class CityInfo {
         val cityResources = ResourceSupplyList()
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
-            val resource = tileInfo.getTileResource()
+            val resource = tileInfo.tileResource
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
             if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
@@ -336,7 +336,7 @@ class CityInfo {
 
     fun getTileResourceAmount(tileInfo: TileInfo): Int {
         if (tileInfo.resource == null) return 0
-        val resource = tileInfo.getTileResource()
+        val resource = tileInfo.tileResource
         if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched

@@ -620,8 +620,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     it.resource != null
                     && requiredNearbyImprovedResources!!.contains(it.resource!!)
                     && it.getOwner() == civInfo
-                    && (it.getTileResource().improvement == it.improvement || it.isCityCenter()
-                       || (it.getTileImprovement()?.isGreatImprovement() == true && it.getTileResource().resourceType == ResourceType.Strategic) 
+                    && (it.tileResource.improvement == it.improvement || it.isCityCenter()
+                       || (it.getTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
                     )
                 }
             if (!containsResourceWithImprovement) 
