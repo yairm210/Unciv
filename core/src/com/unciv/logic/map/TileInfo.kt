@@ -630,6 +630,17 @@ open class TileInfo {
                     FormattedLine("{$resource} ($resourceAmount)", link="Resource/$resource")
                 else
                     FormattedLine(resource!!, link="Resource/$resource")
+        if (resource != null && viewingCiv != null && hasViewableResource(viewingCiv)) {
+            val tileImprovement = ruleset.tileImprovements[getTileResource().improvement]
+            if (tileImprovement?.techRequired != null
+                && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
+                lineList += FormattedLine(
+                    "Requires [${tileImprovement.techRequired}]",
+                    link="Technology/${tileImprovement.techRequired}",
+                    color= "#FAA"
+                )
+            }
+        }
         if (naturalWonder != null)
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
         if (roadStatus !== RoadStatus.None && !isCityCenter())
