@@ -210,7 +210,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             val gameTable = Table()
             val turnIndicator = Table()
             var currentTurnUser = ""
-            var lastTurnMinutesAgo = 0L
+            var lastTurnMillis = 0L
 
             try {
                 turnIndicator.add(ImageGetter.getImage("EmojiIcons/Turn"))
@@ -218,6 +218,17 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
                 val lastModifiedMillis = gameSaveFile.lastModified()
                 val gameButton = gameSaveFile.name().toTextButton()
+
+
+                //TODO: replace this with nice formatting using kotlin.time.DurationUnit (once it is no longer experimental)
+                fun formattedElapsedTime(lastMillis: Long): String {
+                    val elapsedMinutes = (System.currentTimeMillis() - lastMillis) / 60000
+                    return when {
+                        elapsedMinutes < 120 -> "[$elapsedMinutes] [Minutes]"
+                        elapsedMinutes < 2880 -> "[${elapsedMinutes / 60}] [Hours]"
+                        else -> "[${elapsedMinutes / 1440}] [Days]"
+                    }
+                }
 
                 gameButton.onClick {
                     selectedGameFile = gameSaveFile
@@ -229,11 +240,8 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
                     editButton.enable()
                     rightSideButton.enable()
-
-                    //get Minutes since last modified
-                    val lastSavedMinutesAgo = (System.currentTimeMillis() - lastModifiedMillis) / 60000
-                    var descriptionText = "Last refresh: [$lastSavedMinutesAgo] minutes ago".tr() + "\r\n"
-                    descriptionText += "Current Turn:".tr() + " ${currentTurnUser} since $lastTurnMinutesAgo minutes ago\r\n"
+                    var descriptionText = "Last refresh: ${formattedElapsedTime(lastModifiedMillis)} ago".tr() + "\r\n"
+                    descriptionText += "Current Turn: [$currentTurnUser] since ${formattedElapsedTime(lastTurnMillis)} ago\r\n".tr()
                     descriptionLabel.setText(descriptionText)
                 }
 
@@ -261,7 +269,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                         }
                         //set variable so it can be displayed when gameButton.onClick gets called
                         currentTurnUser = game.currentPlayer
-                        lastTurnMinutesAgo = (System.currentTimeMillis() - game.currentTurnStartTime) / 60000
+                        lastTurnMillis = game.currentTurnStartTime
                     }
                 } catch (usx: UncivShowableException) {
                     //Gets thrown when mods are not installed
