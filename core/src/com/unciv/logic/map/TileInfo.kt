@@ -436,7 +436,7 @@ open class TileInfo {
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
             // Terrain blocks most improvements
-            getAllTerrains().any { it.getMatchingUniques("Only [] improvements may be built on this tile")
+            getAllTerrains().any { it.getMatchingUniques(UniqueType.RestrictedBuildableImprovements)
                 .any { unique -> !improvement.matchesFilter(unique.params[0]) } } -> false
 
             // Decide cancelImprovementOrder earlier, otherwise next check breaks it
