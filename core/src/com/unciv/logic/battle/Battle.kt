@@ -372,15 +372,13 @@ object Battle {
     }
 
     private fun postBattleAddXp(attacker: ICombatant, defender: ICombatant) {
-        if (attacker.isMelee()) {
-            if (!defender.isCivilian()) // unit was not captured but actually attacked
-            {
-                addXp(attacker, 5, defender)
-                addXp(defender, 4, attacker)
-            }
-        } else { // ranged attack
+        if (!attacker.isMelee()) { // ranged attack
             addXp(attacker, 2, defender)
             addXp(defender, 2, attacker)
+        } else if (!defender.isCivilian()) // unit was not captured but actually attacked
+        {
+            addXp(attacker, 5, defender)
+            addXp(defender, 4, attacker)
         }
     }
 
