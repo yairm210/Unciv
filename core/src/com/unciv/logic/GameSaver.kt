@@ -38,9 +38,21 @@ object GameSaver {
         return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence()
     }
 
-    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
+    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
         try {
-            json().toJson(game, getSave(GameName, multiplayer))
+            json().toJson(game, getSave(GameName))
+            saveCompletionCallback?.invoke(null)
+        } catch (ex: Exception) {
+            saveCompletionCallback?.invoke(ex)
+        }
+    }
+
+    /**
+        Overload of function saveGame to save MultiplayerGameInfo in separate folder
+     **/
+    fun saveGame(game: MultiplayerGameInfo, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
+        try {
+            json().toJson(game, getSave(GameName, true))
             saveCompletionCallback?.invoke(null)
         } catch (ex: Exception) {
             saveCompletionCallback?.invoke(ex)
@@ -58,6 +70,10 @@ object GameSaver {
         val game = json().fromJson(GameInfo::class.java, gameFile)
         game.setTransients()
         return game
+    }
+
+    fun loadMultiplayerGameFromFile(gameFile: FileHandle): MultiplayerGameInfo {
+        return json().fromJson(MultiplayerGameInfo::class.java, gameFile)
     }
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
