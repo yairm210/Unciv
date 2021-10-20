@@ -372,7 +372,7 @@ class CivilizationInfo {
             .map { it.first }
             .filter { it.isOfType(uniqueType) }
         )
-        yieldAll(getEra().getMatchingUniques(uniqueType))
+        yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
     }.filter {
