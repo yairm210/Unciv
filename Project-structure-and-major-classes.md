@@ -8,6 +8,9 @@ The [Desktop](https://github.com/yairm210/Unciv/tree/master/desktop) and [Androi
 
 The [Test](https://github.com/yairm210/Unciv/tree/master/tests/src/de/tomgrill/gdxtesting/examples) folder contains tests that can be run manually via gradle with `./gradlew tests:test`, and are run automatically by Travis for every push.
 
+# Translations
+Before we get to the Classes, a word on Languages. Unciv is playable in several handfuls of languages, and there's magic to support that. Whenever you include a new string in code you will need to give it a quick evaluation - will users see it, and if so, what do I need to do to support its translations. Sometimes you may not need to do anything, sometimes you will add a line to the [translation templates](../blob/master/android/assets/jsons/translations/template.properties), and sometimes you will adapt the string formatting to support the translations. For details, see [the 'Translation generation - for developers' chapter](./Translating#translation-generation---for-developers).
+
 # Major classes
 
 Civ, and therefore Unciv, is a game with endless interconnectivity - everything affects everything else.
