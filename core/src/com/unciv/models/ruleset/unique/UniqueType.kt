@@ -62,11 +62,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     /////// Stat providing uniques
 
-    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief, UniqueTarget.Improvement),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
-
+    
     StatPercentBonus("[amount]% [stat]", UniqueTarget.Global),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
 
@@ -83,8 +83,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.16.16", ReplaceWith("[stats] from every specialist [in all cities]"), DeprecationLevel.WARNING)
     StatsFromSpecialistDeprecated("[stats] from every specialist", UniqueTarget.Global),
-
     StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global),
+    ImprovementStatsOnTileCities("[stats] from [tileFilter] tiles [cityFilter]", UniqueTarget.Global),
     
     StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
 
@@ -152,7 +152,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
-
 
 
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
@@ -285,8 +284,18 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     FreshWater("Fresh water", UniqueTarget.Terrain),
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
     
-    // Resource uniques
-    OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
+    /////// Resource uniques
+    ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
+    CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
+    
+    ////// Improvement uniques
+    ImprovementBuildableByFreshWater("Can also be built on tiles adjacent to fresh water", UniqueTarget.Improvement),
+    ImprovementStatsOnTile("[stats] from [tileFilter] tiles", UniqueTarget.Improvement),
+    @Deprecated("As of 3.17.10", ReplaceWith("[stats] from [tileFilter] tiles <after discovering [tech]>"))
+    ImprovementStatsOnTileWithTech("[stats] on [tileFilter] tiles once [tech] is discovered", UniqueTarget.Improvement),
+    @Deprecated("As of 3.17.10", ReplaceWith("[stats] <after discovering [tech]>"))
+    StatsWithTech("[stats] once [tech] is discovered", UniqueTarget.Improvement, UniqueTarget.Building),
+    
     
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
@@ -300,6 +309,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalDuringEra("during the [era]", UniqueTarget.Conditional),
     ConditionalBeforeEra("before the [era]", UniqueTarget.Conditional),
     ConditionalStartingFromEra("starting from the [era]", UniqueTarget.Conditional),
+    
+    ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
+    ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
+    ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
+    ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
 
     // city conditionals
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
@@ -312,7 +326,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),
     ConditionalInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
-//    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
 
     // tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),

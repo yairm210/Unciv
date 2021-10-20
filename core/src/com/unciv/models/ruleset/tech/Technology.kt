@@ -36,13 +36,26 @@ class Technology: RulesetObject() {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         for (unique in uniques) lineList += unique.tr()
 
-        for (improvement in ruleset.tileImprovements.values)
+        for (improvement in ruleset.tileImprovements.values) {
             for (unique in improvement.uniqueObjects) {
-                if (unique.placeholderText == "[] once [] is discovered" && unique.params.last() == name)
+                // Deprecated since 3.17.10
+                    if (unique.isOfType(UniqueType.StatsWithTech) && unique.params.last() == name)
+                        lineList += "[${unique.params[0]}] from every [${improvement.name}]"
+                    else if (unique.isOfType(UniqueType.ImprovementStatsOnTileWithTech) && unique.params.last() == name)
+                        lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
+                    else 
+                //
+                if (unique.isOfType(UniqueType.Stats)) {
+                    val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
+                    if (requiredTech != name) continue
                     lineList += "[${unique.params[0]}] from every [${improvement.name}]"
-                else if (unique.placeholderText == "[] on [] tiles once [] is discovered" && unique.params.last() == name)
+                } else if (unique.isOfType(UniqueType.ImprovementStatsOnTile)) {
+                    val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
+                    if (requiredTech != name) continue
                     lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
+                }
             }
+        }
 
         val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
         val enabledUnits = getEnabledUnits(viewingCiv)
@@ -176,12 +189,26 @@ class Technology: RulesetObject() {
         var wantEmpty = true
         for (improvement in ruleset.tileImprovements.values)
             for (unique in improvement.uniqueObjects) {
-                if (unique.placeholderText == "[] once [] is discovered" && unique.params.last() == name) {
-                    if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
+                // Deprecated since 3.17.10
+                    if (unique.placeholderText == "[] once [] is discovered" && unique.params.last() == name) {
+                        if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
+                        lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}]",
+                            link = improvement.makeLink())
+                    } else if (unique.placeholderText == "[] on [] tiles once [] is discovered" && unique.params.last() == name) {
+                        if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
+                        lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles",
+                            link = improvement.makeLink())
+                    }
+                    else
+                //
+                if (unique.isOfType(UniqueType.Stats)) {
+                    val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
+                    if (requiredTech != name) continue
                     lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}]",
                         link = improvement.makeLink())
-                } else if (unique.placeholderText == "[] on [] tiles once [] is discovered" && unique.params.last() == name) {
-                    if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
+                } else if (unique.placeholderText == "[] on [] tiles") {
+                    val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
+                    if (requiredTech != name) continue
                     lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles",
                         link = improvement.makeLink())
                 }

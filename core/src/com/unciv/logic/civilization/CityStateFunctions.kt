@@ -28,7 +28,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         for (tech in startingTechs)
             civInfo.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
 
-        val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique("Can only be created by Mercantile City-States") }.map { it.name }
+        val allMercantileResources = ruleset.tileResources.values.filter { it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
         val allPossibleBonuses = HashSet<Unique>()    // We look through these to determine what kind of city state we are
         var fallback = false
         for (era in ruleset.eras.values) {

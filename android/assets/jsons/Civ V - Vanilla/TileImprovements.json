@@ -7,8 +7,8 @@
 		"turnsToBuild": 7,
 		"techRequired": "Agriculture",
 		"uniques": ["Can also be built on tiles adjacent to fresh water", 
-			"[+1 Food] on [Fresh water] tiles once [Civil Service] is discovered",
-			"[+1 Food] on [non-fresh water] tiles once [Fertilizer] is discovered"],
+			"[+1 Food] from [Fresh water] tiles <after discovering [Civil Service]>",
+			"[+1 Food] from [non-fresh water] tiles <after discovering [Fertilizer]>"],
 		"shortcutKey": "F"
 	},
 	{
@@ -17,7 +17,7 @@
 		"production": 1,
 		"turnsToBuild": 7,
 		"techRequired": "Construction",
-		"uniques": ["[+1 Production] once [Scientific Theory] is discovered"],
+		"uniques": ["[+1 Production] <after discovering [Scientific Theory]>"],
 		"shortcutKey": "L"
 	},
 	{
@@ -26,7 +26,7 @@
 		"production": 1,
 		"turnsToBuild": 7,
 		"techRequired": "Mining",
-		"uniques": ["[+1 Production] once [Chemistry] is discovered"],
+		"uniques": ["[+1 Production] <after discovering [Chemistry]>"],
 		"shortcutKey": "M"
 	},
 	{
@@ -35,7 +35,7 @@
 		"gold": 1,
 		"turnsToBuild": 7,
 		"techRequired": "Guilds",
-		"uniques": ["[+1 Gold] once [Economics] is discovered"],
+		"uniques": ["[+1 Gold] <after discovering [Economics]>"],
 		"shortcutKey": "T"
 	},
 	
@@ -44,7 +44,7 @@
 		"name": "Camp",
 		"turnsToBuild": 7,
 		"techRequired": "Trapping",
-		"uniques": ["Does not need removal of [Forest]","Does not need removal of [Jungle]","[+1 Gold] once [Economics] is discovered"],
+		"uniques": ["Does not need removal of [Forest]","Does not need removal of [Jungle]","[+1 Gold] <after discovering [Economics]>"],
 		"shortcutKey": "C"
 	},
 	{
@@ -59,7 +59,7 @@
 		"name": "Pasture",
 		"turnsToBuild": 8,
 		"techRequired": "Animal Husbandry",
-		"uniques": ["[+1 Food] once [Fertilizer] is discovered"],
+		"uniques": ["[+1 Food] <after discovering [Fertilizer]>"],
 		"shortcutKey": "P"
 	},
 	{
@@ -67,14 +67,14 @@
 		"turnsToBuild": 6,
 		"gold": 1,
 		"techRequired": "Calendar",
-		"uniques": ["[+1 Food] once [Fertilizer] is discovered"],
+		"uniques": ["[+1 Food] <after discovering [Fertilizer]>"],
 		"shortcutKey": "P"
 	},
 	{
 		"name": "Quarry",
 		"turnsToBuild": 8,
 		"techRequired": "Masonry",
-		"uniques": ["[+1 Production] once [Chemistry] is discovered"],
+		"uniques": ["[+1 Production] <after discovering [Chemistry]>"],
 		"shortcutKey": "Q"
 	},
 	{
@@ -82,7 +82,7 @@
 		"terrainsCanBeBuiltOn": ["Coast"],
 		"food": 1,
 		"techRequired": "Sailing",
-		"uniques": ["[+1 Gold] once [Compass] is discovered"]
+		"uniques": ["[+1 Gold] <after discovering [Compass]>"]
 	},
 
 	// Military improvement
@@ -173,7 +173,7 @@
 	{
 		"name": "Academy",
 		"science": 8,
-		"uniques": ["Great Improvement", "[+2 Science] once [Scientific Theory] is discovered", "[+2 Science] once [Atomic Theory] is discovered"]
+		"uniques": ["Great Improvement", "[+2 Science] <after discovering [Scientific Theory]>", "[+2 Science] <after discovering [Atomic Theory]>"]
 	},
 	{
 		"name": "Landmark",
@@ -183,12 +183,12 @@
 	{
 		"name": "Manufactory",
 		"production": 4,
-		"uniques": ["Great Improvement", "[+1 Production] once [Chemistry] is discovered"]
+		"uniques": ["Great Improvement", "[+1 Production] <after discovering [Chemistry]>"]
 	},
 	{
 		"name": "Customs house",
 		"gold": 4,
-		"uniques": ["Great Improvement", "[+1 Gold] once [Economics] is discovered"]
+		"uniques": ["Great Improvement", "[+1 Gold] <after discovering [Economics]>"]
 	},
 	{
 		"name": "Holy site",
@@ -207,7 +207,7 @@
 		"uniqueTo": "Polynesia",
 		"culture": 1,
 		"turnsToBuild": 4,
-		"uniques": ["Can only be built on [Coastal] tiles", "[+1 Culture] for each adjacent [Moai]", "[+1 Gold] once [Flight] is discovered"],
+		"uniques": ["Can only be built on [Coastal] tiles", "[+1 Culture] for each adjacent [Moai]", "[+1 Gold] <after discovering [Flight]>"],
 		"techRequired": "Construction",
 		"shortcutKey": "M"
 	},
@@ -219,8 +219,8 @@
 		"turnsToBuild": 7,
 		"uniques": ["Cannot be built on [Bonus resource] tiles",
 			"[+1 Food] for each adjacent [Mountain]",
-			"[+1 Food] on [Fresh water] tiles once [Civil Service] is discovered",
-			"[+1 Food] on [non-fresh water] tiles once [Fertilizer] is discovered"],
+			"[+1 Food] on [Fresh water] tiles <after discovering [Civil Service]>",
+			"[+1 Food] on [non-fresh water] tiles <after discovering[Fertilizer]>"],
 		"techRequired": "Construction",
 		"shortcutKey": "F"
 	},
@@ -230,7 +230,7 @@
 		"food": 3,
 		"terrainsCanBeBuiltOn": ["Marsh", "Flood plains"],
 		"turnsToBuild": 7,
-		"uniques": ["[+1 Production, +2 Gold] once [Economics] is discovered"],
+		"uniques": ["[+1 Production, +2 Gold] <after discovering [Economics]>"],
 		"techRequired": "Guilds",
 		"shortcutKey": "F"
 	},

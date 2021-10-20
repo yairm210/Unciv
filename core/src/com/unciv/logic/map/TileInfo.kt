@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -346,21 +347,31 @@ open class TileInfo {
     }
 
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
-        val stats = improvement.clone() // clones the stats of the improvement, not the improvement itself
+        val stats = improvement.cloneStats()
         if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name)
             stats.add(tileResource.improvementStats!!.clone()) // resource-specific improvement
 
-        for (unique in improvement.uniqueObjects)
-            if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
-                stats.add(unique.stats)
+        // Deprecated since 3.17.10
+            for (unique in improvement.uniqueObjects) {
+                if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
+                    stats.add(unique.stats)
+            }
+        //
+        
+        for (unique in improvement.getMatchingUniques(UniqueType.Stats, StateForConditionals(civInfo = observingCiv, cityInfo = city))) {
+            stats.add(unique.stats)
+        }
 
         if (city != null) {
-            val tileUniques = city.getMatchingUniques("[] from [] tiles []")
+            val tileUniques = city.getMatchingUniques(UniqueType.ImprovementStatsOnTileCities, StateForConditionals(civInfo = observingCiv, cityInfo = city))
                 .filter { city.matchesFilter(it.params[2]) }
-            val improvementUniques = improvement.uniqueObjects.filter {
-                it.placeholderText == "[] on [] tiles once [] is discovered"
-                        && observingCiv.tech.isResearched(it.params[2])
-            }
+            val improvementUniques = 
+                // Deprecated since 3.17.10
+                    improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTileWithTech)
+                        .filter { observingCiv.tech.isResearched(it.params[2]) } +
+                //
+                improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, StateForConditionals(civInfo = observingCiv, cityInfo = city))
+            
             for (unique in tileUniques + improvementUniques) {
                 if (improvement.matchesFilter(unique.params[1])
                     // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an endless feedback.
@@ -455,7 +466,7 @@ open class TileInfo {
             improvement.name == roadStatus.removeAction -> true
             topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
-            improvement.hasUnique("Can also be built on tiles adjacent to fresh water") && isAdjacentToFreshwater -> true
+            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater) && isAdjacentToFreshwater -> true
 
             // If an unique of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful).
             improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.let {
@@ -752,7 +763,7 @@ open class TileInfo {
         
         if (newResource.resourceType != ResourceType.Strategic) return
         
-        for (unique in newResource.getMatchingUniques(UniqueType.OverrideDepositAmountOnTileFilter)) {
+        for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles)) {
             if (matchesTerrainFilter(unique.params[0])) {
                 resourceAmount = unique.params[1].toInt()
                 return
