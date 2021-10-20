@@ -33,6 +33,7 @@ class MapEditorEditTerrainTab(
 ): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
+        defaults().pad(10f).fillX().left()
         add(MarkupRenderer.render(
             getTerrains(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
@@ -41,7 +42,7 @@ class MapEditorEditTerrainTab(
                 tile.baseTerrain = it
                 tile.naturalWonder = null
             }
-        }).fillX().row()
+        }).row()
     }
 
     private fun allTerrains() = ruleset.terrains.values.asSequence()
@@ -61,6 +62,7 @@ class MapEditorEditFeaturesTab(
 ): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
+        defaults().pad(10f).fillX().left()
         allowedFeatures().firstOrNull()?.let { addFeatures(it) }
     }
 
@@ -71,7 +73,7 @@ class MapEditorEditFeaturesTab(
             editTab.setBrush("Remove feature", eraserIcon) { tile ->
                 tile.terrainFeatures.clear()
             }
-        } }).fillX().left().row()
+        } }).padBottom(0f).row()
         add(MarkupRenderer.render(
             getFeatures(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
@@ -80,7 +82,7 @@ class MapEditorEditFeaturesTab(
                 if (it !in tile.terrainFeatures)
                     tile.terrainFeatures.add(it)
             }
-        }).fillX().left().row()
+        }).padTop(0f).row()
     }
 
     private fun allowedFeatures() = ruleset.terrains.values.asSequence()
@@ -100,7 +102,7 @@ class MapEditorEditWondersTab(
 ): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
-
+        defaults().pad(10f).fillX().left()
         add(MarkupRenderer.render(
             getWonders(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
@@ -111,7 +113,7 @@ class MapEditorEditWondersTab(
                 tile.terrainFeatures.clear()
                 tile.naturalWonder = it
             }
-        }).fillX().row()
+        }).row()
     }
 
     private fun allowedWonders() = ruleset.terrains.values.asSequence()
@@ -131,6 +133,7 @@ class MapEditorEditResourcesTab(
 ): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
+        defaults().pad(10f).fillX().left()
         allowedResources().firstOrNull()?.let { addResources(it) }
     }
 
@@ -141,7 +144,7 @@ class MapEditorEditResourcesTab(
             editTab.setBrush("Remove resource", eraserIcon) { tile ->
                 tile.resource = null
             }
-        } }).fillX().left().row()
+        } }).padBottom(0f).row()
         add(MarkupRenderer.render(
             getResources(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
@@ -149,7 +152,7 @@ class MapEditorEditResourcesTab(
             editTab.setBrush(it, "Resource/$it") { tile ->
                 tile.resource = it
             }
-        }).fillX().left().row()
+        }).padTop(0f).row()
     }
 
     private fun allowedResources() = ruleset.tileResources.values.asSequence()
@@ -169,6 +172,7 @@ class MapEditorEditImprovementsTab(
 ): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
+        defaults().pad(10f).fillX().left()
         allowedImprovements().firstOrNull()?.let { addImprovements(it) }
     }
 
@@ -180,7 +184,7 @@ class MapEditorEditImprovementsTab(
                 tile.improvement = null
                 tile.roadStatus = RoadStatus.None
             }
-        } }).fillX().left().row()
+        } }).padBottom(0f).row()
         add(MarkupRenderer.render(
             getImprovements(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
@@ -194,7 +198,7 @@ class MapEditorEditImprovementsTab(
                 editTab.setBrush(it, "Improvement/$it") { tile ->
                     tile.improvement = it
                 }
-        }).fillX().left().row()
+        }).padTop(0f).row()
     }
 
     private fun allowedImprovements() = ruleset.tileImprovements.values.asSequence()
@@ -225,6 +229,7 @@ class MapEditorEditStartsTab(
 
     init {
         top()
+        defaults().pad(10f).fillX().left()
         allowedNations().firstOrNull()?.let { addNations(it) }
     }
 
@@ -235,7 +240,7 @@ class MapEditorEditStartsTab(
             editTab.setBrush(BrushHandlerType.Direct, "Remove starting locations", eraserIcon) { tile ->
                 tile.tileMap.removeStartingLocations(tile.position)
             }
-        } }).fillX().left().row()
+        } }).padBottom(0f).row()
         add(MarkupRenderer.render(
             getNations(),
             iconDisplay = FormattedLine.IconDisplay.NoLink
@@ -246,7 +251,7 @@ class MapEditorEditStartsTab(
                 if (!tile.tileMap.addStartingLocation(it, tile))
                     tile.tileMap.removeStartingLocation(it, tile)
             }
-        }).fillX().left().row()
+        }).padTop(0f).row()
     }
 
     private fun allowedNations() = ruleset.nations.values.asSequence()
@@ -278,6 +283,7 @@ class MapEditorEditRiversTab(
         ?: ruleset.terrains.values.first()
 
     init {
+        top()
         defaults().pad(10f).left()
         val removeLine = Table().apply {
             add(getRemoveRiverIcon()).padRight(10f)
@@ -405,6 +411,8 @@ class MapEditorEditUnitsTab(
     private val ruleset: Ruleset
 ): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
     init {
+        top()
+        defaults().pad(10f).left()
         add("Work in progress".toLabel(Color.FIREBRICK, 24))
     }
 

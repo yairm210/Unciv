@@ -77,10 +77,18 @@ class MapEditorEditTab(
             add(brushSlider).padLeft(0f)
         }
 
-        val subTabsHeight = editorScreen.stage.height - headerHeight - brushTable.prefHeight - 5f
-        subTabs = TabbedPager(minimumHeight = subTabsHeight, maximumHeight = subTabsHeight, capacity = 8).apply {
-            prefWidth = editorScreen.getToolsWidth()
-        }
+        // TabbedPager parameters specify content page area. Assume subTabs will have the same headerHeight
+        // as the master tabs, the 2f is for the separator, and the 10f for reduced header padding:
+        val subTabsHeight = editorScreen.stage.height - 2 * headerHeight - brushTable.prefHeight - 2f + 10f
+        val subTabsWidth = editorScreen.getToolsWidth()
+        subTabs = TabbedPager(
+            minimumHeight = subTabsHeight,
+            maximumHeight = subTabsHeight,
+            minimumWidth = subTabsWidth,
+            maximumWidth = subTabsWidth,
+            headerPadding = 5f,
+            capacity = AllEditSubTabs.values().size
+        )
 
         for (page in AllEditSubTabs.values()) {
             val tab = page.instantiate(this, ruleset)

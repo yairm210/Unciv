@@ -24,8 +24,8 @@ import com.unciv.ui.utils.*
 //todo TabbedPager page scroll disabling goes into Widget
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
 //todo left-align everything so a half-open drawer is more useful
-//todo View: Tile Continent info
 //todo combined brush
+//todo Load should check isDirty before discarding and replacing the current map
 
 
 class MapEditorScreenV2(map: TileMap? = null): CameraStageBaseScreen() {
