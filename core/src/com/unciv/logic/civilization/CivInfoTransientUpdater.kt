@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.UniqueType
@@ -13,6 +14,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         updateViewableInvisibleTiles()
 
+        updateLastSeenImprovements()
 
         // updating the viewable tiles also affects the explored tiles, obviously.
         // So why don't we play switcharoo with the explored tiles as well?
@@ -65,7 +67,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         val newViewableTiles = HashSet<TileInfo>()
 
         // while spectating all map is visible
-        if (civInfo.isSpectator()) {
+        if (civInfo.isSpectator() || UncivGame.Current.viewEntireMapForDebug) {
             val allTiles = civInfo.gameInfo.tileMap.values.toSet()
             civInfo.viewableTiles = allTiles
             civInfo.viewableInvisibleUnitsTiles = allTiles
@@ -90,6 +92,18 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         }
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
+    }
+
+    private fun updateLastSeenImprovements() {
+        if (civInfo.playerType == PlayerType.AI) return // don't bother for AI, they don't really use the info anyway
+
+        for (tile in civInfo.viewableTiles) {
+            val before = civInfo.lastSeenImprovement[tile.position]
+            if (tile.improvement == null)
+                civInfo.lastSeenImprovement.remove(tile.position)
+            else
+                civInfo.lastSeenImprovement[tile.position] = tile.improvement!!
+        }
     }
 
     private fun discoverNaturalWonders() {

@@ -160,6 +160,14 @@ class CivilizationInfo {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
+    // This double construction because for some reason the game wants to load a
+    // map<Vector2, String> as a map<String, String> causing all sorts of type problems.
+    // So we let the game have its map<String, String> and remap it in setTransients,
+    // everyone's happy. Sort of.
+    var lastSeenImprovementSaved = HashMap<String, String>()
+    @Transient
+    var lastSeenImprovement = HashMap<Vector2, String>()
+
     // To correctly determine "game over" condition as clarified in #4707
     // Nullable type meant to be deprecated and converted to non-nullable,
     // default false once we no longer want legacy save-game compatibility
@@ -207,6 +215,7 @@ class CivilizationInfo {
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
         // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
+        toReturn.lastSeenImprovementSaved.putAll(lastSeenImprovement.mapKeys { it.key.toString() })
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
@@ -730,6 +739,8 @@ class CivilizationInfo {
         }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
+
+        lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
     }
 
     fun updateSightAndResources() {

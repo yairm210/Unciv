@@ -180,14 +180,15 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.hexagon)
         if (tileInfo.naturalWonder != null) return listOf(tileSetStrings.getTile(tileInfo.naturalWonder!!))
 
-        val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
+        val shownImprovement = tileInfo.getShownImprovement(viewingCiv)
+        val shouldShowImprovement = (shownImprovement != null && UncivGame.Current.settings.showPixelImprovements)
 
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tileInfo.resource != null &&
                 (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
 
         var resourceAndImprovementSequence = sequenceOf<String?>()
         if (shouldShowResource) resourceAndImprovementSequence += sequenceOf(tileInfo.resource)
-        if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(tileInfo.improvement)
+        if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(shownImprovement)
         resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
 
         val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()).filterNotNull()
