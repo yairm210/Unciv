@@ -188,10 +188,17 @@ enum class UniqueParameterType(val parameterName:String) {
     },
     BeliefTypeName("beliefType") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
-                in BeliefType.values().map { it.name } -> null
-                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
-            }
+                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            in BeliefType.values().map { it.name } -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        }
+    },
+    Belief("belief") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            in ruleset.beliefs -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
     },
     FoundingOrEnhancing("foundingOrEnhancing") {
         private val knownValues = setOf("founding", "enhancing")
