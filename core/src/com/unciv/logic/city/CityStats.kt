@@ -7,6 +7,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -266,14 +267,7 @@ class CityStats(val cityInfo: CityInfo) {
         val uniques = uniqueSequence.toList().asSequence()
           // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
           // this helps mitigate concurrency problems.
-
-        if (currentConstruction is Building && !currentConstruction.isAnyWonder())
-            for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] buildings" }) {
-                val stat = Stat.valueOf(unique.params[1])
-                if (currentConstruction.isStatRelated(stat))
-                    stats.production += unique.params[0].toInt()
-            }
-
+        
         for (unique in uniques.filter { it.isOfType(UniqueType.StatPercentBonus) }) {
             if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
@@ -285,33 +279,65 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         //
 
-        // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
-        // For instance "+[50]% [Production] [in all cities]
-        for (unique in uniques.filter { it.placeholderText == "+[]% [] []"})
+        // Deprecated since 3.17.10
+            // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
+            // For instance "+[50]% [Production] [in all cities]
+            for (unique in uniques.filter { it.isOfType(UniqueType.StatPercentBonusCitiesDeprecated) })
+                if (cityInfo.matchesFilter(unique.params[2]))
+                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        //
+        
+        for (unique in uniques.filter { it.isOfType(UniqueType.StatPercentBonusCities) }) {
+            if (!unique.conditionalsApply(StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo))) continue
             if (cityInfo.matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-
-        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
-            if (constructionMatchesFilter(currentConstruction, unique.params[1]))
-                stats.production += unique.params[0].toInt()
         }
-        // Used for specific buildings (e.g. +100% Production when constructing a Factory)
-        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing a []" }) {
-            if (constructionMatchesFilter(currentConstruction, unique.params[1]))
-                stats.production += unique.params[0].toInt()
-        }
-
-        //  "+[amount]% Production when constructing [constructionFilter] [cityFilter]"
-        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] []" }) {
+        
+        val uniquesToCheck =
+            if (currentConstruction is Building && !currentConstruction.isAnyWonder()) {
+                uniques.filter { it.isOfType(UniqueType.PercentProductionWonders) }   
+            } else if (currentConstruction is Building && currentConstruction.isAnyWonder()) {
+                uniques.filter { it.isOfType(UniqueType.PercentProductionBuildings) }
+            } else if (currentConstruction is BaseUnit) {
+                uniques.filter { it.isOfType(UniqueType.PercentProductionUnits) }
+            } else { // Science/Gold production
+                sequenceOf()
+            }
+        for (unique in uniquesToCheck) {
+            if (!unique.conditionalsApply(StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo))) continue
             if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
                 stats.production += unique.params[0].toInt()
         }
 
-        // "+[amount]% Production when constructing [unitFilter] units [cityFilter]"
-        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] units []" }) {
-            if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
-                stats.production += unique.params[0].toInt()
-        }
+        // Deprecated since 3.17.10
+            if (currentConstruction is Building && !currentConstruction.isAnyWonder())
+                for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionStatBuildings) }) {
+                    val stat = Stat.valueOf(unique.params[1])
+                    if (currentConstruction.isStatRelated(stat))
+                        stats.production += unique.params[0].toInt()
+                }
+            for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionConstructions) }) {
+                if (constructionMatchesFilter(currentConstruction, unique.params[1]))
+                    stats.production += unique.params[0].toInt()
+            }
+            // Used for specific buildings (e.g. +100% Production when constructing a Factory)
+            for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionBuildingName) }) {
+                if (constructionMatchesFilter(currentConstruction, unique.params[1]))
+                    stats.production += unique.params[0].toInt()
+            }
+    
+            //  "+[amount]% Production when constructing [constructionFilter] [cityFilter]"
+            for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionConstructionsCities) }) {
+                if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
+                    stats.production += unique.params[0].toInt()
+            }
+    
+            // "+[amount]% Production when constructing [unitFilter] units [cityFilter]"
+            for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionUnitsDeprecated) }) {
+                if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
+                    stats.production += unique.params[0].toInt()
+            }
+        //
 
         // Deprecated since 3.17.1
             if (cityInfo.civInfo.getHappiness() >= 0) {

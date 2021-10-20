@@ -67,8 +67,35 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
 
+    StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.16", ReplaceWith("[stats] from every specialist [in all cities]"), DeprecationLevel.WARNING)
+    StatsFromSpecialistDeprecated("[stats] from every specialist", UniqueTarget.Global),
+
+    StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global),
+
+    StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
+
+
     StatPercentBonus("[amount]% [stat]", UniqueTarget.Global),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
+    StatPercentBonusCities("[amount]% [stat] [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.17.10", ReplaceWith("[+amount]% [stat] [cityFilter]"), DeprecationLevel.WARNING)
+    StatPercentBonusCitiesDeprecated("+[amount]% [stat] [cityFilter]", UniqueTarget.Global),
+
+    PercentProductionWonders("[amount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.Resource, UniqueTarget.FollowerBelief),
+    PercentProductionBuildings("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]", UniqueTarget.Global),
+    PercentProductionUnits("[amount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global),
+
+    @Deprecated("As of 3.17.10", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.WARNING)
+    PercentProductionStatBuildings("+[amount]% Production when constructing [stat] buildings", UniqueTarget.Global),
+    @Deprecated("As of 3.17.10", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.WARNING)
+    PercentProductionConstructions("+[amount]% Production when constructing [constructionFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.17.10", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.WARNING)
+    PercentProductionBuildingName("+[amount]% Production when constructing a [buildingName]", UniqueTarget.Global),
+    @Deprecated("As of 3.17.10", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.WARNING)
+    PercentProductionConstructionsCities("+[amount]% Production when constructing [constructionFilter] [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.17.10", ReplaceWith("[+amount]% Production when constructing [baseUnitFilter] units [cityFilter]"), DeprecationLevel.WARNING)
+    PercentProductionUnitsDeprecated("+[amount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global),
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
     UnhappinessFromPopulationPercentageChange("[amount]% unhappiness from population [cityFilter]", UniqueTarget.Global),
@@ -78,15 +105,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     @Deprecated("As of 3.16.11", ReplaceWith("[amount]% unhappiness from population [cityFilter]"), DeprecationLevel.WARNING)
     UnhappinessFromPopulationPercentageChangeOld2("Unhappiness from population decreased by [amount]% [cityFilter]", UniqueTarget.Global),
 
-
-
-    StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.16.16", ReplaceWith("[stats] from every specialist [in all cities]"), DeprecationLevel.WARNING)
-    StatsFromSpecialistDeprecated("[stats] from every specialist", UniqueTarget.Global),
-
-    StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global),
-    
-    StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
 
     /////// City-State related uniques
 
