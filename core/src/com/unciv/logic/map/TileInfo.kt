@@ -265,9 +265,9 @@ open class TileInfo {
         }
 
         if (city != null) {
-            var tileUniques = city.getMatchingUniques("[] from [] tiles []")
+            var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles)
                 .filter { city.matchesFilter(it.params[2]) }
-            tileUniques += city.getMatchingUniques("[] from every []")
+            tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject)
             for (unique in tileUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
@@ -363,7 +363,7 @@ open class TileInfo {
                 stats.add(unique.stats)
 
         if (city != null) {
-            val tileUniques = city.getMatchingUniques("[] from [] tiles []")
+            val tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles)
                 .filter { city.matchesFilter(it.params[2]) }
             val improvementUniques = improvement.uniqueObjects.filter {
                 it.placeholderText == "[] on [] tiles once [] is discovered"
@@ -378,7 +378,7 @@ open class TileInfo {
                         stats.add(unique.stats)
             }
 
-            for (unique in city.getMatchingUniques("[] from every []")) {
+            for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
                 if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)
                 }

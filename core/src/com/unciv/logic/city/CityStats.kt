@@ -191,7 +191,7 @@ class CityStats(val cityInfo: CityInfo) {
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromSpecialist))
             if (cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
-        for (unique in cityInfo.civInfo.getMatchingUniques("[] from every []"))
+        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.StatsFromObject))
             if (unique.params[1] == specialistName)
                 stats.add(unique.stats)
         return stats

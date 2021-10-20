@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
@@ -206,6 +205,13 @@ enum class UniqueParameterType(val parameterName:String) {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
             in ruleset.technologies -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
+    Specialist("specialist") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            in ruleset.specialists -> null
             else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
