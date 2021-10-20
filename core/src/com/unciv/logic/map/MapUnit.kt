@@ -1017,15 +1017,16 @@ class MapUnit {
     private fun doCitadelDamage() {
         // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
         val citadelTile = currentTile.neighbors
-            .firstOrNull {
-                it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) &&
-                        with(it.getTileImprovement()) {
-                            this != null && this.hasUnique("Deal 30 damage to adjacent enemy units")
-                        }
+            .filter {
+                it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) && it.improvement != null
+            }.maxByOrNull { tile ->
+                tile.getTileImprovement()!!
+                    .getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
+                    .sumOf { it.params[0].toInt() }
             }
 
         if (citadelTile != null) {
-            health -= 30
+            health -= citadelTile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits).sumOf { it.params[0].toInt() }
             val locations = LocationAction(listOf(citadelTile.position, currentTile.position))
             if (health <= 0) {
                 civInfo.addNotification(

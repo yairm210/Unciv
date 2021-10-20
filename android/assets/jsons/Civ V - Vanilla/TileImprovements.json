@@ -100,6 +100,7 @@
 		"name": "Road",
 		"turnsToBuild": 4,
 		"techRequired": "The Wheel",
+		// "Costs [1] gold per turn when in your territory" does nothing and is only to inform the user
 		"uniques": ["Can be built outside your borders", "Costs [1] gold per turn when in your territory"],
 		"shortcutKey": "R",
         "civilopediaText": [
@@ -197,7 +198,7 @@
 	},
 	{
 		"name": "Citadel",
-		"uniques": ["Great Improvement", "Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Can be built just outside your borders"],
+		"uniques": ["Great Improvement", "Gives a defensive bonus of [100]%", "Adjacent enemy units ending their turn take [30] damage", "Can be built just outside your borders"],
         "civilopediaText": [{"text":"Constructing it will take over the tiles around it and assign them to your closest city"}]
 	},
 

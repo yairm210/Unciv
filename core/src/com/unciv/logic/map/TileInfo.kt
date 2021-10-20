@@ -388,15 +388,14 @@ open class TileInfo {
             }
         }
 
-        for (unique in improvement.uniqueObjects)
-            if (unique.placeholderText == "[] for each adjacent []") {
-                val adjacent = unique.params[1]
-                val numberOfBonuses = neighbors.count {
-                    it.matchesFilter(adjacent, observingCiv)
-                        || it.roadStatus.name == adjacent
-                }
-                stats.add(unique.stats.times(numberOfBonuses.toFloat()))
+        for (unique in improvement.getMatchingUniques(UniqueType.ImprovementStatsForAdjacencies)) {
+            val adjacent = unique.params[1]
+            val numberOfBonuses = neighbors.count {
+                it.matchesFilter(adjacent, observingCiv)
+                || it.roadStatus.name == adjacent
             }
+            stats.add(unique.stats.times(numberOfBonuses.toFloat()))
+        }
 
         for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
             if (improvement.matchesFilter(unique.params[1]))
@@ -411,16 +410,16 @@ open class TileInfo {
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
             getOwner() != civInfo && !(
-                    improvement.hasUnique("Can be built outside your borders")
-                            // citadel can be built only next to or within own borders
-                            || improvement.hasUnique("Can be built just outside your borders")
-                                && neighbors.any { it.getOwner() == civInfo } && civInfo.cities.isNotEmpty()
-                    ) -> false
+                improvement.hasUnique(UniqueType.CanBuildOutsideBorders)
+                    || ( // citadel can be built only next to or within own borders
+                        improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders)
+                        && neighbors.any { it.getOwner() == civInfo } && civInfo.cities.isNotEmpty()
+                    )
+                ) -> false
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
             } -> return false
-            improvement.uniqueObjects.any {
-                it.placeholderText == "Cannot be built on [] tiles until [] is discovered" &&
+            improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
                 matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
             } -> false
             improvement.uniqueObjects.any {
@@ -440,8 +439,8 @@ open class TileInfo {
         return when {
             improvement.name == this.improvement -> false
             isCityCenter() -> false
-            improvement.uniqueObjects.filter { it.placeholderText == "Cannot be built on [] tiles" }.any {
-                    unique -> matchesTerrainFilter(unique.params[0])
+            improvement.getMatchingUniques(UniqueType.CannotBuildOnTile).any {
+                unique -> matchesTerrainFilter(unique.params[0])
             } -> false
 
             // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
@@ -547,9 +546,8 @@ open class TileInfo {
         var bonus = getLastTerrain().defenceBonus
         val tileImprovement = getTileImprovement()
         if (tileImprovement != null) {
-            for (unique in tileImprovement.uniqueObjects)
-                if (unique.placeholderText == "Gives a defensive bonus of []%")
-                    bonus += unique.params[0].toFloat() / 100
+            for (unique in tileImprovement.getMatchingUniques(UniqueType.DefensiveBonus))
+                bonus += unique.params[0].toFloat() / 100
         }
         return bonus
     }

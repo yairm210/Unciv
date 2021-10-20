@@ -291,16 +291,34 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ////// Improvement uniques
     ImprovementBuildableByFreshWater("Can also be built on tiles adjacent to fresh water", UniqueTarget.Improvement),
     ImprovementStatsOnTile("[stats] from [tileFilter] tiles", UniqueTarget.Improvement),
-    @Deprecated("As of 3.17.10", ReplaceWith("[stats] from [tileFilter] tiles <after discovering [tech]>"))
+    @Deprecated("As of 3.17.10", ReplaceWith("[stats] from [tileFilter] tiles <after discovering [tech]>"), DeprecationLevel.WARNING)
     ImprovementStatsOnTileWithTech("[stats] on [tileFilter] tiles once [tech] is discovered", UniqueTarget.Improvement),
-    @Deprecated("As of 3.17.10", ReplaceWith("[stats] <after discovering [tech]>"))
+    @Deprecated("As of 3.17.10", ReplaceWith("[stats] <after discovering [tech]>"), DeprecationLevel.WARNING)
     StatsWithTech("[stats] once [tech] is discovered", UniqueTarget.Improvement, UniqueTarget.Building),
+    ImprovementStatsForAdjacencies("[stats] for each adjacent [tileFilter]", UniqueTarget.Improvement),
+
+    CanBuildOutsideBorders("Can be built outside your borders", UniqueTarget.Improvement),
+    CanBuildJustOutsideBorders("Can be built just outside your borders", UniqueTarget.Improvement),
+    RequiresTechToBuildOnTile("Cannot be built on [tileFilter] tiles until [tech] is discovered", UniqueTarget.Improvement),
+    CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
+    NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
     
+    DefensiveBonus("Gives a defensive bonus of [amount]%", UniqueTarget.Improvement),
+    ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused
+    DamagesAdjacentEnemyUnits("Deal [amount] damage to adjacent enemy units", UniqueTarget.Improvement),
+    @Deprecated("As of 3.17.10", ReplaceWith("Adjacent enemy units ending their turn take [30] damage"), DeprecationLevel.WARNING)
+    DamagesAdjacentEnemyUnitsForExactlyThirtyDamage("Deal 30 damage to adjacent enemy units", UniqueTarget.Improvement),
     
+    GreatImprovement("Great Improvement", UniqueTarget.Improvement),
+    IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
+    
+    Unpillagable("Unpillagable", UniqueTarget.Improvement),
+    Indestructible("Indestructible", UniqueTarget.Improvement),
+
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
     
-    // civ conditionals
+    /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
@@ -315,10 +333,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
 
-    // city conditionals
+    /////// city conditionals
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
 
-    // unit conditionals
+    /////// unit conditionals
     ConditionalOurUnit("for [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
@@ -327,7 +345,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalDefending("when defending", UniqueTarget.Conditional),
     ConditionalInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
 
-    // tile conditionals
+    /////// tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
 
