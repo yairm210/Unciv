@@ -76,7 +76,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
     StatsFromTiles("[stats] from [tileFilter] tiles [cityFilter]", UniqueTarget.Global),
     // This is a doozy
-    StatsFromObject("[stats] from every [tileFilter/specialist/buildingName/belief]", UniqueTarget.Global),
+    StatsFromObject("[stats] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     StatPercentBonus("[amount]% [stat]", UniqueTarget.Global),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
