@@ -176,15 +176,6 @@ class CityStats(val cityInfo: CityInfo) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 bonus += unique.params[0].toFloat()
         }
-        // Deprecated since 3.16.14
-            for (unique in cityInfo.getMatchingUniques(UniqueType.GrowthPercentBonusPositive)) {
-                if (cityInfo.matchesFilter(unique.params[1]))
-                    bonus += unique.params[0].toFloat()
-            }
-            for (unique in cityInfo.getMatchingUniques(UniqueType.GrowthPercentBonusWhenNotAtWar))
-                if (cityInfo.matchesFilter(unique.params[1]) && !cityInfo.civInfo.isAtWar())
-                    bonus += unique.params[0].toFloat()
-        //
         return bonus / 100
     }
 
@@ -197,10 +188,6 @@ class CityStats(val cityInfo: CityInfo) {
         val specialist = cityInfo.getRuleset().specialists[specialistName]
             ?: return Stats()
         val stats = specialist.clone()
-        // Deprecated since 3.16.11
-            for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.StatsFromSpecialistDeprecated))
-                stats.add(unique.stats)
-        //
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromSpecialist))
             if (cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)
@@ -436,15 +423,6 @@ class CityStats(val cityInfo: CityInfo) {
             unhappinessFromCitizens *= 1.5f
         else if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
-
-        // Deprecated since 3.16.11
-            for (unique in civInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChangeOld1))
-                unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
-
-            for (unique in civInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChangeOld2))
-                if (cityInfo.matchesFilter(unique.params[1]))
-                    unhappinessFromCitizens *= (1 - unique.params[0].toFloat() / 100)
-        //
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChange))
             if (cityInfo.matchesFilter(unique.params[1]))
