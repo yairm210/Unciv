@@ -64,13 +64,21 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.16.16", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
 
     StatPercentBonus("[amount]% [stat]", UniqueTarget.Global),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
+    UnhappinessFromPopulationPercentageChange("[amount]% unhappiness from population [cityFilter]", UniqueTarget.Global),
+
+    @Deprecated("As of 3.16.11", ReplaceWith("[amount]% unhappiness from population [cityFilter]"), DeprecationLevel.WARNING)
+    UnhappinessFromPopulationPercentageChangeOld1("Unhappiness from population decreased by [amount]%", UniqueTarget.Global),
+    @Deprecated("As of 3.16.11", ReplaceWith("[amount]% unhappiness from population [cityFilter]"), DeprecationLevel.WARNING)
+    UnhappinessFromPopulationPercentageChangeOld2("Unhappiness from population decreased by [amount]% [cityFilter]", UniqueTarget.Global),
+
+
 
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.16.16", ReplaceWith("[stats] from every specialist [in all cities]"), DeprecationLevel.WARNING)
@@ -130,6 +138,23 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     MayanGainGreatPerson("Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.", UniqueTarget.Nation),
     MayanCalendarDisplay("Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.", UniqueTarget.Nation),
 
+
+    ///////////////////////////////////////// CONSTRUCTION UNIQUES /////////////////////////////////////////
+
+    Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit),
+    CannotBePurchased("Cannot be purchased", UniqueTarget.Building, UniqueTarget.Unit),
+    CanBePurchasedWithStat("Can be purchased with [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
+
+
+    ///////////////////////////////////////// BUILDING UNIQUES /////////////////////////////////////////
+
+
+    CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
+    CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
+    RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
+
+
+
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
@@ -178,6 +203,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     CannotAttack("Cannot attack", UniqueTarget.Unit),
 
+    @Deprecated("As of 3.16.11", ReplaceWith("[+1] Movement <for [Embarked] units>"), DeprecationLevel.WARNING)
+    EmbarkedUnitMovement1("Increases embarked movement +1", UniqueTarget.Global),
+    @Deprecated("As of 3.16.11", ReplaceWith("[+1] Movement <for [Embarked] units>"), DeprecationLevel.WARNING)
+    EmbarkedUnitMovement2("+1 Movement for all embarked units", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     MovementUnits("+[amount] Movement for all [mapUnitFilter] units", UniqueTarget.Global),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount] Movement <for [All] units> <during a Golden Age>"), DeprecationLevel.WARNING)
@@ -232,16 +261,33 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     // The "Except [terrainFilter]" could theoretically be implemented with a conditional
     NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain),
 
+    DamagesContainingUnits("Units ending their turn on this terrain take [amount] damage", UniqueTarget.Terrain),
     TerrainGrantsPromotion("Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game", UniqueTarget.Terrain),
+    GrantsCityStrength("[amount] Strength for cities built on this terrain", UniqueTarget.Terrain),
+    ProductionBonusWhenRemoved("Provides a one-time Production bonus to the closest city when cut down", UniqueTarget.Terrain),
 
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
     NullifyYields("Nullifies all other stats this tile provides", UniqueTarget.Terrain),
+    RestrictedBuildableImprovements("Only [improvementFilter] improvements may be built on this tile", UniqueTarget.Terrain),
+    
+    BlocksLineOfSightAtSameElevation("Blocks line-of-sight from tiles at same elevation", UniqueTarget.Terrain),
     VisibilityElevation("Has an elevation of [amount] for visibility calculations", UniqueTarget.Terrain),
 
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain),
-
+    TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain),
+    OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain),
+    OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain),
+    RareFeature("Rare feature", UniqueTarget.Terrain),
+    
+    ResistsNukes("Resistant to nukes", UniqueTarget.Terrain),
+    DestroyableByNukes("Can be destroyed by nukes", UniqueTarget.Terrain),
+    
+    FreshWater("Fresh water", UniqueTarget.Terrain),
+    RoughTerrain("Rough terrain", UniqueTarget.Terrain),
+    
+    // Resource uniques
     OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
-
+    
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
     

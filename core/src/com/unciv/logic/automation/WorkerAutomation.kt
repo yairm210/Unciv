@@ -301,7 +301,7 @@ class WorkerAutomation(
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
             
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
-            && tile.getTileResource().improvement != tile.improvement
+            && tile.tileResource.improvement != tile.improvement
             && (unit == null || chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
                 .let { it != null && tile.canBuildImprovement(it, civInfo) && unit.canBuildImprovement(it, tile)}))
             return true
@@ -335,7 +335,7 @@ class WorkerAutomation(
             tile.terrainFeatures.contains("Fallout") && !isImprovementOnFeatureAllowed(tile) -> "Remove Fallout"    // for really mad modders
             tile.terrainFeatures.contains(Constants.jungle) && !isImprovementOnFeatureAllowed(tile) -> "Remove Jungle"
             tile.terrainFeatures.contains(Constants.forest) && !isImprovementOnFeatureAllowed(tile) -> "Remove Forest"
-            else -> tile.getTileResource().improvement
+            else -> tile.tileResource.improvement
         }
 
         // turnsToBuild is what defines them as buildable
@@ -378,7 +378,7 @@ class WorkerAutomation(
      * Assumes the caller ensured that terrainFeature and resource are both present!
      */
     private fun isImprovementOnFeatureAllowed(tile: TileInfo): Boolean {
-        val resourceImprovementName = tile.getTileResource().improvement
+        val resourceImprovementName = tile.tileResource.improvement
             ?: return false
         val resourceImprovement = ruleSet.tileImprovements[resourceImprovementName]
             ?: return false

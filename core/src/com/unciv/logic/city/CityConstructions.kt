@@ -205,7 +205,7 @@ class CityConstructions {
         val turnsToConstruction = turnsToConstruction(constructionName, useStoredProduction)
         val currentProgress = if (useStoredProduction) getWorkDone(constructionName) else 0
         val lines = ArrayList<String>()
-        val buildable = construction.uniques.none{ it == "Unbuildable" }
+        val buildable = construction.uniqueObjects.none{ it.isOfType(UniqueType.Unbuildable) }
         if (buildable)
             lines += (if (currentProgress == 0) "" else "$currentProgress/") +
                     "$cost${Fonts.production} $turnsToConstruction${Fonts.turn}"

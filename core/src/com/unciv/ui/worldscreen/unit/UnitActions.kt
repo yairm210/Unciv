@@ -130,7 +130,7 @@ object UnitActions {
         val tile = unit.currentTile
         if (!tile.isWater || !unit.hasUnique(UniqueType.CreateWaterImprovements) || tile.resource == null) return null
 
-        val improvementName = tile.getTileResource().improvement ?: return null
+        val improvementName = tile.tileResource.improvement ?: return null
         val improvement = tile.ruleset.tileImprovements[improvementName] ?: return null
         if (!tile.canBuildImprovement(improvement, unit.civInfo)) return null
 
@@ -595,7 +595,7 @@ object UnitActions {
             
             var resourcesAvailable = true
             if (improvement.uniqueObjects.any { 
-                    it.matches(UniqueType.ConsumesResources, tile.ruleset) && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
+                    it.isOfType(UniqueType.ConsumesResources) && civResources[unique.params[1]] ?: 0 < unique.params[0].toInt()
             }) 
                 resourcesAvailable = false
             

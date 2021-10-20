@@ -273,7 +273,7 @@ class CityInfo {
         val cityResources = ResourceSupplyList()
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
-            val resource = tileInfo.getTileResource()
+            val resource = tileInfo.tileResource
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
             if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
@@ -282,7 +282,7 @@ class CityInfo {
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
             for (unique in tileImprovement!!.uniqueObjects) {
-                if (unique.matches(UniqueType.ProvidesResources, getRuleset())) {
+                if (unique.isOfType(UniqueType.ProvidesResources)) {
                     if (!unique.conditionalsApply(civInfo, this)) continue
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(
@@ -291,7 +291,7 @@ class CityInfo {
                         "Improvements"
                     )
                 }
-                if (unique.matches(UniqueType.ConsumesResources, getRuleset())) {
+                if (unique.isOfType(UniqueType.ConsumesResources)) {
                     val resource = getRuleset().tileResources[unique.params[1]] ?: continue
                     cityResources.add(
                         resource,
@@ -336,7 +336,7 @@ class CityInfo {
 
     fun getTileResourceAmount(tileInfo: TileInfo): Int {
         if (tileInfo.resource == null) return 0
-        val resource = tileInfo.getTileResource()
+        val resource = tileInfo.tileResource
         if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
@@ -754,7 +754,7 @@ class CityInfo {
 
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { it.params.none { param -> param == "in this city" } && it.conditionalsApply(stateForConditionals) }
+            .filter { it.params.none { param -> param == "in this city" } }
         // Note that we don't query religion here, as those only have local effects
     }
 

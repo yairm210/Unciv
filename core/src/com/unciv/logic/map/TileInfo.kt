@@ -135,10 +135,12 @@ open class TileInfo {
         else -> getBaseTerrain()
     }
 
-    fun getTileResource(): TileResource =
-            if (resource == null) throw Exception("No resource exists for this tile!")
-            else if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
-            else ruleset.tileResources[resource!!]!!
+    @delegate:Transient
+    val tileResource: TileResource by lazy {
+        if (resource == null) throw Exception("No resource exists for this tile!")
+        else if (!ruleset.tileResources.containsKey(resource!!)) throw Exception("Resource $resource does not exist in this ruleset!")
+        else ruleset.tileResources[resource!!]!!
+    }
 
     private fun getNaturalWonder(): Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
@@ -278,7 +280,7 @@ open class TileInfo {
         }
 
         // resource base
-        if (hasViewableResource(observingCiv)) stats.add(getTileResource())
+        if (hasViewableResource(observingCiv)) stats.add(tileResource)
 
         val improvement = getTileImprovement()
         if (improvement != null)
@@ -332,7 +334,7 @@ open class TileInfo {
             else
                 stats.add(terrainFeatureBase)
         }
-        if (resource != null) stats.add(getTileResource())
+        if (resource != null) stats.add(tileResource)
 
         if (stats.production < 0) stats.production = 0f
         if (isCenter) {
@@ -345,8 +347,8 @@ open class TileInfo {
 
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
         val stats = improvement.clone() // clones the stats of the improvement, not the improvement itself
-        if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
-            stats.add(getTileResource().improvementStats!!.clone()) // resource-specific improvement
+        if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name)
+            stats.add(tileResource.improvementStats!!.clone()) // resource-specific improvement
 
         for (unique in improvement.uniqueObjects)
             if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
@@ -411,7 +413,7 @@ open class TileInfo {
                 matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
             } -> false
             improvement.uniqueObjects.any {
-                it.matches(UniqueType.ConsumesResources, ruleset)
+                it.isOfType(UniqueType.ConsumesResources)
                 && civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
@@ -436,7 +438,7 @@ open class TileInfo {
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
             // Terrain blocks most improvements
-            getAllTerrains().any { it.getMatchingUniques("Only [] improvements may be built on this tile")
+            getAllTerrains().any { it.getMatchingUniques(UniqueType.RestrictedBuildableImprovements)
                 .any { unique -> !improvement.matchesFilter(unique.params[0]) } } -> false
 
             // Decide cancelImprovementOrder earlier, otherwise next check breaks it
@@ -460,7 +462,7 @@ open class TileInfo {
                 it.any() && it.all { unique -> matchesTerrainFilter(unique.params[0]) }
             } -> true
 
-            else -> resourceIsVisible && getTileResource().improvement == improvement.name
+            else -> resourceIsVisible && tileResource.improvement == improvement.name
         }
     }
 
@@ -499,7 +501,7 @@ open class TileInfo {
                 // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course
                 // not using hasViewableResource as observingCiv is often not passed in,
                 // and we want to be able to at least test for non-strategic in that case.
-                val resourceObject = getTileResource()
+                val resourceObject = tileResource
                 if (resourceObject.resourceType.name + " resource" != filter) return false // filter match
                 if (resourceObject.revealedBy == null) return true  // no need for tech
                 if (observingCiv == null) return false  // can't check tech
@@ -515,7 +517,8 @@ open class TileInfo {
     fun isCoastalTile() = _isCoastalTile
 
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean =
-            resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
+            resource != null && (tileResource.revealedBy == null || civInfo.tech.isResearched(
+                tileResource.revealedBy!!))
 
     fun getViewableTilesList(distance: Int): List<TileInfo> =
             tileMap.getViewableTiles(position, distance)
@@ -564,7 +567,7 @@ open class TileInfo {
         lineList += baseTerrain
         for (terrainFeature in terrainFeatures) lineList += terrainFeature
         if (resource != null) {
-            lineList += if (getTileResource().resourceType == ResourceType.Strategic)
+            lineList += if (tileResource.resourceType == ResourceType.Strategic)
                     "{$resourceAmount} {$resource}"
                 else
                     resource!!
@@ -626,10 +629,21 @@ open class TileInfo {
         for (terrainFeature in terrainFeatures)
             lineList += FormattedLine(terrainFeature, link="Terrain/$terrainFeature")
         if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv)))
-            lineList += if (getTileResource().resourceType == ResourceType.Strategic)
+            lineList += if (tileResource.resourceType == ResourceType.Strategic)
                     FormattedLine("{$resource} ($resourceAmount)", link="Resource/$resource")
                 else
                     FormattedLine(resource!!, link="Resource/$resource")
+        if (resource != null && viewingCiv != null && hasViewableResource(viewingCiv)) {
+            val tileImprovement = ruleset.tileImprovements[tileResource.improvement]
+            if (tileImprovement?.techRequired != null
+                && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
+                lineList += FormattedLine(
+                    "Requires [${tileImprovement.techRequired}]",
+                    link="Technology/${tileImprovement.techRequired}",
+                    color= "#FAA"
+                )
+            }
+        }
         if (naturalWonder != null)
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
         if (roadStatus !== RoadStatus.None && !isCityCenter())
@@ -714,9 +728,9 @@ open class TileInfo {
         isOcean = baseTerrain == Constants.ocean
 
         // Resource amounts missing - Old save or bad mapgen?
-        if (resource != null && getTileResource().resourceType == ResourceType.Strategic && resourceAmount == 0) {
+        if (resource != null && tileResource.resourceType == ResourceType.Strategic && resourceAmount == 0) {
             // Let's assume it's a small deposit
-            setTileResource(getTileResource(), majorDeposit = false)
+            setTileResource(tileResource, majorDeposit = false)
         }
     }
 

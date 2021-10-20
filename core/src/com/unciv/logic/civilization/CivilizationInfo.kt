@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -343,7 +342,7 @@ class CivilizationInfo {
         cities.asSequence().flatMap {
             city ->
                 if (cityItIsFor != null && city == cityItIsFor)
-                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" } }
+                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" || param == "in all cities" } }
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
@@ -351,10 +350,9 @@ class CivilizationInfo {
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
         
     // Does not return local uniques, only global ones.
-    /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
+    // Destined to replace getMatchingUniques, gradually, as we fill the enum
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null, cityToIgnore: CityInfo? = null) = sequence {
-        val ruleset = gameInfo.ruleSet
-        yieldAll(nation.uniqueObjects.asSequence().filter { it.matches(uniqueType, ruleset) })
+        yieldAll(nation.uniqueObjects.asSequence().filter { it.isOfType(uniqueType) })
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
             .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType, stateForConditionals) }
@@ -363,7 +361,7 @@ class CivilizationInfo {
         yieldAll(tech.techUniques.getUniques(uniqueType))
         yieldAll(temporaryUniques.asSequence()
             .map { it.first }
-            .filter { it.matches(uniqueType, ruleset) }
+            .filter { it.isOfType(uniqueType) }
         )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
@@ -714,7 +712,7 @@ class CivilizationInfo {
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.
-        nonStandardTerrainDamage = getMatchingUniques("Units ending their turn on [] tiles take [] damage")
+        nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
             .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
         // Cache the last era each resource is used for buildings or units respectively for AI building evaluation
