@@ -31,9 +31,9 @@
 			    "Occurs at temperature between [0.7] and [0.8] and humidity between [0.7] and [0.9]",
 			    "Occurs at temperature between [0.6] and [0.8] and humidity between [0.4] and [0.6]",
 				"[+3] to Fertility for Map Generation",
-				"Can act as a Region during Map Generation",
-				"A Region is formed with at least [30]% [Grassland]",
-				"A Region can not contain more [Plains] than [Grassland]"]
+				"Can act as a Region during Map Generation, takes priority [7]",
+				"A Region is formed with at least [30]% [Grassland] tiles",
+				"A Region can not contain more [Plains] tiles than [Grassland] tiles"]
 	},
 	{
 		"name": "Plains",
@@ -54,9 +54,9 @@
 			    "Occurs at temperature between [0.6] and [0.8] and humidity between [0.6] and [0.7]",
 			    "Occurs at temperature between [0.5] and [0.7] and humidity between [0.7] and [0.8]",
 				"[+4] to Fertility for Map Generation",
-				"Can act as a Region during Map Generation",
-				"A Region is formed with at least [30]% [Plains]",
-				"A Region can not contain more [Grassland] than [Plains]"]
+				"Can act as a Region during Map Generation, takes priority [6]",
+				"A Region is formed with at least [30]% [Plains] tiles",
+				"A Region can not contain more [Grassland] tiles than [Plains] tiles"]
 	},
 	{
 		"name": "Tundra",
@@ -70,8 +70,8 @@
 			    "Occurs at temperature between [-0.6] and [-0.4] and humidity between [0.2] and [0.4]",
 			    "Occurs at temperature between [-0.5] and [-0.4] and humidity between [0] and [0.2]",
 				"[+2] to Fertility for Map Generation",
-				"Can act as a Region during Map Generation",
-				"A Region is formed with at least [30]% [Tundra] and [Snow]"]
+				"Can act as a Region during Map Generation, takes priority [1]",
+				"A Region is formed with at least [30]% [Tundra] tiles and [Snow] tiles"]
 	},
 	{
 		"name": "Desert",
@@ -84,8 +84,8 @@
 			    "Occurs at temperature between [0.4] and [0.6] and humidity between [0.4] and [0.5]",
 			    "Occurs at temperature between [0.5] and [0.6] and humidity between [0.5] and [0.7]",
 				"[+1] to Fertility for Map Generation",
-				"Can act as a Region during Map Generation",
-				"A Region is formed with at least [25]% [Desert]"]
+				"Can act as a Region during Map Generation, takes priority [4]",
+				"A Region is formed with at least [25]% [Desert] tiles"]
 	},
 	{
 		"name": "Lakes",
@@ -135,8 +135,9 @@
 					"Has an elevation of [2] for visibility calculations",
 					"Occurs in groups around high elevations",
 					"[+1] to Fertility for Map Generation",
-					"Can act as a Region during Map Generation",
-					"A Region is formed with at least [42]% [Hill]"]
+					"Can act as a Region during Map Generation, takes priority [5]",
+					"A Region is formed with at least [40]% [Hill] tiles",
+					"Base Terrain on this tile is not counted for Region determination."]
 	},
 	{
 		"name": "Forest",
@@ -152,10 +153,10 @@
 					"Provides a one-time Production bonus to the closest city when cut down",
 					"Blocks line-of-sight from tiles at same elevation",
 					"Resistant to nukes", "Can be destroyed by nukes",
-					"Can act as a Region during Map Generation",
-					"A Region is formed with at least [30]% [Forest]",
-					"A Region is formed with at least [35]% [Forest] and [Jungle]",
-					"A Region can not contain more [Jungle] than [Forest]"],
+					"Can act as a Region during Map Generation, takes priority [3]",
+					"A Region is formed with at least [30]% [Forest] tiles",
+					"A Region is formed with at least [35]% [Forest] tiles and [Jungle] tiles",
+					"A Region can not contain more [Jungle] tiles than [Forest] tiles"],
 		"civilopediaText": [{"text":"A Camp can be built here without cutting it down", "link":"Improvement/Camp"}]
 	},
 	{
@@ -171,10 +172,10 @@
 					"Blocks line-of-sight from tiles at same elevation",
 					"Resistant to nukes", "Can be destroyed by nukes",
 					"[-1] to Fertility for Map Generation",
-					"Can act as a Region during Map Generation",
-					"A Region is formed with at least [30]% [Jungle]",
-					"A Region is formed with at least [35]% [Jungle] and [Forest]",
-					"A Region can not contain more [Forest] than [Jungle]"]
+					"Can act as a Region during Map Generation, takes priority [2]",
+					"A Region is formed with at least [30]% [Jungle] tiles",
+					"A Region is formed with at least [35]% [Jungle] tiles and [Forest] tiles",
+					"A Region can not contain more [Forest] tiles than [Jungle] tiles"]
 	},
 	{
 		"name": "Marsh",

@@ -27,7 +27,8 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
                 UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, link = it))
             } ).pad(5f).row()
             if (UncivGame.Current.viewEntireMapForDebug)
-                add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f)
+                add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f).row()
+                add("Continent ${tile.getContinent()}".toLabel()).colspan(2).pad(5f)
         }
 
         pack()

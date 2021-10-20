@@ -1,14 +1,18 @@
 package com.unciv.logic.map.mapgenerator
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.pow
@@ -25,7 +29,9 @@ class MapGenerator(val ruleset: Ruleset) {
 
     private var randomness = MapGenerationRandomness()
 
-    fun generateMap(mapParameters: MapParameters): TileMap {
+    private var regions = ArrayList<Region>()
+
+    fun generateMap(mapParameters: MapParameters, civilizations: List<CivilizationInfo> = emptyList()): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
 
@@ -81,6 +87,12 @@ class MapGenerator(val ruleset: Ruleset) {
         }
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness).spawnRivers()
+        }
+        runAndMeasure("generateRegions") {
+            generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv() })
+        }
+        runAndMeasure("assignRegions") {
+            assignRegions(map, civilizations)
         }
         runAndMeasure("spreadResources") {
             spreadResources(map)
@@ -159,6 +171,182 @@ class MapGenerator(val ruleset: Ruleset) {
                 suitableTiles, map.mapParameters.mapSize.radius)
         for (tile in locations)
             tile.improvement = ruinsEquivalents.keys.random()
+    }
+
+    /** Creates [numRegions] number of balanced regions for civ starting locations. */
+    private fun generateRegions(tileMap: TileMap, numRegions: Int) {
+        if (numRegions <= 0) return // Don't bother about regions, probably map editor
+        if (tileMap.continentSizes.isEmpty()) throw Exception("No Continents on this map!")
+        val totalLand = tileMap.continentSizes.values.sum().toFloat()
+        val largestContinent = tileMap.continentSizes.values.maxOf { it }.toFloat()
+
+        val radius = if (tileMap.mapParameters.shape == MapShape.hexagonal)
+            tileMap.mapParameters.mapSize.radius.toFloat()
+        else
+            (max(tileMap.mapParameters.mapSize.width, tileMap.mapParameters.mapSize.height) / 2).toFloat()
+        // These hold the information for a hueg box including the entire map
+        val mapOrigin = Vector2(-radius, -radius)
+        val mapEnd = Vector2(radius, radius)
+
+        // Lots of small islands - just split ut the map in rectangles while ignoring Continents
+        if (largestContinent / totalLand < 0.2f) {
+            // Make a huge rectangle covering the entire map
+            val hugeRect = Region()
+            hugeRect.continentID = -1 // Don't care about continents
+            hugeRect.origin = mapOrigin
+            hugeRect.end = mapEnd
+            hugeRect.tileMap = tileMap
+            hugeRect.update()
+            divideRegion(hugeRect, numRegions)
+            return
+        }
+        // Continents type - distribute civs according to total fertility, then split as needed
+        val continents = tileMap.continentSizes.keys.toMutableList()
+        val civsAddedToContinent = HashMap<Int, Int>() // Continent ID, civs added
+        val continentFertility = HashMap<Int, Int>() // Continent ID, total fertility
+
+        // Calculate continent fertilities
+        for (tile in tileMap.values) {
+            val continent = tile.getContinent()
+            if (continent != -1) {
+                continentFertility[continent] = tile.getTileFertility(true) +
+                        (continentFertility[continent] ?: 0)
+            }
+        }
+
+        // Assign regions to the best continents, giving half value for region #2 etc
+        for (regionToAssign in 1..numRegions) {
+            val bestContinent = continents
+                    .maxByOrNull { continentFertility[it]!! / (1 + (civsAddedToContinent[it] ?: 0)) }!!
+            civsAddedToContinent[bestContinent] = (civsAddedToContinent[bestContinent] ?: 0) + 1
+        }
+
+        // Split up the continents
+        for (continent in civsAddedToContinent.keys) {
+            val continentRegion = Region()
+            continentRegion.continentID = continent
+            continentRegion.origin = mapOrigin.cpy()
+            continentRegion.end = mapEnd.cpy()
+            continentRegion.tileMap = tileMap
+            continentRegion.update()
+            divideRegion(continentRegion, civsAddedToContinent[continent]!!)
+        }
+    }
+
+    /** Recursive function, divides a region into [numDivisions] pars of equal-ish fertility */
+    private fun divideRegion(region: Region, numDivisions: Int) {
+        if (numDivisions <= 1) {
+            // We're all set, save the region and return
+            regions.add(region)
+            println("Created region ${regions.indexOf(region)} on continent ${region.continentID}, with ${region.tiles.count()} tiles, total fertility ${region.totalFertility}.")
+            for (tile in region.tiles) {
+                when (regions.indexOf(region)) {
+                    0 -> tile.improvement = "Farm"
+                    1 -> tile.improvement = "Mine"
+                    2 -> tile.improvement = "Lumber mill"
+                    3 -> tile.improvement = "Trading post"
+                    4 -> tile.improvement = "Camp"
+                    5 -> tile.improvement = "Plantation"
+                }
+            }
+            return
+        }
+        //println("Dividing a region on continent ${region.continentID} into $numDivisions..")
+
+        val firstDivisions = numDivisions / 2 // Since int division rounds down, works for all numbers
+        val splitRegions = splitRegion(region, (100 * firstDivisions) / numDivisions)
+        divideRegion(splitRegions.first, firstDivisions)
+        divideRegion(splitRegions.second, numDivisions - firstDivisions)
+    }
+
+    /** Splits a region in 2, with the first having [firstPercent] of total fertility */
+    private fun splitRegion(regionToSplit: Region, firstPercent: Int): Pair<Region, Region> {
+        val targetFertility = (regionToSplit.totalFertility * firstPercent) / 100
+        //println("Splitting a region on continent ${regionToSplit.continentID}, from ${regionToSplit.origin} to ${regionToSplit.end}, first percent $firstPercent, target fertility $targetFertility.")
+
+        val splitOffRegion = Region()
+        splitOffRegion.tileMap = regionToSplit.tileMap
+        splitOffRegion.continentID = regionToSplit.continentID
+        splitOffRegion.origin = regionToSplit.origin.cpy()
+        splitOffRegion.end = regionToSplit.end.cpy()
+
+        val size = Vector2()
+        size.x = regionToSplit.end.x - regionToSplit.origin.x
+        size.y = regionToSplit.end.y - regionToSplit.origin.y
+        val widerThanTall = size.x > size.y
+
+        // TODO: optimize
+        var bestSplitPoint = 0
+        var closestFertility = 0
+        val pointsToTry = if (widerThanTall) 0..size.x.toInt()
+            else 0..size.y.toInt()
+
+        for (splitPoint in pointsToTry) {
+            if (widerThanTall)
+                splitOffRegion.end.x = splitOffRegion.origin.x + splitPoint
+            else
+                splitOffRegion.end.y = splitOffRegion.origin.y + splitPoint
+            splitOffRegion.update(trim = false)
+            // Better than last try?
+            if (abs(splitOffRegion.totalFertility - targetFertility) <= abs(closestFertility - targetFertility)) {
+                bestSplitPoint = splitPoint
+                closestFertility = splitOffRegion.totalFertility
+            }
+        }
+
+        if (widerThanTall) {
+            splitOffRegion.end.x = splitOffRegion.origin.x + bestSplitPoint.toFloat()
+            regionToSplit.origin.x = splitOffRegion.end.x + 1
+        } else {
+            splitOffRegion.end.y = splitOffRegion.origin.y + bestSplitPoint.toFloat()
+            regionToSplit.origin.y = splitOffRegion.end.y + 1
+        }
+        splitOffRegion.update()
+        regionToSplit.update()
+
+        //println("Split off region from ${splitOffRegion.origin} to ${splitOffRegion.end}, fertility ${splitOffRegion.totalFertility}.")
+        //println("Remainder ${regionToSplit.origin} to ${regionToSplit.end}, fertility ${regionToSplit.totalFertility}.")
+        return Pair(splitOffRegion, regionToSplit)
+    }
+
+    private fun assignRegions(tileMap: TileMap, civilizations: List<CivilizationInfo>) {
+        // first assign region types
+        val regionTypes = ruleset.terrains.values.filter { it.hasUnique(UniqueType.IsRegion) }
+                .sortedBy { it.getMatchingUniques(UniqueType.IsRegion).first().params[0].toInt() }
+        val terrainCounts = HashMap<String, Int>()
+
+        for (region in regions) {
+            // Count terrains in the region
+            terrainCounts.clear()
+            for (tile in region.tiles) {
+                val terrainsToCount = if (tile.getAllTerrains().any { it.hasUnique(UniqueType.IgnoreBaseTerrainForRegion) })
+                        tile.getTerrainFeatures().map { it.name }.asSequence()
+                    else
+                        tile.getAllTerrains().map { it.name }
+                for (terrain in terrainsToCount) {
+                    terrainCounts[terrain] = (terrainCounts[terrain] ?: 0) + 1
+                }
+            }
+            println(terrainCounts)
+
+            for (type in regionTypes) {
+                // Test exclusion criteria first
+                if (type.getMatchingUniques(UniqueType.RegionRequireFirstLessThanSecond).any {
+                    (terrainCounts[it.params[0]] ?: 0) >= (terrainCounts[it.params[1]] ?: 0) } ) {
+                    continue
+                }
+                // Test inclusion criteria
+                if (type.getMatchingUniques(UniqueType.RegionRequirePercentSingleType).any {
+                        (terrainCounts[it.params[1]] ?: 0) >= (it.params[0].toInt() * region.tiles.count()) / 100 }
+                    || type.getMatchingUniques(UniqueType.RegionRequirePercentTwoTypes).any {
+                        (terrainCounts[it.params[1]] ?: 0) + (terrainCounts[it.params[2]] ?: 0) >= (it.params[0].toInt() * region.tiles.count()) / 100 }
+                    ) {
+                    region.type = type.name
+                    break
+                }
+            }
+            println("Region ${regions.indexOf(region)} is a ${region.type} region.")
+        }
     }
 
     private fun spreadResources(tileMap: TileMap) {
@@ -460,6 +648,42 @@ class MapGenerator(val ruleset: Ruleset) {
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
             if (temperature < -0.8)
                 tile.terrainFeatures.add(Constants.ice)
+        }
+    }
+
+    class Region {
+        var tiles = HashSet<TileInfo>()
+        var totalFertility = 0
+        var continentID = -1 // -1 meaning no particular continent
+        var type = "Hybrid" // being an undefined or inderminate type
+        lateinit var origin: Vector2
+        lateinit var end: Vector2
+        lateinit var tileMap: TileMap
+
+        /** Recalculates tiles and fertility, then trims origin and size as appropriate */
+        fun update(trim: Boolean = true) {
+            totalFertility = 0
+            tiles.clear()
+
+            for (tile in tileMap.values
+                    .filter { it.position.x in origin.x..end.x
+                           && it.position.y in origin.y..end.y
+                           && (continentID == -1 || it.getContinent() == continentID) } ) {
+                val fertility = tile.getTileFertility(continentID != -1)
+                if (fertility != 0) { // If fertility is 0 this is candidate for trimming
+                    tiles.add(tile)
+                    totalFertility += fertility
+                }
+            }
+            if (tiles.isEmpty()) return
+
+            if (trim) {
+                // Trim the edges if possible
+                origin.x = tiles.minOf { it.position.x }
+                origin.y = tiles.minOf { it.position.y }
+                end.x = tiles.maxOf { it.position.x }
+                end.y = tiles.maxOf { it.position.y }
+            }
         }
     }
 }

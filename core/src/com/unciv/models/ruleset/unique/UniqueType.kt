@@ -255,7 +255,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     OverrideFertility("Always Fertility [amount] for Map Generation", UniqueTarget.Terrain),
     AddFertility("[amount] to Fertility for Map Generation", UniqueTarget.Terrain),
 
-    IsRegion("Can act as a Region during Map Generation", UniqueTarget.Terrain),
+    IsRegion("Can act as a Region during Map Generation, takes priority [amount]", UniqueTarget.Terrain),
+    RegionRequirePercentSingleType("A Region is formed with at least [amount]% [simpleTerrain] tiles", UniqueTarget.Terrain),
+    RegionRequirePercentTwoTypes("A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles", UniqueTarget.Terrain),
+    RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain),
+    IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination.", UniqueTarget.Terrain),
 
     LuxuryWeighting("Appears in [regionType] regions with weight [amount]", UniqueTarget.Resource),
     LuxuryWeightingForCityStates("Appears near City States with weight [amount]", UniqueTarget.Resource),
