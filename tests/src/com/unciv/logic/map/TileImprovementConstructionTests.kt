@@ -15,29 +15,26 @@ import org.junit.runner.RunWith
 @RunWith(GdxTestRunner::class)
 class TileImprovementConstructionTests {
 
-    private var tile = TileInfo()
     private var civInfo = CivilizationInfo()
     private var city = CityInfo()
     private var ruleSet = Ruleset()
+    private val tileMap = TileMap()
+
+    private fun getTile() = TileInfo().apply {
+        baseTerrain = "Plains"
+        ruleset = ruleSet
+        owningCity = city
+        position = Vector2(1f, 1f) // so that it's not on the same position as the city
+        this@apply.tileMap = this@TileImprovementConstructionTests.tileMap
+    }
 
     @Before
     fun initTheWorld() {
         RulesetCache.loadRulesets()
         ruleSet = RulesetCache.getBaseRuleset()
-        tile.ruleset = ruleSet
         civInfo.tech.researchedTechnologies.addAll(ruleSet.technologies.values)
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
-
-        // This is so all improvements can be built
-        tile.owningCity = city
-        tile.position = Vector2(1f, 1f) // so that it's not on the same position as the city
         city.civInfo = civInfo
-
-
-        // Needed for convertHillToTerrainFeature to not crash
-        val tileMap = TileMap()
-        tileMap.tileMatrix.add(ArrayList<TileInfo?>().apply { add(tile) })
-        tile.tileMap = tileMap
     }
 
 
@@ -46,8 +43,8 @@ class TileImprovementConstructionTests {
 
         for (improvement in ruleSet.tileImprovements.values) {
             val terrain = improvement.terrainsCanBeBuiltOn.firstOrNull() ?: continue
+            val tile = getTile()
             tile.baseTerrain = terrain
-            tile.terrainFeatures.clear()
             tile.setTransients()
             if (improvement.uniqueTo != null) civInfo.civName = improvement.uniqueTo!!
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
@@ -58,10 +55,10 @@ class TileImprovementConstructionTests {
     @Test
     fun allResourceImprovementsCanBeBuilt() {
         for (improvement in ruleSet.tileImprovements.values) {
+            val tile = getTile()
             tile.resource = ruleSet.tileResources.values
                     .firstOrNull { it.improvement == improvement.name }?.name
             if (tile.resource == null) continue
-            tile.baseTerrain = "Plains"
             tile.setTransients()
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertTrue(improvement.name, canBeBuilt)
@@ -71,7 +68,7 @@ class TileImprovementConstructionTests {
     @Test
     fun coastalImprovementsCanBeBuilt() {
         val map = TileMap()
-        tile.baseTerrain = "Plains"
+        val tile = getTile()
         tile.tileMap = map
         tile.setTransients()
 
@@ -91,7 +88,7 @@ class TileImprovementConstructionTests {
 
     @Test
     fun coastalImprovementsCanNOTBeBuiltInland() {
-        tile.baseTerrain = "Plains"
+        val tile = getTile()
         tile.setTransients()
 
         for (improvement in ruleSet.tileImprovements.values) {
@@ -107,7 +104,7 @@ class TileImprovementConstructionTests {
         for (improvement in ruleSet.tileImprovements.values) {
             if (improvement.uniqueTo == null) continue
             civInfo.civName = "OtherCiv"
-            tile.baseTerrain = "Plains"
+            val tile = getTile()
             tile.setTransients()
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertFalse(improvement.name, canBeBuilt)
@@ -116,7 +113,6 @@ class TileImprovementConstructionTests {
 
     @Test
     fun improvementsCanNOTBeBuiltOnWrongResource() {
-        tile.baseTerrain = "Plains"
         civInfo.civName = "OtherCiv"
 
         for (resource in ruleSet.tileResources.values) {
@@ -126,6 +122,8 @@ class TileImprovementConstructionTests {
             val wrongResource = ruleSet.tileResources.values.firstOrNull { 
                 it != resource && it.improvement != improvement.name 
             } ?: continue
+            val tile = getTile()
+            tile.baseTerrain = "Plains"
             tile.resource = wrongResource.name
             tile.setTransients()
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
@@ -135,7 +133,7 @@ class TileImprovementConstructionTests {
 
     @Test
     fun terraceFarmCanNOTBeBuiltOnBonus() {
-        tile.baseTerrain = "Plains"
+        val tile = getTile()
         tile.terrainFeatures.add("Hill")
         tile.resource = "Sheep"
         tile.setTransients()
