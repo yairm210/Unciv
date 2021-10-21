@@ -48,8 +48,8 @@ object GameSaver {
     }
 
     /**
-        Overload of function saveGame to save MultiplayerGameInfo in separate folder
-     **/
+     * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
+     */
     fun saveGame(game: GameInfoPreview, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
         try {
             json().toJson(game, getSave(GameName, true))
