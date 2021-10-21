@@ -398,7 +398,7 @@ class CityStats(val cityInfo: CityInfo) {
 
     // needs to be a separate function because we need to know the global happiness state
     // in order to determine how much food is produced in a city!
-    fun updateCityHappiness() {
+    fun updateCityHappiness(statsFromBuildings: Stats) {
         val civInfo = cityInfo.civInfo
         val newHappinessList = LinkedHashMap<String, Float>()
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
@@ -446,8 +446,7 @@ class CityStats(val cityInfo: CityInfo) {
         val happinessFromSpecialists = getStatsFromSpecialists(cityInfo.population.getNewSpecialists()).happiness.toInt().toFloat()
         if (happinessFromSpecialists > 0) newHappinessList["Specialists"] = happinessFromSpecialists
 
-        val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
-        newHappinessList["Buildings"] = happinessFromBuildings
+        newHappinessList["Buildings"] = statsFromBuildings.happiness.toInt().toFloat()
 
         newHappinessList["National ability"] = getStatsFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()).happiness
 
@@ -462,7 +461,7 @@ class CityStats(val cityInfo: CityInfo) {
         happinessList = newHappinessList
     }
 
-    private fun updateBaseStatList() {
+    private fun updateBaseStatList(statsFromBuildings: Stats) {
         val newBaseStatList = LinkedHashMap<String, Stats>() // we don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
         val civInfo = cityInfo.civInfo
 
@@ -473,7 +472,7 @@ class CityStats(val cityInfo: CityInfo) {
         newBaseStatList["Tile yields"] = statsFromTiles
         newBaseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.getNewSpecialists())
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
-        newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
+        newBaseStatList["Buildings"] = statsFromBuildings
         newBaseStatList["Policies"] = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques())
         newBaseStatList["National ability"] = getStatsFromNationUnique()
         newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques(cityInfo))
@@ -527,8 +526,10 @@ class CityStats(val cityInfo: CityInfo) {
         val citySpecificUniques = cityInfo.getAllLocalUniques()
 
         // We need to compute Tile yields before happiness
-        updateBaseStatList()
-        updateCityHappiness()
+
+        val statsFromBuildings = cityInfo.cityConstructions.getStats() // this is performance heavy, so calculate once
+        updateBaseStatList(statsFromBuildings)
+        updateCityHappiness(statsFromBuildings)
         updateStatPercentBonusList(currentConstruction, localBuildingUniques)
 
         updateFinalStatList(currentConstruction, citySpecificUniques) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
