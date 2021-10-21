@@ -196,7 +196,8 @@ class MapGenerator(val ruleset: Ruleset) {
             hugeRect.origin = mapOrigin
             hugeRect.end = mapEnd
             hugeRect.tileMap = tileMap
-            hugeRect.update()
+            hugeRect.updateTiles()
+            hugeRect.trim()
             divideRegion(hugeRect, numRegions)
             return
         }
@@ -228,7 +229,8 @@ class MapGenerator(val ruleset: Ruleset) {
             continentRegion.origin = mapOrigin.cpy()
             continentRegion.end = mapEnd.cpy()
             continentRegion.tileMap = tileMap
-            continentRegion.update()
+            continentRegion.updateTiles()
+            continentRegion.trim()
             divideRegion(continentRegion, civsAddedToContinent[continent]!!)
         }
     }
@@ -286,7 +288,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 splitOffRegion.end.x = splitOffRegion.origin.x + splitPoint
             else
                 splitOffRegion.end.y = splitOffRegion.origin.y + splitPoint
-            splitOffRegion.update(trim = false)
+            splitOffRegion.updateTiles()
             // Better than last try?
             if (abs(splitOffRegion.totalFertility - targetFertility) <= abs(closestFertility - targetFertility)) {
                 bestSplitPoint = splitPoint
@@ -301,8 +303,10 @@ class MapGenerator(val ruleset: Ruleset) {
             splitOffRegion.end.y = splitOffRegion.origin.y + bestSplitPoint.toFloat()
             regionToSplit.origin.y = splitOffRegion.end.y + 1
         }
-        splitOffRegion.update()
-        regionToSplit.update()
+        splitOffRegion.updateTiles()
+        splitOffRegion.trim()
+        regionToSplit.updateTiles()
+        regionToSplit.trim()
 
         //println("Split off region from ${splitOffRegion.origin} to ${splitOffRegion.end}, fertility ${splitOffRegion.totalFertility}.")
         //println("Remainder ${regionToSplit.origin} to ${regionToSplit.end}, fertility ${regionToSplit.totalFertility}.")
@@ -313,33 +317,22 @@ class MapGenerator(val ruleset: Ruleset) {
         // first assign region types
         val regionTypes = ruleset.terrains.values.filter { it.hasUnique(UniqueType.IsRegion) }
                 .sortedBy { it.getMatchingUniques(UniqueType.IsRegion).first().params[0].toInt() }
-        val terrainCounts = HashMap<String, Int>()
 
         for (region in regions) {
-            // Count terrains in the region
-            terrainCounts.clear()
-            for (tile in region.tiles) {
-                val terrainsToCount = if (tile.getAllTerrains().any { it.hasUnique(UniqueType.IgnoreBaseTerrainForRegion) })
-                        tile.getTerrainFeatures().map { it.name }.asSequence()
-                    else
-                        tile.getAllTerrains().map { it.name }
-                for (terrain in terrainsToCount) {
-                    terrainCounts[terrain] = (terrainCounts[terrain] ?: 0) + 1
-                }
-            }
-            println(terrainCounts)
+            region.countTerrains()
+            println(region.terrainCounts)
 
             for (type in regionTypes) {
                 // Test exclusion criteria first
                 if (type.getMatchingUniques(UniqueType.RegionRequireFirstLessThanSecond).any {
-                    (terrainCounts[it.params[0]] ?: 0) >= (terrainCounts[it.params[1]] ?: 0) } ) {
+                    region.getTerrainAmount(it.params[0]) >= region.getTerrainAmount(it.params[1]) } ) {
                     continue
                 }
                 // Test inclusion criteria
                 if (type.getMatchingUniques(UniqueType.RegionRequirePercentSingleType).any {
-                        (terrainCounts[it.params[1]] ?: 0) >= (it.params[0].toInt() * region.tiles.count()) / 100 }
+                        region.getTerrainAmount(it.params[1]) >= (it.params[0].toInt() * region.tiles.count()) / 100 }
                     || type.getMatchingUniques(UniqueType.RegionRequirePercentTwoTypes).any {
-                        (terrainCounts[it.params[1]] ?: 0) + (terrainCounts[it.params[2]] ?: 0) >= (it.params[0].toInt() * region.tiles.count()) / 100 }
+                        region.getTerrainAmount(it.params[1]) + region.getTerrainAmount(it.params[2]) >= (it.params[0].toInt() * region.tiles.count()) / 100 }
                     ) {
                     region.type = type.name
                     break
@@ -652,7 +645,8 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     class Region {
-        var tiles = HashSet<TileInfo>()
+        val tiles = HashSet<TileInfo>()
+        val terrainCounts = HashMap<String, Int>()
         var totalFertility = 0
         var continentID = -1 // -1 meaning no particular continent
         var type = "Hybrid" // being an undefined or inderminate type
@@ -660,8 +654,8 @@ class MapGenerator(val ruleset: Ruleset) {
         lateinit var end: Vector2
         lateinit var tileMap: TileMap
 
-        /** Recalculates tiles and fertility, then trims origin and size as appropriate */
-        fun update(trim: Boolean = true) {
+        /** Recalculates tiles and fertility */
+        fun updateTiles() {
             totalFertility = 0
             tiles.clear()
 
@@ -675,16 +669,35 @@ class MapGenerator(val ruleset: Ruleset) {
                     totalFertility += fertility
                 }
             }
-            if (tiles.isEmpty()) return
+        }
 
-            if (trim) {
-                // Trim the edges if possible
-                origin.x = tiles.minOf { it.position.x }
-                origin.y = tiles.minOf { it.position.y }
-                end.x = tiles.maxOf { it.position.x }
-                end.y = tiles.maxOf { it.position.y }
+        /** Trims the containing rectangle if possible. */
+        fun trim() {
+            origin.x = tiles.minOf { it.position.x }
+            origin.y = tiles.minOf { it.position.y }
+            end.x = tiles.maxOf { it.position.x }
+            end.y = tiles.maxOf { it.position.y }
+        }
+
+        /** Counts the terrains in the Region for type and start determination */
+        fun countTerrains() {
+            // Count terrains in the region
+            terrainCounts.clear()
+            for (tile in tiles) {
+                val terrainsToCount = if (tile.getAllTerrains().any { it.hasUnique(UniqueType.IgnoreBaseTerrainForRegion) })
+                    tile.getTerrainFeatures().map { it.name }.asSequence()
+                else
+                    tile.getAllTerrains().map { it.name }
+                for (terrain in terrainsToCount) {
+                    terrainCounts[terrain] = (terrainCounts[terrain] ?: 0) + 1
+                }
+                if (tile.isCoastalTile())
+                    terrainCounts["Coastal"] = (terrainCounts["Coastal"] ?: 0) + 1
             }
         }
+
+        /** Returns number terrains with [name] */
+        fun getTerrainAmount(name: String) = terrainCounts[name] ?: 0
     }
 }
 
