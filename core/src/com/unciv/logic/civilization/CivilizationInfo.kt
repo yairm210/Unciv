@@ -3,7 +3,6 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Vector2
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo

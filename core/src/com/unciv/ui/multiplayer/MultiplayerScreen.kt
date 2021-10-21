@@ -188,7 +188,6 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             errorPopup.addCloseButton()
             errorPopup.open()
         }
-
     }
 
     private fun gameIsAlreadySavedAsMultiplayer(gameId: String): Boolean {
@@ -246,7 +245,6 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                 gameTable.add(gameButton).pad(5f).row()
                 leftSubTable.add(gameTable).row()
             } catch (ex: Exception) {
-                ex.printStackTrace()
                 //skipping one save is not fatal
                 ToastPopup("Could not refresh!", this)
                 continue
@@ -281,7 +279,6 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                         turnIndicator.add(ImageGetter.getImage("StatIcons/Malcontent")).size(50f)
                     }
                 } catch (ex: Exception) {
-                    ex.printStackTrace()
                     Gdx.app.postRunnable {
                         ToastPopup("Could not refresh!", this)
                         turnIndicator.clear()
