@@ -50,7 +50,7 @@ object GameSaver {
     /**
         Overload of function saveGame to save MultiplayerGameInfo in separate folder
      **/
-    fun saveGame(game: MultiplayerGameInfo, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
+    fun saveGame(game: GameInfoPreview, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
         try {
             json().toJson(game, getSave(GameName, true))
             saveCompletionCallback?.invoke(null)
@@ -70,10 +70,6 @@ object GameSaver {
         val game = json().fromJson(GameInfo::class.java, gameFile)
         game.setTransients()
         return game
-    }
-
-    fun loadMultiplayerGameFromFile(gameFile: FileHandle): MultiplayerGameInfo {
-        return json().fromJson(MultiplayerGameInfo::class.java, gameFile)
     }
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {

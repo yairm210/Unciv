@@ -18,7 +18,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     private lateinit var selectedGameFile: FileHandle
 
     // Concurrent because we can get concurrent modification errors if we change things around while running redownloadAllGames() in another thread
-    private var multiplayerGames = ConcurrentHashMap<FileHandle, MultiplayerGameInfo>()
+    private var multiplayerGames = ConcurrentHashMap<FileHandle, GameInfoPreview>()
     private val rightSideTable = Table()
     private val leftSideTable = Table()
 
@@ -144,11 +144,11 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             try {
                 // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
                 // we need to run it in a different thread.
-                val game = MultiplayerGameInfo(OnlineMultiplayer().tryDownloadGame(gameId.trim()))
+                val gamePreview = OnlineMultiplayer().tryDownloadGame(gameId.trim()).asPreview()
                 if (gameName == "")
-                    GameSaver.saveGame(game, game.gameId)
+                    GameSaver.saveGame(gamePreview, gamePreview.gameId)
                 else
-                    GameSaver.saveGame(game, gameName)
+                    GameSaver.saveGame(gamePreview, gameName)
 
                 Gdx.app.postRunnable { reloadGameListUI() }
             } catch (ex: Exception) {
@@ -246,6 +246,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                 gameTable.add(gameButton).pad(5f).row()
                 leftSubTable.add(gameTable).row()
             } catch (ex: Exception) {
+                ex.printStackTrace()
                 //skipping one save is not fatal
                 ToastPopup("Could not refresh!", this)
                 continue
@@ -253,7 +254,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
             thread(name = "loadGameFile") {
                 try {
-                    val game = gameSaver.loadMultiplayerGameFromFile(gameSaveFile)
+                    val game = gameSaver.loadGamePreviewFromFile(gameSaveFile)
 
                     //Add games to list so saves don't have to be loaded as Files so often
                     if (!gameIsAlreadySavedAsMultiplayer(game.gameId)) {
@@ -280,6 +281,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                         turnIndicator.add(ImageGetter.getImage("StatIcons/Malcontent")).size(50f)
                     }
                 } catch (ex: Exception) {
+                    ex.printStackTrace()
                     Gdx.app.postRunnable {
                         ToastPopup("Could not refresh!", this)
                         turnIndicator.clear()
@@ -304,7 +306,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         thread(name = "multiplayerGameDownload") {
             for ((fileHandle, gameInfo) in multiplayerGames) {
                 try {
-                    val game = gameInfo.updateCurrentPlayer(OnlineMultiplayer().tryDownloadGame(gameInfo.gameId))
+                    val game = gameInfo.updateCurrentTurn(OnlineMultiplayer().tryDownloadGame(gameInfo.gameId))
                     GameSaver.saveGame(game, fileHandle.name())
                     multiplayerGames[fileHandle] = game
                 } catch (ex: Exception) {
@@ -363,9 +365,9 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     }
 
     //check if its the users turn
-    private fun isUsersTurn(gameInfo: MultiplayerGameInfo) = gameInfo.currentPlayerId == game.settings.userId
+    private fun isUsersTurn(gameInfo: GameInfoPreview) = gameInfo.getCivilization(gameInfo.currentPlayer).playerId == game.settings.userId
 
-    fun removeMultiplayerGame(gameInfo: MultiplayerGameInfo?, gameName: String) {
+    fun removeMultiplayerGame(gameInfo: GameInfoPreview?, gameName: String) {
         val games = multiplayerGames.filterValues { it == gameInfo }.keys
         try {
             GameSaver.deleteSave(gameName, true)

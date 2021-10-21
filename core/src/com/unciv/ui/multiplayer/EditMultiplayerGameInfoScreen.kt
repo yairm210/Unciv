@@ -3,8 +3,8 @@ package com.unciv.ui
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
-import com.unciv.logic.MultiplayerGameInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -14,7 +14,7 @@ import kotlin.concurrent.thread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
 * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
-class EditMultiplayerGameInfoScreen(val gameInfo: MultiplayerGameInfo?, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
+class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
     init {
         val textField = TextField(gameName, skin)
 
@@ -103,7 +103,7 @@ class EditMultiplayerGameInfoScreen(val gameInfo: MultiplayerGameInfo?, gameName
                     }
 
                     //save game so multiplayer list stays up to date
-                    val newSave = this.gameInfo!!.updateCurrentPlayer(gameInfo)
+                    val newSave = this.gameInfo!!.updateCurrentTurn(gameInfo)
                     GameSaver.saveGame(newSave, gameName)
                     OnlineMultiplayer().tryUploadGame(gameInfo)
                     Gdx.app.postRunnable {
