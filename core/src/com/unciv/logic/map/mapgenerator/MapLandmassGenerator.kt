@@ -20,7 +20,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         }
 
         when (tileMap.mapParameters.type) {
-            MapType.pangaea -> createPangea(tileMap)
+            MapType.pangaea -> createPangaea(tileMap)
+            MapType.innerSea -> createInnerSea(tileMap)
             MapType.continents -> createTwoContinents(tileMap)
             MapType.fourCorners -> createFourCorners(tileMap)
             MapType.perlin -> createPerlin(tileMap)
@@ -70,11 +71,20 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
         }
     }
 
-    private fun createPangea(tileMap: TileMap) {
+    private fun createPangaea(tileMap: TileMap) {
         val elevationSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed)
             elevation = (elevation + getEllipticContinent(tile, tileMap)) / 2.0
+            spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
+        }
+    }
+
+    private fun createInnerSea(tileMap: TileMap) {
+        val elevationSeed = randomness.RNG.nextInt().toDouble()
+        for (tile in tileMap.values) {
+            var elevation = randomness.getPerlinNoise(tile, elevationSeed)
+            elevation -= getEllipticContinent(tile, tileMap, 0.6) * 0.3
             spawnLandOrWater(tile, elevation, tileMap.mapParameters.waterThreshold.toDouble())
         }
     }
@@ -101,9 +111,9 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
      * Create an elevation map that favors a central elliptic continent spanning over 85% - 95% of
      * the map size.
      */
-    private fun getEllipticContinent(tileInfo: TileInfo, tileMap: TileMap): Double {
+    private fun getEllipticContinent(tileInfo: TileInfo, tileMap: TileMap, percentOfMap: Double = 0.85): Double {
         val randomScale = randomness.RNG.nextDouble()
-        val ratio = 0.85 + 0.1 * randomness.RNG.nextDouble()
+        val ratio = percentOfMap + 0.1 * randomness.RNG.nextDouble()
 
         val a = ratio * tileMap.maxLongitude
         val b = ratio * tileMap.maxLatitude
