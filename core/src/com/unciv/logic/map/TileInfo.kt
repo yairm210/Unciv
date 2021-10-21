@@ -628,7 +628,7 @@ open class TileInfo {
         if (isCityCenter()) {
             val city = getCity()!!
             var cityString = city.name.tr()
-            if (isViewableToPlayer) cityString += " (" + city.health + ")"
+            if (isViewableToPlayer) cityString += " (${city.health})"
             lineList += FormattedLine(cityString)
             if (UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
                 lineList += city.cityConstructions.getProductionMarkup(ruleset)
