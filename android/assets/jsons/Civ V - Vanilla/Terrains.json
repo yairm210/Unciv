@@ -33,7 +33,13 @@
 				"[+3] to Fertility for Map Generation",
 				"Can act as a Region during Map Generation, takes priority [7]",
 				"A Region is formed with at least [30]% [Grassland] tiles",
-				"A Region can not contain more [Plains] tiles than [Grassland] tiles"]
+				"A Region can not contain more [Plains] tiles than [Grassland] tiles",
+				"Counts as [Good] in [All] Regions when determining start locations",
+				"Counts as [Food] in [Jungle] Regions when determining start locations",
+				"Counts as [Food] in [Forest] Regions when determining start locations",
+				"Counts as [Food] in [Hill] Regions when determining start locations",
+				"Counts as [Food] in [Grassland] Regions when determining start locations",
+				"Counts as [Food] in [Hybrid] Regions when determining start locations"]
 	},
 	{
 		"name": "Plains",
@@ -56,7 +62,13 @@
 				"[+4] to Fertility for Map Generation",
 				"Can act as a Region during Map Generation, takes priority [6]",
 				"A Region is formed with at least [30]% [Plains] tiles",
-				"A Region can not contain more [Grassland] tiles than [Plains] tiles"]
+				"A Region can not contain more [Grassland] tiles than [Plains] tiles",
+				"Counts as [Good] in [All] Regions when determining start locations",
+				"Counts as [Food] in [Tundra] Regions when determining start locations",
+				"Counts as [Food] in [Desert] Regions when determining start locations",
+				"Counts as [Food] in [Hill] Regions when determining start locations",
+				"Counts as [Food] in [Plains] Regions when determining start locations",
+				"Counts as [Food] in [Hybrid] Regions when determining start locations"]
 	},
 	{
 		"name": "Tundra",
@@ -71,7 +83,9 @@
 			    "Occurs at temperature between [-0.5] and [-0.4] and humidity between [0] and [0.2]",
 				"[+2] to Fertility for Map Generation",
 				"Can act as a Region during Map Generation, takes priority [1]",
-				"A Region is formed with at least [30]% [Tundra] tiles and [Snow] tiles"]
+				"A Region is formed with at least [30]% [Tundra] tiles and [Snow] tiles",
+				"Counts as [Food] in [Tundra] Regions when determining start locations",
+				"Counts as [Good] in [Tundra] Regions when determining start locations"]
 	},
 	{
 		"name": "Desert",
@@ -85,7 +99,8 @@
 			    "Occurs at temperature between [0.5] and [0.6] and humidity between [0.5] and [0.7]",
 				"[+1] to Fertility for Map Generation",
 				"Can act as a Region during Map Generation, takes priority [4]",
-				"A Region is formed with at least [25]% [Desert] tiles"]
+				"A Region is formed with at least [25]% [Desert] tiles",
+				"Counts as [Junk] in all except [Desert] Regions when determining start locations"]
 	},
 	{
 		"name": "Lakes",
@@ -93,7 +108,9 @@
 		"food": 2,
 		"gold": 1,
 		"RGB": [ 123, 202, 226],
-		"uniques": ["Fresh water"]
+		"uniques": ["Fresh water",
+					"Counts as [Food] in [All] Regions when determining start locations",
+					"Counts as [Good] in [All] Regions when determining start locations"]
 	},
 	{
 		"name": "Mountain",
@@ -105,7 +122,8 @@
 					"Has an elevation of [4] for visibility calculations",
 					"Occurs in chains at high elevations",
 					"Units ending their turn on this terrain take [50] damage",
-					"Always Fertility [-2] for Map Generation"]
+					"Always Fertility [-2] for Map Generation",
+					"Counts as [Junk] in [All] Regions when determining start locations"]
 	},
 	{
 		"name": "Snow",
@@ -117,7 +135,8 @@
 			    "Occurs at temperature between [-0.8] and [-0.7] and humidity between [0] and [0.6]",
 			    "Occurs at temperature between [-0.7] and [-0.6] and humidity between [0] and [0.4]",
 			    "Occurs at temperature between [-0.6] and [-0.5] and humidity between [0] and [0.2]",
-				"Always Fertility [-1] for Map Generation"]
+				"Always Fertility [-1] for Map Generation",
+				"Counts as [Junk] in [All] Regions when determining start locations"]
 	},
 
 	// Terrain features
@@ -137,7 +156,9 @@
 					"[+1] to Fertility for Map Generation",
 					"Can act as a Region during Map Generation, takes priority [5]",
 					"A Region is formed with at least [40]% [Hill] tiles",
-					"Base Terrain on this tile is not counted for Region determination."]
+					"Base Terrain on this tile is not counted for Region determination.",
+					"Counts as [Good] in [All] Regions when determining start locations",
+					"Counts as [Production] in [All] Regions when determining start locations"]
 	},
 	{
 		"name": "Forest",
@@ -156,7 +177,11 @@
 					"Can act as a Region during Map Generation, takes priority [3]",
 					"A Region is formed with at least [30]% [Forest] tiles",
 					"A Region is formed with at least [35]% [Forest] tiles and [Jungle] tiles",
-					"A Region can not contain more [Jungle] tiles than [Forest] tiles"],
+					"A Region can not contain more [Jungle] tiles than [Forest] tiles",
+					"Counts as [Good] in [All] Regions when determining start locations",
+					"Counts as [Production] in [All] Regions when determining start locations",
+					"Counts as [Food] in [Forest] Regions when determining start locations",
+					"Counts as [Food] in [Tundra] Regions when determining start locations"],
 		"civilopediaText": [{"text":"A Camp can be built here without cutting it down", "link":"Improvement/Camp"}]
 	},
 	{
@@ -175,7 +200,9 @@
 					"Can act as a Region during Map Generation, takes priority [2]",
 					"A Region is formed with at least [30]% [Jungle] tiles",
 					"A Region is formed with at least [35]% [Jungle] tiles and [Forest] tiles",
-					"A Region can not contain more [Forest] tiles than [Jungle] tiles"]
+					"A Region can not contain more [Forest] tiles than [Jungle] tiles",
+					"Counts as [Food] in all except [Grassland] Regions when determining start locations",
+					"Counts as [Good] in all except [Grassland] Regions when determining start locations"]
 	},
 	{
 		"name": "Marsh",
@@ -211,7 +238,9 @@
 		"occursOn": ["Desert"],
 		"uniques": ["Fresh water", "Rare feature",
 					"Only [All Road] improvements may be built on this tile",
-					"Always Fertility [4] for Map Generation"]
+					"Always Fertility [4] for Map Generation",
+					"Counts as [Food] in [All] Regions when determining start locations",
+					"Counts as [Good] in [All] Regions when determining start locations"]
 	},
 	{
 		"name": "Flood plains",
@@ -220,7 +249,9 @@
 		"movementCost": 1,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"],
-		"uniques": ["Always Fertility [5] for Map Generation"]
+		"uniques": ["Always Fertility [5] for Map Generation",
+					"Counts as [Food] in [All] Regions when determining start locations",
+					"Counts as [Good] in [All] Regions when determining start locations"]
 	},
 	{
 		"name": "Ice",
@@ -228,7 +259,8 @@
 		"impassable": true,
 		"overrideStats": true,
 		"occursOn": ["Ocean", "Coast"],
-		"uniques": ["[-1] to Fertility for Map Generation"]
+		"uniques": ["[-1] to Fertility for Map Generation",
+					"Counts as [Junk] in [All] Regions when determining start locations"]
 	},
 	{
 		"name": "Atoll",

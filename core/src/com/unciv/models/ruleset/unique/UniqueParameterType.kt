@@ -132,14 +132,23 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
-    /** Used for region definitions, can be a terrain type with region unique or "hybrid" */
+    /** Used for region definitions, can be a terrain type with region unique, "All" or "Hybrid" */
     RegionType("regionType") {
-        private val knownValues = setOf("Hybrid")
+        private val knownValues = setOf("Hybrid", "All")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.terrains[parameterText]?.hasUnique(UniqueType.IsRegion) == true)
                 return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
+    /** Used for start placements */
+    TerrainQuality("terrainQuality") {
+        private val knownValues = setOf("Junk", "Food", "Good", "Production")
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },

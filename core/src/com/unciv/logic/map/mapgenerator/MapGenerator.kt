@@ -29,7 +29,8 @@ class MapGenerator(val ruleset: Ruleset) {
 
     private var randomness = MapGenerationRandomness()
 
-    private var regions = ArrayList<Region>()
+    private val regions = ArrayList<Region>()
+    private val tileData = HashMap<Vector2, MapGenTileData>()
 
     fun generateMap(mapParameters: MapParameters, civilizations: List<CivilizationInfo> = emptyList()): TileMap {
         val mapSize = mapParameters.mapSize
@@ -340,6 +341,26 @@ class MapGenerator(val ruleset: Ruleset) {
             }
             println("Region ${regions.indexOf(region)} is a ${region.type} region.")
         }
+    }
+
+    /** Evaluates a plot for food, prod, good, junk, or does nothing if values already exist. */
+    fun evaluatePlot(tile: TileInfo) {
+        var data = tileData[tile.position]
+        if (data?.evaluated == true) return // already evaluated
+        if (data == null) { // Make sure the data exists
+            data = MapGenTileData()
+            tileData[tile.position] = data
+        }
+        data.evaluated = true // We'll only do this once
+
+        if (tile.isImpassible()) { // Mountains, ice are always junk
+            data.isJunk = true
+            return
+        }
+        val region = regions.firstOrNull { it.tiles.contains(tile) }
+        if (region == null) return
+
+
     }
 
     private fun spreadResources(tileMap: TileMap) {
@@ -698,6 +719,16 @@ class MapGenerator(val ruleset: Ruleset) {
 
         /** Returns number terrains with [name] */
         fun getTerrainAmount(name: String) = terrainCounts[name] ?: 0
+    }
+
+    // Holds a bunch of tile info that is only interesting during map gen
+    class MapGenTileData {
+        var closeStartPenalty = 0
+        var isFood = false
+        var isProd = false
+        var isGood = false
+        var isJunk = false
+        var evaluated = false
     }
 }
 
