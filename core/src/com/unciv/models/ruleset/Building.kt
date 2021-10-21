@@ -683,7 +683,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
-                if (isStats(filter) && isStatRelated(Stat.valueOf(filter))) return true
+                val stat = Stat.values().firstOrNull { it.name == filter }
+                if (stat != null && isStatRelated(stat)) return true
                 return false
             }
         }
