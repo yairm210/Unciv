@@ -13,10 +13,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.toPercent
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.pow
-import kotlin.math.sign
+import kotlin.math.*
 import kotlin.random.Random
 
 
@@ -184,10 +181,14 @@ class MapGenerator(val ruleset: Ruleset) {
         val radius = if (tileMap.mapParameters.shape == MapShape.hexagonal)
             tileMap.mapParameters.mapSize.radius.toFloat()
         else
-            (max(tileMap.mapParameters.mapSize.width, tileMap.mapParameters.mapSize.height) / 2).toFloat()
-        // These hold the information for a hueg box including the entire map
-        val mapOrigin = Vector2(-radius, -radius)
-        val mapEnd = Vector2(radius, radius)
+            (max(tileMap.mapParameters.mapSize.width / 2, tileMap.mapParameters.mapSize.height / 2)).toFloat()
+        // These hold the information for a hueg box including the entire map. Extra hueg if world wrap since some
+        // continents may straddle the seam and we don't want to cut them off
+        val mapOrigin = if (tileMap.mapParameters.worldWrap) Vector2(-2 * radius, -2 * radius)
+            else Vector2(-radius, -radius)
+        val mapSize = if (tileMap.mapParameters.worldWrap) Vector2(radius * 4 + 1, radius * 4 + 1)
+            else Vector2(radius * 2 + 1, radius * 2 + 1)
+
 
         // Lots of small islands - just split ut the map in rectangles while ignoring Continents
         if (largestContinent / totalLand < 0.2f) {
@@ -195,10 +196,11 @@ class MapGenerator(val ruleset: Ruleset) {
             val hugeRect = Region()
             hugeRect.continentID = -1 // Don't care about continents
             hugeRect.origin = mapOrigin
-            hugeRect.end = mapEnd
+            hugeRect.size = mapSize
             hugeRect.tileMap = tileMap
+            if (!tileMap.mapParameters.worldWrap)
+                hugeRect.affectedByWorldWrap = false
             hugeRect.updateTiles()
-            hugeRect.trim()
             divideRegion(hugeRect, numRegions)
             return
         }
@@ -228,10 +230,11 @@ class MapGenerator(val ruleset: Ruleset) {
             val continentRegion = Region()
             continentRegion.continentID = continent
             continentRegion.origin = mapOrigin.cpy()
-            continentRegion.end = mapEnd.cpy()
+            continentRegion.size = mapSize.cpy()
             continentRegion.tileMap = tileMap
+            if (!tileMap.mapParameters.worldWrap)
+                continentRegion.affectedByWorldWrap = false
             continentRegion.updateTiles()
-            continentRegion.trim()
             divideRegion(continentRegion, civsAddedToContinent[continent]!!)
         }
     }
@@ -265,49 +268,53 @@ class MapGenerator(val ruleset: Ruleset) {
     /** Splits a region in 2, with the first having [firstPercent] of total fertility */
     private fun splitRegion(regionToSplit: Region, firstPercent: Int): Pair<Region, Region> {
         val targetFertility = (regionToSplit.totalFertility * firstPercent) / 100
-        //println("Splitting a region on continent ${regionToSplit.continentID}, from ${regionToSplit.origin} to ${regionToSplit.end}, first percent $firstPercent, target fertility $targetFertility.")
+        //println("Splitting a region on continent ${regionToSplit.continentID}, from ${regionToSplit.origin}, size ${regionToSplit.size}, first percent $firstPercent, target fertility $targetFertility.")
 
         val splitOffRegion = Region()
         splitOffRegion.tileMap = regionToSplit.tileMap
         splitOffRegion.continentID = regionToSplit.continentID
         splitOffRegion.origin = regionToSplit.origin.cpy()
-        splitOffRegion.end = regionToSplit.end.cpy()
+        splitOffRegion.size = regionToSplit.size.cpy()
 
-        val size = Vector2()
-        size.x = regionToSplit.end.x - regionToSplit.origin.x
-        size.y = regionToSplit.end.y - regionToSplit.origin.y
-        val widerThanTall = size.x > size.y
+        val widerThanTall = regionToSplit.size.x > regionToSplit.size.y
 
-        // TODO: optimize
-        var bestSplitPoint = 0
+        var bestSplitPoint = 1 // will be the size of the split-off region
         var closestFertility = 0
-        val pointsToTry = if (widerThanTall) 0..size.x.toInt()
-            else 0..size.y.toInt()
+        var cumulativeFertility = 0
+        val pointsToTry = if (widerThanTall) 1..regionToSplit.size.x.toInt()
+            else 1..regionToSplit.size.y.toInt()
 
         for (splitPoint in pointsToTry) {
-            if (widerThanTall)
-                splitOffRegion.end.x = splitOffRegion.origin.x + splitPoint
+            val nextRect = if (widerThanTall)
+                splitOffRegion.tileMap.getTilesInRectangle(
+                        Vector2(splitOffRegion.origin.x + splitPoint - 1, splitOffRegion.origin.y),
+                        Vector2(1f, splitOffRegion.size.y))
             else
-                splitOffRegion.end.y = splitOffRegion.origin.y + splitPoint
-            splitOffRegion.updateTiles()
+                splitOffRegion.tileMap.getTilesInRectangle(
+                        Vector2(splitOffRegion.origin.x, splitOffRegion.origin.y + splitPoint - 1),
+                        Vector2(splitOffRegion.size.x, 1f))
+
+            cumulativeFertility += if (splitOffRegion.continentID == -1)
+                nextRect.sumBy { it.getTileFertility(false) }
+            else
+                nextRect.sumBy { if (it.getContinent() == splitOffRegion.continentID) it.getTileFertility(true) else 0 }
+
             // Better than last try?
-            if (abs(splitOffRegion.totalFertility - targetFertility) <= abs(closestFertility - targetFertility)) {
+            if (abs(cumulativeFertility - targetFertility) <= abs(closestFertility - targetFertility)) {
                 bestSplitPoint = splitPoint
-                closestFertility = splitOffRegion.totalFertility
+                closestFertility = cumulativeFertility
             }
         }
 
         if (widerThanTall) {
-            splitOffRegion.end.x = splitOffRegion.origin.x + bestSplitPoint.toFloat()
-            regionToSplit.origin.x = splitOffRegion.end.x + 1
+            splitOffRegion.size.x = bestSplitPoint.toFloat()
+            regionToSplit.origin.x = splitOffRegion.origin.x + splitOffRegion.size.x
         } else {
-            splitOffRegion.end.y = splitOffRegion.origin.y + bestSplitPoint.toFloat()
-            regionToSplit.origin.y = splitOffRegion.end.y + 1
+            splitOffRegion.size.y = bestSplitPoint.toFloat()
+            regionToSplit.origin.y = splitOffRegion.origin.y + splitOffRegion.size.y
         }
         splitOffRegion.updateTiles()
-        splitOffRegion.trim()
         regionToSplit.updateTiles()
-        regionToSplit.trim()
 
         //println("Split off region from ${splitOffRegion.origin} to ${splitOffRegion.end}, fertility ${splitOffRegion.totalFertility}.")
         //println("Remainder ${regionToSplit.origin} to ${regionToSplit.end}, fertility ${regionToSplit.totalFertility}.")
@@ -341,26 +348,103 @@ class MapGenerator(val ruleset: Ruleset) {
             }
             println("Region ${regions.indexOf(region)} is a ${region.type} region.")
         }
+
+        // Generate tile data for all tiles
+        for (tile in tileMap.values) {
+            tileData[tile.position] = MapGenTileData(tile, regions.firstOrNull { it.tiles.contains(tile) })
+        }
+
+
     }
 
-    /** Evaluates a plot for food, prod, good, junk, or does nothing if values already exist. */
-    fun evaluatePlot(tile: TileInfo) {
-        var data = tileData[tile.position]
-        if (data?.evaluated == true) return // already evaluated
-        if (data == null) { // Make sure the data exists
-            data = MapGenTileData()
-            tileData[tile.position] = data
+    private fun findStart(region: Region) {
+
+    }
+
+    private fun setCloseStartPenalty(tile: TileInfo) {
+        val penaltyForRing =
+                mapOf(  0 to 99, 1 to 97, 2 to 95,
+                        3 to 92, 4 to 89, 5 to 69,
+                        6 to 57, 7 to 24, 8 to 15 )
+
+        for ((ring, penalty) in penaltyForRing) {
+            for (outerTile in tile.getTilesAtDistance(ring).map { it.position })
+                tileData[outerTile]!!.addCloseStartPenalty(penalty)
         }
-        data.evaluated = true // We'll only do this once
+    }
 
-        if (tile.isImpassible()) { // Mountains, ice are always junk
-            data.isJunk = true
-            return
+    /** Evaluates a tile for starting position, setting isGoodStart and startScore in
+     *  MapGenTileData. Assumes that all tiles have corresponding MapGenTileData. */
+    private fun evaluateTileForStart(tile: TileInfo) {
+        val minimumFoodForRing = mapOf(1 to 1, 2 to 4, 3 to 4)
+        val minimumProdForRing = mapOf(1 to 0, 2 to 0, 3 to 2)
+        val minimumGoodForRing = mapOf(1 to 3, 2 to 6, 3 to 8)
+        val maximumJunk = 9
+
+        val localData = tileData[tile.position]!!
+
+        var totalFood = 0
+        var totalProd = 0
+        var totalGood = 0
+        var totalJunk = 0
+        var totalRivers = 0
+        var totalScore = 0
+
+        if (tile.isCoastalTile()) totalScore += 40
+
+        // Go through all rings
+        for (ring in 1..3) {
+            // Sum up the values for this ring
+            for (outerTile in tile.getTilesAtDistance(ring)) {
+                val outerTileData = tileData[outerTile.position]!!
+                if (outerTileData.isJunk)
+                    totalJunk++
+                else {
+                    if (outerTileData.isFood) totalFood++
+                    if (outerTileData.isProd) totalProd++
+                    if (outerTileData.isGood) totalGood++
+                    if (outerTile.isAdjacentToRiver()) totalRivers++
+                }
+            }
+            // Check for minimum levels. We still keep on calculating final score in case of failure
+            if (totalFood < minimumFoodForRing[ring]!!
+                    || totalProd < minimumProdForRing[ring]!!
+                    || totalGood < minimumGoodForRing[ring]!!)
+                        localData.isGoodStart = false
+
+            // Ring-specific scoring
+            when (ring) {
+                1 -> {
+                    val foodScore = listOf(0, 8, 14, 19, 22, 24, 25)[totalFood]
+                    val prodScore = listOf(0, 10, 16, 20, 20, 12, 0)[totalProd]
+                    totalScore += foodScore + prodScore + totalRivers
+                        + (totalGood * 2) - (totalJunk * 3)
+                }
+                2 -> {
+                    val foodScore = if (totalFood > 10) 35
+                        else listOf(0, 2, 5, 10, 20, 25, 28, 30, 32, 34, 35)[totalFood]
+                    val effectiveTotalProd = if (totalProd >= totalFood * 2) totalProd
+                        else (totalFood + 1) / 2 // Can't use all that production without food
+                    val prodScore = if (effectiveTotalProd > 5) 35
+                        else listOf(0, 10, 20, 25, 30, 35)[effectiveTotalProd]
+                    totalScore += foodScore + prodScore + totalRivers
+                        + (totalGood * 2) - (totalJunk * 3)
+                }
+                else -> {
+                    totalScore += totalFood + totalProd + totalGood + totalRivers - (totalJunk * 2)
+                }
+            }
         }
-        val region = regions.firstOrNull { it.tiles.contains(tile) }
-        if (region == null) return
+        // Too much junk?
+        if (totalJunk > maximumJunk)
+            localData.isGoodStart = false
 
-
+        // Finally check if this is near another start
+        if (localData.closeStartPenalty > 0) {
+            localData.isGoodStart = false
+            totalScore -= (totalScore * localData.closeStartPenalty) / 100
+        }
+        localData.startScore = totalScore
     }
 
     private fun spreadResources(tileMap: TileMap) {
@@ -672,32 +756,46 @@ class MapGenerator(val ruleset: Ruleset) {
         var continentID = -1 // -1 meaning no particular continent
         var type = "Hybrid" // being an undefined or inderminate type
         lateinit var origin: Vector2
-        lateinit var end: Vector2
+        lateinit var size: Vector2
         lateinit var tileMap: TileMap
+        var affectedByWorldWrap = true
 
         /** Recalculates tiles and fertility */
-        fun updateTiles() {
+        fun updateTiles(trim: Boolean = true) {
             totalFertility = 0
-            tiles.clear()
+            var minX = 99999f
+            var maxX = -99999f
+            var minY = 99999f
+            var maxY = -99999f
 
-            for (tile in tileMap.values
-                    .filter { it.position.x in origin.x..end.x
-                           && it.position.y in origin.y..end.y
-                           && (continentID == -1 || it.getContinent() == continentID) } ) {
+            val columnHasTile = HashSet<Int>()
+
+            tiles.clear()
+            for (tile in tileMap.getTilesInRectangle(origin, size).filter {
+                           continentID == -1 || it.getContinent() == continentID } ) {
                 val fertility = tile.getTileFertility(continentID != -1)
                 if (fertility != 0) { // If fertility is 0 this is candidate for trimming
                     tiles.add(tile)
                     totalFertility += fertility
                 }
-            }
-        }
 
-        /** Trims the containing rectangle if possible. */
-        fun trim() {
-            origin.x = tiles.minOf { it.position.x }
-            origin.y = tiles.minOf { it.position.y }
-            end.x = tiles.maxOf { it.position.x }
-            end.y = tiles.maxOf { it.position.y }
+                if (affectedByWorldWrap)
+                    columnHasTile.add(tile.position.x.toInt())
+
+                if (trim) {
+                    if (tile.position.x < minX) minX = tile.position.x
+                    if (tile.position.x > maxX) maxX = tile.position.x
+                    if (tile.position.y < minY) minY = tile.position.y
+                    if (tile.position.y > maxY) maxY = tile.position.y
+                }
+            }
+
+            if (trim) {
+                origin.x = minX
+                origin.y = minY
+                size.x = maxX - minX + 1
+                size.y = maxY - minY + 1
+            }
         }
 
         /** Counts the terrains in the Region for type and start determination */
@@ -722,13 +820,63 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     // Holds a bunch of tile info that is only interesting during map gen
-    class MapGenTileData {
+    class MapGenTileData(val tile: TileInfo, val region: Region?) {
         var closeStartPenalty = 0
         var isFood = false
         var isProd = false
         var isGood = false
         var isJunk = false
-        var evaluated = false
+        var isTwoFromCoast = false
+
+        var isGoodStart = true
+        var startScore = 0
+
+        fun addCloseStartPenalty(penalty: Int) {
+            if (closeStartPenalty == 0)
+                closeStartPenalty = penalty
+            else {
+                // Multiple overlapping values - take the higher one and add 20 %
+                closeStartPenalty = max(closeStartPenalty, penalty)
+                closeStartPenalty = min(97, (closeStartPenalty * 1.2f).toInt())
+            }
+        }
+
+        fun init() {
+            // First check for tiles that are always junk
+            if (tile.getAllTerrains().any { it.getMatchingUniques(UniqueType.HasQualityInRegionType)
+                            .any { unique -> unique.params[0] == "Junk" && unique.params[1] == "All" } } ) {
+                isJunk = true
+            }
+            // For the rest of qualities we need to be in a region, and not auto junk
+            if (region != null && !isJunk) {
+                // Check first available out of unbuildable features, then other features, then base terrain
+                val terrainToCheck = if (tile.terrainFeatures.isEmpty()) tile.getBaseTerrain()
+                else tile.getTerrainFeatures().firstOrNull { it.unbuildable }
+                        ?: tile.getTerrainFeatures().first()
+
+                // Add all applicable qualities
+                val qualities = HashSet<String>()
+                for (unique in terrainToCheck.getMatchingUniques(UniqueType.HasQualityInRegionType)) {
+                    if (unique.params[1] == "All" || unique.params[1] == region.type)
+                        qualities.add(unique.params[0])
+                }
+                for (unique in terrainToCheck.getMatchingUniques(UniqueType.HasQualityExceptInRegionType)) {
+                    if (unique.params[1] != region.type)
+                        qualities.add(unique.params[0])
+                }
+                for (quality in qualities) {
+                    when (quality) {
+                        "Food" -> isFood = true
+                        "Good" -> isGood = true
+                        "Production" -> isProd = true
+                        "Junk" -> isJunk = true
+                    }
+                }
+            }
+            // Check if we are two tiles from coast (a bad starting site)
+            if (!tile.isCoastalTile() && tile.neighbors.any { it.isCoastalTile() })
+                isTwoFromCoast = true
+        }
     }
 }
 

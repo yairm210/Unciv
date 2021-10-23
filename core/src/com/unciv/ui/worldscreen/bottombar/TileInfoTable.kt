@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -28,6 +29,7 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
             } ).pad(5f).row()
             if (UncivGame.Current.viewEntireMapForDebug)
                 add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f).row()
+                add(HexMath.hex2EvenQCoords(tile.position).run { "Even Q: (${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f).row()
                 add("Continent ${tile.getContinent()}".toLabel()).colspan(2).pad(5f)
         }
 

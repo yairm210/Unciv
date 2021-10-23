@@ -198,6 +198,27 @@ class TileMap {
                     }
                 }.filterNotNull()
 
+    /** @return all tiles in a rectangle of [size] with its lower left corner at [origin].
+     *  If using even Q coordinates the rectangle will be "straight" ie parallel with rectangular map edges. */
+    fun getTilesInRectangle(origin: Vector2, size: Vector2, evenQ: Boolean = false): Sequence<TileInfo> =
+            if (size.x <= 0 || size.y <= 0)
+                sequenceOf(get(origin))
+            else
+                sequence {
+                    for (x in 0 until size.x.toInt()) {
+                        for (y in 0 until size.y.toInt()) {
+                            val currentX = origin.x + x
+                            val currentY = origin.y + y
+                            if (evenQ) {
+                                val hexCoords = HexMath.evenQ2HexCoords(Vector2(currentX, currentY))
+                                yield(getIfTileExistsOrNull(hexCoords.x.toInt(), hexCoords.y.toInt()))
+                            }
+                            else
+                                yield(getIfTileExistsOrNull(currentX.toInt(), currentY.toInt()))
+                        }
+                    }
+                }.filterNotNull()
+
     /** @return tile at hex coordinates ([x],[y]) or null if they are outside the map. Respects map edges and world wrap. */
     fun getIfTileExistsOrNull(x: Int, y: Int): TileInfo? {
         if (contains(x, y))
