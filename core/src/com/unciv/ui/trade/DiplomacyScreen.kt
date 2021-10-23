@@ -192,8 +192,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
             diplomacyTable.add(nextLevelString.toLabel()).row()
         }
         diplomacyTable.row().padTop(15f)
-        val eraInfo = viewingCiv.getEra()
 
+        val eraInfo = viewingCiv.getEra()
 
         var friendBonusText = "{When Friends:} ".tr()
         val friendBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
