@@ -161,6 +161,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val constructionsSequence = city.getRuleset().units.values.asSequence() +
                 city.getRuleset().buildings.values.asSequence()
+
+        city.cityStats.updateTileStats() // only once
         for (entry in constructionsSequence.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             var buttonText = entry.name.tr() + cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction)
@@ -201,7 +203,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
         }
 
-        thread {
+        thread(name = "Construction info gathering - ${cityScreen.city.name}") {
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
             Gdx.app.postRunnable {

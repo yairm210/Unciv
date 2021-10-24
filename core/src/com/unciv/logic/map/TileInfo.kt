@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
@@ -154,6 +155,13 @@ open class TileInfo {
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
     fun getTileImprovementInProgress(): TileImprovement? = if (improvementInProgress == null) null else ruleset.tileImprovements[improvementInProgress!!]
 
+    fun getShownImprovement(viewingCiv: CivilizationInfo?): String? {
+        return if (viewingCiv == null || viewingCiv.playerType == PlayerType.AI)
+            improvement
+        else
+            viewingCiv.lastSeenImprovement[position]
+    }
+
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
@@ -258,9 +266,9 @@ open class TileInfo {
         }
 
         if (city != null) {
-            var tileUniques = city.getMatchingUniques("[] from [] tiles []")
+            var tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles)
                 .filter { city.matchesFilter(it.params[2]) }
-            tileUniques += city.getMatchingUniques("[] from every []")
+            tileUniques += city.getMatchingUniques(UniqueType.StatsFromObject)
             for (unique in tileUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
@@ -363,7 +371,7 @@ open class TileInfo {
         }
 
         if (city != null) {
-            val tileUniques = city.getMatchingUniques(UniqueType.ImprovementStatsOnTileCities, StateForConditionals(civInfo = observingCiv, cityInfo = city))
+            val tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals(civInfo = observingCiv, cityInfo = city))
                 .filter { city.matchesFilter(it.params[2]) }
             val improvementUniques = 
                 // Deprecated since 3.17.10
@@ -381,7 +389,7 @@ open class TileInfo {
                         stats.add(unique.stats)
             }
 
-            for (unique in city.getMatchingUniques("[] from every []")) {
+            for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
                 if (improvement.matchesFilter(unique.params[1])) {
                     stats.add(unique.stats)
                 }
@@ -629,7 +637,7 @@ open class TileInfo {
         if (isCityCenter()) {
             val city = getCity()!!
             var cityString = city.name.tr()
-            if (isViewableToPlayer) cityString += " (" + city.health + ")"
+            if (isViewableToPlayer) cityString += " (${city.health})"
             lineList += FormattedLine(cityString)
             if (UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
                 lineList += city.cityConstructions.getProductionMarkup(ruleset)
@@ -657,8 +665,9 @@ open class TileInfo {
             lineList += FormattedLine(naturalWonder!!, link="Terrain/$naturalWonder")
         if (roadStatus !== RoadStatus.None && !isCityCenter())
             lineList += FormattedLine(roadStatus.name, link="Improvement/${roadStatus.name}")
-        if (improvement != null)
-            lineList += FormattedLine(improvement!!, link="Improvement/$improvement")
+        val shownImprovement = getShownImprovement(viewingCiv)
+        if (shownImprovement != null)
+            lineList += FormattedLine(shownImprovement, link="Improvement/$shownImprovement")
         if (improvementInProgress != null && isViewableToPlayer) {
             val line = "{$improvementInProgress}" +
                 if (turnsToImprovement > 0) " - $turnsToImprovement${Fonts.turn}" else " ({Under construction})"

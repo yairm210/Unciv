@@ -317,8 +317,9 @@ class CityConstructions {
             SO, we create an entirely new CityStats and iterate there - problem solve!
             */
             val cityStats = CityStats(cityInfo)
+            cityStats.statsFromTiles = cityInfo.cityStats.statsFromTiles // take as-is
             val construction = cityInfo.cityConstructions.getConstruction(constructionName)
-            cityStats.update(construction)
+            cityStats.update(construction, false)
             cityStatsForConstruction = cityStats.currentCityStats
         }
 

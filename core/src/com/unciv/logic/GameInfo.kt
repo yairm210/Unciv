@@ -337,7 +337,9 @@ class GameInfo {
             civInfo.initialSetCitiesConnectedToCapitalTransients()
 
             // We need to determine the GLOBAL happiness state in order to determine the city stats
-            for (cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
+            for (cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness(
+                cityInfo.cityConstructions.getStats()
+            )
 
             for (cityInfo in civInfo.cities) {
                 /** We remove constructions from the queue that aren't defined in the ruleset.

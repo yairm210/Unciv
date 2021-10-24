@@ -88,7 +88,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private fun getUniquesStrings() = sequence {
         val tileBonusHashmap = HashMap<String, ArrayList<String>>()
         for (unique in uniqueObjects) when {
-            unique.placeholderText == "[] from [] tiles []" && unique.params[2] == "in this city" -> {
+            unique.isOfType(UniqueType.StatsFromTiles) && unique.params[2] == "in this city" -> {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
@@ -158,7 +158,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (city == null) return stats
         val civInfo = city.civInfo
 
-        for (unique in city.getMatchingUniques("[] from every []")) {
+        for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
@@ -683,7 +683,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
-                if (isStats(filter) && isStatRelated(Stat.valueOf(filter))) return true
+                val stat = Stat.values().firstOrNull { it.name == filter }
+                if (stat != null && isStatRelated(stat)) return true
                 return false
             }
         }
@@ -693,7 +694,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null)[stat] > 0) return true
         if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats[stat] > 0 }) return true
-        if (uniqueObjects.any { it.placeholderText == "[] from [] tiles []" && it.stats[stat] > 0 }) return true
+        if (uniqueObjects.any { it.isOfType(UniqueType.StatsFromTiles) && it.stats[stat] > 0 }) return true
         return false
     }
 
