@@ -222,6 +222,17 @@ enum class UniqueParameterType(val parameterName:String) {
             else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
+    Policy("policy") {
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            return when (parameterText) {
+                in ruleset.policies -> null
+                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            }
+        }
+    },
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):

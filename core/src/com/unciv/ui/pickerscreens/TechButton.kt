@@ -65,12 +65,14 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
             })
 
         for (improvement in ruleset.tileImprovements.values
-                .filter {
-                    it.techRequired == techName || it.uniqueObjects.any { u -> u.params.contains(techName) }
-                            || it.uniqueObjects.any { it.placeholderText == "[] once [] is discovered" && it.params[1] == techName }
-                }
-                .filter { it.uniqueTo == null || it.uniqueTo == civName })
+            .filter {
+                it.techRequired == techName 
+                || it.uniqueObjects.any { u -> u.allParams.contains(techName) }
+            }
+            .filter { it.uniqueTo == null || it.uniqueTo == civName }
+        ) {
             techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, techIconSize))
+        }
 
 
         for (resource in ruleset.tileResources.values.filter { it.revealedBy == techName })
@@ -78,7 +80,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         for (unique in tech.uniques)
             techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Star")
-                    .apply { color = Color.BLACK }.surroundWithCircle(techIconSize))
+                .apply { color = Color.BLACK }.surroundWithCircle(techIconSize))
 
         if (isWorldScreen) rightSide.add(techEnabledIcons)
         else rightSide.add(techEnabledIcons)

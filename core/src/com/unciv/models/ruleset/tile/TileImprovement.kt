@@ -1,13 +1,11 @@
 package com.unciv.models.ruleset.tile
 
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -67,9 +65,9 @@ class TileImprovement : RulesetStatsObject() {
         return lines.joinToString("\n")
     }
 
-    fun isGreatImprovement() = hasUnique("Great Improvement")
+    fun isGreatImprovement() = hasUnique(UniqueType.GreatImprovement)
     fun isRoad() = RoadStatus.values().any { it != RoadStatus.None && it.name == this.name }
-    fun isAncientRuinsEquivalent() = hasUnique("Provides a random bonus when entered")
+    fun isAncientRuinsEquivalent() = hasUnique(UniqueType.IsAncientRuinsEquivalent)
 
     /**
      * Check: Is this improvement allowed on a [given][name] terrain feature?
@@ -81,11 +79,7 @@ class TileImprovement : RulesetStatsObject() {
      * so this check is done in conjunction - for the user, success means he does not need to remove
      * a terrain feature, thus the unique name.
      */
-    fun isAllowedOnFeature(name: String): Boolean {
-        return uniqueObjects.filter { it.placeholderText == "Does not need removal of []"
-                && it.params[0] == name
-        }.any()
-    }
+    fun isAllowedOnFeature(name: String) = getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { it.params[0] == name }
     
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
