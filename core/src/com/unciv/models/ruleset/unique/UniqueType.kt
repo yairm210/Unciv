@@ -264,8 +264,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
-    
-    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins),
 
     ///////////////////////////////////////// TILE UNIQUES /////////////////////////////////////////
 
@@ -376,6 +374,15 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns", UniqueTarget.Global),  // used in Policy
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
+    
+    ///////////////////////////////////////////// META /////////////////////////////////////////////
+    
+    
+    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins),
+    HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
+    HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
+    HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
+    
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
