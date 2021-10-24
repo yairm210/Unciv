@@ -1,3 +1,18 @@
+## 3.17.11
+
+City construction speedup with caching stats from tiles
+
+Fixed "[stats] from all [stat] buildings" check for stat relatedness
+
+By xlenstra:
+- Fixed Siam's unique applying multiple times
+- Added missing unit type filter
+- Enumified all remaining resource & improvement uniques
+- Fixed a bug where AI would not found religions
+- Fixed a bug where buying units with faith would not increase in cost
+
+Inner Sea map type  - By SimonCeder
+
 ## 3.17.10
 
 Global uniques from buildings register correctly for units
