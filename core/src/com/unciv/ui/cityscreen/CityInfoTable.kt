@@ -81,7 +81,6 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     YesNoPopup("Are you sure you want to sell this [${building.name}]?".tr(),
                         {
                             cityScreen.city.sellBuilding(building.name)
-                            cityScreen.city.cityStats.update()
                             cityScreen.update()
                         }, cityScreen,
                         {

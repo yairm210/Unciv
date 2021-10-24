@@ -161,6 +161,8 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         val constructionsSequence = city.getRuleset().units.values.asSequence() +
                 city.getRuleset().buildings.values.asSequence()
+
+        city.cityStats.updateTileStats() // only once
         for (entry in constructionsSequence.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val useStoredProduction = entry is Building || !cityConstructions.isBeingConstructedOrEnqueued(entry.name)
             var buttonText = entry.name.tr() + cityConstructions.getTurnsToConstructionString(entry.name, useStoredProduction)
