@@ -534,19 +534,21 @@ class CityConstructions {
         if (!cityInfo.civInfo.gameInfo.gameParameters.godMode) {
             val construction = getConstruction(constructionName)
             if (construction is PerpetualConstruction) return false
-            val constructionCost =
-                (construction as INonPerpetualConstruction).getStatBuyCost(cityInfo, stat)
+            val constructionCost = (construction as INonPerpetualConstruction).getStatBuyCost(cityInfo, stat)
             if (constructionCost == null) return false // We should never end up here anyway, so things have already gone _way_ wrong
             cityInfo.addStat(stat, -1 * constructionCost)
 
-            if (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
-                .any {
+            val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
+            
+            if ((
+                    cityInfo.civInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState) +
+                    cityInfo.civInfo.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
+                ).any {
                     (
                         construction is BaseUnit && construction.matchesFilter(it.params[0]) ||
                         construction is Building && construction.matchesFilter(it.params[0])
                     )
                     && cityInfo.matchesFilter(it.params[3])
-                    && cityInfo.civInfo.getEraNumber() >= cityInfo.civInfo.gameInfo.ruleSet.eras[it.params[4]]!!.eraNumber
                     && it.params[2] == stat.name
                 }
             ) {
