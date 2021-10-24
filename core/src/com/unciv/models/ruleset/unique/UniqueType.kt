@@ -382,7 +382,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
-    
+    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

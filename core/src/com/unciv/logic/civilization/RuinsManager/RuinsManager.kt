@@ -52,10 +52,8 @@ class RuinsManager {
                 continue
             if (possibleReward.hasUnique(UniqueType.HiddenBeforePantheon) && civInfo.religionManager.religionState == ReligionState.None)
                 continue
-            if (possibleReward.uniqueObjects.any { unique ->
-                unique.placeholderText == "Only available after [] turns" 
-                && unique.params[0].toInt() < civInfo.gameInfo.turns
-            }) continue
+            if (possibleReward.getMatchingUniques(UniqueType.AvailableAfterCertainTurns).any { it.params[0].toInt() < civInfo.gameInfo.turns })
+                continue
             
             var atLeastOneUniqueHadEffect = false
             for (unique in possibleReward.uniqueObjects) {
