@@ -233,16 +233,6 @@ enum class UniqueParameterType(val parameterName:String) {
             }
         }
     },
-    TechOrPolicy("techOrPolicy") {
-        override fun getErrorSeverity(
-            parameterText: String,
-            ruleset: Ruleset
-        ): UniqueType.UniqueComplianceErrorSeverity? {
-            if (Policy.getErrorSeverity(parameterText, ruleset) == null && Technology.getErrorSeverity(parameterText, ruleset) == null)
-                return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
-        }
-    },
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
     Comment("comment") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):

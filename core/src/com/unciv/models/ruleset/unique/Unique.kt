@@ -21,6 +21,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
     val conditionals: List<Unique> = text.getConditionals()
 
+    val allParams = params + conditionals.flatMap { it.params }
+
     fun isOfType(uniqueType: UniqueType) = uniqueType == type
 
     fun conditionalsApply(civInfo: CivilizationInfo? = null, city: CityInfo? = null): Boolean {

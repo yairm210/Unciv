@@ -41,7 +41,7 @@ class Technology: RulesetObject() {
                 // Deprecated since 3.17.10
                     if (unique.isOfType(UniqueType.StatsWithTech) && unique.params.last() == name)
                         lineList += "[${unique.params[0]}] from every [${improvement.name}]"
-                    else if (unique.isOfType(UniqueType.ImprovementStatsOnTileWithTech) && unique.params.last() == name)
+                    else if (unique.isOfType(UniqueType.StatsOnTileWithTech) && unique.params.last() == name)
                         lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
                     else 
                 //
@@ -190,11 +190,11 @@ class Technology: RulesetObject() {
         for (improvement in ruleset.tileImprovements.values)
             for (unique in improvement.uniqueObjects) {
                 // Deprecated since 3.17.10
-                    if (unique.placeholderText == "[] once [] is discovered" && unique.params.last() == name) {
+                    if (unique.isOfType(UniqueType.StatsWithTech) && unique.params.last() == name) {
                         if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
                         lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}]",
                             link = improvement.makeLink())
-                    } else if (unique.placeholderText == "[] on [] tiles once [] is discovered" && unique.params.last() == name) {
+                    } else if (unique.isOfType(UniqueType.StatsOnTileWithTech) && unique.params.last() == name) {
                         if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
                         lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles",
                             link = improvement.makeLink())

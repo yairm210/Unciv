@@ -116,10 +116,12 @@ class CityConstructions {
             stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
         }
         
-        for (unique in cityInfo.getLocalMatchingUniques("[] once [] is discovered")) {
-            if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
-                stats.add(unique.stats)
-        }
+        // Deprecated since 3.17.11
+            for (unique in cityInfo.getLocalMatchingUniques(UniqueType.StatsWithTech)) {
+                if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
+                    stats.add(unique.stats)
+            }
+        //
         
         return stats
     }

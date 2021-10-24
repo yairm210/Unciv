@@ -360,8 +360,8 @@ open class TileInfo {
             stats.add(tileResource.improvementStats!!.clone()) // resource-specific improvement
 
         // Deprecated since 3.17.10
-            for (unique in improvement.uniqueObjects) {
-                if (unique.placeholderText == "[] once [] is discovered" && observingCiv.tech.isResearched(unique.params[1]))
+            for (unique in improvement.getMatchingUniques(UniqueType.StatsWithTech)) {
+                if (observingCiv.tech.isResearched(unique.params[1]))
                     stats.add(unique.stats)
             }
         //
@@ -375,7 +375,7 @@ open class TileInfo {
                 .filter { city.matchesFilter(it.params[2]) }
             val improvementUniques = 
                 // Deprecated since 3.17.10
-                    improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTileWithTech)
+                    improvement.getMatchingUniques(UniqueType.StatsOnTileWithTech)
                         .filter { observingCiv.tech.isResearched(it.params[2]) } +
                 //
                 improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, StateForConditionals(civInfo = observingCiv, cityInfo = city))
