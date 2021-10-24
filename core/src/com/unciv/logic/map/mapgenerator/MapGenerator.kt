@@ -182,24 +182,20 @@ class MapGenerator(val ruleset: Ruleset) {
             tileMap.mapParameters.mapSize.radius.toFloat()
         else
             (max(tileMap.mapParameters.mapSize.width / 2, tileMap.mapParameters.mapSize.height / 2)).toFloat()
-        // These hold the information for a hueg box including the entire map. Extra hueg if world wrap since some
-        // continents may straddle the seam and we don't want to cut them off
-        val mapOrigin = if (tileMap.mapParameters.worldWrap) Vector2(-2 * radius, -2 * radius)
-            else Vector2(-radius, -radius)
-        val mapSize = if (tileMap.mapParameters.worldWrap) Vector2(radius * 4 + 1, radius * 4 + 1)
-            else Vector2(radius * 2 + 1, radius * 2 + 1)
+        // These hold the information for a hueg box including the entire map.
+        val mapOrigin = Vector2(-radius, -radius)
+        val mapSize = Vector2(radius * 2 + 1, radius * 2 + 1)
 
 
         // Lots of small islands - just split ut the map in rectangles while ignoring Continents
-        if (largestContinent / totalLand < 0.2f) {
+        if (largestContinent / totalLand < 0.3f) {
             // Make a huge rectangle covering the entire map
             val hugeRect = Region()
             hugeRect.continentID = -1 // Don't care about continents
             hugeRect.origin = mapOrigin
             hugeRect.size = mapSize
             hugeRect.tileMap = tileMap
-            if (!tileMap.mapParameters.worldWrap)
-                hugeRect.affectedByWorldWrap = false
+            hugeRect.affectedByWorldWrap = false // Might as well start at the seam
             hugeRect.updateTiles()
             divideRegion(hugeRect, numRegions)
             return
@@ -208,13 +204,19 @@ class MapGenerator(val ruleset: Ruleset) {
         val continents = tileMap.continentSizes.keys.toMutableList()
         val civsAddedToContinent = HashMap<Int, Int>() // Continent ID, civs added
         val continentFertility = HashMap<Int, Int>() // Continent ID, total fertility
+        // Keep track of the even-q columns each continent is at, to figure out if they wrap
+        val continentIsAtCol = HashMap<Int, HashSet<Int>>()
 
-        // Calculate continent fertilities
+        // Calculate continent fertilities and columns
         for (tile in tileMap.values) {
             val continent = tile.getContinent()
             if (continent != -1) {
                 continentFertility[continent] = tile.getTileFertility(true) +
                         (continentFertility[continent] ?: 0)
+
+                if (continentIsAtCol[continent] == null)
+                    continentIsAtCol[continent] = HashSet()
+                continentIsAtCol[continent]!!.add(HexMath.hex2EvenQCoords(tile.position).x.toInt())
             }
         }
 
@@ -228,13 +230,28 @@ class MapGenerator(val ruleset: Ruleset) {
         // Split up the continents
         for (continent in civsAddedToContinent.keys) {
             val continentRegion = Region()
+            val cols = continentIsAtCol[continent]!!
             continentRegion.continentID = continent
             continentRegion.origin = mapOrigin.cpy()
+            // The rightmost column which does not have a neighbor on the left
+            continentRegion.origin.x = cols.filter { !cols.contains(it - 1) }.maxOf { it }.toFloat()
             continentRegion.size = mapSize.cpy()
+            continentRegion.size.x = cols.count().toFloat()
             continentRegion.tileMap = tileMap
-            if (!tileMap.mapParameters.worldWrap)
+            if (tileMap.mapParameters.worldWrap) {
                 continentRegion.affectedByWorldWrap = false
+                // Check if the continent is possibly wrapping - there needs to be a gap when going through the cols
+                for (i in cols.minOf { it }..cols.maxOf { it }) {
+                    if (!cols.contains(i)) {
+                        continentRegion.affectedByWorldWrap = true
+                        println("continent $continent is wrapping")
+                        break
+                    }
+                }
+            }
+            println("continent $continent is origin ${continentRegion.origin} size ${continentRegion.size}")
             continentRegion.updateTiles()
+            println("It has total ${continentRegion.tiles.count()} tiles with total fertility ${continentRegion.totalFertility}")
             divideRegion(continentRegion, civsAddedToContinent[continent]!!)
         }
     }
@@ -257,7 +274,7 @@ class MapGenerator(val ruleset: Ruleset) {
             }
             return
         }
-        //println("Dividing a region on continent ${region.continentID} into $numDivisions..")
+        println("Dividing a region on continent ${region.continentID} into $numDivisions..")
 
         val firstDivisions = numDivisions / 2 // Since int division rounds down, works for all numbers
         val splitRegions = splitRegion(region, (100 * firstDivisions) / numDivisions)
@@ -288,16 +305,18 @@ class MapGenerator(val ruleset: Ruleset) {
             val nextRect = if (widerThanTall)
                 splitOffRegion.tileMap.getTilesInRectangle(
                         Vector2(splitOffRegion.origin.x + splitPoint - 1, splitOffRegion.origin.y),
-                        Vector2(1f, splitOffRegion.size.y))
+                        Vector2(1f, splitOffRegion.size.y),
+                        evenQ = true)
             else
                 splitOffRegion.tileMap.getTilesInRectangle(
                         Vector2(splitOffRegion.origin.x, splitOffRegion.origin.y + splitPoint - 1),
-                        Vector2(splitOffRegion.size.x, 1f))
+                        Vector2(splitOffRegion.size.x, 1f),
+                        evenQ = true)
 
             cumulativeFertility += if (splitOffRegion.continentID == -1)
-                nextRect.sumBy { it.getTileFertility(false) }
+                nextRect.sumOf { it.getTileFertility(false) }
             else
-                nextRect.sumBy { if (it.getContinent() == splitOffRegion.continentID) it.getTileFertility(true) else 0 }
+                nextRect.sumOf { if (it.getContinent() == splitOffRegion.continentID) it.getTileFertility(true) else 0 }
 
             // Better than last try?
             if (abs(cumulativeFertility - targetFertility) <= abs(closestFertility - targetFertility)) {
@@ -309,9 +328,11 @@ class MapGenerator(val ruleset: Ruleset) {
         if (widerThanTall) {
             splitOffRegion.size.x = bestSplitPoint.toFloat()
             regionToSplit.origin.x = splitOffRegion.origin.x + splitOffRegion.size.x
+            regionToSplit.size.x = regionToSplit.size.x - bestSplitPoint
         } else {
             splitOffRegion.size.y = bestSplitPoint.toFloat()
             regionToSplit.origin.y = splitOffRegion.origin.y + splitOffRegion.size.y
+            regionToSplit.size.y = regionToSplit.size.y - bestSplitPoint
         }
         splitOffRegion.updateTiles()
         regionToSplit.updateTiles()
@@ -322,6 +343,8 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     private fun assignRegions(tileMap: TileMap, civilizations: List<CivilizationInfo>) {
+        if (civilizations.isEmpty()) return
+
         // first assign region types
         val regionTypes = ruleset.terrains.values.filter { it.hasUnique(UniqueType.IsRegion) }
                 .sortedBy { it.getMatchingUniques(UniqueType.IsRegion).first().params[0].toInt() }
@@ -758,7 +781,8 @@ class MapGenerator(val ruleset: Ruleset) {
         lateinit var origin: Vector2
         lateinit var size: Vector2
         lateinit var tileMap: TileMap
-        var affectedByWorldWrap = true
+
+        var affectedByWorldWrap = false
 
         /** Recalculates tiles and fertility */
         fun updateTiles(trim: Boolean = true) {
@@ -771,7 +795,7 @@ class MapGenerator(val ruleset: Ruleset) {
             val columnHasTile = HashSet<Int>()
 
             tiles.clear()
-            for (tile in tileMap.getTilesInRectangle(origin, size).filter {
+            for (tile in tileMap.getTilesInRectangle(origin, size, evenQ = true).filter {
                            continentID == -1 || it.getContinent() == continentID } ) {
                 val fertility = tile.getTileFertility(continentID != -1)
                 if (fertility != 0) { // If fertility is 0 this is candidate for trimming
@@ -780,21 +804,30 @@ class MapGenerator(val ruleset: Ruleset) {
                 }
 
                 if (affectedByWorldWrap)
-                    columnHasTile.add(tile.position.x.toInt())
+                    columnHasTile.add(HexMath.hex2EvenQCoords(tile.position).x.toInt())
 
                 if (trim) {
-                    if (tile.position.x < minX) minX = tile.position.x
-                    if (tile.position.x > maxX) maxX = tile.position.x
-                    if (tile.position.y < minY) minY = tile.position.y
-                    if (tile.position.y > maxY) maxY = tile.position.y
+                    val evenQCoords = HexMath.hex2EvenQCoords(tile.position)
+                    minX = min(minX, evenQCoords.x)
+                    maxX = max(maxX, evenQCoords.x)
+                    minY = min(minY, evenQCoords.y)
+                    maxY = max(maxY, evenQCoords.y)
                 }
             }
 
             if (trim) {
-                origin.x = minX
+                if (affectedByWorldWrap) // Need to be more thorough with origin longitude
+                    origin.x = columnHasTile.filter { !columnHasTile.contains(it - 1) }.maxOf { it }.toFloat()
+                else
+                    origin.x = minX // ez way for non-wrapping regions
                 origin.y = minY
-                size.x = maxX - minX + 1
                 size.y = maxY - minY + 1
+                if (affectedByWorldWrap && minX < origin.x) {
+                    size.x = columnHasTile.count().toFloat()
+                } else {
+                    size.x = maxX - minX + 1
+                    affectedByWorldWrap = false
+                }
             }
         }
 
