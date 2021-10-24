@@ -521,6 +521,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return when (filter) {
             unitType -> true
             name -> true
+            replaces -> true
             "All" -> true
 
             "Melee" -> isMelee()
