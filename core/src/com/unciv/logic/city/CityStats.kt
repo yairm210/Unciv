@@ -125,11 +125,11 @@ class CityStats(val cityInfo: CityInfo) {
                         ) stats.add(bonus.stats)
                     }
                 }
-
-                for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
-                    stats[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
-                }
             }
+        }
+        
+        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
+            stats[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
         }
 
         return stats
