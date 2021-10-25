@@ -2,8 +2,10 @@ package com.unciv.logic.civilization.RuinsManager
 
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.RuinReward
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
@@ -43,13 +45,15 @@ class RuinsManager {
         for (possibleReward in possibleRewards) {
             if (civInfo.gameInfo.difficulty in possibleReward.excludedDifficulties) continue
             if (possibleReward.hasUnique(UniqueType.HiddenWithoutReligion) && !civInfo.gameInfo.isReligionEnabled()) continue
-            if ("Hidden after generating a Great Prophet" in possibleReward.uniques 
+            if (possibleReward.hasUnique(UniqueType.HiddenAfterGreatProphet) 
                 && civInfo.civConstructions.boughtItemsWithIncreasingPrice[civInfo.religionManager.getGreatProphetEquivalent()] ?: 0 > 0
             ) continue
-            if (possibleReward.uniqueObjects.any { unique ->
-                unique.placeholderText == "Only available after [] turns" 
-                && unique.params[0].toInt() < civInfo.gameInfo.turns
-            }) continue
+            if (possibleReward.hasUnique(UniqueType.HiddenAfterPantheon) && civInfo.religionManager.religionState >= ReligionState.Pantheon)
+                continue
+            if (possibleReward.hasUnique(UniqueType.HiddenBeforePantheon) && civInfo.religionManager.religionState == ReligionState.None)
+                continue
+            if (possibleReward.getMatchingUniques(UniqueType.AvailableAfterCertainTurns).any { it.params[0].toInt() < civInfo.gameInfo.turns })
+                continue
             
             var atLeastOneUniqueHadEffect = false
             for (unique in possibleReward.uniqueObjects) {
