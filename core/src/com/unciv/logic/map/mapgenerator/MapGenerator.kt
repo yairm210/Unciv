@@ -244,7 +244,7 @@ class MapGenerator(val ruleset: Ruleset) {
         tileMap.setTransients(ruleset)
         for (tile in tileMap.values.asSequence().filter { !it.isWater }) {
             var elevation = randomness.getPerlinNoise(tile, elevationSeed, scale = 2.0)
-                    elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
+            elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
 
             when {
                 elevation <= 0.5 -> tile.baseTerrain = flat

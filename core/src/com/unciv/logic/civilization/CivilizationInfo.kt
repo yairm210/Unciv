@@ -1019,7 +1019,7 @@ class CivilizationInfo {
                     city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                     else -> religionManager.religion?.name
                 }
-            placedUnit.setupAbilityUses()
+            placedUnit.setupAbilityUses(cityToAddTo)
         }
 
         for (unique in getMatchingUniques("Land units may cross [] tiles after the first [] is earned")) {
