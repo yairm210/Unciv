@@ -17,7 +17,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class MapRegions (val ruleset: Ruleset, val randomness: MapGenerationRandomness){
+class MapRegions (val ruleset: Ruleset){
     private val regions = ArrayList<Region>()
     private val tileData = HashMap<Vector2, MapGenTileData>()
 

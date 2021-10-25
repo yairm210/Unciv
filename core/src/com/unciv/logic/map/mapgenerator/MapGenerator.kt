@@ -1,7 +1,5 @@
 package com.unciv.logic.map.mapgenerator
 
-import com.badlogic.gdx.math.Rectangle
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -12,10 +10,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.ui.utils.toPercent
 import kotlin.math.*
 import kotlin.random.Random
 
@@ -86,7 +80,7 @@ class MapGenerator(val ruleset: Ruleset) {
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness).spawnRivers()
         }
-        val regions = MapRegions(ruleset, randomness)
+        val regions = MapRegions(ruleset)
         runAndMeasure("generateRegions") {
             regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv() })
         }
