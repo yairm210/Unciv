@@ -383,6 +383,7 @@ class GameInfoPreview() {
     var turns = 0
     var gameId = ""
     var currentPlayer = ""
+    var currentTurnStartTime = 0L
     var turnNotification = true //used as setting in the MultiplayerScreen
 
     /**
@@ -396,6 +397,7 @@ class GameInfoPreview() {
         turns = gameInfo.turns
         gameId = gameInfo.gameId
         currentPlayer = gameInfo.currentPlayer
+        currentTurnStartTime = gameInfo.currentTurnStartTime
     }
 
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
@@ -407,6 +409,7 @@ class GameInfoPreview() {
     fun updateCurrentTurn(gameInfo: GameInfo) : GameInfoPreview {
         currentPlayer = gameInfo.currentPlayer
         turns = gameInfo.turns
+        currentTurnStartTime = gameInfo.currentTurnStartTime
 
         return this
     }
