@@ -3,12 +3,17 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
 import kotlin.math.max
 import kotlin.math.min
@@ -132,14 +137,17 @@ class ReligionOverviewTable(
             cell.minWidth(minWidth)           
         }
     }
-    
-    private fun createBeliefDescription(belief: Belief): Table {
-        val contentsTable = Table(CameraStageBaseScreen.skin)
-        contentsTable.add(belief.type.name.toLabel()).row()
-        contentsTable.add(belief.name.toLabel(fontSize = 24)).row()
-        contentsTable.add(belief.uniques.joinToString().toLabel())
-        contentsTable.background = ImageGetter.getBackground(ImageGetter.getBlue())
-        contentsTable.padTop(5f).padBottom(5f)
-        return contentsTable
-    }
+
+    private fun createBeliefDescription(belief: Belief) =
+        MarkupRenderer.render(
+            belief.run { sequence {
+                yield(FormattedLine(name, size = 24, centered = true))
+                yield(FormattedLine())
+                yieldAll(getCivilopediaTextLines(gameInfo.ruleSet, true))
+            } }.toList()
+        ) {
+            UncivGame.Current.setScreen(CivilopediaScreen(gameInfo.ruleSet, link = it))
+        }.apply {
+            background = ImageGetter.getBackground(ImageGetter.getBlue())
+        }
 }
