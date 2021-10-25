@@ -1015,7 +1015,10 @@ class MapUnit {
         // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
         val citadelTile = currentTile.neighbors
             .filter {
-                it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) && it.improvement != null
+                it.getOwner() != null 
+                && it.improvement != null
+                && civInfo.isAtWarWith(it.getOwner()!!) 
+                && it.getTileImprovement()!!.hasUnique(UniqueType.DamagesAdjacentEnemyUnits)
             }.maxByOrNull { tile ->
                 tile.getTileImprovement()!!
                     .getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
