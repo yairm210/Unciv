@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.max
@@ -43,14 +44,23 @@ class ReligionOverviewTable(
     }
     
     private fun addCivSpecificStats(statsTable: Table) {
-        statsTable.add("Minimal faith required for\nthe next great prophet: ".toLabel()).left()
-        statsTable.add((viewingPlayer.religionManager.faithForNextGreatProphet() + 1).toLabel()).right().pad(5f).row()
-        statsTable.add("Religions that can still be founded: ".toLabel()).left()
+        if (viewingPlayer.religionManager.canGenerateProphet()) {
+            statsTable.add("Minimal faith required for\nthe next [great prophet equivalent]:"
+                .fillPlaceholders(viewingPlayer.religionManager.getGreatProphetEquivalent()!!)
+                .toLabel()
+            ).left()
+            statsTable.add(
+                (viewingPlayer.religionManager.faithForNextGreatProphet() + 1)
+                .toLabel()
+            ).right().pad(5f).row()
+        }
+        
+        statsTable.add("Religions founded:".toLabel()).left()
         
         val foundedReligions = viewingPlayer.gameInfo.civilizations.count { it.religionManager.religionState >= ReligionState.Religion }
         statsTable.add((viewingPlayer.religionManager.amountOfFoundableReligions() - foundedReligions).toLabel()).right().pad(5f).row()
         
-        statsTable.add("Religion status: ".toLabel()).left()
+        statsTable.add("Religious status:".toLabel()).left()
         statsTable.add(viewingPlayer.religionManager.religionState.toString().toLabel()).right().pad(5f).row()
     }
     
@@ -93,27 +103,27 @@ class ReligionOverviewTable(
             beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
         }
         
-        statsTable.add("Religion Name:".toLabel())
-        statsTable.add(religion.getReligionDisplayName().toLabel()).pad(5f).row()
-        statsTable.add("Founding Civ:".toLabel())
+        statsTable.add("Religion Name:".toLabel()).left()
+        statsTable.add(religion.getReligionDisplayName().toLabel()).right().pad(5f).row()
+        statsTable.add("Founding Civ:".toLabel()).left()
         val foundingCivName =
             if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName) 
                 religion.foundingCivName
             else "???"
-        statsTable.add(foundingCivName.toLabel()).pad(5f).row()
+        statsTable.add(foundingCivName.toLabel()).right().pad(5f).row()
         if (religion.isMajorReligion()) {
             val holyCity = gameInfo.getCities().firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion.name }
             if (holyCity != null) {
-                statsTable.add("Holy City:".toLabel())
+                statsTable.add("Holy City:".toLabel()).left()
                 val cityName = 
                     if (viewingPlayer.exploredTiles.contains(holyCity.getCenterTile().position))
                         holyCity.name
                     else "???"
-                statsTable.add(cityName.toLabel()).pad(5f).row()
+                statsTable.add(cityName.toLabel()).right().pad(5f).row()
             }
         }
-        statsTable.add("Cities following this religion:".toLabel())
-        statsTable.add(gameInfo.getCivilization(religion.foundingCivName).religionManager.numberOfCitiesFollowingThisReligion().toString()).pad(5f).row()
+        statsTable.add("Cities following this religion:".toLabel()).left()
+        statsTable.add(gameInfo.getCivilization(religion.foundingCivName).religionManager.numberOfCitiesFollowingThisReligion().toString()).right().pad(5f).row()
         
         val minWidth = max(statsTable.minWidth, beliefsTable.minWidth) + 5
         

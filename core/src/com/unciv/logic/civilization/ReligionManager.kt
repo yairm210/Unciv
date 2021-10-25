@@ -128,7 +128,7 @@ class ReligionManager {
         return faithCost.toInt()
     }
 
-    private fun canGenerateProphet(): Boolean {
+    fun canGenerateProphet(): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no prophets
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (getGreatProphetEquivalent() == null) return false
