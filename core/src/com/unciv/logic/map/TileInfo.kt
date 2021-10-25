@@ -40,6 +40,9 @@ open class TileInfo {
     @Transient
     var isOcean = false
 
+    @Transient
+    var mapGenLog = ""
+
     // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
     @delegate:Transient

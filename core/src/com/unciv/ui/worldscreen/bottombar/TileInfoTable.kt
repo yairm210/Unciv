@@ -31,6 +31,7 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
                 add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f).row()
                 add(HexMath.hex2EvenQCoords(tile.position).run { "Even Q: (${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f).row()
                 add("Continent ${tile.getContinent()}".toLabel()).colspan(2).pad(5f)
+                add(tile.mapGenLog.toLabel()).colspan(2).pad(5f)
         }
 
         pack()
