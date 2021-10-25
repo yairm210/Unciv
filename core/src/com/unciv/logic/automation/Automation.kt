@@ -142,7 +142,7 @@ object Automation {
             else 1f // We're slightly more afraid of raging barbs
 
         // If it is late in the game we are not afraid
-        if (civInfo.gameInfo.turns > 90 * multiplier)
+        if (civInfo.gameInfo.turns > 120 * civInfo.gameInfo.gameParameters.gameSpeed.modifier * multiplier)
             return false
 
         // If we have a lot of, or no cities we are not afraid
