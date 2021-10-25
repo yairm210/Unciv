@@ -6,12 +6,14 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.randomWeighted
 import com.unciv.ui.victoryscreen.RankingType
 
 object Automation {
@@ -118,12 +120,44 @@ object Automation {
                 .distinct()
                 .toList()
             if (availableTypes.isEmpty()) return null
-            val randomType = availableTypes.random()
-            chosenUnit = militaryUnits
-                .filter { it.unitType == randomType }
-                .maxByOrNull { it.cost }!!
+            val bestUnitsForType = availableTypes.map { type -> militaryUnits
+                    .filter { unit -> unit.unitType == type }
+                    .maxByOrNull { unit -> unit.cost }!! }
+            // Check the maximum force evaluation for the shortlist so we can prune useless ones (ie scouts)
+            val bestForce = bestUnitsForType.maxOf { it.getForceEvaluation() }
+            chosenUnit = bestUnitsForType.filter { it.uniqueTo != null || it.getForceEvaluation() > bestForce / 3 }.random()
         }
         return chosenUnit.name
+    }
+
+    /** Determines whether [civInfo] should be allocating military to fending off barbarians */
+    fun afraidOfBarbarians(civInfo: CivilizationInfo): Boolean {
+        if (civInfo.isCityState() || civInfo.isBarbarian())
+            return false
+
+        // If there are no barbarians we are not afraid
+        if (civInfo.gameInfo.gameParameters.noBarbarians)
+            return false
+
+        val multiplier = if (civInfo.gameInfo.gameParameters.ragingBarbarians) 1.3f
+            else 1f // We're slightly more afraid of raging barbs
+
+        // If it is late in the game we are not afraid
+        if (civInfo.gameInfo.turns > 90 * multiplier)
+            return false
+
+        // If we have a lot of, or no cities we are not afraid
+        if (civInfo.cities.isEmpty() || civInfo.cities.count() >= 4 * multiplier)
+            return false
+
+        // If we have vision of our entire starting continent (ish) we are not afraid
+        civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
+        val startingContinent = civInfo.getCapital().getCenterTile().getContinent()
+        if (civInfo.gameInfo.tileMap.continentSizes[startingContinent]!! < civInfo.viewableTiles.count())
+            return false
+
+        // Otherwise we're afraid
+        return true
     }
 
 

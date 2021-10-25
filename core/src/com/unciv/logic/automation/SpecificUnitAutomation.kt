@@ -147,14 +147,6 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
-        if (unit.civInfo.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
-            val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
-            if(foundCityAction?.action != null) {
-                foundCityAction.action.invoke()
-                return
-            }
-        }
-
         if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
             && !unit.civInfo.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
             && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
@@ -194,8 +186,22 @@ object SpecificUnitAutomation {
                 .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
                 .distinct()
 
+        if (unit.civInfo.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
+            val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
+            // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
+            val otherSettlers = unit.civInfo.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
+            if(foundCityAction?.action != null &&
+                    otherSettlers.none {
+                        rankTileAsCityCenter(it.getTile(), nearbyTileRankings, emptySequence()) > rankTileAsCityCenter(unit.getTile(), nearbyTileRankings, emptySequence())
+                    } ) {
+                foundCityAction.action.invoke()
+                return
+            }
+        }
+
+        val closenessModifier = mapOf(0 to 1f, 1 to 1f, 2 to 0.9f, 3 to 0.75f, 4 to 0.5f, 5 to 0.2f) // To stop the AI from sending its settlers on death marches
         val citiesByRanking = possibleCityLocations
-                .map { Pair(it, rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea)) }
+                .map { Pair(it, rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea) * (closenessModifier[it.aerialDistanceTo(unit.getTile())] ?: 0.1f)) }
                 .sortedByDescending { it.second }.toList()
 
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
