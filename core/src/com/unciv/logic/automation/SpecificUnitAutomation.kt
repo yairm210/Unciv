@@ -34,7 +34,7 @@ object SpecificUnitAutomation {
                 unit.movement.headTowards(closestReachableResource)
 
                 // could be either fishing boats or oil well
-                val improvement = closestReachableResource.getTileResource().improvement
+                val improvement = closestReachableResource.tileResource.improvement
                 if (unit.currentTile == closestReachableResource && improvement != null)
                     UnitActions.getWaterImprovementAction(unit)?.action?.invoke()
             }
@@ -137,7 +137,7 @@ object SpecificUnitAutomation {
         if (tileInfo.isCoastalTile()) rank += 5
 
         val luxuryResourcesInCityArea = tileInfo.getTilesAtDistance(2).filter { it.resource != null }
-                .map { it.getTileResource() }.filter { it.resourceType == ResourceType.Luxury }.distinct()
+                .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }.distinct()
         val luxuryResourcesAlreadyInCivArea = luxuryResourcesInCivArea.map { it.name }.toHashSet()
         val luxuryResourcesNotYetInCiv = luxuryResourcesInCityArea
                 .count { it.name !in luxuryResourcesAlreadyInCivArea }
@@ -191,7 +191,7 @@ object SpecificUnitAutomation {
 
         val luxuryResourcesInCivArea = unit.civInfo.cities.asSequence()
                 .flatMap { it.getTiles().asSequence() }.filter { it.resource != null }
-                .map { it.getTileResource() }.filter { it.resourceType == ResourceType.Luxury }
+                .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
                 .distinct()
 
         val citiesByRanking = possibleCityLocations
@@ -378,14 +378,20 @@ object SpecificUnitAutomation {
     }
 
     fun foundReligion(unit: MapUnit) {
-        val cityToFoundReligionAt = unit.civInfo.cities.first { !it.isHolyCity() }
+        val cityToFoundReligionAt =
+            if (unit.getTile().isCityCenter() && !unit.getTile().owningCity!!.isHolyCity()) unit.getTile().owningCity 
+            else unit.civInfo.cities.firstOrNull {
+                !it.isHolyCity()
+                && unit.movement.canMoveTo(it.getCenterTile())
+                && unit.movement.canReach(it.getCenterTile())
+            }
+        if (cityToFoundReligionAt == null) return
         if (unit.getTile() != cityToFoundReligionAt.getCenterTile()) {
             unit.movement.headTowards(cityToFoundReligionAt.getCenterTile())
-            return   
+            return
         }
-        
+
         UnitActions.getFoundReligionAction(unit)()
-        
     }
     
     fun enhanceReligion(unit: MapUnit) {

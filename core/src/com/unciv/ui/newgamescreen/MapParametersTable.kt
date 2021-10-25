@@ -76,6 +76,7 @@ class MapParametersTable(
             MapType.fourCorners,
             MapType.perlin,
             MapType.archipelago,
+            MapType.innerSea,
             if (isEmptyMapAllowed) MapType.empty else null
         )
 

@@ -339,14 +339,17 @@ class TileMap {
             This can all be summed up as "I can see c if a>b || c>b || (a==b && b !blocks same-elevation view)"
             */
 
-                val containsViewableNeighborThatCanSeeOver = cTile.neighbors.any {
-                        bNeighbor: TileInfo ->
+                val containsViewableNeighborThatCanSeeOver = cTile.neighbors.any { bNeighbor: TileInfo ->
                     val bNeighborHeight = bNeighbor.height
-                    viewableTiles.contains(bNeighbor) && (
-                            currentTileHeight > bNeighborHeight // a>b
-                                    || cTileHeight > bNeighborHeight // c>b
-                                    || currentTileHeight == bNeighborHeight // a==b
-                                    && !bNeighbor.hasUnique("Blocks line-of-sight from tiles at same elevation"))
+                    viewableTiles.contains(bNeighbor) 
+                    && (
+                        currentTileHeight > bNeighborHeight // a>b
+                        || cTileHeight > bNeighborHeight // c>b
+                        || (
+                            currentTileHeight == bNeighborHeight // a==b
+                            && !bNeighbor.hasUnique(UniqueType.BlocksLineOfSightAtSameElevation)
+                        )
+                    )
                 }
                 if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(cTile)
             }
