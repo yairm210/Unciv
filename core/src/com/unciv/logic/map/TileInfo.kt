@@ -576,6 +576,15 @@ open class TileInfo {
         return min(distance, wrappedDistance).toInt()
     }
 
+    fun canBeSettled(): Boolean {
+        if (isWater || isImpassible())
+            return false
+        if (getTilesInDistance(2).any { it.isCityCenter() } ||
+                getTilesAtDistance(3).any { it.isCityCenter() && it.getContinent() == getContinent() })
+                    return false
+        return true
+    }
+
     /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */
     override fun toString(): String {
         val lineList = arrayListOf("TileInfo @$position")

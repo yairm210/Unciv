@@ -13,7 +13,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.randomWeighted
 import com.unciv.ui.victoryscreen.RankingType
 
 object Automation {

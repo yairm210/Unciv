@@ -12,6 +12,8 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
+import kotlin.math.max
+import kotlin.math.min
 
 object SpecificUnitAutomation {
 
@@ -173,7 +175,11 @@ object SpecificUnitAutomation {
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)
                 .associateBy({ it }, { Automation.rankTile(it, unit.civInfo) })
 
-        val possibleCityLocations = unit.getTile().getTilesInDistance(5)
+        val distanceFromHome = if (unit.civInfo.cities.isEmpty()) 0
+            else unit.civInfo.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+        val range = max(1, min(5, 8 - distanceFromHome)) // Restrict vision when far from home to avoid death marches
+
+        val possibleCityLocations = unit.getTile().getTilesInDistance(range)
                 .filter {
                     val tileOwner = it.getOwner()
                     it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civInfo) // don't allow settler to settle inside other civ's territory
@@ -199,9 +205,8 @@ object SpecificUnitAutomation {
             }
         }
 
-        val closenessModifier = mapOf(0 to 1f, 1 to 1f, 2 to 0.9f, 3 to 0.75f, 4 to 0.5f, 5 to 0.2f) // To stop the AI from sending its settlers on death marches
         val citiesByRanking = possibleCityLocations
-                .map { Pair(it, rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea) * (closenessModifier[it.aerialDistanceTo(unit.getTile())] ?: 0.1f)) }
+                .map { Pair(it, rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea)) }
                 .sortedByDescending { it.second }.toList()
 
         // It's possible that we'll see a tile "over the sea" that's better than the tiles close by, but that's not a reason to abandon the close tiles!
@@ -211,7 +216,11 @@ object SpecificUnitAutomation {
             return@firstOrNull pathSize in 1..3
         }?.first
 
-        if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
+        if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
+            // Try to move towards the frontier
+            val frontierCity = unit.civInfo.cities.maxByOrNull { it.getFrontierScore() }
+            if (frontierCity != null && frontierCity.getFrontierScore() > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
+                unit.movement.headTowards(frontierCity.getCenterTile())
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas
             UnitAutomation.wander(unit) // go around aimlessly
             return
