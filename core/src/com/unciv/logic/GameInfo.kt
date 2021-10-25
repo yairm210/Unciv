@@ -34,6 +34,7 @@ class GameInfo {
     var turns = 0
     var oneMoreTurnMode = false
     var currentPlayer = ""
+    var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
 
     // Maps a civ to the civ they voted for
@@ -88,6 +89,7 @@ class GameInfo {
         toReturn.barbarians = barbarians.clone()
         toReturn.religions.putAll(religions.map { Pair(it.key, it.value.clone()) })
         toReturn.currentPlayer = currentPlayer
+        toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
         toReturn.difficulty = difficulty
         toReturn.gameParameters = gameParameters
@@ -240,6 +242,7 @@ class GameInfo {
             switchTurn()
         }
 
+        currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)
         if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators

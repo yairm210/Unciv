@@ -683,7 +683,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
     private fun getNextTurnAction(): NextTurnAction {
         return when {
-            !isPlayersTurn -> NextTurnAction("Waiting for other players...", Color.GRAY) {}
+            !isPlayersTurn && gameInfo.gameParameters.isOnlineMultiplayer -> NextTurnAction("Waiting for [${gameInfo.currentPlayerCiv}]...", Color.GRAY) {}
+            !isPlayersTurn && !gameInfo.gameParameters.isOnlineMultiplayer -> NextTurnAction("Waiting for other players...", Color.GRAY) {}
 
             viewingCiv.shouldGoToDueUnit() ->
                 NextTurnAction("Next unit", Color.LIGHT_GRAY) {
