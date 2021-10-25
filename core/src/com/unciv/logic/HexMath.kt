@@ -118,7 +118,10 @@ object HexMath {
     }
 
     fun hex2EvenQCoords(hexCoord: Vector2): Vector2 {
-        return cubic2EvenQCoords(hex2CubicCoords(hexCoord))
+        return if (hexCoord == Vector2.Zero)
+            Vector2.Zero
+        else
+            cubic2EvenQCoords(hex2CubicCoords(hexCoord))
     }
 
     fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
