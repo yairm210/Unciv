@@ -240,7 +240,7 @@
 		"gold": 2,
 		"improvement": "Quarry",
 		"improvementStats": {"production": 1},
-		"uniques": ["+[15]% Production when constructing [Wonders]"]
+		"uniques": ["[+15]% Production when constructing [All] wonders [in all cities]"]
 	},
 	{
 		"name": "Whales",

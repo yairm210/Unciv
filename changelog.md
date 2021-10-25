@@ -1,3 +1,21 @@
+## 3.17.10
+
+Global uniques from buildings register correctly for units
+
+Solved multiple movement bugs
+
+Performance improvements
+
+By xlenstra:
+- Band-aided a bug with building unique application
+- Fixed belief increasing city-state influence resting point
+
+By SimonCeder:
+- Can now raze cities Austria has married
+- Improvements for fog of war
+
+Added resource tech requirement to tile info - By p-bystritsky
+
 ## 3.17.9
 
 By xlenstra:

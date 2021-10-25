@@ -117,6 +117,7 @@ object MapType {
     const val fourCorners = "Four Corners"
     const val perlin = "Perlin"
     const val archipelago = "Archipelago"
+    const val innerSea = "Inner Sea"
 
     // Cellular automata
     const val default = "Default"

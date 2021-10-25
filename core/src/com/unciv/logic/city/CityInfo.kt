@@ -752,7 +752,7 @@ class CityInfo {
     }
 
 
-    fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
+    fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
             .filter { it.params.none { param -> param == "in this city" } }
         // Note that we don't query religion here, as those only have local effects

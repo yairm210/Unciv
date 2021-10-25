@@ -91,6 +91,29 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
+    BuildingFilter("buildingFilter") {
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText == "All") return null
+            if (Stat.values().any { it.name == parameterText }) return null
+            if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
+            return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
+        } 
+    },
+    // Only used in values deprecated in 3.17.10
+        ConstructionFilter("constructionFilter") {
+            override fun getErrorSeverity(
+                parameterText: String,
+                ruleset: Ruleset
+            ): UniqueType.UniqueComplianceErrorSeverity? {
+                if (BuildingFilter.getErrorSeverity(parameterText, ruleset) == null) return null
+                if (BaseUnitFilter.getErrorSeverity(parameterText, ruleset) == null) return null
+                return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
+            }
+        },
+    //
     TerrainFilter("terrainFilter") {
         private val knownValues = setOf("All",
             "Coastal", "River", "Open terrain", "Rough terrain", "Water resource",
@@ -165,10 +188,17 @@ enum class UniqueParameterType(val parameterName:String) {
     },
     BeliefTypeName("beliefType") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-            UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
-                in BeliefType.values().map { it.name } -> null
-                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
-            }
+                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            in BeliefType.values().map { it.name } -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        }
+    },
+    Belief("belief") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            in ruleset.beliefs -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
     },
     FoundingOrEnhancing("foundingOrEnhancing") {
         private val knownValues = setOf("founding", "enhancing")
@@ -182,6 +212,13 @@ enum class UniqueParameterType(val parameterName:String) {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
             in ruleset.technologies -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
+    Specialist("specialist") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            in ruleset.specialists -> null
             else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
