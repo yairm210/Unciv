@@ -7,4 +7,8 @@ open class NamedStats : Stats(), INamed {
     override fun toString(): String {
         return name
     }
+    
+    fun cloneStats(): Stats {
+        return clone()
+    }
 }

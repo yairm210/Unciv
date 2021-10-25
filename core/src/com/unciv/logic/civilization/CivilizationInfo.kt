@@ -934,11 +934,11 @@ class CivilizationInfo {
     fun addStat(stat: Stat, amount: Int) {
         when (stat) {
             Stat.Culture -> { policies.addCulture(amount)
-                              totalCultureForContests += amount }
+                              if(amount > 0) totalCultureForContests += amount }
             Stat.Science -> tech.addScience(amount)
             Stat.Gold -> addGold(amount)
             Stat.Faith -> { religionManager.storedFaith += amount
-                            totalFaithForContests += amount }
+                            if(amount > 0) totalFaithForContests += amount }
             else -> {}
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead

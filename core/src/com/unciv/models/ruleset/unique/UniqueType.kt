@@ -62,7 +62,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     /////// Stat providing uniques
 
-    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief, UniqueTarget.Improvement),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global),
     @Deprecated("As of 3.16.16 - removed as of 3.17.11", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
@@ -151,6 +151,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
 
     BuyUnitsIncreasingCost("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global),
+    BuyBuildingsIncreasingCost("May buy [buildingFilter] buildings for [amount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global),
     @Deprecated("As of 3.17.9", ReplaceWith ("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"))
     BuyUnitsIncreasingCostEra("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])", UniqueTarget.Global),    
     BuyUnitsByProductionCost("May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
@@ -172,7 +173,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
-
 
 
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
@@ -264,8 +264,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
-    
-    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins),
 
     ///////////////////////////////////////// TILE UNIQUES /////////////////////////////////////////
 
@@ -305,13 +303,41 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     FreshWater("Fresh water", UniqueTarget.Terrain),
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
     
-    // Resource uniques
-    OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
+    /////// Resource uniques
+    ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
+    CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
     
+    ////// Improvement uniques
+    ImprovementBuildableByFreshWater("Can also be built on tiles adjacent to fresh water", UniqueTarget.Improvement),
+    ImprovementStatsOnTile("[stats] from [tileFilter] tiles", UniqueTarget.Improvement),
+    @Deprecated("As of 3.17.10", ReplaceWith("[stats] from [tileFilter] tiles <after discovering [tech]>"), DeprecationLevel.WARNING)
+    StatsOnTileWithTech("[stats] on [tileFilter] tiles once [tech] is discovered", UniqueTarget.Improvement),
+    @Deprecated("As of 3.17.10", ReplaceWith("[stats] <after discovering [tech]>"), DeprecationLevel.WARNING)
+    StatsWithTech("[stats] once [tech] is discovered", UniqueTarget.Improvement, UniqueTarget.Building),
+    ImprovementStatsForAdjacencies("[stats] for each adjacent [tileFilter]", UniqueTarget.Improvement),
+
+    CanBuildOutsideBorders("Can be built outside your borders", UniqueTarget.Improvement),
+    CanBuildJustOutsideBorders("Can be built just outside your borders", UniqueTarget.Improvement),
+    RequiresTechToBuildOnTile("Cannot be built on [tileFilter] tiles until [tech] is discovered", UniqueTarget.Improvement),
+    CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
+    NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
+    
+    DefensiveBonus("Gives a defensive bonus of [amount]%", UniqueTarget.Improvement),
+    ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused
+    DamagesAdjacentEnemyUnits("Deal [amount] damage to adjacent enemy units", UniqueTarget.Improvement),
+    @Deprecated("As of 3.17.10", ReplaceWith("Adjacent enemy units ending their turn take [30] damage"), DeprecationLevel.WARNING)
+    DamagesAdjacentEnemyUnitsForExactlyThirtyDamage("Deal 30 damage to adjacent enemy units", UniqueTarget.Improvement),
+    
+    GreatImprovement("Great Improvement", UniqueTarget.Improvement),
+    IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
+    
+    Unpillagable("Unpillagable", UniqueTarget.Improvement),
+    Indestructible("Indestructible", UniqueTarget.Improvement),
+
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
     
-    // civ conditionals
+    /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
@@ -320,11 +346,16 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalDuringEra("during the [era]", UniqueTarget.Conditional),
     ConditionalBeforeEra("before the [era]", UniqueTarget.Conditional),
     ConditionalStartingFromEra("starting from the [era]", UniqueTarget.Conditional),
+    
+    ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
+    ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
+    ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
+    ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
 
-    // city conditionals
+    /////// city conditionals
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
 
-    // unit conditionals
+    /////// unit conditionals
     ConditionalOurUnit("for [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
@@ -332,9 +363,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),
     ConditionalInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
-//    ConditionalIntercepting("when intercepting", UniqueTarget.Conditional),
 
-    // tile conditionals
+    /////// tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
 
@@ -376,6 +406,15 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns", UniqueTarget.Global),  // used in Policy
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
+    
+    ///////////////////////////////////////////// META /////////////////////////////////////////////
+    
+    
+    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins),
+    HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
+    HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
+    HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
+    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
     ;
 
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually

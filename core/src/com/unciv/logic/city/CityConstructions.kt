@@ -116,10 +116,12 @@ class CityConstructions {
             stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
         }
         
-        for (unique in cityInfo.getLocalMatchingUniques("[] once [] is discovered")) {
-            if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
-                stats.add(unique.stats)
-        }
+        // Deprecated since 3.17.11
+            for (unique in cityInfo.getLocalMatchingUniques(UniqueType.StatsWithTech)) {
+                if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
+                    stats.add(unique.stats)
+            }
+        //
         
         return stats
     }
@@ -317,8 +319,9 @@ class CityConstructions {
             SO, we create an entirely new CityStats and iterate there - problem solve!
             */
             val cityStats = CityStats(cityInfo)
+            cityStats.statsFromTiles = cityInfo.cityStats.statsFromTiles // take as-is
             val construction = cityInfo.cityConstructions.getConstruction(constructionName)
-            cityStats.update(construction)
+            cityStats.update(construction, false)
             cityStatsForConstruction = cityStats.currentCityStats
         }
 
@@ -533,19 +536,21 @@ class CityConstructions {
         if (!cityInfo.civInfo.gameInfo.gameParameters.godMode) {
             val construction = getConstruction(constructionName)
             if (construction is PerpetualConstruction) return false
-            val constructionCost =
-                (construction as INonPerpetualConstruction).getStatBuyCost(cityInfo, stat)
+            val constructionCost = (construction as INonPerpetualConstruction).getStatBuyCost(cityInfo, stat)
             if (constructionCost == null) return false // We should never end up here anyway, so things have already gone _way_ wrong
             cityInfo.addStat(stat, -1 * constructionCost)
 
-            if (cityInfo.civInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
-                .any {
+            val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
+            
+            if ((
+                    cityInfo.civInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState) +
+                    cityInfo.civInfo.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
+                ).any {
                     (
                         construction is BaseUnit && construction.matchesFilter(it.params[0]) ||
                         construction is Building && construction.matchesFilter(it.params[0])
                     )
                     && cityInfo.matchesFilter(it.params[3])
-                    && cityInfo.civInfo.getEraNumber() >= cityInfo.civInfo.gameInfo.ruleSet.eras[it.params[4]]!!.eraNumber
                     && it.params[2] == stat.name
                 }
             ) {
