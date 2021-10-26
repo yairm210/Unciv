@@ -19,9 +19,9 @@ object UnitAutomation {
         return unit.movement.canMoveTo(tile)
                 && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
                 && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
-                && unit.movement.canReach(tile)
-                && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo } // Don't want city-states exploring far outside their borders
-                && unit.getDamageFromTerrain(tile) <= 0)    // Don't take unnecessary damage
+                && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo }) // Don't want city-states exploring far outside their borders
+                && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
+                && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {
@@ -87,8 +87,8 @@ object UnitAutomation {
                 && tile.neighbors.all { it.getOwner() == null }
                 && tile.position in unit.civInfo.exploredTiles
                 && tile.getTilesInDistance(2).any { it.getOwner() == unit.civInfo }
-                && unit.movement.canReach(tile)
                 && unit.getDamageFromTerrain(tile) <= 0
+                && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
     @JvmStatic
