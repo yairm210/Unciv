@@ -161,11 +161,17 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
-        if (!unit.hasUnique(UniqueType.FoundCity) || tile.isWater || tile.isImpassible()) return null
+        if (!(unit.hasUnique(UniqueType.FoundCity) || unit.hasUnique(UniqueType.FoundCityNewContinent))
+                || tile.isWater || tile.isImpassible()) return null
+        // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
+        if (unit.civInfo.isOneCityChallenger() && unit.civInfo.hasEverOwnedOriginalCapital == true) return null
 
         if (unit.currentMovement <= 0 ||
                 tile.getTilesInDistance(2).any { it.isCityCenter() } ||
-                tile.getTilesAtDistance(3).any { it.isCityCenter() && it.getContinent() == tile.getContinent() })
+                tile.getTilesAtDistance(3).any { it.isCityCenter() && it.getContinent() == tile.getContinent() } ||
+                    (unit.hasUnique(UniqueType.FoundCityNewContinent) &&
+                    unit.civInfo.cities.isNotEmpty() &&
+                    unit.civInfo.getCapital().getCenterTile().getContinent() == unit.getTile().getContinent()))
             return UnitAction(UnitActionType.FoundCity, action = null)
 
         val foundAction = {

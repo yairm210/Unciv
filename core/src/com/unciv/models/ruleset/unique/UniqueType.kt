@@ -178,6 +178,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
+    FoundCityNewContinent("Founds a new city on foreign continents", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
     CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
