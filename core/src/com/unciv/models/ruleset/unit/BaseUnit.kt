@@ -90,7 +90,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (replacementTextForUniques != "") lines += replacementTextForUniques
         else for (unique in uniques.filterNot {
-            it.startsWith("Hidden ") && it.endsWith(" disabled") || it == "Unbuildable"
+            it.startsWith("Hidden ") && it.endsWith(" disabled") || it == UniqueType.Unbuildable.text
         })
             lines += unique.tr()
 
@@ -319,9 +319,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     )        
                 }
             )
-            + (cityInfo.getMatchingUniques(
-                    UniqueType.BuyUnitsByProductionCost, conditionalState
-                ).filter {
+            + (cityInfo.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
+                .filter {
                     it.params[1] == stat.name
                     && matchesFilter(it.params[0])
                 }.map {
@@ -382,7 +381,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val rejectionReasons = RejectionReasons()
         val ruleSet = civInfo.gameInfo.ruleSet
 
-        if (uniques.contains("Unbuildable")) 
+        if (hasUnique(UniqueType.Unbuildable))
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
@@ -481,7 +480,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()
         }
-        unit.promotions.XP = XP
+        unit.promotions.XP = XP        
 
         for (unique in cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) }) {
@@ -490,13 +489,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
             if (unit.matchesFilter(filter)
                 || (
-                        filter == "relevant"
-                                && civInfo.gameInfo.ruleSet.unitPromotions.values
-                            .any {
-                                it.name == promotion
-                                        && unit.type.name in it.unitTypes
-                            }
-                        )
+                    filter == "relevant"
+                    && civInfo.gameInfo.ruleSet.unitPromotions.values
+                        .any {
+                            it.name == promotion
+                            && unit.type.name in it.unitTypes
+                        }
+                    )
             ) {
                 unit.promotions.addPromotion(promotion, isFree = true)
             }
@@ -521,6 +520,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return when (filter) {
             unitType -> true
             name -> true
+            replaces -> true
             "All" -> true
 
             "Melee" -> isMelee()

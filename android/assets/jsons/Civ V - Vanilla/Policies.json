@@ -6,7 +6,7 @@
 		"policies": [
 			{
 				"name": "Aristocracy",
-				"uniques": ["+[15]% Production when constructing [Wonders]", "[+1 Happiness] per [10] population [in all cities]"],
+				"uniques": ["[+15]% Production when constructing [All] wonders [in all cities]", "[+1 Happiness] per [10] population [in all cities]"],
 				"row": 1,
 				"column": 1
 			},
@@ -49,7 +49,7 @@
 		"policies": [
 			{
 				"name": "Republic",
-				"uniques": ["[+1 Production] [in all cities]", "+[5]% Production when constructing [Buildings]"],
+				"uniques": ["[+1 Production] [in all cities]", "[+5]% Production when constructing [All] buildings [in all cities]"],
 				"row": 1,
 				"column": 1
 			},
@@ -61,7 +61,7 @@
 			},
 			{
 				"name": "Collective Rule",
-				"uniques": ["+[50]% Production when constructing [Settler] units [in capital]", "Free [Settler] appears"],
+				"uniques": ["[+50]% Production when constructing [Settler] units [in capital]", "Free [Settler] appears"],
 				"requires": ["Republic"],
 				"row": 2,
 				"column": 1
@@ -94,7 +94,7 @@
 		"policies": [
 			{
 				"name": "Warrior Code",
-				"uniques":["+[15]% Production when constructing [Melee] units [in all cities]", "Free [Great General] appears"],
+				"uniques":["[+15]% Production when constructing [Melee] units [in all cities]", "Free [Great General] appears"],
 				"row": 1,
 				"column": 2
 			},
@@ -135,7 +135,7 @@
 	},{
 		"name": "Piety",
 		"era": "Classical era",
-		"uniques": ["+[100]% Production when constructing a [Shrine]", "+[100]% Production when constructing a [Temple]", 
+		"uniques": ["[+100]% Production when constructing [Shrine] buildings [in all cities]", "[+100]% Production when constructing [Temple] buildings [in all cities]", 
 			"Incompatible with [Rationalism]"],
 		"policies": [
 			{
@@ -159,7 +159,7 @@
 			},
 			{
 				"name": "Reformation",
-				"uniques": ["+[33]% [Culture] [in all cities with a world wonder]", "Empire enters golden age"],
+				"uniques": ["[+33]% [Culture] [in all cities with a world wonder]", "Empire enters golden age"],
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 3
@@ -225,7 +225,7 @@
 	},
 	{
 		"name": "Commerce",
-		"uniques": ["+[25]% [Gold] [in capital]"],
+		"uniques": ["[+25]% [Gold] [in capital]"],
 		"era": "Medieval era",
 		"policies": [
 			{
@@ -391,7 +391,7 @@
 			},
 			{
 				"name": "Police State",
-				"uniques": ["[+3 Happiness] from every [Courthouse]", "+[100]% Production when constructing [Courthouse]"],
+				"uniques": ["[+3 Happiness] from every [Courthouse]", "[+100]% Production when constructing [Courthouse] buildings [in all cities]"],
 				// There are also some uniques regarding espoinage, which as of this writing is not yet implemented
 				"requires": ["Militarism"],
 				"row": 2,
@@ -399,7 +399,7 @@
 			},
 			{
 				"name": "Total War",
-				"uniques": ["+[25]% Production when constructing [Military] units [in all cities]", "New [Military] units start with [15] Experience [in all cities]"],
+				"uniques": ["[+25]% Production when constructing [Military] units [in all cities]", "New [Military] units start with [15] Experience [in all cities]"],
 				"requires": ["Police State","Fascism"],
 				"row": 3,
 				"column": 4
@@ -426,7 +426,7 @@
         },
 		{
 			"name": "Planned Economy",
-			"uniques": ["+[25]% [Science] from every [Factory]", "+[100]% Production when constructing a [Factory]"],
+			"uniques": ["+[25]% [Science] from every [Factory]", "[+100]% Production when constructing [Factory] buildings [in all cities]"],
 			"row": 1,
 			"column": 3
 		},

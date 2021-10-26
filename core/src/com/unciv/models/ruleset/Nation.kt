@@ -6,11 +6,10 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.INamed
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.colorFromRGB
 
@@ -177,7 +176,7 @@ class Nation : RulesetObject() {
         if (showResources) {
             val allMercantileResources = ruleset.tileResources.values
                 .filter { it.unique == "Can only be created by Mercantile City-States" // Deprecated 3.16.16
-                        || it.uniques.contains("Can only be created by Mercantile City-States") }
+                        || it.hasUnique(UniqueType.CityStateOnlyResource) }
 
             if (allMercantileResources.isNotEmpty()) {
                 textList += FormattedLine()

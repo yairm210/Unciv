@@ -88,7 +88,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private fun getUniquesStrings() = sequence {
         val tileBonusHashmap = HashMap<String, ArrayList<String>>()
         for (unique in uniqueObjects) when {
-            unique.placeholderText == "[] from [] tiles []" && unique.params[2] == "in this city" -> {
+            unique.isOfType(UniqueType.StatsFromTiles) && unique.params[2] == "in this city" -> {
                 val stats = unique.params[0]
                 if (!tileBonusHashmap.containsKey(stats)) tileBonusHashmap[stats] = ArrayList()
                 tileBonusHashmap[stats]!!.add(unique.params[1])
@@ -107,7 +107,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private fun getUniquesStringsWithoutDisablers() = getUniquesStrings()
         .filterNot {
             it.startsWith("Hidden ") && it.endsWith(" disabled") ||
-            it == "Unbuildable" ||
+            it == UniqueType.Unbuildable.text ||
             it == Constants.hideFromCivilopediaUnique
         }
 
@@ -158,7 +158,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (city == null) return stats
         val civInfo = city.civInfo
 
-        for (unique in city.getMatchingUniques("[] from every []")) {
+        for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
             if (!matchesFilter(unique.params[1])) continue
             stats.add(unique.stats)
         }
@@ -321,7 +321,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
 
-        for (unique in uniqueObjects.filter { it.placeholderText == "Cost increases by [] per owned city" })
+        for (unique in uniqueObjects.filter { it.isOfType(UniqueType.CostIncreasesPerCity) })
             productionCost += civInfo.cities.count() * unique.params[0].toInt()
 
         if (civInfo.isCityState())
@@ -403,7 +403,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.AlreadyBuilt)
         // for buildings that are created as side effects of other things, and not directly built,
         // or for buildings that can only be bought
-        if (uniques.contains("Unbuildable"))
+        if (hasUnique(UniqueType.Unbuildable))
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         for (unique in uniqueObjects) {
@@ -467,7 +467,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (civInfo.tech.isResearched(unique.params[0])) 
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
 
-                "Hidden when religion is disabled" -> 
+                UniqueType.HiddenWithoutReligion.text ->
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
             }
@@ -555,7 +555,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         for (unique in uniqueObjects) when (unique.placeholderText) {
-            "Requires a [] in this city" -> {
+            UniqueType.RequiresAnotherBuilding.text -> {
                 val filter = unique.params[0]
                 if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter) && !cityConstructions.containsBuildingOrEquivalent(filter))
                     rejectionReasons.add(
@@ -602,11 +602,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 )
             }
         }
-        val cannotBeBuiltWith = uniqueObjects
-            .firstOrNull { it.placeholderText == "Cannot be built with []" }
-            ?.params?.get(0)
-        if (cannotBeBuiltWith != null && cityConstructions.isBuilt(cannotBeBuiltWith))
-            rejectionReasons.add(RejectionReason.CannotBeBuiltWith.apply { errorMessage = "Cannot be built with [$cannotBeBuiltWith]" })
+        val cannotBeBuiltWithUnique = uniqueObjects
+            .firstOrNull { it.isOfType(UniqueType.CannotBeBuiltWith) }
+        if (cannotBeBuiltWithUnique != null && cityConstructions.isBuilt(cannotBeBuiltWithUnique.params[0]))
+            rejectionReasons.add(RejectionReason.CannotBeBuiltWith.apply { errorMessage = cannotBeBuiltWithUnique.text })
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
@@ -621,8 +620,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     it.resource != null
                     && requiredNearbyImprovedResources!!.contains(it.resource!!)
                     && it.getOwner() == civInfo
-                    && (it.getTileResource().improvement == it.improvement || it.isCityCenter()
-                       || (it.getTileImprovement()?.isGreatImprovement() == true && it.getTileResource().resourceType == ResourceType.Strategic) 
+                    && (it.tileResource.improvement == it.improvement || it.isCityCenter()
+                       || (it.getTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
                     )
                 }
             if (!containsResourceWithImprovement) 
@@ -684,7 +683,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
-                if (isStats(filter) && isStatRelated(Stat.valueOf(filter))) return true
+                val stat = Stat.values().firstOrNull { it.name == filter }
+                if (stat != null && isStatRelated(stat)) return true
                 return false
             }
         }
@@ -694,7 +694,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null)[stat] > 0) return true
         if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats[stat] > 0 }) return true
-        if (uniqueObjects.any { it.placeholderText == "[] from [] tiles []" && it.stats[stat] > 0 }) return true
+        if (uniqueObjects.any { it.isOfType(UniqueType.StatsFromTiles) && it.stats[stat] > 0 }) return true
         return false
     }
 

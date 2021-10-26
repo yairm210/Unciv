@@ -223,7 +223,8 @@ class MapUnit {
         return tempUniques.any { it.placeholderText == unique }
     }
 
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Boolean {
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals
+            = StateForConditionals(civInfo, unit=this)): Boolean {
         return tempUniques.any { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
     }
 
@@ -326,12 +327,6 @@ class MapUnit {
                 movement += 1
         //
 
-        // Deprecated since 3.16.11
-            if (isEmbarked()) {
-                movement += civInfo.getMatchingUniques(UniqueType.EmbarkedUnitMovement1).count()
-                if (civInfo.hasUnique(UniqueType.EmbarkedUnitMovement2)) movement += 1
-            }
-        //
         
         if (movement < 1) movement = 1
 
@@ -345,8 +340,10 @@ class MapUnit {
     private fun getVisibilityRange(): Int {
         var visibilityRange = 2
 
-        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked)
-            && !civInfo.hasUnique(UniqueType.NormalVisionWhenEmbarked)) {
+        val conditionalState = StateForConditionals(civInfo = civInfo, unit = this)
+
+        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)
+            && !civInfo.hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)) {
             return 1
         }
         
@@ -614,9 +611,7 @@ class MapUnit {
                     tile.roadStatus = RoadStatus.None
                 else {
                     val removedFeatureObject = tile.ruleset.terrains[removedFeatureName]
-                    if (removedFeatureObject != null && removedFeatureObject.uniques
-                            .contains("Provides a one-time Production bonus to the closest city when cut down")
-                    ) {
+                    if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
                         tryProvideProductionToClosestCity(removedFeatureName)
                     }
                     tile.terrainFeatures.remove(removedFeatureName)
@@ -1006,7 +1001,7 @@ class MapUnit {
 
     fun getDamageFromTerrain(tile: TileInfo = currentTile): Int {
         if (civInfo.nonStandardTerrainDamage) {
-            for (unique in getMatchingUniques("Units ending their turn on [] tiles take [] damage")) {
+            for (unique in getMatchingUniques(UniqueType.DamagesContainingUnits)) {
                 if (unique.params[0] in tile.getAllTerrains().map { it.name }) {
                     return unique.params[1].toInt() // Use the damage from the unique
                 }
@@ -1019,15 +1014,16 @@ class MapUnit {
     private fun doCitadelDamage() {
         // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
         val citadelTile = currentTile.neighbors
-            .firstOrNull {
-                it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) &&
-                        with(it.getTileImprovement()) {
-                            this != null && this.hasUnique("Deal 30 damage to adjacent enemy units")
-                        }
+            .filter {
+                it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) && it.improvement != null
+            }.maxByOrNull { tile ->
+                tile.getTileImprovement()!!
+                    .getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
+                    .sumOf { it.params[0].toInt() }
             }
 
         if (citadelTile != null) {
-            health -= 30
+            health -= citadelTile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits).sumOf { it.params[0].toInt() }
             val locations = LocationAction(listOf(citadelTile.position, currentTile.position))
             if (health <= 0) {
                 civInfo.addNotification(

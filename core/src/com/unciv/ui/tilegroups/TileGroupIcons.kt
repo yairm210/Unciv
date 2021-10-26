@@ -23,7 +23,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
     fun update(showResourcesAndImprovements: Boolean, showTileYields: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv: CivilizationInfo?) {
         updateResourceIcon(showResourcesAndImprovements)
-        updateImprovementIcon(showResourcesAndImprovements)
+        updateImprovementIcon(showResourcesAndImprovements, viewingCiv)
         updateStartingLocationIcon(showResourcesAndImprovements)
 
         if (viewingCiv != null) updateYieldIcon(showTileYields, viewingCiv)
@@ -104,12 +104,13 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
 
-    private fun updateImprovementIcon(showResourcesAndImprovements: Boolean) {
+    private fun updateImprovementIcon(showResourcesAndImprovements: Boolean, viewingCiv: CivilizationInfo?) {
         improvementIcon?.remove()
         improvementIcon = null
-        if (tileGroup.tileInfo.improvement == null || !showResourcesAndImprovements) return
+        val shownImprovement = tileGroup.tileInfo.getShownImprovement(viewingCiv)
+        if (shownImprovement == null || !showResourcesAndImprovements) return
 
-        val newImprovementImage = ImageGetter.getImprovementIcon(tileGroup.tileInfo.improvement!!)
+        val newImprovementImage = ImageGetter.getImprovementIcon(shownImprovement)
         tileGroup.miscLayerGroup.addActor(newImprovementImage)
         newImprovementImage.run {
             setSize(20f, 20f)

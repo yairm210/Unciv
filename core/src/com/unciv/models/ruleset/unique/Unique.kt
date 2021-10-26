@@ -5,7 +5,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.ruleset.Ruleset
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -22,11 +21,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
     val conditionals: List<Unique> = text.getConditionals()
 
-    fun isOfType(uniqueType: UniqueType) = uniqueType == type
+    val allParams = params + conditionals.flatMap { it.params }
 
-    /** We can't save compliance errors in the unique, since it's ruleset-dependant */
-    fun matches(uniqueType: UniqueType, ruleset: Ruleset) = isOfType(uniqueType)
-        && uniqueType.getComplianceErrors(this, ruleset).isEmpty()
+    fun isOfType(uniqueType: UniqueType) = uniqueType == type
 
     fun conditionalsApply(civInfo: CivilizationInfo? = null, city: CityInfo? = null): Boolean {
         return conditionalsApply(StateForConditionals(civInfo, city))
@@ -57,7 +54,15 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.getEraNumber() >= state.civInfo.gameInfo.ruleSet.eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalDuringEra ->
                 state.civInfo != null && state.civInfo.getEraNumber() == state.civInfo.gameInfo.ruleSet.eras[condition.params[0]]!!.eraNumber
-
+            UniqueType.ConditionalTech ->
+                state.civInfo != null && state.civInfo.tech.isResearched(condition.params[0])
+            UniqueType.ConditionalNoTech ->
+                state.civInfo != null && !state.civInfo.tech.isResearched(condition.params[0])
+            UniqueType.ConditionalPolicy ->
+                state.civInfo != null && state.civInfo.policies.isAdopted(condition.params[0])
+            UniqueType.ConditionalNoPolicy ->
+                state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
+            
             UniqueType.ConditionalSpecialistCount -> 
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
 
@@ -112,3 +117,4 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
+

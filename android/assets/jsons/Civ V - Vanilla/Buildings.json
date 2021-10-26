@@ -67,7 +67,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 1},
-		"uniques": ["+[10]% [Food] [in all cities]", "+[15]% Production when constructing [Ranged] units [in all cities]"],
+		"uniques": ["[+10]% [Food] [in all cities]", "[+15]% Production when constructing [Ranged] units [in all cities]"],
 		"requiredTech": "Archery",
 		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson"
 	},
@@ -239,7 +239,7 @@
 		"maintenance": 1,
 		"requiredNearbyImprovedResources": ["Horses","Sheep","Cattle"],
 		"hurryCostModifier": 25,
-		"uniques": ["+[15]% Production when constructing [Mounted] units [in this city]",
+		"uniques": ["[+15]% Production when constructing [Mounted] units [in this city]",
 			"[+1 Production] from [Cattle] tiles [in this city]",
 			"[+1 Production] from [Horses] tiles [in this city]",
 			"[+1 Production] from [Sheep] tiles [in this city]"],
@@ -390,7 +390,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 1},
-		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production, +1 Gold] from [Desert] tiles without [Flood plains] [in this city]", "Gain a free [Amphitheater] [in this city]", "[+6 Culture] once [Archaeology] is discovered"],
+		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production, +1 Gold] from [Desert] tiles without [Flood plains] [in this city]", "Gain a free [Amphitheater] [in this city]", "[+6 Culture] <after discovering [Archaeology]>"],
 		"requiredTech": "Currency",
 		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones"
 	},
@@ -528,9 +528,9 @@
 		"requiredNearbyImprovedResources": ["Iron"],
 		"requiredTech": "Metal Casting",
 		// If spaceship parts are changed into units, the spaceship part unique should be changed to
-		// "+[15]% Production when constructing [Spaceship part] units [in this city]"
-		"uniques": ["+[15]% Production when constructing [Spaceship part] [in this city]",
-			"+[15]% Production when constructing [Land] units [in this city]",
+		// "[+15]% Production when constructing [Spaceship part] units [in this city]"
+		"uniques": ["[+15]% Production when constructing [Spaceship part] buildings [in this city]",
+			"[+15]% Production when constructing [Land] units [in this city]",
 			"[+1 Production] from [Iron] tiles [in this city]"]
 	},
 	// Column 6
@@ -603,7 +603,7 @@
 		"culture": 2,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Walls",
-		"uniques": ["[+1 Gold] once [Flight] is discovered", "Destroyed when the city is captured"],
+		"uniques": ["[+1 Gold] <after discovering [Flight]>", "Destroyed when the city is captured"],
 		"requiredTech": "Chivalry"
 	},
 	{
@@ -684,7 +684,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 2},
-		"uniques": ["+[25]% [Culture] [in all cities]"],
+		"uniques": ["[+25]% [Culture] [in all cities]"],
 		"requiredTech": "Acoustics",
 		"quote": "'I live and love in God's peculiar light.' - Michelangelo Buonarroti"
 	},
@@ -765,7 +765,7 @@
 		"maintenance": 3,
 		"requiredBuilding": "Harbor",
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles [in this city]",
-			"Must be next to [Coast]", "+[15]% Production when constructing [Water] units [in this city]"],
+			"Must be next to [Coast]", "[+15]% Production when constructing [Water] units [in this city]"],
 		"requiredTech": "Navigation"
 	},
 	{
@@ -802,7 +802,7 @@
 		"specialistSlots": {"Engineer": 1},
 		"hurryCostModifier": 25,
 		"maintenance": 2,
-		"uniques": ["Must not be on [Hill]", "+[10]% Production when constructing [Buildings] [in this city]"],
+		"uniques": ["Must not be on [Hill]", "[+10]% Production when constructing [All] buildings [in this city]"],
 		"requiredTech": "Economics"
 	},
 	{
@@ -1107,9 +1107,9 @@
 		"isWonder": true,
 		"greatPersonPoints": {"Great Scientist": 1},
 		// If spaceship parts are changed into units, the spaceship part unique should be changed to
-		// "+[25]% Production when constructing [Spaceship part] units [in this city]"
+		// "[+25]% Production when constructing [Spaceship part] units [in this city]"
 		"uniques": ["[2] free [Great Scientist] units appear",
-			"+[25]% Production when constructing [Spaceship part] [in this city]",
+			"[+25]% Production when constructing [Spaceship part] buildings [in this city]",
 			"Gain a free [Spaceship Factory] [in this city]"],
 		"requiredTech": "Satellites",
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.' - Anatole France"
@@ -1127,8 +1127,8 @@
 		"cost": 360,
 		"requiredBuilding": "Factory",
 		// If spaceship parts are changed into units, this unique should be changed to
-		// "+[50]% Production when constructing [Spaceship part] units [in this city]"
-		"uniques": ["+[50]% Production when constructing [Spaceship part] [in this city]"],
+		// "[+50]% Production when constructing [Spaceship part] units [in this city]"
+		"uniques": ["[+50]% Production when constructing [Spaceship part] buildings [in this city]"],
 		"requiredTech": "Robotics"
 	},
 	// Column 16

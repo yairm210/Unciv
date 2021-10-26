@@ -44,17 +44,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             numberOfUnitsToPayFor += numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
         }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedUnitMaintenanceCostsByFilter)) {
-            val numberOfUnitsWithDiscount = min(
-                numberOfUnitsToPayFor,
-                unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
-            )
-            numberOfUnitsToPayFor -= numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
-        }
-        for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedUnitMaintenanceCostsGlobally)) {
-            numberOfUnitsToPayFor *= 1f - unique.params[0].toFloat() / 100f
-        }
-
         val turnLimit =
             BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
         val gameProgress =

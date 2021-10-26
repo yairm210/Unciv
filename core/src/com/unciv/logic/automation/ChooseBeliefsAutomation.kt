@@ -6,6 +6,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -44,7 +45,8 @@ object ChooseBeliefsAutomation {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
             when (unique.placeholderText) {
-                "[] from every []" -> if (tile.matchesFilter(unique.params[1])) bonusYield += unique.stats.values.sum()
+                UniqueType.StatsFromObject.placeholderText -> if (tile.matchesFilter(unique.params[1]))
+                    bonusYield += unique.stats.values.sum()
                 "[] from [] tiles without [] []" -> 
                     if (city.matchesFilter(unique.params[3])
                         && tile.matchesFilter(unique.params[1])
@@ -76,7 +78,7 @@ object ChooseBeliefsAutomation {
                     if (city.getCenterTile().matchesFilter(unique.params[1])) 
                         unique.stats.values.sum() // Modified by personality 
                     else 0f
-                "[] from every []", "[] from every [] in cities where this religion has at least [] followers" -> 
+                UniqueType.StatsFromObject.placeholderText, "[] from every [] in cities where this religion has at least [] followers" ->
                     when {
                         ruleSet.buildings.containsKey(unique.params[1]) -> {
                             unique.stats.values.sum() / 

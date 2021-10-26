@@ -256,7 +256,7 @@ class Ruleset {
      *  */
     fun updateBuildingCosts() {
         for (building in buildings.values) {
-            if (building.cost == 0 && !building.uniques.contains("Unbuildable")) {
+            if (building.cost == 0 && !building.hasUnique(UniqueType.Unbuildable)) {
                 val column = technologies[building.requiredTech]?.column
                         ?: throw UncivShowableException("Building (${building.name}) is buildable and therefore must either have an explicit cost or reference an existing tech")
                 building.cost = if (building.isAnyWonder()) column.wonderCost else column.buildingCost
@@ -393,7 +393,7 @@ class Ruleset {
         }
 
         for (building in buildings.values) {
-            if (building.requiredTech == null && building.cost == 0 && !building.uniques.contains("Unbuildable"))
+            if (building.requiredTech == null && building.cost == 0 && !building.hasUnique(UniqueType.Unbuildable))
                 lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
 
             checkUniques(building, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
@@ -588,7 +588,7 @@ class Ruleset {
                     lines.add("${promotion.name} requires promotion $prereq which does not exist!", RulesetErrorSeverity.Warning)
             for (unitType in promotion.unitTypes)
                 if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unitType)))
-                    lines.add("${promotion.name} references unit type ${unitType}, which does not exist!", RulesetErrorSeverity.Warning)
+                    lines.add("${promotion.name} references unit type $unitType, which does not exist!", RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
         for (unitType in unitTypes.values) {

@@ -372,15 +372,13 @@ object Battle {
     }
 
     private fun postBattleAddXp(attacker: ICombatant, defender: ICombatant) {
-        if (attacker.isMelee()) {
-            if (!defender.isCivilian()) // unit was not captured but actually attacked
-            {
-                addXp(attacker, 5, defender)
-                addXp(defender, 4, attacker)
-            }
-        } else { // ranged attack
+        if (!attacker.isMelee()) { // ranged attack
             addXp(attacker, 2, defender)
             addXp(defender, 2, attacker)
+        } else if (!defender.isCivilian()) // unit was not captured but actually attacked
+        {
+            addXp(attacker, 5, defender)
+            addXp(defender, 4, attacker)
         }
     }
 
@@ -697,20 +695,20 @@ object Battle {
         }
 
         // Remove improvements, add fallout
-        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Indestructible)) {
             tile.improvement = null
         }
         tile.improvementInProgress = null
         tile.turnsToImprovement = 0
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
-            if (tile.terrainFeatures.any { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Resistant to nukes") }) {
+            if (tile.terrainFeatures.any { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.ResistsNukes) }) {
                 if (Random().nextFloat() < 0.25f) {
-                    tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Can be destroyed by nukes") }
+                    tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
                     tile.terrainFeatures.add("Fallout")
                 }
             } else if (Random().nextFloat() < 0.5f) {
-                tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Can be destroyed by nukes") }
+                tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
                 tile.terrainFeatures.add("Fallout")
             }
         }
@@ -760,20 +758,20 @@ object Battle {
         }
 
         // Remove improvements
-        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique("Indestructible")) {
+        if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Indestructible)) {
             tile.improvement = null
         }
         tile.improvementInProgress = null
         tile.turnsToImprovement = 0
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
-            if (tile.terrainFeatures.any { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Resistant to nukes") }) {
+            if (tile.terrainFeatures.any { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.ResistsNukes) }) {
                 if (Random().nextFloat() < 0.25f) {
-                    tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Can be destroyed by nukes") }
+                    tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
                     tile.terrainFeatures.add("Fallout")
                 }
             } else if (Random().nextFloat() < 0.5f) {
-                tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.uniques.contains("Can be destroyed by nukes") }
+                tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
                 tile.terrainFeatures.add("Fallout")
             }
         }

@@ -196,7 +196,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             {
                 val canBombard = UnitAutomation.getBombardTargets(attacker.city).contains(defender.getTile())
                 if (canBombard) {
-                    attackableTile = AttackableTile(attacker.getTile(), defender.getTile())
+                    attackableTile = AttackableTile(attacker.getTile(), defender.getTile(), 0f)
                 }
             }
         }

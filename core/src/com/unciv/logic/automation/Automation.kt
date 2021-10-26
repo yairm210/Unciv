@@ -221,7 +221,7 @@ object Automation {
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
         if (tile.hasViewableResource(civInfo)) {
-            val resource = tile.getTileResource()
+            val resource = tile.tileResource
             if (resource.resourceType != ResourceType.Bonus) rank += 1f // for usage
             if (tile.improvement == null) rank += 1f // improvement potential - resources give lots when improved!
         }
@@ -243,7 +243,7 @@ object Automation {
 
         // Resources are good: less points
         if (tile.hasViewableResource(cityInfo.civInfo)) {
-            if (tile.getTileResource().resourceType != ResourceType.Bonus) score -= 105
+            if (tile.tileResource.resourceType != ResourceType.Bonus) score -= 105
             else if (distance <= 3) score -= 104
             
         } else {
@@ -273,7 +273,7 @@ object Automation {
             val adjacentDistance = cityInfo.getCenterTile().aerialDistanceTo(adjacentTile)
             if (adjacentTile.hasViewableResource(cityInfo.civInfo) &&
                 (adjacentDistance < 3 ||
-                    adjacentTile.getTileResource().resourceType != ResourceType.Bonus
+                    adjacentTile.tileResource.resourceType != ResourceType.Bonus
                 )
             ) score -= 1
             if (adjacentTile.naturalWonder != null) {

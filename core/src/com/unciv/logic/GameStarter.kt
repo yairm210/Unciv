@@ -222,7 +222,7 @@ object GameStarter {
 
         val allMercantileResources = ruleset.tileResources.values.filter {
             it.unique == "Can only be created by Mercantile City-States" // Deprecated as of 3.16.16
-                || it.uniques.contains("Can only be created by Mercantile City-States") }.map { it.name }
+                || it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
 
 
         val unusedMercantileResources = Stack<String>()
@@ -486,7 +486,7 @@ object GameStarter {
         val relevantTiles = spawn.getTilesInDistance(2).shuffled()
 
         for (tile in relevantTiles) {
-            if(tile.resource != null && tile.getTileResource().resourceType == ResourceType.Luxury)
+            if(tile.resource != null && tile.tileResource.resourceType == ResourceType.Luxury)
                 return  // At least one luxury; all set
         }
 

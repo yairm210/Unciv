@@ -470,14 +470,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 passingMovementSpent = 0f
             }
 
-
             previousTile = tile
-            
+
+            // We can't continue, stop here.
             if (unit.isDestroyed || unit.currentMovement - passingMovementSpent < Constants.minimumMovementEpsilon) {
-                unit.currentMovement = passingMovementSpent // silly floats which are "almost zero"
                 break
             }
         }
+
+        // Silly floats which are almost zero
+        if (unit.currentMovement < Constants.minimumMovementEpsilon)
+            unit.currentMovement = 0f
+
 
         if (!unit.isDestroyed)
             unit.putInTile(lastReachedEnterableTile)

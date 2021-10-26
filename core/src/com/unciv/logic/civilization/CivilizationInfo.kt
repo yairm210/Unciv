@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -161,6 +160,14 @@ class CivilizationInfo {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
+    // This double construction because for some reason the game wants to load a
+    // map<Vector2, String> as a map<String, String> causing all sorts of type problems.
+    // So we let the game have its map<String, String> and remap it in setTransients,
+    // everyone's happy. Sort of.
+    var lastSeenImprovementSaved = HashMap<String, String>()
+    @Transient
+    var lastSeenImprovement = HashMap<Vector2, String>()
+
     // To correctly determine "game over" condition as clarified in #4707
     // Nullable type meant to be deprecated and converted to non-nullable,
     // default false once we no longer want legacy save-game compatibility
@@ -208,6 +215,7 @@ class CivilizationInfo {
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
         // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
+        toReturn.lastSeenImprovementSaved.putAll(lastSeenImprovement.mapKeys { it.key.toString() })
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
@@ -343,7 +351,7 @@ class CivilizationInfo {
         cities.asSequence().flatMap {
             city ->
                 if (cityItIsFor != null && city == cityItIsFor)
-                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" } }
+                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" || param == "in all cities" } }
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
@@ -353,8 +361,7 @@ class CivilizationInfo {
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null, cityToIgnore: CityInfo? = null) = sequence {
-        val ruleset = gameInfo.ruleSet
-        yieldAll(nation.uniqueObjects.asSequence().filter {it.matches(uniqueType, ruleset) })
+        yieldAll(nation.uniqueObjects.asSequence().filter {it.isOfType(uniqueType) })
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
             .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType) }
@@ -363,9 +370,9 @@ class CivilizationInfo {
         yieldAll(tech.techUniques.getUniques(uniqueType))
         yieldAll(temporaryUniques.asSequence()
             .map { it.first }
-            .filter { it.matches(uniqueType, ruleset) }
+            .filter { it.isOfType(uniqueType) }
         )
-        yieldAll(getEra().getMatchingUniques(uniqueType))
+        yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
     }.filter {
@@ -714,7 +721,7 @@ class CivilizationInfo {
 
         passThroughImpassableUnlocked = passableImpassables.isNotEmpty()
         // Cache whether this civ gets nonstandard terrain damage for performance reasons.
-        nonStandardTerrainDamage = getMatchingUniques("Units ending their turn on [] tiles take [] damage")
+        nonStandardTerrainDamage = getMatchingUniques(UniqueType.DamagesContainingUnits)
             .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
         // Cache the last era each resource is used for buildings or units respectively for AI building evaluation
@@ -732,6 +739,8 @@ class CivilizationInfo {
         }
 
         hasLongCountDisplayUnique = hasUnique(UniqueType.MayanCalendarDisplay)
+
+        lastSeenImprovement.putAll(lastSeenImprovementSaved.mapKeys { Vector2().fromString(it.key) })
     }
 
     fun updateSightAndResources() {
