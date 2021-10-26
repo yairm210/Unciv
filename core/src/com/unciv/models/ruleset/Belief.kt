@@ -22,9 +22,13 @@ class Belief : RulesetObject() {
     override fun getIconName() = if (type == BeliefType.None) "Religion" else type.name
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
+        return getCivilopediaTextLines(ruleset, false)
+    }
+    
+    fun getCivilopediaTextLines(ruleset: Ruleset, centerType: Boolean): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
         if (type != BeliefType.None)
-            textList += FormattedLine("{Type}: $type", color = type.color )
+            textList += FormattedLine("{Type}: $type", color = type.color, centered = centerType)
         uniqueObjects.forEach {
             textList += FormattedLine(it)
         }

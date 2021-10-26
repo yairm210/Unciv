@@ -3,11 +3,19 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.ReligionState
 import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
+import kotlin.math.max
 import kotlin.math.min
 
 class ReligionOverviewTable(
@@ -16,6 +24,10 @@ class ReligionOverviewTable(
 ): Table() {
     
     val gameInfo = viewingPlayer.gameInfo
+    
+    private val civStatsTable = Table(CameraStageBaseScreen.skin)
+    
+    private val religionsTable = Table(CameraStageBaseScreen.skin)
     private val topButtons = Table(CameraStageBaseScreen.skin)
     private val topButtonLabel = "Click an icon to see the stats of this religion".toLabel()
     private val statsTable = Table(CameraStageBaseScreen.skin)
@@ -23,13 +35,38 @@ class ReligionOverviewTable(
     private var selectedReligion: String? = null
     
     init {
+        addCivSpecificStats(civStatsTable)
         addReligionButtons()
+
+        religionsTable.add(topButtons).pad(5f).row()
+        religionsTable.add(topButtonLabel).pad(5f)
+        religionsTable.addSeparator()
+        religionsTable.add(statsTable).pad(5f).row()
+        religionsTable.add(beliefsTable).pad(5f)
         
-        add(topButtons).pad(5f).row()
-        add(topButtonLabel).pad(5f)
-        addSeparator()
-        add(statsTable).pad(5f).row()
-        add(beliefsTable).pad(5f)
+        add(civStatsTable).top().left().padRight(25f)
+        add(religionsTable)
+    }
+    
+    private fun addCivSpecificStats(statsTable: Table) {
+        if (viewingPlayer.religionManager.canGenerateProphet()) {
+            statsTable.add("Minimal faith required for\nthe next [great prophet equivalent]:"
+                .fillPlaceholders(viewingPlayer.religionManager.getGreatProphetEquivalent()!!)
+                .toLabel()
+            ).left()
+            statsTable.add(
+                (viewingPlayer.religionManager.faithForNextGreatProphet() + 1)
+                .toLabel()
+            ).right().pad(5f).row()
+        }
+        
+        statsTable.add("Religions founded:".toLabel()).left()
+        
+        val foundedReligions = viewingPlayer.gameInfo.civilizations.count { it.religionManager.religionState >= ReligionState.Religion }
+        statsTable.add((viewingPlayer.religionManager.amountOfFoundableReligions() - foundedReligions).toLabel()).right().pad(5f).row()
+        
+        statsTable.add("Religious status:".toLabel()).left()
+        statsTable.add(viewingPlayer.religionManager.religionState.toString().toLabel()).right().pad(5f).row()
     }
     
     private fun addReligionButtons() {
@@ -71,43 +108,46 @@ class ReligionOverviewTable(
             beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
         }
         
-        statsTable.add("Religion Name:".toLabel())
-        statsTable.add(religion.getReligionDisplayName().toLabel()).pad(5f).row()
-        statsTable.add("Founding Civ:".toLabel())
+        statsTable.add("Religion Name:".toLabel()).left()
+        statsTable.add(religion.getReligionDisplayName().toLabel()).right().pad(5f).row()
+        statsTable.add("Founding Civ:".toLabel()).left()
         val foundingCivName =
             if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName) 
                 religion.foundingCivName
             else "???"
-        statsTable.add(foundingCivName.toLabel()).pad(5f).row()
+        statsTable.add(foundingCivName.toLabel()).right().pad(5f).row()
         if (religion.isMajorReligion()) {
             val holyCity = gameInfo.getCities().firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion.name }
             if (holyCity != null) {
-                statsTable.add("Holy City:".toLabel())
+                statsTable.add("Holy City:".toLabel()).left()
                 val cityName = 
                     if (viewingPlayer.exploredTiles.contains(holyCity.getCenterTile().position))
                         holyCity.name
                     else "???"
-                statsTable.add(cityName.toLabel()).pad(5f).row()
+                statsTable.add(cityName.toLabel()).right().pad(5f).row()
             }
         }
-        statsTable.add("Cities following this religion:".toLabel())
-        statsTable.add(gameInfo.getCivilization(religion.foundingCivName).religionManager.numberOfCitiesFollowingThisReligion().toString()).pad(5f).row()
+        statsTable.add("Cities following this religion:".toLabel()).left()
+        statsTable.add(gameInfo.getCivilization(religion.foundingCivName).religionManager.numberOfCitiesFollowingThisReligion().toString()).right().pad(5f).row()
         
-        val minWidth = min(statsTable.minWidth, beliefsTable.minWidth) + 5f
+        val minWidth = max(statsTable.minWidth, beliefsTable.minWidth) + 5
         
         statsTable.width = minWidth
         for (cell in beliefsTable.cells) {
             cell.minWidth(minWidth)           
         }
     }
-    
-    private fun createBeliefDescription(belief: Belief): Table {
-        val contentsTable = Table(CameraStageBaseScreen.skin)
-        contentsTable.add(belief.type.name.toLabel()).row()
-        contentsTable.add(belief.name.toLabel(fontSize = 24)).row()
-        contentsTable.add(belief.uniques.joinToString().toLabel())
-        contentsTable.background = ImageGetter.getBackground(ImageGetter.getBlue())
-        contentsTable.padTop(5f).padBottom(5f)
-        return contentsTable
-    }
+
+    private fun createBeliefDescription(belief: Belief) =
+        MarkupRenderer.render(
+            belief.run { sequence {
+                yield(FormattedLine(name, size = 24, centered = true))
+                yield(FormattedLine())
+                yieldAll(getCivilopediaTextLines(gameInfo.ruleSet, true))
+            } }.toList()
+        ) {
+            UncivGame.Current.setScreen(CivilopediaScreen(gameInfo.ruleSet, link = it))
+        }.apply {
+            background = ImageGetter.getBackground(ImageGetter.getBlue())
+        }
 }
