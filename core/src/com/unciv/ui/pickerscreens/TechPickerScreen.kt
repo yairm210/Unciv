@@ -12,12 +12,18 @@ import com.unciv.logic.civilization.TechManager
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaCategories
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.utils.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null, private val freeTechPick: Boolean = false) : PickerScreen() {
+class TechPickerScreen(
+    internal val civInfo: CivilizationInfo,
+    centerOnTech: Technology? = null,
+    private val freeTechPick: Boolean = false
+) : PickerScreen() {
 
     private var techNameToButton = HashMap<String, TechButton>()
     private var selectedTech: Technology? = null
@@ -45,11 +51,17 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
 
     private val turnsToTech = civInfo.gameInfo.ruleSet.technologies.values.associateBy({ it.name }, { civTech.turnsToTech(it.name) })
-    
+
     init {
         setDefaultCloseAction()
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         scrollPane.setOverscroll(false, false)
+
+        descriptionLabel.onClick {
+            if (selectedTech != null)
+                game.setScreen(CivilopediaScreen(civInfo.gameInfo.ruleSet, CivilopediaCategories.Technology, selectedTech!!.name))
+        }
+
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
         createTechTable()
