@@ -18,6 +18,23 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 class MapRegions (val ruleset: Ruleset){
+    companion object {
+        val minimumFoodForRing = mapOf(1 to 1, 2 to 4, 3 to 4)
+        val minimumProdForRing = mapOf(1 to 0, 2 to 0, 3 to 2)
+        val minimumGoodForRing = mapOf(1 to 3, 2 to 6, 3 to 8)
+        const val maximumJunk = 9
+
+        val firstRingFoodScores = listOf(0, 8, 14, 19, 22, 24, 25)
+        val firstRingProdScores = listOf(0, 10, 16, 20, 20, 12, 0)
+        val secondRingFoodScores = listOf(0, 2, 5, 10, 20, 25, 28, 30, 32, 34, 35)
+        val secondRingProdScores = listOf(0, 10, 20, 25, 30, 35)
+
+        val closeStartPenaltyForRing =
+                mapOf(  0 to 99, 1 to 97, 2 to 95,
+                        3 to 92, 4 to 89, 5 to 69,
+                        6 to 57, 7 to 24, 8 to 15 )
+    }
+
     private val regions = ArrayList<Region>()
     private val tileData = HashMap<Vector2, MapGenTileData>()
 
@@ -32,17 +49,14 @@ class MapRegions (val ruleset: Ruleset){
             tileMap.mapParameters.mapSize.radius.toFloat()
         else
             (max(tileMap.mapParameters.mapSize.width / 2, tileMap.mapParameters.mapSize.height / 2)).toFloat()
-        // A hueg box including the entire map.
+        // A huge box including the entire map.
         val mapRect = Rectangle(-radius, -radius, radius * 2 + 1, radius * 2 + 1)
 
         // Lots of small islands - just split ut the map in rectangles while ignoring Continents
         // 25% is chosen as limit so Four Corners maps don't fall in this category
         if (largestContinent / totalLand < 0.25f) {
             // Make a huge rectangle covering the entire map
-            val hugeRect = Region()
-            hugeRect.continentID = -1 // Don't care about continents
-            hugeRect.rect = mapRect
-            hugeRect.tileMap = tileMap
+            val hugeRect = Region(tileMap, mapRect, -1) // -1 meaning ignore continent data
             hugeRect.affectedByWorldWrap = false // Might as well start at the seam
             hugeRect.updateTiles()
             divideRegion(hugeRect, numRegions)
@@ -77,23 +91,15 @@ class MapRegions (val ruleset: Ruleset){
 
         // Split up the continents
         for (continent in civsAddedToContinent.keys) {
-            val continentRegion = Region()
+            val continentRegion = Region(tileMap, Rectangle(mapRect), continent)
             val cols = continentIsAtCol[continent]!!
-            continentRegion.continentID = continent
-            continentRegion.rect = Rectangle(mapRect)
-            // The rightmost column which does not have a neighbor on the left
+            // Set origin at the rightmost column which does not have a neighbor on the left
             continentRegion.rect.x = cols.filter { !cols.contains(it - 1) }.maxOf { it }.toFloat()
             continentRegion.rect.width = cols.count().toFloat()
-            continentRegion.tileMap = tileMap
             if (tileMap.mapParameters.worldWrap) {
-                continentRegion.affectedByWorldWrap = false
-                // Check if the continent is possibly wrapping - there needs to be a gap when going through the cols
-                for (i in cols.minOf { it }..cols.maxOf { it }) {
-                    if (!cols.contains(i)) {
-                        continentRegion.affectedByWorldWrap = true
-                        break
-                    }
-                }
+                // Check if the continent is wrapping - if the leftmost col is not the one we set origin by
+                if (cols.minOf { it } < continentRegion.rect.x)
+                    continentRegion.affectedByWorldWrap = true
             }
             continentRegion.updateTiles()
             divideRegion(continentRegion, civsAddedToContinent[continent]!!)
@@ -118,10 +124,7 @@ class MapRegions (val ruleset: Ruleset){
     private fun splitRegion(regionToSplit: Region, firstPercent: Int): Pair<Region, Region> {
         val targetFertility = (regionToSplit.totalFertility * firstPercent) / 100
 
-        val splitOffRegion = Region()
-        splitOffRegion.tileMap = regionToSplit.tileMap
-        splitOffRegion.continentID = regionToSplit.continentID
-        splitOffRegion.rect = Rectangle(regionToSplit.rect)
+        val splitOffRegion = Region(regionToSplit.tileMap, Rectangle(regionToSplit.rect), regionToSplit.continentID)
 
         val widerThanTall = regionToSplit.rect.width > regionToSplit.rect.height
 
@@ -401,6 +404,7 @@ class MapRegions (val ruleset: Ruleset){
         val panicPosition = region.rect.getPosition(Vector2())
         val panicTerrain = ruleset.terrains.values.first { it.type == TerrainType.Land }.name
         region.tileMap[panicPosition].baseTerrain = panicTerrain
+        region.tileMap[panicPosition].terrainFeatures.clear()
         setRegionStart(region, panicPosition)
     }
 
@@ -433,12 +437,7 @@ class MapRegions (val ruleset: Ruleset){
     }
 
     private fun setCloseStartPenalty(tile: TileInfo) {
-        val penaltyForRing =
-                mapOf(  0 to 99, 1 to 97, 2 to 95,
-                        3 to 92, 4 to 89, 5 to 69,
-                        6 to 57, 7 to 24, 8 to 15 )
-
-        for ((ring, penalty) in penaltyForRing) {
+        for ((ring, penalty) in closeStartPenaltyForRing) {
             for (outerTile in tile.getTilesAtDistance(ring).map { it.position })
                 tileData[outerTile]!!.addCloseStartPenalty(penalty)
         }
@@ -447,11 +446,6 @@ class MapRegions (val ruleset: Ruleset){
     /** Evaluates a tile for starting position, setting isGoodStart and startScore in
      *  MapGenTileData. Assumes that all tiles have corresponding MapGenTileData. */
     private fun evaluateTileForStart(tile: TileInfo) {
-        val minimumFoodForRing = mapOf(1 to 1, 2 to 4, 3 to 4)
-        val minimumProdForRing = mapOf(1 to 0, 2 to 0, 3 to 2)
-        val minimumGoodForRing = mapOf(1 to 3, 2 to 6, 3 to 8)
-        val maximumJunk = 9
-
         val localData = tileData[tile.position]!!
 
         var totalFood = 0
@@ -487,18 +481,18 @@ class MapRegions (val ruleset: Ruleset){
             // Ring-specific scoring
             when (ring) {
                 1 -> {
-                    val foodScore = listOf(0, 8, 14, 19, 22, 24, 25)[totalFood]
-                    val prodScore = listOf(0, 10, 16, 20, 20, 12, 0)[totalProd]
+                    val foodScore = firstRingFoodScores[totalFood]
+                    val prodScore = firstRingProdScores[totalProd]
                     totalScore += foodScore + prodScore + totalRivers
                     + (totalGood * 2) - (totalJunk * 3)
                 }
                 2 -> {
-                    val foodScore = if (totalFood > 10) 35
-                    else listOf(0, 2, 5, 10, 20, 25, 28, 30, 32, 34, 35)[totalFood]
+                    val foodScore = if (totalFood > 10) secondRingFoodScores.last()
+                    else secondRingFoodScores[totalFood]
                     val effectiveTotalProd = if (totalProd >= totalFood * 2) totalProd
                     else (totalFood + 1) / 2 // Can't use all that production without food
-                    val prodScore = if (effectiveTotalProd > 5) 35
-                    else listOf(0, 10, 20, 25, 30, 35)[effectiveTotalProd]
+                    val prodScore = if (effectiveTotalProd > 5) secondRingProdScores.last()
+                    else secondRingProdScores[effectiveTotalProd]
                     totalScore += foodScore + prodScore + totalRivers
                     + (totalGood * 2) - (totalJunk * 3)
                 }
@@ -520,15 +514,12 @@ class MapRegions (val ruleset: Ruleset){
         localData.startScore = totalScore
     }
 
-    class Region {
+    class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = -1) {
         val tiles = HashSet<TileInfo>()
         val terrainCounts = HashMap<String, Int>()
         var totalFertility = 0
-        var continentID = -1 // -1 meaning no particular continent
         var type = "Hybrid" // being an undefined or inderminate type
         var startPosition: Vector2? = null
-        lateinit var rect: Rectangle
-        lateinit var tileMap: TileMap
 
         var affectedByWorldWrap = false
 
