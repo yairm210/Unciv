@@ -1013,39 +1013,37 @@ class MapUnit {
 
     private fun doCitadelDamage() {
         // Check for Citadel damage - note: 'Damage does not stack with other Citadels'
-        val citadelTile = currentTile.neighbors
+        val (citadelTile, damage) = currentTile.neighbors
             .filter {
-                it.getOwner() != null 
+                it.getOwner() != null
                 && it.improvement != null
-                && civInfo.isAtWarWith(it.getOwner()!!) 
-                && it.getTileImprovement()!!.hasUnique(UniqueType.DamagesAdjacentEnemyUnits)
-            }.maxByOrNull { tile ->
-                tile.getTileImprovement()!!
+                && civInfo.isAtWarWith(it.getOwner()!!)
+            }.map { tile ->
+                tile to tile.getTileImprovement()!!
                     .getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
                     .sumOf { it.params[0].toInt() }
-            }
-
-        if (citadelTile != null) {
-            health -= citadelTile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits).sumOf { it.params[0].toInt() }
-            val locations = LocationAction(listOf(citadelTile.position, currentTile.position))
-            if (health <= 0) {
-                civInfo.addNotification(
-                    "An enemy [Citadel] has destroyed our [$name]",
-                    locations,
-                    NotificationIcon.Citadel, NotificationIcon.Death, name
-                )
-                citadelTile.getOwner()?.addNotification(
-                    "Your [Citadel] has destroyed an enemy [$name]",
-                    locations,
-                    NotificationIcon.Citadel, NotificationIcon.Death, name
-                )
-                destroy()
-            } else civInfo.addNotification(
-                "An enemy [Citadel] has attacked our [$name]",
+            }.maxByOrNull { it.second }
+            ?: return
+        if (damage == 0) return
+        health -= damage
+        val locations = LocationAction(listOf(citadelTile.position, currentTile.position))
+        if (health <= 0) {
+            civInfo.addNotification(
+                "An enemy [Citadel] has destroyed our [$name]",
                 locations,
-                NotificationIcon.Citadel, NotificationIcon.War, name 
+                NotificationIcon.Citadel, NotificationIcon.Death, name
             )
-        }
+            citadelTile.getOwner()?.addNotification(
+                "Your [Citadel] has destroyed an enemy [$name]",
+                locations,
+                NotificationIcon.Citadel, NotificationIcon.Death, name
+            )
+            destroy()
+        } else civInfo.addNotification(
+            "An enemy [Citadel] has attacked our [$name]",
+            locations,
+            NotificationIcon.Citadel, NotificationIcon.War, name 
+        )
     }
 
     fun matchesFilter(filter: String): Boolean {
