@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.mainmenu
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
 import com.unciv.ui.saves.Gzip
 import java.io.*
@@ -118,9 +119,19 @@ class OnlineMultiplayer {
         DropBox.uploadFile(getGameLocation(gameInfo.gameId), zippedGameInfo, true)
     }
 
+    fun tryUploadGamePreview(gameInfo: GameInfoPreview){
+        val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
+        DropBox.uploadFile("${getGameLocation(gameInfo.gameId)}_Preview", zippedGameInfo, true)
+    }
+
     fun tryDownloadGame(gameId: String): GameInfo {
         val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
         return GameSaver.gameInfoFromString(Gzip.unzip(zippedGameInfo))
+    }
+
+    fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
+        val zippedGameInfo = DropBox.downloadFileAsString("${getGameLocation(gameId)}_Preview")
+        return GameSaver.gameInfoPreviewFromString(Gzip.unzip(zippedGameInfo))
     }
 
     /**

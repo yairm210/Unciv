@@ -90,6 +90,10 @@ object GameSaver {
         return game
     }
 
+    fun gameInfoPreviewFromString(gameData: String): GameInfoPreview {
+        return json().fromJson(GameInfoPreview::class.java, gameData)
+    }
+
     /**
      * WARNING! transitive GameInfo data not initialized
      * The returned GameInfo can not be used for most circumstances because its not initialized!
