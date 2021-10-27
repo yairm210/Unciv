@@ -222,6 +222,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     CannotAttack("Cannot attack", UniqueTarget.Unit),
+    MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
 
     @Deprecated("As of 3.16.11 - removed as of 3.17.11", ReplaceWith("[+1] Movement <for [Embarked] units>"), DeprecationLevel.ERROR)
     EmbarkedUnitMovement1("Increases embarked movement +1", UniqueTarget.Global),

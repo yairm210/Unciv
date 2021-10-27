@@ -7,6 +7,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.utils.randomWeighted
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -252,18 +253,20 @@ class Encampment (val position: Vector2) {
         val barbarianCiv = gameInfo.getBarbarianCivilization()
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
         val unitList = gameInfo.ruleSet.units.values
-            .filter { it.isMilitary() }
-            .filter { it.isBuildable(barbarianCiv) }
+            .filter { it.isMilitary() &&
+                    it.isBuildable(barbarianCiv) &&
+                    !(it.hasUnique(UniqueType.MustSetUp) || it.hasUnique(UniqueType.CannotAttack)) &&
+                    (if (naval) it.isWaterUnit() else it.isLandUnit()) }
 
-        var unit = if (naval)
-            unitList.filter { it.isWaterUnit() }.randomOrNull()
-        else
-            unitList.filter { it.isLandUnit() }.randomOrNull()
+        if (unitList.isEmpty()) return null // No naval tech yet? Mad modders?
 
-        if (unit == null) // Didn't find a unit for preferred domain
-            unit = unitList.randomOrNull() // Try picking another
+        // Civ V weights its list by FAST_ATTACK or ATTACK_SEA AI types, we'll do it a bit differently
+        // getForceEvaluation is already conveniently biased towards fast units and against ranged naval
+        val weightings = unitList.map { it.getForceEvaluation().toFloat() }
 
-        return unit?.name // Could still be null in case of mad modders
+        val unit = unitList.randomWeighted(weightings)
+
+        return unit.name
     }
 
     /** When a barbarian is spawned, seed the counter for next spawn */
