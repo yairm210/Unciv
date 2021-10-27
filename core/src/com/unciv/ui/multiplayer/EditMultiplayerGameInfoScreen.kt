@@ -3,7 +3,7 @@ package com.unciv.ui
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
-import com.unciv.logic.GameInfo
+import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.translations.tr
@@ -14,7 +14,7 @@ import kotlin.concurrent.thread
 
 /** Subscreen of MultiplayerScreen to edit and delete saves
 * backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again */
-class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
+class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
     init {
         val textField = TextField(gameName, skin)
 
@@ -24,7 +24,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScree
         val deleteButton = "Delete save".toTextButton()
         deleteButton.onClick {
             val askPopup = YesNoPopup("Are you sure you want to delete this map?", {
-                backScreen.removeMultiplayerGame(game, gameName)
+                backScreen.removeMultiplayerGame(gameInfo, gameName)
                 backScreen.game.setScreen(backScreen)
                 backScreen.reloadGameListUI()
             }, this)
@@ -34,7 +34,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScree
         val giveUpButton = "Resign".toTextButton()
         giveUpButton.onClick {
             val askPopup = YesNoPopup("Are you sure you want to resign?", {
-                resign(game!!.gameId, gameName, backScreen)
+                resign(gameInfo!!.gameId, gameName, backScreen)
             }, this)
             askPopup.open()
         }
@@ -55,14 +55,14 @@ class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScree
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             //remove the old game file
-            backScreen.removeMultiplayerGame(game, gameName)
+            backScreen.removeMultiplayerGame(gameInfo, gameName)
             //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
-            backScreen.addMultiplayerGame(game!!.gameId, textField.text)
+            backScreen.addMultiplayerGame(gameInfo!!.gameId, textField.text)
             backScreen.game.setScreen(backScreen)
             backScreen.reloadGameListUI()
         }
 
-        if (game == null){
+        if (gameInfo == null){
             textField.isDisabled = true
             textField.color = Color.GRAY
             rightSideButton.disable()
@@ -102,8 +102,9 @@ class EditMultiplayerGameInfoScreen(game: GameInfo?, gameName: String, backScree
                         civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI", playerCiv.civName)
                     }
 
-                    //save game so multiplayer list stays up to date
-                    GameSaver.saveGame(gameInfo, gameName, true)
+                    //save game so multiplayer list stays up to date but do not override multiplayer settings
+                    val updatedSave = this.gameInfo!!.updateCurrentTurn(gameInfo)
+                    GameSaver.saveGame(updatedSave, gameName)
                     OnlineMultiplayer().tryUploadGame(gameInfo)
                     Gdx.app.postRunnable {
                         popup.close()

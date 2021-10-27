@@ -38,9 +38,21 @@ object GameSaver {
         return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence()
     }
 
-    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
+    fun saveGame(game: GameInfo, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
         try {
-            json().toJson(game, getSave(GameName, multiplayer))
+            json().toJson(game, getSave(GameName))
+            saveCompletionCallback?.invoke(null)
+        } catch (ex: Exception) {
+            saveCompletionCallback?.invoke(ex)
+        }
+    }
+
+    /**
+     * Overload of function saveGame to save a GameInfoPreview in the MultiplayerGames folder
+     */
+    fun saveGame(game: GameInfoPreview, GameName: String, saveCompletionCallback: ((Exception?) -> Unit)? = null) {
+        try {
+            json().toJson(game, getSave(GameName, true))
             saveCompletionCallback?.invoke(null)
         } catch (ex: Exception) {
             saveCompletionCallback?.invoke(ex)

@@ -207,7 +207,8 @@ class NewGameScreen(
                 GameSaver.autoSave(newGame!!) {}
 
                 // Saved as Multiplayer game to show up in the session browser
-                GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
+                val newGamePreview = newGame!!.asPreview()
+                GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
                     Popup(this).apply {
