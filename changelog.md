@@ -1,3 +1,21 @@
+## 3.17.12
+
+Clarified Oil well / Refrigeration relation - By SomeTroglodyte
+
+Improved multiplayer screen performance - By GGGuenni
+
+By SimonCeder:
+- Improve AI performance vs barbarians & AI settlers
+- Conquistadors only settle other continents
+- Fixed contest quests bug 
+
+By xlenstra:
+- Religion UI improvements
+- Fixed multiple faith bonuses from ruins
+- Fixed unconventional great prophets not gaining wonder bonuses
+
+Provide more information to waiting players in multiplayer - By thepianoboy
+
 ## 3.17.11
 
 City construction speedup with caching stats from tiles
