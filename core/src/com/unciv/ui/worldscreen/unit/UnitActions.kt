@@ -16,6 +16,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -161,7 +162,10 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
-        if (!unit.hasUnique(UniqueType.FoundCity) || tile.isWater || tile.isImpassible()) return null
+        if (!(unit.hasUnique(UniqueType.FoundCity))
+                || tile.isWater || tile.isImpassible()) return null
+        // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
+        if (unit.civInfo.isOneCityChallenger() && unit.civInfo.hasEverOwnedOriginalCapital == true) return null
 
         if (unit.currentMovement <= 0 ||
                 !tile.canBeSettled())
