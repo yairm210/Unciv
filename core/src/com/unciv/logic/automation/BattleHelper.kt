@@ -49,7 +49,7 @@ object BattleHelper {
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
 
-        val unitMustBeSetUp = unit.hasUnique("Must set up to ranged attack")
+        val unitMustBeSetUp = unit.hasUnique(UniqueType.MustSetUp)
         val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits())
             sequenceOf(Pair(unit.currentTile, unit.currentMovement))
         else

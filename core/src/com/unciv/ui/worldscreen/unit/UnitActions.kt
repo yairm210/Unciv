@@ -227,7 +227,7 @@ object UnitActions {
     }
 
     private fun addSetupAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique("Must set up to ranged attack") || unit.isEmbarked()) return
+        if (!unit.hasUnique(UniqueType.MustSetUp) || unit.isEmbarked()) return
         val isSetUp = unit.isSetUpForSiege()
         actionList += UnitAction(UnitActionType.SetUp,
                 isCurrentAction = isSetUp,
