@@ -355,13 +355,18 @@ class QuestManager {
             return false
         if (quest.isIndividual() && civInfo.getDiplomacyManager(challenger).hasFlag(DiplomacyFlags.Bullied))
             return false
-        if (quest.description == "Route"){
-            for (challengerCity in challenger.cities)
-                for (targetCity in civInfo.cities)
-                    if (challengerCity.getCenterTile().aerialDistanceTo(targetCity.getCenterTile()) <= 10)
-                        break
-            return false
 
+        var questVaild = false
+        if (quest.description == "Route"){
+            for (challengerCity in challenger.cities){
+                for (targetCity in civInfo.cities)
+                    if (challengerCity.getCenterTile().aerialDistanceTo(targetCity.getCenterTile()) <= 10){ //
+                        questVaild = true
+                        break
+                    }
+                if (questVaild) break
+            }
+            return false
         }
 
         val mostRecentBully = getMostRecentBully()
