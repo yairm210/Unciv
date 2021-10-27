@@ -14,7 +14,7 @@ class ModCheckboxTable(
     isPortrait: Boolean = false,
     onUpdate: (String) -> Unit
 ): Table(){
-    private val modRulesets = RulesetCache.values.filter { it.name != "" }
+    private val modRulesets = RulesetCache.values.filter { it.name != "" && !it.modOptions.isBaseRuleset}
     private val baseRulesetCheckboxes = ArrayList<CheckBox>()
     private var lastToast: ToastPopup? = null
 
@@ -29,21 +29,10 @@ class ModCheckboxTable(
                     onUpdate(mod.name)
                 }
             }
-            if (mod.modOptions.isBaseRuleset) baseRulesetCheckboxes.add(checkBox)
-            else extensionRulesetModButtons.add(checkBox)
+            extensionRulesetModButtons.add(checkBox)
         }
 
         val padTop = if (isPortrait) 0f else 16f
-
-        if (baseRulesetCheckboxes.any()) {
-            add(ExpanderTab("Base ruleset mods:", persistenceID = "NewGameBaseMods") {
-                it.defaults().pad(5f,0f)
-                for (checkbox in baseRulesetCheckboxes) it.add(checkbox).row()
-            }).padTop(padTop).growX().row()
-        }
-
-        if (isPortrait && baseRulesetCheckboxes.any() && extensionRulesetModButtons.any())
-            addSeparator(Color.DARK_GRAY, height = 1f)
 
         if (extensionRulesetModButtons.any()) {
             add(ExpanderTab("Extension mods:", persistenceID = "NewGameExpansionMods") {
