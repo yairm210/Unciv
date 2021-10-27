@@ -355,6 +355,14 @@ class QuestManager {
             return false
         if (quest.isIndividual() && civInfo.getDiplomacyManager(challenger).hasFlag(DiplomacyFlags.Bullied))
             return false
+        if (quest.description == "Route"){
+            for (challengerCity in challenger.cities)
+                for (targetCity in civInfo.cities)
+                    if (challengerCity.getCenterTile().aerialDistanceTo(targetCity.getCenterTile()) <= 10)
+                        break
+            return false
+
+        }
 
         val mostRecentBully = getMostRecentBully()
         val playerReligion = civInfo.gameInfo.religions.values.firstOrNull() { it.foundingCivName == challenger.civName && it.isMajorReligion() }?.name
