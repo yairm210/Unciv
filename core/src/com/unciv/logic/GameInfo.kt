@@ -410,6 +410,8 @@ class GameInfoPreview() {
         currentPlayer = gameInfo.currentPlayer
         turns = gameInfo.turns
         currentTurnStartTime = gameInfo.currentTurnStartTime
+        //We update the civilizations in case someone is removed from the game (resign/kick)
+        civilizations = gameInfo.getCivilizationsAsPreviews()
 
         return this
     }

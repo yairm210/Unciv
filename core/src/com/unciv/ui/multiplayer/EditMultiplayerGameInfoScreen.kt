@@ -102,9 +102,9 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
                         civ.addNotification("[${playerCiv.civName}] resigned and is now controlled by AI", playerCiv.civName)
                     }
 
-                    //save game so multiplayer list stays up to date
-                    val newSave = this.gameInfo!!.updateCurrentTurn(gameInfo)
-                    GameSaver.saveGame(newSave, gameName)
+                    //save game so multiplayer list stays up to date but do not override multiplayer settings
+                    val updatedSave = this.gameInfo!!.updateCurrentTurn(gameInfo)
+                    GameSaver.saveGame(updatedSave, gameName)
                     OnlineMultiplayer().tryUploadGame(gameInfo)
                     Gdx.app.postRunnable {
                         popup.close()
