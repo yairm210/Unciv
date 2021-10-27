@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -97,7 +98,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
-        if ((!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < cities * 2)
+        if ((!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < max(5, cities * 2))
                 || (isAtWar && civInfo.gold > -50)) {
             val militaryUnit = Automation.chooseMilitaryUnit(cityInfo)
             if (militaryUnit == null) return
@@ -106,6 +107,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             var modifier = sqrt(unitsToCitiesRatio) / 2
             if (preferredVictoryType == VictoryType.Domination) modifier *= 3
             else if (isAtWar) modifier *= unitsToCitiesRatio * 2
+
+            if (Automation.afraidOfBarbarians(civInfo)) modifier = 2f // military units are pro-growth if pressured by barbs
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
 
             val civilianUnit = cityInfo.getCenterTile().civilianUnit

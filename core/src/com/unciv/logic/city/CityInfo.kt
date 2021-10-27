@@ -266,6 +266,8 @@ class CityInfo {
 
     fun isInResistance() = resistanceCounter > 0
 
+    /** @return the number of tiles 4 out from this city that could hold a city, ie how lonely this city is */
+    fun getFrontierScore() = getCenterTile().getTilesAtDistance(4).count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == civInfo ) }
 
     fun getRuleset() = civInfo.gameInfo.ruleSet
 

@@ -19,9 +19,9 @@ object UnitAutomation {
         return unit.movement.canMoveTo(tile)
                 && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
                 && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
-                && unit.movement.canReach(tile)
-                && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo } // Don't want city-states exploring far outside their borders
-                && unit.getDamageFromTerrain(tile) <= 0)    // Don't take unnecessary damage
+                && (!unit.civInfo.isCityState() || tile.neighbors.any { it.getOwner() == unit.civInfo }) // Don't want city-states exploring far outside their borders
+                && unit.getDamageFromTerrain(tile) <= 0    // Don't take unnecessary damage
+                && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {
@@ -59,6 +59,36 @@ object UnitAutomation {
             } ?: return false
         unit.movement.moveToTile(tileWithRuinOrEncampment)
         return true
+    }
+
+    // "Fog busting" is a strategy where you put your units slightly outside your borders to discourage barbarians from spawning
+    private fun tryFogBust(unit: MapUnit): Boolean {
+        if (!Automation.afraidOfBarbarians(unit.civInfo)) return false // Not if we're not afraid
+
+        val reachableTilesThisTurn =
+                unit.movement.getDistanceToTiles().keys.filter { isGoodTileForFogBusting(unit, it) }
+        if (reachableTilesThisTurn.any()) {
+            unit.movement.headTowards(reachableTilesThisTurn.random()) // Just pick one
+            return true
+        }
+
+        // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
+        for (tile in unit.currentTile.getTilesInDistance(5))
+            if (isGoodTileForFogBusting(unit, tile)) {
+                unit.movement.headTowards(tile)
+                return true
+            }
+        return false
+    }
+
+    private fun isGoodTileForFogBusting(unit: MapUnit, tile: TileInfo): Boolean {
+        return unit.movement.canMoveTo(tile)
+                && tile.getOwner() == null
+                && tile.neighbors.all { it.getOwner() == null }
+                && tile.position in unit.civInfo.exploredTiles
+                && tile.getTilesInDistance(2).any { it.getOwner() == unit.civInfo }
+                && unit.getDamageFromTerrain(tile) <= 0
+                && unit.movement.canReach(tile) // expensive, evaluate last
     }
 
     @JvmStatic
@@ -183,6 +213,8 @@ object UnitAutomation {
 
         // else, try to go to unreached tiles
         if (tryExplore(unit)) return
+
+        if (tryFogBust(unit)) return
 
         // Idle CS units should wander so they don't obstruct players so much
         if (unit.civInfo.isCityState())

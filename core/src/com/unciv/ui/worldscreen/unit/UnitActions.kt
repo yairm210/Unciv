@@ -164,8 +164,7 @@ object UnitActions {
         if (!unit.hasUnique(UniqueType.FoundCity) || tile.isWater || tile.isImpassible()) return null
 
         if (unit.currentMovement <= 0 ||
-                tile.getTilesInDistance(2).any { it.isCityCenter() } ||
-                tile.getTilesAtDistance(3).any { it.isCityCenter() && it.getContinent() == tile.getContinent() })
+                !tile.canBeSettled())
             return UnitAction(UnitActionType.FoundCity, action = null)
 
         val foundAction = {
