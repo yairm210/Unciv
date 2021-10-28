@@ -607,13 +607,9 @@ object RulesetCache : HashMap<String,Ruleset>() {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
-            val fileHandle = 
-                if (consoleMode) FileHandle(fileName)
-                else Gdx.files.internal(fileName)
-            this[ruleset.fullName] = Ruleset().apply { 
-                load(fileHandle, printOutput)
-                name = ruleset.fullName
-            }
+            val fileHandle = if (consoleMode) FileHandle(fileName)
+            else Gdx.files.internal(fileName)
+            this[ruleset.fullName] = Ruleset().apply { load(fileHandle, printOutput) }
         }
 
         if (noMods) return
