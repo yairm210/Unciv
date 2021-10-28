@@ -41,16 +41,19 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Bow And Arrow](https://thenounproject.com/search/?q=Bow%20and%20Arrow&i=338261) By Viktor Ostrovsky for Archer
 * [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain for Bowman
 * [Javelin](https://thenounproject.com/term/javelin-thrower/2118369/) By WEBTECHOPS LLP for Atlatlist
+* [arrows](https://thenounproject.com/term/arrows/2047488/) by Ayub Irawan for Skirmisher
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Quinquereme. The original work has been modified.
 * [dragon](https://thenounproject.com/search/?q=dragon&i=1646681) by BGBOXXX Design for Dromon
+* [Viking Boat](https://thenounproject.com/search/?q=longship&i=3782922) by Eucalyp for Galley
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
 * [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado for War Elephant
 * [Centaur](https://thenounproject.com/search/?q=horse+archer&i=1791296) by Michael Wohlwend for Horse Archer 
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 * [Transparent Medieval Battering Ram Png Logo](https://www.pngimages.pics/275495/transparent-medieval-battering-ram-png.php) for Battering Ram
+* [Spear](https://thenounproject.com/term/spear/313412/) by lastspark for Javelineer
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 * [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger
