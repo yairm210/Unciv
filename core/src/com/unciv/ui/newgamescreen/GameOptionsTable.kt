@@ -135,11 +135,45 @@ class GameOptionsTable(
     }
 
     private fun Table.addBaseRulesetSelectBox() {
-        if (BaseRuleset.values().size < 2) return
-        addSelectBox("{Base Ruleset}:", BaseRuleset.values().map { it.fullName }, gameParameters.baseRuleset.fullName)
-        {
-            gameParameters.baseRuleset = BaseRuleset.values().first { br -> br.fullName == it }
+        val baseRulesets = 
+            RulesetCache.values
+                .filter { it.modOptions.isBaseRuleset }
+                .map { it.name }
+                .distinct()
+        if (baseRulesets.size < 2) return
+        
+        // We sort the base rulesets such that the ones unciv provides are on the top,
+        // and the rest is alphabetically ordered.
+        val sortedBaseRulesets = baseRulesets.sortedWith(
+            compareBy(
+                { ruleset ->
+                    BaseRuleset.values()
+                        .firstOrNull { br -> br.fullName == ruleset }?.ordinal
+                        ?: BaseRuleset.values().size
+                },
+                { it }
+            )
+        )
+        addSelectBox(
+            "{Base Ruleset}:",
+            sortedBaseRulesets,
+            gameParameters.mods.first { RulesetCache[it]!!.modOptions.isBaseRuleset }
+        ) { modToAdd ->
+            val old = gameParameters.mods.first { RulesetCache[it]!!.modOptions.isBaseRuleset }
+            // So there is a call loop here: addSelectBox -> onChange() -> update() -> getGameOptionsTable() -> addBaseRulesetSelectBox() -> addSelectBox()
+            // To prevent stack overflow errors, this loop needs to be broken _somewhere_, and this
+            // is the most 'local' place to do it.
+            if (old == modToAdd) return@addSelectBox 
+            gameParameters.mods = LinkedHashSet(
+                listOf(
+                    *gameParameters.mods
+                        .filter { !RulesetCache[it]!!.modOptions.isBaseRuleset }
+                        .toTypedArray(), 
+                    modToAdd
+                )
+            )
             reloadRuleset()
+            update()
         }
     }
 
