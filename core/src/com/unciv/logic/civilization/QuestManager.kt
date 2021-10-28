@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
@@ -119,6 +120,8 @@ class QuestManager {
         
         tryBarbarianInvasion()
         tryEndWarWithMajorQuests()
+
+        cancelQuestsIfAngry()
     }
 
     private fun decrementQuestCountdowns() {
@@ -190,6 +193,11 @@ class QuestManager {
             assignNewQuest(quest, assignees)
             globalQuestCountdown = UNSET
         }
+    }
+    private fun cancelQuestsIfAngry(){
+        for (currentQuest in assignedQuests)
+            if (civInfo.getDiplomacyManager(currentQuest.assignee).influence < 0)
+                assignedQuests.remove(currentQuest)
     }
 
     private fun tryStartNewIndividualQuests() {
