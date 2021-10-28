@@ -1212,14 +1212,27 @@ class CivilizationInfo {
     }
 
     //endregion
+
+    fun asPreview() = CivilizationInfoPreview(this)
 }
 
-// reduced variant only for load preview
-class CivilizationInfoPreview {
+/**
+ * Reduced variant of CivilizationInfo used for load preview.
+ */
+class CivilizationInfoPreview() {
     var civName = ""
     var playerType = PlayerType.AI
     var playerId = ""
     fun isPlayerCivilization() = playerType == PlayerType.Human
+
+    /**
+     * Converts a CivilizationInfo object (can be uninitialized) into a CivilizationInfoPreview object.
+     */
+    constructor(civilizationInfo: CivilizationInfo) : this() {
+        civName = civilizationInfo.civName
+        playerType = civilizationInfo.playerType
+        playerId = civilizationInfo.playerId
+    }
 }
 
 enum class CivFlags {

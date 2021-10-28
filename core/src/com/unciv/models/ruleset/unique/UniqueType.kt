@@ -364,6 +364,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),
     ConditionalInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalForeignContinent("on foreign continents", UniqueTarget.Conditional),
 
     /////// tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),

@@ -92,6 +92,10 @@ class Technology: RulesetObject() {
         if (tileImprovements.isNotEmpty())
             lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
 
+        val seeAlsoObjects = getSeeAlsoObjects(ruleset)
+        if (seeAlsoObjects.any())
+            lineList += "{See also}: " + seeAlsoObjects.joinToString { it.name }
+
         return lineList.joinToString("\n") { it.tr() }
     }
 
@@ -110,7 +114,7 @@ class Technology: RulesetObject() {
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
     fun getObsoletedBuildings(civInfo: CivilizationInfo) = getFilteredBuildings(civInfo)
         { it.uniqueObjects.any { unique -> unique.placeholderText == "Obsolete with []" && unique.params[0] == name } }
-    
+
     // Helper: common filtering for both getEnabledBuildings and getObsoletedBuildings, difference via predicate parameter
     private fun getFilteredBuildings(civInfo: CivilizationInfo, predicate: (Building)->Boolean): Sequence<Building> {
         val nuclearWeaponsEnabled = civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
@@ -144,6 +148,17 @@ class Technology: RulesetObject() {
                 && Constants.hideFromCivilopediaUnique !in it.uniques
             }
     }
+
+    /** Get improvements related to this tech by a unique */
+    private fun getSeeAlsoObjects(ruleset: Ruleset) =
+        // This is a band-aid to clarify the relation Offshore platform - Refrigeration. A generic variant
+        // covering all mentions in uniques in all ruleset objects would be possible here but - overkill for now.
+        ruleset.tileImprovements.values.asSequence()
+        .filter { improvement ->
+            improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
+                it.params[1] == name
+            }
+        }
 
 
     override fun makeLink() = "Technology/$name"
@@ -180,7 +195,7 @@ class Technology: RulesetObject() {
                 }
             }
         }
-        
+
         if (uniques.isNotEmpty()) {
             lineList += FormattedLine()
             for (unique in uniqueObjects) lineList += FormattedLine(unique)
@@ -259,6 +274,15 @@ class Technology: RulesetObject() {
             lineList += FormattedLine()
             lineList += FormattedLine("{Tile improvements enabled}:")
             tileImprovements.forEach {
+                lineList += FormattedLine(it.name, link = it.makeLink())
+            }
+        }
+
+        val seeAlsoObjects = getSeeAlsoObjects(ruleset)
+        if (seeAlsoObjects.any()) {
+            lineList += FormattedLine()
+            lineList += FormattedLine("{See also}:")
+            seeAlsoObjects.forEach {
                 lineList += FormattedLine(it.name, link = it.makeLink())
             }
         }

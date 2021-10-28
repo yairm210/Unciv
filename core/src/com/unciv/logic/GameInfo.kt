@@ -121,6 +121,7 @@ class GameInfo {
      *  @throws NoSuchElementException if no civ of than name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
+    fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
      *  @throws NoSuchElementException in no-barbarians games! */
     fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
@@ -367,15 +368,51 @@ class GameInfo {
     }
 
     //endregion
+
+    fun asPreview() = GameInfoPreview(this)
 }
 
-// reduced variant only for load preview
-class GameInfoPreview {
+/**
+ * Reduced variant of GameInfo used for load preview and multiplayer saves.
+ * Contains additional data for multiplayer settings.
+ */
+class GameInfoPreview() {
     var civilizations = mutableListOf<CivilizationInfoPreview>()
     var difficulty = "Chieftain"
     var gameParameters = GameParameters()
     var turns = 0
     var gameId = ""
     var currentPlayer = ""
+    var currentTurnStartTime = 0L
+    var turnNotification = true //used as setting in the MultiplayerScreen
+
+    /**
+     * Converts a GameInfo object (can be uninitialized) into a GameInfoPreview object.
+     * Sets all multiplayer settings to default.
+     */
+    constructor(gameInfo: GameInfo) : this() {
+        civilizations = gameInfo.getCivilizationsAsPreviews()
+        difficulty = gameInfo.difficulty
+        gameParameters = gameInfo.gameParameters
+        turns = gameInfo.turns
+        gameId = gameInfo.gameId
+        currentPlayer = gameInfo.currentPlayer
+        currentTurnStartTime = gameInfo.currentTurnStartTime
+    }
+
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+
+    /**
+     * Updates the current player and turn information in the GameInfoPreview object with the help of a
+     * GameInfo object (can be uninitialized).
+     */
+    fun updateCurrentTurn(gameInfo: GameInfo) : GameInfoPreview {
+        currentPlayer = gameInfo.currentPlayer
+        turns = gameInfo.turns
+        currentTurnStartTime = gameInfo.currentTurnStartTime
+        //We update the civilizations in case someone is removed from the game (resign/kick)
+        civilizations = gameInfo.getCivilizationsAsPreviews()
+
+        return this
+    }
 }
