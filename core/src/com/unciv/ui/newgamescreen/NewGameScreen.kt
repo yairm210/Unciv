@@ -27,7 +27,7 @@ class NewGameScreen(
 ): IPreviousScreen, PickerScreen() {
 
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the GameOptionsTable etc. depend on this
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset) // needs to be set because the GameOptionsTable etc. depend on this
     private val newGameOptionsTable: GameOptionsTable
     private val playerPickerTable: PlayerPickerTable
     private val mapOptionsTable: MapOptionsTable
@@ -225,9 +225,9 @@ class NewGameScreen(
 
     fun updateRuleset() {
         ruleset.clear()
-        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods))
+        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset))
         ImageGetter.setNewRuleset(ruleset)
-        game.musicController.setModList(gameSetupInfo.gameParameters.mods)
+        game.musicController.setModList(gameSetupInfo.gameParameters.mods.toHashSet().apply { add(gameSetupInfo.gameParameters.baseRuleset) })
     }
 
     fun lockTables() {

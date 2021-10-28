@@ -187,6 +187,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disabl
                 val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                 textToSet += "\n" + playerCivNames +
                         ", " + game.difficulty.tr() + ", ${Fonts.turn}" + game.turns
+                textToSet += "\n${"Base ruleset:".tr()} " + game.gameParameters.baseRuleset
                 if (game.gameParameters.mods.isNotEmpty())
                     textToSet += "\n${"Mods:".tr()} " + game.gameParameters.mods.joinToString()
             } catch (ex: Exception) {

@@ -157,21 +157,10 @@ class GameOptionsTable(
         addSelectBox(
             "{Base Ruleset}:",
             sortedBaseRulesets,
-            gameParameters.mods.first { RulesetCache[it]!!.modOptions.isBaseRuleset }
+            gameParameters.baseRuleset
         ) { modToAdd ->
-            val old = gameParameters.mods.first { RulesetCache[it]!!.modOptions.isBaseRuleset }
-            // So there is a call loop here: addSelectBox -> onChange() -> update() -> getGameOptionsTable() -> addBaseRulesetSelectBox() -> addSelectBox()
-            // To prevent stack overflow errors, this loop needs to be broken _somewhere_, and this
-            // is the most 'local' place to do it.
-            if (old == modToAdd) return@addSelectBox 
-            gameParameters.mods = LinkedHashSet(
-                listOf(
-                    *gameParameters.mods
-                        .filter { !RulesetCache[it]!!.modOptions.isBaseRuleset }
-                        .toTypedArray(), 
-                    modToAdd
-                )
-            )
+            if (modToAdd == gameParameters.baseRuleset) return@addSelectBox
+            gameParameters.baseRuleset = modToAdd
             reloadRuleset()
             update()
         }
@@ -216,18 +205,20 @@ class GameOptionsTable(
 
     fun reloadRuleset() {
         ruleset.clear()
-        val newRuleset = RulesetCache.getComplexRuleset(gameParameters.mods)
+        val newRuleset = RulesetCache.getComplexRuleset(gameParameters.mods, gameParameters.baseRuleset)
         ruleset.add(newRuleset)
+        ruleset.mods += gameParameters.baseRuleset
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
 
         ImageGetter.setNewRuleset(ruleset)
-        UncivGame.Current.musicController.setModList(gameParameters.mods)
+        UncivGame.Current.musicController.setModList(gameParameters.mods.toHashSet().apply { add(gameParameters.baseRuleset) })
     }
 
     fun getModCheckboxes(isPortrait: Boolean = false): Table {
         return ModCheckboxTable(gameParameters.mods, previousScreen as CameraStageBaseScreen, isPortrait) {
-            UncivGame.Current.translations.translationActiveMods = gameParameters.mods
+            val activeMods: LinkedHashSet<String> = LinkedHashSet(listOf(*gameParameters.mods.toTypedArray(), gameParameters.baseRuleset)) 
+            UncivGame.Current.translations.translationActiveMods = activeMods
             reloadRuleset()
             update()
 

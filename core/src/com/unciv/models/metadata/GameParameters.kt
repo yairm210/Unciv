@@ -32,7 +32,8 @@ class GameParameters { // Default values are the default new game
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
-    var mods = LinkedHashSet<String>(listOf(BaseRuleset.Civ_V_Vanilla.fullName))
+    var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
+    var mods = LinkedHashSet<String>()
 
     fun clone(): GameParameters {
         val parameters = GameParameters()
@@ -48,6 +49,7 @@ class GameParameters { // Default values are the default new game
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
+        parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
         return parameters
     }
@@ -68,6 +70,7 @@ class GameParameters { // Default values are the default new game
             for (victoryType in VictoryType.values()) {
                 if (victoryType !in victoryTypes) yield("No $victoryType Victory")
             }
+            yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")
 }

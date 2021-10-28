@@ -647,11 +647,20 @@ object RulesetCache : HashMap<String,Ruleset>() {
      * Creates a combined [Ruleset] from a list of mods. If no baseRuleset is listed in [mods],
      * then the vanilla Ruleset is included automatically.
      */
-    fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
+    fun getComplexRuleset(mods: LinkedHashSet<String>, optionalBaseRuleset: String? = null): Ruleset {
         val newRuleset = Ruleset()
-        val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
-        if (loadedMods.none { it.modOptions.isBaseRuleset })
-            newRuleset.add(getBaseRuleset())
+        
+        val baseRuleset =
+            if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
+            else getBaseRuleset()
+        
+        
+        val loadedMods = mods
+            .filter { containsKey(it) }
+            .map { this[it]!! }
+            .filter { !it.modOptions.isBaseRuleset } + 
+            baseRuleset
+        
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             newRuleset.add(mod)
             newRuleset.mods += mod.name

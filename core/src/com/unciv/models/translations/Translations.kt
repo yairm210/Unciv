@@ -254,8 +254,10 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
  */
 fun String.tr(): String {
     val activeMods = with(UncivGame.Current) {
-        if (isGameInfoInitialized()) gameInfo.gameParameters.mods else translations.translationActiveMods
-    }
+        if (isGameInfoInitialized()) 
+            gameInfo.gameParameters.mods + gameInfo.gameParameters.baseRuleset 
+        else translations.translationActiveMods
+    }.toHashSet()
     val language = UncivGame.Current.settings.language
     
     if (contains('<')) { // Conditionals!
