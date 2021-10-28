@@ -659,7 +659,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 //
                 unique.placeholderText == "May Paradrop up to [] tiles from inside friendly territory" // Paradrop - 25% bonus
                     -> power += power / 4
-                unique.placeholderText == "Must set up to ranged attack" // Must set up - 20 % penalty
+                unique.isOfType(UniqueType.MustSetUp) // Must set up - 20 % penalty
                     -> power -= power / 5
                 unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 20% bonus per extra attack
                     -> power += (power * unique.params[0].toInt()) / 5

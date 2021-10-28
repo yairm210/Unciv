@@ -36,7 +36,7 @@ object Battle {
              * but the hidden tile is actually IMPASSIBLE so you stop halfway!
              */
             if (attacker.getTile() != attackableTile.tileToAttackFrom) return
-            if (attacker.unit.hasUnique("Must set up to ranged attack") && !attacker.unit.isSetUpForSiege()) {
+            if (attacker.unit.hasUnique(UniqueType.MustSetUp) && !attacker.unit.isSetUpForSiege()) {
                 attacker.unit.action = UnitActionType.SetUp.value
                 attacker.unit.useMovementPoints(1f)
             }
