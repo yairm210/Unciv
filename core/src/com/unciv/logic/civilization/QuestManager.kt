@@ -360,7 +360,8 @@ class QuestManager {
         if (quest.description == "Route"){
             for (challengerCity in challenger.cities){
                 for (targetCity in civInfo.cities)
-                    if (challengerCity.getCenterTile().aerialDistanceTo(targetCity.getCenterTile()) <= 10){ //
+                    if (challengerCity.getCenterTile().aerialDistanceTo(targetCity.getCenterTile()) <= 10){
+                        // this solution does not account for trading posts
                         questVaild = true
                         break
                     }

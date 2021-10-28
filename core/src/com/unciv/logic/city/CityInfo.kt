@@ -793,6 +793,5 @@ class CityInfo {
             .mapNotNull { it.getOwner()?.civName }
             .toSet()
     }
-
     //endregion
 }
