@@ -53,7 +53,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 * [Transparent Medieval Battering Ram Png Logo](https://www.pngimages.pics/275495/transparent-medieval-battering-ram-png.php) for Battering Ram
-* [Spear](https://thenounproject.com/term/spear/313412/) by lastspark for Javelineer
+* [Spear](https://thenounproject.com/term/spear/313412/) by lastspark for Marauder
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 * [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
 * [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger

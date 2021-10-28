@@ -345,7 +345,7 @@
 		"attackSound": "metalhit"
 	},
 	{
-		"name": "Javelineer",
+		"name": "Marauder",
 		"unitType": "Sword",
 		"replaces": "Spearman",
 		"uniqueTo": "Barbarians",
