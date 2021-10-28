@@ -9,6 +9,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
@@ -275,9 +276,10 @@ class MapRegions (val ruleset: Ruleset){
 
         // Next do negative bias ones (ie "Avoid []")
         for (civ in negativeBiasCivs) {
-            // Try to find a region not of the avoided types
-            val startRegion = regions.filterNot { it.type in ruleset.nations[civ.civName]!!.startBias.map {
-                bias -> bias.getPlaceholderParameters()[0] } }.randomOrNull()
+            val avoided = ruleset.nations[civ.civName]!!.startBias.map { it.getPlaceholderParameters()[0] }
+            // Try to find a region not of the avoided types, secondary sort by least number of undesired terrains
+            val startRegion = regions.filterNot { it.type in avoided }
+                    .minByOrNull { it.terrainCounts.filterKeys { terrain -> terrain in avoided }.values.sum() }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
                 continue
@@ -514,83 +516,6 @@ class MapRegions (val ruleset: Ruleset){
         localData.startScore = totalScore
     }
 
-    class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = -1) {
-        val tiles = HashSet<TileInfo>()
-        val terrainCounts = HashMap<String, Int>()
-        var totalFertility = 0
-        var type = "Hybrid" // being an undefined or inderminate type
-        var startPosition: Vector2? = null
-
-        var affectedByWorldWrap = false
-
-        /** Recalculates tiles and fertility */
-        fun updateTiles(trim: Boolean = true) {
-            totalFertility = 0
-            var minX = 99999f
-            var maxX = -99999f
-            var minY = 99999f
-            var maxY = -99999f
-
-            val columnHasTile = HashSet<Int>()
-
-            tiles.clear()
-            for (tile in tileMap.getTilesInRectangle(rect, evenQ = true).filter {
-                continentID == -1 || it.getContinent() == continentID } ) {
-                val fertility = tile.getTileFertility(continentID != -1)
-                if (fertility != 0) { // If fertility is 0 this is candidate for trimming
-                    tiles.add(tile)
-                    totalFertility += fertility
-                }
-
-                if (affectedByWorldWrap)
-                    columnHasTile.add(HexMath.hex2EvenQCoords(tile.position).x.toInt())
-
-                if (trim) {
-                    val evenQCoords = HexMath.hex2EvenQCoords(tile.position)
-                    minX = min(minX, evenQCoords.x)
-                    maxX = max(maxX, evenQCoords.x)
-                    minY = min(minY, evenQCoords.y)
-                    maxY = max(maxY, evenQCoords.y)
-                }
-            }
-
-            if (trim) {
-                if (affectedByWorldWrap) // Need to be more thorough with origin longitude
-                    rect.x = columnHasTile.filter { !columnHasTile.contains(it - 1) }.maxOf { it }.toFloat()
-                else
-                    rect.x = minX // ez way for non-wrapping regions
-                rect.y = minY
-                rect.height = maxY - minY + 1
-                if (affectedByWorldWrap && minX < rect.x) { // Thorough way
-                    rect.width = columnHasTile.count().toFloat()
-                } else {
-                    rect.width = maxX - minX + 1 // ez way
-                    affectedByWorldWrap = false // also we're not wrapping anymore
-                }
-            }
-        }
-
-        /** Counts the terrains in the Region for type and start determination */
-        fun countTerrains() {
-            // Count terrains in the region
-            terrainCounts.clear()
-            for (tile in tiles) {
-                val terrainsToCount = if (tile.getAllTerrains().any { it.hasUnique(UniqueType.IgnoreBaseTerrainForRegion) })
-                    tile.getTerrainFeatures().map { it.name }.asSequence()
-                else
-                    tile.getAllTerrains().map { it.name }
-                for (terrain in terrainsToCount) {
-                    terrainCounts[terrain] = (terrainCounts[terrain] ?: 0) + 1
-                }
-                if (tile.isCoastalTile())
-                    terrainCounts["Coastal"] = (terrainCounts["Coastal"] ?: 0) + 1
-            }
-        }
-
-        /** Returns number terrains with [name] */
-        fun getTerrainAmount(name: String) = terrainCounts[name] ?: 0
-    }
-
     // Holds a bunch of tile info that is only interesting during map gen
     class MapGenTileData(val tile: TileInfo, val region: Region?) {
         var closeStartPenalty = 0
@@ -614,40 +539,109 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         fun evaluate() {
-            // First check for tiles that are always junk
-            if (tile.getAllTerrains().any { it.getMatchingUniques(UniqueType.HasQualityInRegionType)
-                            .any { unique -> unique.params[0] == "Junk" && unique.params[1] == "All" } } ) {
-                isJunk = true
-            }
-            // For the rest of qualities we need to be in a region, and not auto junk
-            if (region != null && !isJunk) {
-                // Check first available out of unbuildable features, then other features, then base terrain
-                val terrainToCheck = if (tile.terrainFeatures.isEmpty()) tile.getBaseTerrain()
-                else tile.getTerrainFeatures().firstOrNull { it.unbuildable }
-                        ?: tile.getTerrainFeatures().first()
-
-                // Add all applicable qualities
-                val qualities = HashSet<String>()
-                for (unique in terrainToCheck.getMatchingUniques(UniqueType.HasQualityInRegionType)) {
-                    if (unique.params[1] == "All" || unique.params[1] == region.type)
-                        qualities.add(unique.params[0])
-                }
-                for (unique in terrainToCheck.getMatchingUniques(UniqueType.HasQualityExceptInRegionType)) {
-                    if (unique.params[1] != region.type)
-                        qualities.add(unique.params[0])
-                }
-                for (quality in qualities) {
-                    when (quality) {
-                        "Food" -> isFood = true
-                        "Good" -> isGood = true
-                        "Production" -> isProd = true
-                        "Junk" -> isJunk = true
-                    }
-                }
-            }
             // Check if we are two tiles from coast (a bad starting site)
             if (!tile.isCoastalTile() && tile.neighbors.any { it.isCoastalTile() })
                 isTwoFromCoast = true
+
+            // Check first available out of unbuildable features, then other features, then base terrain
+            val terrainToCheck = if (tile.terrainFeatures.isEmpty()) tile.getBaseTerrain()
+            else tile.getTerrainFeatures().firstOrNull { it.unbuildable }
+                    ?: tile.getTerrainFeatures().first()
+
+            // Add all applicable qualities
+            val qualities = HashSet<String>()
+            for (unique in terrainToCheck.getMatchingUniques(UniqueType.HasQuality, StateForConditionals(region = region))) {
+                when (unique.params[0]) {
+                    "Food" -> isFood = true
+                    "Desirable" -> isGood = true
+                    "Production" -> isProd = true
+                    "Undesirable" -> isJunk = true
+                }
+            }
+
+            // Were there in fact no explicit qualities for any region? If so let's guess
+            if (!terrainToCheck.hasUnique(UniqueType.HasQuality)) {
+                if (tile.isWater) return // Most water type tiles have no qualities
+
+                //
+            }
         }
     }
+}
+
+class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = -1) {
+    val tiles = HashSet<TileInfo>()
+    val terrainCounts = HashMap<String, Int>()
+    var totalFertility = 0
+    var type = "Hybrid" // being an undefined or indeterminate type
+    var startPosition: Vector2? = null
+
+    var affectedByWorldWrap = false
+
+    /** Recalculates tiles and fertility */
+    fun updateTiles(trim: Boolean = true) {
+        totalFertility = 0
+        var minX = 99999f
+        var maxX = -99999f
+        var minY = 99999f
+        var maxY = -99999f
+
+        val columnHasTile = HashSet<Int>()
+
+        tiles.clear()
+        for (tile in tileMap.getTilesInRectangle(rect, evenQ = true).filter {
+            continentID == -1 || it.getContinent() == continentID } ) {
+            val fertility = tile.getTileFertility(continentID != -1)
+            if (fertility != 0) { // If fertility is 0 this is candidate for trimming
+                tiles.add(tile)
+                totalFertility += fertility
+            }
+
+            if (affectedByWorldWrap)
+                columnHasTile.add(HexMath.hex2EvenQCoords(tile.position).x.toInt())
+
+            if (trim) {
+                val evenQCoords = HexMath.hex2EvenQCoords(tile.position)
+                minX = min(minX, evenQCoords.x)
+                maxX = max(maxX, evenQCoords.x)
+                minY = min(minY, evenQCoords.y)
+                maxY = max(maxY, evenQCoords.y)
+            }
+        }
+
+        if (trim) {
+            if (affectedByWorldWrap) // Need to be more thorough with origin longitude
+                rect.x = columnHasTile.filter { !columnHasTile.contains(it - 1) }.maxOf { it }.toFloat()
+            else
+                rect.x = minX // ez way for non-wrapping regions
+            rect.y = minY
+            rect.height = maxY - minY + 1
+            if (affectedByWorldWrap && minX < rect.x) { // Thorough way
+                rect.width = columnHasTile.count().toFloat()
+            } else {
+                rect.width = maxX - minX + 1 // ez way
+                affectedByWorldWrap = false // also we're not wrapping anymore
+            }
+        }
+    }
+
+    /** Counts the terrains in the Region for type and start determination */
+    fun countTerrains() {
+        // Count terrains in the region
+        terrainCounts.clear()
+        for (tile in tiles) {
+            val terrainsToCount = if (tile.getAllTerrains().any { it.hasUnique(UniqueType.IgnoreBaseTerrainForRegion) })
+                tile.getTerrainFeatures().map { it.name }.asSequence()
+            else
+                tile.getAllTerrains().map { it.name }
+            for (terrain in terrainsToCount) {
+                terrainCounts[terrain] = (terrainCounts[terrain] ?: 0) + 1
+            }
+            if (tile.isCoastalTile())
+                terrainCounts["Coastal"] = (terrainCounts["Coastal"] ?: 0) + 1
+        }
+    }
+
+    /** Returns number terrains with [name] */
+    fun getTerrainAmount(name: String) = terrainCounts[name] ?: 0
 }

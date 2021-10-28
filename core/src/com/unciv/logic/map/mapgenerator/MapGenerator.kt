@@ -19,7 +19,7 @@ class MapGenerator(val ruleset: Ruleset) {
     companion object {
         // temporary instrumentation while tuning/debugging
         const val consoleOutput = false
-        private const val consoleTimings = false
+        private const val consoleTimings = true
     }
 
     private var randomness = MapGenerationRandomness()
@@ -75,9 +75,6 @@ class MapGenerator(val ruleset: Ruleset) {
         runAndMeasure("assignContinents") {
             map.assignContinents(TileMap.AssignContinentsMode.Assign)
         }
-        runAndMeasure("NaturalWonderGenerator") {
-            NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
-        }
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness).spawnRivers()
         }
@@ -87,6 +84,9 @@ class MapGenerator(val ruleset: Ruleset) {
         }
         runAndMeasure("assignRegions") {
             regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv() })
+        }
+        runAndMeasure("NaturalWonderGenerator") {
+            NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
         }
         runAndMeasure("spreadResources") {
             spreadResources(map)

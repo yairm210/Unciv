@@ -304,8 +304,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain),
     IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination.", UniqueTarget.Terrain),
 
-    HasQualityInRegionType("Counts as [terrainQuality] in [regionType] Regions when determining start locations", UniqueTarget.Terrain),
-    HasQualityExceptInRegionType("Counts as [terrainQuality] in all except [regionType] Regions when determining start locations", UniqueTarget.Terrain),
+    HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain),
 
     LuxuryWeighting("Appears in [regionType] regions with weight [amount]", UniqueTarget.Resource),
     LuxuryWeightingForCityStates("Appears near City States with weight [amount]", UniqueTarget.Resource),
@@ -386,6 +385,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     /////// tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
+
+    /////// region conditionals
+    ConditionalOnWaterMaps("on water maps", UniqueTarget.Conditional),
+    ConditionalInRegionOfType("in [regionType] Regions", UniqueTarget.Conditional),
+    ConditionalInRegionExceptOfType("in all except [regionType] Regions", UniqueTarget.Conditional),
 
     ///////////////////////////////////////// TRIGGERED ONE-TIME /////////////////////////////////////////
 
