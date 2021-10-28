@@ -19,7 +19,7 @@ class MapGenerator(val ruleset: Ruleset) {
     companion object {
         // temporary instrumentation while tuning/debugging
         const val consoleOutput = false
-        private const val consoleTimings = true
+        private const val consoleTimings = false
     }
 
     private var randomness = MapGenerationRandomness()

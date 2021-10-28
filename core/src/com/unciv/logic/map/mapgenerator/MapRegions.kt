@@ -8,6 +8,7 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -205,7 +206,7 @@ class MapRegions (val ruleset: Ruleset){
         // Generate tile data for all tiles
         for (tile in tileMap.values) {
             val newData = MapGenTileData(tile, regions.firstOrNull { it.tiles.contains(tile) })
-            newData.evaluate()
+            newData.evaluate(ruleset)
             tileData[tile.position] = newData
         }
 
@@ -227,26 +228,30 @@ class MapRegions (val ruleset: Ruleset){
 
         // First assign coast bias civs
         for (civ in coastBiasCivs) {
-            // Try to find a coastal start
-            var startRegion = regions.filter { tileMap[it.startPosition!!].isCoastalTile() }.randomOrNull()
+            // Try to find a coastal start, preferably a really coastal one
+            var startRegion = regions.filter { tileMap[it.startPosition!!].isCoastalTile() }
+                    .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
                 continue
             }
             // Else adjacent to a lake
-            startRegion = regions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.getBaseTerrain().hasUnique(UniqueType.FreshWater) } }.randomOrNull()
+            startRegion = regions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.getBaseTerrain().hasUnique(UniqueType.FreshWater) } }
+                    .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
                 continue
             }
             // Else adjacent to a river
-            startRegion = regions.filter { tileMap[it.startPosition!!].isAdjacentToRiver() }.randomOrNull()
+            startRegion = regions.filter { tileMap[it.startPosition!!].isAdjacentToRiver() }
+                    .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
                 continue
             }
             // Else at least close to a river ????
-            startRegion = regions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.isAdjacentToRiver() } }.randomOrNull()
+            startRegion = regions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.isAdjacentToRiver() } }
+                    .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
                 continue
@@ -257,8 +262,10 @@ class MapRegions (val ruleset: Ruleset){
 
         // Next do positive bias civs
         for (civ in positiveBiasCivs) {
-            // Try to find a start that matches any of the desired regions
-            val startRegion = regions.filter { it.type in ruleset.nations[civ.civName]!!.startBias }.randomOrNull()
+            // Try to find a start that matches any of the desired regions, ideally with lots of desired terrain
+            val preferred = ruleset.nations[civ.civName]!!.startBias
+            val startRegion = regions.filter { it.type in preferred }
+                    .maxByOrNull { it.terrainCounts.filterKeys { terrain -> terrain in preferred }.values.sum() }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
                 continue
@@ -388,8 +395,10 @@ class MapRegions (val ruleset: Ruleset){
             val center = region.rect.getCenter(Vector2())
             setRegionStart(region,
                     dryTiles.filter { tileData[it]!!.isGoodStart }.minByOrNull {
-                        region.tileMap.getIfTileExistsOrNull(center.x.roundToInt(), center.y.roundToInt())!!
-                                .aerialDistanceTo(region.tileMap.getIfTileExistsOrNull(it.x.toInt(), it.y.toInt())!!) }!!)
+                        (region.tileMap.getIfTileExistsOrNull(center.x.roundToInt(), center.y.roundToInt()) ?: region.tileMap.values.first())
+                                .aerialDistanceTo(
+                                        region.tileMap.getIfTileExistsOrNull(it.x.toInt(), it.y.toInt()) ?: region.tileMap.values.first()
+                                ) }!!)
             return
         }
         if (dryTiles.isNotEmpty())
@@ -538,7 +547,7 @@ class MapRegions (val ruleset: Ruleset){
             }
         }
 
-        fun evaluate() {
+        fun evaluate(ruleset: Ruleset) {
             // Check if we are two tiles from coast (a bad starting site)
             if (!tile.isCoastalTile() && tile.neighbors.any { it.isCoastalTile() })
                 isTwoFromCoast = true
@@ -549,7 +558,6 @@ class MapRegions (val ruleset: Ruleset){
                     ?: tile.getTerrainFeatures().first()
 
             // Add all applicable qualities
-            val qualities = HashSet<String>()
             for (unique in terrainToCheck.getMatchingUniques(UniqueType.HasQuality, StateForConditionals(region = region))) {
                 when (unique.params[0]) {
                     "Food" -> isFood = true
@@ -559,11 +567,32 @@ class MapRegions (val ruleset: Ruleset){
                 }
             }
 
-            // Were there in fact no explicit qualities for any region? If so let's guess
-            if (!terrainToCheck.hasUnique(UniqueType.HasQuality)) {
+            // Were there in fact no explicit qualities defined for any region at all? If so let's guess at qualities to preserve mod compatibility.
+            if (terrainToCheck.uniqueObjects.none { it.type == UniqueType.HasQuality }) {
                 if (tile.isWater) return // Most water type tiles have no qualities
 
-                //
+                // is it junk???
+                if (terrainToCheck.impassable) {
+                    isJunk = true
+                    return // Don't bother checking the rest, junk is junk
+                }
+
+                // Take possible improvements into account
+                val improvements = ruleset!!.tileImprovements.values.filter {
+                    terrainToCheck.name in it.terrainsCanBeBuiltOn &&
+                    it.uniqueTo == null &&
+                    !it.hasUnique(UniqueType.GreatImprovement)
+                }
+
+                val maxFood = terrainToCheck.food + (improvements.maxOfOrNull { it.food } ?: 0f)
+                val maxProd = terrainToCheck.production + (improvements.maxOfOrNull { it.production } ?: 0f)
+                val bestImprovementValue = improvements.maxOfOrNull { it.food + it.production + it.gold + it.culture + it.science + it.faith } ?: 0f
+                val maxOverall = terrainToCheck.food + terrainToCheck.production + terrainToCheck.gold +
+                        terrainToCheck.culture + terrainToCheck.science + terrainToCheck.faith + bestImprovementValue
+
+                if (maxFood >= 2) isFood = true
+                if (maxProd >= 2) isProd = true
+                if (maxOverall >= 3) isGood = true
             }
         }
     }
