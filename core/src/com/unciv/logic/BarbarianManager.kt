@@ -167,13 +167,19 @@ class BarbarianManager {
     }
 }
 
-class Encampment (val position: Vector2) {
+class Encampment() {
+    val position = Vector2()
     var countdown = 0
     var spawnedUnits = -1
     var destroyed = false // destroyed encampments haunt the vicinity for 15 turns preventing new spawns
 
     @Transient
     lateinit var gameInfo: GameInfo
+
+    constructor(position: Vector2): this() {
+        this.position.x = position.x
+        this.position.y = position.y
+    }
 
     fun clone(): Encampment {
         val toReturn = Encampment(position)
