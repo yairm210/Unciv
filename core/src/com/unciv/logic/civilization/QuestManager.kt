@@ -377,7 +377,7 @@ class QuestManager {
                     }
                 if (questVaild) break
             }
-            return false
+            return questVaild
         }
 
         val mostRecentBully = getMostRecentBully()
