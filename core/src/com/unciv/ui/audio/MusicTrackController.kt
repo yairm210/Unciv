@@ -162,7 +162,7 @@ class MusicTrackController(private var volume: Float) {
             if (!music.isPlaying)  // for fade-over this could be called by the end of the previous track
                 music.play()
             true
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
             println("Exception playing music: ${ex.message}")
             if (MusicController.consoleLog)
                 ex.printStackTrace()
