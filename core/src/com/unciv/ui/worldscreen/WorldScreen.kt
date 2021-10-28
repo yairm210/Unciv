@@ -610,7 +610,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
                 if (gameInfo.gameParameters.isOnlineMultiplayer) {
                     try {
-                        OnlineMultiplayer().tryUploadGame(gameInfoClone)
+                        OnlineMultiplayer().tryUploadGame(gameInfoClone, withPreview = true)
                     } catch (ex: Exception) {
                         Gdx.app.postRunnable { // Since we're changing the UI, that should be done on the main thread
                             val cantUploadNewGamePopup = Popup(this)

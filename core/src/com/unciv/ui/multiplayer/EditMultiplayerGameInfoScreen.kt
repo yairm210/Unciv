@@ -105,7 +105,8 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
                     //save game so multiplayer list stays up to date but do not override multiplayer settings
                     val updatedSave = this.gameInfo!!.updateCurrentTurn(gameInfo)
                     GameSaver.saveGame(updatedSave, gameName)
-                    OnlineMultiplayer().tryUploadGame(gameInfo)
+                    OnlineMultiplayer().tryUploadGame(gameInfo, withPreview = true)
+
                     Gdx.app.postRunnable {
                         popup.close()
                         //go back to the MultiplayerScreen

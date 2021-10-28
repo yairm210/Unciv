@@ -114,11 +114,23 @@ object DropBox {
 class OnlineMultiplayer {
     fun getGameLocation(gameId: String) = "/MultiplayerGames/$gameId"
 
-    fun tryUploadGame(gameInfo: GameInfo){
+    fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean){
+        // We upload the gamePreview before we upload the game as this
+        // seems to be necessary for the kick functionality
+        if (withPreview) {
+            tryUploadGamePreview(gameInfo.asPreview())
+        }
+
         val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
         DropBox.uploadFile(getGameLocation(gameInfo.gameId), zippedGameInfo, true)
     }
 
+    /**
+     * Used to upload only the preview of a game. If the preview is uploaded together with (before/after)
+     * the gameInfo, it is recommended to use tryUploadGame(gameInfo, withPreview = true)
+     * @see tryUploadGame
+     * @see GameInfo.asPreview
+     */
     fun tryUploadGamePreview(gameInfo: GameInfoPreview){
         val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
         DropBox.uploadFile("${getGameLocation(gameInfo.gameId)}_Preview", zippedGameInfo, true)

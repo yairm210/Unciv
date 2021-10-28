@@ -197,7 +197,7 @@ class NewGameScreen(
         if (newGame != null && gameSetupInfo.gameParameters.isOnlineMultiplayer) {
             newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
-                OnlineMultiplayer().tryUploadGame(newGame!!)
+                OnlineMultiplayer().tryUploadGame(newGame!!, withPreview = true)
 
                 // Save gameId to clipboard because you have to do it anyway.
                 Gdx.app.clipboard.contents = newGame!!.gameId
