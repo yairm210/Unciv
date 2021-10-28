@@ -8,7 +8,6 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
@@ -578,7 +577,7 @@ class MapRegions (val ruleset: Ruleset){
                 }
 
                 // Take possible improvements into account
-                val improvements = ruleset!!.tileImprovements.values.filter {
+                val improvements = ruleset.tileImprovements.values.filter {
                     terrainToCheck.name in it.terrainsCanBeBuiltOn &&
                     it.uniqueTo == null &&
                     !it.hasUnique(UniqueType.GreatImprovement)
