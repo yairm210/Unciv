@@ -195,8 +195,10 @@ class QuestManager {
         }
     }
     private fun cancelQuestsIfAngry(){
+        val randomNumberCancelQuest = (1..15).random() // 15 is included
+
         for (currentQuest in assignedQuests)
-            if (civInfo.getDiplomacyManager(currentQuest.assignee).influence < 0)
+            if (civInfo.getDiplomacyManager(currentQuest.assignee).influence < 0 && randomNumberCancelQuest == 15)
                 assignedQuests.remove(currentQuest)
     }
 
