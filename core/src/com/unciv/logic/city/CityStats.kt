@@ -273,9 +273,9 @@ class CityStats(val cityInfo: CityInfo) {
         }
 
         val uniquesToCheck =
-            if (currentConstruction is Building && !currentConstruction.isAnyWonder()) {
+            if (currentConstruction is Building && currentConstruction.isAnyWonder()) {
                 uniques.filter { it.isOfType(UniqueType.PercentProductionWonders) }
-            } else if (currentConstruction is Building && currentConstruction.isAnyWonder()) {
+            } else if (currentConstruction is Building && !currentConstruction.isAnyWonder()) {
                 uniques.filter { it.isOfType(UniqueType.PercentProductionBuildings) }
             } else if (currentConstruction is BaseUnit) {
                 uniques.filter { it.isOfType(UniqueType.PercentProductionUnits) }
