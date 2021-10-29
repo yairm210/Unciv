@@ -8,6 +8,8 @@ import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 object DropBox {
@@ -38,7 +40,15 @@ object DropBox {
             } catch (ex: Exception) {
                 println(ex.message)
                 val reader = BufferedReader(InputStreamReader(errorStream))
-                println(reader.readText())
+                val responseString = reader.readText()
+                println(responseString)
+
+                // Throw Exceptions based on the HTTP response from dropbox
+                if (responseString.contains("path/not_found/"))
+                    throw FileNotFoundException()
+                if (responseString.contains("path/conflict/file"))
+                    throw DropBoxFileConflictException()
+
                 return null
             } catch (error: Error) {
                 println(error.message)
@@ -78,7 +88,12 @@ object DropBox {
         return BufferedReader(InputStreamReader(inputStream)).readText()
     }
 
-    fun uploadFile(fileName: String, data: String, overwrite: Boolean = false){
+    /**
+     * @param overwrite set to true to avoid DropBoxFileConflictException
+     * @throws DropBoxFileConflictException when overwrite is false and a file with the
+     * same name already exists
+     */
+    fun uploadFile(fileName: String, data: String, overwrite: Boolean = false) {
         val overwriteModeString = if(!overwrite) "" else ""","mode":{".tag":"overwrite"}"""
         dropboxApi("https://content.dropboxapi.com/2/files/upload",
                 data, "application/octet-stream", """{"path":"$fileName"$overwriteModeString}""")
@@ -87,6 +102,17 @@ object DropBox {
     fun deleteFile(fileName: String){
         dropboxApi("https://api.dropboxapi.com/2/files/delete_v2",
                 "{\"path\":\"$fileName\"}", "application/json")
+    }
+
+    fun fileExists(fileName: String): Boolean {
+        try {
+            dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
+                    "{\"path\":\"$fileName\"}", "application/json")
+            return true
+        } catch (ex: FileNotFoundException) {
+            return false
+        }
+
     }
 //
 //    fun createTemplate(): String {
@@ -114,7 +140,7 @@ object DropBox {
 class OnlineMultiplayer {
     fun getGameLocation(gameId: String) = "/MultiplayerGames/$gameId"
 
-    fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean){
+    fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         // We upload the gamePreview before we upload the game as this
         // seems to be necessary for the kick functionality
         if (withPreview) {
@@ -131,9 +157,35 @@ class OnlineMultiplayer {
      * @see tryUploadGame
      * @see GameInfo.asPreview
      */
-    fun tryUploadGamePreview(gameInfo: GameInfoPreview){
+    fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
         DropBox.uploadFile("${getGameLocation(gameInfo.gameId)}_Preview", zippedGameInfo, true)
+    }
+
+    /**
+     * Use to lock a game before uploading.
+     * DO NOT forget to unlock using tryReleaseLockForGame!
+     * ALWAYS thread-sleep between multiple tries!
+     * @see tryReleaseLockForGame
+     * @return false if game is already locked
+     */
+    fun tryLockGame(gameInfo: GameInfoPreview): Boolean {
+        // We have to check if the lock file already exists before we try to upload a new
+        // lock file to not overuse the dropbox file upload limit else it will return an error
+        if (DropBox.fileExists("${getGameLocation(gameInfo.gameId)}_Lock"))
+            return false
+
+        val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(LockFile()))
+        try {
+            DropBox.uploadFile("${getGameLocation(gameInfo.gameId)}_Lock", zippedGameInfo)
+        } catch (foe: DropBoxFileConflictException) {
+            return false
+        }
+        return true
+    }
+
+    fun tryReleaseLockForGame(gameInfo: GameInfoPreview) {
+        DropBox.deleteFile("${getGameLocation(gameInfo.gameId)}_Lock")
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {
@@ -156,3 +208,15 @@ class OnlineMultiplayer {
         return GameSaver.gameInfoFromStringWithoutTransients(Gzip.unzip(zippedGameInfo))
     }
 }
+
+/**
+ * Used to communicate data access between players
+ */
+class LockFile {
+    // The lockData is necessary to make every LockFile unique
+    // If Dropbox gets a file with the same content and overwrite set to false, it returns no
+    // error even though the file was not uploaded as the exact file is already existing
+    var lockData = UUID.randomUUID().toString()
+}
+
+class DropBoxFileConflictException: Exception()
