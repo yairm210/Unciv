@@ -260,9 +260,11 @@ class Encampment() {
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
         val unitList = gameInfo.ruleSet.units.values
             .filter { it.isMilitary() &&
-                    it.isBuildable(barbarianCiv) &&
-                    !(it.hasUnique(UniqueType.MustSetUp) || it.hasUnique(UniqueType.CannotAttack)) &&
-                    (if (naval) it.isWaterUnit() else it.isLandUnit()) }
+                    !(it.hasUnique(UniqueType.MustSetUp) ||
+                            it.hasUnique(UniqueType.CannotAttack) ||
+                            it.hasUnique(UniqueType.CannotBeBarbarian)) &&
+                    (if (naval) it.isWaterUnit() else it.isLandUnit()) &&
+                    it.isBuildable(barbarianCiv) }
 
         if (unitList.isEmpty()) return null // No naval tech yet? Mad modders?
 

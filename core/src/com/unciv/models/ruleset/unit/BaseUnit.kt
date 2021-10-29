@@ -416,12 +416,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             }
         }
 
-        for ((resource, amount) in getResourceRequirements())
-            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.apply {
-                    errorMessage = "Consumes [$amount] [$resource]"
-                })
-            }
+        if (!civInfo.isBarbarian()) { // Barbarians don't need resources
+            for ((resource, amount) in getResourceRequirements())
+                if (civInfo.getCivResourcesByName()[resource]!! < amount) {
+                    rejectionReasons.add(RejectionReason.ConsumesResources.apply {
+                        errorMessage = "Consumes [$amount] [$resource]"
+                    })
+                }
+        }
 
         if (hasUnique(UniqueType.FoundCity) &&
             (civInfo.isCityState() || civInfo.isOneCityChallenger())
