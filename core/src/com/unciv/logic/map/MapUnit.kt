@@ -555,11 +555,15 @@ class MapUnit {
         if (action == null) return
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
 
+        fun abortAction() {
+            action = null
+            due = currentMovement > 0
+        }
         val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
             .filter { it.militaryUnit != null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo) }
         if (enemyUnitsInWalkingDistance.isNotEmpty()) {
             if (isMoving()) // stop on enemy in sight
-                action = null
+                abortAction()
             return  // Don't you dare move.
         }
 
@@ -568,13 +572,13 @@ class MapUnit {
             val destinationTile = getMovementDestination()
             if (!movement.canReach(destinationTile)) { // That tile that we were moving towards is now unreachable -
                 // for instance we headed towards an unknown tile and it's apparently unreachable
-                action = null
+                abortAction()
                 return
             }
             val gotTo = movement.headTowards(destinationTile)
             if (gotTo == currentTile) // We didn't move at all
                 return
-            if (gotTo.position == destinationTile.position) action = null
+            if (gotTo.position == destinationTile.position) abortAction()
             if (currentMovement > 0) doAction()
             return
         }

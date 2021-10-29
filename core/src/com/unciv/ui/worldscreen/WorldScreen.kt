@@ -17,6 +17,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.Tutorial
@@ -718,7 +719,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                 NextTurnAction("Found Pantheon", Color.WHITE) {
                     game.setScreen(PantheonPickerScreen(viewingCiv, gameInfo))
                 }
-            
+
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
                 NextTurnAction("Found Religion", Color.WHITE) {
                     game.setScreen(ReligiousBeliefsPickerScreen(
@@ -728,7 +729,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                         pickIconAndName = true
                     ))
                 }
-            
+
             viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion -> 
                 NextTurnAction("Enhance Religion", Color.ORANGE) {
                     game.setScreen(ReligiousBeliefsPickerScreen(
@@ -738,7 +739,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                         pickIconAndName = false
                     ))
                 }
-            
+
             viewingCiv.mayVoteForDiplomaticVictory() ->
                 NextTurnAction("Vote for World Leader", Color.RED) {
                     game.setScreen(DiplomaticVotePickerScreen(viewingCiv))
@@ -746,8 +747,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
             else ->
                 NextTurnAction("${Fonts.turn}{Next turn}", Color.WHITE) {
-                    game.settings.addCompletedTutorialTask("Pass a turn")
-                    nextTurn()
+                    if (viewingCiv.playerType == PlayerType.Human && viewingCiv.doAllUnitActions()) {
+                        // A unit with orders has decided to stop and is now due
+                        shouldUpdate = true
+                    } else {
+                        game.settings.addCompletedTutorialTask("Pass a turn")
+                        nextTurn()
+                    }
                 }
         }
     }

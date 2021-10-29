@@ -844,6 +844,15 @@ class CivilizationInfo {
         cachedMilitaryMight = -1    // Reset so we don't use a value from a previous turn
     }
 
+    /** Call doAction on all MapUnit's of this Civ, processing their orders
+     *  @return whether after the processing any [due][MapUnit.due] units remain */
+    fun doAllUnitActions(): Boolean {
+        getCivUnits().forEach {
+            it.doAction()
+        }
+        return getDueUnits().any()
+    }
+
     private fun startTurnFlags() {
         for (flag in flagsCountdown.keys.toList()) {
             // In case we remove flags while iterating
