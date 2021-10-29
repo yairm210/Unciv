@@ -762,9 +762,17 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                 .any { it.isMoving() || it.isAutomated() || it.isExploring() } ->
                 NextTurnAction("Move automated units", Color.LIGHT_GRAY) {
                     viewingCiv.hasMovedAutomatedUnits = true
-                    for (unit in viewingCiv.getCivUnits())
-                        unit.doAction()
-                    shouldUpdate = true
+                    isPlayersTurn = false // Disable state changes
+                    nextTurnButton.disable()
+                    thread(name="Move automated units") {
+                        for (unit in viewingCiv.getCivUnits())
+                            unit.doAction()
+                        Gdx.app.postRunnable {
+                            shouldUpdate = true
+                            isPlayersTurn = true //Re-enable state changes
+                            nextTurnButton.enable()
+                        }
+                    }
                 }
 
             else ->
