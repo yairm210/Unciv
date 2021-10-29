@@ -283,23 +283,17 @@ object SpecificUnitAutomation {
 
     fun automateMissionary(unit: MapUnit){
 
-        var unitDistance = 10000 // large number so it does not interfere with the map
-        val possibleCities = unit.civInfo.cities.filter { it.religion.religionThisIsTheHolyCityOf != unit.getReligionDisplayName() }
+        println(unit.currentTile.getCity()!!.religion.religionThisIsTheHolyCityOf)
+
+        val possibleCities: Sequence<CityInfo> = unit.civInfo.cities.asSequence()
+            .filter { it.religion.religionThisIsTheHolyCityOf != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
 
-        var destination: CityInfo? = null
-
-        if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.religion.religionThisIsTheHolyCityOf == unit.religion){
+        if (unit.currentTile.owningCity != null && unit.currentTile.getCity()!!.religion.religionThisIsTheHolyCityOf == unit.religion){
             unit.doAction()
         }
 
-        for (city in possibleCities) {
-            val currentDistance = city.getCenterTile().aerialDistanceTo(unit.currentTile)
-            if (currentDistance < unitDistance){
-                unitDistance = currentDistance
-                destination = city
-            }
-        }
+        val destination: CityInfo? = possibleCities.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
 
         if (destination == null) return
         unit.movement.headTowards(destination.getCenterTile())
