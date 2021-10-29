@@ -160,8 +160,9 @@ object UnitAutomation {
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
             if (unit.hasUnique("Can [Spread Religon] [] times")){
-                return
+                return SpecificUnitAutomation.automateMissionary(unit)
             }
+
 
             // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
             

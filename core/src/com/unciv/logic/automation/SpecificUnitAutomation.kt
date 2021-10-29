@@ -281,7 +281,7 @@ object SpecificUnitAutomation {
         }
     }
 
-    fun automateReligiousUnit(unit: MapUnit){
+    fun automateMissionary(unit: MapUnit){
 
         var unitDistance = 10000 // large number so it does not interfere with the map
         val possibleCities = unit.civInfo.cities.filter { it.religion.religionThisIsTheHolyCityOf != unit.getReligionDisplayName() }
