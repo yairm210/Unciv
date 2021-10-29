@@ -159,6 +159,11 @@ object UnitAutomation {
             if (unit.hasUnique("Can construct []"))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
+            if (unit.hasUnique("Can [Spread Religon] [] times")){
+                /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                return
+            }
+
             // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)
             
             return // The AI doesn't know how to handle unknown civilian units

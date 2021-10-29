@@ -2,6 +2,7 @@
 
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -278,6 +279,30 @@ object SpecificUnitAutomation {
                 UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return
         }
+    }
+
+    fun automateReligiousUnit(unit: MapUnit){
+
+        var unitDistance = 10000 // large number so it does not interfere with the map
+        val possibleCities = unit.civInfo.cities.filter { it.religion.religionThisIsTheHolyCityOf != unit.getReligionDisplayName() }
+            .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
+
+        var destination: CityInfo? = null
+
+        if (unit.currentTile.isCityCenter() && unit.currentTile.getCity()!!.religion.religionThisIsTheHolyCityOf == unit.religion){
+            unit.doAction()
+        }
+
+        for (city in possibleCities) {
+            val currentDistance = city.getCenterTile().aerialDistanceTo(unit.currentTile)
+            if (currentDistance < unitDistance){
+                unitDistance = currentDistance
+                destination = city
+            }
+        }
+
+        if (destination == null) return
+        unit.movement.headTowards(destination.getCenterTile())
     }
 
     fun automateFighter(unit: MapUnit) {
