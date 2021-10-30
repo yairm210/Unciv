@@ -264,7 +264,7 @@ class TechManager {
 
         if (civInfo.playerType == PlayerType.Human) {
             for (revealedResource in getRuleset().tileResources.values.filter { techName == it.revealedBy }) {
-                civInfo.gameInfo.notifyVisibleResources(civInfo, revealedResource.name, 5, false)
+                civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5, false)
             }
         }
 

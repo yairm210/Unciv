@@ -293,11 +293,12 @@ class GameInfo {
         }
     }
 
-    fun notifyVisibleResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
+    fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
         // `maxDistance = 0` removes distance limitation.
         data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
 
-        val visibleRevealTiles = civInfo.viewableTiles.asSequence()
+        val exploredRevealTiles = tileMap.values
+            .filter { it.position in civInfo.exploredTiles }
             .filter { it.resource == resourceName }
             .flatMap { tile -> civInfo.cities.asSequence()
                 .map {
@@ -311,8 +312,8 @@ class GameInfo {
             .sortedWith ( compareBy { it.distance } )
             .distinctBy { it.tile }
 
-        val chosenCity = visibleRevealTiles.firstOrNull()?.city ?: return
-        val positions = visibleRevealTiles
+        val chosenCity = exploredRevealTiles.firstOrNull()?.city ?: return
+        val positions = exploredRevealTiles
             // re-sort to a more pleasant display order
             .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
             .map { it.tile.position }
