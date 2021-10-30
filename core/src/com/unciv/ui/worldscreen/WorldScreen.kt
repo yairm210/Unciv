@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.console.ConsoleScope
+import com.unciv.console.ConsoleState
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -27,6 +29,7 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.console.ConsoleScreen
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.*
 import com.unciv.ui.saves.LoadGameScreen
@@ -239,6 +242,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
 
         // Space and N are assigned in createNextTurnButton
+        keyPressDispatcher[Input.Keys.GRAVE] = { game.setScreen(ConsoleScreen(ConsoleState(ConsoleScope(selectedCiv)), { game.setWorldScreen() })) } // CLI console
         keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
         keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*
@@ -339,8 +343,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             // if we find the current player didn't change, don't update
             // Additionally, check if we are the current player, and in that case always stop
             // This fixes a bug where for some reason players were waiting for themselves.
-            if (gameInfo.currentPlayer == latestGame.currentPlayer 
-                && gameInfo.turns == latestGame.turns 
+            if (gameInfo.currentPlayer == latestGame.currentPlayer
+                && gameInfo.turns == latestGame.turns
                 && latestGame.currentPlayer != gameInfo.getPlayerToViewAs().civName
             ) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
