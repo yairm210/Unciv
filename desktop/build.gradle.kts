@@ -2,7 +2,6 @@ import com.badlogicgames.packr.Packr
 import com.badlogicgames.packr.PackrConfig
 import com.unciv.build.BuildConfig
 
-
 plugins {
     id("kotlin")
 }
@@ -23,6 +22,9 @@ val discordDir = file("discord_rpc")
 val deployFolder = file("../deploy")
 
 tasks.register<JavaExec>("run") {
+
+    jvmArgs = listOf("-XstartOnFirstThread") // See https://github.com/libgdx/libgdx/wiki/Starter-classes-and-configuration#common-issues
+
     dependsOn(tasks.getByName("classes"))
 
     main = mainClassName
