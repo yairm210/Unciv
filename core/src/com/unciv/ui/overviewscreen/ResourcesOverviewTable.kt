@@ -41,7 +41,7 @@ class ResourcesOverviewTable (
             // due to different label lengths.
             val holder = Group()
             resourceImage.onClick {
-                viewingPlayer.gameInfo.notifyVisibleResources(viewingPlayer, resource.name)
+                viewingPlayer.gameInfo.notifyVisibleResources(viewingPlayer, resource.name, 0, true)
                 overviewScreen.game.setWorldScreen()
             }
             holder.addActor(resourceImage)

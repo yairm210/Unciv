@@ -293,44 +293,41 @@ class GameInfo {
         }
     }
 
-    fun notifyVisibleResources(civInfo: CivilizationInfo, resourceName: String) {
+    fun notifyVisibleResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
+        // `maxDistance = 0` removes distance limitation.
         data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
 
-        for (revealedResource in this.ruleSet.tileResources.values.filter { resourceName == it.name }) {
-            val revealedName = revealedResource.name
-
-            val visibleRevealTiles = civInfo.viewableTiles.asSequence()
-                .filter { it.resource == revealedName }
-                .flatMap { tile -> civInfo.cities.asSequence()
-                    .map {
-                        // build a full cross join all revealed tiles * civ's cities (should rarely surpass a few hundred)
-                        // cache distance for each pair as sort will call it ~ 2n log n times
-                        // should still be cheaper than looking up 'the' closest city per reveal tile before sorting
-                        city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
-                    }
+        val visibleRevealTiles = civInfo.viewableTiles.asSequence()
+            .filter { it.resource == resourceName }
+            .flatMap { tile -> civInfo.cities.asSequence()
+                .map {
+                    // build a full cross join all revealed tiles * civ's cities (should rarely surpass a few hundred)
+                    // cache distance for each pair as sort will call it ~ 2n log n times
+                    // should still be cheaper than looking up 'the' closest city per reveal tile before sorting
+                    city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
                 }
-                .filter { it.distance <= 5 && (it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
-                .sortedWith ( compareBy { it.distance } )
-                .distinctBy { it.tile }
+            }
+            .filter { (maxDistance == 0 || it.distance <= maxDistance) && (showForeign || it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
+            .sortedWith ( compareBy { it.distance } )
+            .distinctBy { it.tile }
 
-            val chosenCity = visibleRevealTiles.firstOrNull()?.city ?: continue
-            val positions = visibleRevealTiles
-                // re-sort to a more pleasant display order
-                .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
-                .map { it.tile.position }
-                .toList()       // explicit materialization of sequence to satisfy addNotification overload
+        val chosenCity = visibleRevealTiles.firstOrNull()?.city ?: return
+        val positions = visibleRevealTiles
+            // re-sort to a more pleasant display order
+            .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
+            .map { it.tile.position }
+            .toList()       // explicit materialization of sequence to satisfy addNotification overload
 
-            val text =  if(positions.size==1)
-                "[$revealedName] revealed near [${chosenCity.name}]"
-            else
-                "[${positions.size}] sources of [$revealedName] revealed, e.g. near [${chosenCity.name}]"
+        val text =  if(positions.size==1)
+            "[$resourceName] revealed near [${chosenCity.name}]"
+        else
+            "[${positions.size}] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
-            civInfo.addNotification(
-                text,
-                LocationAction(positions),
-                "ResourceIcons/$revealedName"
-            )
-        }
+        civInfo.addNotification(
+            text,
+            LocationAction(positions),
+            "ResourceIcons/$resourceName"
+        )
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
