@@ -89,6 +89,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
+    private var consoleScreen: ConsoleScreen
+
     companion object {
         /** Switch for console logging of next turn duration */
         private const val consoleLog = false
@@ -194,6 +196,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
+
+        consoleScreen = ConsoleScreen(ConsoleState(ConsoleScope(selectedCiv)), { game.setWorldScreen() })
     }
 
     private fun stopMultiPlayerRefresher() {
@@ -242,7 +246,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
 
         // Space and N are assigned in createNextTurnButton
-        keyPressDispatcher[Input.Keys.GRAVE] = { game.setScreen(ConsoleScreen(ConsoleState(ConsoleScope(selectedCiv)), { game.setWorldScreen() })) } // CLI console
+        keyPressDispatcher[Input.Keys.GRAVE] = { game.setScreen(consoleScreen) } // CLI console
         keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
         keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*

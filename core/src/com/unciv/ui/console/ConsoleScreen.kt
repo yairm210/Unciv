@@ -49,6 +49,11 @@ class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): Camer
         keyPressDispatcher[Input.Keys.ENTER] = { this.run() }
         keyPressDispatcher[Input.Keys.NUMPAD_ENTER] = { this.run() }
         
+        keyPressDispatcher[Input.Keys.TAB] = { this.autocomplete() }
+        
+        keyPressDispatcher[Input.Keys.UP] = { this.navigateHistory(1) }
+        keyPressDispatcher[Input.Keys.DOWN] = { this.navigateHistory(-1) }
+        
         stage.addActor(layoutTable)
         
         echoHistory()
@@ -58,10 +63,36 @@ class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): Camer
         printHistory.clearChildren()
     }
     
+    private fun setText(text:String) {
+        inputField.setText(text)
+        inputField.setCursorPosition(inputField.text.length)
+    }
+    
     private fun echoHistory() {
         for (hist in consoleState.outputHistory) {
             echo(hist)
         }
+    }
+    
+    private fun autocomplete() {
+        var results = consoleState.getAutocomplete(inputField.text)
+        if (results.isHelpText) {
+            echo(results.helpText)
+            return
+        }
+        if (results.matches.size < 1) {
+            return
+        } else if (results.matches.size == 1) {
+            setText(results.matches[0])
+        } else {
+            for (m in results.matches) {
+                echo(m)
+            }
+        }
+    }
+    
+    private fun navigateHistory(increment:Int) {
+        setText(consoleState.navigateHistory(increment))
     }
     
     private fun echo(text: String) {
@@ -70,7 +101,7 @@ class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): Camer
     
     private fun run() {
         echo(consoleState.exec(inputField.text))
-        inputField.setText("")
+        setText("")
     }
 }
 
