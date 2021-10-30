@@ -169,10 +169,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         }
 
         // when deselected, move city button to its original position
-        if (isButtonMoved
-                && unitTable.selectedCity != city
-                && unitTable.selectedUnit?.currentTile != city.getCenterTile()) {
-
+        if (isButtonMoved && unitTable.selectedCity != city) {
             moveButtonUp()
         }
     }
