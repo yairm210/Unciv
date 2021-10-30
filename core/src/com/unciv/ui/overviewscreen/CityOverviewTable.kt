@@ -141,6 +141,8 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
             }
             citiesTable.add(button)
 
+            citiesTable.add(ImageGetter.getConstructionImage(city.cityConstructions.currentConstructionFromQueue).surroundWithCircle(iconSize*0.8f)).padRight(paddingHorz)
+
             val cell = citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
             constructionCells.add(cell)
 
