@@ -51,8 +51,7 @@ internal object DesktopLauncher {
 
         val game = UncivGame(desktopParameters)
 
-        if (!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
-            tryActivateDiscord(game)
+        tryActivateDiscord(game)
 
         LwjglApplication(game, config)
     }
