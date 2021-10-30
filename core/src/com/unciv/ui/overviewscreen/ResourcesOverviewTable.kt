@@ -3,6 +3,7 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+//import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
@@ -13,8 +14,9 @@ import com.unciv.ui.utils.toLabel
 
 @Suppress("UNUSED_PARAMETER")       // Keep all OverviewScreen Pages compatible
 class ResourcesOverviewTable (
+    //gameInfo: GameInfo,
     viewingPlayer: CivilizationInfo,
-    overviewScreen: EmpireOverviewScreen
+    overviewScreen: EmpireOverviewScreen,
 ) : Table() {
 
     init {
@@ -31,25 +33,20 @@ class ResourcesOverviewTable (
             .filter { it.resourceType != ResourceType.Bonus }.distinct()
             .sortedWith(compareBy({ it.resourceType }, { it.name.tr() }))
 
-        var visibleLabel: Label? = null
         for (resource in resources) {
             // Create a group of label and icon for each resource.
             val resourceImage = ImageGetter.getResourceImage(resource.name, 50f)
-            val resourceLabel = resource.name.toLabel()
             val labelPadding = 10f
             // Using a table here leads to spacing issues
             // due to different label lengths.
             val holder = Group()
             resourceImage.onClick {
-                if (visibleLabel != null)
-                    visibleLabel!!.isVisible = false
-                resourceLabel.isVisible = true
-                visibleLabel = resourceLabel
+                viewingPlayer.gameInfo.notifyVisibleResources(viewingPlayer, resource.name)
+                overviewScreen.game.setWorldScreen()
             }
             holder.addActor(resourceImage)
-            holder.addActor(resourceLabel)
             holder.setSize(resourceImage.width,
-                resourceImage.height + resourceLabel.height + labelPadding)
+                resourceImage.height + labelPadding)
             // Center-align all labels, but right-align the last couple resources' labels
             // because they may get clipped otherwise. The leftmost label should be fine
             // center-aligned (if there are more than 2 resources), because the left side
@@ -58,9 +55,6 @@ class ResourcesOverviewTable (
                 (resources.indexOf(resource) + 2 >= resources.count()) -> 1
                 else -> 2
             }
-            resourceLabel.moveBy((resourceImage.width - resourceLabel.width) / alignFactor,
-                resourceImage.height + labelPadding)
-            resourceLabel.isVisible = false
             add(holder)
         }
         addSeparator()
