@@ -709,8 +709,6 @@ class MapUnit {
     }
 
     fun endTurn() {
-        doAction()
-
         if (currentMovement > 0 &&
             getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
