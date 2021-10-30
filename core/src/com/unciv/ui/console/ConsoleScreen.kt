@@ -1,47 +1,90 @@
 package com.unciv.ui.console
 
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
+import com.unciv.console.ConsoleBackend
+import com.unciv.console.ConsoleBackendType
 import com.unciv.console.ConsoleState
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
+
 
 class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): CameraStageBaseScreen() {
 
     private val lineHeight = 30f
 
     private val layoutTable: Table = Table()
+    
     private val topBar: Table = Table()
-    private val printHistory: Table = Table()//ScrollPane = ScrollPane()
+    private var backendsScroll: ScrollPane
+    private val backendsAdders: Table = Table()
+    private val closeButton: TextButton = Constants.close.toTextButton()
+    
+    private var middleSplit: SplitPane
     private var printScroll: ScrollPane
+    private val printHistory: Table = Table()
+    private val runningContainer: Table = Table()
+    private val runningList: Table = Table()
+    
     private val inputBar: Table = Table()
     private val inputField: TextField = TextField("", skin)
-    private val runButton: TextButton = "Enter".toTextButton()
-    private val closeButton: TextButton = Constants.close.toTextButton()
+    
+    private val inputControls: Table = Table()
+    private val tabButton: TextButton = "TAB".toTextButton()
+    private val upButton: Image = ImageGetter.getImage("OtherIcons/Up")
+    private val downButton: Image = ImageGetter.getImage("OtherIcons/Down")
+    private val runButton: TextButton = "ENTER".toTextButton()
 
     init {
         onBackButtonClicked(closeAction)
         closeButton.onClick(closeAction)
         
+        backendsAdders.add("Launch new backend:".toLabel())
+        for (backendtype in ConsoleBackendType.values()) {
+            var backendadder = backendtype.displayname.toTextButton()
+            backendadder.onClick({
+                echo(consoleState.spawnBackend(backendtype))
+                updateRunning()
+            })
+            backendsAdders.add(backendadder)
+        }
+        backendsScroll = ScrollPane(backendsAdders)
+        
+        backendsAdders.left()
+        
+        topBar.add(backendsScroll).minWidth(stage.width - closeButton.getPrefWidth())
         topBar.add(closeButton)
         
         printHistory.left()
         printHistory.bottom()
         printScroll = ScrollPane(printHistory)
         
-        inputBar.add(inputField).minWidth(stage.width - runButton.getPrefWidth())
-        inputBar.add(runButton)
+        runningContainer.add("Active Backends:".toLabel()).row()
+        runningContainer.add(runningList)
+        
+        middleSplit = SplitPane(printScroll, runningContainer, false, skin)
+        middleSplit.setSplitAmount(0.8f)
+        
+        inputControls.add(tabButton)
+        inputControls.add(upButton.surroundWithCircle(40f))
+        inputControls.add(downButton.surroundWithCircle(40f))
+        inputControls.add(runButton)
+        
+        inputBar.add(inputField).minWidth(stage.width - inputControls.getPrefWidth())
+        inputBar.add(inputControls)
         
         layoutTable.setSize(stage.width, stage.height)
         
         layoutTable.add(topBar).minWidth(stage.width).row()
         
-        layoutTable.add(printScroll).minWidth(stage.width).minHeight(stage.height - topBar.getPrefHeight() - inputBar.getPrefHeight()).row()
+        layoutTable.add(middleSplit).minWidth(stage.width).minHeight(stage.height - topBar.getPrefHeight() - inputBar.getPrefHeight()).row()
         
         layoutTable.add(inputBar)
         
@@ -49,14 +92,43 @@ class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): Camer
         keyPressDispatcher[Input.Keys.ENTER] = { this.run() }
         keyPressDispatcher[Input.Keys.NUMPAD_ENTER] = { this.run() }
         
+        tabButton.onClick({ this.autocomplete() })
         keyPressDispatcher[Input.Keys.TAB] = { this.autocomplete() }
         
+        upButton.onClick({ this.navigateHistory(1) })
         keyPressDispatcher[Input.Keys.UP] = { this.navigateHistory(1) }
+        downButton.onClick({ this.navigateHistory(-1) })
         keyPressDispatcher[Input.Keys.DOWN] = { this.navigateHistory(-1) }
         
         stage.addActor(layoutTable)
         
         echoHistory()
+        
+        updateRunning()
+    }
+    
+    private fun updateRunning() {
+        runningList.clearChildren()
+        var i = 0
+        for (backend in consoleState.consoleBackends) {
+            var button = backend.displayname.toTextButton()
+            val index = i
+            runningList.add(button)
+            if (i == consoleState.activeBackend) {
+                button.color = Color.GREEN
+            }
+            button.onClick({
+                consoleState.switchToBackend(index)
+                updateRunning()
+            })
+            var termbutton = ImageGetter.getImage("OtherIcons/Stop")
+            termbutton.onClick({
+                consoleState.termBackend(index)
+                updateRunning()
+            })
+            runningList.add(termbutton.surroundWithCircle(40f)).row()
+            i += 1
+        }
     }
     
     private fun clear() {
@@ -97,6 +169,7 @@ class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): Camer
     
     private fun echo(text: String) {
         printHistory.add(text.toLabel()).left().bottom().padLeft(15f).row()
+        printScroll.scrollTo(0f,0f,1f,1f)
     }
     
     private fun run() {
