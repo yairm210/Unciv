@@ -195,20 +195,45 @@ Which will only apply the strength boost when fighting armored units in open ter
 This system is currently in development, so only a small amount of conditionals exist, and only a few uniques can have conditionals for now. It will be expanded greatly, improving the amount of combinations that can be made and therefore the amount of different uniques that exist.
 Uniques that support conditionals will be denoted with a "©" sign for now.
 
-#### Existing conditionals
+#### Global conditionals
 
 \<when at war\> - Applies when the civilization is at war
 
 \<when not at war\> - Applies when the civilization is not at war
 
+\<while the empire is happy\>
+
+\<during a Golden Age\>
+
+\<before the [eraName]\>
+
+\<starting from the [eraName]\>
+
+\<during the [eraName\]>
+
+\<before discovering [tech]\>
+
+\<after discovering [tech]\>
+
+\<before adopting [policy]\>
+
+\<after adopting [policy]\>
+
+#### City conditionals
+
 \<if this city has at least [amount] specialists\> - Can only be used on things that exist in a city or relate to a specific city
 
-\<while the empire is happy\>
+#### Unit conditionals
 
 \<vs [unitFilter] units\>
 
 \<vs cities\>
 
+\<when attacking\>
+
+\<when defending\>
+
+\<in [tileFilter] tiles\>
 
 ## General uniques
 
@@ -342,8 +367,6 @@ Uniques that support conditionals will be denoted with a "©" sign for now.
 
 "When spreading religion to a city, gain [amount] times the amount of followers of other religions as [Stat]" - "Stat" may be Science, Culture, Faith or Gold
 
-"May buy [unitFilter] units for [amount] [Stat] [cityFilter] at an increasing price ([amount2])" - Prices increases by (amount bought) * (amount2) each time after buying.
-
 
 
 ### City-state related uniques
@@ -383,9 +406,11 @@ Uniques that support conditionals will be denoted with a "©" sign for now.
 
 "[amount]% unhappiness from population [cityFilter]"
 
-"+[amount]% Production when constructing [unitFilter] units", "+[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
+"[amount]% Production when constructing [unitFilter] units [cityFilter]" - The city produces extra Production when a unit fitting the filter in under construction.
 
-"+[amount]% Production when constructing [buildingFilter]", "+[amount]% Production when constructing [buildingFilter] [cityfilter]", "+[amount]% Production when constructing a [buildingFilter]
+"[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
+
+"[amount]% Production when constructing [buildingFilter] wonders [cityFilter]"
 
 "[Stat] cost of purchasing [buildingFilter] buildings [amount]%"
 
@@ -439,6 +464,16 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Hidden when religion is disabled" - Removes units, buildings or ancient ruin rewards from the game when religion is disabled
 
+"Hidden when [victoryType] victory is disabled"
+
+"Only available after [amount] turns" - To be used for ancient ruin rewards
+
+"Hidden after founding a Pantheon" - same
+
+"Hidden before founding a Pantheon" - same
+
+"Hidden after generating a Great Prophet" - same
+
 "+[amount]% attacking strength for cities with garrisoned units"
 
 "+[amount]% defensive strength for cities"
@@ -457,9 +492,22 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "Hidden after generating a Great Prophet" - Used for ancient ruins to disable a reward after generating a great prophet
 
-"May buy [constructionFilter] buildings for [amount] [Stat] [cityFilter]"
+"May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])" - Price increases quadratically based on the the "amount" parameters
 
-"May buy [unitFilter] units for [amount] [Stat] [cityFilter] starting from the [eraName] at an increasing price ([amount2])" - Price increases quadratically based on the the "amount" parameters
+"May buy [constructionFilter] buildings for [amount] [stat] [cityFilter] at an increasing price ([amount])" - same
+
+"May buy [baseUnitFilter] units for [amount] [stat] [cityFilter]"
+
+"May buy [constructionFilter] buildings for [amount] [stat] [cityFilter]"
+
+"May buy [baseUnitFilter] units with [stat] [cityFilter]"
+
+"May buy [constructionFilter] buildings with [stat] [cityFilter]"
+
+"May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost"
+
+"May buy [constructionFilter] buildings with [stat] for [amount] times their normal Production cost"
+
 
 "May not generate great prophet equivalents naturally"
 
@@ -471,7 +519,7 @@ These last two uniques may seem like they only have a one-time effect. However, 
 
 "May choose [amount] additional [beliefType] beliefs when [param] a religion" - param may be "founding" or "enhancing", beleifType may be "Pantheon", "Follower", "Founder", "Enhancer"
 
-"May choose [amount] additional beliefs of any type when [param] a religion"
+May choose [amount] additional belief(s) of any type when [param] a religion
 
 
 ## Buildings-only
@@ -501,8 +549,6 @@ These last two uniques may seem like they only have a one-time effect. However, 
 "Triggers a global alert upon completion"
 
 "Triggers a Cultural Victory upon completion"
-
-"Hidden when [victoryType] victory is disabled"
 
 "Population loss from nuclear attacks [amount]% [cityFilter]"
 
@@ -566,29 +612,39 @@ Follower uniques are uniques applied to each city following a religion which inc
 
 ## Improvement uniques
 
-"Obsolete with [techName]"
+"[stats] from [tileFilter] tiles"
 
-"[stats] once [techName] is discovered"
+"[stats] for each adjacent [tileFilter]"
 
-"Gives a defensive bonus of [amount]%"
+
+"Can also be built on tiles adjacent to fresh water"
 
 "Can be built outside your borders"
 
 "Can be built just outside your borders" - one tile outside your borders
 
-"Costs [amount] gold per turn when in your territory"
-
-"Great Improvement"
-
-"[stats] for each adjacent [tileFilter]"
-
-"Cannot be built on bonus resource"
-
 "Cannot be built on [tileFilter] tiles"
 
 "Cannot be built on [tileFilter] tiles until [techName] is discovered"
 
+"Cannot be built on bonus resource"
+
+"Does not need removal of [tileFilter]"
+
+
+"Gives a defensive bonus of [amount]%"
+
+"Costs [amount] gold per turn when in your territory"
+
+"Deal [amount] damage to adjacent enemy units"
+
+"Obsolete with [techName]"
+
+"Great Improvement"
+
 "Tile provides yield without assigned population"
+
+"Unpillageable"
 
 "Indestructable" - Cannot be removed by nukes (might be used more later, for now only this)
 
@@ -650,13 +706,9 @@ May be added in promotions or ancient ruins equivalents
 
 ### Visibility
 
-"[amount] Visibility Range"
+"[amount] Sight"
 
 "6 tiles in every direction always visible"
-
-"+1 Sight when embarked"
-
-"Limited Visibility"
 
 "Normal vision when embarked"
 
@@ -710,14 +762,6 @@ May be added in promotions or ancient ruins equivalents
 "[amount]% Strength" ©
 
 "No defensive terrain bonus"
-
-"+[amount]% Strength when attacking"
-
-"+[amount]% Strength when defending"
-
-"[amount]% Strength when defending vs [unitFilter]"
-
-"+[amount]% Strength in [tileFilter]"
 
 "+[amount]% Strength for [unitFilter] units which have another [unitFilter] unit in an adjacent tile"
 
@@ -803,6 +847,8 @@ May be added in promotions or ancient ruins equivalents
 
 "Can be purchased for [amount] [Stat] [cityFilter]"
 
+"[amount]% Religious Spread Strength"
+
 
 # Terrain uniques
 Some of the terrain uniques have gameplay effect, others are used only for map generation:
@@ -821,11 +867,24 @@ Some of the terrain uniques have gameplay effect, others are used only for map g
 
 "Can be destroyed by nukes" - Features with this unique will be removed when fallout is placed on this tile
 
-"Rough Terrain"
+"Rough terrain"
+
+"Fresh water"
 
 "Grants 500 Gold to the first civilization to discover it" - given to natural wonders
 
 "Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game" (Fountain of Youth)
+
+"Nullifies all other stats this tile provides"
+
+"Units ending their turn on this terrain take [amount] damage"
+
+"Provides a one-time Production bonus to the closest city when cut down"
+
+"Only [improvementFilter] improvements may be built on this tile"
+
+
+
 
 ### Terrain uniques - map generation
 
@@ -849,12 +908,16 @@ Some of the terrain uniques have gameplay effect, others are used only for map g
 
 "Neighboring tiles except [terrainFilter] will convert to [baseTerrain]"
 
+"Rare feature"
+
 
 # Resource Uniques
 
 "+15% production towards Wonder construction"
 
 "Can only be created by Mercantile City-States"
+
+"Deposits in [tileFilter] tiles always provide [amount] resources"
 
 
 # ModOptions Uniques
@@ -962,3 +1025,13 @@ These uniques have been recently deprecated. While they are still supported, the
 "+[amount]% Strength vs [unitFilter]" - Replaced with "[amount]% Strength <vs [unitFilter] units>" or "[amount]% Strength <vs cities>"
 
 "+[amount]% Combat Strength" - Replaced with "[amount]% Strength"
+
+"+[amount]% Strength when attacking" - Replaced with "[amount]% Strength \<when attacking>"
+
+"+[amount]% Strength when defending" - Replaced with "[amount]% Strength \<when defending>"
+
+"[amount]% Strength when defending vs [unitFilter]" - Replaced with "[amount]% Strength \<when defending> \<vs [unitFilter] units>"
+
+"+[amount]% Strength in [tileFilter]" - Replaced with "[amount]% Strength \<in [tileFilter] tiles>"
+
+"[stats] once [techName] is discovered" - Replace with "[stats] \<after discovering [techname]>"
