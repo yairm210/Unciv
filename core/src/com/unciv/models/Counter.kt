@@ -1,6 +1,8 @@
 package com.unciv.models
 
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
 
 open class Counter<K> : LinkedHashMap<K, Int>() {
 
@@ -40,3 +42,13 @@ open class Counter<K> : LinkedHashMap<K, Int>() {
     }
 }
 
+class MultiHashMap<K, V> : LinkedHashMap<K, ArrayList<V>>() {
+    fun add(key: K, value: V) {
+        var existingList = get(key)
+        if (existingList == null) {
+            existingList = ArrayList()
+            this[key] = existingList
+        }
+        existingList.add(value)
+    }
+}
