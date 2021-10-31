@@ -3,7 +3,6 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-//import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
@@ -14,7 +13,6 @@ import com.unciv.ui.utils.toLabel
 
 @Suppress("UNUSED_PARAMETER")       // Keep all OverviewScreen Pages compatible
 class ResourcesOverviewTable (
-    //gameInfo: GameInfo,
     viewingPlayer: CivilizationInfo,
     overviewScreen: EmpireOverviewScreen,
 ) : Table() {
