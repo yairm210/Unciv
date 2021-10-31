@@ -181,6 +181,8 @@ class CivilizationInfo {
     var totalCultureForContests = 0
     var totalFaithForContests = 0
 
+    var hasMovedAutomatedUnits = false
+
     @Transient
     var hasLongCountDisplayUnique = false
 
@@ -234,6 +236,7 @@ class CivilizationInfo {
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
+        toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         return toReturn
     }
 
@@ -779,6 +782,7 @@ class CivilizationInfo {
         for (city in cities) city.startTurn()  // Most expensive part of startTurn
 
         for (unit in getCivUnits()) unit.startTurn()
+        hasMovedAutomatedUnits = false
 
         for (tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
             val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)

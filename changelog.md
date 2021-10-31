@@ -1,3 +1,22 @@
+## 3.17.13
+
+Show construction icons in Cities Overview.  - By will-ca
+
+Remove Discord RPC checks for unsuitable devices  - By asda488
+
+Allow unit movement after unit automation steps
+
+By SimonCeder:
+- Barbarian units
+- Fix for broken saves in #5573
+- Barbarian fixes
+
+By SomeTroglodyte:
+- Fix PercentProductionBuildings and PercentProductionWonders
+- Minor hardening of music against OpenAL quirks
+
+GameInfoPreview upload as Metadata  - By GGGuenni
+
 ## 3.17.12
 
 Clarified Oil well / Refrigeration relation - By SomeTroglodyte
@@ -2665,7 +2684,7 @@ Translation updates
 
 Game starts and defaults to a new Main Menu - should help solve errors as well as allow for cleaner disambiguation of problems
 
-Map height normalized to feasable amounts of mountains
+Map Elevation normalized to feasable amounts of mountains
 
 Resolved #1936 - can sign Declarations of Friendship in Multiplayer
 

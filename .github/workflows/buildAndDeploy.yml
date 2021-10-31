@@ -43,13 +43,14 @@ jobs:
       - name: Run unit tests
         run: ./gradlew tests:test
 
+
+# RELEASE
       
       - name: Get release tag # We can then get the tag using ${{steps.tag.outputs.tag}} as below
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         id: tag
         uses: dawidd6/action-get-tag@v1 
-        
-# RELEASE
+      
 
       - name: Read release.md and use it as a body of new release. This will fail for patch releases, since they have no readme.
         continue-on-error: true
