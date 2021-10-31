@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
@@ -294,12 +295,23 @@ class GameInfo {
     }
 
     fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
-        // `maxDistance = 0` removes distance limitation.
+        // Calling with `maxDistance = 0` removes distance limitation.
         data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
 
-        val exploredRevealTiles = tileMap.values
+        var exploredRevealTiles:Collection<TileInfo>
+
+        if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+            // Look for matching mercantile CS centers 
+            exploredRevealTiles = getAliveCityStates()
+                .filter { it.cityStateResource == resourceName }
+                .map { it.getCapital().getCenterTile() }
+        } else {
+            exploredRevealTiles = tileMap.values
+                .filter { it.resource == resourceName }
+        }
+
+        val exploredRevealInfo = exploredRevealTiles
             .filter { it.position in civInfo.exploredTiles }
-            .filter { it.resource == resourceName }
             .flatMap { tile -> civInfo.cities.asSequence()
                 .map {
                     // build a full cross join all revealed tiles * civ's cities (should rarely surpass a few hundred)
@@ -312,8 +324,8 @@ class GameInfo {
             .sortedWith ( compareBy { it.distance } )
             .distinctBy { it.tile }
 
-        val chosenCity = exploredRevealTiles.firstOrNull()?.city ?: return
-        val positions = exploredRevealTiles
+        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return
+        val positions = exploredRevealInfo
             // re-sort to a more pleasant display order
             .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
             .map { it.tile.position }
