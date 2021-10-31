@@ -168,7 +168,7 @@ class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): Camer
     }
     
     private fun echo(text: String) {
-        printHistory.add(text.toLabel()).left().bottom().padLeft(15f).row()
+        printHistory.add(Label(text, skin)).left().bottom().padLeft(15f).row()
         printScroll.scrollTo(0f,0f,1f,1f)
     }
     

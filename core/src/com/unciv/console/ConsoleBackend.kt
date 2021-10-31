@@ -6,7 +6,7 @@ import kotlin.collections.ArrayList
 data class AutocompleteResults(val isHelpText:Boolean, val matches:List<String>, val helpText:String)
 
 
-open class ConsoleBackend(consoleScope:ConsoleScope) {
+open class ConsoleBackend(val consoleScope:ConsoleScope) {
 
     open val displayname:String = "Dummy"
 
@@ -36,7 +36,6 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
 
     override val displayname:String = "Hardcoded"
     
-    val commands:List<String> = listOf("help", "countcities", "locatebuildings", "listcities", "cheatson", "cheatsoff", "entergodmode", "exitgodmode")
     val commandshelp:Map<String, String> = mapOf(
         "help" to "help - Display all commands\nhelp <command> - Display information on a specific command.",
         "countcities" to "countcities - Print out a numerical count of all cities in the current empire.",
@@ -44,8 +43,9 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
         "listcities" to "listcities - Print the names of all cities in the current empire.",
         "cheatson" to "cheatson - Enable commands that break game rules.",
         "cheatsoff" to "cheatsoff - Disable commands that break game rules.",
-        "entergodmode" to "entergodmode - Massively boost all empire growth stats. (Requires cheats.)",
-        "exitgodemode" to "exitgodmode - Clear any previous boosts on all empire growth stats. (Requires cheats.)"
+        "supercharge" to "supercharge [true|false] - Massively boost all empire growth stats.\n\tRun with no arguments to toggle. (Requires cheats.)",
+        "godview" to "godview [true|false] - Make the entire map visible.\n\tRun with no arguments to toggle. (Requires cheats.)",
+        "simulatetoturn" to "simulatetoturn <integer> - After this turn, automatically play until the turn specified by `integer`.\n\tMap view will be frozen while simulating. (Requires cheats.)"
     )
     
     var cheats:Boolean = false
@@ -66,40 +66,61 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
         if (' ' in command) {
             return AutocompleteResults(true, listOf(), getCommandHelpText(command.split(' ')[0]))
         } else {
-            return AutocompleteResults(false, commands.filter({ c -> c.startsWith(command) }).map({ c -> c + " " }), "")
+            return AutocompleteResults(false, commandshelp.keys.filter({ c -> c.startsWith(command) }).map({ c -> c + " " }), "")
         }
     }
     
     override fun exec(command: String): String {
         var args = command.split(' ')
-        var out:String
+        var out = ""
         if (args[0] == "help") {
             if (args.size > 1) {
                 out = getCommandHelpText(args[1])
             } else {
-                out = commands.joinToString(", ")
+                out = commandshelp.keys.joinToString(", ")
             }
         } else if (args[0] == "countcities") {
-            out = "Not implemented."
+            out = consoleScope.civInfo.cities.size.toString()
         } else if (args[0] == "locatebuildings") {
             out = "Not implemented."
         } else if (args[0] == "listcities") {
-            out = "Not implemented."
+            out = consoleScope.civInfo.cities
+                .map { city -> city.name }
+                .joinToString(", ")
         } else if (args[0] == "cheatson") {
             cheats = true
             out = "Cheats enabled."
         } else if (args[0] == "cheatsoff") {
             cheats = false
             out = "Cheats disabled."
-        } else if (args[0] == "entergodmode") {
+        } else if (args[0] == "supercharge") {
             if (cheats) {
-                out = "Not implemented."
+                var supercharge = if (args.size > 1) args[1].toBoolean() else !(consoleScope.uncivGame.superchargedForDebug)
+                consoleScope.uncivGame.superchargedForDebug = supercharge
+                out = "${if (supercharge) "Enabled" else "Disabled"} stats supercharge."
             } else {
                 out = "Cheats must be enabled to use this command!"
             }
-        } else if (args[0] == "exitgodmode") {
+        } else if (args[0] == "godview") {
             if (cheats) {
-                out = "Not implemented."
+                var godview = if (args.size > 1) args[1].toBoolean() else !(consoleScope.uncivGame.viewEntireMapForDebug)
+                consoleScope.uncivGame.viewEntireMapForDebug = godview
+                out = "${if (godview) "Enabled" else "Disabled"} whole map visibility."
+            } else {
+                out = "Cheats must be enabled to use this command!"
+            }
+        } else if (args[0] == "simulatetoturn") {
+            if (cheats) {
+                var numturn = 0
+                if (args.size > 1) {
+                    try {
+                        numturn = args[1].toInt()
+                    } catch (e: NumberFormatException) {
+                        out += "Invalid number: ${args[1]}\n"
+                    }
+                }
+                consoleScope.uncivGame.simulateUntilTurnForDebug = numturn
+                out += "Will automatically simulate game until turn ${numturn} after this turn.\nThe map will not update until completed."
             } else {
                 out = "Cheats must be enabled to use this command!"
             }

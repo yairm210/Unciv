@@ -197,7 +197,15 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         //  know what the viewing civ is.
         shouldUpdate = true
 
-        consoleScreen = ConsoleScreen(ConsoleState(ConsoleScope(selectedCiv)), { game.setWorldScreen() })
+        consoleScreen = ConsoleScreen(
+            ConsoleState(
+                ConsoleScope(
+                    selectedCiv,
+                    UncivGame.Current
+                )
+            ),
+            { game.setWorldScreen() }
+        )
     }
 
     private fun stopMultiPlayerRefresher() {
