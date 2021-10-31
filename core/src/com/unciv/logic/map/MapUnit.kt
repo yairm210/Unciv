@@ -259,20 +259,6 @@ class MapUnit {
         roughTerrainPenalty = hasUnique(UniqueType.RoughTerrainPenalty)
 
         doubleMovementInTerrain.clear()
-        // Cache the deprecated uniques
-        if (hasUnique(UniqueType.DoubleMovementCoast)) {
-            doubleMovementInTerrain[Constants.coast] = DoubleMovementTerrainTarget.Base
-        }
-        if (hasUnique(UniqueType.DoubleMovementForestJungle)) {
-            doubleMovementInTerrain[Constants.forest] = DoubleMovementTerrainTarget.Feature
-            doubleMovementInTerrain[Constants.jungle] = DoubleMovementTerrainTarget.Feature
-        }
-        if (hasUnique(UniqueType.DoubleMovementSnowTundraHill)) {
-            doubleMovementInTerrain[Constants.snow] = DoubleMovementTerrainTarget.Base
-            doubleMovementInTerrain[Constants.tundra] = DoubleMovementTerrainTarget.Base
-            doubleMovementInTerrain[Constants.hill] = DoubleMovementTerrainTarget.Feature
-        }
-        // Now the current unique
         for (unique in getMatchingUniques(UniqueType.DoubleMovementOnTerrain)) {
             val param = unique.params[0]
             val terrain = ruleset.terrains[param]

@@ -131,7 +131,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
     @Deprecated("As of 3.16.16 - removed as of 3.17.11", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.ERROR)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UniqueTarget.Global),
-    @Deprecated("As of 3.16.16", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.ERROR)
+    @Deprecated("As of 3.16.16 - removed as of 3.17.11", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.ERROR)
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UniqueTarget.Global),
 
     ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
@@ -140,7 +140,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.16.14 - removed as of 3.17.11", ReplaceWith("[amount]% growth [cityFilter]"), DeprecationLevel.ERROR)
     GrowthPercentBonusPositive("+[amount]% growth [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.16.14", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.ERROR)
+    @Deprecated("As of 3.16.14 - removed as of 3.17.11", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.ERROR)
     GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
 
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
@@ -194,15 +194,15 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit),
 
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.3 - removed as of 3.17.13", ReplaceWith("[amount]% Strength"), DeprecationLevel.ERROR)
     StrengthPlus("+[amount]% Strength", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.3 - removed as of 3.17.13", ReplaceWith("[amount]% Strength"), DeprecationLevel.ERROR)
     StrengthMin("-[amount]% Strength", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.3 - removed as of 3.17.13", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"), DeprecationLevel.ERROR)
     StrengthPlusVs("+[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.3 - removed as of 3.17.13", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"), DeprecationLevel.ERROR)
     StrengthMinVs("-[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3", ReplaceWith("[amount]% Strength"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.3 - removed as of 3.17.13", ReplaceWith("[amount]% Strength"), DeprecationLevel.ERROR)
     CombatBonus("+[amount]% Combat Strength", UniqueTarget.Unit),
     @Deprecated("As of 3.17.5", ReplaceWith("[amount]% Strength <when attacking>"), DeprecationLevel.WARNING)
     StrengthAttacking("+[amount]% Strength when attacking", UniqueTarget.Unit),
@@ -260,11 +260,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget) {
 
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.1 - removed as of 3.17.13", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.ERROR)
     DoubleMovementCoast("Double movement in coast", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.1 - removed as of 3.17.13", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.ERROR)
     DoubleMovementForestJungle("Double movement rate through Forest and Jungle", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.1", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.WARNING)
+    @Deprecated("As of 3.17.1 - removed as of 3.17.13", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.ERROR)
     DoubleMovementSnowTundraHill("Double movement in Snow, Tundra and Hills", UniqueTarget.Unit),
     AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
     CanPassImpassable("Can pass through impassable tiles", UniqueTarget.Unit),

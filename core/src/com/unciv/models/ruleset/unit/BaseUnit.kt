@@ -662,12 +662,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 unique.isOfType(UniqueType.StrengthNearCapital) && unique.params[0].toInt() > 0 ->
                     power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
-                // Deprecated since 3.17.3
-                    unique.isOfType(UniqueType.StrengthPlusVs) && unique.params[1] == "City" // City Attack - half the bonus
-                        -> power += (power * unique.params[0].toInt()) / 200
-                    unique.isOfType(UniqueType.StrengthPlusVs) && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
-                        -> power += (power * unique.params[0].toInt()) / 400
-                //
                 // Deprecated since 3.17.4
                     unique.isOfType(UniqueType.StrengthAttacking) // Attack - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
