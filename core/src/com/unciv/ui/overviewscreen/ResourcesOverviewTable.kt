@@ -14,7 +14,7 @@ import com.unciv.ui.utils.toLabel
 @Suppress("UNUSED_PARAMETER")       // Keep all OverviewScreen Pages compatible
 class ResourcesOverviewTable (
     viewingPlayer: CivilizationInfo,
-    overviewScreen: EmpireOverviewScreen,
+    overviewScreen: EmpireOverviewScreen
 ) : Table() {
 
     init {
