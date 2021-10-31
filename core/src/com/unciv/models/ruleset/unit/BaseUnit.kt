@@ -256,24 +256,24 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return (
             cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
                 .any {
-                    matchesFilter(it.params[0])
-                        && cityInfo.matchesFilter(it.params[3])
-                        && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                        && it.params[2] == stat.name
+                    it.params[2] == stat.name
+                    && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
+                    && matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[3])
                 }
             || cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .any {
-                    matchesFilter(it.params[0])
-                        && cityInfo.matchesFilter(it.params[3])
-                        && it.params[2] == stat.name
+                    it.params[2] == stat.name
+                    && matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[3])
                 }
             || cityInfo.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
-                .any { matchesFilter(it.params[0]) && it.params[1] == stat.name }
+                .any { it.params[1] == stat.name && matchesFilter(it.params[0]) }
             || cityInfo.getMatchingUniques(UniqueType.BuyUnitsWithStat, conditionalState)
                 .any {
                     it.params[1] == stat.name
-                        && matchesFilter(it.params[0])
-                        && cityInfo.matchesFilter(it.params[2])
+                    && matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[2])
                 }
             || cityInfo.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
                 .any {
@@ -296,10 +296,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             // Deprecated since 3.17.9
                 yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
                     .filter {
-                        matchesFilter(it.params[0])
+                        it.params[2] == stat.name
+                        && matchesFilter(it.params[0])
                         && cityInfo.matchesFilter(it.params[3])
                         && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                        && it.params[2] == stat.name
                     }.map {
                         getCostForConstructionsIncreasingInPrice(
                             it.params[1].toInt(),
@@ -311,9 +311,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             //
             yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .filter {
-                    matchesFilter(it.params[0])
+                    it.params[2] == stat.name
+                    && matchesFilter(it.params[0])
                     && cityInfo.matchesFilter(it.params[3])
-                    && it.params[2] == stat.name
                 }.map {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),

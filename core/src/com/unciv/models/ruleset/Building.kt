@@ -346,12 +346,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return (
             cityInfo.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
                 .any {
-                    matchesFilter(it.params[0])
+                    it.params[2] == stat.name
+                    && matchesFilter(it.params[0])
                     && cityInfo.matchesFilter(it.params[3])
-                    && it.params[2] == stat.name
                 }
             || cityInfo.getMatchingUniques(UniqueType.BuyBuildingsByProductionCost, conditionalState)
-                .any { matchesFilter(it.params[0]) && it.params[1] == stat.name }
+                .any { it.params[1] == stat.name && matchesFilter(it.params[0]) }
             || cityInfo.getMatchingUniques(UniqueType.BuyBuildingsWithStat, conditionalState)
                 .any {
                     it.params[1] == stat.name
@@ -378,9 +378,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 yield(baseCost)
             yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
                 .filter {
-                    matchesFilter(it.params[0])
+                    it.params[2] == stat.name
+                    && matchesFilter(it.params[0])
                     && cityInfo.matchesFilter(it.params[3])
-                    && it.params[2] == stat.name
                 }.map {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
