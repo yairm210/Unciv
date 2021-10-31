@@ -5,6 +5,9 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
 import com.unciv.logic.civilization.CivilizationInfo
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -107,6 +110,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     //todo Once all untyped Uniques are converted, this should be  HashMap<UniqueType, *>
+    // For now, we can have both map types "side by side" each serving their own purpose,
+    // and gradually this one will be deprecated in favor of the other
     fun addUnique(unique: Unique) {
         if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
         this[unique.placeholderText]!!.add(unique)
@@ -121,3 +126,12 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
 
+class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.java) {
+    fun addUnique(unique: Unique) {
+        if (!containsKey(unique.type)) this[unique.type] = ArrayList()
+        this[unique.type]!!.add(unique)
+    }
+
+    fun getUniques(uniqueType: UniqueType): Sequence<Unique> =
+        this[uniqueType]?.asSequence() ?: sequenceOf()
+}

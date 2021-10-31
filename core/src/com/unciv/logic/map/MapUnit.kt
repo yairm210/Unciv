@@ -9,12 +9,14 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.models.MultiHashMap
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
@@ -202,6 +204,9 @@ class MapUnit {
     @Transient
     private var tempUniques = ArrayList<Unique>()
 
+    @Transient
+    private var tempUniquesMap = UniqueMapTyped()
+
     fun getUniques(): ArrayList<Unique> = tempUniques
 
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
@@ -212,9 +217,11 @@ class MapUnit {
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
         checkCivInfoUniques:Boolean = false
     ) = sequence {
-        yieldAll(tempUniques.asSequence()
-            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
-        )
+        val tempUniques = tempUniquesMap[uniqueType]
+        if (tempUniques != null)
+            yieldAll(
+                tempUniques.filter { it.conditionalsApply(stateForConditionals) }
+            )
         if (checkCivInfoUniques)
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
@@ -225,7 +232,7 @@ class MapUnit {
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals
             = StateForConditionals(civInfo, unit=this)): Boolean {
-        return tempUniques.any { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
+        return getMatchingUniques(uniqueType, stateForConditionals).any()
     }
 
     fun updateUniques(ruleset: Ruleset) {
@@ -239,6 +246,11 @@ class MapUnit {
         }
 
         tempUniques = uniques
+        val newUniquesMap = UniqueMapTyped()
+        for (unique in uniques)
+            if (unique.type != null)
+                newUniquesMap.addUnique(unique)
+        tempUniquesMap = newUniquesMap
 
         allTilesCosts1 = hasUnique(UniqueType.AllTilesCost1Move)
         canPassThroughImpassableTiles = hasUnique(UniqueType.CanPassImpassable)
@@ -274,7 +286,7 @@ class MapUnit {
         }
         // Init shortcut flags
         noTerrainMovementUniques = doubleMovementInTerrain.isEmpty() &&
-            !roughTerrainPenalty && !civInfo.nation.ignoreHillMovementCost
+                !roughTerrainPenalty && !civInfo.nation.ignoreHillMovementCost
         noBaseTerrainOrHillDoubleMovementUniques = doubleMovementInTerrain
             .none { it.value != DoubleMovementTerrainTarget.Feature }
         noFilteredDoubleMovementUniques = doubleMovementInTerrain
@@ -967,7 +979,7 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        return getUniques().filter { it.placeholderText == "[]% Damage when intercepting"}
+        return getMatchingUniques("[]% Damage when intercepting")
             .sumOf { it.params[0].toInt() }
     }
 
