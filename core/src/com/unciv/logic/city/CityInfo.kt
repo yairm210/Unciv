@@ -709,9 +709,8 @@ class CityInfo {
         // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
         // The time loss shouldn't be that large I don't think
         return civInfo.getMatchingUniques(placeholderText, this) +
-                localUniques.filter { 
-                    it.placeholderText == placeholderText
-                    && it.params.none { param -> param == "in other cities" }
+                localUniques.filter {
+                    !it.isAntiLocalEffect && it.placeholderText == placeholderText
                 }
     }
 
