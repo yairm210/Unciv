@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.IHasUniques
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.Stat
@@ -31,11 +32,11 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
         if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat)
-                .any { it.params[0] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[1])) }
+            .any { it.params[0] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[1])) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
-        if (getMatchingUniques("Can be purchased for [] [] []")
-                .any { it.params[1] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[2])) }
+        if (getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
+            .any { it.params[1] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[2])) }
         ) return true
         return false
     }
@@ -58,17 +59,23 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
 
+        val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
+        
         // Can be purchased for [amount] [Stat] [cityFilter]
-        val lowestCostUnique = getMatchingUniques("Can be purchased for [] [] []")
+        val lowestCostUnique = getMatchingUniques(UniqueType.CanBePurchasedForAmountStat, conditionalState)
             .filter { it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
             .minByOrNull { it.params[0].toInt() }
         if (lowestCostUnique != null) return lowestCostUnique.params[0].toInt()
 
         // Can be purchased with [Stat] [cityFilter]
-        if (getMatchingUniques(UniqueType.CanBePurchasedWithStat)
-                .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1])}
+        if (getMatchingUniques(UniqueType.CanBePurchasedWithStat, conditionalState)
+            .any { it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
         ) return cityInfo.civInfo.getEra().baseUnitBuyCost
         return null
+    }
+
+    fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
+        return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()
     }
 }
 
