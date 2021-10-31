@@ -727,14 +727,14 @@ class CityInfo {
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { it.params.none { param -> param == "in other cities" } } +
+            .filter { !it.isAntiLocalEffect } +
                 religion.getUniques().filter { it.placeholderText == placeholderText }
     }
 
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
         return (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-                .filter { it.params.none { param -> param == "in other cities" } } 
+                .filter { !it.isAntiLocalEffect }
             + religion.getUniques().filter { it.isOfType(uniqueType) }
         ).filter {
             it.conditionalsApply(stateForConditionals)

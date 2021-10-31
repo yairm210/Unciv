@@ -27,6 +27,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     val allParams = params + conditionals.flatMap { it.params }
 
     val isLocalEffect = params.contains("in this city")
+    val isAntiLocalEffect = params.contains("in other cities")
 
     fun isOfType(uniqueType: UniqueType) = uniqueType == type
 
