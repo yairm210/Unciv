@@ -749,21 +749,21 @@ class CityInfo {
     // Get all matching uniques that don't apply to only this city
     fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { it.params.none { param -> param == "in this city" } }
+            .filter { !it.isLocalEffect }
         // Note that we don't query religion here, as those only have local effects
     }
 
 
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { it.params.none { param -> param == "in this city" } }
+            .filter { !it.isLocalEffect }
         // Note that we don't query religion here, as those only have local effects
     }
 
     // Get all uniques that don't apply to only this city
     fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getAllUniques()
-            .filter { it.params.none { param -> param == "in this city" } }
+            .filter { !it.isLocalEffect }
         // Note that we don't query religion here, as those only have local effects
     }
 
