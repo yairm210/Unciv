@@ -254,8 +254,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
 
         // Space and N are assigned in createNextTurnButton
+<<<<<<< HEAD
         keyPressDispatcher[Input.Keys.GRAVE] = { game.setScreen(consoleScreen) } // CLI console
         keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
+=======
+        keyPressDispatcher[Input.Keys.GRAVE] = { consoleScreen.openConsole() } // CLI console
+        keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet)) }
+>>>>>>> b18fdd2d1 (Try to fix CLI screen key binding persistence with SomeTroglodyte's suggestion.)
         keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online

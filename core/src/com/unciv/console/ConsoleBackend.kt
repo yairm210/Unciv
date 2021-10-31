@@ -82,7 +82,13 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
         } else if (args[0] == "countcities") {
             out = consoleScope.civInfo.cities.size.toString()
         } else if (args[0] == "locatebuildings") {
-            out = "Not implemented."
+            var buildingcities:List<String> = listOf()
+            if (args.size > 1) {
+                var buildingcities = consoleScope.civInfo.cities
+                    .filter { args[1] in it.cityConstructions.builtBuildings }
+                    .map { it.name }
+            }
+            out = buildingcities.joinToString(", ")
         } else if (args[0] == "listcities") {
             out = consoleScope.civInfo.cities
                 .map { city -> city.name }

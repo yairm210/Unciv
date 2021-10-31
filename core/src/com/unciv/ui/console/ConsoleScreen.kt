@@ -16,7 +16,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
-class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): CameraStageBaseScreen() {
+class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): CameraStageBaseScreen() {
 
     private val lineHeight = 30f
 
@@ -43,8 +43,6 @@ class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): Camer
     private val runButton: TextButton = "ENTER".toTextButton()
 
     init {
-        onBackButtonClicked(closeAction)
-        closeButton.onClick(closeAction)
         
         backendsAdders.add("Launch new backend:".toLabel())
         for (backendtype in ConsoleBackendType.values()) {
@@ -88,23 +86,36 @@ class ConsoleScreen(val consoleState:ConsoleState, closeAction: ()->Unit): Camer
         
         layoutTable.add(inputBar)
         
-        runButton.onClick({ this.run() })
-        keyPressDispatcher[Input.Keys.ENTER] = { this.run() }
-        keyPressDispatcher[Input.Keys.NUMPAD_ENTER] = { this.run() }
+        runButton.onClick({ run() })
+        keyPressDispatcher[Input.Keys.ENTER] = { run() }
+        keyPressDispatcher[Input.Keys.NUMPAD_ENTER] = { run() }
         
-        tabButton.onClick({ this.autocomplete() })
-        keyPressDispatcher[Input.Keys.TAB] = { this.autocomplete() }
+        tabButton.onClick({ autocomplete() })
+        keyPressDispatcher[Input.Keys.TAB] = { autocomplete() }
         
-        upButton.onClick({ this.navigateHistory(1) })
-        keyPressDispatcher[Input.Keys.UP] = { this.navigateHistory(1) }
-        downButton.onClick({ this.navigateHistory(-1) })
-        keyPressDispatcher[Input.Keys.DOWN] = { this.navigateHistory(-1) }
+        upButton.onClick({ navigateHistory(1) })
+        keyPressDispatcher[Input.Keys.UP] = { navigateHistory(1) }
+        downButton.onClick({ navigateHistory(-1) })
+        keyPressDispatcher[Input.Keys.DOWN] = { navigateHistory(-1) }
+        
+        onBackButtonClicked({ closeConsole() })
+        closeButton.onClick({ closeConsole() })
         
         stage.addActor(layoutTable)
         
         echoHistory()
         
         updateRunning()
+    }
+    
+    fun openConsole() {
+        game.setScreen(this)
+        keyPressDispatcher.install(stage)
+    }
+    
+    fun closeConsole() {
+        closeAction()
+        keyPressDispatcher.uninstall()
     }
     
     private fun updateRunning() {
