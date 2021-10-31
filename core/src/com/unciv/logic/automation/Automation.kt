@@ -138,12 +138,16 @@ object Automation {
         if (civInfo.gameInfo.gameParameters.noBarbarians)
             return false
 
-        val multiplier = if (civInfo.gameInfo.gameParameters.ragingBarbarians) 1.3f
+        // Very late in the game we are not afraid
+        if (civInfo.gameInfo.turns > 200 * civInfo.gameInfo.gameParameters.gameSpeed.modifier)
+            return false
+
+        var multiplier = if (civInfo.gameInfo.gameParameters.ragingBarbarians) 1.3f
             else 1f // We're slightly more afraid of raging barbs
 
-        // If it is late in the game we are not afraid
+        // Past the early game we are less afraid
         if (civInfo.gameInfo.turns > 120 * civInfo.gameInfo.gameParameters.gameSpeed.modifier * multiplier)
-            return false
+            multiplier /= 2
 
         // If we have a lot of, or no cities we are not afraid
         if (civInfo.cities.isEmpty() || civInfo.cities.count() >= 4 * multiplier)
@@ -152,7 +156,7 @@ object Automation {
         // If we have vision of our entire starting continent (ish) we are not afraid
         civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
         val startingContinent = civInfo.getCapital().getCenterTile().getContinent()
-        if (civInfo.gameInfo.tileMap.continentSizes[startingContinent]!! < civInfo.viewableTiles.count())
+        if (civInfo.gameInfo.tileMap.continentSizes[startingContinent]!! < civInfo.viewableTiles.count() * multiplier)
             return false
 
         // Otherwise we're afraid
