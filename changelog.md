@@ -2684,7 +2684,7 @@ Translation updates
 
 Game starts and defaults to a new Main Menu - should help solve errors as well as allow for cleaner disambiguation of problems
 
-Map height normalized to feasable amounts of mountains
+Map Elevation normalized to feasable amounts of mountains
 
 Resolved #1936 - can sign Declarations of Friendship in Multiplayer
 
