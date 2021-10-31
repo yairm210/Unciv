@@ -279,7 +279,7 @@ open class TileInfo {
                 }
             }
 
-            for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 
+            for (unique in city.getMatchingUniques(UniqueType.StatsFromTilesWithout))
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
