@@ -10,6 +10,7 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.concurrent.Thread
 
 
 object DropBox {
@@ -217,6 +218,41 @@ class LockFile {
     // If Dropbox gets a file with the same content and overwrite set to false, it returns no
     // error even though the file was not uploaded as the exact file is already existing
     var lockData = UUID.randomUUID().toString()
+}
+
+/**
+ *	Wrapper around OnlineMultiplayer's synchronization facilities.
+ *	Almost identical to kotlinx.coroutines.sync.Mutex except it blocks at the thread level.
+ */
+class ServerMutex(gameInfo: GameInfo) {
+	var locked = false
+
+	fun tryLock(): Boolean {
+		locked = OnlineMultiplayer.tryLockGame(gameInfo.asPreview())
+		return locked
+	}
+
+	suspend fun lock() {
+		var tries = 0
+		while (!(locked = tryLock())) {
+			
+			Thread.sleep(500)
+			// If we've been trying for a while, wait a little bit longer.
+			if (tries > 5) {
+				Thread.sleep(500)
+			}
+			tries++
+		}
+	}
+
+	fun unlock() {
+		OnlineMultiplayer.tryReleaseLockForGame(gameInfo.asPreview())
+		locked = false
+	}
+
+	fun holdsLock(): Boolean {
+		return locked
+	}
 }
 
 class DropBoxFileConflictException: Exception()
