@@ -293,10 +293,17 @@ object SpecificUnitAutomation {
             unit.doAction()
         }
 
-        val destination: CityInfo? = possibleCities.minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
+        val destination: CityInfo = possibleCities
+            .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
+            ?: return
 
-        if (destination == null) return
-        unit.movement.headTowards(destination.getCenterTile())
+
+        try {
+            unit.movement.headTowards(destination.getCenterTile())
+        }
+        catch (e: NullPointerException) {
+            return
+        }
     }
 
     fun automateFighter(unit: MapUnit) {

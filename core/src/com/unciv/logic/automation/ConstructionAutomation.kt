@@ -322,4 +322,37 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         }
     }
 
+    fun addReligousUnit(){
+
+        var modifier = 0f
+
+        val missionary = civUnits.asSequence()
+            .filter { it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spreads Religon" }}
+            .first()
+
+        if (preferredVictoryType == VictoryType.Domination) return
+        if (civInfo.religionManager.religion?.name == null) return
+
+        if (preferredVictoryType == VictoryType.Cultural) modifier += 1
+
+        if (isAtWar) modifier -= 0.5f
+
+
+        val citiesNotFollowingOurReligion = civInfo.cities.asSequence()
+            .filterNot { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion!!.name }
+
+        val buildInqusitor = citiesNotFollowingOurReligion.toList().size.toFloat() / 10 + modifier
+
+        val possibleSpreadReligionTargets = civInfo.gameInfo.getCities()
+            .filter { it.getCenterTile().aerialDistanceTo(civInfo.getCapital().getCenterTile()) < 30 }
+            .filterNot { it.civInfo == civInfo }
+
+        val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
+
+        if (buildMissionary > buildInqusitor) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary)
+        else addChoice(relativeCostEffectiveness, missionary.name, buildMissionary) // will change later when I add inquisitor AI
+
+
+    }
+
 }
