@@ -1,4 +1,4 @@
-package com.unciv.console
+package com.unciv.scripting
 
 import kotlin.collections.ArrayList
 import kotlin.reflect.KProperty1

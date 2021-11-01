@@ -1,12 +1,12 @@
-package com.unciv.console
+package com.unciv.scripting
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.UncivGame
 
-class ConsoleScope(var civInfo: CivilizationInfo, var gameInfo: GameInfo, var uncivGame: UncivGame) {
+class ScriptingScope(var civInfo: CivilizationInfo, var gameInfo: GameInfo, var uncivGame: UncivGame) {
     // Holds references to all internal game data that the console has access to.
     // Mostly `.civInfo`/.`gameInfo`, but could be cool to E.G. allow loading and making saves through CLI/API too.
     // Also where to put any `PlayerAPI`, `CheatAPI`, `ModAPI`, etc.
-    // For `LuaConsoleBackend`, `UpyConsoleBackend`, `QjsConsoleBackend`, etc, this should probably directly mirror the wrappers exposed to the scripting language.
+    // For `LuaScriptingBackend`, `UpyScriptingBackend`, `QjsScriptingBackend`, etc, this should probably directly mirror the wrappers exposed to the scripting language.
 }

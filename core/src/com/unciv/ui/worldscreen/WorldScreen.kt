@@ -13,8 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.console.ConsoleScope
-import com.unciv.console.ConsoleState
+import com.unciv.scripting.ScriptingScope
+import com.unciv.scripting.ScriptingState
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -198,8 +198,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         shouldUpdate = true
 
         consoleScreen = ConsoleScreen(
-            ConsoleState(
-                ConsoleScope(
+            ScriptingState(
+                ScriptingScope(
                     selectedCiv,
                     gameInfo,
                     UncivGame.Current

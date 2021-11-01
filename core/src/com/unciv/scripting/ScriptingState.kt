@@ -1,68 +1,68 @@
-package com.unciv.console
+package com.unciv.scripting
 
 import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 
-class ConsoleState(val consoleScope: ConsoleScope){
+class ScriptingState(val scriptingScope: ScriptingScope){
 
-    val consoleBackends:ArrayList<ConsoleBackend> = ArrayList<ConsoleBackend>()
-    
+    val scriptingBackends:ArrayList<ScriptingBackend> = ArrayList<ScriptingBackend>()
+
     val outputHistory:ArrayList<String> = ArrayList<String>() // Not implemented
     val commandHistory:ArrayList<String> = ArrayList<String>() // Not implemented
-    
+
     var activeBackend:Int = 0
-    
+
     var maxOutputHistory:Int = 50
     var maxCommandHistory:Int = 50
-    
+
     var activeCommandHistory:Int = 0
-    
+
     init {
-        echo(spawnBackend(ConsoleBackendType.Dummy))
+        echo(spawnBackend(ScriptingBackendType.Dummy))
     }
-    
-    fun spawnBackend(backendtype: ConsoleBackendType): String {
-        var backend:ConsoleBackend = GetNamedConsoleBackend(backendtype, consoleScope)
-        consoleBackends.add(backend)
-        activeBackend = consoleBackends.size - 1
+
+    fun spawnBackend(backendtype: ScriptingBackendType): String {
+        var backend:ScriptingBackend = GetNamedScriptingBackend(backendtype, scriptingScope)
+        scriptingBackends.add(backend)
+        activeBackend = scriptingBackends.size - 1
         return backend.motd()
     }
-    
+
     fun switchToBackend(index: Int) {
-        activeBackend = max(0, min(consoleBackends.size - 1, index))
+        activeBackend = max(0, min(scriptingBackends.size - 1, index))
     }
-    
+
     fun termBackend(index: Int) {
-        if (!(0 <= index && index < consoleBackends.size)) {
+        if (!(0 <= index && index < scriptingBackends.size)) {
             return // Maybe checking should be better done and unified, and raise a warning when out of bounds.
         }
-        val result = consoleBackends[index].terminate()
+        val result = scriptingBackends[index].terminate()
         if (result) {
-            consoleBackends.removeAt(index)
-            activeBackend = min(activeBackend, consoleBackends.size - 1)
+            scriptingBackends.removeAt(index)
+            activeBackend = min(activeBackend, scriptingBackends.size - 1)
         }
     }
-    
+
     fun hasBackend(): Boolean {
-        return consoleBackends.size > 0
+        return scriptingBackends.size > 0
     }
-    
-    fun getActiveBackend(): ConsoleBackend {
-        return consoleBackends[activeBackend]
+
+    fun getActiveBackend(): ScriptingBackend {
+        return scriptingBackends[activeBackend]
     }
-    
+
     fun echo(text: String) {
         outputHistory.add(text)
     }
-    
+
     fun getAutocomplete(command: String): AutocompleteResults {
         if (!(hasBackend())) {
             return AutocompleteResults(false, listOf(), "")
         }
         return getActiveBackend().getAutocomplete(command)
     }
-    
+
     fun navigateHistory(increment: Int): String {
         activeCommandHistory = max(0, min(commandHistory.size, activeCommandHistory + increment))
         if (activeCommandHistory <= 0) {
@@ -71,7 +71,7 @@ class ConsoleState(val consoleScope: ConsoleScope){
             return commandHistory[commandHistory.size - activeCommandHistory]
         }
     }
-    
+
     fun exec(command: String): String {
         commandHistory.add(command)
         var out:String

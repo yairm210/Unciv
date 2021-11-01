@@ -9,14 +9,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
-import com.unciv.console.ConsoleBackend
-import com.unciv.console.ConsoleBackendType
-import com.unciv.console.ConsoleState
+import com.unciv.scripting.ScriptingBackend
+import com.unciv.scripting.ScriptingBackendType
+import com.unciv.scripting.ScriptingState
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
-class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): CameraStageBaseScreen() {
+class ConsoleScreen(val scriptingState:ScriptingState, val closeAction: ()->Unit): CameraStageBaseScreen() {
 
     private val lineHeight = 30f
 
@@ -44,11 +44,11 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
 
     init {
         
-        backendsAdders.add("Launch new backend:".toLabel())
-        for (backendtype in ConsoleBackendType.values()) {
+        backendsAdders.add("Launch new backend:".toLabel()).padRight(30f)
+        for (backendtype in ScriptingBackendType.values()) {
             var backendadder = backendtype.displayname.toTextButton()
             backendadder.onClick({
-                echo(consoleState.spawnBackend(backendtype))
+                echo(scriptingState.spawnBackend(backendtype))
                 updateRunning()
             })
             backendsAdders.add(backendadder)
@@ -121,20 +121,20 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
     private fun updateRunning() {
         runningList.clearChildren()
         var i = 0
-        for (backend in consoleState.consoleBackends) {
+        for (backend in scriptingState.scriptingBackends) {
             var button = backend.displayname.toTextButton()
             val index = i
             runningList.add(button)
-            if (i == consoleState.activeBackend) {
+            if (i == scriptingState.activeBackend) {
                 button.color = Color.GREEN
             }
             button.onClick({
-                consoleState.switchToBackend(index)
+                scriptingState.switchToBackend(index)
                 updateRunning()
             })
             var termbutton = ImageGetter.getImage("OtherIcons/Stop")
             termbutton.onClick({
-                consoleState.termBackend(index)
+                scriptingState.termBackend(index)
                 updateRunning()
             })
             runningList.add(termbutton.surroundWithCircle(40f)).row()
@@ -152,14 +152,14 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
     }
     
     private fun echoHistory() {
-        for (hist in consoleState.outputHistory) {
+        for (hist in scriptingState.outputHistory) {
             echo(hist)
         }
     }
     
     private fun autocomplete() {
         var input = inputField.text
-        var results = consoleState.getAutocomplete(input)
+        var results = scriptingState.getAutocomplete(input)
         if (results.isHelpText) {
             echo(results.helpText)
             return
@@ -188,7 +188,7 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
     }
     
     private fun navigateHistory(increment:Int) {
-        setText(consoleState.navigateHistory(increment))
+        setText(scriptingState.navigateHistory(increment))
     }
     
     private fun echo(text: String) {
@@ -201,7 +201,7 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
     }
     
     private fun run() {
-        echo(consoleState.exec(inputField.text))
+        echo(scriptingState.exec(inputField.text))
         setText("")
     }
 }
