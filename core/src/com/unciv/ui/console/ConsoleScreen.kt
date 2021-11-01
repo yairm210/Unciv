@@ -158,7 +158,8 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
     }
     
     private fun autocomplete() {
-        var results = consoleState.getAutocomplete(inputField.text)
+        var input = inputField.text
+        var results = consoleState.getAutocomplete(input)
         if (results.isHelpText) {
             echo(results.helpText)
             return
@@ -172,6 +173,17 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
             for (m in results.matches) {
                 echo(m)
             }
+            var minmatch = input
+            var chosenresult = results.matches.first({true})
+            for (l in input.length..chosenresult.length) {
+                var longer = chosenresult.slice(0..l)
+                if (results.matches.all { it.startsWith(longer) }) {
+                    minmatch = longer
+                } else {
+                    break
+                }
+            }
+            setText(minmatch)
         }
     }
     

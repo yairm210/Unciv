@@ -49,8 +49,8 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
         "cheatsoff" to "cheatsoff - Disable commands that break game rules.",
         "godmode" to "godmode [true|false] - Ignore many game rule restrictions. Allows instant purchase of tech, policies, buildings, tiles, and more.\n\tRun with no arguments to toggle. (Requires cheats.)",
         "godview" to "godview [true|false] - Make the entire map visible.\n\tRun with no arguments to toggle. (Requires cheats.)",
-        "inspectpath" to "",
-        "simulatetoturn" to "simulatetoturn <integer> - After this turn, automatically play until the turn specified by `integer`.\n\tMap view will be frozen while simulating. (Requires cheats.)",
+        "inspectpath" to "inspectpath <path> - Read out the value of the Kotlin object at a given path.\n\tThe path can be a string representing any combination of property accesses, map keys, array indexes, and method calls.\ninspectpath detailed <path> - Also print out the class name and members of the object at the given path.",
+        "simulatetoturn" to "simulatetoturn <integer> - After this turn, automatically play until the turn specified by <integer>.\n\tMap view will be frozen while simulating. (Requires cheats.)",
         "spawnbuilding" to "",
         "spawnunit" to "",
         "supercharge" to "supercharge [true|false] - Massively boost all empire growth stats.\n\tRun with no arguments to toggle. (Requires cheats.)"
@@ -150,10 +150,18 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
             }
             "inspectpath" -> {
                 if (cheats) {
+                    val detailed = args.size > 1 && args[1] == "detailed"
+                    val startindex = if (detailed) 2 else 1
+                    val path = (if (args.size > startindex) args.slice(startindex..args.size-1) else listOf()).joinToString(" ")
                     try {
-                        out = "${resolveInstancePath(consoleScope, parseKotlinPath(args[1]))}"
-                        //out = "${evalKotlinPath(consoleScope, args[1])}"
-                    } catch (e: RuntimeException) {
+                        //var obj = resolveInstancePath(consoleScope, parseKotlinPath(path))
+                        var obj = evalKotlinString(consoleScope, path)
+                        out =
+                            if (detailed)
+                                "Type: ${obj::class.qualifiedName}\n\nValue: ${obj}\n\nMembers: ${obj::class.members.map{it.name}}\n"
+                            else
+                                "${obj}"
+                    } catch (e: Exception) {
                         out = "Error accessing: ${e}"
                     }
                 } else {

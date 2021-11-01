@@ -13,6 +13,14 @@ fun <R> readInstanceProperty(instance: Any, propertyName: String): R {
     return property.get(instance) as R  
 }
 
+fun readInstanceItem(instance: Any, keyOrIndex: Any): Any {
+    if (keyOrIndex is Int) {
+        return (instance as List<Any>)[keyOrIndex]!!
+    } else {
+        return (instance as Map<Any, Any>)[keyOrIndex]!!
+    }
+}
+
 
 interface PathElementArg {
     val value: Any
@@ -38,6 +46,7 @@ data class PathElement(
     val doEval: Boolean = false
 )
 
+
 private val brackettypes: Map<Char, String> = mapOf(
     '[' to "[]",
     '(' to "()"
@@ -54,7 +63,7 @@ fun parseKotlinPath(text: String): Collection<PathElement> {
     var curr_name = ArrayList<Char>()
     var curr_brackets = ""
     var curr_bracketdepth = 0
-    var just_closed_brackets = false
+    var just_closed_brackets = true
     for (char in text) {
         if (curr_bracketdepth == 0) {
             if (char == '.') {
@@ -115,26 +124,42 @@ fun resolveInstancePath(instance: Any, path: Collection<PathElement>): Any {
     path.map({print(it);print("\n")})
     for (element in path) {
         when (element.type) {
-            PathElementType.Property -> { obj = readInstanceProperty(obj, element.name) }
+            PathElementType.Property -> {
+                obj = readInstanceProperty(obj, element.name)
+            }
+            PathElementType.Key -> {
+                obj = readInstanceItem(
+                    obj,
+                    if (element.doEval)
+                        evalKotlinString(instance, element.name)
+                    else
+                        element.name
+                )
+            }
+            PathElementType.Call -> {
+                throw UnsupportedOperationException("Calls not implemented.")
+            }
+            else -> {
+                throw UnsupportedOperationException("Unknown path element type: ${element.type}")
+            }
         }
     }
     return obj
 }
 
 
-
-fun evalKotlinPath(scope: Any, path: String): Any{
-    if (path.length > 1 && path.startsWith('"') && path.endsWith('"')) {
-        return path.slice(1..path.length-2)
+fun evalKotlinString(scope: Any, string: String): Any{
+    if (string.length > 1 && string.startsWith('"') && string.endsWith('"')) {
+        return string.slice(1..string.length-2)
     }
-    val asint = path.toIntOrNull()
+    val asint = string.toIntOrNull()
     if (asint != null) {
         return asint
     }
-    val asfloat = path.toFloatOrNull()
+    val asfloat = string.toFloatOrNull()
     if (asfloat != null) {
         return asfloat
     }
-    return 5
+    return resolveInstancePath(scope, parseKotlinPath(string))
 }
 
