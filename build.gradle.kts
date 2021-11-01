@@ -33,7 +33,7 @@ buildscript {
         classpath("com.github.anuken:packr:-SNAPSHOT")
     }
 }
-        
+
 allprojects {
     apply(plugin  = "eclipse")
     apply(plugin  = "idea")
@@ -62,6 +62,7 @@ project(":desktop") {
 
     dependencies {
         "implementation"(project(":core"))
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
         "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:${gdxVersion}")
         "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
 
@@ -82,6 +83,7 @@ project(":android") {
 
     dependencies {
         "implementation"(project(":core"))
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
         "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
@@ -96,6 +98,7 @@ project(":ios") {
 
     dependencies {
         "implementation"(project(":core"))
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
         "implementation"("com.mobidevelop.robovm:robovm-rt:$roboVMVersion")
         "implementation"("com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion")
         "implementation"("com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion")

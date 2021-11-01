@@ -181,8 +181,10 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
     
     private fun echo(text: String) {
         var label = Label(text, skin)
+        var width = stage.width * 0.75f
+        label.setWidth(width)
         label.setWrap(true)
-        printHistory.add(label).left().bottom().width(stage.width*0.75f).padLeft(15f).row()
+        printHistory.add(label).left().bottom().width(width).padLeft(15f).row()
         printScroll.scrollTo(0f,0f,1f,1f)
     }
     
