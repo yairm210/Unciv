@@ -298,15 +298,17 @@ class GameInfo {
         // Calling with `maxDistance = 0` removes distance limitation.
         data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
 
-        var exploredRevealTiles:Collection<TileInfo>
+        var exploredRevealTiles:Sequence<TileInfo>
 
         if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
             // Look for matching mercantile CS centers 
             exploredRevealTiles = getAliveCityStates()
+                .asSequence()
                 .filter { it.cityStateResource == resourceName }
                 .map { it.getCapital().getCenterTile() }
         } else {
             exploredRevealTiles = tileMap.values
+                .asSequence()
                 .filter { it.resource == resourceName }
         }
 
