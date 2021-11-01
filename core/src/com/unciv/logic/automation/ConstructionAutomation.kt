@@ -325,16 +325,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     fun addReligousUnit(){
 
         var modifier = 0f
-
         val missionary = civUnits.asSequence()
             .filter { it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spreads Religon" }}
             .first()
 
         if (preferredVictoryType == VictoryType.Domination) return
         if (civInfo.religionManager.religion?.name == null) return
-
         if (preferredVictoryType == VictoryType.Cultural) modifier += 1
-
         if (isAtWar) modifier -= 0.5f
 
 

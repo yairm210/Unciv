@@ -4,6 +4,7 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.ReligionManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
@@ -283,26 +284,21 @@ object SpecificUnitAutomation {
 
     fun automateMissionary(unit: MapUnit){
 
-        println(unit.currentTile.getCity()!!.religion.religionThisIsTheHolyCityOf)
+        println(unit.currentTile.getCity()!!.religion.getMajorityReligion())
 
         val possibleCities: Sequence<CityInfo> = unit.civInfo.cities.asSequence()
-            .filter { it.religion.religionThisIsTheHolyCityOf != unit.getReligionDisplayName() }
+            .filter { it.religion.getMajorityReligion()!!.name != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
+            .filter { unit.movement.canMoveTo(it.getCenterTile()) }
 
-        if (unit.currentTile.owningCity != null && unit.currentTile.getCity()!!.religion.religionThisIsTheHolyCityOf == unit.religion){
-            unit.doAction()
-        }
 
         val destination: CityInfo = possibleCities
             .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
             ?: return
 
+        if (unit.currentTile.owningCity != null && unit.currentTile.getCity()!!.religion.getMajorityReligion()!!.name == unit.religion){
+            destination.religion.religionThisIsTheHolyCityOf
 
-        try {
-            unit.movement.headTowards(destination.getCenterTile())
-        }
-        catch (e: NullPointerException) {
-            return
         }
     }
 
