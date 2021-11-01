@@ -168,6 +168,7 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
         } else if (results.matches.size == 1) {
             setText(results.matches[0])
         } else {
+            echo("")
             for (m in results.matches) {
                 echo(m)
             }
@@ -179,7 +180,9 @@ class ConsoleScreen(val consoleState:ConsoleState, val closeAction: ()->Unit): C
     }
     
     private fun echo(text: String) {
-        printHistory.add(Label(text, skin)).left().bottom().padLeft(15f).row()
+        var label = Label(text, skin)
+        label.setWrap(true)
+        printHistory.add(label).left().bottom().width(stage.width*0.75f).padLeft(15f).row()
         printScroll.scrollTo(0f,0f,1f,1f)
     }
     

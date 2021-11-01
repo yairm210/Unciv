@@ -201,6 +201,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             ConsoleState(
                 ConsoleScope(
                     selectedCiv,
+                    gameInfo,
                     UncivGame.Current
                 )
             ),

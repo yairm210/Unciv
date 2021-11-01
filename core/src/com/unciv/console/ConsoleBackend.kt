@@ -39,8 +39,9 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
     val commandshelp:Map<String, String> = mapOf(
         "help" to "help - Display all commands\nhelp <command> - Display information on a specific command.",
         "countcities" to "countcities - Print out a numerical count of all cities in the current empire.",
-        "locatebuildings" to "locatebuildings <buildingname> - Print out a list of all cities that have a given building.\nlocatebuildings <resourcename> - Print out a list of all cities that are using a given resource.",
         "listcities" to "listcities - Print the names of all cities in the current empire.",
+        "locatebuildings" to "locatebuildings <buildingname> - Print out a list of all cities that have a given building.\nlocatebuildings <resourcename> - Print out a list of all cities that are using a given resource.",
+        "missingbuildings" to "missingbuildings <buildingname> - Print out a list of all cities that do not have a given building.",
         "cheatson" to "cheatson - Enable commands that break game rules.",
         "cheatsoff" to "cheatsoff - Disable commands that break game rules.",
         "supercharge" to "supercharge [true|false] - Massively boost all empire growth stats.\n\tRun with no arguments to toggle. (Requires cheats.)",
@@ -84,8 +85,21 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
         } else if (args[0] == "locatebuildings") {
             var buildingcities:List<String> = listOf()
             if (args.size > 1) {
-                var buildingcities = consoleScope.civInfo.cities
-                    .filter { args[1] in it.cityConstructions.builtBuildings }
+                buildingcities = consoleScope.civInfo.cities
+                    .filter {
+                        args[1] in it.cityConstructions.builtBuildings ||
+                        it.cityConstructions.builtBuildings.any({ building ->
+                            consoleScope.gameInfo.ruleSet.buildings[building]!!.requiresResource(args[1])
+                        })
+                    }
+                    .map { it.name }
+            }
+            out = buildingcities.joinToString(", ")
+        } else if (args[0] == "missingbuildings") {
+            var buildingcities:List<String> = listOf()
+            if (args.size > 1) {
+                buildingcities = consoleScope.civInfo.cities
+                    .filter { !(args[1] in it.cityConstructions.builtBuildings) }
                     .map { it.name }
             }
             out = buildingcities.joinToString(", ")
