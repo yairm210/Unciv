@@ -49,7 +49,8 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
         "cheatsoff" to "cheatsoff - Disable commands that break game rules.",
         "godmode" to "godmode [true|false] - Ignore many game rule restrictions. Allows instant purchase of tech, policies, buildings, tiles, and more.\n\tRun with no arguments to toggle. (Requires cheats.)",
         "godview" to "godview [true|false] - Make the entire map visible.\n\tRun with no arguments to toggle. (Requires cheats.)",
-        "inspectpath" to "inspectpath <path> - Read out the value of the Kotlin object at a given path.\n\tThe path can be a string representing any combination of property accesses, map keys, array indexes, and method calls.\ninspectpath detailed <path> - Also print out the class name and members of the object at the given path.",
+        "inspectpath" to "inspectpath <path> - Read out the value of the Kotlin object at a given <path>.\n\tThe path can be a string representing any combination of property accesses, map keys, array indexes, and method calls.\ninspectpath detailed <path> - Also print out the class name and members of the object at the given path.",
+        "setpath" to "setpath <value> <path> - Set the Kotlin property at a given <path> to a given <value>.\n\tThe <path> can be a string representing any combination of property accesses, map keys, array indexes, and method calls.\n\tThe value will be resolved the same was as the path, but will be delineated by the first space character after its start.",
         "simulatetoturn" to "simulatetoturn <integer> - After this turn, automatically play until the turn specified by <integer>.\n\tMap view will be frozen while simulating. (Requires cheats.)",
         "spawnbuilding" to "",
         "spawnunit" to "",
@@ -154,7 +155,6 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
                     val startindex = if (detailed) 2 else 1
                     val path = (if (args.size > startindex) args.slice(startindex..args.size-1) else listOf()).joinToString(" ")
                     try {
-                        //var obj = resolveInstancePath(consoleScope, parseKotlinPath(path))
                         var obj = evalKotlinString(consoleScope, path)
                         out =
                             if (detailed)
@@ -163,6 +163,24 @@ class HardcodedConsoleBackend(consoleScope:ConsoleScope): ConsoleBackend(console
                                 "${obj}"
                     } catch (e: Exception) {
                         out = "Error accessing: ${e}"
+                    }
+                } else {
+                    out = "Cheats must be enabled to use this command!"
+                }
+            }
+            "setpath" -> {
+                if (cheats) {
+                    try {
+                        val path = (if (args.size > 2) args.slice(2..args.size-1) else listOf()).joinToString(" ")
+                        val value = evalKotlinString(consoleScope, args[1])
+                        var obj = setInstancePath(
+                            consoleScope,
+                            parseKotlinPath(path),
+                            value
+                        )
+                        out = "Set ${path} to ${value}."
+                    } catch (e: Exception) {
+                        out = "Error setting: ${e}"
                     }
                 } else {
                     out = "Cheats must be enabled to use this command!"

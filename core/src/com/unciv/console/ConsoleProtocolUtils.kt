@@ -2,6 +2,7 @@ package com.unciv.console
 
 import kotlin.collections.ArrayList
 import kotlin.reflect.KProperty1
+import kotlin.reflect.KMutableProperty1
 import java.util.*
 
 
@@ -19,6 +20,13 @@ fun readInstanceItem(instance: Any, keyOrIndex: Any): Any {
     } else {
         return (instance as Map<Any, Any>)[keyOrIndex]!!
     }
+}
+
+
+fun <T> setInstanceProperty(instance: Any, propertyName: String, value: T): Unit {
+    val property = instance::class.members
+        .first { it.name == propertyName } as KMutableProperty1<Any, T>
+    property.set(instance, value)
 }
 
 
@@ -57,7 +65,7 @@ private val bracketmeanings: Map<String, PathElementType> = mapOf(
     "()" to PathElementType.Call
 )
 
-fun parseKotlinPath(text: String): Collection<PathElement> {
+fun parseKotlinPath(text: String): List<PathElement> {
     var path:MutableList<PathElement> = ArrayList<PathElement>()
     var curr_type = PathElementType.Property
     var curr_name = ArrayList<Char>()
@@ -118,7 +126,7 @@ fun parseKotlinPath(text: String): Collection<PathElement> {
 }
 
 
-fun resolveInstancePath(instance: Any, path: Collection<PathElement>): Any {
+fun resolveInstancePath(instance: Any, path: List<PathElement>): Any {
     var obj = instance
     print("\n")
     path.map({print(it);print("\n")})
@@ -161,5 +169,32 @@ fun evalKotlinString(scope: Any, string: String): Any{
         return asfloat
     }
     return resolveInstancePath(scope, parseKotlinPath(string))
+}
+
+
+fun setInstancePath(instance: Any, path: List<PathElement>, value: Any): Unit {
+    val leafobj = resolveInstancePath(instance, path.slice(0..path.size-2))
+    val leafelement = path[path.size - 1]
+    when (leafelement.type) {
+        PathElementType.Property -> {
+            setInstanceProperty(leafobj, leafelement.name, value)
+        }
+        PathElementType.Key -> {
+            throw UnsupportedOperationException("Keys not implemented.")
+            leafobj = readInstanceItem(
+                leafobj,
+                if (leafelement.doEval)
+                    evalKotlinString(instance, leafelement.name)
+                else
+                    leafelement.name
+            )
+        }
+        PathElementType.Call -> {
+            throw UnsupportedOperationException("Cannot assign to function call.")
+        }
+        else -> {
+            throw UnsupportedOperationException("Unknown path element type: ${leafelement.type}")
+        }
+    }
 }
 
