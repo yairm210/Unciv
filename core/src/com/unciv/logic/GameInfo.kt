@@ -7,6 +7,7 @@ import com.unciv.logic.BackwardCompatibility.replaceDiplomacyFlag
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
@@ -16,6 +17,7 @@ import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
@@ -290,6 +292,57 @@ class GameInfo {
             val positions = tiles.map { it.position }
             thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
         }
+    }
+
+    fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
+        // Calling with `maxDistance = 0` removes distance limitation.
+        data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
+
+        var exploredRevealTiles:Sequence<TileInfo>
+
+        if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+            // Look for matching mercantile CS centers 
+            exploredRevealTiles = getAliveCityStates()
+                .asSequence()
+                .filter { it.cityStateResource == resourceName }
+                .map { it.getCapital().getCenterTile() }
+        } else {
+            exploredRevealTiles = tileMap.values
+                .asSequence()
+                .filter { it.resource == resourceName }
+        }
+
+        val exploredRevealInfo = exploredRevealTiles
+            .filter { it.position in civInfo.exploredTiles }
+            .flatMap { tile -> civInfo.cities.asSequence()
+                .map {
+                    // build a full cross join all revealed tiles * civ's cities (should rarely surpass a few hundred)
+                    // cache distance for each pair as sort will call it ~ 2n log n times
+                    // should still be cheaper than looking up 'the' closest city per reveal tile before sorting
+                    city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
+                }
+            }
+            .filter { (maxDistance == 0 || it.distance <= maxDistance) && (showForeign || it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
+            .sortedWith ( compareBy { it.distance } )
+            .distinctBy { it.tile }
+
+        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return
+        val positions = exploredRevealInfo
+            // re-sort to a more pleasant display order
+            .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
+            .map { it.tile.position }
+            .toList()       // explicit materialization of sequence to satisfy addNotification overload
+
+        val text =  if(positions.size==1)
+            "[$resourceName] revealed near [${chosenCity.name}]"
+        else
+            "[${positions.size}] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
+
+        civInfo.addNotification(
+            text,
+            LocationAction(positions),
+            "ResourceIcons/$resourceName"
+        )
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
