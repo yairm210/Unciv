@@ -181,7 +181,7 @@
 		"strength": 13,
 		"cost": 45,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles"],
+		"uniques": ["Cannot enter ocean tiles", "Never appears as a Barbarian unit"],
 		"upgradesTo": "Caravel",
 		"obsoleteTech": "Astronomy",
 		"attackSound": "nonmetalhit"
@@ -196,7 +196,7 @@
 		"rangedStrength": 10,
 		"cost": 56,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles", "[+50]% Strength <vs [Water] units>"],
+		"uniques": ["Cannot enter ocean tiles", "[+50]% Strength <vs [Water] units>", "Never appears as a Barbarian unit"],
 		"upgradesTo": "Galleass",
 		"obsoleteTech": "Astronomy",
 		"attackSound": "arrow"
@@ -240,7 +240,7 @@
 		"requiredTech": "The Wheel",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-		"uniques": ["No defensive terrain bonus", "Rough terrain penalty"],
+		"uniques": ["No defensive terrain bonus", "Rough terrain penalty", "Never appears as a Barbarian unit"],
 		"attackSound": "arrow"
 	},
 	{
@@ -255,7 +255,7 @@
 		"requiredTech": "The Wheel",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-		"uniques": ["No defensive terrain bonus"],
+		"uniques": ["No defensive terrain bonus", "Never appears as a Barbarian unit"],
 		"promotions": ["Accuracy I"],
 		"attackSound": "arrow"
 	},
@@ -271,7 +271,7 @@
 		"requiredTech": "The Wheel",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-		"uniques": ["No defensive terrain bonus"],
+		"uniques": ["No defensive terrain bonus", "Never appears as a Barbarian unit"],
 		"attackSound": "elephant"
 	},
 	{
@@ -452,7 +452,7 @@
 		"obsoleteTech": "Physics",
 		"upgradesTo": "Trebuchet",
 		"uniques": ["[+200]% Strength <vs cities> <when attacking>", "No defensive terrain bonus",
-			"Must set up to ranged attack", "[-1] Sight"],
+			"Must set up to ranged attack", "[-1] Sight", "Never appears as a Barbarian unit"],
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
 	},
@@ -596,7 +596,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
 		"obsoleteTech": "Military Science",
-		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus", "Never appears as a Barbarian unit"],
 		"attackSound": "arrow"
 		//Camel Archer should have no penalty attacking cities
 	},
@@ -612,7 +612,8 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
 		"obsoleteTech": "Military Science",
-		"uniques": ["Can move after attacking","No defensive terrain bonus", "Founds a new city <on foreign continents>", "[+2] Sight", "Defense bonus when embarked"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus", "Founds a new city <on foreign continents>",
+			"[+2] Sight", "Defense bonus when embarked", "Never appears as a Barbarian unit"],
 		"attackSound": "horse"
 		//Conquistador should have no penalty attacking cities
 		//Ability to found new cities can only be used on a foreign continent that does not contain the Spanish capital.
@@ -628,7 +629,8 @@
 		"requiredTech": "Chivalry",
 		"obsoleteTech": "Military Science",
 		"upgradesTo": "Cavalry",
-		"uniques": ["Can move after attacking","No defensive terrain bonus","[+50]% Strength <vs [Mounted] units>","[-33]% Strength <vs cities>"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus","[+50]% Strength <vs [Mounted] units>",
+			"[-33]% Strength <vs cities>", "Never appears as a Barbarian unit"],
 		"attackSound": "elephant"
 	},
 	{
@@ -643,7 +645,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
 		"obsoleteTech": "Military Science",
-		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus", "Never appears as a Barbarian unit"],
 		"attackSound": "horse"
 	},
 	{
@@ -660,7 +662,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
 		"obsoleteTech": "Military Science",
-		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus", "Never appears as a Barbarian unit"],
 		"promotions": ["Great Generals I", "Quick Study"],
 		"attackSound": "arrow"
 		// Keshik should have no penalty attacking cities
@@ -718,7 +720,8 @@
 		"requiredTech": "Physics",
 		"obsoleteTech": "Chemistry",
 		"upgradesTo": "Cannon",
-		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus","Must set up to ranged attack","[-1] Sight","Never appears as a Barbarian unit"],
+		"uniques": ["[+200]% Strength <vs cities> <when attacking>","No defensive terrain bonus","Must set up to ranged attack",
+			"[-1] Sight","Never appears as a Barbarian unit"],
 		"attackSound": "throw"
 	},
 	{
@@ -733,7 +736,7 @@
 		"requiredTech": "Physics",
 		"obsoleteTech": "Chemistry",
 		"upgradesTo": "Cannon",
-		"uniques": ["No defensive terrain bonus","Must set up to ranged attack"],
+		"uniques": ["No defensive terrain bonus","Must set up to ranged attack", "Never appears as a Barbarian unit"],
 		"attackSound": "throw"
 	},
 	{
@@ -961,7 +964,7 @@
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>",
-			"[+1] Sight", "No movement cost to pillage"],
+			"[+1] Sight", "No movement cost to pillage", "Never appears as a Barbarian unit"],
 		"promotions": ["Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
@@ -978,7 +981,7 @@
 		"requiredTech": "Metallurgy",
 		"requiredResource": "Horses",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>",
-			"Transfer Movement to [Great General]", "[+15]% Strength when stacked with [Great General]"],
+			"Transfer Movement to [Great General]", "[+15]% Strength when stacked with [Great General]", "Never appears as a Barbarian unit"],
 		"promotions": ["Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combined Arms",
@@ -1097,7 +1100,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus",
-			"[-33]% Strength <vs cities>", "[+50]% Strength <vs [Wounded] units>"],
+			"[-33]% Strength <vs cities>", "[+50]% Strength <vs [Wounded] units>", "Never appears as a Barbarian unit"],
 		"attackSound": "horse"
 	},
 	{
@@ -1113,7 +1116,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>" ,
-		"[+1] Sight", "[+50]% to Flank Attack bonuses" ],
+		"[+1] Sight", "[+50]% to Flank Attack bonuses", "Never appears as a Barbarian unit"],
 		"attackSound": "horse"
 	},
 	{
@@ -1407,7 +1410,7 @@
 		"requiredTech": "Combined Arms",
 		"requiredResource": "Oil",
 		"upgradesTo": "Modern Armor",
-		"uniques": ["Can move after attacking","No defensive terrain bonus"],
+		"uniques": ["Can move after attacking","No defensive terrain bonus", "Never appears as a Barbarian unit"],
 		"attackSound": "tankshot"
 		//German unique unit, stronger than Tank
 	},
