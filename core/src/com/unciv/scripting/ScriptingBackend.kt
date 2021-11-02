@@ -1,17 +1,27 @@
 package com.unciv.scripting
 
+import kotlin.reflect.full.*
 import java.util.*
 
 
 data class AutocompleteResults(val isHelpText:Boolean, val matches:List<String>, val helpText:String)
 
 
+interface ScriptingBackend_metadata {
+   fun new(scriptingScope: ScriptingScope): ScriptingBackend
+   val displayname:String
+}
+
+
 open class ScriptingBackend(val scriptingScope:ScriptingScope) {
 
-    open val displayname:String = "Dummy"
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope: ScriptingScope) = ScriptingBackend(scriptingScope)
+        override val displayname:String = "Dummy"
+    }
+    val metadata: ScriptingBackend_metadata
+        get(): ScriptingBackend_metadata = this::class.companionObjectInstance as ScriptingBackend_metadata
 
-    /* val scriptingScope: ScriptingScope
-            get() = scriptingState.scriptingScope */
 
     open fun motd(): String {
         // Message to print on launch.
@@ -37,9 +47,12 @@ open class ScriptingBackend(val scriptingScope:ScriptingScope) {
 
 class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
 
-    override val displayname:String = "Hardcoded"
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope:ScriptingScope) = HardcodedScriptingBackend(scriptingScope)
+        override val displayname:String = "Hardcoded"
+    }
 
-    val commandshelp:Map<String, String> = mapOf(
+    val commandshelp = mapOf<String, String>(
         "help" to "help - Display all commands\nhelp <command> - Display information on a specific command.",
         "countcities" to "countcities - Print out a numerical count of all cities in the current empire.",
         "listcities" to "listcities - Print the names of all cities in the current empire.",
@@ -173,7 +186,7 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
                     try {
                         val path = (if (args.size > 2) args.slice(2..args.size-1) else listOf()).joinToString(" ")
                         val value = evalKotlinString(scriptingScope, args[1])
-                        var obj = setInstancePath(
+                        setInstancePath(
                             scriptingScope,
                             parseKotlinPath(path),
                             value
@@ -220,7 +233,12 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
 
 
 class QjsScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
-    override val displayname:String = "QuickJS"
+
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope:ScriptingScope) = QjsScriptingBackend(scriptingScope)
+        override val displayname:String = "QuickJS"
+    }
+
     override fun motd(): String {
         return "\n\nWelcome to the QuickJS Unciv CLI, which doesn't currently run QuickJS but might one day!"
     }
@@ -228,7 +246,12 @@ class QjsScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scrip
 
 
 class LuaScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
-    override val displayname:String = "Lua"
+
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope:ScriptingScope) = LuaScriptingBackend(scriptingScope)
+        override val displayname:String = "Lua"
+    }
+
     override fun motd(): String {
         return "\n\nWelcome to the Lua Unciv CLI, which doesn't currently run Lua but might one day!"
     }
@@ -236,34 +259,28 @@ class LuaScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scrip
 
 
 class UpyScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
-    override val displayname:String = "MicroPython"
+
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope:ScriptingScope) = UpyScriptingBackend(scriptingScope)
+        override val displayname:String = "MicroPython"
+    }
+
     override fun motd(): String {
         return "\n\nWelcome to the MicroPython Unciv CLI, which doesn't currently run MicroPython but might one day!"
     }
 }
 
 
-enum class ScriptingBackendType(val displayname:String) {
-    Dummy("Dummy"),
-    Hardcoded("Hardcoded"),
-    QuickJS("QuickJS"),
-    Lua("Lua"),
-    MicroPython("MicroPython")
+enum class ScriptingBackendType(val metadata:ScriptingBackend_metadata) {
+    Dummy(ScriptingBackend),
+    Hardcoded(HardcodedScriptingBackend),
+    //Reflective(),
+    QuickJS(QjsScriptingBackend),
+    Lua(LuaScriptingBackend),
+    MicroPython(UpyScriptingBackend)
 }
 
 
-fun GetNamedScriptingBackend(backendtype:ScriptingBackendType, scriptingScope:ScriptingScope): ScriptingBackend {
-    if (backendtype == ScriptingBackendType.Dummy) {
-        return ScriptingBackend(scriptingScope)
-    } else if (backendtype == ScriptingBackendType.Hardcoded) {
-        return HardcodedScriptingBackend(scriptingScope)
-    } else if (backendtype == ScriptingBackendType.QuickJS) {
-        return QjsScriptingBackend(scriptingScope)
-    } else if (backendtype == ScriptingBackendType.Lua) {
-        return LuaScriptingBackend(scriptingScope)
-    } else if (backendtype == ScriptingBackendType.MicroPython) {
-        return UpyScriptingBackend(scriptingScope)
-    } else {
-        throw IllegalArgumentException("Unexpected backend requsted: ${backendtype.displayname}")
-    }
+fun SpawnNamedScriptingBackend(backendtype:ScriptingBackendType, scriptingScope:ScriptingScope): ScriptingBackend {
+    return backendtype.metadata.new(scriptingScope)
 }

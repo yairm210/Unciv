@@ -4,7 +4,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 
-class ScriptingState(val scriptingScope: ScriptingScope){
+class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: ScriptingBackendType? = null){
 
     val scriptingBackends:ArrayList<ScriptingBackend> = ArrayList<ScriptingBackend>()
 
@@ -19,11 +19,13 @@ class ScriptingState(val scriptingScope: ScriptingScope){
     var activeCommandHistory:Int = 0
 
     init {
-        echo(spawnBackend(ScriptingBackendType.Dummy))
+        if (initialBackendType != null) {
+            echo(spawnBackend(initialBackendType))
+        }
     }
 
     fun spawnBackend(backendtype: ScriptingBackendType): String {
-        var backend:ScriptingBackend = GetNamedScriptingBackend(backendtype, scriptingScope)
+        var backend:ScriptingBackend = SpawnNamedScriptingBackend(backendtype, scriptingScope)
         scriptingBackends.add(backend)
         activeBackend = scriptingBackends.size - 1
         return backend.motd()

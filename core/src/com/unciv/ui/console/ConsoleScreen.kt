@@ -46,7 +46,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, val closeAction: ()->Unit
         
         backendsAdders.add("Launch new backend:".toLabel()).padRight(30f)
         for (backendtype in ScriptingBackendType.values()) {
-            var backendadder = backendtype.displayname.toTextButton()
+            var backendadder = backendtype.metadata.displayname.toTextButton()
             backendadder.onClick({
                 echo(scriptingState.spawnBackend(backendtype))
                 updateRunning()
@@ -108,6 +108,9 @@ class ConsoleScreen(val scriptingState:ScriptingState, val closeAction: ()->Unit
         updateRunning()
     }
     
+    fun updateLayout() {
+    }
+    
     fun openConsole() {
         game.setScreen(this)
         keyPressDispatcher.install(stage)
@@ -122,7 +125,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, val closeAction: ()->Unit
         runningList.clearChildren()
         var i = 0
         for (backend in scriptingState.scriptingBackends) {
-            var button = backend.displayname.toTextButton()
+            var button = backend.metadata.displayname.toTextButton()
             val index = i
             runningList.add(button)
             if (i == scriptingState.activeBackend) {

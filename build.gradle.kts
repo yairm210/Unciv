@@ -2,10 +2,10 @@ import com.unciv.build.BuildConfig.gdxVersion
 import com.unciv.build.BuildConfig.roboVMVersion
 
 
-// You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
-configurations.all { resolutionStrategy {
-    force("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
-} }
+//// You'll still get kotlin-reflect-1.3.70.jar in your classpath, but will no longer be used
+//configurations.all { resolutionStrategy {
+//    force("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+//} }
 
 
 buildscript {
@@ -62,7 +62,7 @@ project(":desktop") {
 
     dependencies {
         "implementation"(project(":core"))
-        "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}") // Seem to need here as well as in `:core`, or else fails to find class def at run time.
         "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:${gdxVersion}")
         "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
 
@@ -112,6 +112,7 @@ project(":core") {
 
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
+        "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}") // Used for scripting API backends.
     }
 
 
