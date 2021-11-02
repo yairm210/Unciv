@@ -377,8 +377,10 @@ object Battle {
             addXp(defender, 2, attacker)
         } else if (!defender.isCivilian()) // unit was not captured but actually attacked
         {
-            addXp(attacker, 5, defender)
-            addXp(defender, 4, attacker)
+            // Melee combat vs barbarians does not increase great general points
+            // that other combats do is probably a Civ V bug, but oh well lets implement it
+            addXp(attacker, 5, defender, !defender.getCivInfo().isBarbarian())
+            addXp(defender, 4, attacker, !attacker.getCivInfo().isBarbarian())
         }
     }
 
@@ -401,7 +403,7 @@ object Battle {
     }
 
     // XP!
-    private fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
+    private fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant, addGreatGeneralPoints: Boolean = true) {
         if (thisCombatant !is MapUnitCombatant) return
         if (thisCombatant.unit.promotions.totalXpProduced() >= thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.maxXPfromBarbarians
                 && otherCombatant.getCivInfo().isBarbarian())
@@ -419,7 +421,7 @@ object Battle {
         thisCombatant.unit.promotions.XP += xpGained
 
 
-        if (thisCombatant.getCivInfo().isMajorCiv() && !otherCombatant.getCivInfo().isBarbarian()) { // Can't get great generals from Barbarians
+        if (thisCombatant.getCivInfo().isMajorCiv() && addGreatGeneralPoints) {
             var greatGeneralPointsModifier = 1f
             for (unique in thisCombatant.getMatchingUniques("[] is earned []% faster")) {
                 val unitName = unique.params[0]
