@@ -307,24 +307,21 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     BlocksLineOfSightAtSameElevation("Blocks line-of-sight from tiles at same elevation", UniqueTarget.Terrain),
     VisibilityElevation("Has an elevation of [amount] for visibility calculations", UniqueTarget.Terrain),
   
-    OverrideFertility("Always Fertility [amount] for Map Generation", UniqueTarget.Terrain),
-    AddFertility("[amount] to Fertility for Map Generation", UniqueTarget.Terrain),
+    OverrideFertility("Always Fertility [amount] for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    AddFertility("[amount] to Fertility for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
-    IsRegion("Can act as a Region during Map Generation, takes priority [amount]", UniqueTarget.Terrain),
-    RegionRequirePercentSingleType("A Region is formed with at least [amount]% [simpleTerrain] tiles", UniqueTarget.Terrain),
-    RegionRequirePercentTwoTypes("A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles", UniqueTarget.Terrain),
-    RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain),
-    IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination.", UniqueTarget.Terrain),
+    IsRegion("Can act as a Region during Map Generation, takes priority [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    RegionRequirePercentSingleType("A Region is formed with at least [amount]% [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    RegionRequirePercentTwoTypes("A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination.", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
-    HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain),
+    HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
-    LuxuryWeighting("Appears in [regionType] regions with weight [amount]", UniqueTarget.Resource),
-    LuxuryWeightingForCityStates("Appears near City States with weight [amount]", UniqueTarget.Resource),
+    LuxuryWeighting("Appears in [regionType] regions with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    LuxuryWeightingForCityStates("Appears near City States with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
+
     OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
-  
-    TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain),
-    OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain),
-    OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain),
   
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
