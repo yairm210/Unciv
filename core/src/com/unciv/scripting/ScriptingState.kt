@@ -1,5 +1,8 @@
 package com.unciv.scripting
 
+import com.unciv.logic.GameInfo
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.UncivGame
 import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
@@ -17,6 +20,20 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     var maxCommandHistory:Int = 50
 
     var activeCommandHistory:Int = 0
+
+
+    var civInfo: CivilizationInfo?
+        get() = scriptingScope.civInfo
+        set(value) { scriptingScope.civInfo = value }
+
+    var gameInfo: GameInfo?
+        get() = scriptingScope.gameInfo
+        set(value) { scriptingScope.gameInfo = value }
+
+    var uncivGame: UncivGame?
+        get() = scriptingScope.uncivGame
+        set(value) { scriptingScope.uncivGame = value }
+
 
     init {
         if (initialBackendType != null) {

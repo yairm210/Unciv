@@ -13,6 +13,9 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
+import com.unciv.scripting.ScriptingScope
+import com.unciv.scripting.ScriptingState
+import com.unciv.ui.console.ConsoleScreen
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.MusicController
 import com.unciv.ui.audio.MusicMood
@@ -70,6 +73,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
 
     val translations = Translations()
+
+    lateinit var scriptingState: ScriptingState
+    lateinit var consoleScreen: ConsoleScreen
 
     override fun create() {
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
@@ -129,6 +135,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             }
         }
         crashController = CrashController.Impl(crashReportSender)
+
+        createScripting()
     }
 
     fun loadGame(gameInfo: GameInfo) {
@@ -144,6 +152,23 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             worldScreen = WorldScreen(gameInfo, gameInfo.getPlayerToViewAs())
             setWorldScreen()
         }
+    }
+
+    fun createScripting() {
+
+        scriptingState = ScriptingState(
+            ScriptingScope(
+                null,
+                null,
+                this
+            )
+        )
+
+        consoleScreen = ConsoleScreen(
+            scriptingState,
+            {  }
+        )
+
     }
 
     fun setScreen(screen: BaseScreen) {

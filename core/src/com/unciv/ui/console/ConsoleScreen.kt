@@ -16,7 +16,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
-class ConsoleScreen(val scriptingState:ScriptingState, val closeAction: ()->Unit): CameraStageBaseScreen() {
+class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Unit): CameraStageBaseScreen() {
 
     private val lineHeight = 30f
 

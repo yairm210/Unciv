@@ -10,5 +10,5 @@ class ScriptingScope(var civInfo: CivilizationInfo?, var gameInfo: GameInfo?, va
     // Holds references to all internal game data that the console has access to.
     // Mostly `.civInfo`/.`gameInfo`, but could be cool to E.G. allow loading and making saves through CLI/API too.
     // Also where to put any `PlayerAPI`, `CheatAPI`, `ModAPI`, etc.
-    // For `LuaScriptingBackend`, `UpyScriptingBackend`, `QjsScriptingBackend`, etc, this should probably directly mirror the wrappers exposed to the scripting language.
+    // For `LuaScriptingBackend`, `UpyScriptingBackend`, `QjsScriptingBackend`, etc, the hierarchy of data under this class definition should probably directly mirror the wrappers in the namespace exposed to the scripting language.
 }

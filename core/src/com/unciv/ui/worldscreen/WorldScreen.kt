@@ -13,8 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.scripting.ScriptingScope
-import com.unciv.scripting.ScriptingState
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -27,6 +25,7 @@ import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
+import com.unciv.scripting.ScriptingState
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.console.ConsoleScreen
@@ -89,7 +88,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
-    private var consoleScreen: ConsoleScreen
+    private val consoleScreen: ConsoleScreen
+        get() = game.consoleScreen
+
+    private val scriptingState: ScriptingState
+        get() = game.scriptingState
 
     companion object {
         /** Switch for console logging of next turn duration */
@@ -197,16 +200,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         //  know what the viewing civ is.
         shouldUpdate = true
 
-        consoleScreen = ConsoleScreen(
-            ScriptingState(
-                ScriptingScope(
-                    null,
-                    null,
-                    UncivGame.Current
-                )
-            ),
-            { game.setWorldScreen() }
-        )
+        consoleScreen.closeAction = { game.setWorldScreen() }
+        scriptingState.gameInfo = gameInfo
+        scriptingState.civInfo = selectedCiv
+
     }
 
     private fun stopMultiPlayerRefresher() {
