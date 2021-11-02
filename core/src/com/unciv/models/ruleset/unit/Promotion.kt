@@ -49,7 +49,7 @@ class Promotion : RulesetObject() {
         val textList = ArrayList<FormattedLine>()
 
         uniqueObjects.forEach {
-            if (it.type == null || !it.type.flags.contains(UniqueFlag.HideInCivilopedia))
+            if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
                 textList += FormattedLine(it)
         }
 

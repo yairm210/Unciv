@@ -118,7 +118,7 @@ class Nation : RulesetObject() {
             textList += FormattedLine(uniqueText, indent = 1)
         } else {
             uniqueObjects.forEach {
-                if (it.type == null || !it.type.flags.contains(UniqueFlag.HideInCivilopedia))
+                if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
                     textList += FormattedLine(it)
             }
             textList += FormattedLine()
@@ -248,11 +248,11 @@ class Nation : RulesetObject() {
                 // This does not use the auto-linking FormattedLine(Unique) for two reasons:
                 // would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
                 // No .copy() factory on FormattedLine and no FormattedLine(Unique, all other val's) constructor either
-                for (unique in unit.uniqueObjects.filterNot { it.text in originalUnit.uniques || (it.type != null && it.type.flags.contains(UniqueFlag.HideInCivilopedia)) }) {
+                for (unique in unit.uniqueObjects.filterNot { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HideInCivilopedia) }) {
 
                     textList += FormattedLine(unique.text.tr(), indent = 1)
                 }
-                for (unique in originalUnit.uniqueObjects.filterNot { it.text in unit.uniques || (it.type != null && it.type.flags.contains(UniqueFlag.HideInCivilopedia)) }) {
+                for (unique in originalUnit.uniqueObjects.filterNot { it.text in unit.uniques || it.hasFlag(UniqueFlag.HideInCivilopedia) }) {
                     textList += FormattedLine("Lost ability".tr() + " (" + "vs [${originalUnit.name}]".tr() + "): " +
                             unique.text.tr(), indent = 1)
                 }

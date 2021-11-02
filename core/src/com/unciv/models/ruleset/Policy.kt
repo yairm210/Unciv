@@ -91,7 +91,7 @@ open class Policy : RulesetObject() {
         if (uniques.isNotEmpty()) {
             lineList += FormattedLine()
             uniqueObjects.forEach {
-                if (it.type == null || !it.type.flags.contains(UniqueFlag.HideInCivilopedia))
+                if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
                     lineList += FormattedLine(it)
             }
         }

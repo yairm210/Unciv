@@ -135,7 +135,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         } else if (uniques.isNotEmpty()) {
             textList += FormattedLine()
             uniqueObjects.sortedBy { it.text }.forEach {
-                if (it.type == null || !it.type.flags.contains(UniqueFlag.HideInCivilopedia))
+                if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
                     textList += FormattedLine(it)
             }
         }
