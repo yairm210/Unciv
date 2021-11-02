@@ -2,7 +2,6 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
-import com.unciv.models.metadata.LocaleCode
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stats
 import java.util.*
@@ -253,24 +252,11 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
  *                  defaults to the input string if no translation is available,
  *                  but with placeholder or sentence brackets removed.
  */
-fun String.tr(languageOverride: String? = null): String {
+fun String.tr(): String {
     val activeMods = with(UncivGame.Current) {
         if (isGameInfoInitialized()) gameInfo.gameParameters.mods else translations.translationActiveMods
     }
-    val language: String
-
-    if(languageOverride == null ) language = UncivGame.Current.settings.language
-    else
-    {
-        val something = LocaleCode.values()
-        val something2 = Array<String>(something.size){ _ ->""}
-        for((index, a) in something.withIndex())
-        {
-            something2[index] = a.name
-        }
-        if(something2.contains(languageOverride)) language = languageOverride
-        else language = UncivGame.Current.settings.language
-    }
+    val language = UncivGame.Current.settings.language
     
     if (contains('<')) { // Conditionals!
         /**
