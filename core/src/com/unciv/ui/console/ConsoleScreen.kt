@@ -234,4 +234,4 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     }
 }
 
-// Screen, or widget? Screen would create whole new context for hotkeys and such, I think? Widget would be nice for 
+// Screen, widget, or popup?
