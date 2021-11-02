@@ -7,6 +7,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -133,8 +134,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             textList += FormattedLine(replacementTextForUniques)
         } else if (uniques.isNotEmpty()) {
             textList += FormattedLine()
-            for (uniqueObject in uniqueObjects.sortedBy { it.text })
-                textList += FormattedLine(uniqueObject)
+            uniqueObjects.sortedBy { it.text }.forEach {
+                if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+                    textList += FormattedLine(it)
+            }
         }
 
         val resourceRequirements = getResourceRequirements()

@@ -259,8 +259,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (replacementTextForUniques.isNotEmpty())
                 textList += FormattedLine(replacementTextForUniques)
             else
-                for (unique in getUniquesStrings())
-                    textList += FormattedLine(Unique(unique))
+                uniqueObjects.forEach {
+                    if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+                        textList += FormattedLine(it)
+                }
         }
 
         if (!stats.isEmpty()) {
