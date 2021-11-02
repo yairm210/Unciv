@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -198,7 +199,10 @@ class Technology: RulesetObject() {
 
         if (uniques.isNotEmpty()) {
             lineList += FormattedLine()
-            for (unique in uniqueObjects) lineList += FormattedLine(unique)
+            uniqueObjects.forEach {
+                if (it.type == null || !it.type.flags.contains(UniqueFlag.HideInCivilopedia))
+                    lineList += FormattedLine(it)
+            }
         }
 
         var wantEmpty = true

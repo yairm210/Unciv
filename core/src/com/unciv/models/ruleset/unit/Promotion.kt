@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unit
 
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -47,8 +48,9 @@ class Promotion : RulesetObject() {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
-        for (unique in uniqueObjects) {
-            textList += FormattedLine(unique)
+        uniqueObjects.forEach {
+            if (it.type == null || !it.type.flags.contains(UniqueFlag.HideInCivilopedia))
+                textList += FormattedLine(it)
         }
 
         val filteredPrerequisites = prerequisites.mapNotNull {
