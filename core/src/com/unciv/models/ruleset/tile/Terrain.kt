@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.civilopedia.FormattedLine
@@ -115,7 +116,8 @@ class Terrain : RulesetStatsObject() {
         if (turnsInto == null && displayAs(TerrainType.Land, ruleset) && !isRough())
             textList += FormattedLine("Open terrain")   // Rough is in uniques
         uniqueObjects.forEach {
-            textList += FormattedLine(it)
+            if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+                textList += FormattedLine(it)
         }
 
         textList += FormattedLine()

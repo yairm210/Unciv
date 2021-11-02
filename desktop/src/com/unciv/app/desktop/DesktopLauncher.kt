@@ -51,8 +51,7 @@ internal object DesktopLauncher {
 
         val game = UncivGame(desktopParameters)
 
-        if (!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
-            tryActivateDiscord(game)
+        tryActivateDiscord(game)
 
         LwjglApplication(game, config)
     }
@@ -86,9 +85,9 @@ internal object DesktopLauncher {
         if (!game.isInitialized) return
         val presence = DiscordRichPresence()
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
-        presence.details = currentPlayerCiv.nation.getLeaderDisplayName().tr()
+        presence.details = "${currentPlayerCiv.nation.leaderName} of ${currentPlayerCiv.nation.name}"
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
-        presence.largeImageText = "Turn".tr() + " " + currentPlayerCiv.gameInfo.turns
+        presence.largeImageText = "Turn" + " " + currentPlayerCiv.gameInfo.turns
         DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }

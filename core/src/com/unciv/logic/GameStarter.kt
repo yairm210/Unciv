@@ -221,8 +221,7 @@ object GameStarter {
 
 
         val allMercantileResources = ruleset.tileResources.values.filter {
-            it.unique == "Can only be created by Mercantile City-States" // Deprecated as of 3.16.16
-                || it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
+            it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
 
 
         val unusedMercantileResources = Stack<String>()

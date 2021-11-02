@@ -266,6 +266,8 @@ class CityInfo {
 
     fun isInResistance() = resistanceCounter > 0
 
+    /** @return the number of tiles 4 out from this city that could hold a city, ie how lonely this city is */
+    fun getFrontierScore() = getCenterTile().getTilesAtDistance(4).count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == civInfo ) }
 
     fun getRuleset() = civInfo.gameInfo.ruleSet
 
@@ -707,9 +709,8 @@ class CityInfo {
         // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
         // The time loss shouldn't be that large I don't think
         return civInfo.getMatchingUniques(placeholderText, this) +
-                localUniques.filter { 
-                    it.placeholderText == placeholderText
-                    && it.params.none { param -> param == "in other cities" }
+                localUniques.filter {
+                    !it.isAntiLocalEffect && it.placeholderText == placeholderText
                 }
     }
 
@@ -725,14 +726,14 @@ class CityInfo {
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { it.params.none { param -> param == "in other cities" } } +
+            .filter { !it.isAntiLocalEffect } +
                 religion.getUniques().filter { it.placeholderText == placeholderText }
     }
 
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
         return (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-                .filter { it.params.none { param -> param == "in other cities" } } 
+                .filter { !it.isAntiLocalEffect }
             + religion.getUniques().filter { it.isOfType(uniqueType) }
         ).filter {
             it.conditionalsApply(stateForConditionals)
@@ -747,21 +748,21 @@ class CityInfo {
     // Get all matching uniques that don't apply to only this city
     fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { it.params.none { param -> param == "in this city" } }
+            .filter { !it.isLocalEffect }
         // Note that we don't query religion here, as those only have local effects
     }
 
 
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { it.params.none { param -> param == "in this city" } }
+            .filter { !it.isLocalEffect }
         // Note that we don't query religion here, as those only have local effects
     }
 
     // Get all uniques that don't apply to only this city
     fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getAllUniques()
-            .filter { it.params.none { param -> param == "in this city" } }
+            .filter { !it.isLocalEffect }
         // Note that we don't query religion here, as those only have local effects
     }
 

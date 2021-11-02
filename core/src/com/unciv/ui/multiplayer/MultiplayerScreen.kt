@@ -3,10 +3,7 @@ package com.unciv.ui
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
-import com.unciv.logic.IdChecker
-import com.unciv.logic.UncivShowableException
+import com.unciv.logic.*
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
@@ -21,7 +18,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     private lateinit var selectedGameFile: FileHandle
 
     // Concurrent because we can get concurrent modification errors if we change things around while running redownloadAllGames() in another thread
-    private var multiplayerGames = ConcurrentHashMap<FileHandle, GameInfo>()
+    private var multiplayerGames = ConcurrentHashMap<FileHandle, GameInfoPreview>()
     private val rightSideTable = Table()
     private val leftSideTable = Table()
 
@@ -117,7 +114,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         //RightSideButton Setup
         rightSideButton.setText("Join game".tr())
         rightSideButton.onClick {
-            joinMultiplaerGame()
+            joinMultiplayerGame()
         }
     }
 
@@ -147,11 +144,11 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             try {
                 // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
                 // we need to run it in a different thread.
-                val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
+                val gamePreview = OnlineMultiplayer().tryDownloadGame(gameId.trim()).asPreview()
                 if (gameName == "")
-                    GameSaver.saveGame(game, game.gameId, true)
+                    GameSaver.saveGame(gamePreview, gamePreview.gameId)
                 else
-                    GameSaver.saveGame(game, gameName, true)
+                    GameSaver.saveGame(gamePreview, gameName)
 
                 Gdx.app.postRunnable { reloadGameListUI() }
             } catch (ex: Exception) {
@@ -170,12 +167,21 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         }
     }
 
-    //just loads the game from savefile
-    //the game will be downloaded opon joining it anyway
-    private fun joinMultiplaerGame() {
+    //Download game and use the popup to cover ANRs
+    private fun joinMultiplayerGame() {
+        val loadingGamePopup = Popup(this)
+        loadingGamePopup.add("Loading latest game state...".tr())
+        loadingGamePopup.open()
+
         try {
-            game.loadGame(multiplayerGames[selectedGameFile]!!)
+            // For whatever reason, the only way to show the popup before the ANRs started was to
+            // call the loadGame explicitly with a runnable on the main thread.
+            // Maybe this adds just enough lag for the popup to show up
+            Gdx.app.postRunnable {
+                game.loadGame(OnlineMultiplayer().tryDownloadGame((multiplayerGames[selectedGameFile]!!.gameId)))
+            }
         } catch (ex: Exception) {
+            loadingGamePopup.close()
             val errorPopup = Popup(this)
             errorPopup.addGoodSizedLabel("Could not download game!")
             errorPopup.row()
@@ -210,6 +216,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             val gameTable = Table()
             val turnIndicator = Table()
             var currentTurnUser = ""
+            var lastTurnMillis = 0L
 
             try {
                 turnIndicator.add(ImageGetter.getImage("EmojiIcons/Turn"))
@@ -217,6 +224,17 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
                 val lastModifiedMillis = gameSaveFile.lastModified()
                 val gameButton = gameSaveFile.name().toTextButton()
+
+
+                //TODO: replace this with nice formatting using kotlin.time.DurationUnit (once it is no longer experimental)
+                fun formattedElapsedTime(lastMillis: Long): String {
+                    val elapsedMinutes = (System.currentTimeMillis() - lastMillis) / 60000
+                    return when {
+                        elapsedMinutes < 120 -> "[$elapsedMinutes] [Minutes]"
+                        elapsedMinutes < 2880 -> "[${elapsedMinutes / 60}] [Hours]"
+                        else -> "[${elapsedMinutes / 1440}] [Days]"
+                    }
+                }
 
                 gameButton.onClick {
                     selectedGameFile = gameSaveFile
@@ -228,11 +246,8 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
                     editButton.enable()
                     rightSideButton.enable()
-
-                    //get Minutes since last modified
-                    val lastSavedMinutesAgo = (System.currentTimeMillis() - lastModifiedMillis) / 60000
-                    var descriptionText = "Last refresh: [$lastSavedMinutesAgo] minutes ago".tr() + "\r\n"
-                    descriptionText += "Current Turn:".tr() + " ${currentTurnUser}\r\n"
+                    var descriptionText = "Last refresh: ${formattedElapsedTime(lastModifiedMillis)} ago".tr() + "\n"
+                    descriptionText += "Current Turn: [$currentTurnUser] since ${formattedElapsedTime(lastTurnMillis)} ago".tr() + "\n"
                     descriptionLabel.setText(descriptionText)
                 }
 
@@ -246,7 +261,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
             thread(name = "loadGameFile") {
                 try {
-                    val game = gameSaver.loadGameFromFile(gameSaveFile)
+                    val game = gameSaver.loadGamePreviewFromFile(gameSaveFile)
 
                     //Add games to list so saves don't have to be loaded as Files so often
                     if (!gameIsAlreadySavedAsMultiplayer(game.gameId)) {
@@ -256,10 +271,11 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                     Gdx.app.postRunnable {
                         turnIndicator.clear()
                         if (isUsersTurn(game)) {
-                            turnIndicator.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 50f))
+                            turnIndicator.add(ImageGetter.getImage("OtherIcons/ExclamationMark")).size(50f)
                         }
                         //set variable so it can be displayed when gameButton.onClick gets called
                         currentTurnUser = game.currentPlayer
+                        lastTurnMillis = game.currentTurnStartTime
                     }
                 } catch (usx: UncivShowableException) {
                     //Gets thrown when mods are not installed
@@ -297,8 +313,8 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         thread(name = "multiplayerGameDownload") {
             for ((fileHandle, gameInfo) in multiplayerGames) {
                 try {
-                    val game = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
-                    GameSaver.saveGame(game, fileHandle.name(), true)
+                    val game = gameInfo.updateCurrentTurn(OnlineMultiplayer().tryDownloadGame(gameInfo.gameId))
+                    GameSaver.saveGame(game, fileHandle.name())
                     multiplayerGames[fileHandle] = game
                 } catch (ex: Exception) {
                     //skipping one is not fatal
@@ -332,7 +348,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             if (gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
                 return@onClick
             try {
-                GameSaver.saveGame(currentlyRunningGame, currentlyRunningGame.gameId, true)
+                GameSaver.saveGame(currentlyRunningGame, currentlyRunningGame.gameId)
                 reloadGameListUI()
             } catch (ex: Exception) {
                 val errorPopup = Popup(this)
@@ -356,9 +372,9 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     }
 
     //check if its the users turn
-    private fun isUsersTurn(gameInfo: GameInfo) = gameInfo.currentPlayerCiv.playerId == game.settings.userId
+    private fun isUsersTurn(gameInfo: GameInfoPreview) = gameInfo.getCivilization(gameInfo.currentPlayer).playerId == game.settings.userId
 
-    fun removeMultiplayerGame(gameInfo: GameInfo?, gameName: String) {
+    fun removeMultiplayerGame(gameInfo: GameInfoPreview?, gameName: String) {
         val games = multiplayerGames.filterValues { it == gameInfo }.keys
         try {
             GameSaver.deleteSave(gameName, true)

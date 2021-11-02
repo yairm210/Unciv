@@ -252,17 +252,17 @@ open class TileInfo {
         }
 
         if (naturalWonder != null) {
-            val wonder = getNaturalWonder().clone()
+            val wonderStats = getNaturalWonder().clone()
 
             // Spain doubles tile yield
             if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
-                wonder.timesInPlace(2f)
+                wonderStats.timesInPlace(2f)
             }
 
             if (getNaturalWonder().overrideStats)
-                stats = wonder
+                stats = wonderStats
             else
-                stats.add(wonder)
+                stats.add(wonderStats)
         }
 
         if (city != null) {
@@ -279,7 +279,7 @@ open class TileInfo {
                 }
             }
 
-            for (unique in city.getMatchingUniques("[] from [] tiles without [] []")) 
+            for (unique in city.getMatchingUniques(UniqueType.StatsFromTilesWithout))
                 if (
                     matchesTerrainFilter(unique.params[1]) &&
                     !matchesTerrainFilter(unique.params[2]) &&
@@ -591,6 +591,15 @@ open class TileInfo {
         }
 
         return min(distance, wrappedDistance).toInt()
+    }
+
+    fun canBeSettled(): Boolean {
+        if (isWater || isImpassible())
+            return false
+        if (getTilesInDistance(2).any { it.isCityCenter() } ||
+                getTilesAtDistance(3).any { it.isCityCenter() && it.getContinent() == getContinent() })
+                    return false
+        return true
     }
 
     /** Shows important properties of this tile for debugging _only_, it helps to see what you're doing */

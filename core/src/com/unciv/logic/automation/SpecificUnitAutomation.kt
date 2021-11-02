@@ -12,6 +12,8 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
+import kotlin.math.max
+import kotlin.math.min
 
 object SpecificUnitAutomation {
 
@@ -147,14 +149,6 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
-        if (unit.civInfo.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
-            val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
-            if(foundCityAction?.action != null) {
-                foundCityAction.action.invoke()
-                return
-            }
-        }
-
         if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
             && !unit.civInfo.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
             && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
@@ -181,7 +175,11 @@ object SpecificUnitAutomation {
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)
                 .associateBy({ it }, { Automation.rankTile(it, unit.civInfo) })
 
-        val possibleCityLocations = unit.getTile().getTilesInDistance(5)
+        val distanceFromHome = if (unit.civInfo.cities.isEmpty()) 0
+            else unit.civInfo.cities.minOf { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
+        val range = max(1, min(5, 8 - distanceFromHome)) // Restrict vision when far from home to avoid death marches
+
+        val possibleCityLocations = unit.getTile().getTilesInDistance(range)
                 .filter {
                     val tileOwner = it.getOwner()
                     it.isLand && !it.isImpassible() && (tileOwner == null || tileOwner == unit.civInfo) // don't allow settler to settle inside other civ's territory
@@ -194,6 +192,19 @@ object SpecificUnitAutomation {
                 .map { it.tileResource }.filter { it.resourceType == ResourceType.Luxury }
                 .distinct()
 
+        if (unit.civInfo.gameInfo.turns == 0) {   // Special case, we want AI to settle in place on turn 1.
+            val foundCityAction = UnitActions.getFoundCityAction(unit, unit.getTile())
+            // Depending on era and difficulty we might start with more than one settler. In that case settle the one with the best location
+            val otherSettlers = unit.civInfo.getCivUnits().filter { it.currentMovement > 0 && it.baseUnit == unit.baseUnit }
+            if(foundCityAction?.action != null &&
+                    otherSettlers.none {
+                        rankTileAsCityCenter(it.getTile(), nearbyTileRankings, emptySequence()) > rankTileAsCityCenter(unit.getTile(), nearbyTileRankings, emptySequence())
+                    } ) {
+                foundCityAction.action.invoke()
+                return
+            }
+        }
+
         val citiesByRanking = possibleCityLocations
                 .map { Pair(it, rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea)) }
                 .sortedByDescending { it.second }.toList()
@@ -205,7 +216,11 @@ object SpecificUnitAutomation {
             return@firstOrNull pathSize in 1..3
         }?.first
 
-        if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
+        if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken?
+            // Try to move towards the frontier
+            val frontierCity = unit.civInfo.cities.maxByOrNull { it.getFrontierScore() }
+            if (frontierCity != null && frontierCity.getFrontierScore() > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
+                unit.movement.headTowards(frontierCity.getCenterTile())
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas
             UnitAutomation.wander(unit) // go around aimlessly
             return

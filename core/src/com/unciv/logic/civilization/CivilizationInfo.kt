@@ -181,6 +181,8 @@ class CivilizationInfo {
     var totalCultureForContests = 0
     var totalFaithForContests = 0
 
+    var hasMovedAutomatedUnits = false
+
     @Transient
     var hasLongCountDisplayUnique = false
 
@@ -234,6 +236,7 @@ class CivilizationInfo {
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
+        toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         return toReturn
     }
 
@@ -779,6 +782,7 @@ class CivilizationInfo {
         for (city in cities) city.startTurn()  // Most expensive part of startTurn
 
         for (unit in getCivUnits()) unit.startTurn()
+        hasMovedAutomatedUnits = false
 
         for (tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
             val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
@@ -934,11 +938,11 @@ class CivilizationInfo {
     fun addStat(stat: Stat, amount: Int) {
         when (stat) {
             Stat.Culture -> { policies.addCulture(amount)
-                              totalCultureForContests += amount }
+                              if(amount > 0) totalCultureForContests += amount }
             Stat.Science -> tech.addScience(amount)
             Stat.Gold -> addGold(amount)
             Stat.Faith -> { religionManager.storedFaith += amount
-                            totalFaithForContests += amount }
+                            if(amount > 0) totalFaithForContests += amount }
             else -> {}
             // Food and Production wouldn't make sense to be added nationwide
             // Happiness cannot be added as it is recalculated again, use a unique instead
@@ -1019,7 +1023,7 @@ class CivilizationInfo {
                     city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
                     else -> religionManager.religion?.name
                 }
-            placedUnit.setupAbilityUses()
+            placedUnit.setupAbilityUses(cityToAddTo)
         }
 
         for (unique in getMatchingUniques("Land units may cross [] tiles after the first [] is earned")) {
@@ -1212,14 +1216,27 @@ class CivilizationInfo {
     }
 
     //endregion
+
+    fun asPreview() = CivilizationInfoPreview(this)
 }
 
-// reduced variant only for load preview
-class CivilizationInfoPreview {
+/**
+ * Reduced variant of CivilizationInfo used for load preview.
+ */
+class CivilizationInfoPreview() {
     var civName = ""
     var playerType = PlayerType.AI
     var playerId = ""
     fun isPlayerCivilization() = playerType == PlayerType.Human
+
+    /**
+     * Converts a CivilizationInfo object (can be uninitialized) into a CivilizationInfoPreview object.
+     */
+    constructor(civilizationInfo: CivilizationInfo) : this() {
+        civName = civilizationInfo.civName
+        playerType = civilizationInfo.playerType
+        playerId = civilizationInfo.playerId
+    }
 }
 
 enum class CivFlags {

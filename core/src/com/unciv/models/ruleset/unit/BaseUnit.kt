@@ -7,6 +7,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -133,8 +134,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             textList += FormattedLine(replacementTextForUniques)
         } else if (uniques.isNotEmpty()) {
             textList += FormattedLine()
-            for (uniqueObject in uniqueObjects.sortedBy { it.text })
-                textList += FormattedLine(uniqueObject)
+            uniqueObjects.sortedBy { it.text }.forEach {
+                if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+                    textList += FormattedLine(it)
+            }
         }
 
         val resourceRequirements = getResourceRequirements()
@@ -250,53 +253,56 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     }
 
     override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
-        // May buy [unitFilter] units for [amount] [Stat] [cityFilter] starting from the [eraName] at an increasing price ([amount])
-        if (cityInfo != null && cityInfo.getMatchingUniques("May buy [] units for [] [] [] starting from the [] at an increasing price ([])")
-            .any { 
-                matchesFilter(it.params[0])
-                && cityInfo.matchesFilter(it.params[3])        
-                && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber 
-                && it.params[2] == stat.name
-            }
-        ) return true
+        if (cityInfo == null) return super.canBePurchasedWithStat(cityInfo, stat)
+        val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
         
-        // May buy [unitFilter] units for [amount] [Stat] [cityFilter] at an increasing price ([amount])
-        if (cityInfo != null && cityInfo.getMatchingUniques("May buy [] units for [] [] [] at an increasing price ([])")
-            .any {
-                matchesFilter(it.params[0])
-                && cityInfo.matchesFilter(it.params[3])
-                && it.params[2] == stat.name
-            }
-        ) return true
-        
-        if (cityInfo != null && cityInfo.getMatchingUniques(
-                UniqueType.BuyUnitsByProductionCost, 
-                stateForConditionals = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-            ).any {
-                matchesFilter(it.params[0])
-                && it.params[1] == stat.name
-            }
-        ) return true
-
-        return super.canBePurchasedWithStat(cityInfo, stat)
-    }
-
-    private fun getCostForConstructionsIncreasingInPrice(baseCost: Int, increaseCost: Int, previouslyBought: Int): Int {
-        return (baseCost + increaseCost / 2f * ( previouslyBought * previouslyBought + previouslyBought )).toInt()        
+        return (
+            cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
+                .any {
+                    it.params[2] == stat.name
+                    && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
+                    && matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[3])
+                }
+            || cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
+                .any {
+                    it.params[2] == stat.name
+                    && matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[3])
+                }
+            || cityInfo.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
+                .any { it.params[1] == stat.name && matchesFilter(it.params[0]) }
+            || cityInfo.getMatchingUniques(UniqueType.BuyUnitsWithStat, conditionalState)
+                .any {
+                    it.params[1] == stat.name
+                    && matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[2])
+                }
+            || cityInfo.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
+                .any {
+                    it.params[2] == stat.name
+                    && matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[3])
+                }
+            || return super.canBePurchasedWithStat(cityInfo, stat)
+        )
     }
 
     override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-        return (
-            sequenceOf(super.getBaseBuyCost(cityInfo, stat)).filterNotNull()
+
+        return sequence {
+            val baseCost = super.getBaseBuyCost(cityInfo, stat)
+            if (baseCost != null)
+                yield(baseCost)
             // Deprecated since 3.17.9
-                + (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
+                yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
                     .filter {
-                        matchesFilter(it.params[0])
+                        it.params[2] == stat.name
+                        && matchesFilter(it.params[0])
                         && cityInfo.matchesFilter(it.params[3])
                         && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                        && it.params[2] == stat.name
                     }.map {
                         getCostForConstructionsIncreasingInPrice(
                             it.params[1].toInt(),
@@ -306,28 +312,40 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     }
                 )
             //
-            + (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
+            yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .filter {
-                    matchesFilter(it.params[0])
+                    it.params[2] == stat.name
+                    && matchesFilter(it.params[0])
                     && cityInfo.matchesFilter(it.params[3])
-                    && it.params[2] == stat.name
                 }.map {
                     getCostForConstructionsIncreasingInPrice(
                         it.params[1].toInt(),
                         it.params[4].toInt(),
                         cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
-                    )        
+                    )
                 }
             )
-            + (cityInfo.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
-                .filter {
+            yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsByProductionCost, conditionalState)
+                .filter { it.params[1] == stat.name && matchesFilter(it.params[0]) }
+                .map { getProductionCost(cityInfo.civInfo) * it.params[2].toInt() }
+            )
+            if (cityInfo.getMatchingUniques(UniqueType.BuyUnitsWithStat, conditionalState)
+                .any {
                     it.params[1] == stat.name
                     && matchesFilter(it.params[0])
-                }.map {
-                    getProductionCost(cityInfo.civInfo) * it.params[2].toInt()
+                    && cityInfo.matchesFilter(it.params[2])
                 }
+            ) {
+                yield(cityInfo.civInfo.getEra().baseUnitBuyCost)
+            }
+            yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsForAmountStat, conditionalState)
+                .filter {
+                    it.params[2] == stat.name
+                    && matchesFilter(it.params[0])
+                    && cityInfo.matchesFilter(it.params[3])
+                }.map { it.params[1].toInt() }
             )
-        ).minOrNull()
+        }.minOrNull()
     }
 
     override fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
@@ -416,12 +434,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             }
         }
 
-        for ((resource, amount) in getResourceRequirements())
-            if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.apply {
-                    errorMessage = "Consumes [$amount] [$resource]"
-                })
-            }
+        if (!civInfo.isBarbarian()) { // Barbarians don't need resources
+            for ((resource, amount) in getResourceRequirements())
+                if (civInfo.getCivResourcesByName()[resource]!! < amount) {
+                    rejectionReasons.add(RejectionReason.ConsumesResources.apply {
+                        errorMessage = "Consumes [$amount] [$resource]"
+                    })
+                }
+        }
 
         if (hasUnique(UniqueType.FoundCity) &&
             (civInfo.isCityState() || civInfo.isOneCityChallenger())
@@ -645,12 +665,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 unique.isOfType(UniqueType.StrengthNearCapital) && unique.params[0].toInt() > 0 ->
                     power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
-                // Deprecated since 3.17.3
-                    unique.isOfType(UniqueType.StrengthPlusVs) && unique.params[1] == "City" // City Attack - half the bonus
-                        -> power += (power * unique.params[0].toInt()) / 200
-                    unique.isOfType(UniqueType.StrengthPlusVs) && unique.params[1] != "City" // Bonus vs something else - a quarter of the bonus
-                        -> power += (power * unique.params[0].toInt()) / 400
-                //
                 // Deprecated since 3.17.4
                     unique.isOfType(UniqueType.StrengthAttacking) // Attack - half the bonus
                         -> power += (power * unique.params[0].toInt()) / 200
@@ -659,7 +673,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 //
                 unique.placeholderText == "May Paradrop up to [] tiles from inside friendly territory" // Paradrop - 25% bonus
                     -> power += power / 4
-                unique.placeholderText == "Must set up to ranged attack" // Must set up - 20 % penalty
+                unique.isOfType(UniqueType.MustSetUp) // Must set up - 20 % penalty
                     -> power -= power / 5
                 unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 20% bonus per extra attack
                     -> power += (power * unique.params[0].toInt()) / 5

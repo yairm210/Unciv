@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
@@ -235,11 +236,28 @@ class MainMenuScreen: CameraStageBaseScreen() {
     }
 
     private fun quickstartNewGame() {
-        try {
-            val newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
-            game.loadGame(newGame)
-        } catch (ex: Exception) {
-            ToastPopup("Cannot start game with the default new game parameters!", this)
+        ToastPopup("Working...", this)
+        val errorText = "Cannot start game with the default new game parameters!"
+        thread {
+            val newGame: GameInfo
+            // Can fail when starting the game...
+            try {
+                newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
+            } catch (ex: Exception) {
+                Gdx.app.postRunnable { ToastPopup(errorText, this) }
+                return@thread
+            }
+
+            // ...or when loading the game
+            Gdx.app.postRunnable {
+                try {
+                    game.loadGame(newGame)
+                } catch (outOfMemory: OutOfMemoryError) {
+                    ToastPopup("Not enough memory on phone to load game!", this)
+                } catch (ex: Exception) {
+                    ToastPopup(errorText, this)
+                }
+            }
         }
     }
 

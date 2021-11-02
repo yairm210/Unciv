@@ -419,12 +419,6 @@ class Ruleset {
         }
 
         for (resource in tileResources.values) {
-            if (resource.unique != null)
-                lines.add(
-                    "`Resource.unique` used in ${resource.name} is deprecated, please use `uniques` instead",
-                    RulesetErrorSeverity.WarningOptionsOnly
-                )
-
             checkUniques(resource, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
         }
 

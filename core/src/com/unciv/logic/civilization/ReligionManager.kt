@@ -128,7 +128,7 @@ class ReligionManager {
         return faithCost.toInt()
     }
 
-    private fun canGenerateProphet(): Boolean {
+    fun canGenerateProphet(): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion, no prophets
         if (religion == null || religionState == ReligionState.None) return false // First get a pantheon, then we'll talk about a real religion
         if (getGreatProphetEquivalent() == null) return false
@@ -347,5 +347,14 @@ enum class ReligionState {
     FoundingReligion, // Great prophet used, but religion has not yet been founded
     Religion,
     EnhancingReligion, // Great prophet used, but religion has not yet been enhanced
-    EnhancedReligion
+    EnhancedReligion;
+
+    override fun toString(): String {
+        // Yes, this is the ugliest way to convert camel case to human readable format I've seen as well, but it works.
+        return super.toString()
+            .map { letter -> (if (letter.isUpperCase()) " " else "") + letter.lowercase() }
+            .joinToString("")
+            .removePrefix(" ")
+            .replaceFirstChar { it.uppercase() }
+    }
 }

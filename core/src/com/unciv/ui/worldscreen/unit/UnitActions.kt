@@ -16,6 +16,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -161,11 +162,13 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
-        if (!unit.hasUnique(UniqueType.FoundCity) || tile.isWater || tile.isImpassible()) return null
+        if (!(unit.hasUnique(UniqueType.FoundCity))
+                || tile.isWater || tile.isImpassible()) return null
+        // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
+        if (unit.civInfo.isOneCityChallenger() && unit.civInfo.hasEverOwnedOriginalCapital == true) return null
 
         if (unit.currentMovement <= 0 ||
-                tile.getTilesInDistance(2).any { it.isCityCenter() } ||
-                tile.getTilesAtDistance(3).any { it.isCityCenter() && it.getContinent() == tile.getContinent() })
+                !tile.canBeSettled())
             return UnitAction(UnitActionType.FoundCity, action = null)
 
         val foundAction = {
@@ -227,7 +230,7 @@ object UnitActions {
     }
 
     private fun addSetupAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
-        if (!unit.hasUnique("Must set up to ranged attack") || unit.isEmbarked()) return
+        if (!unit.hasUnique(UniqueType.MustSetUp) || unit.isEmbarked()) return
         val isSetUp = unit.isSetUpForSiege()
         actionList += UnitAction(UnitActionType.SetUp,
                 isCurrentAction = isSetUp,

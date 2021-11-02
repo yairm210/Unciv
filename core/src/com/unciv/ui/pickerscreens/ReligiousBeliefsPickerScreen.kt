@@ -163,6 +163,8 @@ class ReligiousBeliefsPickerScreen (
         for (newBelief in chosenBeliefs.withIndex()) {
             addChoosableBeliefButton(newBelief, getBeliefTypeFromIndex(newBelief.index))
         }
+        
+        equalizeAllButtons(leftChosenBeliefs)
     }
     
     private fun loadRightTable(beliefType: BeliefType, leftButtonIndex: Int) {
@@ -182,7 +184,20 @@ class ReligiousBeliefsPickerScreen (
                 updateLeftTable()
                 checkAndEnableRightSideButton()
             }
-            rightBeliefsToChoose.add(beliefButton).pad(10f).row()
+            rightBeliefsToChoose.add(beliefButton).left().pad(10f).row()
+        }
+        equalizeAllButtons(rightBeliefsToChoose)
+    }
+    
+    private fun equalizeAllButtons(table: Table) {
+        val minWidth = table.cells
+            .filter { it.actor is Button }
+            .maxOfOrNull { it.actor.width }
+            ?: return
+        
+        for (button in table.cells) {
+            if (button.actor is Button)
+                button.minWidth(minWidth)
         }
     }
     
@@ -199,9 +214,9 @@ class ReligiousBeliefsPickerScreen (
     
     private fun convertBeliefToButton(belief: Belief): Button {
         val contentsTable = Table()
-        contentsTable.add(belief.type.name.toLabel()).row()
+        contentsTable.add(belief.type.name.toLabel(fontColor = Color.valueOf(belief.type.color))).row()
         contentsTable.add(belief.name.toLabel(fontSize = 24)).row()
-        contentsTable.add(belief.uniques.joinToString().toLabel())
+        contentsTable.add(belief.uniques.joinToString("\n") { it.tr() }.toLabel())
         return Button(contentsTable, skin)
     }
     

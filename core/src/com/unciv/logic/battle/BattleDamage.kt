@@ -331,7 +331,6 @@ object BattleDamage {
      */
     private fun getAttackingStrength(
         attacker: ICombatant,
-        tileToAttackFrom: TileInfo?,
         defender: ICombatant
     ): Float {
         val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker, defender))
@@ -355,7 +354,7 @@ object BattleDamage {
         if (attacker.isRanged()) return 0
         if (defender.isCivilian()) return 0
         val ratio =
-            getAttackingStrength(attacker, tileToAttackFrom, defender) / getDefendingStrength(
+            getAttackingStrength(attacker, defender) / getDefendingStrength(
                 attacker,
                 defender
             )
@@ -368,7 +367,7 @@ object BattleDamage {
         defender: ICombatant
     ): Int {
         val ratio =
-            getAttackingStrength(attacker, tileToAttackFrom, defender) / getDefendingStrength(
+            getAttackingStrength(attacker, defender) / getDefendingStrength(
                 attacker,
                 defender
             )

@@ -262,7 +262,11 @@ class TechManager {
             }
         }
 
-        if (civInfo.playerType == PlayerType.Human) notifyRevealedResources(techName)
+        if (civInfo.playerType == PlayerType.Human) {
+            for (revealedResource in getRuleset().tileResources.values.filter { techName == it.revealedBy }) {
+                civInfo.gameInfo.notifyExploredResources(civInfo, revealedResource.name, 5, false)
+            }
+        }
 
         val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
         val unitUpgrades = HashMap<String, ArrayList<CityInfo>>()
@@ -321,46 +325,6 @@ class TechManager {
     fun addTechToTransients(tech: Technology) {
         for (unique in tech.uniqueObjects)
             techUniques.addUnique(unique)
-    }
-
-    private fun notifyRevealedResources(techName: String) {
-        data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
-
-        for (revealedResource in getRuleset().tileResources.values.filter { techName == it.revealedBy }) {
-            val revealedName = revealedResource.name
-
-            val visibleRevealTiles = civInfo.viewableTiles.asSequence()
-                .filter { it.resource == revealedName }
-                .flatMap { tile -> civInfo.cities.asSequence()
-                    .map {
-                        // build a full cross join all revealed tiles * civ's cities (should rarely surpass a few hundred)
-                        // cache distance for each pair as sort will call it ~ 2n log n times
-                        // should still be cheaper than looking up 'the' closest city per reveal tile before sorting
-                        city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
-                    }
-                }
-                .filter { it.distance <= 5 && (it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
-                .sortedWith ( compareBy { it.distance } )
-                .distinctBy { it.tile }
-
-            val chosenCity = visibleRevealTiles.firstOrNull()?.city ?: continue
-            val positions = visibleRevealTiles
-                // re-sort to a more pleasant display order
-                .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
-                .map { it.tile.position }
-                .toList()       // explicit materialization of sequence to satisfy addNotification overload
-
-            val text =  if(positions.size==1)
-                "[$revealedName] revealed near [${chosenCity.name}]"
-            else
-                "[${positions.size}] sources of [$revealedName] revealed, e.g. near [${chosenCity.name}]"
-
-            civInfo.addNotification(
-                text,
-                LocationAction(positions),
-                "ResourceIcons/$revealedName"
-            )
-        }
     }
 
     fun setTransients() {

@@ -7,6 +7,7 @@ import com.unciv.logic.BackwardCompatibility.replaceDiplomacyFlag
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
@@ -16,6 +17,7 @@ import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
@@ -34,6 +36,7 @@ class GameInfo {
     var turns = 0
     var oneMoreTurnMode = false
     var currentPlayer = ""
+    var currentTurnStartTime = 0L
     var gameId = UUID.randomUUID().toString() // random string
 
     // Maps a civ to the civ they voted for
@@ -88,6 +91,7 @@ class GameInfo {
         toReturn.barbarians = barbarians.clone()
         toReturn.religions.putAll(religions.map { Pair(it.key, it.value.clone()) })
         toReturn.currentPlayer = currentPlayer
+        toReturn.currentTurnStartTime = currentTurnStartTime
         toReturn.turns = turns
         toReturn.difficulty = difficulty
         toReturn.gameParameters = gameParameters
@@ -119,6 +123,7 @@ class GameInfo {
      *  @throws NoSuchElementException if no civ of than name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
+    fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
     /** Get barbarian civ
      *  @throws NoSuchElementException in no-barbarians games! */
     fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
@@ -240,6 +245,7 @@ class GameInfo {
             switchTurn()
         }
 
+        currentTurnStartTime = System.currentTimeMillis()
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)
         if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
@@ -288,6 +294,57 @@ class GameInfo {
         }
     }
 
+    fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
+        // Calling with `maxDistance = 0` removes distance limitation.
+        data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
+
+        var exploredRevealTiles:Sequence<TileInfo>
+
+        if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+            // Look for matching mercantile CS centers 
+            exploredRevealTiles = getAliveCityStates()
+                .asSequence()
+                .filter { it.cityStateResource == resourceName }
+                .map { it.getCapital().getCenterTile() }
+        } else {
+            exploredRevealTiles = tileMap.values
+                .asSequence()
+                .filter { it.resource == resourceName }
+        }
+
+        val exploredRevealInfo = exploredRevealTiles
+            .filter { it.position in civInfo.exploredTiles }
+            .flatMap { tile -> civInfo.cities.asSequence()
+                .map {
+                    // build a full cross join all revealed tiles * civ's cities (should rarely surpass a few hundred)
+                    // cache distance for each pair as sort will call it ~ 2n log n times
+                    // should still be cheaper than looking up 'the' closest city per reveal tile before sorting
+                    city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
+                }
+            }
+            .filter { (maxDistance == 0 || it.distance <= maxDistance) && (showForeign || it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
+            .sortedWith ( compareBy { it.distance } )
+            .distinctBy { it.tile }
+
+        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return
+        val positions = exploredRevealInfo
+            // re-sort to a more pleasant display order
+            .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
+            .map { it.tile.position }
+            .toList()       // explicit materialization of sequence to satisfy addNotification overload
+
+        val text =  if(positions.size==1)
+            "[$resourceName] revealed near [${chosenCity.name}]"
+        else
+            "[${positions.size}] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
+
+        civInfo.addNotification(
+            text,
+            LocationAction(positions),
+            "ResourceIcons/$resourceName"
+        )
+    }
+
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
@@ -305,7 +362,6 @@ class GameInfo {
 
         removeMissingModReferences()
 
-        replaceDiplomacyFlag(DiplomacyFlags.Denunceation, DiplomacyFlags.Denunciation)
 
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet
@@ -364,15 +420,51 @@ class GameInfo {
     }
 
     //endregion
+
+    fun asPreview() = GameInfoPreview(this)
 }
 
-// reduced variant only for load preview
-class GameInfoPreview {
+/**
+ * Reduced variant of GameInfo used for load preview and multiplayer saves.
+ * Contains additional data for multiplayer settings.
+ */
+class GameInfoPreview() {
     var civilizations = mutableListOf<CivilizationInfoPreview>()
     var difficulty = "Chieftain"
     var gameParameters = GameParameters()
     var turns = 0
     var gameId = ""
     var currentPlayer = ""
+    var currentTurnStartTime = 0L
+    var turnNotification = true //used as setting in the MultiplayerScreen
+
+    /**
+     * Converts a GameInfo object (can be uninitialized) into a GameInfoPreview object.
+     * Sets all multiplayer settings to default.
+     */
+    constructor(gameInfo: GameInfo) : this() {
+        civilizations = gameInfo.getCivilizationsAsPreviews()
+        difficulty = gameInfo.difficulty
+        gameParameters = gameInfo.gameParameters
+        turns = gameInfo.turns
+        gameId = gameInfo.gameId
+        currentPlayer = gameInfo.currentPlayer
+        currentTurnStartTime = gameInfo.currentTurnStartTime
+    }
+
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
+
+    /**
+     * Updates the current player and turn information in the GameInfoPreview object with the help of a
+     * GameInfo object (can be uninitialized).
+     */
+    fun updateCurrentTurn(gameInfo: GameInfo) : GameInfoPreview {
+        currentPlayer = gameInfo.currentPlayer
+        turns = gameInfo.turns
+        currentTurnStartTime = gameInfo.currentTurnStartTime
+        //We update the civilizations in case someone is removed from the game (resign/kick)
+        civilizations = gameInfo.getCivilizationsAsPreviews()
+
+        return this
+    }
 }

@@ -7,6 +7,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.utils.randomWeighted
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -38,8 +39,7 @@ class BarbarianManager {
         for (tile in tileMap.values) {
             if (tile.improvement == Constants.barbarianEncampment
                 && camps[tile.position] == null) {
-                val newCamp = Encampment()
-                newCamp.position = tile.position
+                val newCamp = Encampment(tile.position)
                 camps[newCamp.position] = newCamp
             }
         }
@@ -50,11 +50,17 @@ class BarbarianManager {
 
     fun updateEncampments() {
         // Check if camps were destroyed
-        for (position in camps.keys.toList()) {
+        val positionsToRemove = ArrayList<Vector2>()
+        for ((position, camp) in camps) {
             if (tileMap[position].improvement != Constants.barbarianEncampment) {
-                camps.remove(position)
+                camp.wasDestroyed()
             }
+            // Check if the ghosts are ready to depart
+            if (camp.destroyed && camp.countdown == 0)
+                positionsToRemove.add(position)
         }
+        for (position in positionsToRemove)
+            camps.remove(position)
 
         // Possibly place a new encampment
         placeBarbarianEncampment()
@@ -83,7 +89,7 @@ class BarbarianManager {
         val fogTilesPerCamp = (tileMap.values.size.toFloat().pow(0.4f)).toInt() // Approximately
 
         // Check if we have more room
-        var campsToAdd = (fogTiles.size / fogTilesPerCamp) - camps.size
+        var campsToAdd = (fogTiles.size / fogTilesPerCamp) - camps.count { !it.value.destroyed }
 
         // First turn of the game add 1/3 of all possible camps
         if (gameInfo.turns == 1) {
@@ -98,7 +104,9 @@ class BarbarianManager {
         val tooCloseToCapitals = gameInfo.civilizations.filterNot { it.isBarbarian() || it.isSpectator() || it.cities.isEmpty() || it.isCityState() }
             .flatMap { it.getCapital().getCenterTile().getTilesInDistance(4) }.toSet()
         val tooCloseToCamps = camps
-            .flatMap { tileMap[it.key].getTilesInDistance(7) }.toSet()
+            .flatMap { tileMap[it.key].getTilesInDistance(
+                    if (it.value.destroyed) 4 else 7
+            ) }.toSet()
 
         val viableTiles = fogTiles.filter {
             !it.isImpassible()
@@ -127,8 +135,7 @@ class BarbarianManager {
                 tile = viableTiles.random()
             
             tile.improvement = Constants.barbarianEncampment
-            val newCamp = Encampment()
-            newCamp.position = tile.position
+            val newCamp = Encampment(tile.position)
             newCamp.gameInfo = gameInfo
             camps[newCamp.position] = newCamp
             notifyCivsOfBarbarianEncampment(tile)
@@ -160,26 +167,32 @@ class BarbarianManager {
     }
 }
 
-class Encampment {
+class Encampment() {
+    val position = Vector2()
     var countdown = 0
     var spawnedUnits = -1
-    lateinit var position: Vector2
+    var destroyed = false // destroyed encampments haunt the vicinity for 15 turns preventing new spawns
 
     @Transient
     lateinit var gameInfo: GameInfo
 
+    constructor(position: Vector2): this() {
+        this.position.x = position.x
+        this.position.y = position.y
+    }
+
     fun clone(): Encampment {
-        val toReturn = Encampment()
-        toReturn.position = position
+        val toReturn = Encampment(position)
         toReturn.countdown = countdown
         toReturn.spawnedUnits = spawnedUnits
+        toReturn.destroyed = destroyed
         return toReturn
     }
 
     fun update() {
         if (countdown > 0) // Not yet
             countdown--
-        else if (spawnBarbarian()) { // Countdown at 0, try to spawn a barbarian
+        else if (!destroyed && spawnBarbarian()) { // Countdown at 0, try to spawn a barbarian
             // Successful
             spawnedUnits++
             resetCountdown()
@@ -187,7 +200,15 @@ class Encampment {
     }
 
     fun wasAttacked() {
-        countdown /= 2
+        if (!destroyed)
+            countdown /= 2
+    }
+
+    fun wasDestroyed() {
+        if (!destroyed) {
+            countdown = 15
+            destroyed = true
+        }
     }
 
     /** Attempts to spawn a Barbarian from this encampment. Returns true if a unit was spawned. */
@@ -238,18 +259,22 @@ class Encampment {
         val barbarianCiv = gameInfo.getBarbarianCivilization()
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
         val unitList = gameInfo.ruleSet.units.values
-            .filter { it.isMilitary() }
-            .filter { it.isBuildable(barbarianCiv) }
+            .filter { it.isMilitary() &&
+                    !(it.hasUnique(UniqueType.MustSetUp) ||
+                            it.hasUnique(UniqueType.CannotAttack) ||
+                            it.hasUnique(UniqueType.CannotBeBarbarian)) &&
+                    (if (naval) it.isWaterUnit() else it.isLandUnit()) &&
+                    it.isBuildable(barbarianCiv) }
 
-        var unit = if (naval)
-            unitList.filter { it.isWaterUnit() }.randomOrNull()
-        else
-            unitList.filter { it.isLandUnit() }.randomOrNull()
+        if (unitList.isEmpty()) return null // No naval tech yet? Mad modders?
 
-        if (unit == null) // Didn't find a unit for preferred domain
-            unit = unitList.randomOrNull() // Try picking another
+        // Civ V weights its list by FAST_ATTACK or ATTACK_SEA AI types, we'll do it a bit differently
+        // getForceEvaluation is already conveniently biased towards fast units and against ranged naval
+        val weightings = unitList.map { it.getForceEvaluation().toFloat() }
 
-        return unit?.name // Could still be null in case of mad modders
+        val unit = unitList.randomWeighted(weightings)
+
+        return unit.name
     }
 
     /** When a barbarian is spawned, seed the counter for next spawn */

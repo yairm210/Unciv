@@ -610,7 +610,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
                 if (gameInfo.gameParameters.isOnlineMultiplayer) {
                     try {
-                        OnlineMultiplayer().tryUploadGame(gameInfoClone)
+                        OnlineMultiplayer().tryUploadGame(gameInfoClone, withPreview = true)
                     } catch (ex: Exception) {
                         Gdx.app.postRunnable { // Since we're changing the UI, that should be done on the main thread
                             val cantUploadNewGamePopup = Popup(this)
@@ -683,13 +683,20 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
 
     private fun getNextTurnAction(): NextTurnAction {
         return when {
-            !isPlayersTurn -> NextTurnAction("Waiting for other players...", Color.GRAY) {}
+            !isPlayersTurn && gameInfo.gameParameters.isOnlineMultiplayer ->
+                NextTurnAction("Waiting for [${gameInfo.currentPlayerCiv}]...", Color.GRAY) {}
+            !isPlayersTurn && !gameInfo.gameParameters.isOnlineMultiplayer ->
+                NextTurnAction("Waiting for other players...",Color.GRAY) {}
 
             viewingCiv.shouldGoToDueUnit() ->
                 NextTurnAction("Next unit", Color.LIGHT_GRAY) {
                     val nextDueUnit = viewingCiv.getNextDueUnit()
                     if (nextDueUnit != null) {
-                        mapHolder.setCenterPosition(nextDueUnit.currentTile.position, immediately = false, selectUnit = false)
+                        mapHolder.setCenterPosition(
+                            nextDueUnit.currentTile.position,
+                            immediately = false,
+                            selectUnit = false
+                        )
                         bottomUnitTable.selectUnit(nextDueUnit)
                         shouldUpdate = true
                     }
@@ -698,13 +705,17 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
             viewingCiv.cities.any { it.cityConstructions.currentConstructionFromQueue == "" } ->
                 NextTurnAction("Pick construction", Color.CORAL) {
                     val cityWithNoProductionSet = viewingCiv.cities
-                            .firstOrNull { it.cityConstructions.currentConstructionFromQueue == "" }
-                    if (cityWithNoProductionSet != null) game.setScreen(CityScreen(cityWithNoProductionSet))
+                        .firstOrNull { it.cityConstructions.currentConstructionFromQueue == "" }
+                    if (cityWithNoProductionSet != null) game.setScreen(
+                        CityScreen(cityWithNoProductionSet)
+                    )
                 }
 
             viewingCiv.shouldOpenTechPicker() ->
                 NextTurnAction("Pick a tech", Color.SKY) {
-                    game.setScreen(TechPickerScreen(viewingCiv, null, viewingCiv.tech.freeTechs != 0))
+                    game.setScreen(
+                        TechPickerScreen(viewingCiv, null, viewingCiv.tech.freeTechs != 0)
+                    )
                 }
 
             viewingCiv.policies.shouldOpenPolicyPicker || (viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy()) ->
@@ -717,30 +728,51 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                 NextTurnAction("Found Pantheon", Color.WHITE) {
                     game.setScreen(PantheonPickerScreen(viewingCiv, gameInfo))
                 }
-            
+
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
                 NextTurnAction("Found Religion", Color.WHITE) {
-                    game.setScreen(ReligiousBeliefsPickerScreen(
-                        viewingCiv, 
-                        gameInfo,
-                        viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
-                        pickIconAndName = true
-                    ))
+                    game.setScreen(
+                        ReligiousBeliefsPickerScreen(
+                            viewingCiv,
+                            gameInfo,
+                            viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
+                            pickIconAndName = true
+                        )
+                    )
                 }
-            
-            viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion -> 
+
+            viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion ->
                 NextTurnAction("Enhance Religion", Color.ORANGE) {
-                    game.setScreen(ReligiousBeliefsPickerScreen(
-                        viewingCiv,
-                        gameInfo,
-                        viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
-                        pickIconAndName = false
-                    ))
+                    game.setScreen(
+                        ReligiousBeliefsPickerScreen(
+                            viewingCiv,
+                            gameInfo,
+                            viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
+                            pickIconAndName = false
+                        )
+                    )
                 }
-            
+
             viewingCiv.mayVoteForDiplomaticVictory() ->
                 NextTurnAction("Vote for World Leader", Color.RED) {
                     game.setScreen(DiplomaticVotePickerScreen(viewingCiv))
+                }
+
+            !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
+                .any { it.isMoving() || it.isAutomated() || it.isExploring() } ->
+                NextTurnAction("Move automated units", Color.LIGHT_GRAY) {
+                    viewingCiv.hasMovedAutomatedUnits = true
+                    isPlayersTurn = false // Disable state changes
+                    nextTurnButton.disable()
+                    thread(name="Move automated units") {
+                        for (unit in viewingCiv.getCivUnits())
+                            unit.doAction()
+                        Gdx.app.postRunnable {
+                            shouldUpdate = true
+                            isPlayersTurn = true //Re-enable state changes
+                            nextTurnButton.enable()
+                        }
+                    }
                 }
 
             else ->
