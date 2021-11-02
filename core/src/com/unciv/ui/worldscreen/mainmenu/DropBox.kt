@@ -10,7 +10,7 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.Thread
+import kotlin.concurrent.*
 
 
 object DropBox {
@@ -224,17 +224,18 @@ class LockFile {
  *	Wrapper around OnlineMultiplayer's synchronization facilities.
  *	Almost identical to kotlinx.coroutines.sync.Mutex except it blocks at the thread level.
  */
-class ServerMutex(gameInfo: GameInfo) {
+class ServerMutex(val gameInfo: GameInfo) {
 	var locked = false
 
 	fun tryLock(): Boolean {
-		locked = OnlineMultiplayer.tryLockGame(gameInfo.asPreview())
+		locked = OnlineMultiplayer().tryLockGame(gameInfo.asPreview())
 		return locked
 	}
 
-	suspend fun lock() {
+	fun lock() {
 		var tries = 0
-		while (!(locked = tryLock())) {
+        locked = tryLock()
+		while (!locked) {
 			
 			Thread.sleep(500)
 			// If we've been trying for a while, wait a little bit longer.
@@ -242,11 +243,13 @@ class ServerMutex(gameInfo: GameInfo) {
 				Thread.sleep(500)
 			}
 			tries++
+
+            locked = tryLock()
 		}
 	}
 
 	fun unlock() {
-		OnlineMultiplayer.tryReleaseLockForGame(gameInfo.asPreview())
+		OnlineMultiplayer().tryReleaseLockForGame(gameInfo.asPreview())
 		locked = false
 	}
 
