@@ -1,3 +1,19 @@
+## 3.17.14
+
+Large performance boosts
+
+Solved ANRs caused by slow "quickstarts"
+
+Fixed music download error
+
+Show notification to cycle through visible resources when clicking on resource icon in Resource Overview.  - By will-ca
+
+By xlenstra:
+- Reworked buying buildings & units with stats a bit
+- Fixed a bug where hagia sophia could be build in non-faith games
+
+Made rich presence text not change with language  - By logicminimal
+
 ## 3.17.13
 
 Show construction icons in Cities Overview.  - By will-ca
