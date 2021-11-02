@@ -11,6 +11,7 @@ import java.nio.charset.Charset
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.*
+import kotlin.math.pow
 
 
 object DropBox {
@@ -222,37 +223,72 @@ class LockFile {
 
 /**
  *	Wrapper around OnlineMultiplayer's synchronization facilities.
- *	Almost identical to kotlinx.coroutines.sync.Mutex except it blocks at the thread level.
+ *
+ *	Based on the design of Mutex from kotlinx.coroutines.sync, except that when it blocks,
+ *	  it blocks the entire thread for an increasing period of time via Thread.sleep()
  */
 class ServerMutex(val gameInfo: GameInfo) {
 	var locked = false
 
+    /**
+     * Try to obtain the server lock ONCE
+     * @see OnlineMultiplayer.tryLockGame
+     * @see lock
+     * @see unlock
+     * @return true if lock is acquired
+     */
 	fun tryLock(): Boolean {
 		locked = OnlineMultiplayer().tryLockGame(gameInfo.asPreview())
-		return locked
+        return locked
 	}
 
+    /**
+     * Block until this client owns the lock
+     *
+     * TODO: Create an alternative to the underlying tryLock or tryLockGame which checks for
+     *       (and returns, when present) the value of the Retry-After header
+     *
+     * @see tryLock
+     * @see unlock
+     */
 	fun lock() {
 		var tries = 0
+
+        // Try the lockfile once
         locked = tryLock()
 		while (!locked) {
-			
-			Thread.sleep(500)
-			// If we've been trying for a while, wait a little bit longer.
-			if (tries > 5) {
-				Thread.sleep(500)
-			}
-			tries++
+            // Wait exponentially longer after each attempt as per DropBox API recommendations
+            var delay = 250 * 2.0.pow(tries).toLong()
 
+            // 8 seconds is a really long time to sleep a thread, it's as good a cap as any
+            if (delay > 8000) {
+                delay = 8000
+            }
+
+            // Consider NOT sleeping here, instead perhaps delay or spin+yield
+			Thread.sleep(delay)
+
+            tries++
+
+            // Retry the lock
             locked = tryLock()
 		}
 	}
 
+    /**
+     * Release a server lock acquired by tryLock or lock
+     * @see tryLock
+     * @see lock
+     */
 	fun unlock() {
 		OnlineMultiplayer().tryReleaseLockForGame(gameInfo.asPreview())
 		locked = false
 	}
 
+    /**
+     * See whether the client currently holds this lock
+     * @return true if lock is active
+     */
 	fun holdsLock(): Boolean {
 		return locked
 	}
