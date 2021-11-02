@@ -200,8 +200,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         consoleScreen = ConsoleScreen(
             ScriptingState(
                 ScriptingScope(
-                    selectedCiv,
-                    gameInfo,
+                    null,
+                    null,
                     UncivGame.Current
                 )
             ),

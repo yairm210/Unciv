@@ -94,75 +94,86 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
 
     override fun exec(command: String): String {
         var args = command.split(' ')
-        var out = ""
+        var out = "\n> ${command}\n"
+        fun appendOut(text: String) {
+            out += text + "\n"
+        }
         when (args[0]) {
             "help" -> {
                 if (args.size > 1) {
-                    out = getCommandHelpText(args[1])
+                    appendOut(getCommandHelpText(args[1]))
                 } else {
-                    out = commandshelp.keys.joinToString(", ")
+                    appendOut(commandshelp.keys.joinToString(", "))
                 }
             }
             "countcities" -> {
-                out = scriptingScope.civInfo.cities.size.toString()
+                if (!(scriptingScope.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                appendOut(scriptingScope.civInfo!!.cities.size.toString())
             }
             "locatebuildings" -> {
                 var buildingcities:List<String> = listOf()
+                if (!(scriptingScope.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (args.size > 1) {
                     var searchfor = args.slice(1..args.size-1).joinToString(" ").trim(' ')
-                    buildingcities = scriptingScope.civInfo.cities
+                    buildingcities = scriptingScope.civInfo!!.cities
                         .filter {
                             searchfor in it.cityConstructions.builtBuildings ||
                             it.cityConstructions.builtBuildings.any({ building ->
-                                scriptingScope.gameInfo.ruleSet.buildings[building]!!.requiresResource(searchfor)
+                                scriptingScope.gameInfo!!.ruleSet.buildings[building]!!.requiresResource(searchfor)
                             })
                         }
                         .map { it.name }
                 }
-                out = buildingcities.joinToString(", ")
+                appendOut(buildingcities.joinToString(", "))
             }
             "missingbuildings" -> {
                 var buildingcities:List<String> = listOf()
+                if (!(scriptingScope.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (args.size > 1) {
                     var searchfor = args.slice(1..args.size-1).joinToString(" ").trim(' ')
-                    buildingcities = scriptingScope.civInfo.cities
+                    buildingcities = scriptingScope.civInfo!!.cities
                         .filter { !(searchfor in it.cityConstructions.builtBuildings) }
                         .map { it.name }
                 }
-                out = buildingcities.joinToString(", ")
+                appendOut(buildingcities.joinToString(", "))
             }
             "listcities" -> {
-                out = scriptingScope.civInfo.cities
+                if (!(scriptingScope.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                appendOut(scriptingScope.civInfo!!.cities
                     .map { city -> city.name }
                     .joinToString(", ")
+                )
             }
             "cheatson" -> {
                 cheats = true
-                out = "Cheats enabled."
+                appendOut("Cheats enabled.")
             }
             "cheatsoff" -> {
                 cheats = false
-                out = "Cheats disabled."
+                appendOut("Cheats disabled.")
             }
             "godmode" -> {
+                if (!(scriptingScope.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
-                    var godmode = if (args.size > 1) args[1].toBoolean() else !(scriptingScope.gameInfo.gameParameters.godMode)
-                    scriptingScope.gameInfo.gameParameters.godMode = godmode
-                    out = "${if (godmode) "Enabled" else "Disabled"} godmode."
+                    var godmode = if (args.size > 1) args[1].toBoolean() else !(scriptingScope.gameInfo!!.gameParameters.godMode)
+                    scriptingScope.gameInfo!!.gameParameters.godMode = godmode
+                    appendOut("${if (godmode) "Enabled" else "Disabled"} godmode.")
                 } else {
-                    out = "Cheats must be enabled to use this command!"
+                    appendOut("Cheats must be enabled to use this command!")
                 }
             }
             "godview" -> {
+                if (!(scriptingScope.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
-                    var godview = if (args.size > 1) args[1].toBoolean() else !(scriptingScope.uncivGame.viewEntireMapForDebug)
-                    scriptingScope.uncivGame.viewEntireMapForDebug = godview
-                    out = "${if (godview) "Enabled" else "Disabled"} whole map visibility."
+                    var godview = if (args.size > 1) args[1].toBoolean() else !(scriptingScope.uncivGame!!.viewEntireMapForDebug)
+                    scriptingScope.uncivGame!!.viewEntireMapForDebug = godview
+                    appendOut("${if (godview) "Enabled" else "Disabled"} whole map visibility.")
                 } else {
-                    out = "Cheats must be enabled to use this command!"
+                    appendOut("Cheats must be enabled to use this command!")
                 }
             }
             "inspectpath" -> {
+                if (!(scriptingScope.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
                     val detailed = args.size > 1 && args[1] == "detailed"
                     val startindex = if (detailed) 2 else 1
@@ -175,10 +186,10 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
                             else
                                 "${obj}"
                     } catch (e: Exception) {
-                        out = "Error accessing: ${e}"
+                        appendOut("Error accessing: ${e}")
                     }
                 } else {
-                    out = "Cheats must be enabled to use this command!"
+                    appendOut("Cheats must be enabled to use this command!")
                 }
             }
             "setpath" -> {
@@ -191,15 +202,16 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
                             parseKotlinPath(path),
                             value
                         )
-                        out = "Set ${path} to ${value}."
+                        appendOut("Set ${path} to ${value}.")
                     } catch (e: Exception) {
-                        out = "Error setting: ${e}"
+                        appendOut("Error setting: ${e}")
                     }
                 } else {
-                    out = "Cheats must be enabled to use this command!"
+                    appendOut("Cheats must be enabled to use this command!")
                 }
             }
             "simulatetoturn" -> {
+                if (!(scriptingScope.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
                     var numturn = 0
                     if (args.size > 1) {
@@ -209,25 +221,27 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
                             out += "Invalid number: ${args[1]}\n"
                         }
                     }
-                    scriptingScope.uncivGame.simulateUntilTurnForDebug = numturn
+                    scriptingScope.uncivGame!!.simulateUntilTurnForDebug = numturn
                     out += "Will automatically simulate game until turn ${numturn} after this turn.\nThe map will not update until completed."
                 } else {
-                    out = "Cheats must be enabled to use this command!"
+                    appendOut("Cheats must be enabled to use this command!")
                 }
             }
             "supercharge" -> {
+                if (!(scriptingScope.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
-                    var supercharge = if (args.size > 1) args[1].toBoolean() else !(scriptingScope.uncivGame.superchargedForDebug)
-                    scriptingScope.uncivGame.superchargedForDebug = supercharge
-                    out = "${if (supercharge) "Enabled" else "Disabled"} stats supercharge."
+                    var supercharge = if (args.size > 1) args[1].toBoolean() else !(scriptingScope.uncivGame!!.superchargedForDebug)
+                    scriptingScope.uncivGame!!.superchargedForDebug = supercharge
+                    appendOut("${if (supercharge) "Enabled" else "Disabled"} stats supercharge.")
                 } else {
-                    out = "Cheats must be enabled to use this command!"
+                    appendOut("Cheats must be enabled to use this command!")
                 }
             } else -> {
-                out = "The command ${args[0]} is either not known or not implemented."
+                appendOut("The command ${args[0]} is either not known or not implemented.")
             }
         }
-        return "\n> ${command}\n${out}"
+        return out
+        //return "\n> ${command}\n${out}"
     }
 }
 
