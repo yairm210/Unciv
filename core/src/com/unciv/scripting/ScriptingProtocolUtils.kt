@@ -2,30 +2,31 @@ package com.unciv.scripting
 
 import kotlin.collections.ArrayList
 import kotlin.reflect.KProperty1
+import kotlin.reflect.KFunction
 import kotlin.reflect.KMutableProperty1
 import java.util.*
 
 
 @Suppress("UNCHECKED_CAST")
-fun <R> readInstanceProperty(instance: Any, propertyName: String): R {
+fun <R> readInstanceProperty(instance: Any, propertyName: String): R? {
     // From https://stackoverflow.com/a/35539628/12260302
     val property = instance::class.members
         .first { it.name == propertyName } as KProperty1<Any, *>
-    return property.get(instance) as R  
+    return property.get(instance) as R?
 }
 
-fun readInstanceItem(instance: Any, keyOrIndex: Any): Any {
+fun readInstanceItem(instance: Any, keyOrIndex: Any): Any? {
     if (keyOrIndex is Int) {
-        return (instance as List<Any>)[keyOrIndex]!!
+        return (instance as List<Any?>)[keyOrIndex]
     } else {
-        return (instance as Map<Any, Any>)[keyOrIndex]!!
+        return (instance as Map<Any, Any?>)[keyOrIndex]
     }
 }
 
 
-fun <T> setInstanceProperty(instance: Any, propertyName: String, value: T): Unit {
+fun <T> setInstanceProperty(instance: Any, propertyName: String, value: T?): Unit {
     val property = instance::class.members
-        .first { it.name == propertyName } as KMutableProperty1<Any, T>
+        .first { it.name == propertyName } as KMutableProperty1<Any, T?>
     property.set(instance, value)
 }
 
@@ -51,6 +52,8 @@ data class PathElement(
     val type: PathElementType,
     val name: String,
     //val args: Collection<PathElementArg>,
+    //For IPC with an actual interpreter, it should be possible to pass JSON arrays of basic types instead of just parsing the string.
+    //Mostly I'm not sure how and where to cleanly determine whether to use the args field, or parse the string field.
     val doEval: Boolean = false
 )
 
@@ -79,6 +82,7 @@ fun parseKotlinPath(text: String): List<PathElement> {
                     path.add(PathElement(PathElementType.Property, curr_name.joinToString("")))
                 }
                 curr_name.clear()
+                just_closed_brackets = false
                 continue
             }
             if (char in brackettypes) {
@@ -88,13 +92,12 @@ fun parseKotlinPath(text: String): List<PathElement> {
                 curr_name.clear()
                 curr_brackets = brackettypes[char]!!
                 curr_bracketdepth += 1
+                just_closed_brackets = false
                 continue
             }
             curr_name.add(char)
         }
-        if (just_closed_brackets) {
-            just_closed_brackets = false
-        }
+        just_closed_brackets = false
         if (curr_bracketdepth > 0) {
             if (char == curr_brackets[1]) {
                 curr_bracketdepth -= 1
@@ -126,20 +129,22 @@ fun parseKotlinPath(text: String): List<PathElement> {
 }
 
 
-fun resolveInstancePath(instance: Any, path: List<PathElement>): Any {
-    var obj = instance
-    print("\n")
-    path.map({print(it);print("\n")})
+fun stringifyKotlinPath() {
+}
+
+
+fun resolveInstancePath(instance: Any, path: List<PathElement>): Any? {
+    var obj: Any? = instance
     for (element in path) {
         when (element.type) {
             PathElementType.Property -> {
-                obj = readInstanceProperty(obj, element.name)
+                obj = readInstanceProperty(obj!!, element.name)
             }
             PathElementType.Key -> {
                 obj = readInstanceItem(
-                    obj,
+                    obj!!,
                     if (element.doEval)
-                        evalKotlinString(instance, element.name)
+                        evalKotlinString(instance!!, element.name)!!
                     else
                         element.name
                 )
@@ -156,35 +161,45 @@ fun resolveInstancePath(instance: Any, path: List<PathElement>): Any {
 }
 
 
-fun evalKotlinString(scope: Any, string: String): Any{
-    if (string.length > 1 && string.startsWith('"') && string.endsWith('"')) {
-        return string.slice(1..string.length-2)
+fun evalKotlinString(scope: Any, string: String): Any? {
+    val trimmed = string.trim(' ')
+    if (trimmed == "null") {
+        return null
     }
-    val asint = string.toIntOrNull()
+    if (trimmed == "true") {
+        return true
+    }
+    if (trimmed == "false") {
+        return false
+    }
+    if (trimmed.length > 1 && trimmed.startsWith('"') && trimmed.endsWith('"')) {
+        return trimmed.slice(1..trimmed.length-2)
+    }
+    val asint = trimmed.toIntOrNull()
     if (asint != null) {
         return asint
     }
-    val asfloat = string.toFloatOrNull()
+    val asfloat = trimmed.toFloatOrNull()
     if (asfloat != null) {
         return asfloat
     }
-    return resolveInstancePath(scope, parseKotlinPath(string))
+    return resolveInstancePath(scope, parseKotlinPath(trimmed))
 }
 
 
-fun setInstancePath(instance: Any, path: List<PathElement>, value: Any): Unit {
+fun setInstancePath(instance: Any, path: List<PathElement>, value: Any?): Unit {
     val leafobj = resolveInstancePath(instance, path.slice(0..path.size-2))
     val leafelement = path[path.size - 1]
     when (leafelement.type) {
         PathElementType.Property -> {
-            setInstanceProperty(leafobj, leafelement.name, value)
+            setInstanceProperty(leafobj!!, leafelement.name, value)
         }
         PathElementType.Key -> {
             throw UnsupportedOperationException("Keys not implemented.")
             leafobj = readInstanceItem(
-                leafobj,
+                leafobj!!,
                 if (leafelement.doEval)
-                    evalKotlinString(instance, leafelement.name)
+                    evalKotlinString(instance, leafelement.name)!!
                 else
                     leafelement.name
             )

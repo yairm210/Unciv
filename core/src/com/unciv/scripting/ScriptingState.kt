@@ -3,6 +3,7 @@ package com.unciv.scripting
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.UncivGame
+import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
@@ -34,6 +35,10 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         get() = scriptingScope.uncivGame
         set(value) { scriptingScope.uncivGame = value }
 
+    var worldScreen: WorldScreen?
+        get() = scriptingScope.worldScreen
+        set(value) { scriptingScope.worldScreen = value }
+
 
     init {
         if (initialBackendType != null) {
@@ -45,7 +50,9 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         var backend:ScriptingBackend = SpawnNamedScriptingBackend(backendtype, scriptingScope)
         scriptingBackends.add(backend)
         activeBackend = scriptingBackends.size - 1
-        return backend.motd()
+        var motd = backend.motd()
+        echo(motd)
+        return motd
     }
 
     fun switchToBackend(index: Int) {
@@ -77,7 +84,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
 
     fun getAutocomplete(command: String): AutocompleteResults {
         if (!(hasBackend())) {
-            return AutocompleteResults(false, listOf(), "")
+            return AutocompleteResults(listOf(), false, "")
         }
         return getActiveBackend().getAutocomplete(command)
     }
@@ -92,7 +99,9 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     }
 
     fun exec(command: String): String {
-        commandHistory.add(command)
+        if (command.length > 0) {
+            commandHistory.add(command)
+        }
         var out:String
         if (hasBackend()) {
             out = getActiveBackend().exec(command)

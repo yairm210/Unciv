@@ -161,6 +161,7 @@ class MainMenuScreen: BaseScreen() {
         consoleScreen.closeAction = { game.setScreen(this) }
         scriptingState.gameInfo = null
         scriptingState.civInfo = null
+        scriptingState.worldScreen = null
     }
 
 

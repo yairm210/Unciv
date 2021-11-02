@@ -203,6 +203,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         consoleScreen.closeAction = { game.setWorldScreen() }
         scriptingState.gameInfo = gameInfo
         scriptingState.civInfo = selectedCiv
+        scriptingState.worldScreen = this
 
     }
 

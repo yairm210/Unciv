@@ -4,7 +4,7 @@ import kotlin.reflect.full.*
 import java.util.*
 
 
-data class AutocompleteResults(val isHelpText:Boolean, val matches:List<String>, val helpText:String)
+data class AutocompleteResults(val matches:List<String>, val isHelpText:Boolean = false, val helpText:String = "")
 
 
 interface ScriptingBackend_metadata {
@@ -25,12 +25,12 @@ open class ScriptingBackend(val scriptingScope:ScriptingScope) {
 
     open fun motd(): String {
         // Message to print on launch.
-        return "\n\nWelcome to the Unciv CLI!\nYou are currently running the dummy backend, which will echo all commands but never do anything."
+        return "\n\nWelcome to the Unciv CLI!\nYou are currently running the dummy backend, which will echo all commands but never do anything.\n"
     }
 
     open fun getAutocomplete(command: String): AutocompleteResults {
         // Return either a `List` of autocomplete matches, or a
-        return AutocompleteResults(false, listOf(command+"_autocomplete"), "")
+        return AutocompleteResults(listOf(command+"_autocomplete"))
     }
 
     open fun exec(command: String): String {
@@ -73,7 +73,7 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
     var cheats:Boolean = false
 
     override fun motd(): String {
-        return "\n\nWelcome to the hardcoded demo backend.\n\nPlease run \"help\" or press [TAB] to see a list of available commands.\nPress [TAB] at any time to see help for currently typed command.\n\nPlease note that the available commands are meant as a DEMO for the CLI."
+        return "\n\nWelcome to the hardcoded demo backend.\n\nPlease run \"help\" or press [TAB] to see a list of available commands.\nPress [TAB] at any time to see help for currently typed command.\n\nPlease note that the available commands are meant as a DEMO for the CLI.\n"
     }
 
     fun getCommandHelpText(command: String): String {
@@ -86,9 +86,9 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
 
     override fun getAutocomplete(command: String): AutocompleteResults{
         if (' ' in command) {
-            return AutocompleteResults(true, listOf(), getCommandHelpText(command.split(' ')[0]))
+            return AutocompleteResults(listOf(), true, getCommandHelpText(command.split(' ')[0]))
         } else {
-            return AutocompleteResults(false, commandshelp.keys.filter({ c -> c.startsWith(command) }).map({ c -> c + " " }), "")
+            return AutocompleteResults(commandshelp.keys.filter({ c -> c.startsWith(command) }).map({ c -> c + " " }))
         }
     }
 
@@ -180,11 +180,13 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
                     val path = (if (args.size > startindex) args.slice(startindex..args.size-1) else listOf()).joinToString(" ")
                     try {
                         var obj = evalKotlinString(scriptingScope, path)
-                        out =
+                        val isnull = obj == null
+                        appendOut(
                             if (detailed)
-                                "Type: ${obj::class.qualifiedName}\n\nValue: ${obj}\n\nMembers: ${obj::class.members.map{it.name}}\n"
+                                "Type: ${if (isnull) null else obj!!::class.qualifiedName}\n\nValue: ${obj}\n\nMembers: ${if (isnull) null else obj!!::class.members.map{it.name}}\n"
                             else
                                 "${obj}"
+                        )
                     } catch (e: Exception) {
                         appendOut("Error accessing: ${e}")
                     }
@@ -218,11 +220,11 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
                         try {
                             numturn = args[1].toInt()
                         } catch (e: NumberFormatException) {
-                            out += "Invalid number: ${args[1]}\n"
+                            appendOut("Invalid number: ${args[1]}\n")
                         }
                     }
                     scriptingScope.uncivGame!!.simulateUntilTurnForDebug = numturn
-                    out += "Will automatically simulate game until turn ${numturn} after this turn.\nThe map will not update until completed."
+                    appendOut("Will automatically simulate game until turn ${numturn} after this turn.\nThe map will not update until completed.")
                 } else {
                     appendOut("Cheats must be enabled to use this command!")
                 }
@@ -246,6 +248,93 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
 }
 
 
+class ReflectiveScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
+
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope:ScriptingScope) = ReflectiveScriptingBackend(scriptingScope)
+        override val displayname:String = "Reflective"
+    }
+
+    private val commandparams = mapOf("get" to 1, "set" to 2, "typeof" to 1) //showprivates?
+    private val examples = listOf(
+        "get gameInfo.civilizations[1].policies.adoptedPolicies",
+        "set 5 civInfo.tech.freeTechs",
+        "set 1 civInfo.cities[0].health",
+        "set 5 gameInfo.turns",
+        "get civInfo.addGold(1337)",
+        "set 2000 worldScreen.bottomUnitTable.selectedUnit.promotions.XP",
+        "get worldScreen.bottomUnitTable.selectedCity.population.setPopulation(25)",
+        "set \"Cattle\" worldScreen.mapHolder.selectedTile.resource",
+        "set \"Krakatoa\" worldScreen.mapHolder.selectedTile.naturalWonder"
+    )
+
+    override fun motd(): String {
+        return "\n\nWelcome to the reflective Unciv CLI backend.\n\nCommands you enter will be parsed as a path consisting of property reads, key and index accesses, function calls, and string, numeric, boolean, and null literals.\nKeys, indices, and function arguments are parsed recursively.\nProperties can be both read from and written to.\n\nExamples:\n${examples.map({"> ${it}"}).joinToString("\n")}\n\nPress [TAB] at any time to trigger autocompletion for all known leaf names at the currently entered path.\n"
+    }
+    
+    override fun getAutocomplete(command: String): AutocompleteResults {
+        try {
+            var comm = commandparams.keys.find{ command.startsWith(it+" ") }
+            if (comm != null) {
+                val params = command.drop(comm.length+1).split(' ', limit=commandparams[comm]!!)
+                val workingcode = params[params.size-1]
+                val workingpath = parseKotlinPath(workingcode)
+                if (workingpath.any{ it.type == PathElementType.Call }) {
+                    return AutocompleteResults(listOf(), true, "No autocomplete available for function calls.")
+                }
+                val leafname = if (workingpath.size > 0) workingpath[workingpath.size - 1].name else ""
+                val prefix = command.dropLast(leafname.length)
+                val branchobj = resolveInstancePath(scriptingScope, workingpath.slice(0..workingpath.size-2))
+                return AutocompleteResults(
+                    branchobj!!::class.members
+                        .map{ it.name }
+                        .filter{ it.startsWith(leafname) }
+                        .map{ prefix + it }
+                )
+            }
+            return AutocompleteResults(commandparams.keys.filter{ it.startsWith(command) }.map{ it+" " })
+        } catch (e: Exception) {
+            return AutocompleteResults(listOf(), true, "Could not get autocompletion: ${e}")
+        }
+    }
+    
+    override fun exec(command: String): String{
+        var parts = command.split(' ', limit=2)
+        var out = "\n> ${command}\n"
+        fun appendOut(text: String) {
+            out += text + "\n"
+        }
+        try {
+            when (parts[0]) {
+                "get" -> {
+                    appendOut("${evalKotlinString(scriptingScope, parts[1])}")
+                }
+                "set" -> {
+                    var setparts = parts[1].split(' ', limit=2)
+                    var value = evalKotlinString(scriptingScope, setparts[0])
+                    setInstancePath(
+                        scriptingScope,
+                        parseKotlinPath(setparts[1]),
+                        value
+                    )
+                    appendOut("Set ${setparts[1]} to ${value}")
+                }
+                "typeof" -> {
+                    var obj = evalKotlinString(scriptingScope, parts[1])
+                    appendOut("${if (obj == null) null else obj!!::class.qualifiedName}")
+                }
+                else -> {
+                    appendOut("Unknown command: ${parts[0]}")
+                }
+            }
+        } catch (e: Exception) {
+            appendOut("Error evaluating command: ${e}")
+        }
+        return out
+    }
+}
+
+
 class QjsScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
@@ -254,7 +343,7 @@ class QjsScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scrip
     }
 
     override fun motd(): String {
-        return "\n\nWelcome to the QuickJS Unciv CLI, which doesn't currently run QuickJS but might one day!"
+        return "\n\nWelcome to the QuickJS Unciv CLI, which doesn't currently run QuickJS but might one day!\n"
     }
 }
 
@@ -267,7 +356,7 @@ class LuaScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scrip
     }
 
     override fun motd(): String {
-        return "\n\nWelcome to the Lua Unciv CLI, which doesn't currently run Lua but might one day!"
+        return "\n\nWelcome to the Lua Unciv CLI, which doesn't currently run Lua but might one day!\n"
     }
 }
 
@@ -280,7 +369,7 @@ class UpyScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scrip
     }
 
     override fun motd(): String {
-        return "\n\nWelcome to the MicroPython Unciv CLI, which doesn't currently run MicroPython but might one day!"
+        return "\n\nWelcome to the MicroPython Unciv CLI, which doesn't currently run MicroPython but might one day!\n"
     }
 }
 
@@ -288,7 +377,7 @@ class UpyScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scrip
 enum class ScriptingBackendType(val metadata:ScriptingBackend_metadata) {
     Dummy(ScriptingBackend),
     Hardcoded(HardcodedScriptingBackend),
-    //Reflective(),
+    Reflective(ReflectiveScriptingBackend),
     QuickJS(QjsScriptingBackend),
     Lua(LuaScriptingBackend),
     MicroPython(UpyScriptingBackend)
