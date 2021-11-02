@@ -98,7 +98,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (civInfo.playerType == PlayerType.AI) return // don't bother for AI, they don't really use the info anyway
 
         for (tile in civInfo.viewableTiles) {
-            val before = civInfo.lastSeenImprovement[tile.position]
             if (tile.improvement == null)
                 civInfo.lastSeenImprovement.remove(tile.position)
             else
