@@ -446,8 +446,8 @@ class QuestManager {
                     "[${civInfo.civName}] no longer needs your help with the [${assignedQuest.questName}] quest.",
                     civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest")
         } else {
-            var text = "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by ".tr()
-            text += winners.joinToString(", ", postfix = ".") { it.assignee.tr() }
+            var text = "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by".tr()
+            text += winners.joinToString(", ", prefix = " ", postfix = ".") { it.assignee.tr() }
 
             assignee.addNotification(
                     text,
