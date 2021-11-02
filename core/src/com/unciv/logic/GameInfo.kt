@@ -362,7 +362,6 @@ class GameInfo {
 
         removeMissingModReferences()
 
-        replaceDiplomacyFlag(DiplomacyFlags.Denunceation, DiplomacyFlags.Denunciation)
 
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet

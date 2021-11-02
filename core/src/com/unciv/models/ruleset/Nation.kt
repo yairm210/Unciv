@@ -177,8 +177,7 @@ class Nation : RulesetObject() {
 
         if (showResources) {
             val allMercantileResources = ruleset.tileResources.values
-                .filter { it.unique == "Can only be created by Mercantile City-States" // Deprecated 3.16.16
-                        || it.hasUnique(UniqueType.CityStateOnlyResource) }
+                .filter { it.hasUnique(UniqueType.CityStateOnlyResource) }
 
             if (allMercantileResources.isNotEmpty()) {
                 textList += FormattedLine()

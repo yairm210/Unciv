@@ -86,19 +86,6 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
-    @Deprecated("As of 3.16.16 - replaced by regular getStatPercentBonusesFromUniques()")
-    private fun getStatPercentBonusesFromResources(construction: IConstruction): Stats {
-        val stats = Stats()
-
-        if (construction is Building
-                && construction.isWonder
-                && cityInfo.civInfo.getCivResources()
-                        .any { it.amount > 0 && it.resource.unique == "+15% production towards Wonder construction" })
-            stats.production += 15f
-
-        return stats
-    }
-
     private fun getStatsFromNationUnique(): Stats {
         return getStatsFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence())
     }
@@ -493,8 +480,6 @@ class CityStats(val cityInfo: CityInfo) {
         newStatPercentBonusList["Railroads"] = getStatPercentBonusesFromRailroad()  // Name chosen same as tech, for translation, but theoretically independent
         val resourceUniques = cityInfo.civInfo.getCivResources().asSequence().flatMap { it.resource.uniqueObjects }
         newStatPercentBonusList["Resources"] = getStatPercentBonusesFromUniques(currentConstruction, resourceUniques)
-        // Deprecated as of 3.16.16
-        newStatPercentBonusList["Resources"] = getStatPercentBonusesFromResources(currentConstruction)
         newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
         newStatPercentBonusList["Religion"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.religion.getUniques())

@@ -14,8 +14,6 @@ class TileResource : RulesetStatsObject() {
     var improvement: String? = null
     var improvementStats: Stats? = null
     var revealedBy: String? = null
-    @Deprecated("As of 3.16.16 - replaced by uniques")
-    var unique: String? = null
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
     

@@ -252,17 +252,17 @@ open class TileInfo {
         }
 
         if (naturalWonder != null) {
-            val wonder = getNaturalWonder().clone()
+            val wonderStats = getNaturalWonder().clone()
 
             // Spain doubles tile yield
             if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
-                wonder.timesInPlace(2f)
+                wonderStats.timesInPlace(2f)
             }
 
             if (getNaturalWonder().overrideStats)
-                stats = wonder
+                stats = wonderStats
             else
-                stats.add(wonder)
+                stats.add(wonderStats)
         }
 
         if (city != null) {
