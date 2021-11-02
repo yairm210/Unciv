@@ -42,6 +42,9 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     private val downButton: Image = ImageGetter.getImage("OtherIcons/Down")
     private val runButton: TextButton = "ENTER".toTextButton()
 
+    private val layoutUpdators = ArrayList<() -> Unit>()
+    private var isOpen = false
+
     init {
         
         backendsAdders.add("Launch new backend:".toLabel()).padRight(30f)
@@ -57,7 +60,8 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         
         backendsAdders.left()
         
-        topBar.add(backendsScroll).minWidth(stage.width - closeButton.getPrefWidth())
+        val cell_backendsScroll = topBar.add(backendsScroll)
+        layoutUpdators.add( { cell_backendsScroll.minWidth(stage.width - closeButton.getPrefWidth()) } )
         topBar.add(closeButton)
         
         printHistory.left()
@@ -75,14 +79,19 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         inputControls.add(downButton.surroundWithCircle(40f))
         inputControls.add(runButton)
         
-        inputBar.add(inputField).minWidth(stage.width - inputControls.getPrefWidth())
+        val cell_inputField = inputBar.add(inputField)
+        layoutUpdators.add( { cell_inputField.minWidth(stage.width - inputControls.getPrefWidth()) } )
         inputBar.add(inputControls)
         
-        layoutTable.setSize(stage.width, stage.height)
+        layoutUpdators.add( { layoutTable.setSize(stage.width, stage.height) } )
         
-        layoutTable.add(topBar).minWidth(stage.width).row()
+        val cell_topBar = layoutTable.add(topBar)
+        layoutUpdators.add( { cell_topBar.minWidth(stage.width) } )
+        cell_topBar.row()
         
-        layoutTable.add(middleSplit).minWidth(stage.width).minHeight(stage.height - topBar.getPrefHeight() - inputBar.getPrefHeight()).row()
+        val cell_middleSplit = layoutTable.add(middleSplit)
+        layoutUpdators.add( { cell_middleSplit.minWidth(stage.width).minHeight(stage.height - topBar.getPrefHeight() - inputBar.getPrefHeight()) } )
+        cell_middleSplit.row()
         
         layoutTable.add(inputBar)
         
@@ -101,6 +110,8 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         onBackButtonClicked({ closeConsole() })
         closeButton.onClick({ closeConsole() })
         
+        updateLayout()
+        
         stage.addActor(layoutTable)
         
         echoHistory()
@@ -109,16 +120,21 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     }
     
     fun updateLayout() {
+        for (func in layoutUpdators) {
+            func()
+        }
     }
     
     fun openConsole() {
         game.setScreen(this)
         keyPressDispatcher.install(stage)
+        this.isOpen = true
     }
     
     fun closeConsole() {
         closeAction()
         keyPressDispatcher.uninstall()
+        this.isOpen = false
     }
     
     private fun updateRunning() {
@@ -206,6 +222,15 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     private fun run() {
         echo(scriptingState.exec(inputField.text))
         setText("")
+    }
+    
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) { // Right. Actually resizing seems painful.
+            game.consoleScreen = ConsoleScreen(scriptingState, closeAction)
+            if (isOpen) {
+                game.consoleScreen.openConsole()
+            }
+        }
     }
 }
 
