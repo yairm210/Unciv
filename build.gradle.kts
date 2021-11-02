@@ -62,10 +62,12 @@ project(":desktop") {
 
     dependencies {
         "implementation"(project(":core"))
-        "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl:${gdxVersion}")
+        "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:${gdxVersion}")
         "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
 
-        "implementation"("com.badlogicgames.gdx:gdx-tools:$gdxVersion")  // This is for the TexturePacker class
+        "implementation"("com.badlogicgames.gdx:gdx-tools:$gdxVersion") {
+            exclude("com.badlogicgames.gdx", "gdx-backend-lwjgl")
+        }
 
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
     }

@@ -24,7 +24,6 @@ Allow unit movement after unit automation steps
 
 By SimonCeder:
 - Barbarian units
-- Fix for broken saves in #5573
 - Barbarian fixes
 
 By SomeTroglodyte:
