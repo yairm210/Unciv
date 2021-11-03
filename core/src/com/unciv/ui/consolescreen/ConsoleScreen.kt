@@ -1,4 +1,4 @@
-package com.unciv.ui.console
+package com.unciv.ui.consolescreen
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -14,6 +14,7 @@ import com.unciv.scripting.ScriptingBackendType
 import com.unciv.scripting.ScriptingState
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
+import kotlin.math.max
 
 
 class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Unit): CameraStageBaseScreen() {
@@ -44,6 +45,10 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
 
     private val layoutUpdators = ArrayList<() -> Unit>()
     private var isOpen = false
+
+    var input: String
+        get() = inputField.text
+        set(value: String) { inputField.setText(value) }
 
     init {
         
@@ -165,9 +170,17 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         printHistory.clearChildren()
     }
     
-    private fun setText(text:String) {
+    private fun setText(text: String, cursormode: SetTextCursorMode=SetTextCursorMode.End) {
+        val originaltext = inputField.text
+        val originalcursorpos = inputField.getCursorPosition()
         inputField.setText(text)
-        inputField.setCursorPosition(inputField.text.length)
+        when (cursormode) {
+            (SetTextCursorMode.End) -> { inputField.setCursorPosition(inputField.text.length) }
+            (SetTextCursorMode.Unchanged) -> {}
+            (SetTextCursorMode.Insert) -> { inputField.setCursorPosition(max(0, inputField.text.length-(originaltext.length-originalcursorpos))) }
+            (SetTextCursorMode.SelectAll) -> { throw Exception("NotImplemented.") }
+            (SetTextCursorMode.SelectAfter) -> { throw Exception("NotImplemented.") }
+        }
     }
     
     private fun echoHistory() {
@@ -178,7 +191,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     
     private fun autocomplete() {
         var input = inputField.text
-        var results = scriptingState.getAutocomplete(input)
+        var results = scriptingState.getAutocomplete(input, inputField.getCursorPosition())
         if (results.isHelpText) {
             echo(results.helpText)
             return
@@ -186,13 +199,14 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         if (results.matches.size < 1) {
             return
         } else if (results.matches.size == 1) {
-            setText(results.matches[0])
+            setText(results.matches[0], SetTextCursorMode.Insert)
         } else {
             echo("")
             for (m in results.matches) {
                 echo(m)
             }
-            var minmatch = input
+            //var minmatch = input //Checking against the current input would prevent autoinsertion from working for autocomplete backends that support getting results from the middle of the current input.
+            var minmatch = ""
             var chosenresult = results.matches.first({true})
             for (l in input.length..chosenresult.length) {
                 var longer = chosenresult.slice(0..l)
@@ -202,7 +216,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
                     break
                 }
             }
-            setText(minmatch)
+            setText(minmatch, SetTextCursorMode.Insert)
         }
     }
     
@@ -231,6 +245,13 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
                 game.consoleScreen.openConsole() // If this leads to race conditions or some such due to occurring at the same time as other screens' resize methods, then probably close the ConsoleScreen() instead.
             }
         }
+    }
+    enum class SetTextCursorMode() {
+        End(),
+        Unchanged(),
+        Insert(),
+        SelectAll(),
+        SelectAfter()
     }
 }
 

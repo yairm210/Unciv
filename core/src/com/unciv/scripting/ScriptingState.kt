@@ -82,11 +82,11 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         outputHistory.add(text)
     }
 
-    fun getAutocomplete(command: String): AutocompleteResults {
+    fun getAutocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
         if (!(hasBackend())) {
             return AutocompleteResults(listOf(), false, "")
         }
-        return getActiveBackend().getAutocomplete(command)
+        return getActiveBackend().getAutocomplete(command, cursorPos)
     }
 
     fun navigateHistory(increment: Int): String {

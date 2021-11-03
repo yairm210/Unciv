@@ -213,3 +213,6 @@ fun setInstancePath(instance: Any, path: List<PathElement>, value: Any?): Unit {
     }
 }
 
+
+class ScriptingReplSubprocess(exec: Array<String>) {
+} 

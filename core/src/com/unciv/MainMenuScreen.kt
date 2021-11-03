@@ -19,7 +19,7 @@ import com.unciv.scripting.ScriptingState
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.console.ConsoleScreen
+import com.unciv.ui.consolescreen.ConsoleScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen

@@ -1,6 +1,8 @@
 package com.unciv.scripting
 
 import kotlin.reflect.full.*
+//import kotlin.text.*
+import java.io.*
 import java.util.*
 
 
@@ -13,7 +15,7 @@ interface ScriptingBackend_metadata {
 }
 
 
-open class ScriptingBackend(val scriptingScope:ScriptingScope) {
+open class ScriptingBackend(val scriptingScope: ScriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
         override fun new(scriptingScope: ScriptingScope) = ScriptingBackend(scriptingScope)
@@ -28,7 +30,7 @@ open class ScriptingBackend(val scriptingScope:ScriptingScope) {
         return "\n\nWelcome to the Unciv CLI!\nYou are currently running the dummy backend, which will echo all commands but never do anything.\n"
     }
 
-    open fun getAutocomplete(command: String): AutocompleteResults {
+    open fun getAutocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
         // Return either a `List` of autocomplete matches, or a
         return AutocompleteResults(listOf(command+"_autocomplete"))
     }
@@ -45,10 +47,10 @@ open class ScriptingBackend(val scriptingScope:ScriptingScope) {
 }
 
 
-class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
+class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope:ScriptingScope) = HardcodedScriptingBackend(scriptingScope)
+        override fun new(scriptingScope: ScriptingScope) = HardcodedScriptingBackend(scriptingScope)
         override val displayname:String = "Hardcoded"
     }
 
@@ -84,7 +86,7 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
         }
     }
 
-    override fun getAutocomplete(command: String): AutocompleteResults{
+    override fun getAutocomplete(command: String, cursorPos: Int?): AutocompleteResults{
         if (' ' in command) {
             return AutocompleteResults(listOf(), true, getCommandHelpText(command.split(' ')[0]))
         } else {
@@ -248,10 +250,10 @@ class HardcodedScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend
 }
 
 
-class ReflectiveScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
+class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope:ScriptingScope) = ReflectiveScriptingBackend(scriptingScope)
+        override fun new(scriptingScope: ScriptingScope) = ReflectiveScriptingBackend(scriptingScope)
         override val displayname:String = "Reflective"
     }
 
@@ -272,7 +274,7 @@ class ReflectiveScriptingBackend(scriptingScope:ScriptingScope): ScriptingBacken
         return "\n\nWelcome to the reflective Unciv CLI backend.\n\nCommands you enter will be parsed as a path consisting of property reads, key and index accesses, function calls, and string, numeric, boolean, and null literals.\nKeys, indices, and function arguments are parsed recursively.\nProperties can be both read from and written to.\n\nExamples:\n${examples.map({"> ${it}"}).joinToString("\n")}\n\nPress [TAB] at any time to trigger autocompletion for all known leaf names at the currently entered path.\n"
     }
     
-    override fun getAutocomplete(command: String): AutocompleteResults {
+    override fun getAutocomplete(command: String, cursorPos: Int?): AutocompleteResults {
         try {
             var comm = commandparams.keys.find{ command.startsWith(it+" ") }
             if (comm != null) {
@@ -335,10 +337,10 @@ class ReflectiveScriptingBackend(scriptingScope:ScriptingScope): ScriptingBacken
 }
 
 
-class QjsScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
+class QjsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope:ScriptingScope) = QjsScriptingBackend(scriptingScope)
+        override fun new(scriptingScope: ScriptingScope) = QjsScriptingBackend(scriptingScope)
         override val displayname:String = "QuickJS"
     }
 
@@ -348,10 +350,10 @@ class QjsScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scrip
 }
 
 
-class LuaScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
+class LuaScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope:ScriptingScope) = LuaScriptingBackend(scriptingScope)
+        override fun new(scriptingScope: ScriptingScope) = LuaScriptingBackend(scriptingScope)
         override val displayname:String = "Lua"
     }
 
@@ -361,10 +363,10 @@ class LuaScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scrip
 }
 
 
-class UpyScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scriptingScope) {
+class UpyScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope:ScriptingScope) = UpyScriptingBackend(scriptingScope)
+        override fun new(scriptingScope: ScriptingScope) = UpyScriptingBackend(scriptingScope)
         override val displayname:String = "MicroPython"
     }
 
@@ -374,16 +376,104 @@ class UpyScriptingBackend(scriptingScope:ScriptingScope): ScriptingBackend(scrip
 }
 
 
+class SpyScripingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope: ScriptingScope) = SpyScripingBackend(scriptingScope)
+        override val displayname:String = "System Python"
+    }
+
+    var pyProcess: java.lang.Process? = null
+    
+    var pyInStream: BufferedReader? = null
+    var pyOutStream: BufferedWriter? = null
+    
+    var pyProcessLaunchFail = ""
+
+    init {
+        try {
+            // With pipes, Python automatically execs STDIN: `python3 -c 'print("print(5+5)")' | python3`.
+            // When run in interactive mode, it doesn't do this though: `python3` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`
+            // For now, I'm going to have it manually loop through output to get around this: `echo -e "import sys\nwhile True: exec(sys.stdin.readline())" > pyloop.py; python3 pyloop.py` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`
+            pyProcess = Runtime.getRuntime().exec(arrayOf("python3", "-u", "-X", "utf8", "-c", "import sys\nprint('sys.implementation == '+str(sys.implementation))\nwhile True:\n\tline=sys.stdin.readline()\n\ttry:\n\t\ttry:\n\t\t\tcode=compile(line, 'STDIN', 'eval')\n\t\texcept SyntaxError:\n\t\t\texec(line)\n\t\telse:\n\t\t\tprint(eval(code))\n\texcept Exception as e:\n\t\tprint(e)"))
+            pyInStream = BufferedReader(InputStreamReader(pyProcess!!.getInputStream()))
+            pyOutStream = BufferedWriter(OutputStreamWriter(pyProcess!!.getOutputStream()))
+        } catch (e: Exception) {
+            pyProcess = null
+            pyProcessLaunchFail = e.toString()
+        }
+    }
+    
+    fun getPyOutput(block:Boolean = true): List<String> {
+        val lines = ArrayList<String>()
+        if (pyOutStream != null) {
+            val input = pyInStream!!
+            if (block) {
+                lines.add(input.readLine())
+            }
+            while (input.ready()) {
+                lines.add(input.readLine())
+            }
+        }
+        return lines
+    }
+    
+    override fun motd(): String {
+        return "\n\nWelcome to the CPython Unciv CLI. Currently, this backend relies on launching the system Python 3 installation.\n\n${getPyOutput().joinToString("\n")}\n\n"
+    }
+    
+    override fun exec(command: String): String {
+        var out = "\n>>> ${command}\n"
+        if (pyProcess == null) {
+            out += "No Python process. Error on launch: ${pyProcessLaunchFail}\n"
+        } else {
+            //var comm = command.toByteArray(Charsets.UTF_8)
+            //print("${comm}\n${comm.size}\n${comm.decodeToString()}\n")
+            //var outstream = pyProcess!!.getOutputStream()
+            //outstream.write("${command}\n".toByteArray(Charsets.UTF_8))
+            //outstream.flush()
+            //var instream = pyProcess!!.getInputStream()
+            //var l = instream.available()
+            //var ba = ByteArray(l)
+            //instream.read(ba, 0, l)
+            //out += "${ba}\n${ba.size}\n${ba.decodeToString()}\n"
+            
+            pyOutStream!!.write("${command}\n")
+            pyOutStream!!.flush()
+            out += getPyOutput().joinToString("\n")
+            
+            
+            //var inputreader = BufferedReader(InputStreamReader(instream))
+            //out += inputreader.readLine()
+        }
+        return out
+    }
+    
+    override fun terminate(): Boolean {
+        try {
+            if (pyProcess != null) {
+                pyProcess!!.destroy()
+            }
+            return true
+        } catch (e: Exception) {
+            return false
+        }
+    }
+
+}
+
+
 enum class ScriptingBackendType(val metadata:ScriptingBackend_metadata) {
     Dummy(ScriptingBackend),
     Hardcoded(HardcodedScriptingBackend),
     Reflective(ReflectiveScriptingBackend),
     QuickJS(QjsScriptingBackend),
     Lua(LuaScriptingBackend),
-    MicroPython(UpyScriptingBackend)
+    MicroPython(UpyScriptingBackend),
+    SystemPython(SpyScripingBackend)
 }
 
 
-fun SpawnNamedScriptingBackend(backendtype:ScriptingBackendType, scriptingScope:ScriptingScope): ScriptingBackend {
+fun SpawnNamedScriptingBackend(backendtype:ScriptingBackendType, scriptingScope: ScriptingScope): ScriptingBackend {
     return backendtype.metadata.new(scriptingScope)
 }

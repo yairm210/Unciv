@@ -28,7 +28,7 @@ import com.unciv.models.translations.tr
 import com.unciv.scripting.ScriptingState
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.console.ConsoleScreen
+import com.unciv.ui.consolescreen.ConsoleScreen
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.*
 import com.unciv.ui.saves.LoadGameScreen
