@@ -12,13 +12,13 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
 
     val scriptingBackends:ArrayList<ScriptingBackend> = ArrayList<ScriptingBackend>()
 
-    val outputHistory:ArrayList<String> = ArrayList<String>() // Not implemented
-    val commandHistory:ArrayList<String> = ArrayList<String>() // Not implemented
+    val outputHistory:ArrayList<String> = ArrayList<String>()
+    val commandHistory:ArrayList<String> = ArrayList<String>()
 
     var activeBackend:Int = 0
 
-    var maxOutputHistory:Int = 50
-    var maxCommandHistory:Int = 50
+    var maxOutputHistory:Int = 50 // Not implemented
+    var maxCommandHistory:Int = 50 // Not implemented
 
     var activeCommandHistory:Int = 0
 

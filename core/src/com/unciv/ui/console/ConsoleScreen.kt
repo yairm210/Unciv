@@ -228,7 +228,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) { // Right. Actually resizing seems painful.
             game.consoleScreen = ConsoleScreen(scriptingState, closeAction)
             if (isOpen) {
-                game.consoleScreen.openConsole()
+                game.consoleScreen.openConsole() // If this leads to race conditions or some such due to occurring at the same time as other screens' resize methods, then probably close the ConsoleScreen() instead.
             }
         }
     }
