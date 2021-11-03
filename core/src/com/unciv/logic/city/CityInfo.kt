@@ -635,7 +635,7 @@ class CityInfo {
      */
     private fun triggerCitiesSettledNearOtherCiv() {
         val citiesWithin6Tiles =
-            civInfo.gameInfo.civilizations
+            civInfo.gameInfo.civilizations.asSequence()
                 .filter { it.isMajorCiv() && it != civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
@@ -652,7 +652,7 @@ class CityInfo {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits() -> tile.airUnits.filter { !it.isTransported }.size < 6
+            construction.movesLikeAirUnits() -> tile.airUnits.count { !it.isTransported } < 6
             else -> tile.militaryUnit == null
         }
     }
@@ -709,9 +709,7 @@ class CityInfo {
         // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
         // The time loss shouldn't be that large I don't think
         return civInfo.getMatchingUniques(placeholderText, this) +
-                localUniques.filter {
-                    !it.isAntiLocalEffect && it.placeholderText == placeholderText
-                }
+                localUniques.filter { it.placeholderText == placeholderText }
     }
 
     // Finds matching uniques provided from both local and non-local sources.
