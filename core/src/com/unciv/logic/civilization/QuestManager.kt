@@ -506,7 +506,7 @@ class QuestManager {
         if (civInfo == cityState) {
             // Revoke most quest types from the bully
             val revokedQuests = assignedQuests.asSequence()
-                .filter { it.isIndividual() || it.questName == QuestName.Invest.value }
+                .filter { it.assignee == bully.civName && (it.isIndividual() || it.questName == QuestName.Invest.value) }
             assignedQuests.removeAll(revokedQuests)
             if (revokedQuests.count() > 0)
                 bully.addNotification("[${civInfo.civName}] cancelled the quests they had given you because you demanded tribute from them.",
