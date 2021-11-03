@@ -246,6 +246,11 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             settings.showExperimentalWorldWrap = it
         }
 
+        addYesNoRow("Enable scripting console\nEXPERIMENTAL - PRESS ~ TO ACTIVATE.",
+            settings.enableScriptingConsole) {
+            settings.enableScriptingConsole = it
+        }
+
         if (previousScreen.game.limitOrientationsHelper != null) {
             addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {
                 settings.allowAndroidPortrait = it

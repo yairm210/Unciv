@@ -157,7 +157,7 @@ class MainMenuScreen: BaseScreen() {
             ExitGamePopup(this)
         }
 
-        keyPressDispatcher[Input.Keys.GRAVE] = { consoleScreen.openConsole() }
+        keyPressDispatcher[Input.Keys.GRAVE] = { game.setConsoleScreen() }
         consoleScreen.closeAction = { game.setScreen(this) }
         scriptingState.gameInfo = null
         scriptingState.civInfo = null

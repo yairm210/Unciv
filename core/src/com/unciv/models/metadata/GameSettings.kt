@@ -53,6 +53,8 @@ class GameSettings {
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
 
+    var enableScriptingConsole = false
+
     var lastOverviewPage: String = "Cities"
 
     var allowAndroidPortrait = false    // Opt-in to allow Unciv to follow a screen rotation to portrait
