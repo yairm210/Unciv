@@ -565,7 +565,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         nextTurnButton.labelCell.pad(10f)
         val nextTurnActionWrapped = { nextTurnAction() }
         nextTurnButton.onClick(nextTurnActionWrapped)
-        keyPressDispatcher[' '] = nextTurnActionWrapped
+        keyPressDispatcher[Input.Keys.SPACE] = nextTurnActionWrapped
         keyPressDispatcher['n'] = nextTurnActionWrapped
 
         return nextTurnButton
