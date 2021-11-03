@@ -131,8 +131,10 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
 
+/** DOES NOT hold untyped uniques! */
 class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.java) {
     fun addUnique(unique: Unique) {
+        if(unique.type==null) return
         if (!containsKey(unique.type)) this[unique.type] = ArrayList()
         this[unique.type]!!.add(unique)
     }
