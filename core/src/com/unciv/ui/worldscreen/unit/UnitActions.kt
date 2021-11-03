@@ -330,8 +330,9 @@ object UnitActions {
             }.takeIf {
                 isFree ||
                 (
-                    unit.civInfo.gold >= goldCostOfUpgrade && !unit.isEmbarked()
-                    && unit.currentMovement == unit.getMaxMovement().toFloat()
+                        unit.civInfo.gold >= goldCostOfUpgrade
+                                && unit.currentMovement > 0
+                                && !unit.isEmbarked()
                 )
             }
         )
