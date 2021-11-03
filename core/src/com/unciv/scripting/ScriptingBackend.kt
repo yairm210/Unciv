@@ -2,7 +2,6 @@ package com.unciv.scripting
 
 import kotlin.reflect.full.*
 //import kotlin.text.*
-import java.io.*
 import java.util.*
 
 
@@ -376,88 +375,66 @@ class UpyScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scri
 }
 
 
-class SpyScripingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
-
-    companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope: ScriptingScope) = SpyScripingBackend(scriptingScope)
-        override val displayname:String = "System Python"
-    }
-
-    var pyProcess: java.lang.Process? = null
+open class SubprocessScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
     
-    var pyInStream: BufferedReader? = null
-    var pyOutStream: BufferedWriter? = null
+    open val processCmd = arrayOf("")
     
-    var pyProcessLaunchFail = ""
-
-    init {
-        try {
-            // With pipes, Python automatically execs STDIN: `python3 -c 'print("print(5+5)")' | python3`.
-            // When run in interactive mode, it doesn't do this though: `python3` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`
-            // For now, I'm going to have it manually loop through output to get around this: `echo -e "import sys\nwhile True: exec(sys.stdin.readline())" > pyloop.py; python3 pyloop.py` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`
-            pyProcess = Runtime.getRuntime().exec(arrayOf("python3", "-u", "-X", "utf8", "-c", "import sys\nprint('sys.implementation == '+str(sys.implementation))\nwhile True:\n\tline=sys.stdin.readline()\n\ttry:\n\t\ttry:\n\t\t\tcode=compile(line, 'STDIN', 'eval')\n\t\texcept SyntaxError:\n\t\t\texec(line)\n\t\telse:\n\t\t\tprint(eval(code))\n\texcept Exception as e:\n\t\tprint(e)"))
-            pyInStream = BufferedReader(InputStreamReader(pyProcess!!.getInputStream()))
-            pyOutStream = BufferedWriter(OutputStreamWriter(pyProcess!!.getOutputStream()))
-        } catch (e: Exception) {
-            pyProcess = null
-            pyProcessLaunchFail = e.toString()
-        }
-    }
+    lateinit var subprocessReplManager: SubprocessReplManager
     
-    fun getPyOutput(block:Boolean = true): List<String> {
-        val lines = ArrayList<String>()
-        if (pyOutStream != null) {
-            val input = pyInStream!!
-            if (block) {
-                lines.add(input.readLine())
-            }
-            while (input.ready()) {
-                lines.add(input.readLine())
-            }
-        }
-        return lines
-    }
-    
-    override fun motd(): String {
-        return "\n\nWelcome to the CPython Unciv CLI. Currently, this backend relies on launching the system Python 3 installation.\n\n${getPyOutput().joinToString("\n")}\n\n"
+    fun startProcess() {
+        subprocessReplManager = SubprocessReplManager(processCmd)
+        subprocessReplManager.startProc()
     }
     
     override fun exec(command: String): String {
-        var out = "\n>>> ${command}\n"
-        if (pyProcess == null) {
-            out += "No Python process. Error on launch: ${pyProcessLaunchFail}\n"
+        if (subprocessReplManager.isRunning) {
+            return "${subprocessReplManager.evalCode("${command}\n").joinToString("\n")}\n"
         } else {
-            //var comm = command.toByteArray(Charsets.UTF_8)
-            //print("${comm}\n${comm.size}\n${comm.decodeToString()}\n")
-            //var outstream = pyProcess!!.getOutputStream()
-            //outstream.write("${command}\n".toByteArray(Charsets.UTF_8))
-            //outstream.flush()
-            //var instream = pyProcess!!.getInputStream()
-            //var l = instream.available()
-            //var ba = ByteArray(l)
-            //instream.read(ba, 0, l)
-            //out += "${ba}\n${ba.size}\n${ba.decodeToString()}\n"
-            
-            pyOutStream!!.write("${command}\n")
-            pyOutStream!!.flush()
-            out += getPyOutput().joinToString("\n")
-            
-            
-            //var inputreader = BufferedReader(InputStreamReader(instream))
-            //out += inputreader.readLine()
+            return "No process."
         }
-        return out
+    }
+}
+
+
+class SpyScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
+
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope: ScriptingScope) = SpyScriptingBackend(scriptingScope)
+        override val displayname:String = "System Python"
+    }
+
+    val pyBoilerPlate = """
+        import sys, io
+        print('sys.implementation == ' + str(sys.implementation))
+        stdout = sys.stdout
+        while True:
+            line = sys.stdin.readline()
+            out = sys.stdout = io.StringIO() # Won't work with MicroPython. I think it's slotted?
+            print(">>> " + line)
+            try:
+                try:
+                    code = compile(line, 'STDIN', 'eval')
+                except SyntaxError:
+                    exec(compile(line, 'STDIN', 'exec'))
+                else:
+                    print(eval(code))
+            except Exception as e:
+                print(repr(e), file=stdout)
+            else:
+                print(out.getvalue(), file=stdout)
+    """.trimIndent()
+
+    override val processCmd = arrayOf("python3", "-u", "-X", "utf8", "-c", pyBoilerPlate)
+    // With pipes, Python automatically execs STDIN: `python3 -c 'print("print(5+5)")' | python3`.
+    // When run in interactive mode, it doesn't do this though: `python3` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`
+    // For now, I'm going to have it manually loop through output to get around this: `echo -e "import sys\nwhile True: exec(sys.stdin.readline())" > pyloop.py; python3 pyloop.py` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`
+
+    init {
+        startProcess()
     }
     
-    override fun terminate(): Boolean {
-        try {
-            if (pyProcess != null) {
-                pyProcess!!.destroy()
-            }
-            return true
-        } catch (e: Exception) {
-            return false
-        }
+    override fun motd(): String {
+        return "\n\nWelcome to the CPython Unciv CLI. Currently, this backend relies on launching the system Python 3 installation.\n\n${subprocessReplManager.getProcOutput(block=true).joinToString("\n")}\n\n"
     }
 
 }
@@ -470,7 +447,7 @@ enum class ScriptingBackendType(val metadata:ScriptingBackend_metadata) {
     QuickJS(QjsScriptingBackend),
     Lua(LuaScriptingBackend),
     MicroPython(UpyScriptingBackend),
-    SystemPython(SpyScripingBackend)
+    SystemPython(SpyScriptingBackend)
 }
 
 
