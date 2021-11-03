@@ -224,9 +224,9 @@ object UnitActions {
         if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
         // promotion does not consume movement points, so we can do it always
         actionList += UnitAction(UnitActionType.Promote,
-                action = {
-                    UncivGame.Current.setScreen(PromotionPickerScreen(unit))
-                }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 })
+            action = {
+                UncivGame.Current.setScreen(PromotionPickerScreen(unit))
+            }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 })
     }
 
     private fun addSetupAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {

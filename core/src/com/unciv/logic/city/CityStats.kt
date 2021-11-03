@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -231,10 +232,12 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniqueSequence: Sequence<Unique>): Stats {
         val stats = Stats()
         val uniques = uniqueSequence.toList().asSequence()
+        val uniqueMap = UniqueMapTyped()
+        for (unique in uniques) uniqueMap.addUnique(unique)
           // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
           // this helps mitigate concurrency problems.
 
-        for (unique in uniques.filter { it.isOfType(UniqueType.StatPercentBonus) }) {
+        for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonus)) {
             if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
@@ -248,12 +251,12 @@ class CityStats(val cityInfo: CityInfo) {
         // Deprecated since 3.17.10
             // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
             // For instance "+[50]% [Production] [in all cities]
-            for (unique in uniques.filter { it.isOfType(UniqueType.StatPercentBonusCitiesDeprecated) })
+            for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecated))
                 if (cityInfo.matchesFilter(unique.params[2]))
                     stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         //
 
-        for (unique in uniques.filter { it.isOfType(UniqueType.StatPercentBonusCities) }) {
+        for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCities)) {
             if (!unique.conditionalsApply(StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo))) continue
             if (cityInfo.matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
@@ -261,11 +264,11 @@ class CityStats(val cityInfo: CityInfo) {
 
         val uniquesToCheck =
             if (currentConstruction is Building && currentConstruction.isAnyWonder()) {
-                uniques.filter { it.isOfType(UniqueType.PercentProductionWonders) }
+                uniqueMap.getUniques(UniqueType.PercentProductionWonders)
             } else if (currentConstruction is Building && !currentConstruction.isAnyWonder()) {
-                uniques.filter { it.isOfType(UniqueType.PercentProductionBuildings) }
+                uniqueMap.getUniques(UniqueType.PercentProductionBuildings)
             } else if (currentConstruction is BaseUnit) {
-                uniques.filter { it.isOfType(UniqueType.PercentProductionUnits) }
+                uniqueMap.getUniques(UniqueType.PercentProductionUnits)
             } else { // Science/Gold production
                 sequenceOf()
             }
@@ -277,29 +280,29 @@ class CityStats(val cityInfo: CityInfo) {
 
         // Deprecated since 3.17.10
             if (currentConstruction is Building && !currentConstruction.isAnyWonder())
-                for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionStatBuildings) }) {
+                for (unique in uniqueMap.getUniques(UniqueType.PercentProductionStatBuildings)) {
                     val stat = Stat.valueOf(unique.params[1])
                     if (currentConstruction.isStatRelated(stat))
                         stats.production += unique.params[0].toInt()
                 }
-            for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionConstructions) }) {
+            for (unique in uniqueMap.getUniques(UniqueType.PercentProductionConstructions)) {
                 if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                     stats.production += unique.params[0].toInt()
             }
             // Used for specific buildings (e.g. +100% Production when constructing a Factory)
-            for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionBuildingName) }) {
+            for (unique in uniqueMap.getUniques(UniqueType.PercentProductionBuildingName)) {
                 if (constructionMatchesFilter(currentConstruction, unique.params[1]))
                     stats.production += unique.params[0].toInt()
             }
 
             //  "+[amount]% Production when constructing [constructionFilter] [cityFilter]"
-            for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionConstructionsCities) }) {
+            for (unique in uniqueMap.getUniques(UniqueType.PercentProductionConstructionsCities)) {
                 if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
                     stats.production += unique.params[0].toInt()
             }
 
             // "+[amount]% Production when constructing [unitFilter] units [cityFilter]"
-            for (unique in uniques.filter { it.isOfType(UniqueType.PercentProductionUnitsDeprecated) }) {
+            for (unique in uniqueMap.getUniques(UniqueType.PercentProductionUnitsDeprecated)) {
                 if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
                     stats.production += unique.params[0].toInt()
             }
@@ -307,6 +310,7 @@ class CityStats(val cityInfo: CityInfo) {
 
         // Deprecated since 3.17.1
             if (cityInfo.civInfo.getHappiness() >= 0) {
+                // todo convert to uniquetype
                 for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
                     stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
             }
