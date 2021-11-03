@@ -178,8 +178,12 @@ class MapRegions (val ruleset: Ruleset){
         if (civilizations.isEmpty()) return
 
         // first assign region types
-        val regionTypes = ruleset.terrains.values.filter { it.hasUnique(UniqueType.IsRegion) }
-                .sortedBy { it.getMatchingUniques(UniqueType.IsRegion).first().params[0].toInt() }
+        val regionTypes = ruleset.terrains.values.filter { it.hasUnique(UniqueType.RegionRequirePercentSingleType) ||
+                                                            it.hasUnique(UniqueType.RegionRequirePercentTwoTypes) }
+                .sortedBy { if (it.hasUnique(UniqueType.RegionRequirePercentSingleType))
+                                it.getMatchingUniques(UniqueType.RegionRequirePercentSingleType).first().params[2].toInt()
+                        else
+                                it.getMatchingUniques(UniqueType.RegionRequirePercentTwoTypes).first().params[3].toInt() }
 
         for (region in regions) {
             region.countTerrains()

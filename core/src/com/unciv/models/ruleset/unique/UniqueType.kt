@@ -310,11 +310,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     OverrideFertility("Always Fertility [amount] for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     AddFertility("[amount] to Fertility for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
-    IsRegion("Can act as a Region during Map Generation, takes priority [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    RegionRequirePercentSingleType("A Region is formed with at least [amount]% [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    RegionRequirePercentTwoTypes("A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    RegionRequirePercentSingleType("A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    RegionRequirePercentTwoTypes("A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]",
+            UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination.", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
     HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 

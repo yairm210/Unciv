@@ -161,7 +161,8 @@ enum class UniqueParameterType(val parameterName:String) {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            if (ruleset.terrains[parameterText]?.hasUnique(UniqueType.IsRegion) == true)
+            if (ruleset.terrains[parameterText]?.hasUnique(UniqueType.RegionRequirePercentSingleType) == true ||
+                    ruleset.terrains[parameterText]?.hasUnique(UniqueType.RegionRequirePercentTwoTypes) == true)
                 return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
@@ -172,7 +173,7 @@ enum class UniqueParameterType(val parameterName:String) {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
     },
     Promotion("promotion") {
