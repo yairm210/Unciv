@@ -226,7 +226,7 @@ object UnitActions {
         actionList += UnitAction(UnitActionType.Promote,
                 action = {
                     UncivGame.Current.setScreen(PromotionPickerScreen(unit))
-                })
+                }.takeIf { unit.currentMovement > 0 && unit.attacksThisTurn == 0 })
     }
 
     private fun addSetupAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {

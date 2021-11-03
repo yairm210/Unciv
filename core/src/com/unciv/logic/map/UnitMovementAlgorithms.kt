@@ -412,7 +412,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.action = null
             unit.removeFromTile()
             unit.putInTile(destination)
-            unit.currentMovement -= 1f
+            unit.useMovementPoints(1f)
             unit.attacksThisTurn += 1
             // Check if unit maintenance changed
             // Is also done for other units, but because we skip everything else, we have to manually check it
@@ -466,7 +466,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // We can assume we can pass through this tile, as we would have broken earlier
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
                 lastReachedEnterableTile = tile
-                unit.currentMovement -= passingMovementSpent
+                unit.useMovementPoints(passingMovementSpent)
                 passingMovementSpent = 0f
             }
 
