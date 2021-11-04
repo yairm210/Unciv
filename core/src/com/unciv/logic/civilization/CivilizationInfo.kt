@@ -148,11 +148,6 @@ class CivilizationInfo {
      */
     val temporaryUniques = ArrayList<Pair<Unique, Int>>()
 
-    /** Maps the name of the construction to the amount of times bought */
-    @Deprecated("Deprecated since 3.16.15", replaceWith = ReplaceWith("civWideConstructions.boughtItemsWithIncreasingPrice"))
-    val boughtConstructionsWithGloballyIncreasingPrice = HashMap<String, Int>()
-
-
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
     // This is basically a way to ensure our lists are immutable.
@@ -228,9 +223,6 @@ class CivilizationInfo {
         toReturn.cityStateUniqueUnit = cityStateUniqueUnit
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.temporaryUniques.addAll(temporaryUniques)
-        // Deprecated since 3.16.15
-            toReturn.boughtConstructionsWithGloballyIncreasingPrice.putAll(boughtConstructionsWithGloballyIncreasingPrice)
-        //
         toReturn.hasEverOwnedOriginalCapital = hasEverOwnedOriginalCapital
         toReturn.passableImpassables.addAll(passableImpassables)
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked

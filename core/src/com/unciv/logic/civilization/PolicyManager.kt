@@ -28,13 +28,6 @@ class PolicyManager {
     var shouldOpenPolicyPicker = false
         get() = field && canAdoptPolicy()
 
-    // Deprecated since 3.16.15
-        @Deprecated("Deprecated since 3.16.15", ReplaceWith("civInfo.civWideConstructions.freeStatBuildingsProvided[Stat.Culture]"))
-        var cultureBuildingsAdded = HashMap<String, String>() // Maps cities to buildings
-        @Deprecated("Deprecated since 3.16.15", ReplaceWith("civInfo.civWideConstructions.freeSpecificBuildingsProvided"))
-        var specificBuildingsAdded = HashMap<String, MutableSet<String>>() // Maps buildings to cities
-    //
-
 
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
@@ -43,11 +36,6 @@ class PolicyManager {
         toReturn.freePolicies = freePolicies
         toReturn.shouldOpenPolicyPicker = shouldOpenPolicyPicker
         toReturn.storedCulture = storedCulture
-        // Deprecated since 3.16.15
-            toReturn.cultureBuildingsAdded.putAll(cultureBuildingsAdded)
-            toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
-        //
-
         return toReturn
     }
 

@@ -45,43 +45,6 @@ class CivConstructions {
 
     fun setTransients(civInfo: CivilizationInfo) {
         this.civInfo = civInfo
-
-        // civInfo.boughtConstructionsWithGloballyIncreasingPrice deprecated since 3.16.15, this is replacement code
-            if (civInfo.boughtConstructionsWithGloballyIncreasingPrice.isNotEmpty()) {
-                for (item in civInfo.boughtConstructionsWithGloballyIncreasingPrice) {
-                    boughtItemsWithIncreasingPrice.add(item.key, item.value)
-                }
-                civInfo.boughtConstructionsWithGloballyIncreasingPrice.clear()
-            }
-        //
-
-        // Deprecated variables in civ.policies since 3.16.15, this is replacement code
-            if (civInfo.policies.specificBuildingsAdded.isNotEmpty()) {
-                for ((building, cities) in civInfo.policies.specificBuildingsAdded) {
-                    for (cityId in cities) {
-                        if (building !in freeSpecificBuildingsProvided)
-                            freeSpecificBuildingsProvided[building] = hashSetOf()
-                        freeSpecificBuildingsProvided[building]!!.add(cityId)
-
-                        if (cityId !in freeBuildings)
-                            freeBuildings[cityId] = hashSetOf()
-                        freeBuildings[cityId]!!.add(building)
-                    }
-                }
-                civInfo.policies.specificBuildingsAdded.clear()
-            }
-
-            if (civInfo.policies.cultureBuildingsAdded.isNotEmpty()) {
-                for ((cityId, building) in civInfo.policies.cultureBuildingsAdded) {
-                    freeStatBuildingsProvided[Stat.Culture.name]!!.add(cityId)
-
-                    if (cityId !in freeBuildings)
-                        freeBuildings[cityId] = hashSetOf()
-                    freeBuildings[cityId]!!.add(building)
-                }
-                civInfo.policies.cultureBuildingsAdded.clear()
-            }
-        //
     }
 
     fun startTurn() {
