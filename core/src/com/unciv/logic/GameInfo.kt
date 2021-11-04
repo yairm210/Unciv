@@ -279,6 +279,12 @@ class GameInfo {
                 enemyUnitsCloseToTerritory.filter { it.getOwner() != thisPlayer },
                 "near"
         )
+
+        addBombardNotification(thisPlayer,
+                thisPlayer.cities.filter { city -> city.canBombard() &&
+                enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= city.range }
+                }
+        )
     }
 
     private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
@@ -292,6 +298,15 @@ class GameInfo {
             val positions = tiles.map { it.position }
             thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
         }
+    }
+
+    private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
+        if (cities.count() < 3) {
+            for (city in cities)
+                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair)
+
+        } else
+            thisPlayer.addNotification("[${cities.count()}] of your cities can bombard the enemy!", LocationAction(cities.map { it.location }), NotificationIcon.City, NotificationIcon.Crosshair)
     }
 
     fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
