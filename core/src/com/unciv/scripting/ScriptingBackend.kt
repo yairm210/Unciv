@@ -1,7 +1,11 @@
 package com.unciv.scripting
 
+import com.badlogic.gdx.Gdx
+
+import com.unciv.scripting.reflection.*
+import com.unciv.scripting.protocol.ScriptingReplManager
+import com.unciv.scripting.protocol.SubprocessBlackbox
 import kotlin.reflect.full.*
-//import kotlin.text.*
 import java.util.*
 
 
@@ -9,17 +13,18 @@ data class AutocompleteResults(val matches:List<String>, val isHelpText:Boolean 
 
 
 interface ScriptingBackend_metadata {
-   fun new(scriptingScope: ScriptingScope): ScriptingBackend
+   fun new(scriptingScope: ScriptingScope): ScriptingBackendBase
    val displayname:String
 }
 
 
-open class ScriptingBackend(val scriptingScope: ScriptingScope) {
+open class ScriptingBackendBase(val scriptingScope: ScriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope: ScriptingScope) = ScriptingBackend(scriptingScope)
+        override fun new(scriptingScope: ScriptingScope) = ScriptingBackendBase(scriptingScope)
         override val displayname:String = "Dummy"
     }
+
     val metadata: ScriptingBackend_metadata
         get(): ScriptingBackend_metadata = this::class.companionObjectInstance as ScriptingBackend_metadata
 
@@ -39,14 +44,14 @@ open class ScriptingBackend(val scriptingScope: ScriptingScope) {
         return command
     }
 
-    open fun terminate(): Boolean {
-        // Return `true` on successful termination, `false` otherwise.
-        return true
+    open fun terminate(): Exception? {
+        // Return `null` on successful termination, an `Exception()` otherwise.
+        return null
     }
 }
 
 
-class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
         override fun new(scriptingScope: ScriptingScope) = HardcodedScriptingBackend(scriptingScope)
@@ -74,7 +79,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
     var cheats:Boolean = false
 
     override fun motd(): String {
-        return "\n\nWelcome to the hardcoded demo backend.\n\nPlease run \"help\" or press [TAB] to see a list of available commands.\nPress [TAB] at any time to see help for currently typed command.\n\nPlease note that the available commands are meant as a DEMO for the CLI.\n"
+        return "\n\nWelcome to the hardcoded demo CLI backend.\n\nPlease run \"help\" or press [TAB] to see a list of available commands.\nPress [TAB] at any time to see help for currently typed command.\n\nPlease note that the available commands are meant as a DEMO for the CLI.\n"
     }
 
     fun getCommandHelpText(command: String): String {
@@ -249,7 +254,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
 }
 
 
-class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
         override fun new(scriptingScope: ScriptingScope) = ReflectiveScriptingBackend(scriptingScope)
@@ -336,7 +341,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
 }
 
 
-class QjsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+/*class QjsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
         override fun new(scriptingScope: ScriptingScope) = QjsScriptingBackend(scriptingScope)
@@ -346,10 +351,10 @@ class QjsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scri
     override fun motd(): String {
         return "\n\nWelcome to the QuickJS Unciv CLI, which doesn't currently run QuickJS but might one day!\n"
     }
-}
+}*/
 
 
-class LuaScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+/*class LuaScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
         override fun new(scriptingScope: ScriptingScope) = LuaScriptingBackend(scriptingScope)
@@ -359,10 +364,10 @@ class LuaScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scri
     override fun motd(): String {
         return "\n\nWelcome to the Lua Unciv CLI, which doesn't currently run Lua but might one day!\n"
     }
-}
+}*/
 
-
-class UpyScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+/*
+class UpyScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata {
         override fun new(scriptingScope: ScriptingScope) = UpyScriptingBackend(scriptingScope)
@@ -373,25 +378,42 @@ class UpyScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scri
         return "\n\nWelcome to the MicroPython Unciv CLI, which doesn't currently run MicroPython but might one day!\n"
     }
 }
+*/
 
-
-open class SubprocessScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+open class SubprocessScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
     
     open val processCmd = arrayOf("")
     
-    lateinit var subprocessReplManager: SubprocessReplManager
+    open val replSoftExitCode = ""
+    
+    lateinit var replManager: ScriptingReplManager
     
     fun startProcess() {
-        subprocessReplManager = SubprocessReplManager(processCmd)
-        subprocessReplManager.startProc()
+        replManager = ScriptingReplManager(scriptingScope, SubprocessBlackbox(processCmd))
     }
     
     override fun exec(command: String): String {
-        if (subprocessReplManager.isRunning) {
-            return "${subprocessReplManager.evalCode("${command}\n").joinToString("\n")}\n"
-        } else {
-            return "No process."
+        try {
+            return "${replManager.evalCode("${command}\n").joinToString("\n")}\n"
+        } catch (e: RuntimeException) {
+            return "${e}\n"
         }
+    }
+    
+    open fun softStopProcess() {
+        replManager.evalCode(replSoftExitCode)
+    }
+    
+    fun hardStopProcess(): Exception? {
+        return replManager.terminate()
+    }
+    
+    override fun terminate(): Exception? {
+        try {
+            softStopProcess()
+        } catch (e: Exception) {
+        }
+        return hardStopProcess()
     }
 }
 
@@ -403,54 +425,87 @@ class SpyScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBa
         override val displayname:String = "System Python"
     }
 
-    val pyBoilerPlate = """
-        import sys, io
-        print('sys.implementation == ' + str(sys.implementation))
-        stdout = sys.stdout
-        while True:
-            line = sys.stdin.readline()
-            out = sys.stdout = io.StringIO() # Won't work with MicroPython. I think it's slotted?
-            print(">>> " + line)
-            try:
-                try:
-                    code = compile(line, 'STDIN', 'eval')
-                except SyntaxError:
-                    exec(compile(line, 'STDIN', 'exec'))
-                else:
-                    print(eval(code))
-            except Exception as e:
-                print(repr(e), file=stdout)
-            else:
-                print(out.getvalue(), file=stdout)
-    """.trimIndent()
+    val pyBoilerPlate = Gdx.files.internal("scripting/python/main.py").readString(Charsets.UTF_8.name())
 
     override val processCmd = arrayOf("python3", "-u", "-X", "utf8", "-c", pyBoilerPlate)
     // With pipes, Python automatically execs STDIN: `python3 -c 'print("print(5+5)")' | python3`.
-    // When run in interactive mode, it doesn't do this though: `python3` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`
-    // For now, I'm going to have it manually loop through output to get around this: `echo -e "import sys\nwhile True: exec(sys.stdin.readline())" > pyloop.py; python3 pyloop.py` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`
+    // When run in interactive mode, it doesn't do this though: `python3` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`.
+    // As such, I have it manually loop through STDIN to get around this: `echo -e "import sys\nwhile True: exec(sys.stdin.readline())" > pyloop.py; python3 pyloop.py` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`.
+    override val replSoftExitCode = """
+            try:
+                exit()
+            finally:
+                print("Exiting.")
+        """.trimIndent()
 
     init {
         startProcess()
     }
     
     override fun motd(): String {
-        return "\n\nWelcome to the CPython Unciv CLI. Currently, this backend relies on launching the system Python 3 installation.\n\n${subprocessReplManager.getProcOutput(block=true).joinToString("\n")}\n\n"
+        return "\n\nWelcome to the CPython Unciv CLI. Currently, this backend relies on launching the system Python 3 installation.\n\n${replManager.blackbox.readAll(block=true).joinToString("\n")}\n\n"
     }
+    
+}
 
+
+class SqjsScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
+
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope: ScriptingScope) = SqjsScriptingBackend(scriptingScope)
+        override val displayname:String = "System QuickJS"
+    }
+    
+    val jsBoilerPlate = """print(1); print(5); while (true) { print(String(eval(std.in.getline()))+"\n") }""".trimIndent()
+    
+    override val processCmd = arrayOf("qjs", "--std", "--eval", jsBoilerPlate)
+    
+    init {
+        startProcess()
+    }
+    
+    override fun softStopProcess() {}
+    
+}
+
+
+class SluaScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
+
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope: ScriptingScope) = SluaScriptingBackend(scriptingScope)
+        override val displayname:String = "System LUA"
+    }
+    
+    val luaBoilerPlate = """
+            while true do
+                io.stdout:write(io.stdin:read())
+            end
+        """.trimIndent()
+    
+    override val processCmd = arrayOf("lua", "-e", luaBoilerPlate)
+    
+    init {
+        startProcess()
+    }
+    
+    override fun softStopProcess() {}
+    
 }
 
 
 enum class ScriptingBackendType(val metadata:ScriptingBackend_metadata) {
-    Dummy(ScriptingBackend),
+    Dummy(ScriptingBackendBase),
     Hardcoded(HardcodedScriptingBackend),
     Reflective(ReflectiveScriptingBackend),
-    QuickJS(QjsScriptingBackend),
-    Lua(LuaScriptingBackend),
-    MicroPython(UpyScriptingBackend),
-    SystemPython(SpyScriptingBackend)
+    //QuickJS(QjsScriptingBackend),
+    //Lua(LuaScriptingBackend),
+    //MicroPython(UpyScriptingBackend),
+    SystemPython(SpyScriptingBackend),
+    SystemQuickJS(SqjsScriptingBackend),
+    SystemLua(SluaScriptingBackend)
 }
 
 
-fun SpawnNamedScriptingBackend(backendtype:ScriptingBackendType, scriptingScope: ScriptingScope): ScriptingBackend {
+fun SpawnNamedScriptingBackend(backendtype:ScriptingBackendType, scriptingScope: ScriptingScope): ScriptingBackendBase {
     return backendtype.metadata.new(scriptingScope)
 }

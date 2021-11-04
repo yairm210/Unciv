@@ -1,4 +1,4 @@
-import sys, json
+import sys, io, json
 
 
 def ResolvePath(path, scope):
@@ -179,3 +179,22 @@ class ForeignActionTransceiver(ForeignActionReceiver, ForeignActionSender):
 #python | micropython -c "import sys; [print('FMF: '+sys.stdin.readline()) for i in range(10)]"
 #python3 -ic 'from CommTest import *; t=ForeignActionTransceiver()' | micropython -i -c 'from CommTest import *; t=ForeignActionTransceiver(); t.ForeignREPL()'
 #t.SendForeignRead("ForeignActionTransceiver.__name__")
+
+
+print('sys.implementation == ' + str(sys.implementation))
+stdout = sys.stdout
+while True:
+	line = sys.stdin.readline()
+	out = sys.stdout = io.StringIO() # Won't work with MicroPython. I think it's slotted?
+	print(">>> " + line)
+	try:
+		try:
+			code = compile(line, 'STDIN', 'eval')
+		except SyntaxError:
+			exec(compile(line, 'STDIN', 'exec'))
+		else:
+			print(eval(code))
+	except Exception as e:
+		print(repr(e), file=stdout)
+	else:
+		print(out.getvalue(), file=stdout)

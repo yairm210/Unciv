@@ -1,10 +1,9 @@
-package com.unciv.scripting
+package com.unciv.scripting.reflection
 
 import kotlin.collections.ArrayList
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KFunction
 import kotlin.reflect.KMutableProperty1
-import java.io.*
 import java.util.*
 
 
@@ -213,76 +212,3 @@ fun setInstancePath(instance: Any, path: List<PathElement>, value: Any?): Unit {
         }
     }
 }
-
-
-class SubprocessReplManager(val processCmd: Array<String>) {
-
-    var process: java.lang.Process? = null
-    
-    var inStream: BufferedReader? = null
-    var outStream: BufferedWriter? = null
-    
-    var processLaunchFail = ""
-    
-    val isRunning
-        get() = process != null && process!!.isAlive()
-    
-    
-    fun startProc() {
-        if (isRunning) {
-            throw RuntimeException("Process is already running: ${process}")
-        }
-        try {
-            process = Runtime.getRuntime().exec(processCmd)
-        } catch (e: Exception) {
-            process = null
-            processLaunchFail = e.toString()
-            return
-        }
-        inStream = BufferedReader(InputStreamReader(process!!.getInputStream()))
-        outStream = BufferedWriter(OutputStreamWriter(process!!.getOutputStream()))
-    }
-    
-    fun stopProc(): Exception? {
-        try {
-            if (isRunning) {
-                process!!.destroy()
-                //Close streams
-            }
-        } catch (e: Exception) {
-            return e
-        }
-        process = null
-        inStream = null
-        outStream = null
-        return null
-    }
-    
-    fun getProcOutput(block:Boolean = true): List<String> {
-        val lines = ArrayList<String>()
-        if (isRunning) {
-            val input = inStream!!
-            if (block) {
-                lines.add(input.readLine())
-            }
-            while (input.ready()) {
-                lines.add(input.readLine())
-            }
-        }
-        return lines
-    }
-    
-    fun sendProcInput(code: String) {
-        outStream!!.write(code)
-        outStream!!.flush()
-    }
-    
-    fun evalCode(code: String): List<String> {
-        if (!isRunning) {
-            throw RuntimeException("No process: ${process}\nException on launch: ${processLaunchFail}")
-        } else {
-            sendProcInput(code)
-            return getProcOutput(block=true)
-        }
-    }
-} 

@@ -8,9 +8,27 @@ import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 
+/*
+```
+UncivGame():
+    ScriptingState():
+        ScriptingScope():
+            civInfo
+            gameInfo
+            uncivGame
+            worldScreen
+        *ScriptingBackend():
+            scriptingScope
+            ?ScriptingReplManager():
+                Blackbox()
+    ConsoleScreen():
+        scriptingState
+```
+*/
+
 class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: ScriptingBackendType? = null){
 
-    val scriptingBackends:ArrayList<ScriptingBackend> = ArrayList<ScriptingBackend>()
+    val scriptingBackends:ArrayList<ScriptingBackendBase> = ArrayList<ScriptingBackendBase>()
 
     val outputHistory:ArrayList<String> = ArrayList<String>()
     val commandHistory:ArrayList<String> = ArrayList<String>()
@@ -47,7 +65,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     }
 
     fun spawnBackend(backendtype: ScriptingBackendType): String {
-        var backend:ScriptingBackend = SpawnNamedScriptingBackend(backendtype, scriptingScope)
+        var backend:ScriptingBackendBase = SpawnNamedScriptingBackend(backendtype, scriptingScope)
         scriptingBackends.add(backend)
         activeBackend = scriptingBackends.size - 1
         var motd = backend.motd()
@@ -59,22 +77,23 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         activeBackend = max(0, min(scriptingBackends.size - 1, index))
     }
 
-    fun termBackend(index: Int) {
+    fun termBackend(index: Int): Exception? {
         if (!(0 <= index && index < scriptingBackends.size)) {
-            return // Maybe checking should be better done and unified, and raise a warning when out of bounds.
+            throw IndexOutOfBoundsException()// Maybe checking should be better done and unified. Also, I don't love the idea of an exposed method being able to trigger a crash, but I had this fail silently before, which would probably be worse.
         }
         val result = scriptingBackends[index].terminate()
-        if (result) {
+        if (result == null) {
             scriptingBackends.removeAt(index)
             activeBackend = min(activeBackend, scriptingBackends.size - 1)
         }
+        return result
     }
 
     fun hasBackend(): Boolean {
         return scriptingBackends.size > 0
     }
 
-    fun getActiveBackend(): ScriptingBackend {
+    fun getActiveBackend(): ScriptingBackendBase {
         return scriptingBackends[activeBackend]
     }
 

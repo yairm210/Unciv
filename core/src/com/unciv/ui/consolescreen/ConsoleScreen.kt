@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
-import com.unciv.scripting.ScriptingBackend
+import com.unciv.scripting.ScriptingBackendBase
 import com.unciv.scripting.ScriptingBackendType
 import com.unciv.scripting.ScriptingState
 import com.unciv.ui.utils.*
@@ -18,8 +18,6 @@ import kotlin.math.max
 
 
 class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Unit): CameraStageBaseScreen() {
-
-    private val lineHeight = 30f
 
     private val layoutTable: Table = Table()
     
@@ -52,7 +50,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
 
     init {
         
-        backendsAdders.add("Launch new backend:".toLabel()).padRight(30f)
+        backendsAdders.add("Launch new backend:".toLabel()).padRight(30f).padLeft(20f)
         for (backendtype in ScriptingBackendType.values()) {
             var backendadder = backendtype.metadata.displayname.toTextButton()
             backendadder.onClick({
@@ -178,8 +176,8 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             (SetTextCursorMode.End) -> { inputField.setCursorPosition(inputField.text.length) }
             (SetTextCursorMode.Unchanged) -> {}
             (SetTextCursorMode.Insert) -> { inputField.setCursorPosition(max(0, inputField.text.length-(originaltext.length-originalcursorpos))) }
-            (SetTextCursorMode.SelectAll) -> { throw Exception("NotImplemented.") }
-            (SetTextCursorMode.SelectAfter) -> { throw Exception("NotImplemented.") }
+            (SetTextCursorMode.SelectAll) -> { throw UnsupportedOperationException("NotImplemented.") }
+            (SetTextCursorMode.SelectAfter) -> { throw UnsupportedOperationException("NotImplemented.") }
         }
     }
     
@@ -190,8 +188,9 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     }
     
     private fun autocomplete() {
-        var input = inputField.text
-        var results = scriptingState.getAutocomplete(input, inputField.getCursorPosition())
+        val original = inputField.text
+        val cursorpos = inputField.getCursorPosition()
+        var results = scriptingState.getAutocomplete(input, cursorpos)
         if (results.isHelpText) {
             echo(results.helpText)
             return
@@ -205,10 +204,10 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             for (m in results.matches) {
                 echo(m)
             }
-            //var minmatch = input //Checking against the current input would prevent autoinsertion from working for autocomplete backends that support getting results from the middle of the current input.
+            //var minmatch = original //Checking against the current input would prevent autoinsertion from working for autocomplete backends that support getting results from the middle of the current input.
             var minmatch = ""
             var chosenresult = results.matches.first({true})
-            for (l in input.length..chosenresult.length) {
+            for (l in original.length-1..chosenresult.length-1) {
                 var longer = chosenresult.slice(0..l)
                 if (results.matches.all { it.startsWith(longer) }) {
                     minmatch = longer
@@ -216,7 +215,8 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
                     break
                 }
             }
-            setText(minmatch, SetTextCursorMode.Insert)
+            setText(minmatch + original.slice(cursorpos..original.length-1), SetTextCursorMode.Insert)
+            // Splice the longest starting substring with the text after the cursor, to let autocomplete implementations work on the middle of current input.
         }
     }
     
