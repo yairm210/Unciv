@@ -793,6 +793,14 @@ class CivilizationInfo {
             }
         }
         updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
+
+        val citiesThatCanBombard = cities.filter { it.canBombard() && it.tilesInRange.any {
+            tile -> it.getCenterTile().aerialDistanceTo(tile) <= 2 && tile.getFirstUnit() != null && isAtWarWith(tile.getFirstUnit()!!.civInfo) }
+        }
+        if (citiesThatCanBombard.count() == 1)
+            addNotification("Your city [] can bombard an enemy!", citiesThatCanBombard.first().location, NotificationIcon.City, NotificationIcon.Crosshair)
+        else if (citiesThatCanBombard.isNotEmpty())
+            addNotification("Your cities can bombard the enemy!", LocationAction(citiesThatCanBombard.map { it.location }), NotificationIcon.City, NotificationIcon.Crosshair)
     }
 
     fun endTurn() {
