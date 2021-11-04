@@ -104,7 +104,7 @@ class CivConstructions {
     private fun addFreeBuilding(cityId: String, building: String) {
         if (!freeBuildings.containsKey(cityId))
             freeBuildings[cityId] = hashSetOf()
-        freeBuildings[cityId]!!.add(building)
+        freeBuildings[cityId]!!.add(civInfo.getEquivalentBuilding(building).name)
     }
 
     private fun addFreeStatsBuildings() {
@@ -116,7 +116,7 @@ class CivConstructions {
 
         // Deprecated since 3.16.15
             statUniquesData[Stat.Culture] = (statUniquesData[Stat.Culture] ?: 0) +
-                civInfo.getMatchingUniques("Immediately creates the cheapest available cultural building in each of your first [] cities for free")
+                civInfo.getMatchingUniques(UniqueType.FreeStatBuildingsDeprecated)
                     .sumOf { it.params[0].toInt() }
         //
 
@@ -141,7 +141,7 @@ class CivConstructions {
     private fun addFreeSpecificBuildings() {
         val buildingsUniquesData = (civInfo.getMatchingUniques(UniqueType.FreeSpecificBuildings)
             // Deprecated since 3.16.15
-                + civInfo.getMatchingUniques("Immediately creates a [] in each of your first [] cities for free")
+                + civInfo.getMatchingUniques(UniqueType.FreeSpecificBuildingsDeprecated)
             //
             ).groupBy { it.params[0] }
             .mapValues { unique -> unique.value.sumOf { it.params[1].toInt() } }

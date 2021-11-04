@@ -424,6 +424,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     
+    @Deprecated("As of 3.16.15", ReplaceWith("Provides the cheapest [stat] building in your first [amount] cities for free"))
+    FreeStatBuildingsDeprecated("Immediately creates the cheapest available cultural building in each of your first [amount] cities for free", UniqueTarget.Global),
+    @Deprecated("As of 3.16.15", ReplaceWith("Provides a [buildingName] in your first [amount] cities for free"))
+    FreeSpecificBuildingsDeprecated("Immediately creates a [buildingName] in each of your first [amount] cities for free"),
+    
     ///////////////////////////////////////////// META /////////////////////////////////////////////
     
     
