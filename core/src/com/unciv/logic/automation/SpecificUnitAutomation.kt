@@ -1,5 +1,6 @@
 ﻿package com.unciv.logic.automation
 
+import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
@@ -9,6 +10,8 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stat
@@ -297,10 +300,14 @@ object SpecificUnitAutomation {
             ?: return
 
         if (unit.currentTile.owningCity != null && unit.currentTile.getCity()!!.religion.getMajorityReligion()!!.name == unit.religion){
-            destination.religion.religionThisIsTheHolyCityOf
+            var actionList: java.util.ArrayList<UnitAction> = ArrayList()
+            UnitActions.addSpreadReligionActions(unit, actionList, destination)
+
 
         }
     }
+
+
 
     fun automateFighter(unit: MapUnit) {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())

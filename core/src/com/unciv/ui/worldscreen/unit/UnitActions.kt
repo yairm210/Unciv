@@ -542,7 +542,7 @@ object UnitActions {
         }
     }
 
-    private fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
+    fun addSpreadReligionActions(unit: MapUnit, actionList: ArrayList<UnitAction>, city: CityInfo) {
         if (!unit.civInfo.gameInfo.isReligionEnabled()) return
         val blockedByInquisitor =
             city.getCenterTile()

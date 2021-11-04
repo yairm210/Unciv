@@ -62,6 +62,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addCultureBuildingChoice()
         addSpaceshipPartChoice()
         addOtherBuildingChoice()
+        addReligousUnit()
 
         if (!cityInfo.isPuppet) {
             addWondersChoice()
@@ -100,8 +101,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
         if ((!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < max(5, cities * 2))
                 || (isAtWar && civInfo.gold > -50)) {
-            val militaryUnit = Automation.chooseMilitaryUnit(cityInfo)
-            if (militaryUnit == null) return
+            val militaryUnit = Automation.chooseMilitaryUnit(cityInfo) ?: return
             val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
             // most buildings and civ units contribute the the civ's growth, military units are anti-growth
             var modifier = sqrt(unitsToCitiesRatio) / 2
@@ -324,9 +324,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     fun addReligousUnit(){
 
-        var modifier = 0f
-        val missionary = civUnits.asSequence()
-            .filter { it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spreads Religon" }}
+        var modifier = 50000f
+
+        val missionary = cityConstructions.getConstructableUnits()
+                .filter { it -> it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion" }}
             .first()
 
         if (preferredVictoryType == VictoryType.Domination) return
@@ -346,8 +347,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
 
-        if (buildMissionary > buildInqusitor) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary)
-        else addChoice(relativeCostEffectiveness, missionary.name, buildMissionary) // will change later when I add inquisitor AI
+        if (buildMissionary > buildInqusitor && cityConstructions.getConstructableUnits().contains(missionary)) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary)
+        else if(cityConstructions.getConstructableUnits().contains(missionary)) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary) // will change later when I add inquisitor AI
 
 
     }
