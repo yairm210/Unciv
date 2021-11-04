@@ -188,7 +188,7 @@ class CityConstructions {
 
         // Civ-level uniques - for these only add free buildings from each city to itself to avoid weirdness on city conquest
         for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.GainFreeBuildings, stateForConditionals = StateForConditionals(cityInfo.civInfo, cityInfo))) {
-            val freeBuildingName = unique.params[0]
+            val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
             if (cityInfo.matchesFilter(unique.params[1])) {
                 if (cityInfo.id !in freeBuildingsProvidedFromThisCity)
                     freeBuildingsProvidedFromThisCity[cityInfo.id] = hashSetOf()
