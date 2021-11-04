@@ -282,7 +282,7 @@ class GameInfo {
 
         addBombardNotification(thisPlayer,
                 thisPlayer.cities.filter { city -> city.canBombard() &&
-                enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= 2 }
+                enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= city.range }
                 }
         )
     }
