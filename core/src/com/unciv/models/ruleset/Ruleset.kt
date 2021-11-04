@@ -409,12 +409,6 @@ class Ruleset {
         }
 
         for (promotion in unitPromotions.values) {
-            if (promotion.effect != "")
-                lines.add(
-                    "`Promotion.effect` used in ${promotion.name} is deprecated, please use `uniques` instead",
-                    RulesetErrorSeverity.WarningOptionsOnly
-                )
-
             checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
         }
 

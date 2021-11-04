@@ -256,7 +256,7 @@ class Nation : RulesetObject() {
                             unique.text.tr(), indent = 1)
                 }
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions }) {
-                    val effect = ruleset.unitPromotions[promotion]!!.uniquesWithEffect()
+                    val effect = ruleset.unitPromotions[promotion]!!.uniques
                     // "{$promotion} ({$effect})" won't work as effect may contain [] and tr() does not support that kind of nesting
                     textList += FormattedLine(
                         "${promotion.tr()} (${effect.joinToString(",") { it.tr() }})",

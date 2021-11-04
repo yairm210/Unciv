@@ -12,15 +12,7 @@ import com.unciv.ui.civilopedia.FormattedLine
 class Promotion : RulesetObject() {
     var prerequisites = listOf<String>()
 
-    @Deprecated("As of 3.16.12", ReplaceWith("uniques"))
-        var effect = ""
-
     var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
-
-    fun uniquesWithEffect() = sequence {
-        if (effect.isNotEmpty()) yield(effect)
-        yieldAll(uniques)
-    }
 
     override fun getUniqueTarget() = UniqueTarget.Promotion
 
@@ -29,7 +21,7 @@ class Promotion : RulesetObject() {
     fun getDescription(promotionsForUnitType: Collection<Promotion>):String {
         val textList = ArrayList<String>()
 
-        for (unique in uniquesWithEffect()) {
+        for (unique in uniques) {
             textList += unique.tr()
         }
 
