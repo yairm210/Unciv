@@ -2,21 +2,21 @@ package com.unciv.logic.map.mapgenerator
 
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 class MapRegions (val ruleset: Ruleset){
     companion object {
@@ -219,6 +219,10 @@ class MapRegions (val ruleset: Ruleset){
         for (region in sortedRegions) {
             findStart(region)
         }
+        // Normalize starts
+        for (region in regions) {
+            normalizeStart(region)
+        }
 
         val coastBiasCivs = civilizations.filter { ruleset.nations[it.civName]!!.startBias.contains("Coast") }
         val negativeBiasCivs = civilizations.filter { ruleset.nations[it.civName]!!.startBias.any { bias -> bias.equalsPlaceholderText("Avoid []") } }
@@ -420,6 +424,210 @@ class MapRegions (val ruleset: Ruleset){
         region.tileMap[panicPosition].baseTerrain = panicTerrain
         region.tileMap[panicPosition].terrainFeatures.clear()
         setRegionStart(region, panicPosition)
+    }
+
+    /** Attempts to improve the start in [region] as needed to make it decent.
+     *  Relies on startPosition having been set previously.
+     *  Assumes unchanged baseline values ie citizens eat 2 food each, similar production costs */
+    private fun normalizeStart(region: Region) {
+        println("Normalizing start at ${region.startPosition}..")
+        val ruleset = region.tileMap.ruleset!!
+        val startTile = region.tileMap[region.startPosition!!]
+        // Remove ice-like features adjacent to start
+        for (tile in startTile.neighbors) {
+            val lastTerrain = tile.getTerrainFeatures().lastOrNull { it.impassable }
+            if (lastTerrain != null) {
+                tile.terrainFeatures.remove(lastTerrain.name)
+                println("Removed ${lastTerrain.name} at ${tile.position}")
+            }
+        }
+
+        // evaluate production potential
+        val innerProduction = startTile.neighbors.sumOf { getPotentialYield(it, Stat.Production).toInt() }
+        val outerProduction = startTile.getTilesAtDistance(2).sumOf { getPotentialYield(it, Stat.Production).toInt() }
+        // for very early production we ideally want tiles that also give food
+        val earlyProduction = startTile.getTilesInDistanceRange(1..2).sumOf {
+            if (getPotentialYield(it, Stat.Food, unimproved = true) > 0f) getPotentialYield(it, Stat.Production, unimproved = true).toInt()
+                else 0 }
+
+        // If terrible, try adding a hill to a dry flat tile
+        if (innerProduction == 0 || (innerProduction < 2 && outerProduction < 8)) {
+            val hillSpot = startTile.neighbors
+                    .filter { it.isLand && it.terrainFeatures.isEmpty() && !it.isAdjacentToFreshwater }
+                    .toList().randomOrNull()
+            val hillEquivalent = ruleset.terrains.values
+                    .firstOrNull { it.type == TerrainType.TerrainFeature && it.production >= 2 && !it.hasUnique(UniqueType.RareFeature) }?.name
+            if (hillSpot != null && hillEquivalent != null) {
+                hillSpot.terrainFeatures.add(hillEquivalent)
+                println("Put a $hillEquivalent at ${hillSpot.position} to make up for terrible production")
+            }
+        }
+
+        // If bad early production, add a small strategic resource to SECOND ring
+        if (innerProduction < 3 && earlyProduction < 6) {
+            val lastEraNumber = ruleset.eras.values.maxOf { it.eraNumber }
+            val earlyEras = ruleset.eras.filterValues { it.eraNumber <= lastEraNumber / 3 }
+            val validResources = ruleset.tileResources.values.filter {
+                it.resourceType == ResourceType.Strategic &&
+                        (it.revealedBy == null ||
+                        ruleset.technologies[it.revealedBy]!!.era() in earlyEras)
+            }
+
+            if (validResources.isNotEmpty()) {
+                for (tile in startTile.getTilesAtDistance(2).shuffled()) {
+                    val resourceToPlace = validResources.filter { tile.getLastTerrain().name in it.terrainsCanBeFoundOn }.randomOrNull()
+                    if (resourceToPlace != null) {
+                        tile.setTileResource(resourceToPlace, majorDeposit = false)
+                        println("Placed a small ${resourceToPlace.name} at ${tile.position} to make up for bad production")
+                        break
+                    }
+                }
+            }
+        }
+
+        // Now evaluate food situation
+        // Food²/4 because excess food is really good and lets us work other tiles or run specialists!
+        // 2F is worth 1, 3F is worth 2, 4F is worth 4, 5F is worth 6 and so on
+        val innerFood = startTile.neighbors.sumOf { (getPotentialYield(it, Stat.Food).pow(2) / 4).toInt() }
+        val outerFood = startTile.getTilesAtDistance(2).sumOf { (getPotentialYield(it, Stat.Food).pow(2) / 4).toInt() }
+        val totalFood = innerFood + outerFood
+        // we want at least some two-food tiles to keep growing
+        val innerNativeTwoFood = startTile.neighbors.count { getPotentialYield(it, Stat.Food, unimproved = true) >= 2f }
+        val outerNativeTwoFood = startTile.getTilesAtDistance(2).count { getPotentialYield(it, Stat.Food, unimproved = true) >= 2f }
+        val totalNativeTwoFood = innerNativeTwoFood + outerNativeTwoFood
+
+        var bonusesNeeded = when {
+            innerFood == 0 && totalFood < 4         -> 5
+
+            totalFood < 6                           -> 4
+
+            totalFood < 8 ||
+                (totalFood < 12 && innerFood < 5)   -> 3
+
+            (totalFood < 17 && innerFood < 9) ||
+                    totalNativeTwoFood < 2          -> 2
+
+            (totalFood < 24 && innerFood < 11) ||
+                    totalNativeTwoFood == 2 ||
+                    innerNativeTwoFood == 0 ||
+                    totalFood < 20                  -> 1
+
+            else -> 0
+        }
+        // TODO: Legendary start? +2
+        println("Start at ${startTile.position} needs $bonusesNeeded food bonuses.")
+
+        // Attempt to place one grassland at a plains-only spot
+        if (bonusesNeeded < 3 && totalNativeTwoFood == 0) {
+            val twoFoodTerrain = ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land && it.food >= 2 }?.name
+            val candidateInnerSpots = startTile.neighbors
+                    .filter { it.isLand && !it.isImpassible() && it.terrainFeatures.isEmpty() && it.resource == null }
+            val candidateOuterSpots = startTile.getTilesAtDistance(2)
+                    .filter { it.isLand && !it.isImpassible() && it.terrainFeatures.isEmpty() && it.resource == null }
+            val spot = candidateInnerSpots.shuffled().firstOrNull() ?: candidateOuterSpots.shuffled().firstOrNull()
+            if (twoFoodTerrain != null && spot != null) {
+                println("Changed a ${spot.baseTerrain} at ${spot.position} to a $twoFoodTerrain to give some a two food tile")
+                spot.baseTerrain = twoFoodTerrain
+            } else
+                bonusesNeeded = 3 // Irredeemable plains situation
+        }
+
+
+        val oasisEquivalent = ruleset.terrains.values.firstOrNull {
+                it.type == TerrainType.TerrainFeature &&
+                it.hasUnique(UniqueType.RareFeature)  &&
+                it.food >= 2 &&
+                it.food + it.production + it.gold >= 3 &&
+                it.occursOn.any { base -> ruleset.terrains[base]!!.type == TerrainType.Land }
+        }
+        var canPlaceOasis = oasisEquivalent != null // One oasis per start is enough. Don't bother finding a place if there is no good oasis equivalent
+        var placedInFirst = 0 // Attempt to put first 2 in inner ring and next 3 in second ring
+        var placedInSecond = 0
+
+        val candidatePlots = startTile.getTilesInDistanceRange(1..3)
+                .filter { it.resource == null && oasisEquivalent !in it.getTerrainFeatures() }
+                .shuffled().sortedBy { it.aerialDistanceTo(startTile) }.toMutableList()
+
+        // Place food bonuses as able
+        while (bonusesNeeded > 0 && candidatePlots.isNotEmpty()) {
+            val plot = candidatePlots.first()
+            candidatePlots.remove(plot) // remove the plot as it has now been tried
+
+            val validBonuses = ruleset.tileResources.values.filter {
+                it.resourceType == ResourceType.Bonus &&
+                it.food >= 1 &&
+                plot.getLastTerrain().name in it.terrainsCanBeFoundOn
+            }
+            val goodPlotForOasis = canPlaceOasis && plot.getLastTerrain().name in oasisEquivalent!!.occursOn
+
+            if (validBonuses.isNotEmpty() || goodPlotForOasis) {
+                if (goodPlotForOasis) {
+                    plot.terrainFeatures.add(oasisEquivalent!!.name)
+                    canPlaceOasis = false
+                    println("Placed extra oasis at ${plot.position}")
+                } else {
+                    plot.setTileResource(validBonuses.random())
+                    println("Placed extra ${plot.resource} at ${plot.position}")
+                }
+
+                if (plot.aerialDistanceTo(startTile) == 1) {
+                    placedInFirst++
+                    if (placedInFirst == 2) // Resort the list in ring order 2,3,1
+                        candidatePlots.sortBy { abs(it.aerialDistanceTo(startTile) * 10 - 22 ) }
+                } else if (plot.aerialDistanceTo(startTile) == 2) {
+                    placedInSecond++
+                    if (placedInSecond == 3) // Resort the list in ring order 3,1,2
+                        candidatePlots.sortByDescending { abs(it.aerialDistanceTo(startTile) * 10 - 17) }
+                }
+                bonusesNeeded--
+            }
+        }
+
+        // Check for very grass-heavy starts that might still need some stone to help with production
+        val grassTypePlots = startTile.getTilesInDistanceRange(1..2).filter {
+            it.isLand &&
+            getPotentialYield(it, Stat.Food, unimproved = true) >= 2f && // Food neutral natively
+            getPotentialYield(it, Stat.Production) == 0f // Production can't even be improved
+        }.toMutableList()
+        val plainsTypePlots = startTile.getTilesInDistanceRange(1..2).filter {
+            it.isLand &&
+            getPotentialYield(it, Stat.Food) >= 2f && // Something that can be improved to food neutral
+            getPotentialYield(it, Stat.Production, unimproved = true) >= 1f // Some production natively
+        }.toList()
+        var stoneNeeded = when {
+            grassTypePlots.count() >= 9 && plainsTypePlots.isEmpty() -> 2
+            grassTypePlots.count() >= 6 && plainsTypePlots.count() <= 4 -> 1
+            else -> 0
+        }
+        val stoneTypeBonuses = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && it.production > 0 }
+
+        if(stoneTypeBonuses.isNotEmpty()) {
+            while (stoneNeeded > 0 && grassTypePlots.isNotEmpty()) {
+                val plot = grassTypePlots.random()
+                grassTypePlots.remove(plot)
+
+                if (plot.resource != null) continue
+
+                val bonusToPlace = stoneTypeBonuses.filter { plot.getLastTerrain().name in it.terrainsCanBeFoundOn }.randomOrNull()
+                if (bonusToPlace != null) {
+                    plot.resource = bonusToPlace.name
+                    println("Placed a ${bonusToPlace.name} at ${plot.position} due to grassy start")
+                    stoneNeeded--
+                }
+            }
+        }
+    }
+
+    private fun getPotentialYield(tile: TileInfo, stat: Stat, unimproved: Boolean = false): Float {
+        val baseYield = tile.getTileStats(null)[stat]
+        if (unimproved) return baseYield
+
+        val bestImprovementYield = tile.tileMap.ruleset!!.tileImprovements.values
+                .filter { !it.hasUnique(UniqueType.GreatImprovement) &&
+                        it.uniqueTo == null &&
+                        tile.getLastTerrain().name in it.terrainsCanBeBuiltOn }
+                .maxOfOrNull { it[stat] }
+        return baseYield + (bestImprovementYield ?: 0f)
     }
 
     /** @returns the region most similar to a region of [type] */

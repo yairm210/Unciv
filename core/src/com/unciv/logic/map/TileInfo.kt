@@ -237,9 +237,9 @@ open class TileInfo {
         return workingCity != null && workingCity.lockedTiles.contains(position)
     }
 
-    fun getTileStats(observingCiv: CivilizationInfo): Stats = getTileStats(getCity(), observingCiv)
+    fun getTileStats(observingCiv: CivilizationInfo?): Stats = getTileStats(getCity(), observingCiv)
 
-    fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
+    fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?): Stats {
         var stats = getBaseTerrain().clone()
 
         for (terrainFeatureBase in getTerrainFeatures()) {
@@ -288,23 +288,24 @@ open class TileInfo {
                     stats.add(unique.stats)
         }
 
-        // resource base
-        if (hasViewableResource(observingCiv)) stats.add(tileResource)
-
-        val improvement = getTileImprovement()
-        if (improvement != null)
-            stats.add(getImprovementStats(improvement, observingCiv, city))
-
-        if (isCityCenter()) {
-            if (stats.food < 2) stats.food = 2f
-            if (stats.production < 1) stats.production = 1f
-        }
-
         if (isAdjacentToRiver()) stats.gold++
 
-        if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
-            stats.gold++
+        if (observingCiv != null) {
+            // resource base
+            if (hasViewableResource(observingCiv)) stats.add(tileResource)
 
+            val improvement = getTileImprovement()
+            if (improvement != null)
+                stats.add(getImprovementStats(improvement, observingCiv, city))
+
+            if (isCityCenter()) {
+                if (stats.food < 2) stats.food = 2f
+                if (stats.production < 1) stats.production = 1f
+            }
+
+            if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
+                stats.gold++
+        }
         for ((stat, value) in stats)
             if (value < 0f) stats[stat] = 0f
 

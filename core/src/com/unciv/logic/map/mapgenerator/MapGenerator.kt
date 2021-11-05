@@ -169,8 +169,8 @@ class MapGenerator(val ruleset: Ruleset) {
 
     private fun spreadResources(tileMap: TileMap) {
         val mapRadius = tileMap.mapParameters.mapSize.radius
-        for (tile in tileMap.values)
-            tile.resource = null
+        /*for (tile in tileMap.values)
+            tile.resource = null*/
 
         spreadStrategicResources(tileMap, mapRadius)
         spreadResources(tileMap, mapRadius, ResourceType.Luxury)
