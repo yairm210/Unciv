@@ -1,10 +1,12 @@
 package com.unciv.scripting
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 
-import com.unciv.scripting.reflection.*
+import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.protocol.ScriptingReplManager
 import com.unciv.scripting.protocol.SubprocessBlackbox
+import com.unciv.scripting.utils.SourceManager
 import kotlin.reflect.full.*
 import java.util.*
 
@@ -185,7 +187,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                     val startindex = if (detailed) 2 else 1
                     val path = (if (args.size > startindex) args.slice(startindex..args.size-1) else listOf()).joinToString(" ")
                     try {
-                        var obj = evalKotlinString(scriptingScope, path)
+                        var obj = Reflection.evalKotlinString(scriptingScope, path)
                         val isnull = obj == null
                         appendOut(
                             if (detailed)
@@ -204,10 +206,10 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                 if (cheats) {
                     try {
                         val path = (if (args.size > 2) args.slice(2..args.size-1) else listOf()).joinToString(" ")
-                        val value = evalKotlinString(scriptingScope, args[1])
-                        setInstancePath(
+                        val value = Reflection.evalKotlinString(scriptingScope, args[1])
+                        Reflection.setInstancePath(
                             scriptingScope,
-                            parseKotlinPath(path),
+                            Reflection.parseKotlinPath(path),
                             value
                         )
                         appendOut("Set ${path} to ${value}.")
@@ -284,13 +286,13 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
             if (comm != null) {
                 val params = command.drop(comm.length+1).split(' ', limit=commandparams[comm]!!)
                 val workingcode = params[params.size-1]
-                val workingpath = parseKotlinPath(workingcode)
-                if (workingpath.any{ it.type == PathElementType.Call }) {
+                val workingpath = Reflection.parseKotlinPath(workingcode)
+                if (workingpath.any{ it.type == Reflection.PathElementType.Call }) {
                     return AutocompleteResults(listOf(), true, "No autocomplete available for function calls.")
                 }
                 val leafname = if (workingpath.size > 0) workingpath[workingpath.size - 1].name else ""
                 val prefix = command.dropLast(leafname.length)
-                val branchobj = resolveInstancePath(scriptingScope, workingpath.slice(0..workingpath.size-2))
+                val branchobj = Reflection.resolveInstancePath(scriptingScope, workingpath.slice(0..workingpath.size-2))
                 return AutocompleteResults(
                     branchobj!!::class.members
                         .map{ it.name }
@@ -313,20 +315,20 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
         try {
             when (parts[0]) {
                 "get" -> {
-                    appendOut("${evalKotlinString(scriptingScope, parts[1])}")
+                    appendOut("${Reflection.evalKotlinString(scriptingScope, parts[1])}")
                 }
                 "set" -> {
                     var setparts = parts[1].split(' ', limit=2)
-                    var value = evalKotlinString(scriptingScope, setparts[0])
-                    setInstancePath(
+                    var value = Reflection.evalKotlinString(scriptingScope, setparts[0])
+                    Reflection.setInstancePath(
                         scriptingScope,
-                        parseKotlinPath(setparts[1]),
+                        Reflection.parseKotlinPath(setparts[1]),
                         value
                     )
                     appendOut("Set ${setparts[1]} to ${value}")
                 }
                 "typeof" -> {
-                    var obj = evalKotlinString(scriptingScope, parts[1])
+                    var obj = Reflection.evalKotlinString(scriptingScope, parts[1])
                     appendOut("${if (obj == null) null else obj!!::class.qualifiedName}")
                 }
                 else -> {
@@ -341,56 +343,22 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
 }
 
 
-/*class QjsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
-
-    companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope: ScriptingScope) = QjsScriptingBackend(scriptingScope)
-        override val displayname:String = "QuickJS"
-    }
-
-    override fun motd(): String {
-        return "\n\nWelcome to the QuickJS Unciv CLI, which doesn't currently run QuickJS but might one day!\n"
-    }
-}*/
-
-
-/*class LuaScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
-
-    companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope: ScriptingScope) = LuaScriptingBackend(scriptingScope)
-        override val displayname:String = "Lua"
-    }
-
-    override fun motd(): String {
-        return "\n\nWelcome to the Lua Unciv CLI, which doesn't currently run Lua but might one day!\n"
-    }
-}*/
-
-/*
-class UpyScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
-
-    companion object Metadata: ScriptingBackend_metadata {
-        override fun new(scriptingScope: ScriptingScope) = UpyScriptingBackend(scriptingScope)
-        override val displayname:String = "MicroPython"
-    }
-
-    override fun motd(): String {
-        return "\n\nWelcome to the MicroPython Unciv CLI, which doesn't currently run MicroPython but might one day!\n"
-    }
+open class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
+    
+    open val engine = ""
+    
+    val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(engine) }
+    
 }
-*/
 
-open class SubprocessScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
+
+open class SubprocessScriptingBackend(scriptingScope: ScriptingScope): EnvironmentedScriptingBackend(scriptingScope) {
     
     open val processCmd = arrayOf("")
     
+    val replManager: ScriptingReplManager by lazy { ScriptingReplManager(scriptingScope, SubprocessBlackbox(processCmd)) }
+    
     open val replSoftExitCode = ""
-    
-    lateinit var replManager: ScriptingReplManager
-    
-    fun startProcess() {
-        replManager = ScriptingReplManager(scriptingScope, SubprocessBlackbox(processCmd))
-    }
     
     override fun exec(command: String): String {
         try {
@@ -424,27 +392,19 @@ class SpyScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBa
         override fun new(scriptingScope: ScriptingScope) = SpyScriptingBackend(scriptingScope)
         override val displayname:String = "System Python"
     }
-
-    val pyBoilerPlate = Gdx.files.internal("scripting/python/main.py").readString(Charsets.UTF_8.name())
-
-    override val processCmd = arrayOf("python3", "-u", "-X", "utf8", "-c", pyBoilerPlate)
-    // With pipes, Python automatically execs STDIN: `python3 -c 'print("print(5+5)")' | python3`.
-    // When run in interactive mode, it doesn't do this though: `python3` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`.
-    // As such, I have it manually loop through STDIN to get around this: `echo -e "import sys\nwhile True: exec(sys.stdin.readline())" > pyloop.py; python3 pyloop.py` `echo 'print(5)\n' > /proc/$(pgrep python)/fd/0`.
+    
+    override val engine = "python"
+    
+    override val processCmd by lazy { arrayOf("python3", "-u", "-X", "utf8", folderHandle.child("main.py").toString()) }
+    
     override val replSoftExitCode = """
             try:
                 exit()
             finally:
                 print("Exiting.")
         """.trimIndent()
-
-    init {
-        startProcess()
-    }
     
-    override fun motd(): String {
-        return "\n\nWelcome to the CPython Unciv CLI. Currently, this backend relies on launching the system Python 3 installation.\n\n${replManager.blackbox.readAll(block=true).joinToString("\n")}\n\n"
-    }
+    override fun motd() = replManager.blackbox.readAll(block=true).joinToString("\n")
     
 }
 
@@ -456,16 +416,14 @@ class SqjsScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
         override val displayname:String = "System QuickJS"
     }
     
-    val jsBoilerPlate = """print(1); print(5); while (true) { print(String(eval(std.in.getline()))+"\n") }""".trimIndent()
+    override val engine = "qjs"
     
-    override val processCmd = arrayOf("qjs", "--std", "--eval", jsBoilerPlate)
-    
-    init {
-        startProcess()
-    }
+    override val processCmd by lazy { arrayOf("qjs", "--std", "--script", folderHandle.child("main.js").toString()) }
     
     override fun softStopProcess() {}
     
+    override fun motd() = replManager.blackbox.readAll(block=true).joinToString("\n")
+
 }
 
 
@@ -473,22 +431,16 @@ class SluaScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
 
     companion object Metadata: ScriptingBackend_metadata {
         override fun new(scriptingScope: ScriptingScope) = SluaScriptingBackend(scriptingScope)
-        override val displayname:String = "System LUA"
+        override val displayname:String = "System Lua"
     }
     
-    val luaBoilerPlate = """
-            while true do
-                io.stdout:write(io.stdin:read())
-            end
-        """.trimIndent()
+    override val engine = "lua"
     
-    override val processCmd = arrayOf("lua", "-e", luaBoilerPlate)
-    
-    init {
-        startProcess()
-    }
+    override val processCmd by lazy { arrayOf("lua", folderHandle.child("main.lua").toString()) }
     
     override fun softStopProcess() {}
+    
+    override fun motd() = replManager.blackbox.readAll(block=true).joinToString("\n")
     
 }
 
@@ -497,8 +449,6 @@ enum class ScriptingBackendType(val metadata:ScriptingBackend_metadata) {
     Dummy(ScriptingBackendBase),
     Hardcoded(HardcodedScriptingBackend),
     Reflective(ReflectiveScriptingBackend),
-    //QuickJS(QjsScriptingBackend),
-    //Lua(LuaScriptingBackend),
     //MicroPython(UpyScriptingBackend),
     SystemPython(SpyScriptingBackend),
     SystemQuickJS(SqjsScriptingBackend),

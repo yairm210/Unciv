@@ -181,7 +181,14 @@ class ForeignActionTransceiver(ForeignActionReceiver, ForeignActionSender):
 #t.SendForeignRead("ForeignActionTransceiver.__name__")
 
 
-print('sys.implementation == ' + str(sys.implementation))
+print(f"""
+
+Welcome to the CPython Unciv CLI. Currently, this backend relies on launching the system `python3` command.
+
+sys.implementation == {str(sys.implementation)}
+
+""")
+
 stdout = sys.stdout
 while True:
 	line = sys.stdin.readline()
@@ -195,6 +202,6 @@ while True:
 		else:
 			print(eval(code))
 	except Exception as e:
-		print(repr(e), file=stdout)
+		print(repr(e), file=stdout, flush=True)
 	else:
-		print(out.getvalue(), file=stdout)
+		print(out.getvalue(), file=stdout, flush=True)

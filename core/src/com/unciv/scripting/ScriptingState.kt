@@ -10,19 +10,28 @@ import kotlin.math.min
 
 /*
 ```
+The major classes added and changed by this PR are structured as follows. UpperCamelCase() and parentheses means a new instantiation of a class. lowerCamelCase means a reference to an already-existing instance. An asterisk at the start of an item means zero or multiple instances of that class may be held. A question mark at the start of an item means that it may not exist in all implementations of the parent base class/interface. A question mark at the end of an item means that it is nullable, or otherwise may not be set in all states.
+
 UncivGame():
-    ScriptingState():
+    ScriptingState(): // Persistent per UncivGame().
         ScriptingScope():
-            civInfo
-            gameInfo
+            civInfo? // These are set by WorldScreen init, and unset by MainMenuScreen.
+            gameInfo?
             uncivGame
-            worldScreen
+            worldScreen?
         *ScriptingBackend():
             scriptingScope
             ?ScriptingReplManager():
-                Blackbox()
-    ConsoleScreen():
+                Blackbox() // Common interface to wrap foreign interpreter with pipes, STDIN/STDOUT, queues, sockets, embedding, JNI, etc.
+            ?folderHandler: setupInterpreterEnvironment() // If used, a temporary directory with file structure copied from engine and shared folders in `assets/scripting`.
+    ConsoleScreen(): // Persistent as long as window isn't resized. Recreates itself and restores most of its state from scriptingState if resized.
         scriptingState
+WorldScreen():
+    consoleScreen
+    scriptingState // ScriptingState has getters and setters that wrap scriptingScope, which WorldScreen uses to update game info.
+MainMenuScreen():
+    consoleScreen
+    scriptingState // Same as for worldScreen.
 ```
 */
 
