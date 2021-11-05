@@ -354,6 +354,23 @@ open class TileInfo {
         return stats.food + stats.production + stats.gold
     }
 
+    // For dividing the map into Regions to determine start locations
+    fun getTileFertility(checkCoasts: Boolean): Int {
+        val terrains = getAllTerrains()
+        var fertility = 0
+        for (terrain in terrains) {
+            if (terrain.hasUnique(UniqueType.OverrideFertility))
+                return terrain.getMatchingUniques(UniqueType.OverrideFertility).first().params[0].toInt()
+            else
+                fertility += terrain.getMatchingUniques(UniqueType.AddFertility)
+                        .sumBy { it.params[0].toInt() }
+        }
+        if (isAdjacentToRiver()) fertility += 1
+        if (isAdjacentToFreshwater) fertility += 1 // meaning total +2 for river
+        if (checkCoasts && isCoastalTile()) fertility += 2
+        return fertility
+    }
+
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
         val stats = improvement.cloneStats()
         if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name)

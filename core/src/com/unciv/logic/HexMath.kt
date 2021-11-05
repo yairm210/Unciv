@@ -117,6 +117,13 @@ object HexMath {
             cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
     }
 
+    fun hex2EvenQCoords(hexCoord: Vector2): Vector2 {
+        return if (hexCoord == Vector2.Zero)
+            Vector2.Zero
+        else
+            cubic2EvenQCoords(hex2CubicCoords(hexCoord))
+    }
+
     fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
         var rx = round(cubicCoords.x)
         var ry = round(cubicCoords.y)

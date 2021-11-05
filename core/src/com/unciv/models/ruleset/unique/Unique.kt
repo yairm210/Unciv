@@ -105,6 +105,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                     it.matchesFilter(condition.params[2], state.civInfo) &&
                     it.matchesFilter(condition.params[3], state.civInfo)
                 } in (condition.params[0].toInt())..(condition.params[1].toInt())
+
+            UniqueType.ConditionalOnWaterMaps -> state.region?.continentID == -1
+            UniqueType.ConditionalInRegionOfType -> state.region?.type == condition.params[0]
+            UniqueType.ConditionalInRegionExceptOfType -> state.region != null && state.region.type != condition.params[0]
+
             else -> false
         }
     }

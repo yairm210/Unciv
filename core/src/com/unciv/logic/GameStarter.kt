@@ -41,8 +41,12 @@ object GameStarter {
             tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
             // Don't override the map parameters - this can include if we world wrap or not!
         } else runAndMeasure("generateMap") {
-            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters)
+            // The mapgen needs to know what civs are in the game to generate regions, starts and resources
+            addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, existingMap = false)
+            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameInfo.civilizations)
             tileMap.mapParameters = gameSetupInfo.mapParameters
+            // Now forget them for a moment! MapGen can silently fail to place some city states, so then we'll use the old fallback method to place those.
+            gameInfo.civilizations.clear()
         }
 
         runAndMeasure("addCivilizations") {
@@ -52,7 +56,8 @@ object GameStarter {
             addCivilizations(
                 gameSetupInfo.gameParameters,
                 gameInfo,
-                ruleset
+                ruleset,
+                existingMap = true
             ) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
         }
 
@@ -169,7 +174,7 @@ object GameStarter {
         }
     }
 
-    private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset) {
+    private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset, existingMap: Boolean) {
         val availableCivNames = Stack<String>()
         // CityState or Spectator civs are not available for Random pick
         availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
@@ -183,9 +188,16 @@ object GameStarter {
             gameInfo.civilizations.add(barbarianCivilization)
         }
 
+        val civNamesWithStartingLocations = if(existingMap) gameInfo.tileMap.startingLocationsByNation.keys
+            else emptySet()
+        val presetMajors = Stack<String>()
+        presetMajors.addAll(availableCivNames.filter { it in civNamesWithStartingLocations })
+
         for (player in newGameParameters.players.sortedBy { it.chosenCiv == "Random" }) {
             val nationName = if (player.chosenCiv != "Random") player.chosenCiv
+            else if (presetMajors.isNotEmpty()) presetMajors.pop()
             else availableCivNames.pop()
+            availableCivNames.remove(nationName) // In case we got it from a map preset
 
             val playerCiv = CivilizationInfo(nationName)
             for (tech in startingTechs)
@@ -194,8 +206,6 @@ object GameStarter {
             playerCiv.playerId = player.playerId
             gameInfo.civilizations.add(playerCiv)
         }
-
-        val civNamesWithStartingLocations = gameInfo.tileMap.startingLocationsByNation.keys
 
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,

@@ -3,17 +3,15 @@ package com.unciv.logic.map.mapgenerator
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import kotlin.math.*
 import com.unciv.models.ruleset.unique.UniqueType
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.pow
-import kotlin.math.sign
 import kotlin.random.Random
 
 
@@ -26,7 +24,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
     private var randomness = MapGenerationRandomness()
 
-    fun generateMap(mapParameters: MapParameters): TileMap {
+    fun generateMap(mapParameters: MapParameters, civilizations: List<CivilizationInfo> = emptyList()): TileMap {
         val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
 
@@ -77,11 +75,18 @@ class MapGenerator(val ruleset: Ruleset) {
         runAndMeasure("assignContinents") {
             map.assignContinents(TileMap.AssignContinentsMode.Assign)
         }
-        runAndMeasure("NaturalWonderGenerator") {
-            NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
-        }
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness).spawnRivers()
+        }
+        val regions = MapRegions(ruleset)
+        runAndMeasure("generateRegions") {
+            regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv() })
+        }
+        runAndMeasure("assignRegions") {
+            regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv() })
+        }
+        runAndMeasure("NaturalWonderGenerator") {
+            NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
         }
         runAndMeasure("spreadResources") {
             spreadResources(map)
