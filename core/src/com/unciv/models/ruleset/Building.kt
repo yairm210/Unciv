@@ -741,7 +741,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null)[stat] > 0) return true
-        if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats[stat] > 0 }) return true
+        if (uniqueObjects.any { it.isOfType(UniqueType.StatsPerPopulation) && it.stats[stat] > 0 }) return true
         if (uniqueObjects.any { it.isOfType(UniqueType.StatsFromTiles) && it.stats[stat] > 0 }) return true
         return false
     }

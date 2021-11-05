@@ -98,7 +98,7 @@ class CityConstructions {
         // the stats a city receives from wonders. It is then called with `unique` being the list
         // of all specifically non-local uniques of all cities.
         // 
-        // This averts the problem, albeit it barely, and it might change in the future without 
+        // This averts the problem, albeit barely, and it might change in the future without
         // anyone noticing, which might lead to further bugs. So why can't these two unique checks
         // just be merged then? Because of another problem.
         //
@@ -110,7 +110,7 @@ class CityConstructions {
         // while the local uniques with this placeholderText are from buildings, but this is in no
         // way a given. In reality, there should be functions getBuildingStats and getWonderStats,
         // to solve this, with getStats merely adding these two together. 
-        for (unique in cityInfo.getLocalMatchingUniques("[] per [] population []")
+        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.StatsPerPopulation)
                 .filter { cityInfo.matchesFilter(it.params[2])}
         ) {
             stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
