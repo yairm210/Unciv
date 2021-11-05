@@ -348,6 +348,8 @@ open class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): Script
     open val engine = ""
     
     val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(engine) }
+    // This requires the overridden values for `engine`, so setting it in the constructor causes a null error.
+    // Also, SubprocessScriptingBackend inherits from this, but not all subclasses of SubprocessScriptingBackend might need it. So as long as it's not accessed, it won't be intialized.
     
 }
 
@@ -357,6 +359,8 @@ open class SubprocessScriptingBackend(scriptingScope: ScriptingScope): Environme
     open val processCmd = arrayOf("")
     
     val replManager: ScriptingReplManager by lazy { ScriptingReplManager(scriptingScope, SubprocessBlackbox(processCmd)) }
+    // Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way.
+    // Downside: Potential latency on first command, or possibly depending on `motd()` for immediate initialization.
     
     open val replSoftExitCode = ""
     
@@ -396,6 +400,7 @@ class SpyScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBa
     override val engine = "python"
     
     override val processCmd by lazy { arrayOf("python3", "-u", "-X", "utf8", folderHandle.child("main.py").toString()) }
+    // Hm. I suppose this probably doesn't actually need to be lazy, as long as folderHandle is lazy and already available.
     
     override val replSoftExitCode = """
             try:

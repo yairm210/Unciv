@@ -1,9 +1,10 @@
 package com.unciv.scripting.reflection
 
 import kotlin.collections.ArrayList
-import kotlin.reflect.KProperty1
+import kotlin.reflect.KCallable
 import kotlin.reflect.KFunction
 import kotlin.reflect.KMutableProperty1
+import kotlin.reflect.KProperty1
 import java.util.*
 
 
@@ -14,6 +15,12 @@ object Reflection {
         val property = instance::class.members
             .first { it.name == propertyName } as KProperty1<Any, *>
         return property.get(instance) as R?
+    }
+    
+    fun readInstanceMethod(instance: Any, methodName: String): KCallable<Any> {
+        val method = instance::class.members
+            .first { it.name == methodName } as KCallable<Any>
+        return method
     }
 
     fun readInstanceItem(instance: Any, keyOrIndex: Any): Any? {
@@ -31,7 +38,7 @@ object Reflection {
         property.set(instance, value)
     }
 
-
+	/*
     interface PathElementArg {
         val value: Any
     }
@@ -40,22 +47,20 @@ object Reflection {
     data class PathElementArgInt(override val value: Int): PathElementArg
     data class PathElementArgFloat(override val value: Float): PathElementArg
     data class PathElementArgBoolean(override val value: Boolean): PathElementArg
-
+	*/
 
     enum class PathElementType() {
         Property(),
         Key(),
-        //Index(),
         Call()
     }
 
     data class PathElement(
         val type: PathElementType,
         val name: String,
-        //val args: Collection<PathElementArg>,
-        //For IPC with an actual interpreter, it should be possible to pass JSON arrays of basic types instead of just parsing the string.
-        //Mostly I'm not sure how and where to cleanly determine whether to use the args field, or parse the string field.
-        val doEval: Boolean = false
+        val doEval: Boolean = false,
+        val params: List<Any> = listOf()
+        //For key and index accesses, and function calls, evaluate `name` instead of using `params`.
     )
 
 
@@ -69,18 +74,21 @@ object Reflection {
         "()" to PathElementType.Call
     )
 
-    fun parseKotlinPath(text: String): List<PathElement> {
+    fun parseKotlinPath(code: String): List<PathElement> {
         var path:MutableList<PathElement> = ArrayList<PathElement>()
         var curr_type = PathElementType.Property
         var curr_name = ArrayList<Char>()
         var curr_brackets = ""
         var curr_bracketdepth = 0
         var just_closed_brackets = true
-        for (char in text) {
+        for (char in code) {
             if (curr_bracketdepth == 0) {
                 if (char == '.') {
                     if (!just_closed_brackets) {
-                        path.add(PathElement(PathElementType.Property, curr_name.joinToString("")))
+                        path.add(PathElement(
+                            PathElementType.Property,
+                            curr_name.joinToString("")
+                        ))
                     }
                     curr_name.clear()
                     just_closed_brackets = false
@@ -88,7 +96,10 @@ object Reflection {
                 }
                 if (char in brackettypes) {
                     if (!just_closed_brackets) {
-                        path.add(PathElement(PathElementType.Property, curr_name.joinToString("")))
+                        path.add(PathElement(
+                            PathElementType.Property,
+                            curr_name.joinToString("")
+                        ))
                     }
                     curr_name.clear()
                     curr_brackets = brackettypes[char]!!
@@ -120,7 +131,10 @@ object Reflection {
             }
         }
         if (!just_closed_brackets && curr_bracketdepth == 0) {
-            path.add(PathElement(PathElementType.Property, curr_name.joinToString("")))
+            path.add(PathElement(
+                PathElementType.Property,
+                curr_name.joinToString("")
+            ))
             curr_name.clear()
         }
         if (curr_bracketdepth > 0) {
@@ -132,14 +146,33 @@ object Reflection {
 
     fun stringifyKotlinPath() {
     }
+    
+    private val closingbrackets = null
+    
+    fun splitToplevelExprs(code: String): List<String> {
+        return code.split(',').map{ it.trim(' ') }
+        var segs = ArrayList<String>()
+        val bracketdepths = mutableMapOf<Char, Int>(
+            *brackettypes.keys.map{ it to 0 }.toTypedArray()
+        )
+        //TODO: Actually try to parse for parenthesization, strings, etc.
+    }
 
 
     fun resolveInstancePath(instance: Any, path: List<PathElement>): Any? {
         var obj: Any? = instance
+        var lastobj0: Any? = null
+        var lastobj1: Any? = null // Keep the second last object traversed, for function calls to bind to.
         for (element in path) {
+            lastobj1 = lastobj0
+            lastobj0 = obj
             when (element.type) {
                 PathElementType.Property -> {
-                    obj = readInstanceProperty(obj!!, element.name)
+                    try {
+                        obj = readInstanceProperty(obj!!, element.name)
+                    } catch (e: ClassCastException) {
+                        obj = readInstanceMethod(obj!!, element.name)
+                    }
                 }
                 PathElementType.Key -> {
                     obj = readInstanceItem(
@@ -147,11 +180,19 @@ object Reflection {
                         if (element.doEval)
                             evalKotlinString(instance!!, element.name)!!
                         else
-                            element.name
+                            element.params[0]
                     )
                 }
                 PathElementType.Call -> {
-                    throw UnsupportedOperationException("Calls not implemented.")
+                    obj = (obj as KCallable<Any>).call(
+                        lastobj1!!,
+                        *(
+                            if (element.doEval)
+                                splitToplevelExprs(element.name).map{ evalKotlinString(instance!!, it) }
+                            else
+                                element.params
+                        ).toTypedArray()
+                    )
                 }
                 else -> {
                     throw UnsupportedOperationException("Unknown path element type: ${element.type}")
