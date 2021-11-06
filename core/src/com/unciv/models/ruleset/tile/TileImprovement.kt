@@ -87,6 +87,7 @@ class TileImprovement : RulesetStatsObject() {
             "All" -> true
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
+            "Remove" -> name.startsWith("Remove ")
             else -> false
         }
     }
