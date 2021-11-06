@@ -10,6 +10,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import kotlin.math.max
 import kotlin.math.min
@@ -38,11 +39,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
 
     val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
+    val faithConstructionList = arrayListOf<ConstructionChoice>()
 
     data class ConstructionChoice(val choice:String, var choiceModifier:Float,val remainingWork:Int)
 
     fun addChoice(choices:ArrayList<ConstructionChoice>, choice:String, choiceModifier: Float){
         choices.add(ConstructionChoice(choice,choiceModifier,cityConstructions.getRemainingWork(choice)))
+    }
+
+    fun buyWithFaithChoice(toBeBuilt: String, choiceModifier: Float){
+        faithConstructionList.add(ConstructionChoice(toBeBuilt, choiceModifier, 0))
+
+
     }
 
     fun chooseNextConstruction() {
@@ -95,6 +103,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             NotificationIcon.Construction
         )
         cityConstructions.currentConstructionFromQueue = chosenConstruction
+
+        if (civInfo.isPlayerCivilization()) return // don't want the ai to control what a player uses faith for
+
+        var chosenItem: ConstructionChoice? = null
+
+        for (item in faithConstructionList){
+            if (item.choiceModifier < 1f) continue // not worth buying, save for something later
+            if (item.choice < chosenConstruction) continue
+            chosenItem = item
+
+        }
+        if (chosenItem == null) return
     }
 
     private fun addMilitaryUnitChoice() {
@@ -322,13 +342,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         }
     }
 
-    fun addReligousUnit(){
+    private fun addReligousUnit(){
 
         var modifier = 50000f
 
         val missionary = cityConstructions.getConstructableUnits()
                 .filter { it -> it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion" }}
-            .first()
+            .firstOrNull()
 
         if (preferredVictoryType == VictoryType.Domination) return
         if (civInfo.religionManager.religion?.name == null) return
@@ -347,8 +367,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
 
-        if (buildMissionary > buildInqusitor && cityConstructions.getConstructableUnits().contains(missionary)) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary)
-        else if(cityConstructions.getConstructableUnits().contains(missionary)) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary) // will change later when I add inquisitor AI
+        if (buildMissionary > buildInqusitor && missionary != null) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary)
+        else if(missionary != null) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary) // will change later when I add inquisitor AI
 
 
     }
