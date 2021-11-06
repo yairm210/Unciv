@@ -164,32 +164,6 @@ class OnlineMultiplayer {
         DropBox.uploadFile("${getGameLocation(gameInfo.gameId)}_Preview", zippedGameInfo, true)
     }
 
-    /**
-     * Use to lock a game before uploading.
-     * DO NOT forget to unlock using tryReleaseLockForGame!
-     * ALWAYS thread-sleep between multiple tries!
-     * @see tryReleaseLockForGame
-     * @return false if game is already locked
-     */
-    fun tryLockGame(gameInfo: GameInfoPreview): Boolean {
-        // We have to check if the lock file already exists before we try to upload a new
-        // lock file to not overuse the dropbox file upload limit else it will return an error
-        if (DropBox.fileExists("${getGameLocation(gameInfo.gameId)}_Lock"))
-            return false
-
-        val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(LockFile()))
-        try {
-            DropBox.uploadFile("${getGameLocation(gameInfo.gameId)}_Lock", zippedGameInfo)
-        } catch (foe: DropBoxFileConflictException) {
-            return false
-        }
-        return true
-    }
-
-    fun tryReleaseLockForGame(gameInfo: GameInfoPreview) {
-        DropBox.deleteFile("${getGameLocation(gameInfo.gameId)}_Lock")
-    }
-
     fun tryDownloadGame(gameId: String): GameInfo {
         val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
         return GameSaver.gameInfoFromString(Gzip.unzip(zippedGameInfo))
@@ -228,19 +202,44 @@ class LockFile {
  *	  it blocks the entire thread for an increasing period of time via Thread.sleep()
  */
 class ServerMutex(val gameInfo: GameInfo) {
-	var locked = false
+    var locked = false
 
     /**
      * Try to obtain the server lock ONCE
-     * @see OnlineMultiplayer.tryLockGame
+     * DO NOT forget to unlock it when you're done with it!
+     * Sleep between successive attempts
      * @see lock
      * @see unlock
      * @return true if lock is acquired
      */
-	fun tryLock(): Boolean {
-		locked = OnlineMultiplayer().tryLockGame(gameInfo.asPreview())
+    fun tryLock(): Boolean {
+
+        val preview = gameInfo.asPreview()
+
+        // If we already hold the lock, return without doing anything
+        if (locked) {
+            return locked
+        }
+        
+        locked = false
+
+        // We have to check if the lock file already exists before we try to upload a new
+        // lock file to not overuse the dropbox file upload limit else it will return an error
+        if (DropBox.fileExists("${preview.gameId}_Lock")) {
+            return locked
+        }
+
+        val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(LockFile()))
+        try {
+            DropBox.uploadFile("${preview.gameId}_Lock", zippedGameInfo)
+        } catch (fce: DropBoxFileConflictException) {
+            return locked
+        }
+
+        locked = true
         return locked
-	}
+
+    }
 
     /**
      * Block until this client owns the lock
@@ -251,12 +250,12 @@ class ServerMutex(val gameInfo: GameInfo) {
      * @see tryLock
      * @see unlock
      */
-	fun lock() {
-		var tries = 0
+    fun lock() {
+        var tries = 0
 
         // Try the lockfile once
         locked = tryLock()
-		while (!locked) {
+        while (!locked) {
             // Wait exponentially longer after each attempt as per DropBox API recommendations
             var delay = 250 * 2.0.pow(tries).toLong()
 
@@ -266,32 +265,36 @@ class ServerMutex(val gameInfo: GameInfo) {
             }
 
             // Consider NOT sleeping here, instead perhaps delay or spin+yield
-			Thread.sleep(delay)
+            Thread.sleep(delay)
 
             tries++
 
             // Retry the lock
             locked = tryLock()
-		}
-	}
+        }
+    }
 
     /**
      * Release a server lock acquired by tryLock or lock
      * @see tryLock
      * @see lock
      */
-	fun unlock() {
-		OnlineMultiplayer().tryReleaseLockForGame(gameInfo.asPreview())
-		locked = false
-	}
+    fun unlock() {
+
+        val preview = gameInfo.asPreview()
+
+        DropBox.deleteFile("${OnlineMultiplayer().getGameLocation(preview.gameId)}_Lock")
+
+        locked = false
+    }
 
     /**
      * See whether the client currently holds this lock
      * @return true if lock is active
      */
-	fun holdsLock(): Boolean {
-		return locked
-	}
+    fun holdsLock(): Boolean {
+        return locked
+    }
 }
 
 class DropBoxFileConflictException: Exception()
