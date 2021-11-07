@@ -228,9 +228,8 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
             return locked
         }
 
-        val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(LockFile()))
         try {
-            DropBox.uploadFile(fileName, zippedGameInfo)
+            DropBox.uploadFile(fileName, Gzip.zip(GameSaver.json().toJson(LockFile())))
         } catch (ex: DropBoxFileConflictException) {
             return locked
         }
