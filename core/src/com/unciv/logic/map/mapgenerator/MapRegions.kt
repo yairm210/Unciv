@@ -10,12 +10,15 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.ui.utils.randomWeighted
 import kotlin.math.*
 
 class MapRegions (val ruleset: Ruleset){
@@ -38,6 +41,8 @@ class MapRegions (val ruleset: Ruleset){
 
     private val regions = ArrayList<Region>()
     private val tileData = HashMap<Vector2, MapGenTileData>()
+    private val cityStateLuxuries = ArrayList<String>()
+    private val disabledLuxuries = ArrayList<String>()
 
     /** Creates [numRegions] number of balanced regions for civ starting locations. */
     fun generateRegions(tileMap: TileMap, numRegions: Int) {
@@ -178,12 +183,8 @@ class MapRegions (val ruleset: Ruleset){
         if (civilizations.isEmpty()) return
 
         // first assign region types
-        val regionTypes = ruleset.terrains.values.filter { it.hasUnique(UniqueType.RegionRequirePercentSingleType) ||
-                                                            it.hasUnique(UniqueType.RegionRequirePercentTwoTypes) }
-                .sortedBy { if (it.hasUnique(UniqueType.RegionRequirePercentSingleType))
-                                it.getMatchingUniques(UniqueType.RegionRequirePercentSingleType).first().params[2].toInt()
-                        else
-                                it.getMatchingUniques(UniqueType.RegionRequirePercentTwoTypes).first().params[3].toInt() }
+        val regionTypes = ruleset.terrains.values.filter { getRegionPriority(it) != null }
+                .sortedBy { getRegionPriority(it) }
 
         for (region in regions) {
             region.countTerrains()
@@ -232,35 +233,40 @@ class MapRegions (val ruleset: Ruleset){
         val positiveBiasCivs = civilizations.filterNot { it in coastBiasCivs || it in negativeBiasCivs || it in randomCivs }
                 .sortedBy { ruleset.nations[it.civName]!!.startBias.count() } // civs with only one desired region go first
         val positiveBiasFallbackCivs = ArrayList<CivilizationInfo>() // Civs who couln't get their desired region at first pass
+        val unpickedRegions = regions.toMutableList()
 
         // First assign coast bias civs
         for (civ in coastBiasCivs) {
             // Try to find a coastal start, preferably a really coastal one
-            var startRegion = regions.filter { tileMap[it.startPosition!!].isCoastalTile() }
+            var startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].isCoastalTile() }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
+                unpickedRegions.remove(startRegion)
                 continue
             }
             // Else adjacent to a lake
-            startRegion = regions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.getBaseTerrain().hasUnique(UniqueType.FreshWater) } }
+            startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.getBaseTerrain().hasUnique(UniqueType.FreshWater) } }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
+                unpickedRegions.remove(startRegion)
                 continue
             }
             // Else adjacent to a river
-            startRegion = regions.filter { tileMap[it.startPosition!!].isAdjacentToRiver() }
+            startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].isAdjacentToRiver() }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
+                unpickedRegions.remove(startRegion)
                 continue
             }
             // Else at least close to a river ????
-            startRegion = regions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.isAdjacentToRiver() } }
+            startRegion = unpickedRegions.filter { tileMap[it.startPosition!!].neighbors.any { neighbor -> neighbor.isAdjacentToRiver() } }
                     .maxByOrNull { it.terrainCounts["Coastal"] ?: 0 }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
+                unpickedRegions.remove(startRegion)
                 continue
             }
             // Else pick a random region at the end
@@ -271,10 +277,11 @@ class MapRegions (val ruleset: Ruleset){
         for (civ in positiveBiasCivs) {
             // Try to find a start that matches any of the desired regions, ideally with lots of desired terrain
             val preferred = ruleset.nations[civ.civName]!!.startBias
-            val startRegion = regions.filter { it.type in preferred }
+            val startRegion = unpickedRegions.filter { it.type in preferred }
                     .maxByOrNull { it.terrainCounts.filterKeys { terrain -> terrain in preferred }.values.sum() }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
+                unpickedRegions.remove(startRegion)
                 continue
             } else if (ruleset.nations[civ.civName]!!.startBias.count() == 1) { // Civs with a single bias (only) get to look for a fallback region
                 positiveBiasFallbackCivs.add(civ)
@@ -285,17 +292,20 @@ class MapRegions (val ruleset: Ruleset){
 
         // Do a second pass for fallback civs, choosing the region most similar to the desired type
         for (civ in positiveBiasFallbackCivs) {
-            assignCivToRegion(civ, getFallbackRegion(ruleset.nations[civ.civName]!!.startBias.first()))
+            val startRegion = getFallbackRegion(ruleset.nations[civ.civName]!!.startBias.first())
+            assignCivToRegion(civ, startRegion)
+            unpickedRegions.remove(startRegion)
         }
 
         // Next do negative bias ones (ie "Avoid []")
         for (civ in negativeBiasCivs) {
             val avoided = ruleset.nations[civ.civName]!!.startBias.map { it.getPlaceholderParameters()[0] }
             // Try to find a region not of the avoided types, secondary sort by least number of undesired terrains
-            val startRegion = regions.filterNot { it.type in avoided }
+            val startRegion = unpickedRegions.filterNot { it.type in avoided }
                     .minByOrNull { it.terrainCounts.filterKeys { terrain -> terrain in avoided }.values.sum() }
             if (startRegion != null) {
                 assignCivToRegion(civ, startRegion)
+                unpickedRegions.remove(startRegion)
                 continue
             } else
                 randomCivs.add(civ) // else pick a random region at the end
@@ -303,14 +313,25 @@ class MapRegions (val ruleset: Ruleset){
 
         // Finally assign the remaining civs randomly
         for (civ in randomCivs) {
-            val startRegion = regions.random()
+            val startRegion = unpickedRegions.random()
             assignCivToRegion(civ, startRegion)
+            unpickedRegions.remove(startRegion)
         }
+    }
+
+    private fun getRegionPriority(terrain: Terrain): Int? {
+        if (!terrain.hasUnique(UniqueType.RegionRequirePercentSingleType) &&
+            !terrain.hasUnique(UniqueType.RegionRequirePercentTwoTypes))
+                return null
+        else
+            return if (terrain.hasUnique(UniqueType.RegionRequirePercentSingleType))
+                    terrain.getMatchingUniques(UniqueType.RegionRequirePercentSingleType).first().params[2].toInt()
+                else
+                    terrain.getMatchingUniques(UniqueType.RegionRequirePercentTwoTypes).first().params[3].toInt()
     }
 
     private fun assignCivToRegion(civInfo: CivilizationInfo, region: Region) {
         region.tileMap.addStartingLocation(civInfo.civName, region.tileMap[region.startPosition!!])
-        regions.remove(region) // This region can no longer be picked
     }
 
     /** Attempts to find a good start close to the center of [region]. Calls setRegionStart with the position*/
@@ -736,6 +757,112 @@ class MapRegions (val ruleset: Ruleset){
         localData.startScore = totalScore
     }
 
+    fun placeLuxuries(tileMap: TileMap) {
+        assignLuxuries()
+    }
+
+    /** Assigns a luxury to each region. No luxury can be assigned to too many regions.
+     *  Some luxuries are earmarked for city states. The rest are randomly distributed or
+     *  don't occur att all in the map */
+    private fun assignLuxuries() {
+        // If there are any weightings defined in json, assume they are complete. If there are none, use flat weightings instead
+        val fallbackWeightings = ruleset.tileResources.values.none {
+            it.resourceType == ResourceType.Luxury &&
+                (it.hasUnique(UniqueType.LuxuryWeighting) || it.hasUnique(UniqueType.LuxuryWeightingForCityStates)) }
+
+        val maxRegionsWithLuxury = if (regions.count() > 12) 3 else 2
+        val targetCityStateLuxuries = if (tileData.size > 5000) 4 else 3
+        val disabledPercent = 100 - min(tileData.size.toFloat().pow(0.2f) * 16, 100f).toInt()
+        val targetDisabledLuxuries = (ruleset.tileResources.values
+                .count { it.resourceType == ResourceType.Luxury } * disabledPercent) / 100
+        println("Assigning luxuries...")
+        println("Max $maxRegionsWithLuxury regions with luxury, targets $targetCityStateLuxuries city state luxuries and $targetDisabledLuxuries disabled.")
+
+        val amountRegionsWithLuxury = HashMap<String, Int>()
+        // Init map
+        ruleset.tileResources.values
+                .forEach { amountRegionsWithLuxury[it.name] = 0 }
+
+        for (region in regions.sortedBy { getRegionPriority(ruleset.terrains[it.type]!!) } ) {
+            var candidateLuxuries = ruleset.tileResources.values.filter {
+                it.resourceType == ResourceType.Luxury &&
+                amountRegionsWithLuxury[it.name]!! < maxRegionsWithLuxury &&
+                // Check that it has a weight for this region type
+                (fallbackWeightings ||
+                    it.getMatchingUniques(UniqueType.LuxuryWeighting).any { unique -> unique.params[0] == region.type } ) &&
+                // Check that there is enough coast if it is a water based resource
+                ((region.terrainCounts["Coastal"] ?: 0) >= 12 ||
+                    it.terrainsCanBeFoundOn.any { terrain -> ruleset.terrains[terrain]!!.type != TerrainType.Water } )
+            }
+
+            // If we couldn't find any options, pick from all luxuries. First try to not pick water luxuries on land regions
+            if (candidateLuxuries.isEmpty()) {
+                candidateLuxuries = ruleset.tileResources.values.filter {
+                    it.resourceType == ResourceType.Luxury &&
+                    amountRegionsWithLuxury[it.name]!! < maxRegionsWithLuxury &&
+                    // Ignore weightings for this pass
+                    // Check that there is enough coast if it is a water based resource
+                    ((region.terrainCounts["Coastal"] ?: 0) >= 12 ||
+                            it.terrainsCanBeFoundOn.any { terrain -> ruleset.terrains[terrain]!!.type != TerrainType.Water })
+                }
+            }
+            // If there are still no candidates, ignore water restrictions
+            if (candidateLuxuries.isEmpty()) {
+                candidateLuxuries = ruleset.tileResources.values.filter {
+                    it.resourceType == ResourceType.Luxury &&
+                    amountRegionsWithLuxury[it.name]!! < maxRegionsWithLuxury
+                    // Ignore weightings and water for this pass
+                }
+            }
+            // If there are still no candidates (mad modders???) just skip this region
+            if (candidateLuxuries.isEmpty()) continue
+
+            // Pick a luxury at random. Weight is reduced if the luxury has been picked before
+            val modifiedWeights = candidateLuxuries.map {
+                val weightingUnique = it.getMatchingUniques(UniqueType.LuxuryWeighting)
+                        .filter { unique -> unique.params[0] == region.type }.firstOrNull()
+                if (weightingUnique == null)
+                    1f / (1f + amountRegionsWithLuxury[it.name]!!)
+                else
+                    weightingUnique.params[1].toFloat() / (1f + amountRegionsWithLuxury[it.name]!!)
+            }
+            region.luxury = candidateLuxuries.randomWeighted(modifiedWeights).name
+            amountRegionsWithLuxury[region.luxury!!] = amountRegionsWithLuxury[region.luxury]!! + 1
+            println("Assigned ${region.luxury} to region ${regions.indexOf(region)}")
+        }
+
+        // Assign luxuries to City States
+        for (i in 1..targetCityStateLuxuries) {
+            val candidateLuxuries = ruleset.tileResources.values.filter {
+                it.resourceType == ResourceType.Luxury &&
+                amountRegionsWithLuxury[it.name] == 0 &&
+                (fallbackWeightings || it.hasUnique(UniqueType.LuxuryWeightingForCityStates))
+            }
+            if (candidateLuxuries.isEmpty()) continue
+
+            val weights = candidateLuxuries.map {
+                val weightingUnique = it.getMatchingUniques(UniqueType.LuxuryWeightingForCityStates).firstOrNull()
+                if (weightingUnique == null)
+                    1f
+                else
+                    weightingUnique.params[0].toFloat()
+            }
+            val luxury = candidateLuxuries.randomWeighted(weights).name
+            cityStateLuxuries.add(luxury)
+            amountRegionsWithLuxury[luxury] = 1
+            println("Assigned $luxury to City States.")
+        }
+
+        // Assign some resources as disabled. Marble is never disabled.
+        val remainingLuxuries = ruleset.tileResources.values.filter {
+            it.resourceType == ResourceType.Luxury &&
+            amountRegionsWithLuxury[it.name] == 0 &&
+            !it.hasUnique(UniqueType.LuxurySpecialPlacement)
+        }.map { it.name }.shuffled()
+        disabledLuxuries.addAll(remainingLuxuries.take(targetDisabledLuxuries))
+        println("Disabled luxuries: $disabledLuxuries")
+    }
+
     // Holds a bunch of tile info that is only interesting during map gen
     class MapGenTileData(val tile: TileInfo, val region: Region?) {
         var closeStartPenalty = 0
@@ -814,6 +941,7 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
     val terrainCounts = HashMap<String, Int>()
     var totalFertility = 0
     var type = "Hybrid" // being an undefined or indeterminate type
+    var luxury: String? = null
     var startPosition: Vector2? = null
 
     var affectedByWorldWrap = false

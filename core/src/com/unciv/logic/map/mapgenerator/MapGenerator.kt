@@ -85,6 +85,9 @@ class MapGenerator(val ruleset: Ruleset) {
         runAndMeasure("assignRegions") {
             regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv() })
         }
+        runAndMeasure("placeLuxuries") {
+            regions.placeLuxuries(map)
+        }
         runAndMeasure("NaturalWonderGenerator") {
             NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
         }
