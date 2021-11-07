@@ -10,7 +10,6 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.*
 import kotlin.math.pow
 
 
@@ -201,8 +200,10 @@ class LockFile {
  *	Based on the design of Mutex from kotlinx.coroutines.sync, except that when it blocks,
  *	  it blocks the entire thread for an increasing period of time via Thread.sleep()
  */
-class ServerMutex(val gameInfo: GameInfo) {
-    var locked = false
+class ServerMutex(val gameInfo: GameInfoPreview) {
+    private var locked = false
+
+    constructor(gameInfo: GameInfo) : this(gameInfo.asPreview()) { }
 
     /**
      * Try to obtain the server lock ONCE
@@ -213,32 +214,29 @@ class ServerMutex(val gameInfo: GameInfo) {
      * @return true if lock is acquired
      */
     fun tryLock(): Boolean {
-
-        val preview = gameInfo.asPreview()
-
         // If we already hold the lock, return without doing anything
         if (locked) {
             return locked
         }
         
         locked = false
+        val fileName = "${OnlineMultiplayer().getGameLocation(gameInfo.gameId)}_Lock"
 
         // We have to check if the lock file already exists before we try to upload a new
         // lock file to not overuse the dropbox file upload limit else it will return an error
-        if (DropBox.fileExists("${preview.gameId}_Lock")) {
+        if (DropBox.fileExists(fileName)) {
             return locked
         }
 
         val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(LockFile()))
         try {
-            DropBox.uploadFile("${preview.gameId}_Lock", zippedGameInfo)
-        } catch (fce: DropBoxFileConflictException) {
+            DropBox.uploadFile(fileName, zippedGameInfo)
+        } catch (ex: DropBoxFileConflictException) {
             return locked
         }
 
         locked = true
         return locked
-
     }
 
     /**
@@ -280,11 +278,7 @@ class ServerMutex(val gameInfo: GameInfo) {
      * @see lock
      */
     fun unlock() {
-
-        val preview = gameInfo.asPreview()
-
-        DropBox.deleteFile("${OnlineMultiplayer().getGameLocation(preview.gameId)}_Lock")
-
+        DropBox.deleteFile("${OnlineMultiplayer().getGameLocation(gameInfo.gameId)}_Lock")
         locked = false
     }
 
@@ -292,9 +286,7 @@ class ServerMutex(val gameInfo: GameInfo) {
      * See whether the client currently holds this lock
      * @return true if lock is active
      */
-    fun holdsLock(): Boolean {
-        return locked
-    }
+    fun holdsLock() = locked
 }
 
 class DropBoxFileConflictException: Exception()
