@@ -142,3 +142,9 @@ android/assets/music/
 
 # Visual Studio Code
 .vscode/
+
+# Unciv
+GameSettings.json
+
+# Python
+*.pyc

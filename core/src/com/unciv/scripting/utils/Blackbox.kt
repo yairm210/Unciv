@@ -5,7 +5,7 @@ interface Blackbox {
 
     fun start() {  }
     
-    fun stop(): Exception? { return null } // Return null on success, or return an Exception() on failure. Because there might be normal situations where a "black box" isn't viable to cleanly shut down, I'm thinking that letting exceptions be returned will let those situations be distinguished from actual errors. E.G.: Making an invalid API call to a requests library should still throw the Exception as usual, but making the right call only to find out that the network's down or a process is frozen would be a more "normal" and uncontrollable situation, so in that case the exception should be a return value instead of thrown.
+    fun stop(): Exception? = null // Return null on success, or return an Exception() on failure. Because there might be normal situations where a "black box" isn't viable to cleanly shut down, I'm thinking that letting exceptions be returned will let those situations be distinguished from actual errors. E.G.: Making an invalid API call to a requests library should still throw the Exception as usual, but making the right call only to find out that the network's down or a process is frozen would be a more "normal" and uncontrollable situation, so in that case the exception should be a return value instead of thrown.
     
     val isAlive: Boolean
         get() = false
@@ -16,7 +16,7 @@ interface Blackbox {
     val readyForWrite: Boolean
         get() = false
         
-    fun read(block: Boolean = true): String // Return a single string if either blocking or ready to read, or throw an IllegalStateException() otherwise.
+    fun read(block: Boolean = true): String = ""// Return a single string if either blocking or ready to read, or throw an IllegalStateException() otherwise.
     
     fun readAll(block: Boolean = true, limit: Int = 0): List<String> { // Read out all lines up to a limit if greater than zero, returning an empty list if none are available and no blocking is allowed 
         val lines = ArrayList<String>()
@@ -32,6 +32,9 @@ interface Blackbox {
         return lines
     }
     
-    fun write(string: String)
+    fun write(string: String) {  }
     
+}
+
+class DummyBlackbox(): Blackbox {
 }

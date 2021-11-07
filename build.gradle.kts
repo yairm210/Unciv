@@ -20,6 +20,7 @@ buildscript {
         mavenLocal()
         mavenCentral()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
+        //maven { url = uri("https://kotlin.bintray.com/kotlinx") }
         gradlePluginPortal()
         maven{ url = uri("https://jitpack.io") } // for the anuken packr
     }
@@ -31,12 +32,14 @@ buildscript {
 
         // This is for wrapping the .jar file into a standalone executable
         classpath("com.github.anuken:packr:-SNAPSHOT")
+        classpath(kotlin("serialization:${com.unciv.build.BuildConfig.kotlinVersion}"))
     }
 }
 
 allprojects {
     apply(plugin  = "eclipse")
     apply(plugin  = "idea")
+    apply(plugin = "kotlinx-serialization")
 
 
     version = "1.0.1"
@@ -63,6 +66,7 @@ project(":desktop") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}") // Seem to need here as well as in `:core`, or else fails to find class def at run time.
+        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
         "implementation"("com.badlogicgames.gdx:gdx-backend-lwjgl3:${gdxVersion}")
         "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
 
@@ -84,6 +88,7 @@ project(":android") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
         "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
         natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
@@ -99,6 +104,7 @@ project(":ios") {
     dependencies {
         "implementation"(project(":core"))
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}")
+        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
         "implementation"("com.mobidevelop.robovm:robovm-rt:$roboVMVersion")
         "implementation"("com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion")
         "implementation"("com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion")
@@ -113,6 +119,7 @@ project(":core") {
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-reflect:${com.unciv.build.BuildConfig.kotlinVersion}") // Used for scripting API backends.
+        "implementation"("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
     }
 
 

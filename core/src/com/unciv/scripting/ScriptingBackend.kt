@@ -6,12 +6,15 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.protocol.ScriptingReplManager
 import com.unciv.scripting.protocol.SubprocessBlackbox
+import com.unciv.scripting.utils.ApiSpecGenerator
+import com.unciv.scripting.utils.Blackbox
+import com.unciv.scripting.utils.DummyBlackbox
 import com.unciv.scripting.utils.SourceManager
 import kotlin.reflect.full.*
 import java.util.*
 
 
-data class AutocompleteResults(val matches:List<String>, val isHelpText:Boolean = false, val helpText:String = "")
+data class AutocompleteResults(val matches:List<String> = listOf(), val isHelpText:Boolean = false, val helpText:String = "")
 
 
 interface ScriptingBackend_metadata {
@@ -20,7 +23,32 @@ interface ScriptingBackend_metadata {
 }
 
 
-open class ScriptingBackendBase(val scriptingScope: ScriptingScope) {
+interface ScriptingBackend {
+
+    fun motd(): String {
+        // Message to print on launch.
+        return "\n\nWelcome to the Unciv CLI!\nYou are currently running the dummy backend, which will echo all commands but never do anything.\n"
+    }
+
+    fun autocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
+        // Return either a `List` of autocomplete matches, or a
+        return AutocompleteResults(listOf(command+"_autocomplete"))
+    }
+
+    fun exec(command: String): String {
+        // Execute code and return output.
+        return command
+    }
+
+    fun terminate(): Exception? {
+        // Return `null` on successful termination, an `Exception()` otherwise.
+        return null
+    }
+    
+}
+
+
+open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBackend {
 
     companion object Metadata: ScriptingBackend_metadata {
         override fun new(scriptingScope: ScriptingScope) = ScriptingBackendBase(scriptingScope)
@@ -30,26 +58,6 @@ open class ScriptingBackendBase(val scriptingScope: ScriptingScope) {
     val metadata: ScriptingBackend_metadata
         get(): ScriptingBackend_metadata = this::class.companionObjectInstance as ScriptingBackend_metadata
 
-
-    open fun motd(): String {
-        // Message to print on launch.
-        return "\n\nWelcome to the Unciv CLI!\nYou are currently running the dummy backend, which will echo all commands but never do anything.\n"
-    }
-
-    open fun getAutocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
-        // Return either a `List` of autocomplete matches, or a
-        return AutocompleteResults(listOf(command+"_autocomplete"))
-    }
-
-    open fun exec(command: String): String {
-        // Execute code and return output.
-        return command
-    }
-
-    open fun terminate(): Exception? {
-        // Return `null` on successful termination, an `Exception()` otherwise.
-        return null
-    }
 }
 
 
@@ -92,7 +100,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
         }
     }
 
-    override fun getAutocomplete(command: String, cursorPos: Int?): AutocompleteResults{
+    override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults{
         if (' ' in command) {
             return AutocompleteResults(listOf(), true, getCommandHelpText(command.split(' ')[0]))
         } else {
@@ -280,11 +288,14 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
         return "\n\nWelcome to the reflective Unciv CLI backend.\n\nCommands you enter will be parsed as a path consisting of property reads, key and index accesses, function calls, and string, numeric, boolean, and null literals.\nKeys, indices, and function arguments are parsed recursively.\nProperties can be both read from and written to.\n\nExamples:\n${examples.map({"> ${it}"}).joinToString("\n")}\n\nPress [TAB] at any time to trigger autocompletion for all known leaf names at the currently entered path.\n"
     }
     
-    override fun getAutocomplete(command: String, cursorPos: Int?): AutocompleteResults {
+    override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
         try {
             var comm = commandparams.keys.find{ command.startsWith(it+" ") }
             if (comm != null) {
                 val params = command.drop(comm.length+1).split(' ', limit=commandparams[comm]!!)
+                //val prefix
+                //val workingcode
+                //val suffix
                 val workingcode = params[params.size-1]
                 val workingpath = Reflection.parseKotlinPath(workingcode)
                 if (workingpath.any{ it.type == Reflection.PathElementType.Call }) {
@@ -299,8 +310,9 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
                         .filter{ it.startsWith(leafname) }
                         .map{ prefix + it }
                 )
+            } else {
+                return AutocompleteResults(commandparams.keys.filter{ it.startsWith(command) }.map{ it+" " })
             }
-            return AutocompleteResults(commandparams.keys.filter{ it.startsWith(command) }.map{ it+" " })
         } catch (e: Exception) {
             return AutocompleteResults(listOf(), true, "Could not get autocompletion: ${e}")
         }
@@ -331,6 +343,9 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
                     var obj = Reflection.evalKotlinString(scriptingScope, parts[1])
                     appendOut("${if (obj == null) null else obj!!::class.qualifiedName}")
                 }
+                "examples" -> {
+                    throw RuntimeException("Not implemented.")
+                }
                 else -> {
                     appendOut("Unknown command: ${parts[0]}")
                 }
@@ -349,44 +364,58 @@ open class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): Script
     
     val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(engine) }
     // This requires the overridden values for `engine`, so setting it in the constructor causes a null error.
-    // Also, SubprocessScriptingBackend inherits from this, but not all subclasses of SubprocessScriptingBackend might need it. So as long as it's not accessed, it won't be intialized.
+    // Also, BlackboxScriptingBackend inherits from this, but not all subclasses of BlackboxScriptingBackend might need it. So as long as it's not accessed, it won't be intialized.
     
 }
 
 
-open class SubprocessScriptingBackend(scriptingScope: ScriptingScope): EnvironmentedScriptingBackend(scriptingScope) {
+open class BlackboxScriptingBackend(scriptingScope: ScriptingScope): EnvironmentedScriptingBackend(scriptingScope) {
     
-    open val processCmd = arrayOf("")
+    open val blackbox: Blackbox by lazy { DummyBlackbox() }
     
-    val replManager: ScriptingReplManager by lazy { ScriptingReplManager(scriptingScope, SubprocessBlackbox(processCmd)) }
-    // Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way.
+    val replManager: ScriptingReplManager by lazy { ScriptingReplManager(scriptingScope, blackbox) }
+    // Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way. And the liberal use of `lazy` should naturally make sure the properties will always be initialized in the right order.
     // Downside: Potential latency on first command, or possibly depending on `motd()` for immediate initialization.
     
-    open val replSoftExitCode = ""
+    override fun motd(): String {
+        try {
+            return replManager.motd()
+        } catch (e: Exception) {
+            return "No MOTD for ${engine} backend: ${e}\n"
+        }
+    }
+    
+    override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
+        try {
+            return replManager.autocomplete(command, cursorPos)
+        } catch (e: Exception) {
+            return AutocompleteResults(isHelpText = true, helpText = "Autocomplete error: ${e}")
+        }
+    }
     
     override fun exec(command: String): String {
         try {
-            return "${replManager.evalCode("${command}\n").joinToString("\n")}\n"
+            return replManager.exec("${command}\n")
         } catch (e: RuntimeException) {
-            return "${e}\n"
+            return "${e}"
         }
     }
-    
-    open fun softStopProcess() {
-        replManager.evalCode(replSoftExitCode)
-    }
-    
-    fun hardStopProcess(): Exception? {
-        return replManager.terminate()
-    }
-    
+        
     override fun terminate(): Exception? {
         try {
-            softStopProcess()
+            return replManager.terminate()
         } catch (e: Exception) {
+            return e
         }
-        return hardStopProcess()
     }
+}
+
+
+open class SubprocessScriptingBackend(scriptingScope: ScriptingScope): BlackboxScriptingBackend(scriptingScope) {
+    
+    open val processCmd = arrayOf("")
+    
+    override val blackbox by lazy { SubprocessBlackbox(processCmd) }
 }
 
 
@@ -399,18 +428,8 @@ class SpyScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBa
     
     override val engine = "python"
     
-    override val processCmd by lazy { arrayOf("python3", "-u", "-X", "utf8", folderHandle.child("main.py").toString()) }
-    // Hm. I suppose this probably doesn't actually need to be lazy, as long as folderHandle is lazy and already available.
-    
-    override val replSoftExitCode = """
-            try:
-                exit()
-            finally:
-                print("Exiting.")
-        """.trimIndent()
-    
-    override fun motd() = replManager.blackbox.readAll(block=true).joinToString("\n")
-    
+    override val processCmd = arrayOf("python3", "-u", "-X", "utf8", folderHandle.child("main.py").toString())
+        
 }
 
 
@@ -423,11 +442,8 @@ class SqjsScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
     
     override val engine = "qjs"
     
-    override val processCmd by lazy { arrayOf("qjs", "--std", "--script", folderHandle.child("main.js").toString()) }
+    override val processCmd = arrayOf("qjs", "--std", "--script", folderHandle.child("main.js").toString())
     
-    override fun softStopProcess() {}
-    
-    override fun motd() = replManager.blackbox.readAll(block=true).joinToString("\n")
 
 }
 
@@ -441,12 +457,56 @@ class SluaScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
     
     override val engine = "lua"
     
-    override val processCmd by lazy { arrayOf("lua", folderHandle.child("main.lua").toString()) }
+    override val processCmd = arrayOf("lua", folderHandle.child("main.lua").toString())
     
-    override fun softStopProcess() {}
+}
+
+
+class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
+
+    companion object Metadata: ScriptingBackend_metadata {
+        override fun new(scriptingScope: ScriptingScope) = DevToolsScriptingBackend(scriptingScope)
+        override val displayname:String = "DevTools"
+    }
     
-    override fun motd() = replManager.blackbox.readAll(block=true).joinToString("\n")
+    val commands = listOf(
+        "PrintFlatApiDefs",
+        "PrintClassApiDefs",
+        "WriteOutApiFile <outfile>",
+        "WriteOutApiFile android/assets/scripting/shareddata/ScriptAPI.json"
+    )
     
+    override fun motd() = """
+    
+        You have launched the DevTools CLI backend."
+        This tool is meant to help update code files.
+        
+        Available commands:
+    """.trimIndent()+"\n"+commands.map{ "> ${it}" }.joinToString("\n")+"\n\n"
+    
+    override fun autocomplete(command: String, cursorPos: Int?) = AutocompleteResults(commands.filter{ it.startsWith(command) })
+    
+    override fun exec(command: String): String {
+        val commv = command.split(' ', limit=2)
+        var out = "> ${command}\n"
+        try {
+            when (commv[0]) {
+                "PrintFlatApiDefs" -> {
+                    out += ApiSpecGenerator(scriptingScope).generateFlatApi().toString() + "\n"
+                }
+                "PrintClassApiDefs" -> {
+                    out += ApiSpecGenerator(scriptingScope).generateClassApi().toString() + "\n"
+                }
+                else -> {
+                    out += "Unknown command: ${commv[0]}\n"
+                }
+            }
+                
+        } catch (e: Exception) {
+            out += e.toString()
+        }
+        return out
+    }
 }
 
 
@@ -457,7 +517,9 @@ enum class ScriptingBackendType(val metadata:ScriptingBackend_metadata) {
     //MicroPython(UpyScriptingBackend),
     SystemPython(SpyScriptingBackend),
     SystemQuickJS(SqjsScriptingBackend),
-    SystemLua(SluaScriptingBackend)
+    SystemLua(SluaScriptingBackend),
+    DevTools(DevToolsScriptingBackend),
+    //For running ApiSpecGenerator. Comment in releases. Uncomment if needed.
 }
 
 

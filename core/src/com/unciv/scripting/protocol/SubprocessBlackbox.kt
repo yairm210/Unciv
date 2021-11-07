@@ -11,7 +11,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
     var inStream: BufferedReader? = null
     var outStream: BufferedWriter? = null
     
-    var processLaunchFail = ""
+    var processLaunchFail: String? = null
     
     override val isAlive: Boolean
         get() = process != null && process!!.isAlive()
@@ -27,7 +27,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
     }
     
     override fun toString(): String {
-        return "${this::class.simpleName}(process=${process})"
+        return "${this::class.simpleName}(process=${process}).apply{ inStream=${inStream}; outStream=${outStream}; processLaunchFail=${processLaunchFail} }"
     }
     
     override fun start() {

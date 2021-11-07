@@ -156,8 +156,11 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             })
             var termbutton = ImageGetter.getImage("OtherIcons/Stop")
             termbutton.onClick({
-                scriptingState.termBackend(index)
+                val exc: Exception? = scriptingState.termBackend(index)
                 updateRunning()
+                if (exc != null) {
+                	echo("Failed to stop ${backend.metadata.displayname} backend: ${exc.toString()}")
+                }
             })
             runningList.add(termbutton.surroundWithCircle(40f)).row()
             i += 1
@@ -190,7 +193,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     private fun autocomplete() {
         val original = inputField.text
         val cursorpos = inputField.getCursorPosition()
-        var results = scriptingState.getAutocomplete(input, cursorpos)
+        var results = scriptingState.autocomplete(input, cursorpos)
         if (results.isHelpText) {
             echo(results.helpText)
             return

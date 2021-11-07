@@ -2,7 +2,6 @@ package com.unciv.scripting.reflection
 
 import kotlin.collections.ArrayList
 import kotlin.reflect.KCallable
-import kotlin.reflect.KFunction
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 import java.util.*
@@ -59,8 +58,8 @@ object Reflection {
         val type: PathElementType,
         val name: String,
         val doEval: Boolean = false,
-        val params: List<Any> = listOf()
         //For key and index accesses, and function calls, evaluate `name` instead of using `params`.
+        val params: List<Any> = listOf()
     )
 
 
@@ -149,7 +148,19 @@ object Reflection {
     
     private val closingbrackets = null
     
-    fun splitToplevelExprs(code: String): List<String> {
+    data class OpenBracket(
+        val char: Char,
+        var offset: Int
+    )
+    
+    //class OpenBracketIterator() {
+    //}
+    
+    
+    //fun getOpenBracketStack() {
+    //}
+    
+    fun splitToplevelExprs(code: String, delimiters: String = ","): List<String> {
         return code.split(',').map{ it.trim(' ') }
         var segs = ArrayList<String>()
         val bracketdepths = mutableMapOf<Char, Int>(

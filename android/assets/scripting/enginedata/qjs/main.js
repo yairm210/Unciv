@@ -1,7 +1,8 @@
 //import("std");
 
-std.out.puts("\n\nWelcome to the QuickJS Unciv CLI. Currently, this backend relies on launching the system `qjs` command.\n\n")
-std.out.flush()
+function motd() {
+	return "\n\nWelcome to the QuickJS Unciv CLI. Currently, this backend relies on launching the system `qjs` command.\n\n"
+}
 
 while (true) {
 	let line = std.in.getline();

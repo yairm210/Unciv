@@ -31,3 +31,5 @@
 -keepclassmembers class com.badlogic.gdx.backends.android.AndroidInput* {
    <init>(com.badlogic.gdx.Application, android.content.Context, java.lang.Object, com.badlogic.gdx.backends.android.AndroidApplicationConfiguration);
 }
+
+# TODO: Probably need this: https://github.com/Kotlin/kotlinx.serialization/blob/master/README.md#android

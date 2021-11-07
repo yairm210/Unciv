@@ -53,6 +53,7 @@ object SourceManager {
             addfile(enginedir, fp)
         }
         Runtime.getRuntime().addShutdownHook(
+            // Delete on JVM shutdown, not on backend object destruction/termination. The copied files shouldn't be huge anyway, and I trust the shutdown hook to be run more reliably.
             thread(start = false, name = "Delete ${outdir.toString()}") {
                 outdir.deleteDirectory()
             }
