@@ -59,7 +59,7 @@ object Reflection {
         val name: String,
         val doEval: Boolean = false,
         //For key and index accesses, and function calls, evaluate `name` instead of using `params`.
-        val params: List<Any> = listOf()
+        val params: List<Any?> = listOf()
     )
 
 
@@ -191,7 +191,7 @@ object Reflection {
                         if (element.doEval)
                             evalKotlinString(instance!!, element.name)!!
                         else
-                            element.params[0]
+                            element.params[0]!!
                     )
                 }
                 PathElementType.Call -> {

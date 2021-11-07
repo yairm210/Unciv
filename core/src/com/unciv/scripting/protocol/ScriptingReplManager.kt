@@ -50,13 +50,27 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
         blackbox.write(code)
     }
     
-    fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true): ScriptingPacket {
+    fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true, execLoop: () -> Unit = fun(){}): ScriptingPacket {
         blackbox.write(packetToSend.toJson() + "\n")
+        execLoop()
         val response = ScriptingPacket.fromJson(blackbox.read(block=true))
         if (enforceValidity) {
             ScriptingProtocol.enforceIsResponse(packetToSend, response)
         }
         return response
+    }
+    
+    fun foreignExecLoop() {
+        while (true) {
+            val request = ScriptingPacket.fromJson(blackbox.read(block=true))
+            if (request.action != null) {
+                val response = scriptingProtocol.makeActionResponse(request)
+                blackbox.write(response.toJson() + "\n")
+            }
+            if (request.hasFlag(ScriptingProtocol.KnownFlag.PassMic)) {
+                break
+            }
+        }
     }
     
     override fun motd(): String {
@@ -71,7 +85,8 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
         return ScriptingProtocol.parseActionResponses.autocomplete(
             getRequestResponse(
-                ScriptingProtocol.makeActionRequests.autocomplete(command, cursorPos)
+                ScriptingProtocol.makeActionRequests.autocomplete(command, cursorPos),
+                execLoop = { foreignExecLoop() }
             )
         )
         return AutocompleteResults()
@@ -83,7 +98,8 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
         } else {
             return ScriptingProtocol.parseActionResponses.exec(
                 getRequestResponse(
-                    ScriptingProtocol.makeActionRequests.exec(command)
+                    ScriptingProtocol.makeActionRequests.exec(command),
+                    execLoop = { foreignExecLoop() }
                 )
             )
             runCode(command)
@@ -93,13 +109,16 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
     }
     
     override fun terminate(): Exception? {
-        val msg = ScriptingProtocol.parseActionResponses.terminate(
-            getRequestResponse(
-                ScriptingProtocol.makeActionRequests.terminate()
+        try {
+            val msg = ScriptingProtocol.parseActionResponses.terminate(
+                getRequestResponse(
+                    ScriptingProtocol.makeActionRequests.terminate()
+                )
             )
-        )
-        if (msg != null) {
-            return RuntimeException(msg)
+            if (msg != null) {
+                return RuntimeException(msg)
+            }
+        } catch (e: Exception) {
         }
         return blackbox.stop()
     }

@@ -49,15 +49,19 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
         try {
             if (isAlive) {
                 process!!.destroy()
-                inStream!!.close()
-                outStream!!.close()
             }
         } catch (e: Exception) {
             return e
+        } finally {
+            try {
+                inStream!!.close()
+                outStream!!.close()
+            } catch (e: Exception) {
+            }
+            process = null
+            inStream = null
+            outStream = null
         }
-        process = null
-        inStream = null
-        outStream = null
         return null
     }
     

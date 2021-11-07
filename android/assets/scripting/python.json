@@ -3,6 +3,7 @@
 	unciv/__init__.py
 	unciv/autocompletion.py
 	unciv/ipc.py
+	unciv/utils.py
 	unciv/wrapping.py
 	main.py
 ]

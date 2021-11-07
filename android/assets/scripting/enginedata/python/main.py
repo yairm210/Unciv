@@ -7,9 +7,12 @@ try:
 	
 	import unciv
 	
+	
 	foreignActionSender = unciv.ipc.ForeignActionSender()
 	
-	foreignScope = unciv.wrapping.ForeignObject('')
+	foreignScope = {n: unciv.wrapping.ForeignObject(n, foreignrequester=foreignActionSender.GetForeignActionResponse) for n in ('civInfo', 'gameInfo', 'uncivGame', 'worldScreen', 'isInGame')}
+	
+	foreignAutocompleter = unciv.autocompletion.AutocompleteManager(foreignScope)
 	
 	class ForeignActionReplReceiver(unciv.ipc.ForeignActionReceiver):
 		@unciv.ipc.receiverMethod('motd', 'motd_response')
@@ -23,10 +26,14 @@ sys.implementation == {str(sys.implementation)}
 """
 		@unciv.ipc.receiverMethod('autocomplete', 'autocomplete_response')
 		def EvalForeignAutocomplete(self, packet):
-			return "AC."
+			assert 'PassMic' in packet.flags, f"Expected 'PassMic' in packet flags: {packet}"
+			res = foreignAutocompleter.GetAutocomplete(packet.data["command"])
+			foreignActionSender.SendForeignAction({'action':None, 'identifier': None, 'data':None, 'flags':('PassMic',)})
+			return res
 		@unciv.ipc.receiverMethod('exec', 'exec_response')
 		def EvalForeignExec(self, packet):
 			line = packet.data
+			assert 'PassMic' in packet.flags, f"Expected 'PassMic' in packet flags: {packet}"
 			with unciv.ipc.FakeStdout() as fakeout:
 				print(f">>> {str(line)}")
 				try:
@@ -37,16 +44,18 @@ sys.implementation == {str(sys.implementation)}
 					else:
 						print(eval(code, self.scope, self.scope))
 				except Exception as e:
-					return repr(e)
+					return unciv.utils.formatException(e)
 				else:
 					return fakeout.getvalue()
+				finally:
+					foreignActionSender.SendForeignAction({'action':None, 'identifier': None, 'data':None, 'flags':('PassMic',)})
 				
 		@unciv.ipc.receiverMethod('terminate', 'terminate_response')
 		def EvalForeignTerminate(self, packet):
 			return None
 
-	foreignActionReceiver = ForeignActionReplReceiver(scope=globals())
+	foreignActionReceiver = ForeignActionReplReceiver(scope=foreignScope)
 	foreignActionReceiver.ForeignREPL()
 	
 except Exception as e:
-	print(f"Fatal error in Python interepreter: {repr(e)}", file=stdout, flush=True)
+	print(f"Fatal error in Python interepreter: {unciv.utils.formatException(e)}", file=stdout, flush=True)

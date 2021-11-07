@@ -26,7 +26,7 @@ import java.util.UUID
 /*
     A single IPC action consists of one request packet and one response packet.
     A request packet should always be followed by a response packet if it has an action.
-    If a request packet has a null action, then it does not need to be followed by a response. This is to let flags be sent without generating useless responses.
+    If a request packet has a null action, then it should not be followed by a response. This is to let flags be sent without generating useless responses.
 
     However, responses do not have to be sent in the same order as their correspond requests. New requests can be sent out while old ones are left "open"— E.G., if creating a response requires requesting new information.
 
@@ -61,6 +61,7 @@ import java.util.UUID
         'dir': {'path': String} -> 'dir_response': {'value': Collection<String>, 'exception': String?} //Names of all members/properties/attributes/methods.
         //'items': {'path': Strign} -> 'keys_response': {}
         //'args': {'path'} ->  'args_response': Collection<Pair<String, String>> //Names and types of arguments accepted by a function.
+        //'length': {'path': String} -> 'length_response': Int
         
     Flags are string values for communicating extra information that doesn't need a separate packet or response. Depending on the flag and action, they may be contextual to the packet, or they may not. I think I see them mostly as a way to semantically separate meta-communication about the protocol from actual requests for actions:
         'PassMic' //Indicates that the sending side will now begin listening instead, and the receiving side should send the next request. Sent by Kotlin side at start of script execution to allow script to request values, and should be sent by script interpreter immediately before sending response with results of execution.
@@ -109,6 +110,8 @@ data class ScriptingPacket(
     }
     
     fun toJson() = json.encodeToString(this)
+    
+    fun hasFlag(flag: ScriptingProtocol.KnownFlag) = flag.value in flags
 }
 
 
@@ -116,12 +119,23 @@ class ScriptingProtocol(val scriptingScope: ScriptingScope) {
 
     companion object {
         fun transformPath(path: List<Reflection.PathElement>): List<Reflection.PathElement> {
-            return listOf()
+            return path.map{ Reflection.PathElement(
+                type = it.type,
+                name = it.name,
+                doEval = it.doEval,
+                params = it.params.map( { p -> ScriptingObjectIndex.getReal(p) })
+            ) }
         }
         
         fun makeUniqueId(): String {
             return "${System.nanoTime()}-${Random.nextBits(30)}-${UUID.randomUUID().toString()}"
         }
+        
+        val responseTypes = mapOf(
+            "motd" to "motd_response",
+            "autocomplete" to "autocomplete_response",
+            "exec" to "exec_response"
+        )
     
         fun enforceIsResponse(original: ScriptingPacket, response: ScriptingPacket): ScriptingPacket {
             if (!(
@@ -131,6 +145,55 @@ class ScriptingProtocol(val scriptingScope: ScriptingScope) {
                 throw IllegalStateException("Scripting packet response does not match request ID and type: ${original}, ${response}")
             }
             return response
+        }
+        
+        fun <T> getJsonElement(value: T?): JsonElement {
+            if (value is JsonElement) {
+                return value
+            }
+            if (value is Map<*, *>) {
+                return JsonObject( (value as Map<String, Any?>).mapValues{ getJsonElement(it.value) } )
+            }
+            if (value is Collection<*>) {
+                return JsonArray(value.map{ getJsonElement(it) })
+            }
+            if (value is String) { 
+                return JsonPrimitive(value as String)
+            }
+            if (value is Int || value is Long || value is Float || value is Double) { 
+                return JsonPrimitive(value as Number)
+            }
+            if (value is Boolean) { 
+                return JsonPrimitive(value as Boolean)
+            }
+            if (value == null) {
+                return JsonNull
+            }
+            return JsonPrimitive(ScriptingObjectIndex.getToken(value))
+        }
+        
+        fun getJsonReal(value: JsonElement): Any? {
+            if (value is JsonNull || value == JsonNull) {
+                return null
+            }
+            if (value is JsonArray) {
+                return (value as List<JsonElement>).map{ getJsonReal(it) }// as List<Any?>
+            }
+            if (value is JsonObject) {
+                return (value as Map<String, JsonElement>).mapValues{ getJsonReal(it.value) }// as Map<String, Any?>
+            }
+            if (value is JsonPrimitive) {
+                val v = value as JsonPrimitive
+                if (v.isString) {
+                    return ScriptingObjectIndex.getReal(v.content)
+                } else {
+                    return v.content.toIntOrNull()
+                        ?: v.content.toDoubleOrNull()
+                        ?: v.content.toBooleanStrictOrNull()
+                        ?: v.content
+                }
+            }
+            throw IllegalArgumentException("Unrecognized type of JsonElement: ${value::class}/${value}")
         }
     }
 
@@ -142,12 +205,14 @@ class ScriptingProtocol(val scriptingScope: ScriptingScope) {
         fun autocomplete(command: String, cursorPos: Int?) = ScriptingPacket(
             "autocomplete",
             makeUniqueId(),
-            JsonObject(mapOf("command" to JsonPrimitive(command), "cursorpos" to JsonPrimitive(cursorPos)))
+            JsonObject(mapOf("command" to JsonPrimitive(command), "cursorpos" to JsonPrimitive(cursorPos))),
+            listOf(KnownFlag.PassMic.value)
         )
         fun exec(command: String) = ScriptingPacket(
             "exec",
             makeUniqueId(),
-            JsonPrimitive(command)
+            JsonPrimitive(command),
+            listOf(KnownFlag.PassMic.value)
         )
         fun terminate() = ScriptingPacket(
             "terminate",
@@ -157,31 +222,110 @@ class ScriptingProtocol(val scriptingScope: ScriptingScope) {
     
     object parseActionResponses {
         fun motd(packet: ScriptingPacket): String = (packet.data as JsonPrimitive).content
+        
         fun autocomplete(packet: ScriptingPacket): AutocompleteResults =
             if (packet.data is JsonArray) 
                 AutocompleteResults((packet.data as List<JsonElement>).map{ (it as JsonPrimitive).content })
             else
                 AutocompleteResults(listOf(), true, (packet.data as JsonPrimitive).content)
+                
         fun exec(packet: ScriptingPacket): String = (packet.data as JsonPrimitive).content
-        fun terminate(packet: ScriptingPacket): Exception? = if (packet.data == JsonNull || packet.data == null) null else RuntimeException((packet.data as JsonPrimitive).content)
+        
+        fun terminate(packet: ScriptingPacket): Exception? =
+            if (packet.data == JsonNull || packet.data == null)
+                null
+            else
+                RuntimeException((packet.data as JsonPrimitive).content)
+    }
+    
+    enum class KnownFlag(val value: String) {
+        PassMic("PassMic")
     }
 
     fun makeActionResponse(packet: ScriptingPacket): ScriptingPacket {
         var action: String? = null
         var data: JsonElement? = null
         var flags = mutableListOf<String>()
+        var value: JsonElement = JsonNull
+        var exception: JsonElement = JsonNull
         when (packet.action) {
             "read" -> {
                 action = "read_response"
+                try {
+                    value = getJsonElement(
+                        Reflection.evalKotlinString(
+                            scriptingScope,
+                            (((packet.data as JsonObject)["path"]) as JsonPrimitive).content
+                        )
+                    )
+                } catch (e: Exception) {
+                    value = JsonNull
+                    exception = JsonPrimitive(e.toString())
+                }
+                data = JsonObject(mapOf(
+                    "value" to value,
+                    "exception" to exception
+                ))
             }
             "call" -> {
                 action = "call_response"
+                try {
+                    var path = Reflection.parseKotlinPath((((packet.data as JsonObject)["path"]) as JsonPrimitive).content) as MutableList<Reflection.PathElement>
+                    val params = getJsonReal((packet.data as JsonObject)["args"]!!) as List<Any?>
+                    val kwparams = getJsonReal((packet.data as JsonObject)["kwargs"]!!) as Map<String, Any?>
+                    if (kwparams.size > 0) {
+                        throw UnsupportedOperationException("Keyword arguments are not currently supported: ${kwparams}")
+                    }
+                    path.add(Reflection.PathElement(
+                        type = Reflection.PathElementType.Call,
+                        name = "",
+                        doEval = false,
+                        params = params
+                    ))
+                    value = getJsonElement(
+                        Reflection.resolveInstancePath(
+                            scriptingScope,
+                            transformPath(path)
+                        )
+                    )
+                } catch (e: Exception) {
+                    value = JsonNull
+                    exception = JsonPrimitive(e.toString())
+                }
+                data = JsonObject(mapOf(
+                    "value" to value,
+                    "exception" to exception
+                ))
             }
             "assign" -> {
                 action = "assign_response"
+                try {
+                    Reflection.setInstancePath(
+                        scriptingScope,
+                        Reflection.parseKotlinPath((((packet.data as JsonObject)["path"]) as JsonPrimitive).content),
+                        getJsonReal((packet.data as JsonObject)["value"]!!)
+                    )
+                } catch (e: Exception) {
+                    exception = JsonPrimitive(e.toString())
+                }
+                data = exception
             }
             "dir" -> {
                 action = "dir_response"
+                try {
+                    val leaf = Reflection.evalKotlinString(
+                        scriptingScope,
+                        (((packet.data as JsonObject)["path"]) as JsonPrimitive).content
+                    )
+                    value = getJsonElement(leaf!!::class.members.map{it.name})
+                } catch (e: Exception) {
+                    value = JsonNull
+                    exception = JsonPrimitive(e.toString())
+                }
+                data = JsonObject(mapOf(
+                    "value" to value,
+                    "exception" to exception
+                ))
             }
             else -> {
                 throw IllegalArgumentException("Unknown action received in scripting packet: ${packet.action}")
@@ -190,7 +334,7 @@ class ScriptingProtocol(val scriptingScope: ScriptingScope) {
         return ScriptingPacket(action, packet.identifier, data, flags)
     }
 
-    fun resolvePath() { }
+//    fun resolvePath() { }
 }
 
 

@@ -1,7 +1,9 @@
 """Advanced autocompletion. Returns keys for """
 
+from . import utils
 
-class AutoCompleteManager:
+
+class AutocompleteManager:
 	def __init__(self, scope=None):
 		self.scope = globals() if scope is None else scope
 	def Evaled(self, path):
@@ -34,5 +36,5 @@ class AutoCompleteManager:
 			else:
 				return tuple([attrbase+attrjoin+a for a in (dir(self.Evaled(attrbase)) if attrbase else self.scope) if a.startswith(attrleaf)])
 		except (NameError, AttributeError, KeyError, IndexError, SyntaxError) as e:
-			return "No autocompletion found: "+repr(e)
+			return "No autocompletion found: "+utils.formatException(e)
 		

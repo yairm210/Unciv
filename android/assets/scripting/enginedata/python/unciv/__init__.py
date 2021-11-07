@@ -1,4 +1,4 @@
-__all__ = ['autocompletion', 'ipc', 'wrapping']
+__all__ = ['autocompletion', 'ipc', 'utils', 'wrapping']
 #Unsupported by Micropython
 
-from . import autocompletion, ipc, wrapping
+from . import autocompletion, ipc, utils, wrapping

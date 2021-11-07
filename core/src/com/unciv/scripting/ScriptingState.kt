@@ -23,6 +23,8 @@ import kotlin.math.min
                 scriptingScope
                 ?ScriptingReplManager():
                     Blackbox() // Common interface to wrap foreign interpreter with pipes, STDIN/STDOUT, queues, sockets, embedding, JNI, etc.
+                    ScriptingProtocol():
+                        scriptingScope
                 ?folderHandler: setupInterpreterEnvironment() // If used, a temporary directory with file structure copied from engine and shared folders in `assets/scripting`.
         ConsoleScreen(): // Persistent as long as window isn't resized. Recreates itself and restores most of its state from scriptingState if resized.
             scriptingState
@@ -32,6 +34,7 @@ import kotlin.math.min
     MainMenuScreen():
         consoleScreen
         scriptingState // Same as for worldScreen.
+    ScriptingObjectIndex()
     ```
 */
 

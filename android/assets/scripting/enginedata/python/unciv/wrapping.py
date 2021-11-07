@@ -44,22 +44,20 @@ def ForeignResolvingFunc(func):
 		pass
 	return _func
 
+
 def dummyForeignRequester(actionparams, responsetype):
 	return actionparams, responsetype
+	
+	
+def foreignValueParser(packet):
+	if packet.data["exception"] is not None:
+		raise ipc.ForeignError(packet.data["exception"])
+	return packet.data["value"]
 
-def stdForeignRequester(actionparams, responsetype):
-	request = ipc.ForeignPacket(**actionparams)
-	requestjson = request.serialized()
-	try:
-		print(requestjson, file=stdout, flush=True)
-	except TypeError:
-		print(requestjson, file=stdout)
-	response = ipc.ForeignPacket.deserialized(sys.stdin.readline())
-	assert request.identifier == response.identifier, f"Mismatched identifier: {request.identifier} != {response.identifier}"
-	assert response.action == responsetype, f"Mismatched response type: {response.action} != {responsetype}"
-	return response
-	
-	
+def foreignErrmsgChecker(packet):
+	if packet.data is not None:
+		raise ipc.ForeignError(packet.data)
+
 
 class ForeignObject:
 	def __init__(self, path, foreignrequester=dummyForeignRequester):
@@ -72,9 +70,9 @@ class ForeignObject:
 	def __getattr__(self, name):
 		self.__class__
 		self._path
-		return self.__class__((*self._path, f".{name}"))
+		return self.__class__((*self._path, f".{name}"), self._foreignrequester)
 	def __getitem__(self, key):
-		return self.__class__((*self._path, f"[{json.dumps(key)}]"))
+		return self.__class__((*self._path, f"[{json.dumps(key)}]"), self._foreignrequester)
 	@ForeignRequestMethod
 	def _getvalue(self):
 		return ({
@@ -84,7 +82,7 @@ class ForeignObject:
 			}
 		},
 		'read_response',
-		None)
+		foreignValueParser)
 	@ForeignRequestMethod
 	def __dir__(self):
 		return ({
@@ -94,7 +92,7 @@ class ForeignObject:
 			}
 		},
 		'dir_response',
-		None)
+		foreignValueParser)
 #	@ForeignRequestMethod
 #	@property
 #	def __doc__(self):
@@ -116,18 +114,19 @@ class ForeignObject:
 			}
 		},
 		'assign_response',
-		None)
+		foreignErrmsgChecker)
 	@ForeignRequestMethod
 	def __call__(self, *args, **kwargs):
 		return ({
 			'action': 'call',
 			'data': {
+				'path': self._getpath(),
 				'args': args,
 				'kwargs': kwargs
 			}
 		},
 		'call_response',
-		None)
+		foreignValueParser)
 	@ForeignRequestMethod
 	def __setitem__(self, key, value):
 		return ({
@@ -138,12 +137,12 @@ class ForeignObject:
 			}
 		},
 		'assign_response',
-		None)
-	def keys(self):
-		raise NotImplemented()
-		return {
-			''
-		}
+		foreignValueParser)
+#	def keys(self):
+#		raise NotImplemented()
+#		return {
+#			''
+#		}
 
 #class ForeignScope:
 #	_path = ()

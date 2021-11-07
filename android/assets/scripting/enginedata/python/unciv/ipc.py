@@ -1,11 +1,13 @@
-import sys, io, json
+import sys, io, json, time, random
 
+stdout = sys.stdout
 
 #def ResolvePath(path, scope):
 ##	return eval(path, scope, scope)
 #	raise NotImplementedError()
 
-
+def MakeUniqueId():
+	return f"{time.time_ns()}-{random.getrandbits(30)}"
 
 class ForeignError(RuntimeError):
 	pass
@@ -48,10 +50,10 @@ class ForeignActionManager:
 			self.receiver = receiver
 	def sender(self, message):
 		try:
-			print(message, file=sys.stdout, flush=True)
+			print(message, file=stdout, flush=True)
 		except TypeError:
 			#No flush on `micropython`.
-			print(message, file=sys.stdout)
+			print(message, file=stdout)
 	def receiver(self):
 		return sys.stdin.readline()
 #	def EncodeForeignAction(self, action, identifier=None, **data):
@@ -63,12 +65,15 @@ class ForeignActionManager:
 
 
 class ForeignActionSender(ForeignActionManager):
-	def MakeUniqueID(self):
-		return 4 # Chosen by fair dice roll. Guaranteed to be random.
-	def SendForeignAction(self, actionparams, responsetype):
-		identifier = self.MakeUniqueID()
-		self.sender(ForeignPacket(**actionparams, identifier=identifier).serialized())
-		return ForeignPacket.deserialized(self.receiver()).enforce_type(responsetype, identifier).data
+#	def MakeUniqueID(self):
+#		return 4 # Chosen by fair dice roll. Guaranteed to be random.
+	def SendForeignAction(self, actionparams):
+		self.sender(ForeignPacket(**actionparams).serialized())
+		
+	def GetForeignActionResponse(self, actionparams, responsetype):
+		identifier = MakeUniqueId()
+		self.SendForeignAction({**actionparams, 'identifier': identifier})
+		return ForeignPacket.deserialized(self.receiver()).enforce_type(responsetype, identifier)
 
 
 def receiverMethod(action, response):
@@ -99,8 +104,13 @@ class ForeignActionReceiver(ForeignActionManager):
 		else:
 			raise ForeignError("Unknown action type for foreign action request: " + repr(decoded))
 		self.sender(ForeignPacket(raction, decoded.identifier, rdata).serialized())
-	def AwaitForeignAction(self):
+	def AwaitForeignAction(self):#, *, ignoreempty=True):
 		self.RespondForeignAction(self.receiver())
+#		while True:
+#			line = self.receiver()
+#			if line or not ignoreempty:
+#				self.RespondForeignAction(line)
+#				break
 	def ForeignREPL(self):
 		while True:
 			self.AwaitForeignAction()
@@ -118,12 +128,12 @@ class FakeStdout:
 #class ForeignActionBindingSender(ForeignActionSender):
 #	#Probably easier to just define these as needed in the classes that call them.
 #	def SendForeignCall(self, path, args, kwargs):
-#		return self.SendForeignAction({'action': ('call', 'data': {'path':path, 'args':args, 'kwargs':kwargs}}, 'call_response')
+#		return self.GetForeignActionResponse({'action': ('call', 'data': {'path':path, 'args':args, 'kwargs':kwargs}}, 'call_response')
 #	def SendForeignRead(self, path):
 #		identifier = self.MakeUniqueID()
-#		return self.SendForeignAction({'action': 'read', 'data': {'path':path}}, 'read_response')
+#		return self.GetForeignActionResponse({'action': 'read', 'data': {'path':path}}, 'read_response')
 #	def SendForeignAssign(self, path, value):
-#		return self.SendForeignAction({'action': 'assign', 'data': {'path':path, 'value':value}})
+#		return self.GetForeignActionResponse({'action': 'assign', 'data': {'path':path, 'value':value}})
 #	def MakeForeignFunction(self, callpath, callargs):
 #		pass
 
