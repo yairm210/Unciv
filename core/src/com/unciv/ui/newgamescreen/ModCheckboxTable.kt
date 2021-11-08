@@ -3,23 +3,24 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
 class ModCheckboxTable(
-    private val mods:LinkedHashSet<String>,
+    private val mods: LinkedHashSet<String>,
+    private var baseRuleset: String,
     private val screen: CameraStageBaseScreen,
     isPortrait: Boolean = false,
     onUpdate: (String) -> Unit
 ): Table(){
     private val modRulesets = RulesetCache.values.filter { it.name != "" && !it.modOptions.isBaseRuleset}
-    private val baseRulesetCheckboxes = ArrayList<CheckBox>()
     private var lastToast: ToastPopup? = null
+    private val extensionRulesetModButtons = ArrayList<CheckBox>()
 
     init {
-        val extensionRulesetModButtons = ArrayList<CheckBox>()
 
         for (mod in modRulesets.sortedBy { it.name }) {
             val checkBox = mod.name.toCheckBox(mod.name in mods)
@@ -41,6 +42,13 @@ class ModCheckboxTable(
             }).padTop(padTop).growX().row()
         }
     }
+    
+    fun setBaseRuleset(newBaseRuleset: String) { baseRuleset = newBaseRuleset } 
+    fun disableAllCheckboxes() {
+        for (checkBox in extensionRulesetModButtons) {
+            checkBox.isChecked = false
+        }
+    }
 
     private fun checkBoxChanged(checkBox: CheckBox, mod: Ruleset): Boolean {
         if (checkBox.isChecked) {
@@ -55,32 +63,22 @@ class ModCheckboxTable(
                 return false
             }
 
-            // Save selection for a rollback
-            val previousMods = mods.toList()
-
-            // Ensure only one base can be selected
-            if (mod.modOptions.isBaseRuleset) {
-                for (oldBaseRuleset in previousMods) // so we don't get concurrent modification exceptions
-                    if (RulesetCache[oldBaseRuleset]?.modOptions?.isBaseRuleset == true)
-                        mods.remove(oldBaseRuleset)
-                baseRulesetCheckboxes.filter { it != checkBox }.forEach { it.isChecked = false }
-            }
             mods.add(mod.name)
 
             // Check over complete combination of selected mods
-            val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods)
+            val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods,  baseRuleset)
             if (complexModLinkCheck.isWarnUser()) {
                 lastToast?.close()
                 val toastMessage = (
-                        if (complexModLinkCheck.isError()) "The mod combination you selected is incorrectly defined!"
-                        else "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}"
-                        ).tr() + "\n\n${complexModLinkCheck.getErrorText()}"
+                    if (complexModLinkCheck.isError()) "The mod combination you selected is incorrectly defined!".tr()
+                    else "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr()
+                ) + 
+                    "\n\n${complexModLinkCheck.getErrorText()}"
+                
                 lastToast = ToastPopup(toastMessage, screen, 5000L)
 
                 if (complexModLinkCheck.isError()) {
                     checkBox.isChecked = false
-                    mods.clear()
-                    mods.addAll(previousMods)
                     return false
                 }
             }

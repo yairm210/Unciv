@@ -283,4 +283,8 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         items = array
         selected = array.firstOrNull { it.value == default } ?: array.first()
     }
+    
+    fun setSelected(newValue: String) {
+        selected = items.firstOrNull { it == TranslatedString(newValue) } ?: return
+    }
 }

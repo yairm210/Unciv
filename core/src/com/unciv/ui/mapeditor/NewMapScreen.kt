@@ -47,7 +47,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             pad(10f)
             add("Map Options".toLabel(fontSize = 24)).row()
             add(mapParametersTable).row()
-            add(ModCheckboxTable(mapParameters.mods, this@NewMapScreen) {
+            add(ModCheckboxTable(mapParameters.mods, RulesetCache.getBaseRuleset().name, this@NewMapScreen) {
                 ruleset.clear()
                 val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods)
                 ruleset.add(newRuleset)

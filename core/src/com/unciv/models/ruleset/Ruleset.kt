@@ -689,9 +689,9 @@ object RulesetCache : HashMap<String,Ruleset>() {
     /**
      * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
      */
-    fun checkCombinedModLinks(mods: LinkedHashSet<String>): Ruleset.RulesetErrorList {
+    fun checkCombinedModLinks(mods: LinkedHashSet<String>, baseRuleset: String? = null): Ruleset.RulesetErrorList {
         return try {
-            val newRuleset = getComplexRuleset(mods)
+            val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
             newRuleset.checkModLinks()
         } catch (ex: Exception) {

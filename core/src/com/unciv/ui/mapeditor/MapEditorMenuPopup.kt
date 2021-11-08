@@ -34,7 +34,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         init {
             val mods = mapEditorScreen.tileMap.mapParameters.mods
 
-            val checkboxTable = ModCheckboxTable(mods, mapEditorScreen) {
+            val checkboxTable = ModCheckboxTable(mods, RulesetCache.getBaseRuleset().name, mapEditorScreen) {
                 ruleset.clear()
                 val newRuleset = RulesetCache.getComplexRuleset(mods)
                 ruleset.add(newRuleset)
