@@ -1,4 +1,4 @@
-## 3.17.15
+## 3.18.0
 
 Performance improvements!
 
