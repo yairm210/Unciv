@@ -385,7 +385,7 @@
 		"uniques": ["[+2 Gold] from [Gold Ore] tiles [in this city]", "[+2 Gold] from [Silver] tiles [in this city]"],
 		"requiredTech": "Currency"
 	},
-	{ // Flood plains are not supposed to be affected by this wonder. Add stats to all desert tiles and then add negative stats to flood plains to undo the effect on them for now
+	{ 
 		"name": "Petra",
 		"culture": 1,
 		"isWonder": true,

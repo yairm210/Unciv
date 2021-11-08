@@ -21,17 +21,6 @@
 		"maintenance": 1,
 		"uniques": ["Destroyed when the city is captured"]
 	},
-	{
-		"name": "Stele",
-		"replaces": "Monument",
-		"uniqueTo": "Ethiopia",
-		"culture": 2,
-		"faith": 2,
-		"cost": 40,
-		"hurryCostModifier": 40,
-		"maintenance": 1,
-		"uniques": ["Destroyed when the city is captured"] //"Hidden when religion is disabled"
-	},
 	// Column 1
 	{
 		"name": "Granary",
@@ -42,25 +31,6 @@
 			"[+1 Food] from [Bananas] tiles [in this city]",
 			"[+1 Food] from [Wheat] tiles [in this city]"],
 		"requiredTech": "Pottery"
-	},
-	{
-		"name": "Shrine",
-		"faith": 1,
-		"cost": 40,
-		"maintenance": 1,
-		"requiredTech": "Pottery",
-		"uniques": ["Hidden when religion is disabled"]
-	},
-	{
-		"name": "Pyramid",
-		"replaces": "Shrine",
-		"uniqueTo": "The Maya",
-		"faith": 2,
-		"science": 2,
-		"cost": 40,
-		"maintenance": 1,
-		"requiredTech": "Pottery",
-		"uniques": ["Hidden when religion is disabled"]
 	},
 	{
 		"name": "Temple of Artemis",
@@ -86,7 +56,7 @@
 	},
 	{
 		"name": "Stonehenge",
-		"faith": 5,
+		"culture": 6,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Engineer": 1},
 		"requiredTech": "Calendar",
@@ -265,11 +235,10 @@
 	{
 		"name": "Hanging Gardens",
 		"greatPersonPoints": {"Great Artist": 1},
-		"food": 6,
+		"food": 10,
 		"culture": 1,
 		"isWonder": true,
 		"requiredTech": "Mathematics",
-		"uniques": ["Gain a free [Garden] [in this city]"],
 		"quote": "'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.' - F. Frankfort Moore"
 	},
 	{
@@ -279,23 +248,16 @@
 		"hurryCostModifier": 25,
 		"requiredTech": "Construction"
 	},
-	{
-		"name": "Terracotta Army",
-		"culture": 6,
-		"isWonder": true,
-		"greatPersonPoints": {"Great Artist": 1},
-		"requiredTech": "Construction",
-		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.' - Sun Tzu"
-	},
 	// Column 4
 	{
 		"name": "Temple",
-		"faith": 2,
-		"requiredBuilding": "Shrine",
+		"culture": 3,
+		"requiredBuilding": "Monument",
 		"maintenance": 2,
 		"hurryCostModifier": 25,
 		"requiredTech": "Philosophy",
-		"uniques": ["Hidden when religion is disabled", "Destroyed when the city is captured"]
+		"specialistSlots": {"Artist": 1},
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Burial Tomb",
@@ -303,9 +265,9 @@
 		"uniqueTo": "Egypt",
 		"maintenance": 0,
 		"uniques": ["Doubles Gold given to enemy if city is captured"],
-		"faith": 2,
+		"culture": 2,
 		"happiness": 2,
-		"requiredBuilding": "Shrine",
+		"requiredBuilding": "Monument",
 		"hurryCostModifier": 25,
 		"requiredTech": "Philosophy"
 	},
@@ -315,11 +277,11 @@
 		"uniqueTo": "Songhai",
 		"maintenance": 0,
 		"hurryCostModifier": 25,
-		"culture": 2,
-		"faith": 2,
-		"requiredBuilding": "Shrine",
+		"culture": 4,
+		"requiredBuilding": "Monument",
 		"requiredTech": "Philosophy"
 	},
+	
 	{
 		"name": "National College",
 		"cost": 125,
@@ -338,16 +300,6 @@
 		"uniques": ["Free Social Policy"],
 		"requiredTech": "Philosophy",
 		"quote": "'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing' - Socrates"
-	},
-	{
-		"name": "Amphitheater",
-		"culture": 3,
-		"specialistSlots": {"Artist": 1},
-		"requiredBuilding": "Monument",
-		"maintenance": 2,
-		"hurryCostModifier": 25,
-		"uniques": ["Destroyed when the city is captured"],
-		"requiredTech": "Drama and Poetry"
 	},
 	{
 		"name": "National Epic",
@@ -384,15 +336,6 @@
 		"hurryCostModifier": 25,
 		"uniques": ["[+2 Gold] from [Gold Ore] tiles [in this city]", "[+2 Gold] from [Silver] tiles [in this city]"],
 		"requiredTech": "Currency"
-	},
-	{ // Flood plains are not supposed to be affected by this wonder. Add stats to all desert tiles and then add negative stats to flood plains to undo the effect on them for now
-		"name": "Petra",
-		"culture": 1,
-		"isWonder": true,
-		"greatPersonPoints": {"Great Engineer": 1},
-		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production, +1 Gold] from [Desert] tiles without [Flood plains] [in this city]", "Gain a free [Amphitheater] [in this city]", "[+6 Culture] <after discovering [Archaeology]>"],
-		"requiredTech": "Currency",
-		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones"
 	},
 	{
 		"name": "Aqueduct",
@@ -443,33 +386,20 @@
 		"requiredTech": "Theology"
 	},
 	{
+		"name": "Monastery",
+		"cost": 120,
+		"culture": 2,
+		"uniques": ["[+2 Culture] from [Wine] tiles [in this city]",
+			"Unbuildable", "Hidden when religion is disabled", "Destroyed when the city is captured"],
+		"requiredNearbyImprovedResources": ["Incense", "Wine"],
+		"requiredTech": "Theology"
+	},
+	{
 		"name": "Hagia Sophia",
-		"faith": 3,
 		"isWonder": true,
-		"uniques": ["Gain a free [Temple] [in this city]", "Free [Great Prophet] appears", "Hidden when religion is disabled"],
+		"uniques": ["[+25]% great person generation [in all cities]"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty' - Procopius, De Aedificis"
-	},
-	{
-		"name": "Great Mosque of Djenne",
-		"culture": 1,
-		"faith": 3,
-		"greatPersonPoints": {"Great Engineer": 1},
-		"isWonder": true,
-		"uniques": ["Gain a free [Mosque] [in this city]", "Hidden when religion is disabled",
-			"[Missionary] units built [in this city] can [Spread Religion] [1] extra times", "[Great Prophet] units built [in this city] can [Spread Religion] [1] extra times"],
-		"requiredTech": "Theology",
-		"quote": "'With the magnificence of eternity before us, let time, with all its fluctuations, dwindle into its own littleness.' - Thomas Chalmers"
-	},
-	{
-		"name": "Grand Temple",
-		"cost": 125,
-		"culture": 1,
-		"faith": 8,
-		"uniques": ["Requires a [Temple] in all cities", "Cost increases by [30] per owned city",
-			"[+100]% Natural religion spread [in this city]", "Hidden when religion is disabled", "Can only be built [in holy cities]"],
-		"requiredTech": "Theology",
-		"isNationalWonder": true
 	},
 	{
 		"name": "Chichen Itza",
@@ -607,17 +537,6 @@
 		"requiredTech": "Chivalry"
 	},
 	{
-		"name": "Alhambra",
-		"culture": 1,
-		"greatPersonPoints": {"Great Artist": 1},
-		"isWonder": true,
-		"percentStatBonus": {"culture": 20},
-		"uniques": ["All newly-trained [relevant] units [in this city] receive the [Drill I] promotion",
-			"Gain a free [Castle] [in this city]"],
-		"requiredTech": "Chivalry",
-		"quote": "'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.' - Joseph Addison"
-	},
-	{
 		"name": "Ironworks",
 		"cost": 125,
 		"production": 8,
@@ -628,7 +547,7 @@
 	},
 	{
 		"name": "Notre Dame",
-		"faith": 4,
+		"culture": 3,
 		"happiness": 10,
 		"greatPersonPoints": {"Great Merchant": 1},
 		"isWonder": true,
@@ -667,19 +586,6 @@
 		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
-		"name": "Ceilidh Hall",
-		"replaces": "Opera House",
-		"uniqueTo": "Celts",
-		"culture": 4,
-		"happiness": 3,
-		"specialistSlots": {"Artist": 1},
-		"hurryCostModifier": 10,
-		"requiredBuilding": "Amphitheater",
-		"maintenance": 2,
-		"requiredTech": "Acoustics",
-		"uniques": ["Destroyed when the city is captured"]
-	},
-	{
 		"name": "Sistine Chapel",
 		"culture": 1,
 		"isWonder": true,
@@ -709,19 +615,6 @@
 		"requiredBuilding": "Market",
 		"requiredTech": "Banking"
 	},
-	// will be introduced in BNW expansion pack
-//	{
-//		"name": "Hanse",
-//		"replaces": "Bank",
-//		"uniqueTo": "Germany",
-//		"gold": 2,
-//		"specialistSlots": {"Merchant": 1},
-//		"hurryCostModifier": 15,
-//		"percentStatBonus": {"gold": 25},
-//		"uniques": ["+5% Production for every Trade Route with a City-State in the empire"],
-//		"requiredBuilding": "Market",
-//		"requiredTech": "Banking"
-//	},
 	{
 		"name": "Forbidden Palace",
 		"culture": 1,
@@ -738,15 +631,6 @@
 		"maintenance": 2,
 		"requiredBuilding": "Colosseum",
 		"requiredTech": "Printing Press"
-	},
-	{
-		"name": "Leaning Tower of Pisa",
-		"culture": 1,
-		"isWonder": true,
-		"greatPersonPoints": {"Great Artist": 1},
-		"uniques": ["[+25]% great person generation [in all cities]", "Free Great Person"],
-		"requiredTech": "Printing Press",
-		"quote": "'Don't clap too hard - it's a very old building.' - John Osbourne"
 	},
 	{
 		"name": "Himeji Castle",
@@ -806,18 +690,6 @@
 		"requiredTech": "Economics"
 	},
 	{
-		"name": "Coffee House",
-		"replaces": "Windmill",
-		"uniqueTo": "Austria",
-		"production": 2,
-		"percentStatBonus": {"production": 10},
-		"specialistSlots": {"Engineer": 1},
-		"hurryCostModifier": 25,
-		"maintenance": 2,
-		"uniques": ["[+25]% great person generation [in this city]"],
-		"requiredTech": "Economics"
-	},
-	{
 		"name": "Arsenal",
 		"cost": 300,
 		"cityStrength": 9,
@@ -828,11 +700,12 @@
 	},
 	{
 		"name": "Kremlin",
+		"cost": 500
 		"culture": 3,
 		"cityStrength": 12,
 		"isWonder": true,
 		"uniques": ["Defensive buildings in all cities are 25% more effective"],
-		"requiredTech": "Metallurgy",
+		"requiredTech": "Acoustics",
 		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.' - The Prophet Muhammed"
 	},
 
@@ -981,18 +854,6 @@
 		"requiredTech": "Replaceable Parts",
 		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!' - Emma Lazarus"
 	},
-	{
-		"name": "Neuschwanstein",
-		"happiness": 2,
-		"culture": 4,
-		"gold": 6,
-		"greatPersonPoints": {"Great Merchant": 1},
-		"isWonder": true,
-		"uniques": ["[+1 Happiness, +2 Culture, +3 Gold] from every [Castle]",
-			"Must have an owned [Mountain] within [2] tiles"],
-		"requiredTech": "Railroads",
-		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.' - King Ludwig II of Bavaria"
-	},
 	// Column 12
 	{
 		"name": "Research Lab",
@@ -1081,38 +942,10 @@
 
 	// Column 15
 	{
-		"name": "CN Tower",
-		"isWonder": true,
-		"culture": 1,
-		"greatPersonPoints": {"Great Merchant": 1},
-		"uniques": ["[+1] population [in all cities]", "[+1 Happiness] [in all cities]", "Gain a free [Broadcast Tower] [in all cities]"],
-		"requiredTech": "Telecommunications",
-		"quote": "'Nothing travels faster than light with the possible exception of bad news, which obeys its own special rules.' - Douglas Adams"
-	},
-	{
-		"name": "Bomb Shelter",
-		"cost": 300,
-		"maintenance": 1,
-		"requiredTech": "Telecommunications",
-		"uniques": ["Population loss from nuclear attacks [-75]% [in this city]"]
-	},
-	{
 		"name": "SS Cockpit",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Satellites",
 		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
-	},
-	{
-		"name": "Hubble Space Telescope",
-		"isWonder": true,
-		"greatPersonPoints": {"Great Scientist": 1},
-		// If spaceship parts are changed into units, the spaceship part unique should be changed to
-		// "[+25]% Production when constructing [Spaceship part] units [in this city]"
-		"uniques": ["[2] free [Great Scientist] units appear",
-			"[+25]% Production when constructing [Spaceship part] buildings [in this city]",
-			"Gain a free [Spaceship Factory] [in this city]"],
-		"requiredTech": "Satellites",
-		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.' - Anatole France"
 	},
 	{
 		"name": "SS Booster",
@@ -1164,40 +997,4 @@
 			"Triggers a Cultural Victory upon completion", "Hidden when [Cultural] Victory is disabled"]
 	},
 	
-	// Religious buildings
-	
-	{
-		"name": "Cathedral",
-		"cost": 0,
-		"faith": 1,
-		"culture": 3,
-		"happiness": 1,
-		"specialistSlots": {"Artist": 1},
-		"uniques": ["Unbuildable", "Hidden when religion is disabled"]
-	},
-	{
-		"name": "Monastery",
-		"cost": 0,
-		"culture": 2,
-		"faith": 2,
-		"uniques": ["[+1 Culture, +1 Faith] from [Wine] tiles [in this city]", 
-			"[+1 Culture, +1 Faith] from [Incense] tiles [in this city]",
-			"Unbuildable", "Hidden when religion is disabled", "Destroyed when the city is captured"]
-	},
-	{
-		"name": "Mosque",
-		"cost": 0,
-		"culture": 2,
-		"faith": 3,
-		"happiness": 1,
-		"uniques": ["Unbuildable", "Hidden when religion is disabled"]
-	},
-	{
-		"name": "Pagoda",
-		"cost": 0,
-		"culture": 2,
-		"faith": 2,
-		"happiness": 2,
-		"uniques": ["Unbuildable", "Hidden when religion is disabled"]
-	},
 ]
