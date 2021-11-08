@@ -1,6 +1,5 @@
 package com.unciv.ui.newgamescreen
 
-import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
@@ -98,9 +97,9 @@ class GameOptionsTable(
             }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
-        it.isCityState() &&
-                (it.cityStateType != CityStateType.Religious || gameParameters.religionEnabled) &&
-                !it.hasUnique(UniqueType.CityStateDeprecated)
+        it.isCityState()
+        && (it.cityStateType != CityStateType.Religious || gameParameters.religionEnabled)
+        && !it.hasUnique(UniqueType.CityStateDeprecated)
     }
 
     private fun Table.addReligionCheckbox(cityStateSlider: UncivSlider?) =
@@ -179,7 +178,7 @@ class GameOptionsTable(
             
             // If so, add it to the current ruleset
             gameParameters.baseRuleset = newBaseRuleset
-            reloadRuleset()
+            onChooseMod(newBaseRuleset)
 
             // Check if the ruleset in it's entirety is still well-defined
             val modLinkErrors = ruleset.checkModLinks()
@@ -201,10 +200,8 @@ class GameOptionsTable(
                 ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
             }
             
-            
             modCheckboxes!!.setBaseRuleset(newBaseRuleset)
             
-            update()
             null
         }
     }
@@ -260,24 +257,27 @@ class GameOptionsTable(
 
     fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
         return ModCheckboxTable(gameParameters.mods, gameParameters.baseRuleset, previousScreen as CameraStageBaseScreen, isPortrait) {
-            val activeMods: LinkedHashSet<String> = LinkedHashSet(gameParameters.mods + gameParameters.baseRuleset) 
-            UncivGame.Current.translations.translationActiveMods = activeMods
-            reloadRuleset()
-            update()
-
-            var desiredCiv = ""
-            if (gameParameters.mods.contains(it)) {
-                val modNations = RulesetCache[it]?.nations
-                if (modNations != null && modNations.size > 0) desiredCiv = modNations.keys.first()
-
-                val music = UncivGame.Current.musicController
-                if (!music.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())
-                    music.chooseTrack(desiredCiv, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
-            }
-
-            updatePlayerPickerTable(desiredCiv)
+            onChooseMod(it)
         }
     }
+    
+    private fun onChooseMod(mod: String) {
+        val activeMods: LinkedHashSet<String> = LinkedHashSet(gameParameters.mods + gameParameters.baseRuleset)
+        UncivGame.Current.translations.translationActiveMods = activeMods
+        reloadRuleset()
+        update()
 
+        var desiredCiv = ""
+        if (gameParameters.mods.contains(mod)) {
+            val modNations = RulesetCache[mod]?.nations
+            if (modNations != null && modNations.size > 0) desiredCiv = modNations.keys.first()
+
+            val music = UncivGame.Current.musicController
+            if (!music.chooseTrack(mod, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())
+                music.chooseTrack(desiredCiv, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
+        }
+
+        updatePlayerPickerTable(desiredCiv)
+    }
 }
 

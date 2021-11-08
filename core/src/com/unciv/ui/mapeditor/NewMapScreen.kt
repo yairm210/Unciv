@@ -68,7 +68,6 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             add(mapParametersTable).row()
             
             modCheckBoxes = ModCheckboxTable(mapParameters.mods, mapParameters.baseRuleset, this@NewMapScreen) {
-                mapParameters.mods += it
                 reloadRuleset()
             }
             add(modCheckBoxes)

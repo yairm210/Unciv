@@ -150,6 +150,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                 if (modLinkErrors.isError()) {
                     mapParameters.mods.clear()
                     reloadRuleset()
+                    // TODO: These can't be shown as this screen is itself a popup, what should be done instead?
                     val toastMessage =
                         "This base ruleset is not compatible with the previously selected\nextension mods. They have been disabled.".tr()
                     ToastPopup(toastMessage, mapEditorScreen, 5000L)
@@ -170,8 +171,8 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
 
 
             selectBox.onChange {
-                val changedValue = onChange(selectBox.selected.value)
-                if (changedValue != null) selectBox.setSelected(changedValue)
+                val newValue = onChange(selectBox.selected.value)
+                if (newValue != null) selectBox.setSelected(newValue)
             }
 
             onChange(mapParameters.baseRuleset)
