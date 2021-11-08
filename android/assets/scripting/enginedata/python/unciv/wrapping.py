@@ -75,12 +75,6 @@ def stringPathList(pathlist):
 	return "".join(items)
 
 
-def real(obj):
-	if instanceof(obj, ForeignObject):
-		return obj._getvalue()
-	return obj
-
-
 class ForeignObject:
 	def __init__(self, path, foreignrequester=dummyForeignRequester):
 		object.__setattr__(self, '_path', (makePathElement(name=path),) if isinstance(path, str) else tuple(path))

@@ -36,11 +36,15 @@ This is meant to allow Kotlin/JVM objects to be, E.G., used as function argument
 
 Some of this may not yet be fully implemented.
 
-The Python-specific behaviour is also not standardized, and doesn't have to be copied exactly in any other languages. Some other design may be more suited for ECMAScript, Lua, and other possible backends.
+The Python-specific behaviour is also not meant as a hard standard, in that it doesn't have to be copied exactly in any other languages. Some other design may be more suited for ECMAScript, Lua, and other possible backends. If implementing another language, I think some attempt should still be made to keep a similar API and feature parity, though.
 
 """
 
 try:
+
+	# This is all a very messy code structure, but it's literally the most surface-facing part of the entire scripting API on which nothing depends and failures are easy to debug, and since it's making changes to `sys`, I'm not sure how I feel about hiding parts of it in a module.
+	# Otherwise, I would clean it up a bit and move it into `api.py`.
+	
 	import sys, json
 
 	stdout = sys.stdout
@@ -50,15 +54,17 @@ try:
 	
 	foreignActionSender = unciv.ipc.ForeignActionSender()
 	
-	foreignScope = {n: unciv.wrapping.ForeignObject(n, foreignrequester=foreignActionSender.GetForeignActionResponse) for n in ('civInfo', 'gameInfo', 'uncivGame', 'worldScreen', 'isInGame')}
+	apiScope = {n: unciv.wrapping.ForeignObject(n, foreignrequester=foreignActionSender.GetForeignActionResponse) for n in ('civInfo', 'gameInfo', 'uncivGame', 'worldScreen', 'isInGame')}
+	
+	apiScope.update({k: getattr(unciv.api, k) for k in ('real',)})
 	
 	class fsdebug:
 		pass
 	
 	fsdebug = fsdebug()
-	fsdebug.__dict__ = foreignScope
+	fsdebug.__dict__ = apiScope
 	
-	foreignAutocompleter = unciv.autocompletion.AutocompleteManager(foreignScope)
+	foreignAutocompleter = unciv.autocompletion.AutocompleteManager(apiScope)
 	
 	class ForeignActionReplReceiver(unciv.ipc.ForeignActionReceiver):
 		@unciv.ipc.receiverMethod('motd', 'motd_response')
@@ -100,7 +106,7 @@ sys.implementation == {str(sys.implementation)}
 		def EvalForeignTerminate(self, packet):
 			return None
 
-	foreignActionReceiver = ForeignActionReplReceiver(scope=foreignScope)
+	foreignActionReceiver = ForeignActionReplReceiver(scope=apiScope)
 	
 	foreignActionReceiver.ForeignREPL()
 	# Disable this to run manually with `python3 -i main.py` for debug.

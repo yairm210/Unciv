@@ -21,10 +21,14 @@ object ScriptingObjectIndex {
     }
     
     fun clean(): Unit {
+        val badtokens = mutableListOf<String>()
         for ((t, o) in objs) {
             if (o.get() == null) {
-                objs.remove(t)
+                badtokens.add(t)
             }
+        }
+        for (t in badtokens) {
+            objs.remove(t)
         }
     }
     
