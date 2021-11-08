@@ -41,9 +41,15 @@ object BackwardCompatibility {
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
-            for (building in city.cityConstructions.builtBuildings.toHashSet())
+            for (building in city.cityConstructions.builtBuildings.toHashSet()) {
+                // Conversion code for Hanse buildings deprecated in 3.18.1
+                    if (building == "Hanse") 
+                        city.cityConstructions.builtBuildings.add("Bank") 
+                //
+                
                 if (!ruleSet.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
+            }
 
             fun isInvalidConstruction(construction: String) =
                 !ruleSet.buildings.containsKey(construction)
@@ -67,7 +73,7 @@ object BackwardCompatibility {
                     civInfo.tech.techsResearched.remove(tech)
             for (policy in civInfo.policies.adoptedPolicies.toList())
                 if (!ruleSet.policies.containsKey(policy)
-                    // Converstion code for deprecated policies since 3.16.15
+                    // Conversion code for deprecated policies since 3.16.15
                         && !(policy == "Patronage " || policy == "Patronage  Complete")
                     //
                 )
