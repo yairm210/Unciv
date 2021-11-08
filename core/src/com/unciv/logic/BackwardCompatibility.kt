@@ -41,11 +41,9 @@ object BackwardCompatibility {
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
+            changeBuildingNameIfNotInRuleset(ruleSet, city.cityConstructions, "Hanse", "Bank")
+            
             for (building in city.cityConstructions.builtBuildings.toHashSet()) {
-                // Conversion code for Hanse buildings deprecated in 3.18.1
-                    if (building == "Hanse") 
-                        city.cityConstructions.builtBuildings.add("Bank") 
-                //
                 
                 if (!ruleSet.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
