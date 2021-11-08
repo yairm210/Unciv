@@ -59,20 +59,50 @@ def foreignErrmsgChecker(packet):
 		raise ipc.ForeignError(packet.data)
 
 
+def makePathElement(ttype='Property', name='', params=()):
+	assert ttype in ('Property', 'Key', 'Call'), f"{repr(ttype)} not a valid path element type."
+	return {'type': ttype, 'name': name, 'params': params}
+
+def stringPathList(pathlist):
+	items = []
+	for p in pathlist:
+		if p['type'] == 'Property':
+			items.append(f".{p['name']}")
+		if p['type'] == 'Key':
+			items.append(f"[{p['params'][0]}]")
+		if p['type'] == 'Call':
+			items.append(f"({', '.join(p['params'])}])")
+	return "".join(items)
+
+
+def real(obj):
+	if instanceof(obj, ForeignObject):
+		return obj._getvalue()
+	return obj
+
+
 class ForeignObject:
 	def __init__(self, path, foreignrequester=dummyForeignRequester):
-		object.__setattr__(self, '_path', (*path,))
+		object.__setattr__(self, '_path', (makePathElement(name=path),) if isinstance(path, str) else tuple(path))
 		object.__setattr__(self, '_foreignrequester', foreignrequester)
 	def __repr__(self):
-		return f"{self.__class__.__name__}({repr(self._getpath())}):{self._getvalue()}"
+		return f"{self.__class__.__name__}({stringPathList(self._getpath())}):{self._getvalue()}"
+	def __ipcjson__(self):
+		return self._getvalue()
 	def _getpath(self):
-		return ''.join(self._path)
+		return tuple(self._path)
+		#return ''.join(self._path)
 	def __getattr__(self, name):
-		self.__class__
-		self._path
-		return self.__class__((*self._path, f".{name}"), self._foreignrequester)
+		return self.__class__((*self._path, makePathElement(name=name)), self._foreignrequester)
 	def __getitem__(self, key):
-		return self.__class__((*self._path, f"[{json.dumps(key)}]"), self._foreignrequester)
+		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester)
+#	def __hash__(self):
+#		return hash(stringPathList(self._getpath()))
+	def __iter__(self):
+		try:
+			return iter(self.keys())
+		except:
+			return (self[i] for i in range(0, len(self)))
 	@ForeignRequestMethod
 	def _getvalue(self):
 		return ({
@@ -116,16 +146,14 @@ class ForeignObject:
 		'assign_response',
 		foreignErrmsgChecker)
 	@ForeignRequestMethod
-	def __call__(self, *args, **kwargs):
+	def __call__(self, *args):
 		return ({
-			'action': 'call',
+			'action': 'read',
 			'data': {
-				'path': self._getpath(),
-				'args': args,
-				'kwargs': kwargs
+				'path': (*self._getpath(), makePathElement(ttype='Call', params=args)),
 			}
 		},
-		'call_response',
+		'read_response',
 		foreignValueParser)
 	@ForeignRequestMethod
 	def __setitem__(self, key, value):
@@ -137,12 +165,42 @@ class ForeignObject:
 			}
 		},
 		'assign_response',
+		foreignErrmsgChecker)
+	@ForeignRequestMethod
+	def __len__(self):
+		return ({
+			'action': 'length',
+			'data': {
+				'path': self._getpath(),
+			}
+		},
+		'length_response',
+		foreignValueParser)	
+	@ForeignRequestMethod
+	def __contains__(self, item):
+		return ({
+			'action': 'contains',
+			'data': {
+				'path': self._getpath(),
+				'value': item
+			}
+		},
+		'contains_response',
 		foreignValueParser)
-#	def keys(self):
-#		raise NotImplemented()
-#		return {
-#			''
-#		}
+	@ForeignRequestMethod
+	def keys(self):
+		return ({
+			'action': 'keys',
+			'data': {
+				'path': self._getpath(),
+			}
+		},
+		'keys_response',
+		foreignValueParser)	
+	def values(self):
+		return (self[k] for k in self.keys())
+	def entries(self):
+		return ((k, self[k]) for k in self.keys())
 
 #class ForeignScope:
 #	_path = ()

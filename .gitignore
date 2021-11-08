@@ -148,3 +148,4 @@ GameSettings.json
 
 # Python
 *.pyc
+__pycache__

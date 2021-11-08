@@ -3,10 +3,10 @@ package com.unciv.scripting.protocol
 import com.unciv.scripting.AutocompleteResults
 import com.unciv.scripting.ScriptingBackend
 import com.unciv.scripting.ScriptingScope
-import com.unciv.scripting.protocol.ScriptingObjectIndex
 import com.unciv.scripting.protocol.ScriptingPacket
 import com.unciv.scripting.protocol.ScriptingProtocol
 import com.unciv.scripting.utils.Blackbox
+//import com.unciv.scripting.utils.ScriptingObjectIndex
 
 
 /*
@@ -14,7 +14,7 @@ import com.unciv.scripting.utils.Blackbox
     2. While the script interpreter is running, it has a chance to request values from the Kotlin side by sending back packets encoding attribute/property, key, and call stacks.
     3. When the Kotlin side receives a request for a value, it uses reflection to access the requested property or call the requested method, and it sends the result to the script interpreter.
     4. When the script interpreter finishes running, it sends a special packet to the Kotlin side. It then sends the REPL output of the command to the Kotlin side.
-    5. When the Kotlin interpreter receives the packet marking the end of the command run, it stops listening for value requests packets. It then receives the next value, and passes it back to the display/handler.
+    5. When the Kotlin interpreter receives the packet marking the end of the command run, it stops listening for value requests packets. It then receives the commnad result as the next value, and passes it back to the display/handler.
 
     ```
     fun ExecuteCommand(command):
@@ -28,7 +28,7 @@ import com.unciv.scripting.utils.Blackbox
         PrintToConsole(ReceiveFromInterpreter():String)
     ```
 
-    The "packets" should probably all be encoded as strings, probably JSON. The technique used to connect the script interpreter to the Kotlin code shouldn't matter. As long as it's wrapped up in and implements the `Blackbox` interface, IPC/embedding based on pipes, STDIN/STDOUT, sockets, queues, embedding, JNI, etc. should all be interchangeable.
+    The "packets" should probably all be encoded as strings, probably JSON. The technique used to connect the script interpreter to the Kotlin code shouldn't matter, as long as it's wrapped up in and implements the `Blackbox` interface. IPC/embedding based on pipes, STDIN/STDOUT, sockets, queues, embedding, JNI, etc. should all be interchangeable.
 
     I'm not sure if there'd be much point to or a good technique for letting the script interpreter run constantly and initiate actions on its own, instead of waiting for commands from the Kotlin side.
 
@@ -61,6 +61,7 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
     }
     
     fun foreignExecLoop() {
+        // Lists to request for values from the black box, and replies to them, during script execution.
         while (true) {
             val request = ScriptingPacket.fromJson(blackbox.read(block=true))
             if (request.action != null) {

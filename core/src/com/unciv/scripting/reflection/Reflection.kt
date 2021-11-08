@@ -1,9 +1,12 @@
 package com.unciv.scripting.reflection
 
+import com.unciv.scripting.utils.TokenizingJson
 import kotlin.collections.ArrayList
 import kotlin.reflect.KCallable
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
+//import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import java.util.*
 
 
@@ -54,12 +57,15 @@ object Reflection {
         Call()
     }
 
+    @Serializable
     data class PathElement(
         val type: PathElementType,
         val name: String,
         val doEval: Boolean = false,
         //For key and index accesses, and function calls, evaluate `name` instead of using `params`.
-        val params: List<Any?> = listOf()
+        //Default should be false, so deserialized JSON path lists are configured correctly in ScriptingProtocol.kt.
+        val params: List<@Serializable(with=TokenizingJson.TokenizingSerializer::class) Any?> = listOf()
+//        val params: List<@Contextual Any?> = listOf()
     )
 
 

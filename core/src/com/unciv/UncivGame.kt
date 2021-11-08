@@ -25,6 +25,12 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 
+import com.unciv.scripting.utils.TokenizingJson
+import com.unciv.scripting.reflection.Reflection
+
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.decodeFromString
 
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -78,6 +84,34 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     lateinit var consoleScreen: ConsoleScreen // Keep same ConsoleScreen() when possible, to avoid having to manually persist/restore history, input field, etc.
 
     override fun create() {
+    
+    	
+    	println(TokenizingJson.json.encodeToString(TokenizingJson.TokenizingSerializer, "ABC."))
+    	println(TokenizingJson.json.encodeToString(TokenizingJson.TokenizingSerializer, null))
+    	println(TokenizingJson.json.encodeToString(TokenizingJson.TokenizingSerializer, Int))
+    	var pe = Reflection.PathElement(
+    		Reflection.PathElementType.Property,
+    		"Name",
+    		false,
+    		listOf(
+    			1,
+    			2,
+    			"B",
+    			mapOf<String, Int>("A" to 2, "B" to 5),
+    			listOf<Any>("A", 2, listOf<Int>(6,7,8)),
+    			null,
+    			UncivGameParameters("Five")
+			)
+		)
+    	println("\npe    ${pe}")
+    	var pejs = TokenizingJson.json.encodeToString(TokenizingJson.TokenizingSerializer, pe)
+    	println("\npejs    ${pejs}")
+    	var pejs2 = TokenizingJson.json.encodeToString(pe)
+    	println("\npejs2    ${pejs2}")
+    	var peo:Any? = TokenizingJson.json.decodeFromString<Reflection.PathElement>(pejs2)
+    	println("\npeo    ${peo}\n")
+    
+    
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false

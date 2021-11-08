@@ -10,7 +10,7 @@ import kotlin.math.min
 
 /*
     ```
-    The major classes added and changed by this PR are structured as follows. UpperCamelCase() and parentheses means a new instantiation of a class. lowerCamelCase means a reference to an already-existing instance. An asterisk at the start of an item means zero or multiple instances of that class may be held. A question mark at the start of an item means that it may not exist in all implementations of the parent base class/interface. A question mark at the end of an item means that it is nullable, or otherwise may not be set in all states.
+    The major classes involved in the scripting API are structured as follows. UpperCamelCase() and parentheses means a new instantiation of a class. lowerCamelCase means a reference to an already-existing instance. An asterisk at the start of an item means zero or multiple instances of that class may be held. A question mark at the start of an item means that it may not exist in all implementations of the parent base class/interface. A question mark at the end of an item means that it is nullable, or otherwise may not be available in all states.
 
     UncivGame():
         ScriptingState(): // Persistent per UncivGame().
@@ -23,6 +23,7 @@ import kotlin.math.min
                 scriptingScope
                 ?ScriptingReplManager():
                     Blackbox() // Common interface to wrap foreign interpreter with pipes, STDIN/STDOUT, queues, sockets, embedding, JNI, etc.
+                    scriptingScope
                     ScriptingProtocol():
                         scriptingScope
                 ?folderHandler: setupInterpreterEnvironment() // If used, a temporary directory with file structure copied from engine and shared folders in `assets/scripting`.
@@ -34,7 +35,9 @@ import kotlin.math.min
     MainMenuScreen():
         consoleScreen
         scriptingState // Same as for worldScreen.
-    ScriptingObjectIndex()
+    ScriptingObjectIndex() // Holds WeakRefs used by ScriptingProtocol. Unserializable objects get strings as placeholders, and then turned back into into objects if seen again.
+    Reflection() // Used by some hard-coded scripting backends, and essential to dynamic bindings in ScriptingProtocol().
+    SourceManager() // Source of the folderHandler and setupInterpreterEnvironment() above.
     ```
 */
 

@@ -1,4 +1,4 @@
-package com.unciv.scripting.protocol
+package com.unciv.scripting.utils
 
 import kotlin.collections.MutableMap
 import java.lang.ref.WeakReference
@@ -12,10 +12,8 @@ object ScriptingObjectIndex {
     private val kotlinObjectIdPrefix = "_unciv-kt-obj@" // load from ScriptAPIConstants.json
 
     private fun idKotlinObject(value: Any?): String {
-        //Don't depend on parsing this for extracting information.
-        //It's basically a readable/dumb UUID.
-        //Actually, it might be better to just use a UUID. I think that was actually my original plan.
-        return "${kotlinObjectIdPrefix}${System.identityHashCode(value)}:${if (value == null) "null" else value::class.qualifiedName}/${value.toString()}_${UUID.randomUUID().toString()}"
+        //Try to keep this human-informing, but don't parse it to extracting information.
+        return "${kotlinObjectIdPrefix}${System.identityHashCode(value)}:${if (value == null) "null" else value::class.qualifiedName}/${value.toString()}:${UUID.randomUUID().toString()}"
     }
     
     private fun isKotlinToken(value: Any?): Boolean {

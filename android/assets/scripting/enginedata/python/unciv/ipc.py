@@ -6,6 +6,14 @@ stdout = sys.stdout
 ##	return eval(path, scope, scope)
 #	raise NotImplementedError()
 
+
+class IpcJsonEncoder(json.JSONEncoder):
+	def default(self, obj):
+		if hasattr(obj.__class__, '__ipcjson__'):
+			return obj.__ipcjson__()
+		return json.JSONEncoder.default(self, obj)
+
+
 def MakeUniqueId():
 	return f"{time.time_ns()}-{random.getrandbits(30)}"
 
@@ -37,7 +45,7 @@ class ForeignPacket:
 			'flags': (*self.flags,)
 		}
 	def serialized(self):
-		return json.dumps(self.as_dict())
+		return json.dumps(self.as_dict(), cls=IpcJsonEncoder)
 
 # Flags: 'FinishEval', 'BeginIteration', 'StopIteration'
 

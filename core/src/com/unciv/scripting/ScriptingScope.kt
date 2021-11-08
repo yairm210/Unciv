@@ -18,4 +18,6 @@ class ScriptingScope(
     // Also where to put any `PlayerAPI`, `CheatAPI`, `ModAPI`, etc.
     // For `LuaScriptingBackend`, `UpyScriptingBackend`, `QjsScriptingBackend`, etc, the hierarchy of data under this class definition should probably directly mirror the wrappers in the namespace exposed to the scripting language.
     // `WorldScreen` gives access to `UnitTable.selectedUnit`, `MapHolder.selectedTile`, etc. Useful for contextual operations.
+    
+    // Hm. I got some `java.util.ConcurrentModificationException`s from Python shortly after loading a save. A lock might be useful. Then again, the exception needs to be (and is) handled in the CLI anyway, and the modding API shouldn't be trying to call handlers when the game is locked anyway.
 }
