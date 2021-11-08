@@ -580,7 +580,7 @@
 		"culture": 4,
 		"specialistSlots": {"Artist": 1},
 		"hurryCostModifier": 10,
-		"requiredBuilding": "Amphitheater",
+		"requiredBuilding": "Temple",
 		"maintenance": 2,
 		"requiredTech": "Acoustics",
 		"uniques": ["Destroyed when the city is captured"]
