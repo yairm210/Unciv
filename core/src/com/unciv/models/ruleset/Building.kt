@@ -190,9 +190,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
-        if (uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
-            stats.production += 5 * civInfo.citiesConnectedToCapitalToMediums.count { it.key.civInfo.isCityState() }
-
         return stats
     }
 
