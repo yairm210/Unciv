@@ -41,9 +41,13 @@ object BackwardCompatibility {
 
         for (city in civilizations.asSequence().flatMap { it.cities.asSequence() }) {
 
-            for (building in city.cityConstructions.builtBuildings.toHashSet())
+            changeBuildingNameIfNotInRuleset(ruleSet, city.cityConstructions, "Hanse", "Bank")
+            
+            for (building in city.cityConstructions.builtBuildings.toHashSet()) {
+                
                 if (!ruleSet.buildings.containsKey(building))
                     city.cityConstructions.builtBuildings.remove(building)
+            }
 
             fun isInvalidConstruction(construction: String) =
                 !ruleSet.buildings.containsKey(construction)
@@ -67,7 +71,7 @@ object BackwardCompatibility {
                     civInfo.tech.techsResearched.remove(tech)
             for (policy in civInfo.policies.adoptedPolicies.toList())
                 if (!ruleSet.policies.containsKey(policy)
-                    // Converstion code for deprecated policies since 3.16.15
+                    // Conversion code for deprecated policies since 3.16.15
                         && !(policy == "Patronage " || policy == "Patronage  Complete")
                     //
                 )
