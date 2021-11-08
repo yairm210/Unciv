@@ -1,9 +1,10 @@
-"""Advanced autocompletion. Returns keys for """
+import rlcompleter
 
 from . import utils
 
 
 class AutocompleteManager:
+	"""Advanced autocompleter. Returns keys when accessing mappings. Implements API that returns docstrings as help text for callables."""
 	def __init__(self, scope=None):
 		self.scope = globals() if scope is None else scope
 	def Evaled(self, path):
@@ -37,4 +38,6 @@ class AutocompleteManager:
 				return tuple([attrbase+attrjoin+a for a in (dir(self.Evaled(attrbase)) if attrbase else self.scope) if a.startswith(attrleaf)])
 		except (NameError, AttributeError, KeyError, IndexError, SyntaxError) as e:
 			return "No autocompletion found: "+utils.formatException(e)
-		
+
+class RlAutocompleteManager:
+	"""Wrapper for default Python autocompleter."""

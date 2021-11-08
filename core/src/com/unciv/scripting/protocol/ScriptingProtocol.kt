@@ -37,10 +37,10 @@ import java.util.UUID
     A single packet is a standard JSON string of the form:
 
     {
-        'action': String?,
-        'identifier': String?,
-        'data': Any?,
-        'flags': Collection<String>
+        "action": String?,
+        "identifier": String?,
+        "data": Any?,
+        "flags": Collection<String>
     }
 
     Identifiers should be set to a unique value in each request.

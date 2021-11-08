@@ -51,12 +51,21 @@ try:
 	
 	import unciv
 	
+	try:
+		unciv.wrapping.ForeignObject.__doc__ = (unciv.wrapping.ForeignObject.__doc__ or "") + "\n\n\n---\n\n" + __doc__
+	except:
+		pass
 	
 	foreignActionSender = unciv.ipc.ForeignActionSender()
 	
-	apiScope = {n: unciv.wrapping.ForeignObject(n, foreignrequester=foreignActionSender.GetForeignActionResponse) for n in ('civInfo', 'gameInfo', 'uncivGame', 'worldScreen', 'isInGame')}
 	
-	apiScope.update({k: getattr(unciv.api, k) for k in ('real',)})
+	apiScope = {n: unciv.wrapping.ForeignObject(n, foreignrequester=foreignActionSender.GetForeignActionResponse) for n in ('civInfo', 'gameInfo', 'uncivGame', 'worldScreen', 'isInGame')}
+	# I wanna change the protocol to automatically generate these with a `dir()` on an empty `ForeignObject()` path in `.motd()`.
+	
+	apiScope.update(unciv.api.Expose)
+	
+	apiScope['help'] = lambda thing=None: print(__doc__) if thing is None else help(thing)
+	
 	
 	class fsdebug:
 		pass
@@ -111,5 +120,13 @@ sys.implementation == {str(sys.implementation)}
 	foreignActionReceiver.ForeignREPL()
 	# Disable this to run manually with `python3 -i main.py` for debug.
 	
+	raise RuntimeError("No REPL loop. Did you forget to uncomment a line in `main.py`?")
+	
 except Exception as e:
-	print(f"Fatal error in Python interepreter: {unciv.utils.formatException(e)}", file=stdout, flush=True)
+#	try:
+#		import unciv.utils
+#		exc = unciv.utils.formatException(e)
+#		# Disable this. A single line with undefined format is more likely to be printed than multiple.
+#	except:
+#		exc = repr(e)
+	print(f"Fatal error in Python interepreter: {repr(e)}", file=stdout, flush=True)

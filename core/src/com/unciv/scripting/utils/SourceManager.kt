@@ -36,6 +36,10 @@ object SourceManager {
     }
 
     fun setupInterpreterEnvironment(engine: String): FileHandle {
+        // Creates temporary directory.
+        // Copies directory tree under `android/assets/scripting/shareddata/` into it, as specified by `SharedData.json` 
+        // Copies directory tree under `android/assets/scripting/enginedata/{engine}` into it, as specified by `{engine}.json`.
+        // Returns `FileHandle()` for the temporary directory.
         val enginedir = getEngineLibraries(engine)
         val outdir = FileHandle.tempDirectory("unciv-${engine}_")
         fun addfile(sourcedir: FileHandle, path: String) {
@@ -53,8 +57,8 @@ object SourceManager {
             addfile(enginedir, fp)
         }
         Runtime.getRuntime().addShutdownHook(
-            // Delete on JVM shutdown, not on backend object destruction/termination. The copied files shouldn't be huge anyway, and I trust the shutdown hook to be run more reliably.
-            thread(start = false, name = "Delete ${outdir.toString()}") {
+            // Delete temporary directory on JVM shutdown, not on backend object destruction/termination. The copied files shouldn't be huge anyway, there's no reference to a `ScriptingBackend()` here, and I trust the shutdown hook to be run more reliably.
+            thread(start = false, name = "Delete ${outdir.toString()}.") {
                 outdir.deleteDirectory()
             }
         )

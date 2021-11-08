@@ -1,7 +1,7 @@
-import json, sys
+import json, sys, operator
 stdout = sys.stdout
 
-from . import ipc
+from . import ipc, api
 
 class ForeignRequestMethod:
 	"""Decorator for methods that return values from foreign requests."""
@@ -31,18 +31,36 @@ class ForeignRequestMethod:
 #	def __get__(self, obj, cls):
 #		return lambda *a, **kw: self.func(obj._getvalue(), *a, **kw)
 
-def ForeignResolvingFunc(func):
-	"""Decorator for functions that resolve foreign objects as arguments."""
-	def _func(*args, **kwargs):
-		return f(
-			*[a._getvalue() if isinstance(ForeignObject) else a for a in args],
-			**{k: v._getvalue() if isinstance(ForeignObject) else v for k, v in kwargs.items()}
-		)
-	try:
-		_func.__name__, _func.__doc__ = func.__name__, func.__doc__
-	except AttributeError:
-		pass
-	return _func
+#def ForeignResolvingFunc(func):
+#	"""Decorator for functions that resolve foreign objects as arguments."""
+#	def _func(*args, **kwargs):
+#		return f(
+#			*[a._getvalue() if isinstance(ForeignObject) else a for a in args],
+#			**{k: v._getvalue() if isinstance(ForeignObject) else v for k, v in kwargs.items()}
+#		)
+#	try:
+#		_func.__name__, _func.__doc__ = func.__name__, func.__doc__
+#	except AttributeError:
+#		pass
+#	return _func
+
+def ResolvingFunction(op):
+	"""Return a function that passes its arguments through `api.real()`."""
+	def _resolvingfunction(*arguments, **keywords):
+		args = [api.real(a) for a in arguments]
+		kwargs = {k:api.real(v) for k, v in keywords.items()}
+		return op(*args, **kwargs)
+	_resolvingfunction.__name__ = op.__name__
+	_resolvingfunction.__doc__ = f"{op.__doc__ or name + ' operator.'}\n\nCalls `api.real()` on all arguments."
+	return _resolvingfunction
+
+def ReversedMethod(func):
+	"""Return a `.__rop__` version of an `.__op__` magic method function."""
+	def _reversedop(a, b, *args, **kwargs):
+		return func(b, a, *args, **kwargs)
+	_reversedop.__name__ = func.__name__
+	_reversedop.__doc__ = f"{func.__doc__ or name + ' operator.'}\n\nReversed version."
+	return _reversedop
 
 
 def dummyForeignRequester(actionparams, responsetype):
@@ -75,7 +93,83 @@ def stringPathList(pathlist):
 	return "".join(items)
 
 
+_magicmeths = (
+	'__lt__',
+	'__le__',
+	'__eq__', # Kinda undefined behaviour for comparision with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in ScriptingObjectIndex.kt, on every `._getvalue()`, so I think even the same `ForeignObject()` will never equal itself.
+	'__ne__',
+	'__ge__',
+	'__gt__',
+	'__not__',
+	('__bool__', 'truth'),
+#	@is # This could get messy. It's probably best to just not support identity comparison. What do you compare? JVM Kotlin value? Resolved Python value? Python data path? Token strings from ScriptingObjectIndex.kt— Which are currently randomly re-generated for multiple accesses to the same Kotlin object, and thus always unique, and which would require another protocol-level guarantee to not do that, in addition to being (kinda by design) procedurally indistinguishable from "real" resovled Python values?
+#	@is_not # Also, these aren't even magic methods.
+	'__abs__',
+	'__add__',
+	'__and__',
+	'__floordiv__',
+	'__index__',
+	'__inv__',
+	'__invert__',
+	'__lshift__',
+	'__mod__',
+	'__mul__',
+	'__matmul__',
+	'__neg__',
+	'__or__',
+	'__pos__',
+	'__pow__',
+	'__rshift__',
+	'__sub__',
+	'__truediv__',
+	'__xor__',
+	'__concat__',
+	'__contains__', # Implemented through foreign request.
+	'__delitem__', # Should be implemented through foreign request if it is to be supported.
+	'__getitem__', # Implemented through foreign request.
+#	@indexOf # Not actually totally sure what this is. I thought it was implemented in lists and tuples as `.index()`?
+#	'__setitem__', # Implemented through foreign request.
+)
+
+_rmagicmeths = (
+	'__radd__',
+	'__rsub__',
+	'__rmul__',
+	'__rmatmul__',
+	'__rtruediv__',
+	'__rfloordiv__',
+	'__rmod__',
+	'__rdivmod__',
+	'__rpow__',
+	'__rlshift__',
+	'__rrshift__',
+	'__rand__',
+	'__rxor__',
+	'__ror__',
+)
+
+def ResolveForOperators(cls):
+	"""Decorator. Adds missing magic methods to a class, which resolve their arguments with `api.real(a)`."""
+	def alreadyhas(name):
+		return (hasattr(cls, name) and getattr(cls, name) is not getattr(object, name, None))
+	for meth in _magicmeths:
+		if isinstance(meth, str):
+			name = opname = meth
+		else:
+			name, opname = meth
+		if not alreadyhas(name):
+			# Set the magic method only if neither it nor any of its base classes have already defined a custom implementation.
+			setattr(cls, name, ResolvingFunction(getattr(operator, opname)))
+	for rmeth in _rmagicmeths:
+		normalname = rmeth.replace('__r', '__', 1)
+		if not alreadyhas(rmeth) and hasattr(cls, normalname):
+			setattr(cls, rmeth, ReversedMethod(getattr(cls, normalname)))
+	return cls
+
+
+@ResolveForOperators
 class ForeignObject:
+	"""Wrapper for a forign object."""
 	def __init__(self, path, foreignrequester=dummyForeignRequester):
 		object.__setattr__(self, '_path', (makePathElement(name=path),) if isinstance(path, str) else tuple(path))
 		object.__setattr__(self, '_foreignrequester', foreignrequester)
