@@ -67,7 +67,9 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     try {
                         val map = MapSaver.loadMap(chosenMap!!, checkSizeErrors = false)
 
-                        val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }
+                        val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
+                        if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
+                        
                         if (missingMods.isNotEmpty()) {
                             Gdx.app.postRunnable {
                                 needPopup = false
@@ -77,6 +79,13 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                         } else Gdx.app.postRunnable {
                             Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                             try {
+                                // For deprecated maps, set the base ruleset field if it's still saved in the mods field
+                                val modBaseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+                                if (modBaseRuleset != null) {
+                                    map.mapParameters.baseRuleset = modBaseRuleset
+                                    map.mapParameters.mods -= modBaseRuleset
+                                }
+                                    
                                 game.setScreen(MapEditorScreen(map))
                                 dispose()
                             } catch (ex: Throwable) {

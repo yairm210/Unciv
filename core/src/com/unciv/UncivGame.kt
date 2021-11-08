@@ -128,7 +128,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun loadGame(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
         ImageGetter.setNewRuleset(gameInfo.ruleSet)
-        musicController.setModList(gameInfo.gameParameters.mods)
+        // Clone the mod list and add the base ruleset to it
+        val fullModList = (gameInfo.gameParameters.mods.toHashSet()).apply { add(gameInfo.gameParameters.baseRuleset) }
+        musicController.setModList(fullModList)
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
         if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
             setScreen(PlayerReadyScreen(gameInfo, gameInfo.getPlayerToViewAs()))
