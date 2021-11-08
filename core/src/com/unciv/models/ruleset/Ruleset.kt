@@ -269,7 +269,7 @@ class Ruleset {
     /** Used for displaying a RuleSet's name */
     override fun toString() = when {
         name.isNotEmpty() -> name
-        mods.isEmpty() -> BaseRuleset.Civ_V_Vanilla.fullName  //todo differentiate once more than 1 BaseRuleset
+        mods.size == 1 && RulesetCache[mods.first()]!!.modOptions.isBaseRuleset -> mods.first()
         else -> "Combined RuleSet"
     }
 
@@ -634,6 +634,27 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
+    fun getSortedBaseRulesets(): List<String> {
+        val baseRulesets = values
+            .filter { it.modOptions.isBaseRuleset }
+            .map { it.name }
+            .distinct()
+        if (baseRulesets.size < 2) return baseRulesets
+
+        // We sort the base rulesets such that the ones unciv provides are on the top,
+        // and the rest is alphabetically ordered.
+        return baseRulesets.sortedWith(
+            compareBy(
+                { ruleset ->
+                    BaseRuleset.values()
+                        .firstOrNull { br -> br.fullName == ruleset }?.ordinal
+                        ?: BaseRuleset.values().size
+                },
+                { it }
+            )
+        )
+    }
+    
     /**
      * Creates a combined [Ruleset] from a list of mods. If no baseRuleset is listed in [mods],
      * then the vanilla Ruleset is included automatically.

@@ -139,27 +139,10 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
     
     private fun getBaseRulesetSelectBox(): Table? {
         val rulesetSelectionBox = Table()
-        
-        val baseRulesets =
-            RulesetCache.values
-                .filter { it.modOptions.isBaseRuleset }
-                .map { it.name }
-                .distinct()
-        if (baseRulesets.size < 2) return null
 
-        // We sort the base rulesets such that the ones unciv provides are on the top,
-        // and the rest is alphabetically ordered.
-        val sortedBaseRulesets = baseRulesets.sortedWith(
-            compareBy(
-                { ruleset ->
-                    BaseRuleset.values()
-                        .firstOrNull { br -> br.fullName == ruleset }?.ordinal
-                        ?: BaseRuleset.values().size
-                },
-                { it }
-            )
-        )
-        
+        val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
+        if (sortedBaseRulesets.size < 2) return null
+
         rulesetSelectionBox.add("{Base Ruleset}:".toLabel()).left()
         val selectBox = TranslatedSelectBox(sortedBaseRulesets, mapParameters.baseRuleset, skin)
 

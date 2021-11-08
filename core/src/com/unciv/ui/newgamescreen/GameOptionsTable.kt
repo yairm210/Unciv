@@ -141,25 +141,9 @@ class GameOptionsTable(
     }
 
     private fun Table.addBaseRulesetSelectBox() {
-        val baseRulesets = 
-            RulesetCache.values
-                .filter { it.modOptions.isBaseRuleset }
-                .map { it.name }
-                .distinct()
-        if (baseRulesets.size < 2) return
+        val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
+        if (sortedBaseRulesets.size < 2) return
         
-        // We sort the base rulesets such that the ones unciv provides are on the top,
-        // and the rest is alphabetically ordered.
-        val sortedBaseRulesets = baseRulesets.sortedWith(
-            compareBy(
-                { ruleset ->
-                    BaseRuleset.values()
-                        .firstOrNull { br -> br.fullName == ruleset }?.ordinal
-                        ?: BaseRuleset.values().size
-                },
-                { it }
-            )
-        )
         addSelectBox(
             "{Base Ruleset}:",
             sortedBaseRulesets,
@@ -252,7 +236,7 @@ class GameOptionsTable(
         ruleset.modOptions = newRuleset.modOptions
         
         ImageGetter.setNewRuleset(ruleset)
-        UncivGame.Current.musicController.setModList(gameParameters.mods.toHashSet().apply { add(gameParameters.baseRuleset) })
+        UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())
     }
 
     fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
@@ -262,7 +246,7 @@ class GameOptionsTable(
     }
     
     private fun onChooseMod(mod: String) {
-        val activeMods: LinkedHashSet<String> = LinkedHashSet(gameParameters.mods + gameParameters.baseRuleset)
+        val activeMods: LinkedHashSet<String> = LinkedHashSet(gameParameters.getModsAndBaseRuleset())
         UncivGame.Current.translations.translationActiveMods = activeMods
         reloadRuleset()
         update()

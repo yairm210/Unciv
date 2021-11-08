@@ -73,4 +73,8 @@ class GameParameters { // Default values are the default new game
             yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")
+    
+    fun getModsAndBaseRuleset(): HashSet<String> {
+        return mods.toHashSet().apply { add(baseRuleset) }
+    }
 }
