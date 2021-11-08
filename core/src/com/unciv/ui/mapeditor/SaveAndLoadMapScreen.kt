@@ -66,8 +66,13 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     }
                     try {
                         val map = MapSaver.loadMap(chosenMap!!, checkSizeErrors = false)
-
+                        
                         val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
+                        // [TEMPORARY] conversion of old maps with a base ruleset contained in the mods
+                            val newBaseRuleset = map.mapParameters.mods.filter { it !in missingMods }.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+                            if (newBaseRuleset != null) map.mapParameters.baseRuleset = newBaseRuleset
+                        //
+                        
                         if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
                         
                         if (missingMods.isNotEmpty()) {
