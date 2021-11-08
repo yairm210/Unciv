@@ -45,6 +45,9 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
 
     init {
         setDefaultCloseAction(MainMenuScreen())
+        
+        // To load in the mods selected last time this screen was exited 
+        reloadRuleset()
                 
         mapParametersTable = MapParametersTable(mapParameters, isEmptyMapAllowed = true)
         val newMapScreenOptionsTable = Table(skin).apply {
@@ -65,6 +68,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             add(mapParametersTable).row()
             
             modCheckBoxes = ModCheckboxTable(mapParameters.mods, mapParameters.baseRuleset, this@NewMapScreen) {
+                mapParameters.mods += it
                 reloadRuleset()
             }
             add(modCheckBoxes)
