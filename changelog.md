@@ -1,3 +1,21 @@
+## 3.17.15
+
+Performance improvements!
+
+Upgraded Desktop to new rendering methods, solving many existing problems 
+
+Can upgrade/promote units as per Civ V rules
+
+By SimonCeder:
+- Better map generation for civ placements
+- Quest fixes
+- can remove fallout on oases
+- Bombard notification
+- fix bug when city states bullied
+- Encampments revealed by ruins effects have lastSeenImprovement updated
+
+Possibly fixed a bug where replacement buildings would not be granted - By xlenstra
+
 ## 3.17.14
 
 Large performance boosts
