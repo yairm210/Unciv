@@ -80,7 +80,9 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disabl
         loadFromClipboardButton.onClick {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                val decoded = Gzip.unzip(clipboardContentsString)
+                val decoded =
+                    if (clipboardContentsString.startsWith("{")) clipboardContentsString
+                    else Gzip.unzip(clipboardContentsString)
                 val loadedGame = GameSaver.gameInfoFromString(decoded)
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
