@@ -66,7 +66,7 @@ class ModCheckboxTable(
             mods.add(mod.name)
 
             // Check over complete combination of selected mods
-            val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods,  baseRuleset)
+            val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods, baseRuleset)
             if (complexModLinkCheck.isWarnUser()) {
                 lastToast?.close()
                 val toastMessage = (
