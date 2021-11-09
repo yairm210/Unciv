@@ -33,7 +33,7 @@ object GameStarter {
         // We need to remove the dead mods so there aren't problems later.
         gameSetupInfo.gameParameters.mods.removeAll { !RulesetCache.containsKey(it) }
         
-        // [Temporary] If we have a base ruleset in the mod list, we make that our base ruleset
+        // [TEMPORARY] If we have a base ruleset in the mod list, we make that our base ruleset
         val baseRulesetInMods = gameSetupInfo.gameParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
         if (baseRulesetInMods != null)
             gameSetupInfo.gameParameters.baseRuleset = baseRulesetInMods

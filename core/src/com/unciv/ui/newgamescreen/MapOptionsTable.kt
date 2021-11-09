@@ -103,7 +103,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             mapParameters.name = mapFile.name()
             newGameScreen.gameSetupInfo.mapFile = mapFile
             newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(map.mapParameters.mods.filter { RulesetCache[it]?.modOptions?.isBaseRuleset != true })
-            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true } ?: RulesetCache.getBaseRuleset().name
+            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true } ?: map.mapParameters.baseRuleset
             newGameScreen.updateRuleset()
             newGameScreen.updateTables()
         }

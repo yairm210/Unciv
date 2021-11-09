@@ -62,7 +62,7 @@ interface CrashController {
                 val zippedGameInfo = Json().toJson(gameInfo).let { Gzip.zip(it) }
                 CrashReport(
                     zippedGameInfo, 
-                    LinkedHashSet(listOf(*gameInfo.gameParameters.mods.toTypedArray(), gameInfo.gameParameters.baseRuleset)), 
+                    LinkedHashSet(gameInfo.gameParameters.getModsAndBaseRuleset()), 
                     version
                 )
             }

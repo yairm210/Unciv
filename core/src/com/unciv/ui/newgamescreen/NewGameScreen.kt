@@ -228,7 +228,7 @@ class NewGameScreen(
         ruleset.clear()
         ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset))
         ImageGetter.setNewRuleset(ruleset)
-        game.musicController.setModList(gameSetupInfo.gameParameters.mods.toHashSet().apply { add(gameSetupInfo.gameParameters.baseRuleset) })
+        game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
     }
 
     fun lockTables() {
