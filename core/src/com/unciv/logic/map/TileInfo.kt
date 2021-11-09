@@ -240,19 +240,19 @@ open class TileInfo {
     fun getTileStats(observingCiv: CivilizationInfo): Stats = getTileStats(getCity(), observingCiv)
 
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
-        var stats = getBaseTerrain().clone()
+        var stats = getBaseTerrain().cloneStats()
 
         for (terrainFeatureBase in getTerrainFeatures()) {
             when {
                 terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
-                    return terrainFeatureBase.clone()
-                terrainFeatureBase.overrideStats -> stats = terrainFeatureBase.clone()
+                    return terrainFeatureBase.cloneStats()
+                terrainFeatureBase.overrideStats -> stats = terrainFeatureBase.cloneStats()
                 else -> stats.add(terrainFeatureBase)
             }
         }
 
         if (naturalWonder != null) {
-            val wonderStats = getNaturalWonder().clone()
+            val wonderStats = getNaturalWonder().cloneStats()
 
             // Spain doubles tile yield
             if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
@@ -335,11 +335,11 @@ open class TileInfo {
     }
 
     private fun getTileStartYield(isCenter: Boolean): Float {
-        var stats = getBaseTerrain().clone()
+        var stats = getBaseTerrain().cloneStats()
 
         for (terrainFeatureBase in getTerrainFeatures()) {
             if (terrainFeatureBase.overrideStats)
-                stats = terrainFeatureBase.clone()
+                stats = terrainFeatureBase.cloneStats()
             else
                 stats.add(terrainFeatureBase)
         }

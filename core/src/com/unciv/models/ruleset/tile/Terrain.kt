@@ -72,7 +72,7 @@ class Terrain : RulesetStatsObject() {
             textList += FormattedLine("Natural Wonder", header=3, color="#3A0")
         }
 
-        val stats = this.clone()
+        val stats = cloneStats()
         if (!stats.isEmpty()) {
             textList += FormattedLine()
             textList += FormattedLine("$stats")

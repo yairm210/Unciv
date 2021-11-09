@@ -143,7 +143,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                     }
                 }
                 val improvementIcon = getHex(ImageGetter.getImprovementIcon(improvement.name, 40f))
-                setCurrentHex(improvementIcon, improvement.name.tr() + "\n" + improvement.clone().toString())
+                setCurrentHex(improvementIcon, improvement.name.tr() + "\n" + improvement.cloneStats().toString())
             }
             improvementsTable.add(improvementImage).row()
         }
@@ -309,7 +309,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                 tileInfo.resource = resource.name
                 tileInfo.setTerrainTransients()
 
-                setCurrentHex(tileInfo, resource.name.tr() + "\n" + resource.clone().toString())
+                setCurrentHex(tileInfo, resource.name.tr() + "\n" + resource.cloneStats().toString())
             }
             resources.add(resourceHex)
         }
@@ -340,7 +340,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                         else -> it.baseTerrain = terrain.name
                     }
                 }
-                setCurrentHex(tileInfo, terrain.name.tr() + "\n" + terrain.clone().toString())
+                setCurrentHex(tileInfo, terrain.name.tr() + "\n" + terrain.cloneStats().toString())
             }
 
             if (terrain.type == TerrainType.TerrainFeature)
