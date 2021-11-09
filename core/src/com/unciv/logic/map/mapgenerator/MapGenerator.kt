@@ -78,15 +78,18 @@ class MapGenerator(val ruleset: Ruleset) {
         runAndMeasure("RiverGenerator") {
             RiverGenerator(map, randomness).spawnRivers()
         }
-        val regions = MapRegions(ruleset)
-        runAndMeasure("generateRegions") {
-            regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv() })
-        }
-        runAndMeasure("assignRegions") {
-            regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv() })
-        }
-        runAndMeasure("placeLuxuries") {
-            regions.placeLuxuries(map)
+        // Region based map generation - not used when generating maps in worldbuilder
+        if (civilizations.isNotEmpty()) {
+            val regions = MapRegions(ruleset)
+            runAndMeasure("generateRegions") {
+                regions.generateRegions(map, civilizations.count { ruleset.nations[it.civName]!!.isMajorCiv() })
+            }
+            runAndMeasure("assignRegions") {
+                regions.assignRegions(map, civilizations.filter { ruleset.nations[it.civName]!!.isMajorCiv() })
+            }
+            runAndMeasure("placeResourcesAndMinorCivs") {
+                regions.placeResourcesAndMinorCivs(map, civilizations.filter { ruleset.nations[it.civName]!!.isCityState() })
+            }
         }
         runAndMeasure("NaturalWonderGenerator") {
             NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
@@ -172,6 +175,8 @@ class MapGenerator(val ruleset: Ruleset) {
 
     private fun spreadResources(tileMap: TileMap) {
         val mapRadius = tileMap.mapParameters.mapSize.radius
+        // Commenting this out for now not to interfere with start normalization - will be restored when
+        // region-based resource placement is implemented, then this function will be map editor only.
         /*for (tile in tileMap.values)
             tile.resource = null*/
 

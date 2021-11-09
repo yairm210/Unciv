@@ -217,15 +217,7 @@ object GameStarter {
                 !it.value.hasUnique(UniqueType.CityStateDeprecated)
             }.keys
             .shuffled()
-            .sortedByDescending { it in civNamesWithStartingLocations } )
-
-
-        val allMercantileResources = ruleset.tileResources.values.filter {
-            it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
-
-
-        val unusedMercantileResources = Stack<String>()
-        unusedMercantileResources.addAll(allMercantileResources.shuffled())
+            .sortedBy { it in civNamesWithStartingLocations } ) // pop() gets the last item, so sort ascending
 
         var addedCityStates = 0
         // Keep trying to add city states until we reach the target number.

@@ -40,9 +40,10 @@ class MapRegions (val ruleset: Ruleset){
     }
 
     private val regions = ArrayList<Region>()
+    private var usingArchipelagoRegions = false
     private val tileData = HashMap<Vector2, MapGenTileData>()
     private val cityStateLuxuries = ArrayList<String>()
-    private val disabledLuxuries = ArrayList<String>()
+    private val randomLuxuries = ArrayList<String>()
 
     /** Creates [numRegions] number of balanced regions for civ starting locations. */
     fun generateRegions(tileMap: TileMap, numRegions: Int) {
@@ -61,6 +62,7 @@ class MapRegions (val ruleset: Ruleset){
         // Lots of small islands - just split ut the map in rectangles while ignoring Continents
         // 25% is chosen as limit so Four Corners maps don't fall in this category
         if (largestContinent / totalLand < 0.25f) {
+            usingArchipelagoRegions = true
             // Make a huge rectangle covering the entire map
             val hugeRect = Region(tileMap, mapRect, -1) // -1 meaning ignore continent data
             hugeRect.affectedByWorldWrap = false // Might as well start at the seam
@@ -292,7 +294,7 @@ class MapRegions (val ruleset: Ruleset){
 
         // Do a second pass for fallback civs, choosing the region most similar to the desired type
         for (civ in positiveBiasFallbackCivs) {
-            val startRegion = getFallbackRegion(ruleset.nations[civ.civName]!!.startBias.first())
+            val startRegion = getFallbackRegion(ruleset.nations[civ.civName]!!.startBias.first(), unpickedRegions)
             assignCivToRegion(civ, startRegion)
             unpickedRegions.remove(startRegion)
         }
@@ -319,7 +321,9 @@ class MapRegions (val ruleset: Ruleset){
         }
     }
 
-    private fun getRegionPriority(terrain: Terrain): Int? {
+    private fun getRegionPriority(terrain: Terrain?): Int? {
+        if (terrain == null) // ie "hybrid"
+            return 99999 // a big number
         if (!terrain.hasUnique(UniqueType.RegionRequirePercentSingleType) &&
             !terrain.hasUnique(UniqueType.RegionRequirePercentTwoTypes))
                 return null
@@ -331,7 +335,18 @@ class MapRegions (val ruleset: Ruleset){
     }
 
     private fun assignCivToRegion(civInfo: CivilizationInfo, region: Region) {
-        region.tileMap.addStartingLocation(civInfo.civName, region.tileMap[region.startPosition!!])
+        val tile = region.tileMap[region.startPosition!!]
+        region.tileMap.addStartingLocation(civInfo.civName, tile)
+
+        // Place impacts to keep city states etc at appropriate distance
+        placeImpact(ImpactType.MinorCiv,tile, 6)
+        /* lets leave these commented until resource placement is actually implemented
+        placeImpact(ImpactType.Luxury,  tile, 3)
+        placeImpact(ImpactType.Strategic,tile, 0)
+        placeImpact(ImpactType.Bonus,   tile, 3)
+        placeImpact(ImpactType.Fish,    tile, 3)
+        placeImpact(ImpactType.NaturalWonder, tile, 4)
+        */
     }
 
     /** Attempts to find a good start close to the center of [region]. Calls setRegionStart with the position*/
@@ -451,7 +466,6 @@ class MapRegions (val ruleset: Ruleset){
      *  Relies on startPosition having been set previously.
      *  Assumes unchanged baseline values ie citizens eat 2 food each, similar production costs */
     private fun normalizeStart(region: Region) {
-        println("Normalizing start at ${region.startPosition}..")
         val ruleset = region.tileMap.ruleset!!
         val startTile = region.tileMap[region.startPosition!!]
         // Remove ice-like features adjacent to start
@@ -459,7 +473,6 @@ class MapRegions (val ruleset: Ruleset){
             val lastTerrain = tile.getTerrainFeatures().lastOrNull { it.impassable }
             if (lastTerrain != null) {
                 tile.terrainFeatures.remove(lastTerrain.name)
-                println("Removed ${lastTerrain.name} at ${tile.position}")
             }
         }
 
@@ -480,7 +493,6 @@ class MapRegions (val ruleset: Ruleset){
                     .firstOrNull { it.type == TerrainType.TerrainFeature && it.production >= 2 && !it.hasUnique(UniqueType.RareFeature) }?.name
             if (hillSpot != null && hillEquivalent != null) {
                 hillSpot.terrainFeatures.add(hillEquivalent)
-                println("Put a $hillEquivalent at ${hillSpot.position} to make up for terrible production")
             }
         }
 
@@ -499,7 +511,6 @@ class MapRegions (val ruleset: Ruleset){
                     val resourceToPlace = validResources.filter { tile.getLastTerrain().name in it.terrainsCanBeFoundOn }.randomOrNull()
                     if (resourceToPlace != null) {
                         tile.setTileResource(resourceToPlace, majorDeposit = false)
-                        println("Placed a small ${resourceToPlace.name} at ${tile.position} to make up for bad production")
                         break
                     }
                 }
@@ -536,7 +547,6 @@ class MapRegions (val ruleset: Ruleset){
             else -> 0
         }
         // TODO: Legendary start? +2
-        println("Start at ${startTile.position} needs $bonusesNeeded food bonuses.")
 
         // Attempt to place one grassland at a plains-only spot
         if (bonusesNeeded < 3 && totalNativeTwoFood == 0) {
@@ -547,7 +557,6 @@ class MapRegions (val ruleset: Ruleset){
                     .filter { it.isLand && !it.isImpassible() && it.terrainFeatures.isEmpty() && it.resource == null }
             val spot = candidateInnerSpots.shuffled().firstOrNull() ?: candidateOuterSpots.shuffled().firstOrNull()
             if (twoFoodTerrain != null && spot != null) {
-                println("Changed a ${spot.baseTerrain} at ${spot.position} to a $twoFoodTerrain to give some a two food tile")
                 spot.baseTerrain = twoFoodTerrain
             } else
                 bonusesNeeded = 3 // Irredeemable plains situation
@@ -585,10 +594,8 @@ class MapRegions (val ruleset: Ruleset){
                 if (goodPlotForOasis) {
                     plot.terrainFeatures.add(oasisEquivalent!!.name)
                     canPlaceOasis = false
-                    println("Placed extra oasis at ${plot.position}")
                 } else {
                     plot.setTileResource(validBonuses.random())
-                    println("Placed extra ${plot.resource} at ${plot.position}")
                 }
 
                 if (plot.aerialDistanceTo(startTile) == 1) {
@@ -632,7 +639,6 @@ class MapRegions (val ruleset: Ruleset){
                 val bonusToPlace = stoneTypeBonuses.filter { plot.getLastTerrain().name in it.terrainsCanBeFoundOn }.randomOrNull()
                 if (bonusToPlace != null) {
                     plot.resource = bonusToPlace.name
-                    println("Placed a ${bonusToPlace.name} at ${plot.position} due to grassy start")
                     stoneNeeded--
                 }
             }
@@ -652,8 +658,8 @@ class MapRegions (val ruleset: Ruleset){
     }
 
     /** @returns the region most similar to a region of [type] */
-    private fun getFallbackRegion(type: String): Region {
-        return regions.maxByOrNull { it.terrainCounts[type] ?: 0 }!!
+    private fun getFallbackRegion(type: String, candidates: List<Region>): Region {
+        return candidates.maxByOrNull { it.terrainCounts[type] ?: 0 }!!
     }
 
     private fun setRegionStart(region: Region, position: Vector2) {
@@ -757,8 +763,9 @@ class MapRegions (val ruleset: Ruleset){
         localData.startScore = totalScore
     }
 
-    fun placeLuxuries(tileMap: TileMap) {
+    fun placeResourcesAndMinorCivs(tileMap: TileMap, minorCivs: List<CivilizationInfo>) {
         assignLuxuries()
+        placeMinorCivs(tileMap, minorCivs)
     }
 
     /** Assigns a luxury to each region. No luxury can be assigned to too many regions.
@@ -771,19 +778,17 @@ class MapRegions (val ruleset: Ruleset){
                 (it.hasUnique(UniqueType.LuxuryWeighting) || it.hasUnique(UniqueType.LuxuryWeightingForCityStates)) }
 
         val maxRegionsWithLuxury = if (regions.count() > 12) 3 else 2
-        val targetCityStateLuxuries = if (tileData.size > 5000) 4 else 3
-        val disabledPercent = 100 - min(tileData.size.toFloat().pow(0.2f) * 16, 100f).toInt()
+        val targetCityStateLuxuries = 3 // was probably intended to be "if (tileData.size > 5000) 4 else 3"
+        val disabledPercent = 100 - min(tileData.size.toFloat().pow(0.2f) * 16, 100f).toInt() // Approximately
         val targetDisabledLuxuries = (ruleset.tileResources.values
                 .count { it.resourceType == ResourceType.Luxury } * disabledPercent) / 100
-        println("Assigning luxuries...")
-        println("Max $maxRegionsWithLuxury regions with luxury, targets $targetCityStateLuxuries city state luxuries and $targetDisabledLuxuries disabled.")
 
         val amountRegionsWithLuxury = HashMap<String, Int>()
         // Init map
         ruleset.tileResources.values
                 .forEach { amountRegionsWithLuxury[it.name] = 0 }
 
-        for (region in regions.sortedBy { getRegionPriority(ruleset.terrains[it.type]!!) } ) {
+        for (region in regions.sortedBy { getRegionPriority(ruleset.terrains[it.type]) } ) {
             var candidateLuxuries = ruleset.tileResources.values.filter {
                 it.resourceType == ResourceType.Luxury &&
                 amountRegionsWithLuxury[it.name]!! < maxRegionsWithLuxury &&
@@ -828,7 +833,6 @@ class MapRegions (val ruleset: Ruleset){
             }
             region.luxury = candidateLuxuries.randomWeighted(modifiedWeights).name
             amountRegionsWithLuxury[region.luxury!!] = amountRegionsWithLuxury[region.luxury]!! + 1
-            println("Assigned ${region.luxury} to region ${regions.indexOf(region)}")
         }
 
         // Assign luxuries to City States
@@ -850,22 +854,298 @@ class MapRegions (val ruleset: Ruleset){
             val luxury = candidateLuxuries.randomWeighted(weights).name
             cityStateLuxuries.add(luxury)
             amountRegionsWithLuxury[luxury] = 1
-            println("Assigned $luxury to City States.")
         }
 
-        // Assign some resources as disabled. Marble is never disabled.
+        // Assign some resources as random placement. Marble is never random.
         val remainingLuxuries = ruleset.tileResources.values.filter {
             it.resourceType == ResourceType.Luxury &&
             amountRegionsWithLuxury[it.name] == 0 &&
             !it.hasUnique(UniqueType.LuxurySpecialPlacement)
         }.map { it.name }.shuffled()
-        disabledLuxuries.addAll(remainingLuxuries.take(targetDisabledLuxuries))
-        println("Disabled luxuries: $disabledLuxuries")
+        randomLuxuries.addAll(remainingLuxuries.drop(targetDisabledLuxuries))
+    }
+
+    /** Assigns [civs] to regions or "uninhabited" land and places them. Depends on
+     *  assignLuxuries having been called previously.
+     *  Note: can silently fail to place all city states if there is too little room.
+     *  Currently our GameStarter fills out with random city states, Civ V behavior is to
+     *  forget about the discarded city states entirely. */
+    private fun placeMinorCivs(tileMap: TileMap, civs: List<CivilizationInfo>) {
+        if (civs.isEmpty()) return
+
+        // Some but not all city states are assigned to regions directly. Determine the CS density.
+        val minorCivRatio = civs.count().toFloat() / regions.count()
+        val minorCivPerRegion = when {
+            minorCivRatio > 14f     -> 10 // lol
+            minorCivRatio > 11f     -> 8
+            minorCivRatio > 8f      -> 6
+            minorCivRatio > 5.7f    -> 4
+            minorCivRatio > 4.35f   -> 3
+            minorCivRatio > 2.7f    -> 2
+            minorCivRatio > 1.35f   -> 1
+            else                    -> 0
+        }
+        val unassignedCivs = civs.shuffled().toMutableList()
+        if (minorCivPerRegion > 0) {
+            regions.forEach {
+                val civsToAssign = unassignedCivs.take(minorCivPerRegion)
+                it.assignedMinorCivs.addAll(civsToAssign)
+                unassignedCivs.removeAll(civsToAssign)
+            }
+        }
+        // Some city states are assigned to "uninhabited" continents - unless it's an archipelago type map
+        // (Because then every continent will have been assigned to a region anyway)
+        val uninhabitedCoastal = ArrayList<TileInfo>()
+        val uninhabitedHinterland = ArrayList<TileInfo>()
+        val uninhabitedContinents = tileMap.continentSizes.keys.filter {
+            regions.none { region -> region.continentID == it }
+        }
+        val civAssignedToUninhabited = ArrayList<CivilizationInfo>()
+        var numUninhabitedTiles = 0
+        var numInhabitedTiles = 0
+        if (!usingArchipelagoRegions) {
+            // Go through the entire map to build the data
+            for (tile in tileMap.values) {
+                if (!canPlaceMinorCiv(tile)) continue
+                val continent = tile.getContinent()
+                if (continent in uninhabitedContinents) {
+                    if(tile.isCoastalTile())
+                        uninhabitedCoastal.add(tile)
+                    else
+                        uninhabitedHinterland.add(tile)
+                    numUninhabitedTiles++
+                } else
+                    numInhabitedTiles++
+            }
+            // Determine how many minor civs to put on uninhabited continents.
+            val maxByUninhabited = (3 * civs.count() * numUninhabitedTiles) / (numInhabitedTiles + numUninhabitedTiles)
+            val maxByRatio = (civs.count() + 1) / 2
+            val targetForUninhabited = min(maxByRatio, maxByUninhabited)
+            val civsToAssign = unassignedCivs.take(targetForUninhabited)
+            unassignedCivs.removeAll(civsToAssign)
+            civAssignedToUninhabited.addAll(civsToAssign)
+        }
+
+        // If there are still unassigned minor civs, assign extra ones to regions that share their
+        // luxury type with two others, as compensation. Because starting close to a city state is good??
+        if (unassignedCivs.isNotEmpty()) {
+            val regionsWithCommonLuxuries = regions.filter {
+                regions.count { other -> other.luxury == it.luxury } >= 3
+            }
+            // assign one civ each to regions with common luxuries if there are enough to go around
+            if (regionsWithCommonLuxuries.count() > 0 &&
+                            regionsWithCommonLuxuries.count() <= unassignedCivs.count()) {
+                regionsWithCommonLuxuries.forEach {
+                    val civToAssign = unassignedCivs.first()
+                    unassignedCivs.remove(civToAssign)
+                    it.assignedMinorCivs.add(civToAssign)
+                }
+            }
+        }
+        // Still unassigned civs??
+        if (unassignedCivs.isNotEmpty()) {
+            // Add one extra to each region as long as there are enough to go around
+            while (unassignedCivs.count() >= regions.count()) {
+                regions.forEach {
+                    val civToAssign = unassignedCivs.first()
+                    unassignedCivs.remove(civToAssign)
+                    it.assignedMinorCivs.add(civToAssign)
+                }
+            }
+
+            // STILL unassigned civs??
+            if (unassignedCivs.isNotEmpty()) {
+                // At this point there is at least for sure less remaining city states than regions
+                // Sort regions by fertility and put extra city states in the worst ones.
+                val worstRegions = regions.sortedBy { it.totalFertility }.take(unassignedCivs.count())
+                worstRegions.forEach {
+                    val civToAssign = unassignedCivs.first()
+                    unassignedCivs.remove(civToAssign)
+                    it.assignedMinorCivs.add(civToAssign)
+                }
+            }
+        }
+
+        // All minor civs are assigned - now place them
+        // First place the "uninhabited continent" ones, preferring coastal starts
+        tryPlaceMinorCivsInTiles(civAssignedToUninhabited, tileMap, uninhabitedCoastal)
+        tryPlaceMinorCivsInTiles(civAssignedToUninhabited, tileMap, uninhabitedHinterland)
+        // Fallback to a random region for civs that couldn't be placed in the wilderness
+        for (unplacedCiv in civAssignedToUninhabited) {
+            regions.random().assignedMinorCivs.add(unplacedCiv)
+        }
+        // Fallback lists for minor civs that can't be placed with any other method
+        val fallbackTiles = ArrayList<TileInfo>()
+        val fallbackMinors = ArrayList<CivilizationInfo>()
+
+        // Now place the ones assigned to specific regions.
+        for (region in regions) {
+            // Check the outer edges of the region, working inwards
+            val section = Rectangle(region.rect)
+            val unprocessedTiles = ArrayList<TileInfo>()
+            val regionCoastal = ArrayList<TileInfo>()
+            val regionHinterland = ArrayList<TileInfo>()
+            while (section.width >= 4 && section.height >= 4 && region.assignedMinorCivs.isNotEmpty()) {
+                // Clear the tile lists
+                unprocessedTiles.clear()
+                regionCoastal.clear()
+                regionHinterland.clear()
+                if (section.height > section.width) {
+                    // Check top and bottom
+                    unprocessedTiles.addAll(
+                            tileMap.getTilesInRectangle(
+                                    Rectangle(section.x, section.y, section.width, 1f),
+                                    evenQ = true)
+                    )
+                    unprocessedTiles.addAll(
+                            tileMap.getTilesInRectangle(
+                                    Rectangle(section.x, section.y + section.height - 1, section.width, 1f),
+                                    evenQ = true)
+                    )
+                    // Narrow the remaining section
+                    section.y += 1
+                    section.height -= 2
+                } else {
+                    // Check left and right
+                    unprocessedTiles.addAll(
+                            tileMap.getTilesInRectangle(
+                                    Rectangle(section.x, section.y, 1f, section.height),
+                                    evenQ = true)
+                    )
+                    unprocessedTiles.addAll(
+                            tileMap.getTilesInRectangle(
+                                    Rectangle(section.x + section.width - 1, section.y, 1f, section.height),
+                                    evenQ = true)
+                    )
+                    // Narrow the remaining section
+                    section.x += 1
+                    section.width -= 2
+                }
+                // Now process the tiles
+                for (tile in unprocessedTiles) {
+                    if (!canPlaceMinorCiv(tile)) continue
+                    if (!usingArchipelagoRegions && tile.getContinent() != region.continentID) continue
+                    if(tile.isCoastalTile())
+                        regionCoastal.add(tile)
+                    else
+                        regionHinterland.add(tile)
+                }
+                // Now attempt to place as many minor civs as possible, trying coastal tiles first
+                tryPlaceMinorCivsInTiles(region.assignedMinorCivs, tileMap, regionCoastal)
+                tryPlaceMinorCivsInTiles(region.assignedMinorCivs, tileMap, regionHinterland)
+            }
+            // In case we went through the entire region without finding spots for all assigned civs
+            if(region.assignedMinorCivs.isNotEmpty()) {
+                fallbackMinors.addAll(region.assignedMinorCivs)
+            } else {
+                // If we did find spots for all civs, there might be more eligible tiles left in the region
+                // Add them to the fallback list
+                fallbackTiles.addAll(regionCoastal)
+                fallbackTiles.addAll(regionHinterland)
+                fallbackTiles.addAll(tileMap.getTilesInRectangle(section, evenQ = true)
+                        .filter { canPlaceMinorCiv(it) }
+                )
+            }
+        }
+
+        // Finally attempt to place the fallback lists - the rest will be silently discarded
+        if (fallbackMinors.isNotEmpty()) {
+            // Throw in the uninhabited lists as well
+            fallbackTiles.addAll(uninhabitedCoastal)
+            fallbackTiles.addAll(uninhabitedHinterland)
+            tryPlaceMinorCivsInTiles(fallbackMinors, tileMap, fallbackTiles)
+        }
+    }
+
+    /** Attempts to randomly place civs from [civsToPlace] in tiles from [tileList]. Assumes that
+     *  [tileList] is pre-vetted and only contains habitable land tiles.
+     *  Will modify both [civsToPlace] and [tileList] as it goes! */
+    private fun tryPlaceMinorCivsInTiles(civsToPlace: MutableList<CivilizationInfo>, tileMap: TileMap, tileList: MutableList<TileInfo>) {
+        while (tileList.isNotEmpty() && civsToPlace.isNotEmpty()) {
+            val chosenTile = tileList.random()
+            tileList.remove(chosenTile)
+            val data = tileData[chosenTile.position]!!
+            // If the randomly chosen tile is too close to a player or a city state, discard it
+            if (data.impacts.containsKey(ImpactType.MinorCiv))
+                continue
+            // Otherwise, go ahead and place the minor civ
+            val civToAdd = civsToPlace.first()
+            civsToPlace.remove(civToAdd)
+            placeMinorCiv(civToAdd, tileMap, chosenTile)
+        }
+    }
+
+    private fun canPlaceMinorCiv(tile: TileInfo) = !tile.isWater && !tile.isImpassible() &&
+            !tileData[tile.position]!!.isJunk &&
+            tile.getBaseTerrain().getMatchingUniques(UniqueType.HasQuality).none { it.params[0] == "Undesirable" } && // So we don't get snow hills
+            tile.neighbors.count() == 6 // Avoid map edges
+
+    private fun placeMinorCiv(civ: CivilizationInfo, tileMap: TileMap, tile: TileInfo) {
+        tileMap.addStartingLocation(civ.civName, tile)
+        placeImpact(ImpactType.MinorCiv,tile, 4)
+        /* lets leave these commented until resource placement is actually implemented
+        placeImpact(ImpactType.Luxury,  tile, 3)
+        placeImpact(ImpactType.Strategic,tile, 0)
+        placeImpact(ImpactType.Bonus,   tile, 3)
+        placeImpact(ImpactType.Fish,    tile, 3)
+        placeImpact(ImpactType.Marble,  tile, 4)
+         */
+        // Remove ice-like features adjacent to start
+        for (neighbor in tile.neighbors) {
+            val lastTerrain = neighbor.getTerrainFeatures().lastOrNull { it.impassable }
+            if (lastTerrain != null)
+                neighbor.terrainFeatures.remove(lastTerrain.name)
+        }
+        // TODO: Normalize start
+    }
+
+    /** Adds numbers to tileData in a similar way to closeStartPenalty, but for different types */
+    private fun placeImpact(type: ImpactType, tile: TileInfo, radius: Int) {
+        // Epicenter
+        if (type == ImpactType.Fish || type == ImpactType.Marble)
+            tileData[tile.position]!!.impacts[type] = 1 // These use different values
+        else
+            tileData[tile.position]!!.impacts[type] = 99
+        if (radius <= 0) return
+
+        for (ring in 1..radius) {
+            val ringValue = radius - ring + 1
+            for (outerTile in tile.getTilesAtDistance(ring)) {
+                val data = tileData[outerTile.position]!!
+                when (type) {
+                    ImpactType.Marble,
+                    ImpactType.MinorCiv -> data.impacts[type] = 1
+                    ImpactType.Fish -> {
+                        if (data.impacts.containsKey(type))
+                            data.impacts[type] = min(10, max(ringValue, data.impacts[type]!!) + 1)
+                        else
+                            data.impacts[type] = ringValue
+                    }
+                    else -> {
+                        if (data.impacts.containsKey(type))
+                            data.impacts[type] = min(50, max(ringValue, data.impacts[type]!!) + 2)
+                        else
+                            data.impacts[type] = ringValue
+                    }
+                }
+            }
+        }
+    }
+
+    enum class ImpactType {
+        Strategic,
+        Luxury,
+        Bonus,
+        Fish,
+        MinorCiv,
+        NaturalWonder,
+        Marble,
     }
 
     // Holds a bunch of tile info that is only interesting during map gen
     class MapGenTileData(val tile: TileInfo, val region: Region?) {
         var closeStartPenalty = 0
+        val impacts = HashMap<ImpactType, Int>()
         var isFood = false
         var isProd = false
         var isGood = false
@@ -943,6 +1223,7 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
     var type = "Hybrid" // being an undefined or indeterminate type
     var luxury: String? = null
     var startPosition: Vector2? = null
+    val assignedMinorCivs = ArrayList<CivilizationInfo>()
 
     var affectedByWorldWrap = false
 
