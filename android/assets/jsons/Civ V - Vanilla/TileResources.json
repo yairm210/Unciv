@@ -93,7 +93,7 @@
 	{
 		"name": "Coal",
 		"resourceType": "Strategic",
-		"revealedBy": "Industrialization",
+		"revealedBy": "Scientific Theory",
 		"terrainsCanBeFoundOn": ["Grassland","Plains","Hill"],
 		"production": 1,
 		"improvement": "Mine",
