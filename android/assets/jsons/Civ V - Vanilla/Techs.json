@@ -74,13 +74,13 @@
 			},
 			{
 				"name": "Trapping",
-				"row": 5,
+				"row": 4,
 				"prerequisites": ["Animal Husbandry"],
 				"quote": "'Even brute beasts and wandering birds do not fall into the same traps or nets twice.' - Saint Jerome"
 			},
 			{
 				"name": "The Wheel",
-				"row": 7,
+				"row": 6,
 				"prerequisites": ["Animal Husbandry"],
 				"quote": "'Wisdom and virtue are like the two wheels of a cart.' - Japanese proverb"
 			},
@@ -116,7 +116,7 @@
 			{
 				"name": "Philosophy",
 				"row": 3,
-				"prerequisites": ["Writing","Calendar"],
+				"prerequisites": ["Writing"],
 				"quote": "'There is only one good, knowledge, and one evil, ignorance.' - Socrates"
 			},
 			{
@@ -181,7 +181,7 @@
 			{
 				"name": "Metal Casting",
 				"row": 10,
-				"prerequisites": ["Engineering","Iron Working"],
+				"prerequisites": ["Construction","Iron Working"],
 				"quote": "'When pieces of bronze or gold or iron break, the metal-smith welds them together again in the fire, and the bond is established.' - Sri Guru Granth Sahib"
 			}
 		]
@@ -462,7 +462,7 @@
 			{
 				"name": "Electronics",
 				"row": 4,
-				"prerequisites": ["Replaceable Parts", "Flight"],
+				"prerequisites": ["Telegraph"],
 				"quote": "'There's a basic principle about consumer electronics: it gets more powerful all the time and it gets cheaper all the time.' - Trip Hawkins"
 			},
 			{
@@ -501,7 +501,7 @@
 			{
 				"name": "Computers",
 				"row": 4,
-				"prerequisites": ["Electronics","Mass Media"],
+				"prerequisites": ["Electronics","Mass Media","Radar"],
 				"quote": "'Computers are like Old Testament gods: lots of rules and no mercy.' - Joseph Campbell"
 			},
 			{
@@ -535,7 +535,7 @@
 				"name": "Globalization",
 				"cost": 9500,
 				"row": 2,
-				"prerequisites": ["Ecology"],
+				"prerequisites": ["Ecology","Computers"],
 				"quote": "'The new electronic interdependence recreates the world in the image of a global village.' - Marshall McLuhan"
 			},
 			{
@@ -554,13 +554,13 @@
 			{
 				"name": "Stealth",
 				"row": 8,
-				"prerequisites": ["Robotics", "Lasers"],
+				"prerequisites": ["Lasers"],
 				"quote": "'Be extremely subtle, even to the point of formlessness, be extremely mysterious, even to the point of soundlessness. Thereby you can be the director of the opponent's fate.' - Sun Tzu"
 			},
 			{
 				"name": "Advanced Ballistics",
 				"row": 10,
-				"prerequisites": ["Nuclear Fission","Rocketry"],
+				"prerequisites": ["Nuclear Fission","Lasers"],
 				"quote": "'Our scientific power has outrun our spiritual power, we have guided missiles and misguided men.' – Martin Luther King Jr."
 			}
 		]
@@ -581,7 +581,7 @@
 			},
 			{
 				"name": "Nuclear Fusion",
-				"row": 6,
+				"row": 8,
 				"prerequisites": ["Advanced Ballistics", "Satellites", "Stealth"],
 				"quote": "'The release of atomic energy has not created a new problem. It has readily made more urgent the necessity of solving an existing one.' - Albert Einstein"
 			},
@@ -596,8 +596,8 @@
 		"techs": [
 			{
 				"name": "Nanotechnology",
-				"row": 7,
-				"prerequisites": ["Robotics"],
+				"row": 5,
+				"prerequisites": ["Particle Physics"],
 				"quote": "'The impact of nanotechnology is expected to exceed the impact that the electronics revolution has had on our lives.' - Richard Schwartz"
 			}
 		]
