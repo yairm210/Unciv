@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.NotificationIcon
@@ -106,15 +107,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         if (civInfo.isPlayerCivilization()) return // don't want the ai to control what a player uses faith for
 
-        var chosenItem: ConstructionChoice? = null
+        val chosenItem: ConstructionChoice = relativeCostEffectiveness.asSequence()
+            .filter { it.choiceModifier > 1f }
+            .filter { (it as INonPerpetualConstruction).canBePurchasedWithStat(cityInfo, Stat.Faith) }
+            .filterNot { it.choice == chosenConstruction }
+            .maxByOrNull { it.choiceModifier } ?: return
 
-        for (item in faithConstructionList){
-            if (item.choiceModifier < 1f) continue // not worth buying, save for something later
-            if (item.choice < chosenConstruction) continue
-            chosenItem = item
 
-        }
-        if (chosenItem == null) return
+
     }
 
     private fun addMilitaryUnitChoice() {
