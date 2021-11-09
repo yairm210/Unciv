@@ -276,10 +276,10 @@ class Nation : RulesetObject() {
 
     private fun addUniqueImprovementsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (improvement in ruleset.tileImprovements.values) {
-            if (improvement.uniqueTo != name ) continue
+            if (improvement.uniqueTo != name) continue
 
             textList += FormattedLine(improvement.name, link = "Improvement/${improvement.name}")
-            textList += FormattedLine(improvement.clone().toString(), indent = 1)   // = (improvement as Stats).toString minus import plus copy overhead
+            textList += FormattedLine(improvement.cloneStats().toString(), indent = 1)   // = (improvement as Stats).toString minus import plus copy overhead
             if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
                 improvement.terrainsCanBeBuiltOn.withIndex().forEach {
                     textList += FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",

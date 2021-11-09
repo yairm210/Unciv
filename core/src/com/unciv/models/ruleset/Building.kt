@@ -151,7 +151,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun getStats(city: CityInfo?): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
-        val stats = this.clone() 
+        val stats = cloneStats() 
         if (city == null) return stats
         val civInfo = city.civInfo
 
@@ -246,7 +246,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        val stats = this.clone()
+        val stats = cloneStats()
         val percentStats = getStatPercentageBonuses(null)
         val specialists = newSpecialists()
         if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
