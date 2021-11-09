@@ -92,7 +92,7 @@
 		"cost": 40,
 		"requiredTech": "Archery",
 		"obsoleteTech": "Construction",
-		"upgradesTo": "Composite Bowman",
+		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
 	},
 	{
@@ -106,7 +106,7 @@
 		"obsoleteTech": "Machinery",
 		"replaces": "Archer",
 		"uniqueTo": "Babylon",
-		"upgradesTo": "Composite Bowman",
+		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
 	},
 	{
@@ -120,7 +120,7 @@
 		"cost": 40,
 		"requiredTech": "Archery",
 		"obsoleteTech": "Machinery",
-		"upgradesTo": "Composite Bowman",
+		"upgradesTo": "Crossbowman",
 		"promotions": ["Slinger Withdraw"],
 		"attackSound": "arrow"
 	},
@@ -335,18 +335,6 @@
 		"attackSound": "throw"
 	},
 	{
-		"name": "Composite Bowman",
-		"unitType": "Archery",
-		"movement": 2,
-		"strength": 7,
-		"rangedStrength": 11,
-		"cost": 75,
-		"requiredTech": "Construction",
-		"obsoleteTech": "Machinery",
-		"upgradesTo": "Crossbowman",
-		"attackSound": "arrow"
-	},
-	{
 		"name": "Swordsman",
 		"unitType": "Sword",
 		"movement": 2,
@@ -434,19 +422,6 @@
 		"obsoleteTech": "Gunpowder",
 		"attackSound": "metalhit"
 		//"Requires [Mercenary Army]" in BNW
-	},
-	{
-		"name": "Galleass",
-		"unitType": "Ranged Water",
-		"movement": 3,
-		"strength": 16,
-		"rangedStrength": 17,
-		"cost": 100,
-		"requiredTech": "Compass",
-		"obsoleteTech": "Navigation",
-		"upgradesTo": "Frigate",
-		"uniques": ["Cannot enter ocean tiles"],
-		"attackSound": "arrow"
 	},
 	{
 		"name": "Knight",
@@ -758,18 +733,6 @@
 		"attackSound": "shot"
 	},
 	{
-		"name": "Privateer",
-		"unitType": "Melee Water",
-		"movement": 5,
-		"strength": 25,
-		"cost": 150,
-		"requiredTech": "Navigation",
-		"upgradesTo": "Destroyer",
-		"promotions": ["Coastal Raider I"],
-		"uniques": ["May capture killed [Water] units"],
-		"attackSound": "cannon"
-	},
-	{
 		"name": "Frigate",
 		"unitType": "Ranged Water",
 		"movement": 5,
@@ -855,7 +818,7 @@
 		"cost": 225,
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
-		"upgradesTo": "Great War Infantry",
+		"upgradesTo": "Infantry",
 		"attackSound": "shot"
 	},
 	{
@@ -868,7 +831,7 @@
 		"cost": 225,
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
-		"upgradesTo": "Great War Infantry",
+		"upgradesTo": "Infantry",
 		"uniques": ["[+25]% Strength <when fighting in [Snow] tiles>",
 			"[+25]% Strength <when fighting in [Tundra] tiles>",
 			"[+25]% Strength <when fighting in [Hill] tiles>",
@@ -949,20 +912,9 @@
 		"attackSound": "torpedo"
 	},
 	{
-		"name": "Great War Infantry",
-		"unitType": "Gunpowder",
-		"movement": 2,
-		"strength": 50,
-		"cost": 320,
-		"requiredTech": "Replaceable Parts",
-		"upgradesTo": "Infantry",
-		"obsoleteTech": "Plastics",
-		"attackSound": "shot"
-	},
-	{
 		"name": "Foreign Legion",
 		"unitType": "Gunpowder",
-		"replaces": "Great War Infantry",
+		"replaces": "Infantry",
 		"uniqueTo": "France",
 		"movement": 2,
 		"strength": 50,
@@ -972,36 +924,6 @@
 		"obsoleteTech": "Plastics",
 		"uniques": ["[+20]% Strength <when fighting in [Foreign Land] tiles>"],
 		"attackSound": "shot"
-	},
-	{
-		"name": "Triplane",
-		"unitType": "Fighter",
-		"movement": 1,
-		"strength": 35,
-		"rangedStrength": 35,
-		"range": 5,
-		"interceptRange": 5,
-		"cost": 325,
-		"requiredTech": "Flight",
-		"requiredResource": "Oil",
-		"upgradesTo": "Fighter",
-		"obsoleteTech": "Radar",
-		"uniques": ["[50]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
-		"attackSound": "machinegun"
-	},
-	{
-		"name": "Great War Bomber",
-		"unitType": "Bomber",
-		"movement": 1,
-		"strength": 50,
-		"rangedStrength": 50,
-		"range": 6,
-		"cost": 325,
-		"requiredTech": "Flight",
-		"requiredResource": "Oil",
-		"upgradesTo": "Bomber",
-		"obsoleteTech": "Radar",
-		"attackSound": "bombing"
 	},
 	{
 		"name": "Infantry",
@@ -1014,12 +936,27 @@
 		"attackSound": "shot"
 	},
 	{
+		"name": "Fighter",
+		"unitType": "Fighter",
+		"movement": 1,
+		"strength": 45,
+		"rangedStrength": 45,
+		"range": 8,
+		"interceptRange": 8,
+		"cost": 375,
+		"requiredTech": "Flight",
+		"requiredResource": "Oil",
+		"upgradesTo": "Jet Fighter",
+		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
+		"attackSound": "machinegun"
+	},
+	{
 		"name": "Carrier",
 		"unitType": "Aircraft Carrier",
 		"movement": 5,
 		"strength": 40,
 		"cost": 375,
-		"requiredTech": "Electronics",
+		"requiredTech": "Flight",
 		"uniques": ["Cannot attack", "Can carry [2] [Aircraft] units"]
 	},
 	{
@@ -1031,7 +968,7 @@
 		"range": 3,
 		"cost": 375,
 		"requiredResource": "Oil",
-		"requiredTech": "Electronics",
+		"requiredTech": "Telegraph",
 		"uniques": ["Ranged attacks may be performed over obstacles", "Never appears as a Barbarian unit"],
 		"attackSound": "shipguns"
 		// Does not actually upgrade to Missile Cruisers
@@ -1063,32 +1000,6 @@
 
 	// Atomic Era
 
-	{
-		"name": "Marine",
-		"unitType": "Gunpowder",
-		"movement": 2,
-		"strength": 65,
-		"cost": 400,
-		"requiredTech": "Pharmaceuticals",
-		"promotions": ["Amphibious"],
-		"uniques": ["Normal vision when embarked", "Defense bonus when embarked"],
-		"attackSound": "shot"
-	},
-	{
-		"name": "Fighter",
-		"unitType": "Fighter",
-		"movement": 1,
-		"strength": 45,
-		"rangedStrength": 45,
-		"range": 8,
-		"interceptRange": 8,
-		"cost": 375,
-		"requiredTech": "Radar",
-		"requiredResource": "Oil",
-		"upgradesTo": "Jet Fighter",
-		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
-		"attackSound": "machinegun"
-	},
 	{
 		"name": "Zero",
 		"unitType": "Fighter",
@@ -1222,7 +1133,7 @@
 		"interceptRange": 2,
 		"strength": 65,
 		"cost": 425,
-		"requiredTech": "Rocketry",
+		"requiredTech": "Computers",
 		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Air] units>",
 			"[+150]% Strength <vs [Helicopter] units>", "Never appears as a Barbarian unit"],
 		"attackSound": "missile"
@@ -1235,7 +1146,7 @@
 		"rangedStrength": 60,
 		"range": 8,
 		"cost": 150,
-		"requiredTech": "Advanced Ballistics",
+		"requiredTech": "Satellites",
 		"attackSound": "missile"
 	},
 	{
@@ -1259,7 +1170,7 @@
 		"movement": 6,
 		"strength": 60,
 		"cost": 425,
-		"requiredTech": "Computers",
+		"requiredTech": "Rocketry",
 		"requiredResource": "Aluminum",
 		"uniques": ["[+100]% Strength <vs [Armored] units>", "No defensive terrain bonus", "Can move after attacking",
 			"All tiles cost 1 movement", "Ignores Zone of Control", "Unable to capture cities", "Never appears as a Barbarian unit"],
@@ -1441,7 +1352,7 @@
 		"unitType": "Civilian",
 		"movement": 2,
 		"cost": 500,
-		"requiredTech": "Advanced Ballistics",
+		"requiredTech": "Robotics",
 		"requiredResource": "Aluminum",
 		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
 		// costs 750 in G&K, 1500 in BNW
