@@ -224,7 +224,7 @@ class MapRegions (val ruleset: Ruleset){
         }
         // Normalize starts
         for (region in regions) {
-            normalizeStart(region)
+            normalizeStart(tileMap[region.startPosition!!], minorCiv = false)
         }
 
         val coastBiasCivs = civilizations.filter { ruleset.nations[it.civName]!!.startBias.contains("Coast") }
@@ -462,12 +462,11 @@ class MapRegions (val ruleset: Ruleset){
         setRegionStart(region, panicPosition)
     }
 
-    /** Attempts to improve the start in [region] as needed to make it decent.
+    /** Attempts to improve the start on [startTile] as needed to make it decent.
      *  Relies on startPosition having been set previously.
-     *  Assumes unchanged baseline values ie citizens eat 2 food each, similar production costs */
-    private fun normalizeStart(region: Region) {
-        val ruleset = region.tileMap.ruleset!!
-        val startTile = region.tileMap[region.startPosition!!]
+     *  Assumes unchanged baseline values ie citizens eat 2 food each, similar production costs
+     *  If [minorCiv] is true, different weightings will be used. */
+    private fun normalizeStart(startTile: TileInfo, minorCiv: Boolean) {
         // Remove ice-like features adjacent to start
         for (tile in startTile.neighbors) {
             val lastTerrain = tile.getTerrainFeatures().lastOrNull { it.impassable }
@@ -485,7 +484,7 @@ class MapRegions (val ruleset: Ruleset){
                 else 0 }
 
         // If terrible, try adding a hill to a dry flat tile
-        if (innerProduction == 0 || (innerProduction < 2 && outerProduction < 8)) {
+        if (innerProduction == 0 || (innerProduction < 2 && outerProduction < 8) || (minorCiv && innerProduction < 4)) {
             val hillSpot = startTile.neighbors
                     .filter { it.isLand && it.terrainFeatures.isEmpty() && !it.isAdjacentToFreshwater }
                     .toList().randomOrNull()
@@ -496,8 +495,10 @@ class MapRegions (val ruleset: Ruleset){
             }
         }
 
-        // If bad early production, add a small strategic resource to SECOND ring
-        if (innerProduction < 3 && earlyProduction < 6) {
+        // TODO: Strategic Balance Resources
+
+        // If bad early production, add a small strategic resource to SECOND ring (not for minors)
+        if (!minorCiv && innerProduction < 3 && earlyProduction < 6) {
             val lastEraNumber = ruleset.eras.values.maxOf { it.eraNumber }
             val earlyEras = ruleset.eras.filterValues { it.eraNumber <= lastEraNumber / 3 }
             val validResources = ruleset.tileResources.values.filter {
@@ -528,28 +529,33 @@ class MapRegions (val ruleset: Ruleset){
         val outerNativeTwoFood = startTile.getTilesAtDistance(2).count { getPotentialYield(it, Stat.Food, unimproved = true) >= 2f }
         val totalNativeTwoFood = innerNativeTwoFood + outerNativeTwoFood
 
-        var bonusesNeeded = when {
-            innerFood == 0 && totalFood < 4         -> 5
-
-            totalFood < 6                           -> 4
-
-            totalFood < 8 ||
-                (totalFood < 12 && innerFood < 5)   -> 3
-
-            (totalFood < 17 && innerFood < 9) ||
-                    totalNativeTwoFood < 2          -> 2
-
-            (totalFood < 24 && innerFood < 11) ||
-                    totalNativeTwoFood == 2 ||
-                    innerNativeTwoFood == 0 ||
-                    totalFood < 20                  -> 1
-
-            else -> 0
+        // Determine number of needed bonuses. Different weightings for minor and major civs.
+        var bonusesNeeded = if (minorCiv) {
+            when { // From 2 to 0
+                totalFood < 12 || innerFood < 4 -> 2
+                totalFood < 16 || innerFood < 9 -> 1
+                else -> 0
+            }
+        } else {
+            when { // From 5 to 0
+                innerFood == 0 && totalFood < 4 -> 5
+                totalFood < 6 -> 4
+                totalFood < 8 ||
+                        (totalFood < 12 && innerFood < 5) -> 3
+                (totalFood < 17 && innerFood < 9) ||
+                        totalNativeTwoFood < 2 -> 2
+                (totalFood < 24 && innerFood < 11) ||
+                        totalNativeTwoFood == 2 ||
+                        innerNativeTwoFood == 0 ||
+                        totalFood < 20 -> 1
+                else -> 0
+            }
         }
+
         // TODO: Legendary start? +2
 
-        // Attempt to place one grassland at a plains-only spot
-        if (bonusesNeeded < 3 && totalNativeTwoFood == 0) {
+        // Attempt to place one grassland at a plains-only spot (nor for minors)
+        if (!minorCiv && bonusesNeeded < 3 && totalNativeTwoFood == 0) {
             val twoFoodTerrain = ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land && it.food >= 2 }?.name
             val candidateInnerSpots = startTile.neighbors
                     .filter { it.isLand && !it.isImpassible() && it.terrainFeatures.isEmpty() && it.resource == null }
@@ -562,7 +568,6 @@ class MapRegions (val ruleset: Ruleset){
                 bonusesNeeded = 3 // Irredeemable plains situation
         }
 
-
         val oasisEquivalent = ruleset.terrains.values.firstOrNull {
                 it.type == TerrainType.TerrainFeature &&
                 it.hasUnique(UniqueType.RareFeature)  &&
@@ -573,15 +578,17 @@ class MapRegions (val ruleset: Ruleset){
         var canPlaceOasis = oasisEquivalent != null // One oasis per start is enough. Don't bother finding a place if there is no good oasis equivalent
         var placedInFirst = 0 // Attempt to put first 2 in inner ring and next 3 in second ring
         var placedInSecond = 0
+        val rangeForBonuses = if (minorCiv) 2 else 3
 
-        val candidatePlots = startTile.getTilesInDistanceRange(1..3)
+        // Start with list of candidate plots sorted in ring order 1,2,3
+        val candidatePlots = startTile.getTilesInDistanceRange(1..rangeForBonuses)
                 .filter { it.resource == null && oasisEquivalent !in it.getTerrainFeatures() }
                 .shuffled().sortedBy { it.aerialDistanceTo(startTile) }.toMutableList()
 
-        // Place food bonuses as able
+        // Place food bonuses (and oases) as able
         while (bonusesNeeded > 0 && candidatePlots.isNotEmpty()) {
             val plot = candidatePlots.first()
-            candidatePlots.remove(plot) // remove the plot as it has now been tried
+            candidatePlots.remove(plot) // remove the plot as it has now been tried, whether successfully or not
 
             val validBonuses = ruleset.tileResources.values.filter {
                 it.resourceType == ResourceType.Bonus &&
@@ -610,6 +617,9 @@ class MapRegions (val ruleset: Ruleset){
                 bonusesNeeded--
             }
         }
+
+        // Minor civs are done, go on with grassiness checks for major civs
+        if (minorCiv) return
 
         // Check for very grass-heavy starts that might still need some stone to help with production
         val grassTypePlots = startTile.getTilesInDistanceRange(1..2).filter {
@@ -766,6 +776,8 @@ class MapRegions (val ruleset: Ruleset){
     fun placeResourcesAndMinorCivs(tileMap: TileMap, minorCivs: List<CivilizationInfo>) {
         assignLuxuries()
         placeMinorCivs(tileMap, minorCivs)
+        // TODO: place luxuries
+        // TODO: place strategic and bonus resources
     }
 
     /** Assigns a luxury to each region. No luxury can be assigned to too many regions.
@@ -1088,15 +1100,9 @@ class MapRegions (val ruleset: Ruleset){
         placeImpact(ImpactType.Strategic,tile, 0)
         placeImpact(ImpactType.Bonus,   tile, 3)
         placeImpact(ImpactType.Fish,    tile, 3)
-        placeImpact(ImpactType.Marble,  tile, 4)
-         */
-        // Remove ice-like features adjacent to start
-        for (neighbor in tile.neighbors) {
-            val lastTerrain = neighbor.getTerrainFeatures().lastOrNull { it.impassable }
-            if (lastTerrain != null)
-                neighbor.terrainFeatures.remove(lastTerrain.name)
-        }
-        // TODO: Normalize start
+        placeImpact(ImpactType.Marble,  tile, 4) */
+
+        normalizeStart(tile, minorCiv = true)
     }
 
     /** Adds numbers to tileData in a similar way to closeStartPenalty, but for different types */
