@@ -910,6 +910,20 @@ Some of the terrain uniques have gameplay effect, others are used only for map g
 
 "Rare feature"
 
+"Always Fertility [amount] for Map Generation" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+
+"[amount] to Fertility for Map Generation" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+
+"A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+
+"A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+
+"A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+
+"Base Terrain on this tile is not counted for Region determination" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+
+"Considered [terrainQuality] when determining start locations" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+
 
 # Resource Uniques
 
