@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
@@ -470,18 +471,23 @@ class MapUnit {
      * Used for upgrading units via ancient ruins.
      */
     fun canUpgrade(unitToUpgradeTo: BaseUnit = getUnitToUpgradeTo(), ignoreRequired: Boolean = false): Boolean {
-        // We need to remove the unit from the civ for this check,
-        // because if the unit requires, say, horses, and so does its upgrade,
-        // and the civ currently has 0 horses,
-        // if we don't remove the unit before the check it's return false!
-
         if (name == unitToUpgradeTo.name) return false
-        civInfo.removeUnit(this)
-        val canUpgrade = 
-            if (ignoreRequired) unitToUpgradeTo.isBuildableIgnoringTechs(civInfo)
-            else unitToUpgradeTo.isBuildable(civInfo)
-        civInfo.addUnit(this)
-        return canUpgrade
+        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
+        if (rejectionReasons.isEmpty()) return true
+
+        if (rejectionReasons.size == 1 && rejectionReasons.contains(RejectionReason.ConsumesResources)) {
+            // We need to remove the unit from the civ for this check,
+            // because if the unit requires, say, horses, and so does its upgrade,
+            // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
+            // WHEN THE CURRENT UNIT IS NOT HERE
+            civInfo.removeUnit(this)
+            val canUpgrade =
+                if (ignoreRequired) unitToUpgradeTo.isBuildableIgnoringTechs(civInfo)
+                else unitToUpgradeTo.isBuildable(civInfo)
+            civInfo.addUnit(this)
+            return canUpgrade
+        }
+        return false
     }
 
     fun getCostOfUpgrade(): Int {

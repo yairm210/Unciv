@@ -151,7 +151,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun getStats(city: CityInfo?): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
-        val stats = this.clone() 
+        val stats = cloneStats() 
         if (city == null) return stats
         val civInfo = city.civInfo
 
@@ -189,9 +189,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
-
-        if (uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
-            stats.production += 5 * civInfo.citiesConnectedToCapitalToMediums.count { it.key.civInfo.isCityState() }
 
         return stats
     }
@@ -249,7 +246,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        val stats = this.clone()
+        val stats = cloneStats()
         val percentStats = getStatPercentageBonuses(null)
         val specialists = newSpecialists()
         if (uniques.isNotEmpty() || !stats.isEmpty() || !percentStats.isEmpty() || this.greatPersonPoints.isNotEmpty() || specialists.isNotEmpty())
@@ -741,7 +738,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null)[stat] > 0) return true
-        if (uniqueObjects.any { it.placeholderText == "[] per [] population []" && it.stats[stat] > 0 }) return true
+        if (uniqueObjects.any { it.isOfType(UniqueType.StatsPerPopulation) && it.stats[stat] > 0 }) return true
         if (uniqueObjects.any { it.isOfType(UniqueType.StatsFromTiles) && it.stats[stat] > 0 }) return true
         return false
     }

@@ -8,6 +8,7 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.utils.*
@@ -20,6 +21,7 @@ class GameOptionsTable(
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
     var locked = false
+    private var modCheckboxes: ModCheckboxTable? = null
 
     init {
         getGameOptionsTable()
@@ -58,7 +60,8 @@ class GameOptionsTable(
         add(checkboxTable).center().row()
 
         if (!withoutMods)
-            add(getModCheckboxes()).row()
+            modCheckboxes = getModCheckboxes()
+            add(modCheckboxes).row()
 
         pack()
     }
@@ -94,9 +97,9 @@ class GameOptionsTable(
             }
 
     private fun numberOfCityStates() = ruleset.nations.values.count {
-        it.isCityState() &&
-                (it.cityStateType != CityStateType.Religious || gameParameters.religionEnabled) &&
-                !it.hasUnique(UniqueType.CityStateDeprecated)
+        it.isCityState()
+        && (it.cityStateType != CityStateType.Religious || gameParameters.religionEnabled)
+        && !it.hasUnique(UniqueType.CityStateDeprecated)
     }
 
     private fun Table.addReligionCheckbox(cityStateSlider: UncivSlider?) =
@@ -120,39 +123,83 @@ class GameOptionsTable(
         return slider
     }
 
-    private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {
+    private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?) {
         add(text.toLabel()).left()
         val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
         selectBox.isDisabled = locked
-        selectBox.onChange { onChange(selectBox.selected.value) }
+        selectBox.onChange { 
+            val changedValue = onChange(selectBox.selected.value) 
+            if (changedValue != null) selectBox.setSelected(changedValue)
+        }
         onChange(selectBox.selected.value)
         add(selectBox).fillX().row()
     }
 
     private fun Table.addDifficultySelectBox() {
         addSelectBox("{Difficulty}:", ruleset.difficulties.keys, gameParameters.difficulty)
-        { gameParameters.difficulty = it }
+        { gameParameters.difficulty = it; null }
     }
 
     private fun Table.addBaseRulesetSelectBox() {
-        if (BaseRuleset.values().size < 2) return
-        addSelectBox("{Base Ruleset}:", BaseRuleset.values().map { it.fullName }, gameParameters.baseRuleset.fullName)
-        {
-            gameParameters.baseRuleset = BaseRuleset.values().first { br -> br.fullName == it }
-            reloadRuleset()
+        val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
+        if (sortedBaseRulesets.size < 2) return
+        
+        addSelectBox(
+            "{Base Ruleset}:",
+            sortedBaseRulesets,
+            gameParameters.baseRuleset
+        ) { newBaseRuleset ->
+            val previousSelection = gameParameters.baseRuleset
+            if (newBaseRuleset == gameParameters.baseRuleset) return@addSelectBox null 
+            
+            // Check if this mod is well-defined
+            val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
+            if (baseRulesetErrors.isError()) {
+                val toastMessage = "The mod you selected is incorrectly defined!".tr() + "\n\n${baseRulesetErrors.getErrorText()}"
+                ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
+                return@addSelectBox previousSelection
+            }
+            
+            // If so, add it to the current ruleset
+            gameParameters.baseRuleset = newBaseRuleset
+            onChooseMod(newBaseRuleset)
+
+            // Check if the ruleset in it's entirety is still well-defined
+            val modLinkErrors = ruleset.checkModLinks()
+            if (modLinkErrors.isError()) {
+                gameParameters.mods.clear()
+                reloadRuleset()
+                val toastMessage =
+                    "This base ruleset is not compatible with the previously selected\nextension mods. They have been disabled.".tr()
+                ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
+                
+                // _technically_, [modCheckBoxes] can be [null] at this point, 
+                // but only if you change the option while the table is still loading, 
+                // but the timeframe for that is so small I'm just going to ignore that
+                modCheckboxes!!.disableAllCheckboxes()
+            } else if (modLinkErrors.isWarnUser()) {
+                val toastMessage =
+                    "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr() + 
+                    "\n\n${modLinkErrors.getErrorText()}"
+                ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
+            }
+            
+            modCheckboxes!!.setBaseRuleset(newBaseRuleset)
+            
+            null
         }
     }
 
     private fun Table.addGameSpeedSelectBox() {
         addSelectBox("{Game Speed}:", GameSpeed.values().map { it.name }, gameParameters.gameSpeed.name)
-        { gameParameters.gameSpeed = GameSpeed.valueOf(it) }
+        { gameParameters.gameSpeed = GameSpeed.valueOf(it); null }
     }
 
     private fun Table.addEraSelectBox() {
         if (ruleset.technologies.isEmpty()) return // mod with no techs
         val eras = ruleset.eras.keys
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
-        { gameParameters.startingEra = it }
+        { gameParameters.startingEra = it; null }
     }
 
 
@@ -182,34 +229,39 @@ class GameOptionsTable(
 
     fun reloadRuleset() {
         ruleset.clear()
-        val newRuleset = RulesetCache.getComplexRuleset(gameParameters.mods)
+        val newRuleset = RulesetCache.getComplexRuleset(gameParameters.mods, gameParameters.baseRuleset)
         ruleset.add(newRuleset)
+        ruleset.mods += gameParameters.baseRuleset
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
-
+        
         ImageGetter.setNewRuleset(ruleset)
-        UncivGame.Current.musicController.setModList(gameParameters.mods)
+        UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())
     }
 
-    fun getModCheckboxes(isPortrait: Boolean = false): Table {
-        return ModCheckboxTable(gameParameters.mods, previousScreen as CameraStageBaseScreen, isPortrait) {
-            UncivGame.Current.translations.translationActiveMods = gameParameters.mods
-            reloadRuleset()
-            update()
-
-            var desiredCiv = ""
-            if (gameParameters.mods.contains(it)) {
-                val modNations = RulesetCache[it]?.nations
-                if (modNations != null && modNations.size > 0) desiredCiv = modNations.keys.first()
-
-                val music = UncivGame.Current.musicController
-                if (!music.chooseTrack(it, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())
-                    music.chooseTrack(desiredCiv, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
-            }
-
-            updatePlayerPickerTable(desiredCiv)
+    fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
+        return ModCheckboxTable(gameParameters.mods, gameParameters.baseRuleset, previousScreen as CameraStageBaseScreen, isPortrait) {
+            onChooseMod(it)
         }
     }
+    
+    private fun onChooseMod(mod: String) {
+        val activeMods: LinkedHashSet<String> = LinkedHashSet(gameParameters.getModsAndBaseRuleset())
+        UncivGame.Current.translations.translationActiveMods = activeMods
+        reloadRuleset()
+        update()
 
+        var desiredCiv = ""
+        if (gameParameters.mods.contains(mod)) {
+            val modNations = RulesetCache[mod]?.nations
+            if (modNations != null && modNations.size > 0) desiredCiv = modNations.keys.first()
+
+            val music = UncivGame.Current.musicController
+            if (!music.chooseTrack(mod, MusicMood.Theme, MusicTrackChooserFlags.setSelectNation) && desiredCiv.isNotEmpty())
+                music.chooseTrack(desiredCiv, MusicMood.themeOrPeace, MusicTrackChooserFlags.setSelectNation)
+        }
+
+        updatePlayerPickerTable(desiredCiv)
+    }
 }
 

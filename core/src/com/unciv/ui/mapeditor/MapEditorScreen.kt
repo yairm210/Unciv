@@ -34,7 +34,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     constructor(map: TileMap) : this() {
         tileMap = map
         checkAndFixMapSize()
-        ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods)
+        ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
         initialize()
     }
 

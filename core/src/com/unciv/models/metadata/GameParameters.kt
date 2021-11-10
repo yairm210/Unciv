@@ -2,10 +2,13 @@ package com.unciv.models.metadata
 
 import com.unciv.Constants
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
 
 enum class BaseRuleset(val fullName:String){
     Civ_V_Vanilla("Civ V - Vanilla"),
+    Civ_V_GnK("Civ V - Gods & Kings"),
 }
 
 class GameParameters { // Default values are the default new game
@@ -29,7 +32,7 @@ class GameParameters { // Default values are the default new game
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
-    var baseRuleset: BaseRuleset = BaseRuleset.Civ_V_Vanilla
+    var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
 
     fun clone(): GameParameters {
@@ -67,6 +70,11 @@ class GameParameters { // Default values are the default new game
             for (victoryType in VictoryType.values()) {
                 if (victoryType !in victoryTypes) yield("No $victoryType Victory")
             }
+            yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")
+    
+    fun getModsAndBaseRuleset(): HashSet<String> {
+        return mods.toHashSet().apply { add(baseRuleset) }
+    }
 }

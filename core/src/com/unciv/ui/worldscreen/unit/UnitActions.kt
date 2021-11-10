@@ -320,13 +320,21 @@ object UnitActions {
         return UnitAction(UnitActionType.Upgrade,
             title = "Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
             action = {
-                unit.civInfo.addGold(-goldCostOfUpgrade)
                 val unitTile = unit.getTile()
                 unit.destroy()
-                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
-                unit.copyStatisticsTo(newUnit)
-                
-                newUnit.currentMovement = 0f
+                val newUnit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+
+                /** We were UNABLE to place the new unit, which means that the unit failed to upgrade!
+                 * The only known cause of this currently is "land units upgrading to water units" which fail to be placed.
+                 */
+                if (newUnit == null) {
+                    val readdedUnit = unit.civInfo.placeUnitNearTile(unitTile.position, unit.name)
+                    unit.copyStatisticsTo(readdedUnit!!)
+                } else { // Managed to upgrade
+                    unit.civInfo.addGold(-goldCostOfUpgrade)
+                    unit.copyStatisticsTo(newUnit)
+                    newUnit.currentMovement = 0f
+                }
             }.takeIf {
                 isFree ||
                 (

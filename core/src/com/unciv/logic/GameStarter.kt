@@ -29,12 +29,20 @@ object GameStarter {
         val gameInfo = GameInfo()
         lateinit var tileMap: TileMap
 
-        // In the case where we used to have a mod, and now we don't, we cannot "unselect" it in the UI.
+        // In the case where we used to have an extension mod, and now we don't, we cannot "unselect" it in the UI.
         // We need to remove the dead mods so there aren't problems later.
         gameSetupInfo.gameParameters.mods.removeAll { !RulesetCache.containsKey(it) }
+        
+        // [TEMPORARY] If we have a base ruleset in the mod list, we make that our base ruleset
+        val baseRulesetInMods = gameSetupInfo.gameParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+        if (baseRulesetInMods != null)
+            gameSetupInfo.gameParameters.baseRuleset = baseRulesetInMods
 
+        if (!RulesetCache.containsKey(gameSetupInfo.gameParameters.baseRuleset))
+            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getBaseRuleset().name
+        
         gameInfo.gameParameters = gameSetupInfo.gameParameters
-        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
+        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)
         val mapGen = MapGenerator(ruleset)
 
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {

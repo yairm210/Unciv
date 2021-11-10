@@ -269,7 +269,7 @@ class Ruleset {
     /** Used for displaying a RuleSet's name */
     override fun toString() = when {
         name.isNotEmpty() -> name
-        mods.isEmpty() -> BaseRuleset.Civ_V_Vanilla.fullName  //todo differentiate once more than 1 BaseRuleset
+        mods.size == 1 && RulesetCache[mods.first()]!!.modOptions.isBaseRuleset -> mods.first()
         else -> "Combined RuleSet"
     }
 
@@ -595,9 +595,13 @@ object RulesetCache : HashMap<String,Ruleset>() {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
-            val fileHandle = if (consoleMode) FileHandle(fileName)
-            else Gdx.files.internal(fileName)
-            this[ruleset.fullName] = Ruleset().apply { load(fileHandle, printOutput) }
+            val fileHandle = 
+                if (consoleMode) FileHandle(fileName)
+                else Gdx.files.internal(fileName)
+            this[ruleset.fullName] = Ruleset().apply { 
+                load(fileHandle, printOutput)
+                name = ruleset.fullName
+            }
         }
 
         if (noMods) return
@@ -630,15 +634,45 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
+    fun getSortedBaseRulesets(): List<String> {
+        val baseRulesets = values
+            .filter { it.modOptions.isBaseRuleset }
+            .map { it.name }
+            .distinct()
+        if (baseRulesets.size < 2) return baseRulesets
+
+        // We sort the base rulesets such that the ones unciv provides are on the top,
+        // and the rest is alphabetically ordered.
+        return baseRulesets.sortedWith(
+            compareBy(
+                { ruleset ->
+                    BaseRuleset.values()
+                        .firstOrNull { br -> br.fullName == ruleset }?.ordinal
+                        ?: BaseRuleset.values().size
+                },
+                { it }
+            )
+        )
+    }
+    
     /**
      * Creates a combined [Ruleset] from a list of mods. If no baseRuleset is listed in [mods],
      * then the vanilla Ruleset is included automatically.
      */
-    fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
+    fun getComplexRuleset(mods: LinkedHashSet<String>, optionalBaseRuleset: String? = null): Ruleset {
         val newRuleset = Ruleset()
-        val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
-        if (loadedMods.none { it.modOptions.isBaseRuleset })
-            newRuleset.add(getBaseRuleset())
+        
+        val baseRuleset =
+            if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
+            else getBaseRuleset()
+        
+        
+        val loadedMods = mods
+            .filter { containsKey(it) }
+            .map { this[it]!! }
+            .filter { !it.modOptions.isBaseRuleset } + 
+            baseRuleset
+        
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             newRuleset.add(mod)
             newRuleset.mods += mod.name
@@ -667,9 +701,9 @@ object RulesetCache : HashMap<String,Ruleset>() {
     /**
      * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
      */
-    fun checkCombinedModLinks(mods: LinkedHashSet<String>): Ruleset.RulesetErrorList {
+    fun checkCombinedModLinks(mods: LinkedHashSet<String>, baseRuleset: String? = null): Ruleset.RulesetErrorList {
         return try {
-            val newRuleset = getComplexRuleset(mods)
+            val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
             newRuleset.checkModLinks()
         } catch (ex: Exception) {

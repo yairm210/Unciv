@@ -167,7 +167,7 @@ class CityStats(val cityInfo: CityInfo) {
     fun getStatsOfSpecialist(specialistName: String): Stats {
         val specialist = cityInfo.getRuleset().specialists[specialistName]
             ?: return Stats()
-        val stats = specialist.clone()
+        val stats = specialist.cloneStats()
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromSpecialist))
             if (cityInfo.matchesFilter(unique.params[1]))
                 stats.add(unique.stats)

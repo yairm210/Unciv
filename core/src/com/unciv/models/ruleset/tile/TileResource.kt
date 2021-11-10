@@ -28,7 +28,7 @@ class TileResource : RulesetStatsObject() {
         textList += FormattedLine("${resourceType.name} resource", header = 4, color = resourceType.color)
         textList += FormattedLine()
 
-        textList += FormattedLine(this.clone().toString())
+        textList += FormattedLine(cloneStats().toString())
 
         if (terrainsCanBeFoundOn.isNotEmpty()) {
             textList += FormattedLine()

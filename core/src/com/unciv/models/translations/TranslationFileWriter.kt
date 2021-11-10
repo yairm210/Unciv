@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
@@ -255,6 +256,8 @@ object TranslationFileWriter {
 
             fun submitString(string: String) {
                 val unique = Unique(string)
+                if(unique.type?.flags?.contains(UniqueFlag.HideInCivilopedia)==true)
+                    return // We don't need to translate this at all, not user-visible
                 var stringToTranslate = string.removeConditionals()
 
                 val existingParameterNames = HashSet<String>()

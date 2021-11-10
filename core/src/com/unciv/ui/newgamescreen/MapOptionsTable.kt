@@ -9,6 +9,7 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onChange
@@ -101,7 +102,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             }
             mapParameters.name = mapFile.name()
             newGameScreen.gameSetupInfo.mapFile = mapFile
-            newGameScreen.gameSetupInfo.gameParameters.mods = map.mapParameters.mods
+            newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(map.mapParameters.mods.filter { RulesetCache[it]?.modOptions?.isBaseRuleset != true })
+            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true } ?: map.mapParameters.baseRuleset
             newGameScreen.updateRuleset()
             newGameScreen.updateTables()
         }

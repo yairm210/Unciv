@@ -364,13 +364,22 @@ class GameInfo {
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
         tileMap.gameInfo = this
-        ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods)
+
+        // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
+        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+        if (baseRulesetInMods != null) {
+            gameParameters.baseRuleset = baseRulesetInMods
+            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
+        }
+
+        ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods, gameParameters.baseRuleset)
+        
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:
-        val missingMods = gameParameters.mods
-                .filterNot { it in ruleSet.mods }
-                .joinToString(limit = 120) { it }
+        val missingMods = (gameParameters.mods + gameParameters.baseRuleset)
+            .filterNot { it in ruleSet.mods }
+            .joinToString(limit = 120) { it }
         if (missingMods.isNotEmpty()) {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }

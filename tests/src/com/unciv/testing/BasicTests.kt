@@ -4,6 +4,7 @@ package com.unciv.testing
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -84,11 +85,13 @@ class BasicTests {
 
     @Test
     fun baseRulesetHasNoBugs() {
-        ruleset.modOptions.isBaseRuleset = true
-        val modCheck = ruleset.checkModLinks()
-        if (modCheck.isNotOK())
-            println(modCheck.getErrorText(true))
-        Assert.assertFalse(modCheck.isNotOK())
+        for (baseRuleset in BaseRuleset.values()) {
+            val ruleset = RulesetCache[baseRuleset.fullName]!!
+            val modCheck = ruleset.checkModLinks()
+            if (modCheck.isNotOK())
+                println(modCheck.getErrorText(true))
+            Assert.assertFalse(modCheck.isNotOK())
+        }
     }
 
     @Test

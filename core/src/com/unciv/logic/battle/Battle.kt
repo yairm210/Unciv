@@ -517,6 +517,7 @@ object Battle {
                 capturedUnit.capturedBy(attacker.getCivInfo())
                 attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.RecapturedCivilian, capturedUnitTile.position.toString()))
             }
+
             // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
             capturedUnit.hasUnique("Founds a new city") && !attacker.getCivInfo().isBarbarian() -> {
                 capturedUnit.destroy()
@@ -525,9 +526,7 @@ object Battle {
                 capturedUnit.civInfo = attacker.getCivInfo()
                 attacker.getCivInfo().placeUnitNearTile(capturedUnitTile.position, Constants.worker)
             }
-            else -> {
-                capturedUnit.capturedBy(attacker.getCivInfo())
-            }
+            else -> capturedUnit.capturedBy(attacker.getCivInfo())
         }
 
         if (checkDefeat)
