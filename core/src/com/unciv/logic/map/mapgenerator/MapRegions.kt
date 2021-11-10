@@ -909,9 +909,10 @@ class MapRegions (val ruleset: Ruleset){
         // (Because then every continent will have been assigned to a region anyway)
         val uninhabitedCoastal = ArrayList<TileInfo>()
         val uninhabitedHinterland = ArrayList<TileInfo>()
-        val uninhabitedContinents = tileMap.continentSizes.keys.filter {
-            regions.none { region -> region.continentID == it }
-        }
+        val uninhabitedContinents = tileMap.continentSizes.filter {
+            it.value >= 4 && // Don't bother with tiny islands
+            regions.none { region -> region.continentID == it.key }
+        }.keys
         val civAssignedToUninhabited = ArrayList<CivilizationInfo>()
         var numUninhabitedTiles = 0
         var numInhabitedTiles = 0
