@@ -344,7 +344,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                 Gdx.app.postRunnable { createNewWorldScreen(latestGame) }
             }
 
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
             Gdx.app.postRunnable {
                 val couldntDownloadLatestGame = Popup(this)
                 couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()

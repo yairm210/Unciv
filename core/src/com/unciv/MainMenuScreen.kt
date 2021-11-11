@@ -198,21 +198,31 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val loadingPopup = Popup(this)
         loadingPopup.addGoodSizedLabel("Loading...")
         loadingPopup.open()
-        thread { // Load game from file to class on separate thread to avoid ANR...
-            var savedGame: GameInfo
-            try {
-                savedGame = GameSaver.loadGameByName(autosave)
-            } catch (outOfMemory: OutOfMemoryError) {
+        thread {
+            // Load game from file to class on separate thread to avoid ANR...
+            fun outOfMemory() {
                 Gdx.app.postRunnable {
                     loadingPopup.close()
                     ToastPopup("Not enough memory on phone to load game!", this)
                 }
+            }
+
+            var savedGame: GameInfo
+            try {
+                savedGame = GameSaver.loadGameByName(autosave)
+            } catch (oom: OutOfMemoryError) {
+                outOfMemory()
                 return@thread
             } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
                 // This can help for situations when the autosave is corrupted
                 try {
-                    val autosaves = GameSaver.getSaves().filter { it.name() != autosave && it.name().startsWith(autosave) }
-                    savedGame = GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
+                    val autosaves = GameSaver.getSaves()
+                        .filter { it.name() != autosave && it.name().startsWith(autosave) }
+                    savedGame =
+                        GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
+                } catch (oom: OutOfMemoryError) { // The autosave could have oom problems as well... smh
+                    outOfMemory()
+                    return@thread
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {
                         loadingPopup.close()
@@ -226,11 +236,9 @@ class MainMenuScreen: CameraStageBaseScreen() {
                 try {
                     game.loadGame(savedGame)
                     dispose()
-                } catch (outOfMemory: OutOfMemoryError) {
-                    loadingPopup.close()
-                    ToastPopup("Not enough memory on phone to load game!", this)
+                } catch (oom: OutOfMemoryError) {
+                    outOfMemory()
                 }
-
             }
         }
     }

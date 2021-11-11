@@ -53,7 +53,7 @@ class LimitOrientationsHelperAndroid(private val activity: Activity) : LimitOrie
                     GameSettingsPreview()
                 } else try {
                     GameSaver.json().fromJson(GameSettingsPreview::class.java, settingsFile.reader())
-                } catch (ex: java.lang.Exception) {
+                } catch (throwable: Throwable) {
                     GameSettingsPreview()
                 }
             allowPortrait(setting.allowAndroidPortrait)
