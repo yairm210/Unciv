@@ -31,7 +31,7 @@ class AutocompleteManager:
 				_bdepth = 1
 				prefixsplit -= 1
 				while _bdepth and prefixsplit:
-					# Skip over whole  blocks of open brackets.
+					# Skip over whole  blocks of matched brackets.
 					char = command[prefixsplit]
 					if char == '[':
 						_bdepth -= 1

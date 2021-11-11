@@ -36,10 +36,10 @@ import kotlin.math.min
     MainMenuScreen():
         consoleScreen
         scriptingState // Same as for worldScreen.
-    ObjectTokenizer() // Holds WeakRefs used by ScriptingProtocol. Unserializable objects get strings as placeholders, and then turned back into into objects if seen again.
+    InstanceTokenizer() // Holds WeakRefs used by ScriptingProtocol. Unserializable objects get strings as placeholders, and then turned back into into objects if seen again.
     Reflection() // Used by some hard-coded scripting backends, and essential to dynamic bindings in ScriptingProtocol().
     SourceManager() // Source of the folderHandler and setupInterpreterEnvironment() above.
-    TokenizingJson() // Serializer and functions that use ObjectTokenizer.
+    TokenizingJson() // Serializer and functions that use InstanceTokenizer.
         
     ```
 */
@@ -64,8 +64,8 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
 
     var activeBackend: Int = 0
 
-    val maxOutputHistory: Int = 127
-    val maxCommandHistory: Int = 255
+    val maxOutputHistory: Int = 511
+    val maxCommandHistory: Int = 511
 
     var activeCommandHistory: Int = 0
     // Actually inverted, because history items are added to end of list and not start. 0 means nothing, 1 means most recent command at end of list.

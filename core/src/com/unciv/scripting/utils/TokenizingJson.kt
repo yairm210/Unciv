@@ -18,12 +18,7 @@ import kotlinx.serialization.modules.SerializersModule
 
 object TokenizingJson {
 
-    // Json serialization that accepts `Any?`, and converts non-primitive values to string keys from `ObjectTokenizer`.
-    
-//    class ObjectReifyingSerializer: KSerializer<Any?> {
-//        override val descriptor = SerialDescriptor("Reifying", delegateSerializer)
-//    }
-
+    // Json serialization that accepts `Any?`, and converts non-primitive values to string keys from `InstanceTokenizer`.
 
     object TokenizingSerializer: KSerializer<Any?> {
     
@@ -44,7 +39,7 @@ object TokenizingJson {
                 "Long" to serializer<Long>(),
                 "Short" to serializer<Short>(),
                 "String" to serializer<String>()
-                // Only these types will be serialized. Everything else will be replaced with a string key from ObjectTokenizer.
+                // Only these types will be serialized. Everything else will be replaced with a string key from InstanceTokenizer.
             ).mapValues { (_, v) -> v as KSerializer<Any?> }
         
 //        private fun <T> getDataTypeSerializer(value: T): KSerializer<Any?> {
@@ -60,7 +55,7 @@ object TokenizingJson {
                 if (classname in dataTypeSerializers) {
                     encoder.encodeSerializableValue(dataTypeSerializers[value!!::class.simpleName!!]!!, value!!)
                 } else {
-                    encoder.encodeString(ObjectTokenizer.getToken(value!!))
+                    encoder.encodeString(InstanceTokenizer.getToken(value!!))
                 }
             }
         }
@@ -69,7 +64,7 @@ object TokenizingJson {
             if (decoder is JsonDecoder) {
                 val jsonLiteral = (decoder as JsonDecoder).decodeJsonElement()
                 val rawval: Any? = getJsonReal(jsonLiteral)
-                return ObjectTokenizer.getReal(rawval)
+                return InstanceTokenizer.getReal(rawval)
             } else {
                 throw UnsupportedOperationException("Decoding is not supported by TokenizingSerializer for ${decoder::class.simpleName}.")
             }
@@ -95,8 +90,15 @@ object TokenizingJson {
         if (value is Map<*, *>) { //TODO: Decide what to do with the keys.
             return JsonObject( (value as Map<String, Any?>).mapValues{ getJsonElement(it.value) } )
         }
-        if (value is Collection<*>) {
+        if (value is Iterable<*>) {
+            // Apparently ::class.java.isArray can be used to check for primitive arrays, but it breaks 
             return JsonArray(value.map{ getJsonElement(it) })
+        }
+        if (value is Sequence<*>) {
+            var v = (value as Sequence<Any?>).toList()
+            println(v)
+            println(v[0]!!::class.qualifiedName)
+            return getJsonElement(v)
         }
         if (value is String) { 
             return JsonPrimitive(value as String)
@@ -110,7 +112,7 @@ object TokenizingJson {
         if (value == null) {
             return JsonNull
         }
-        return JsonPrimitive(ObjectTokenizer.getToken(value))
+        return JsonPrimitive(InstanceTokenizer.getToken(value))
     }
     
     fun getJsonReal(value: JsonElement): Any? {
@@ -126,7 +128,7 @@ object TokenizingJson {
         if (value is JsonPrimitive) {
             val v = value as JsonPrimitive
             if (v.isString) {
-                return ObjectTokenizer.getReal(v.content)
+                return InstanceTokenizer.getReal(v.content)
             } else {
                 return v.content.toIntOrNull()
                     ?: v.content.toDoubleOrNull()

@@ -12,7 +12,7 @@ val ScriptingConstants: _ScriptingConstantsClasses.ScriptingConstantsClass = Jso
 
 object _ScriptingConstantsClasses{
     // Need to define classes to deserialize the JSONs into, but really this whole file should be one singleton.
-    // It would be better slightly with KotlinX, I think, since then I could at least use data classes and don't have to initialize all the properties.
+    // It would be slightly better with KotlinX, I think, since then I could at least use data classes and don't have to initialize all the properties.
 
     class ScriptingConstantsClass() {
         var engines = HashMap<String, ScriptingEngineConfig>()
@@ -24,10 +24,9 @@ object _ScriptingConstantsClasses{
             get() = field.toList() as ArrayList<String>
             set(value) = throw UnsupportedOperationException("This property is supposed to be constant.")
         
-        val apiConstants = JsonParser().getFromJson(ScriptingAPIConstants::class.java, assetFolders.sharedfilesAssets.child("ScriptAPIConstants.json"))
+        val assetFolders = ScriptingAssetFolders
         
-        val assetFolders
-            get() = ScriptingAssetFolders
+        val apiConstants = JsonParser().getFromJson(ScriptingAPIConstants::class.java, assetFolders.sharedfilesAssets.child("ScriptAPIConstants.json"))
     }
 
     class ScriptingEngineConfig(){
@@ -41,7 +40,7 @@ object _ScriptingConstantsClasses{
     }
 
     class ScriptingAPIConstants() {
-        var kotlinObjectTokenPrefix = ""
+        var kotlinInstanceTokenPrefix = ""
     }
 
     object ScriptingAssetFolders {

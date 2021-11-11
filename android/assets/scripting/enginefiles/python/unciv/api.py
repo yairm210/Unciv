@@ -70,7 +70,7 @@ def real(obj):
 def isForeignToken(obj):
 	"""Return whether an object represents a token for a non-serializable foreign object."""
 	resolved = real(obj)
-	return isinstance(resolved, str) and resolved.startswith(_apiconstants['kotlinObjectTokenPrefix'])
+	return isinstance(resolved, str) and resolved.startswith(_apiconstants['kotlinInstanceTokenPrefix'])
 
 
 from . import wrapping

@@ -39,6 +39,14 @@ object Reflection {
             .first { it.name == propertyName } as KMutableProperty1<Any, T?>
         property.set(instance, value)
     }
+    
+    fun setInstanceItem(instance: Any, keyOrIndex: Any, value: Any?): Unit {
+        if (keyOrIndex is Int) {
+            (instance as MutableList<Any?>)[keyOrIndex] = value
+        } else{
+            (instance as MutableMap<Any, Any?>)[keyOrIndex] = value
+        }
+    }
 
 
     enum class PathElementType() {
@@ -52,7 +60,7 @@ object Reflection {
         val type: PathElementType,
         val name: String,
         val doEval: Boolean = false,
-        //For key and index accesses, and function calls, evaluate `name` instead of using `params`.
+        //For key and index accesses, and function calls, evaluate `name` instead of using `params` for arguments/key.
         //Default should be false, so deserialized JSON path lists are configured correctly in ScriptingProtocol.kt.
         val params: List<@Serializable(with=TokenizingJson.TokenizingSerializer::class) Any?> = listOf()
 //        val params: List<@Contextual Any?> = listOf()
@@ -244,13 +252,13 @@ object Reflection {
                 setInstanceProperty(leafobj!!, leafelement.name, value)
             }
             PathElementType.Key -> {
-                throw UnsupportedOperationException("Keys not implemented.")
-                leafobj = readInstanceItem(
+                setInstanceItem(
                     leafobj!!,
                     if (leafelement.doEval)
                         evalKotlinString(instance, leafelement.name)!!
                     else
-                        leafelement.name
+                        leafelement.params[0]!!,
+                    value
                 )
             }
             PathElementType.Call -> {

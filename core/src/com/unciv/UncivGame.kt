@@ -25,13 +25,9 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 
-import com.unciv.scripting.ScriptingConstants
-
 class UncivGame(parameters: UncivGameParameters) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
     constructor(version: String) : this(UncivGameParameters(version, null))
-    
-    val ss by lazy { ScriptingConstants }
 
     val version = parameters.version
     private val crashReportSender = parameters.crashReportSender

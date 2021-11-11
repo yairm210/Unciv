@@ -6,15 +6,15 @@ import java.lang.ref.WeakReference
 import java.util.UUID
 
 
-object ObjectTokenizer {
+object InstanceTokenizer {
 
-    private val objs = mutableMapOf<String, WeakReference<Any>>()
+    private val instances = mutableMapOf<String, WeakReference<Any>>()
 
     private val tokenPrefix
-        get() = ScriptingConstants.apiConstants.kotlinObjectTokenPrefix
+        get() = ScriptingConstants.apiConstants.kotlinInstanceTokenPrefix
     private val tokenMaxLength = 100
 
-    private fun tokenFromObject(value: Any?): String {
+    private fun tokenFromInstance(value: Any?): String {
         //Try to keep this human-informing, but don't parse it to extracting information.
         var stringified = value.toString()
         if (stringified.length > tokenMaxLength) {
@@ -30,27 +30,27 @@ object ObjectTokenizer {
     
     fun clean(): Unit {
         val badtokens = mutableListOf<String>()
-        for ((t, o) in objs) {
+        for ((t, o) in instances) {
             if (o.get() == null) {
                 badtokens.add(t)
             }
         }
         for (t in badtokens) {
-            objs.remove(t)
+            instances.remove(t)
         }
     }
     
     fun getToken(obj: Any?): String {
         clean()
-        val token = tokenFromObject(obj)
-        objs[token] = WeakReference(obj)
+        val token = tokenFromInstance(obj)
+        instances[token] = WeakReference(obj)
         return token
     }
     
     fun getReal(token: Any?): Any? {
         clean()
         if (isToken(token)) {
-            return objs[token]!!.get()
+            return instances[token]!!.get()
         } else {
             return token
         }

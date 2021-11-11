@@ -42,15 +42,14 @@ import com.unciv.scripting.utils.Blackbox
 
 class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {
     
-    val scriptingProtocol = ScriptingProtocol(scriptingScope)
+    val instanceSaver = mutableListOf<Any?>()
+    // ScriptingProtocol puts references to pre-tokenized returned objects in here.
+    // Should be cleared here at the end of each REPL execution.
+    // This makes sure a single script execution doesn't get its tokenized Kotlin/JVM objects garbage collected, and has a chance to save them elsewhere (E.G. ScriptingScope.apiHelpers) if it needs them later.
+    // Should preserve each instance, not just each value, so should be List and not Set.
+    // To test in Python console backend: x = apiHelpers.Factories.Vector2(1,2); civInfo.endTurn(); print(apiHelpers.toString(x))
     
-    fun whileEval() {
-        return
-    }
-    
-    fun runCode(code: String) {
-        blackbox.write(code)
-    }
+    val scriptingProtocol = ScriptingProtocol(scriptingScope, instanceSaver = instanceSaver)
     
     fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true, execLoop: () -> Unit = fun(){}): ScriptingPacket {
         blackbox.write(packetToSend.toJson() + "\n")
@@ -59,11 +58,12 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
         if (enforceValidity) {
             ScriptingProtocol.enforceIsResponse(packetToSend, response)
         }
+        instanceSaver.clear() // Clear saved references to objects in response, now that the script has had a chance to save them elsewhere.
         return response
     }
     
     fun foreignExecLoop() {
-        // Lists to requests for values from the black box, and replies to them, during script execution.
+        // Listens to requests for values from the black box, and replies to them, during script execution.
         // Terminates loop after receiving a request with a the 'PassMic' flag.
         while (true) {
             val request = ScriptingPacket.fromJson(blackbox.read(block=true))
@@ -105,9 +105,6 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
                     execLoop = { foreignExecLoop() }
                 )
             )
-            runCode(command)
-            whileEval()
-            return blackbox.readAll(block=true).joinToString("\n")
         }
     }
     

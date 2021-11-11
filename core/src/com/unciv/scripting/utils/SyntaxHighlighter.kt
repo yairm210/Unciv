@@ -2,15 +2,15 @@ package com.unciv.scripting.utils
 
 
 interface SyntaxHighlighter {
+    // TODO: Implement/use these.
     fun cmlFromText(text: String): String {
         // https://github.com/libgdx/libgdx/wiki/Color-Markup-Language
         return text
     }
 }
 
-open class FunctionalSyntaxHighlighter() {
-    open val transformList: List<(String) -> String> = listOf()
-    fun cmlFromText(text: String): String {
+class FunctionalSyntaxHighlighter(val transformList: List<(String) -> String>): SyntaxHighlighter {
+    override fun cmlFromText(text: String): String {
         return transformList.fold(text){ t: String, f: (String) -> String -> f(t) }
     }
 }
