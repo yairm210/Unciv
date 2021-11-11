@@ -299,12 +299,14 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                 tileInfo.ruleset = mapEditorScreen.ruleset
                 val terrain = resource.terrainsCanBeFoundOn.first { ruleset.terrains.containsKey(it) }
                 val terrainObject = ruleset.terrains[terrain]!!
-                if (terrainObject.type == TerrainType.TerrainFeature) {
+
+                if (terrainObject.type != TerrainType.TerrainFeature) tileInfo.baseTerrain = terrain
+                else {
                     tileInfo.baseTerrain =
-                            if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
-                            else "Grassland"
+                        if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
+                        else ruleset.terrains.values.first { it.type == TerrainType.Land }.name
                     tileInfo.terrainFeatures.add(terrain)
-                } else tileInfo.baseTerrain = terrain
+                }
 
                 tileInfo.resource = resource.name
                 tileInfo.setTerrainTransients()
