@@ -225,15 +225,7 @@ object GameStarter {
                 !it.value.hasUnique(UniqueType.CityStateDeprecated)
             }.keys
             .shuffled()
-            .sortedByDescending { it in civNamesWithStartingLocations } )
-
-
-        val allMercantileResources = ruleset.tileResources.values.filter {
-            it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
-
-
-        val unusedMercantileResources = Stack<String>()
-        unusedMercantileResources.addAll(allMercantileResources.shuffled())
+            .sortedBy { it in civNamesWithStartingLocations } ) // pop() gets the last item, so sort ascending
 
         var addedCityStates = 0
         // Keep trying to add city states until we reach the target number.
@@ -285,11 +277,6 @@ object GameStarter {
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
-
-            if(civ.isMajorCiv() && startScores[startingLocation]!! < 45) {
-                // An unusually bad spawning location
-                addConsolationPrize(gameInfo, startingLocation, 45 - startingLocation.getTileStartScore().toInt())
-            }
 
             if(civ.isCityState())
                 addCityStateLuxury(gameInfo, startingLocation)
@@ -463,29 +450,6 @@ object GameStarter {
             }
         }
         return preferredTiles.lastOrNull() ?: freeTiles.last()
-    }
-
-    private fun addConsolationPrize(gameInfo: GameInfo, spawn: TileInfo, points: Int) {
-        val relevantTiles = spawn.getTilesInDistanceRange(1..2).shuffled()
-        var addedPoints = 0
-        var addedBonuses = 0
-
-        for (tile in relevantTiles) {
-            if (addedPoints >= points || addedBonuses >= 4) // At some point enough is enough
-                break
-            if (tile.resource != null || tile.baseTerrain == Constants.snow)    // Snow is quite irredeemable
-                continue
-
-            val bonusToAdd = gameInfo.ruleSet.tileResources.values
-                .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) && it.resourceType == ResourceType.Bonus }
-                .randomOrNull()
-
-            if (bonusToAdd != null) {
-                tile.resource = bonusToAdd.name
-                addedPoints += (bonusToAdd.food + bonusToAdd.production + bonusToAdd.gold + 1).toInt()  // +1 because resources can be improved
-                addedBonuses++
-            }
-        }
     }
 
     private fun addCityStateLuxury(gameInfo: GameInfo, spawn: TileInfo) {
