@@ -22,7 +22,7 @@
 			syntaxHighlightingRegexStack: [
 			]
 		}
-		js: {
+		qjs: {
 			files: [
 				unciv/
 				main.js

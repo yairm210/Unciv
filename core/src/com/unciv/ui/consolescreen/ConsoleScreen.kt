@@ -2,6 +2,8 @@ package com.unciv.ui.consolescreen
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
@@ -15,6 +17,7 @@ import com.unciv.scripting.ScriptingState
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import kotlin.math.max
+import kotlin.math.min
 
 
 class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Unit): CameraStageBaseScreen() {
@@ -44,9 +47,15 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     private val layoutUpdators = ArrayList<() -> Unit>()
     private var isOpen = false
 
-    var input: String
+    var inputText: String
         get() = inputField.text
         set(value: String) { inputField.setText(value) }
+    
+    var cursorPos: Int
+        get() = inputField.getCursorPosition()
+        set(value: Int) {
+            inputField.setCursorPosition(max(0, min(inputText.length, value)))
+        }
 
     init {
         
@@ -171,29 +180,37 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         printHistory.clearChildren()
     }
     
-    private fun setText(text: String, cursormode: SetTextCursorMode=SetTextCursorMode.End) {
-        val originaltext = inputField.text
-        val originalcursorpos = inputField.getCursorPosition()
-        inputField.setText(text)
+    fun setText(text: String, cursormode: SetTextCursorMode=SetTextCursorMode.End) {
+        val originaltext = inputText
+        val originalcursorpos = cursorPos
+        inputText = text
         when (cursormode) {
-            (SetTextCursorMode.End) -> { inputField.setCursorPosition(inputField.text.length) }
+            (SetTextCursorMode.End) -> { cursorPos = inputText.length }
             (SetTextCursorMode.Unchanged) -> {}
-            (SetTextCursorMode.Insert) -> { inputField.setCursorPosition(max(0, inputField.text.length-(originaltext.length-originalcursorpos))) }
+            (SetTextCursorMode.Insert) -> { cursorPos = inputText.length-(originaltext.length-originalcursorpos) }
             (SetTextCursorMode.SelectAll) -> { throw UnsupportedOperationException("NotImplemented.") }
             (SetTextCursorMode.SelectAfter) -> { throw UnsupportedOperationException("NotImplemented.") }
         }
     }
     
+    fun setScroll(x: Float, y: Float, animate: Boolean = true) {
+        printScroll.scrollTo(x, y, 1f, 1f)
+        if (!animate) {
+            printScroll.updateVisualScroll()
+        }
+    }
+    
     private fun echoHistory() {
-        for (hist in scriptingState.outputHistory) {
+        // Doesn't restore autocompletion. I guess that's by design. Autocompletion is a protocol/UI-level feature IMO, and not part of the emulated STDIN/STDOUT. Call `echo()` in `ScriptingState`'s `autocomplete` method if that's a problem.
+        for (hist in scriptingState.getOutputHistory()) {
             echo(hist)
         }
     }
     
     private fun autocomplete() {
-        val original = inputField.text
-        val cursorpos = inputField.getCursorPosition()
-        var results = scriptingState.autocomplete(input, cursorpos)
+        val original = inputText
+        val cursorpos = cursorPos
+        var results = scriptingState.autocomplete(inputText, cursorpos)
         if (results.isHelpText) {
             echo(results.helpText)
             return
@@ -224,31 +241,45 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     }
     
     private fun navigateHistory(increment:Int) {
-        setText(scriptingState.navigateHistory(increment))
+        setText(scriptingState.navigateHistory(increment), SetTextCursorMode.End)
     }
     
     private fun echo(text: String) {
-        var label = Label(text, skin)
-        var width = stage.width * 0.75f
+        val label = Label(text, skin)
+        val width = stage.width * 0.75f
         label.setWidth(width)
         label.setWrap(true)
         printHistory.add(label).left().bottom().width(width).padLeft(15f).row()
-        printScroll.scrollTo(0f,0f,1f,1f)
+        val cells = printHistory.getCells()
+        while (cells.size > scriptingState.maxOutputHistory && cells.size > 0) {
+            val cell = cells.first()
+            cell.getActor().remove()
+            cells.removeValue(cell, true)
+            //According to printHistory.getRows(), this isn't perfectly clean. The rows count still increases.
+        }
+        printHistory.invalidate()
+        setScroll(0f,0f)
     }
     
     private fun run() {
-        echo(scriptingState.exec(inputField.text))
+        echo(scriptingState.exec(inputText))
         setText("")
     }
     
-//    fun clone(): ConsoleScreen {
-//    }
+    fun clone(): ConsoleScreen {
+        return ConsoleScreen(scriptingState, closeAction).also {
+            it.inputText = inputText
+            it.cursorPos = cursorPos
+            it.setScroll(printScroll.getScrollX(), printScroll.getScrollY(), animate = false)
+        }
+    }
     
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) { // Right. Actually resizing seems painful.
-            game.consoleScreen = ConsoleScreen(scriptingState, closeAction)
+            game.consoleScreen = clone()
             if (isOpen) {
-                game.consoleScreen.openConsole() // If this leads to race conditions or some such due to occurring at the same time as other screens' resize methods, then probably close the ConsoleScreen() instead.
+                game.consoleScreen.openConsole()
+                // If this leads to race conditions or some such due to occurring at the same time as other screens' resize methods, then probably close the ConsoleScreen() instead.
             }
         }
     }

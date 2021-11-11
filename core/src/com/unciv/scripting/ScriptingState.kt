@@ -44,19 +44,31 @@ import kotlin.math.min
     ```
 */
 
+fun <T> ArrayList<T>.clipIndexToBounds(index: Int, extendsize: Int = 0): Int {
+    return max(0, min(this.size-1+extendsize, index))
+}
+
+fun <T> ArrayList<T>.enforceValidIndex(index: Int) {
+    // Doing all checks with the same function and error message is probably easier to debug than letting an array access fail.
+    if (index < 0 || this.size <= index) {
+        throw IndexOutOfBoundsException("Index {index} is out of range of ArrayList().")
+    }
+}
+
 class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: ScriptingBackendType? = null){
 
-    val scriptingBackends:ArrayList<ScriptingBackendBase> = ArrayList<ScriptingBackendBase>()
+    val scriptingBackends: ArrayList<ScriptingBackendBase> = ArrayList<ScriptingBackendBase>()
 
-    val outputHistory:ArrayList<String> = ArrayList<String>()
-    val commandHistory:ArrayList<String> = ArrayList<String>() //TODO: Private these
+    private val outputHistory: ArrayList<String> = ArrayList<String>()
+    private val commandHistory: ArrayList<String> = ArrayList<String>()
 
-    var activeBackend:Int = 0
+    var activeBackend: Int = 0
 
-    var maxOutputHistory:Int = 50 // Not implemented
-    var maxCommandHistory:Int = 50 // Not implemented
+    val maxOutputHistory: Int = 127
+    val maxCommandHistory: Int = 255
 
-    var activeCommandHistory:Int = 0
+    var activeCommandHistory: Int = 0
+    // Actually inverted, because history items are added to end of list and not start. 0 means nothing, 1 means most recent command at end of list.
 
 
     var civInfo: CivilizationInfo?
@@ -81,18 +93,21 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
             echo(spawnBackend(initialBackendType))
         }
     }
+    
+    fun getOutputHistory() = outputHistory.toList()
 
     fun spawnBackend(backendtype: ScriptingBackendType): String {
-        var backend:ScriptingBackendBase = SpawnNamedScriptingBackend(backendtype, scriptingScope)
+        val backend:ScriptingBackendBase = SpawnNamedScriptingBackend(backendtype, scriptingScope)
         scriptingBackends.add(backend)
         activeBackend = scriptingBackends.size - 1
-        var motd = backend.motd()
+        val motd = backend.motd()
         echo(motd)
         return motd
     }
 
     fun switchToBackend(index: Int) {
-        activeBackend = max(0, min(scriptingBackends.size - 1, index))
+        scriptingBackends.enforceValidIndex(index)
+        activeBackend = index
     }
     
     fun switchToBackend(backend: ScriptingBackendBase) {
@@ -104,15 +119,19 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         }
         throw IllegalArgumentException("Could not find scripting backend base: ${backend}")
     }
+    
+    fun switchToBackend(displayname: String) {
+    }
 
     fun termBackend(index: Int): Exception? {
-        if (!(0 <= index && index < scriptingBackends.size)) {
-            throw IndexOutOfBoundsException()// Maybe checking should be better done and unified. Also, I don't love the idea of an exposed method being able to trigger a crash, but I had this fail silently before, which would probably be worse.
-        }
+        scriptingBackends.enforceValidIndex(index)
         val result = scriptingBackends[index].terminate()
         if (result == null) {
             scriptingBackends.removeAt(index)
-            activeBackend = min(activeBackend, scriptingBackends.size - 1)
+            if (index < activeBackend) {
+                activeBackend -= 1
+            }
+            activeBackend = scriptingBackends.clipIndexToBounds(activeBackend)
         }
         return result
     }
@@ -127,9 +146,15 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
 
     fun echo(text: String) {
         outputHistory.add(text)
+        while (outputHistory.size > maxOutputHistory) {
+            outputHistory.removeAt(0)
+            // If these are ArrayLists, performance will probably be `O(n)` relative ot maxOutputHistory.
+            // But premature optimization would be bad.
+        }
     }
 
     fun autocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
+        // Deliberately not calling `echo()` to add into history because I consider autocompletion a protocol/API level feature
         if (!(hasBackend())) {
             return AutocompleteResults(listOf(), false, "")
         }
@@ -137,7 +162,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     }
 
     fun navigateHistory(increment: Int): String {
-        activeCommandHistory = max(0, min(commandHistory.size, activeCommandHistory + increment))
+        activeCommandHistory = commandHistory.clipIndexToBounds(activeCommandHistory + increment, extendsize = 1)
         if (activeCommandHistory <= 0) {
             return ""
         } else {
@@ -148,15 +173,20 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     fun exec(command: String): String {
         if (command.length > 0) {
             commandHistory.add(command)
+            while (commandHistory.size > maxCommandHistory) {
+                commandHistory.removeAt(0)
+                // No need to restrict activeCommandHistory to valid indices here because it gets set to zero anyway.
+                // Also O(n).
+            }
         }
-        var out:String
+        activeCommandHistory = 0
+        var out: String
         if (hasBackend()) {
             out = getActiveBackend().exec(command)
         } else {
             out = ""
         }
         echo(out)
-        activeCommandHistory = 0
         return out
     }
 }

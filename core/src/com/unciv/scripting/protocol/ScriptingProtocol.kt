@@ -206,15 +206,27 @@ class ScriptingProtocol(val scope: Any) {
             return "${System.nanoTime()}-${Random.nextBits(30)}-${UUID.randomUUID().toString()}"
         }
         
-        val responseTypes = mapOf(
+        val responseTypes = mapOf<String?, String?>(
+            // Deliberately repeating myself because I don't want to imply a hard specification for the name of response packets.
+            null to null,
             "motd" to "motd_response",
             "autocomplete" to "autocomplete_response",
-            "exec" to "exec_response" // TODO
+            "exec" to "exec_response",
+            "terminate" to "terminate_response",
+            "read" to "read_response",
+            "assign" to "assign_response",
+            "dir" to "dir_response",
+            "keys" to "keys_response",
+            "length" to "length_response",
+            "contains" to "contains_response",
+            "callable" to "callable_response",
+            "args" to "args_response",
+            "docstring" to "docstring_response"
         )
     
         fun enforceIsResponse(original: ScriptingPacket, response: ScriptingPacket): ScriptingPacket {
             if (!(
-                ((response.action == null && original.action == null) || response.action == original.action.toString() + "_response")
+                (response.action == responseTypes[original.action]!!)
                 && response.identifier == original.identifier
             )) {
                 throw IllegalStateException("Scripting packet response does not match request ID and type: ${original}, ${response}")
@@ -324,6 +336,23 @@ class ScriptingProtocol(val scope: Any) {
                     "exception" to exception
                 ))
             }
+            "keys" -> {
+                action = "keys_response"
+                try {
+                    val leaf = Reflection.resolveInstancePath(
+                        scope,
+                        TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
+                    )
+                    value = TokenizingJson.getJsonElement((leaf as Map<Any, *>).keys)
+                } catch (e: Exception) {
+                    value = JsonNull
+                    exception = JsonPrimitive(e.toString())
+                }
+                data = JsonObject(mapOf(
+                    "value" to value,
+                    "exception" to exception
+                ))
+            }
             "length" -> {
                 action = "length_response"
                 try {
@@ -341,23 +370,6 @@ class ScriptingProtocol(val scope: Any) {
                             value = TokenizingJson.getJsonElement((leaf as Collection<*>).size)
                         }
                     }
-                } catch (e: Exception) {
-                    value = JsonNull
-                    exception = JsonPrimitive(e.toString())
-                }
-                data = JsonObject(mapOf(
-                    "value" to value,
-                    "exception" to exception
-                ))
-            }
-            "keys" -> {
-                action = "keys_response"
-                try {
-                    val leaf = Reflection.resolveInstancePath(
-                        scope,
-                        TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
-                    )
-                    value = TokenizingJson.getJsonElement((leaf as Map<Any, *>).keys)
                 } catch (e: Exception) {
                     value = JsonNull
                     exception = JsonPrimitive(e.toString())

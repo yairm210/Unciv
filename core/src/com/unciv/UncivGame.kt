@@ -76,7 +76,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     val translations = Translations()
 
-    lateinit var scriptingState: ScriptingState // Could probably replace these with lazies.
+    lateinit var scriptingState: ScriptingState
     lateinit var consoleScreen: ConsoleScreen // Keep same ConsoleScreen() when possible, to avoid having to manually persist/restore history, input field, etc.
 
     override fun create() {
@@ -206,6 +206,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     override fun resize(width: Int, height: Int) {
         screen.resize(width, height)
+        if (screen !== consoleScreen) {
+            // consoleScreen is usually persistent, so it needs to be resized even if not active.
+            consoleScreen.resize(width, height)
+        }
     }
 
     override fun render() = wrappedCrashHandlingRender()
