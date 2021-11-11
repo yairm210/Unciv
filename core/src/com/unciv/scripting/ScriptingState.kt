@@ -9,9 +9,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 /*
-    ```
+    
     The major classes involved in the scripting API are structured as follows. UpperCamelCase() and parentheses means a new instantiation of a class. lowerCamelCase means a reference to an already-existing instance. An asterisk at the start of an item means zero or multiple instances of that class may be held. A question mark at the start of an item means that it may not exist in all implementations of the parent base class/interface. A question mark at the end of an item means that it is nullable, or otherwise may not be available in all states.
-
+    
+    ```
     UncivGame():
         ScriptingState(): // Persistent per UncivGame().
             ScriptingScope():
@@ -35,9 +36,11 @@ import kotlin.math.min
     MainMenuScreen():
         consoleScreen
         scriptingState // Same as for worldScreen.
-    ScriptingObjectIndex() // Holds WeakRefs used by ScriptingProtocol. Unserializable objects get strings as placeholders, and then turned back into into objects if seen again.
+    ObjectTokenizer() // Holds WeakRefs used by ScriptingProtocol. Unserializable objects get strings as placeholders, and then turned back into into objects if seen again.
     Reflection() // Used by some hard-coded scripting backends, and essential to dynamic bindings in ScriptingProtocol().
     SourceManager() // Source of the folderHandler and setupInterpreterEnvironment() above.
+    TokenizingJson() // Serializer and functions that use ObjectTokenizer.
+        
     ```
 */
 
@@ -46,7 +49,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     val scriptingBackends:ArrayList<ScriptingBackendBase> = ArrayList<ScriptingBackendBase>()
 
     val outputHistory:ArrayList<String> = ArrayList<String>()
-    val commandHistory:ArrayList<String> = ArrayList<String>()
+    val commandHistory:ArrayList<String> = ArrayList<String>() //TODO: Private these
 
     var activeBackend:Int = 0
 
@@ -90,6 +93,16 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
 
     fun switchToBackend(index: Int) {
         activeBackend = max(0, min(scriptingBackends.size - 1, index))
+    }
+    
+    fun switchToBackend(backend: ScriptingBackendBase) {
+        for ((i, b) in scriptingBackends.withIndex()) {
+            // TODO: Apparently there's a bunch of extensions like `.withIndex()`, `.indices`, and `.lastIndex` that I can use to replace a lot of stuff currently done with `.size`.
+            if (b == backend) {
+                switchToBackend(index = i)
+            }
+        }
+        throw IllegalArgumentException("Could not find scripting backend base: ${backend}")
     }
 
     fun termBackend(index: Int): Exception? {

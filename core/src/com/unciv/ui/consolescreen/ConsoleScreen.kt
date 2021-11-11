@@ -52,7 +52,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         
         backendsAdders.add("Launch new backend:".toLabel()).padRight(30f).padLeft(20f)
         for (backendtype in ScriptingBackendType.values()) {
-            var backendadder = backendtype.metadata.displayname.toTextButton()
+            var backendadder = backendtype.metadata.displayName.toTextButton()
             backendadder.onClick({
                 echo(scriptingState.spawnBackend(backendtype))
                 updateRunning()
@@ -144,7 +144,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         runningList.clearChildren()
         var i = 0
         for (backend in scriptingState.scriptingBackends) {
-            var button = backend.metadata.displayname.toTextButton()
+            var button = backend.metadata.displayName.toTextButton()
             val index = i
             runningList.add(button)
             if (i == scriptingState.activeBackend) {
@@ -159,7 +159,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
                 val exc: Exception? = scriptingState.termBackend(index)
                 updateRunning()
                 if (exc != null) {
-                	echo("Failed to stop ${backend.metadata.displayname} backend: ${exc.toString()}")
+                	echo("Failed to stop ${backend.metadata.displayName} backend: ${exc.toString()}")
                 }
             })
             runningList.add(termbutton.surroundWithCircle(40f)).row()
@@ -208,7 +208,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
                 echo(m)
             }
             //var minmatch = original //Checking against the current input would prevent autoinsertion from working for autocomplete backends that support getting results from the middle of the current input.
-            var minmatch = ""
+            var minmatch = original.slice(0..cursorpos-1)
             var chosenresult = results.matches.first({true})
             for (l in original.length-1..chosenresult.length-1) {
                 var longer = chosenresult.slice(0..l)
@@ -241,6 +241,9 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         setText("")
     }
     
+//    fun clone(): ConsoleScreen {
+//    }
+    
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) { // Right. Actually resizing seems painful.
             game.consoleScreen = ConsoleScreen(scriptingState, closeAction)
@@ -249,6 +252,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             }
         }
     }
+    
     enum class SetTextCursorMode() {
         End(),
         Unchanged(),

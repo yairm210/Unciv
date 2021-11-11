@@ -1,0 +1,4 @@
+[
+	"//The idea is to generate lists of all available names, types, and parameters in the scripting API scope here, flat, nested, and of classes, using `ApiSpecGenerator.kt`. That way different scripting language implemenations of the API would be able to iterate through whatever structure makes the most sense for them in order to generate bindings. However, a quick count of the number of members of all classes traversable from `ScriptingScope` suggested something like 5,400 unique members that would have to be parametrized, so for the Python bindings I opted to dynamically generate the bindings using Python's magic methods and the reflective tools in `ScriptingProtocol` instead.."
+]
+

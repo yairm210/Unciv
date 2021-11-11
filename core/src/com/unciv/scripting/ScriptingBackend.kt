@@ -10,6 +10,7 @@ import com.unciv.scripting.utils.ApiSpecGenerator
 import com.unciv.scripting.utils.Blackbox
 import com.unciv.scripting.utils.DummyBlackbox
 import com.unciv.scripting.utils.SourceManager
+import com.unciv.scripting.utils.SyntaxHighlighter
 import kotlin.reflect.full.*
 import java.util.*
 
@@ -17,21 +18,29 @@ import java.util.*
 data class AutocompleteResults(val matches:List<String> = listOf(), val isHelpText:Boolean = false, val helpText:String = "")
 
 
-interface ScriptingBackend_metadata {
-   fun new(scriptingScope: ScriptingScope): ScriptingBackendBase
-   val displayname:String
+abstract class ScriptingBackend_metadata {
+    abstract fun new(scriptingScope: ScriptingScope): ScriptingBackendBase
+    abstract val displayName: String
+    val syntaxHighlighting: SyntaxHighlighter? = null
+    // Putting the syntax highlighters here makes the most sense semantically as they should be singletons.
+    // But it'd also be nice to let subclasses define ways of generating new their syntax highlighters based on their other parameters. (E.G.: Read a JSON of REGEXs, based on `EnvironmentedScriptingBackend().engine`.
+    // Hm. I think the solution in that case is to subclass `ScriptingBackend_metadata`, and put those properties in the companion, which I will now do.
+}
+
+abstract class EnvironmentedScriptBackend_metadata: ScriptingBackend_metadata() {
+    abstract val engine: String
 }
 
 
 interface ScriptingBackend {
 
     fun motd(): String {
-        // Message to print on launch.
+        // Message to print on launch. Should be called exactly once per instance, and prior to calling any of the other methods defined here.
         return "\n\nWelcome to the Unciv CLI!\nYou are currently running the dummy backend, which will echo all commands but never do anything.\n"
     }
 
     fun autocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
-        // Return either a `List` of autocomplete matches, or a
+        // Return either an AutocompleteResults object that represents either a List of full autocompletion matches or a help string to print.
         return AutocompleteResults(listOf(command+"_autocomplete"))
     }
 
@@ -50,22 +59,23 @@ interface ScriptingBackend {
 
 open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBackend {
 
-    companion object Metadata: ScriptingBackend_metadata {
+    companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = ScriptingBackendBase(scriptingScope)
-        override val displayname:String = "Dummy"
+        override val displayName:String = "Dummy"
     }
 
-    val metadata: ScriptingBackend_metadata
+    open val metadata
         get(): ScriptingBackend_metadata = this::class.companionObjectInstance as ScriptingBackend_metadata
+        // Let the companion object of the correct subclass be accessed in subclass instances.
 
 }
 
 
 class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
-    companion object Metadata: ScriptingBackend_metadata {
+    companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = HardcodedScriptingBackend(scriptingScope)
-        override val displayname:String = "Hardcoded"
+        override val displayName:String = "Hardcoded"
     }
 
     val commandshelp = mapOf<String, String>(
@@ -266,9 +276,9 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
 
 class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
-    companion object Metadata: ScriptingBackend_metadata {
+    companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = ReflectiveScriptingBackend(scriptingScope)
-        override val displayname:String = "Reflective"
+        override val displayName:String = "Reflective"
     }
 
     private val commandparams = mapOf("get" to 1, "set" to 2, "typeof" to 1) //showprivates?
@@ -358,20 +368,38 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
 }
 
 
-open class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
+abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
     
-    open val engine = ""
+    companion object Metadata: EnvironmentedScriptBackend_metadata() {
+        // Need this here, or else won't compile.
+        // Ideally would be able to just declare that subclasses must define a companion of the correct type, but ah well.
+        override val displayName = ""
+        override fun new(scriptingScope: ScriptingScope) = throw UnsupportedOperationException("Base scripting backend class not meant to be instantiated.")
+        override val engine = ""
+    }
+
+    override val metadata
+        // Since the companion object type is different, we have to define a new getter for the subclass instance companion getter.
+        get() = this::class.companionObjectInstance as EnvironmentedScriptBackend_metadata
     
-    val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(engine) }
-    // This requires the overridden values for `engine`, so setting it in the constructor causes a null error.
+    val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(this.metadata.engine) }
+    // This requires the overridden values for `engine`, so setting it in the constructor causes a null error... May be fixed since moving `engine` to the companions.
     // Also, BlackboxScriptingBackend inherits from this, but not all subclasses of BlackboxScriptingBackend might need it. So as long as it's not accessed, it won't be intialized.
     
 }
 
 
-open class BlackboxScriptingBackend(scriptingScope: ScriptingScope): EnvironmentedScriptingBackend(scriptingScope) {
+abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): EnvironmentedScriptingBackend(scriptingScope) {
     
-    open val blackbox: Blackbox by lazy { DummyBlackbox() }
+    companion object Metadata: EnvironmentedScriptBackend_metadata() {
+        // Need this here, or else won't compile.
+        // Ideally would be able to just declare that subclasses must define a companion of the correct type, but ah well.
+        override val displayName = ""
+        override fun new(scriptingScope: ScriptingScope) = throw UnsupportedOperationException("Base scripting backend class not meant to be instantiated.")
+        override val engine = ""
+    }
+    
+    abstract val blackbox: Blackbox
     
     val replManager: ScriptingReplManager by lazy { ScriptingReplManager(scriptingScope, blackbox) }
     // Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way. And the liberal use of `lazy` should naturally make sure the properties will always be initialized in the right order.
@@ -381,7 +409,7 @@ open class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environment
         try {
             return replManager.motd()
         } catch (e: Exception) {
-            return "No MOTD for ${engine} backend: ${e}\n"
+            return "No MOTD for ${this.metadata.engine} backend: ${e}\n"
         }
     }
     
@@ -411,22 +439,25 @@ open class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environment
 }
 
 
-open class SubprocessScriptingBackend(scriptingScope: ScriptingScope): BlackboxScriptingBackend(scriptingScope) {
+abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): BlackboxScriptingBackend(scriptingScope) {
     
-    open val processCmd = arrayOf("")
+    abstract val processCmd: Array<String>
     
     override val blackbox by lazy { SubprocessBlackbox(processCmd) }
+    
+    override fun motd(): String {
+        return "\n\nWelcome to the Unciv '${displayName}' API. This backend relies on running the system `${processCmd.firstOrNull()}` command as a subprocess.\n\nIf you do not have an interactive REPL below, then please make sure the below command is valid on your system:\n\n${processCmd.joinToString(" ")}\n\n${super.motd()}\n"
+    }
 }
 
 
 class SpyScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
 
-    companion object Metadata: ScriptingBackend_metadata {
+    companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = SpyScriptingBackend(scriptingScope)
-        override val displayname:String = "System Python"
+        override val displayName:String = "System Python"
+        override val engine = "python"
     }
-    
-    override val engine = "python"
     
     override val processCmd = arrayOf("python3", "-u", "-X", "utf8", folderHandle.child("main.py").toString())
         
@@ -435,27 +466,24 @@ class SpyScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBa
 
 class SqjsScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
 
-    companion object Metadata: ScriptingBackend_metadata {
+    companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = SqjsScriptingBackend(scriptingScope)
-        override val displayname:String = "System QuickJS"
+        override val displayName:String = "System QuickJS"
+        override val engine = "qjs"
     }
-    
-    override val engine = "qjs"
     
     override val processCmd = arrayOf("qjs", "--std", "--script", folderHandle.child("main.js").toString())
     
-
 }
 
 
 class SluaScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
 
-    companion object Metadata: ScriptingBackend_metadata {
+    companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = SluaScriptingBackend(scriptingScope)
-        override val displayname:String = "System Lua"
+        override val displayName:String = "System Lua"
+        override val engine = "lua"
     }
-    
-    override val engine = "lua"
     
     override val processCmd = arrayOf("lua", folderHandle.child("main.lua").toString())
     
@@ -464,16 +492,18 @@ class SluaScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
 
 class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
-    companion object Metadata: ScriptingBackend_metadata {
+    //Probably redundant, and can probably be removed in favour of whatever mechanism is currently used to run the translation file generator.
+
+    companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = DevToolsScriptingBackend(scriptingScope)
-        override val displayname:String = "DevTools"
+        override val displayName:String = "DevTools"
     }
     
     val commands = listOf(
         "PrintFlatApiDefs",
         "PrintClassApiDefs",
         "WriteOutApiFile <outfile>",
-        "WriteOutApiFile android/assets/scripting/shareddata/ScriptAPI.json"
+        "WriteOutApiFile android/assets/scripting/sharedfiles/ScriptAPI.json"
     )
     
     override fun motd() = """
@@ -510,7 +540,7 @@ class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend
 }
 
 
-enum class ScriptingBackendType(val metadata:ScriptingBackend_metadata) {
+enum class ScriptingBackendType(val metadata: ScriptingBackend_metadata) {
     Dummy(ScriptingBackendBase),
     Hardcoded(HardcodedScriptingBackend),
     Reflective(ReflectiveScriptingBackend),

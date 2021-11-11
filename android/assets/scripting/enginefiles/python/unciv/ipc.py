@@ -9,8 +9,8 @@ stdout = sys.stdout
 
 class IpcJsonEncoder(json.JSONEncoder):
 	def default(self, obj):
-		if hasattr(obj.__class__, '__ipcjson__'):
-			return obj.__ipcjson__()
+		if hasattr(obj.__class__, '_ipcjson_'):
+			return obj._ipcjson_()
 		return json.JSONEncoder.default(self, obj)
 
 
@@ -177,9 +177,4 @@ class FakeStdout:
 #				self.scope[spath[-1]] = value
 
 
-#class ForeignActionAutocompleter(ForeignActionManager):
-#	pass
-
-#class ForeignActionTransceiver(ForeignActionReceiver, ForeignActionSender):
-#	pass
 

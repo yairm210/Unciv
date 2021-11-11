@@ -18,7 +18,7 @@ import kotlinx.serialization.modules.SerializersModule
 
 object TokenizingJson {
 
-    // Json serialization that accepts `Any?`, and converts non-primitive values to string keys from `ScriptingObjectIndex`.
+    // Json serialization that accepts `Any?`, and converts non-primitive values to string keys from `ObjectTokenizer`.
     
 //    class ObjectReifyingSerializer: KSerializer<Any?> {
 //        override val descriptor = SerialDescriptor("Reifying", delegateSerializer)
@@ -44,7 +44,7 @@ object TokenizingJson {
                 "Long" to serializer<Long>(),
                 "Short" to serializer<Short>(),
                 "String" to serializer<String>()
-                // Only these types will be serialized. Everything else will be replaced with a string key from ScriptingObjectIndex.
+                // Only these types will be serialized. Everything else will be replaced with a string key from ObjectTokenizer.
             ).mapValues { (_, v) -> v as KSerializer<Any?> }
         
 //        private fun <T> getDataTypeSerializer(value: T): KSerializer<Any?> {
@@ -60,7 +60,7 @@ object TokenizingJson {
                 if (classname in dataTypeSerializers) {
                     encoder.encodeSerializableValue(dataTypeSerializers[value!!::class.simpleName!!]!!, value!!)
                 } else {
-                    encoder.encodeString(ScriptingObjectIndex.getToken(value!!))
+                    encoder.encodeString(ObjectTokenizer.getToken(value!!))
                 }
             }
         }
@@ -69,7 +69,7 @@ object TokenizingJson {
             if (decoder is JsonDecoder) {
                 val jsonLiteral = (decoder as JsonDecoder).decodeJsonElement()
                 val rawval: Any? = getJsonReal(jsonLiteral)
-                return ScriptingObjectIndex.getReal(rawval)
+                return ObjectTokenizer.getReal(rawval)
             } else {
                 throw UnsupportedOperationException("Decoding is not supported by TokenizingSerializer for ${decoder::class.simpleName}.")
             }
@@ -92,7 +92,7 @@ object TokenizingJson {
         if (value is JsonElement) {
             return value
         }
-        if (value is Map<*, *>) {
+        if (value is Map<*, *>) { //TODO: Decide what to do with the keys.
             return JsonObject( (value as Map<String, Any?>).mapValues{ getJsonElement(it.value) } )
         }
         if (value is Collection<*>) {
@@ -104,13 +104,13 @@ object TokenizingJson {
         if (value is Int || value is Long || value is Float || value is Double) { 
             return JsonPrimitive(value as Number)
         }
-        if (value is Boolean) { 
+        if (value is Boolean) { //TODO: Arrays?
             return JsonPrimitive(value as Boolean)
         }
         if (value == null) {
             return JsonNull
         }
-        return JsonPrimitive(ScriptingObjectIndex.getToken(value))
+        return JsonPrimitive(ObjectTokenizer.getToken(value))
     }
     
     fun getJsonReal(value: JsonElement): Any? {
@@ -126,7 +126,7 @@ object TokenizingJson {
         if (value is JsonPrimitive) {
             val v = value as JsonPrimitive
             if (v.isString) {
-                return ScriptingObjectIndex.getReal(v.content)
+                return ObjectTokenizer.getReal(v.content)
             } else {
                 return v.content.toIntOrNull()
                     ?: v.content.toDoubleOrNull()

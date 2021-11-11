@@ -93,7 +93,7 @@ class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
     fun generateClassApi(): Map<String, List<ApiSpecDef>> {
         // Provide options for the scripting languages. This function
         val classes = getAllUncivClasses()
-        var c = 0
+        var c = 0 // Test count. Something like 5,400, IIRC. For now, it's easier to just dynamically generate the API using Python's magic methods and the reflective tools in ScriptingProtocol. JS has proxies too, but other languages may not be so dynamic. // TBF I think some of those might have been GDX/Kotlin/JVM classes, which I should filter oout by `.qualifiedName`.
         val output = mutableMapOf<String, List<ApiSpecDef>>(
             *classes.map{
                 it.qualifiedName!! to it.members.map{ c += 1; makeMemberSpecDef(it) }

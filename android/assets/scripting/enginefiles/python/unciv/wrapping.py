@@ -3,6 +3,7 @@ stdout = sys.stdout
 
 from . import ipc, api
 
+
 class ForeignRequestMethod:
 	"""Decorator for methods that return values from foreign requests."""
 	def __init__(self, func):
@@ -15,7 +16,7 @@ class ForeignRequestMethod:
 		def meth(*a, **kw):
 			actionparams, responsetype, responseparser = self.func(obj, *a, **kw)
 			response = obj._foreignrequester(actionparams, responsetype)
-			if responseparser and callable(responseparser):
+			if callable(responseparser):
 				response = responseparser(response)
 			return response
 		try:
@@ -24,31 +25,19 @@ class ForeignRequestMethod:
 			pass
 		return meth
 
-#class ForeignSelfMethod:
-#	"""Decorator for methods that use foreign values for `self`."""
-#	def __init__(self, func):
-#		self.func = func
-#	def __get__(self, obj, cls):
-#		return lambda *a, **kw: self.func(obj._getvalue(), *a, **kw)
 
-#def ForeignResolvingFunc(func):
-#	"""Decorator for functions that resolve foreign objects as arguments."""
-#	def _func(*args, **kwargs):
-#		return f(
-#			*[a._getvalue() if isinstance(ForeignObject) else a for a in args],
-#			**{k: v._getvalue() if isinstance(ForeignObject) else v for k, v in kwargs.items()}
-#		)
-#	try:
-#		_func.__name__, _func.__doc__ = func.__name__, func.__doc__
-#	except AttributeError:
-#		pass
-#	return _func
-
-def ResolvingFunction(op):
+def ResolvingFunction(op, *, allowforeigntokens=False):
 	"""Return a function that passes its arguments through `api.real()`."""
 	def _resolvingfunction(*arguments, **keywords):
 		args = [api.real(a) for a in arguments]
 		kwargs = {k:api.real(v) for k, v in keywords.items()}
+		if not allowforeigntokens:
+			# Forbid foreign token strings from being manipulated through this operation.
+			for l in (args, kwargs.values()):
+				#TODO: Test this.
+				for o in l:
+					if api.isForeignToken(o):
+						raise TypeError(f"Not allowed to call `{op.__name__}()` function with foreign object token: {o}")
 		return op(*args, **kwargs)
 	_resolvingfunction.__name__ = op.__name__
 	_resolvingfunction.__doc__ = f"{op.__doc__ or name + ' operator.'}\n\nCalls `api.real()` on all arguments."
@@ -67,12 +56,14 @@ def dummyForeignRequester(actionparams, responsetype):
 	return actionparams, responsetype
 	
 	
-def foreignValueParser(packet):
-	if packet.data["exception"] is not None:
+def foreignValueParser(packet, *, raise_exceptions=True):
+	"""Value parse that reads a foreign request packet fitting a common structure."""
+	if packet.data["exception"] is not None and raise_exceptions:
 		raise ipc.ForeignError(packet.data["exception"])
 	return packet.data["value"]
 
 def foreignErrmsgChecker(packet):
+	"""Value parse that processes a foreign request packet fitting a simple structure."""
 	if packet.data is not None:
 		raise ipc.ForeignError(packet.data)
 
@@ -96,13 +87,13 @@ def stringPathList(pathlist):
 _magicmeths = (
 	'__lt__',
 	'__le__',
-	'__eq__', # Kinda undefined behaviour for comparision with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in ScriptingObjectIndex.kt, on every `._getvalue()`, so I think even the same `ForeignObject()` will never equal itself.
+	'__eq__', # Kinda undefined behaviour for comparision with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in ObjectTokenizer.kt, on every `._getvalue_()`, so I think even the same `ForeignObject()` will never equal itself.
 	'__ne__',
 	'__ge__',
 	'__gt__',
 	'__not__',
 	('__bool__', 'truth'),
-#	@is # This could get messy. It's probably best to just not support identity comparison. What do you compare? JVM Kotlin value? Resolved Python value? Python data path? Token strings from ScriptingObjectIndex.kt— Which are currently randomly re-generated for multiple accesses to the same Kotlin object, and thus always unique, and which would require another protocol-level guarantee to not do that, in addition to being (kinda by design) procedurally indistinguishable from "real" resovled Python values?
+#	@is # This could get messy. It's probably best to just not support identity comparison. What do you compare? JVM Kotlin value? Resolved Python value? Python data path? Token strings from ObjectTokenizer.kt— Which are currently randomly re-generated for multiple accesses to the same Kotlin object, and thus always unique, and which would require another protocol-level guarantee to not do that, in addition to being (kinda by design) procedurally indistinguishable from "real" resovled Python values?
 #	@is_not # Also, these aren't even magic methods.
 	'__abs__',
 	'__add__',
@@ -159,7 +150,7 @@ def ResolveForOperators(cls):
 			name, opname = meth
 		if not alreadyhas(name):
 			# Set the magic method only if neither it nor any of its base classes have already defined a custom implementation.
-			setattr(cls, name, ResolvingFunction(getattr(operator, opname)))
+			setattr(cls, name, ResolvingFunction(getattr(operator, opname), allowforeigntokens=False))
 	for rmeth in _rmagicmeths:
 		normalname = rmeth.replace('__r', '__', 1)
 		if not alreadyhas(rmeth) and hasattr(cls, normalname):
@@ -169,15 +160,15 @@ def ResolveForOperators(cls):
 
 @ResolveForOperators
 class ForeignObject:
-	"""Wrapper for a forign object."""
+	"""Wrapper for a foreign object."""
 	def __init__(self, path, foreignrequester=dummyForeignRequester):
 		object.__setattr__(self, '_path', (makePathElement(name=path),) if isinstance(path, str) else tuple(path))
 		object.__setattr__(self, '_foreignrequester', foreignrequester)
 	def __repr__(self):
-		return f"{self.__class__.__name__}({stringPathList(self._getpath())}):{self._getvalue()}"
-	def __ipcjson__(self):
-		return self._getvalue()
-	def _getpath(self):
+		return f"{self.__class__.__name__}({stringPathList(self._getpath_())}):{self._getvalue_()}"
+	def _ipcjson_(self):
+		return self._getvalue_()
+	def _getpath_(self):
 		return tuple(self._path)
 		#return ''.join(self._path)
 	def __getattr__(self, name):
@@ -185,49 +176,68 @@ class ForeignObject:
 	def __getitem__(self, key):
 		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester)
 #	def __hash__(self):
-#		return hash(stringPathList(self._getpath()))
+#		return hash(stringPathList(self._getpath_()))
 	def __iter__(self):
 		try:
 			return iter(self.keys())
 		except:
 			return (self[i] for i in range(0, len(self)))
 	@ForeignRequestMethod
-	def _getvalue(self):
+	def _getvalue_(self):
 		return ({
 			'action': 'read',
 			'data': {
-				'path': self._getpath()
+				'path': self._getpath_()
 			}
 		},
 		'read_response',
 		foreignValueParser)
 	@ForeignRequestMethod
+	def _callable_(self, *, raise_exceptions=True):
+		return ({
+			'action': 'callable',
+			'data': {
+				'path': self._getpath_()
+			}
+		},
+		'callable_response',
+		lambda packet: foreignValueParser(packet, raise_exceptions=raise_exceptions))
+	@ForeignRequestMethod
+	def _args_(self, *, raise_exceptions=True):
+		return ({
+			'action': 'args',
+			'data': {
+				'path': self._getpath_()
+			}
+		},
+		'args_response',
+		lambda packet: foreignValueParser(packet, raise_exceptions=raise_exceptions))
+	@ForeignRequestMethod
+	def _docstring_(self, *, raise_exceptions=True):
+		return ({
+			'action': 'docstring',
+			'data': {
+				'path': self._getpath_()
+			}
+		},
+		'docstring_response',
+		lambda packet: foreignValueParser(packet, raise_exceptions=raise_exceptions))
+	@ForeignRequestMethod
 	def __dir__(self):
 		return ({
 			'action': 'dir',
 			'data': {
-				'path': self._getpath()
+				'path': self._getpath_()
 			}
 		},
 		'dir_response',
 		foreignValueParser)
-#	@ForeignRequestMethod
-#	@property
-#	def __doc__(self):
-#		return ({
-#			'action': 'args',
-#			'data': {
-#				'path': self._getpath()
-#			}
-#		},
-#		'args_response',
-#		None)
 	@ForeignRequestMethod
 	def __setattr__(self, name, value):
 		return ({
 			'action': 'assign',
 			'data': {
-				'path': getattr(self, name)._getpath(),
+				'path': getattr(self, name)._getpath_(),
 				'value': value
 			}
 		},
@@ -238,7 +248,7 @@ class ForeignObject:
 		return ({
 			'action': 'read',
 			'data': {
-				'path': (*self._getpath(), makePathElement(ttype='Call', params=args)),
+				'path': (*self._getpath_(), makePathElement(ttype='Call', params=args)),
 			}
 		},
 		'read_response',
@@ -248,7 +258,7 @@ class ForeignObject:
 		return ({
 			'action': 'assign',
 			'data': {
-				'path': self[key]._getpath(),
+				'path': self[key]._getpath_(),
 				'value': value
 			}
 		},
@@ -259,7 +269,7 @@ class ForeignObject:
 		return ({
 			'action': 'length',
 			'data': {
-				'path': self._getpath(),
+				'path': self._getpath_(),
 			}
 		},
 		'length_response',
@@ -269,7 +279,7 @@ class ForeignObject:
 		return ({
 			'action': 'contains',
 			'data': {
-				'path': self._getpath(),
+				'path': self._getpath_(),
 				'value': item
 			}
 		},
@@ -280,7 +290,7 @@ class ForeignObject:
 		return ({
 			'action': 'keys',
 			'data': {
-				'path': self._getpath(),
+				'path': self._getpath_(),
 			}
 		},
 		'keys_response',
@@ -290,12 +300,4 @@ class ForeignObject:
 	def entries(self):
 		return ((k, self[k]) for k in self.keys())
 
-#class ForeignScope:
-#	_path = ()
-#	def __init__(self, attrcls=ForeignObject, foreignrequester=dummyForeignRequester):
-#		self._attrcls = attrcls
-#		self._foreignrequester = foreignrequester
-#	def __getattr__(self, name):
-#		return self._attrcls(name, self._foreignrequester)
-#	__dir__ = ForeignObject.__dir__
 

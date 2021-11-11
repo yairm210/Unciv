@@ -6,7 +6,6 @@ import com.unciv.scripting.ScriptingScope
 import com.unciv.scripting.protocol.ScriptingPacket
 import com.unciv.scripting.protocol.ScriptingProtocol
 import com.unciv.scripting.utils.Blackbox
-//import com.unciv.scripting.utils.ScriptingObjectIndex
 
 
 /*
@@ -37,6 +36,9 @@ import com.unciv.scripting.utils.Blackbox
     Plus, letting the script interpreter run completely in parallel would probably introduce potential for all sorts of issues with no-deterministic synchronicity, and performance issues  Calling the script interpreter from 
 */
 
+//interface ScriptingReplManager {
+//} TODO
+
 
 class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {
     
@@ -61,7 +63,8 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
     }
     
     fun foreignExecLoop() {
-        // Lists to request for values from the black box, and replies to them, during script execution.
+        // Lists to requests for values from the black box, and replies to them, during script execution.
+        // Terminates loop after receiving a request with a the 'PassMic' flag.
         while (true) {
             val request = ScriptingPacket.fromJson(blackbox.read(block=true))
             if (request.action != null) {
@@ -77,10 +80,10 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
     override fun motd(): String {
         return ScriptingProtocol.parseActionResponses.motd(
             getRequestResponse(
-                ScriptingProtocol.makeActionRequests.motd()
+                ScriptingProtocol.makeActionRequests.motd(),
+                execLoop = { foreignExecLoop() }
             )
         )
-        return "${exec("motd()\n")}\n"
     }
     
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
@@ -90,7 +93,6 @@ class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Bla
                 execLoop = { foreignExecLoop() }
             )
         )
-        return AutocompleteResults()
     }
     
     override fun exec(command: String): String {

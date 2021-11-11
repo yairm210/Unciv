@@ -13,11 +13,18 @@ class ScriptingScope(
     ) {
     val isInGame: Boolean
         get() = (civInfo != null && gameInfo != null && uncivGame != null)
+        
+    //val kObjectHelpers //TODO
+    //	val registeredObjects: Set
+    //	val __registeredObjectsForRepl
+    //	fun Vector
+    //	fun MapUnit
+        
     // Holds references to all internal game data that the console has access to.
     // Mostly `.civInfo`/.`gameInfo`, but could be cool to E.G. allow loading and making saves through CLI/API too.
     // Also where to put any `PlayerAPI`, `CheatAPI`, `ModAPI`, etc.
     // For `LuaScriptingBackend`, `UpyScriptingBackend`, `QjsScriptingBackend`, etc, the hierarchy of data under this class definition should probably directly mirror the wrappers in the namespace exposed to the scripting language.
     // `WorldScreen` gives access to `UnitTable.selectedUnit`, `MapHolder.selectedTile`, etc. Useful for contextual operations.
     
-    // Hm. I got some `java.util.ConcurrentModificationException`s from Python shortly after loading a save. A lock might be useful. Then again, the exception needs to be (and is) handled in the CLI anyway, and the modding API shouldn't be trying to call handlers when the game is locked anyway.
+    // 
 }

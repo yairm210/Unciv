@@ -40,16 +40,6 @@ object Reflection {
         property.set(instance, value)
     }
 
-	/*
-    interface PathElementArg {
-        val value: Any
-    }
-
-    data class PathElementArgString(override val value: String): PathElementArg
-    data class PathElementArgInt(override val value: Int): PathElementArg
-    data class PathElementArgFloat(override val value: Float): PathElementArg
-    data class PathElementArgBoolean(override val value: Boolean): PathElementArg
-	*/
 
     enum class PathElementType() {
         Property(),
