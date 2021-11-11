@@ -29,6 +29,8 @@ object Battle {
             attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
             /** You might ask: When can this possibly happen?
              * We always receive an AttackableTile, which means that it was returned from getAttackableTiles!
+             * And getAttackableTiles should ensure that we return only units that are in the range of movement!
+             *
              * The answer is: when crossing a HIDDEN TILE.
              * When calculating movement distance, we assume that a hidden tile is 1 movement point,
              * which can lead to EXCEEDINGLY RARE edge cases where you think
@@ -36,6 +38,11 @@ object Battle {
              * but the hidden tile is actually IMPASSIBLE so you stop halfway!
              */
             if (attacker.getTile() != attackableTile.tileToAttackFrom) return
+            /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
+             * so we expended all of our movement points!
+             */
+            if (attacker.unit.currentMovement != attackableTile.movementLeftAfterMovingToAttackTile)
+                return
             if (attacker.unit.hasUnique(UniqueType.MustSetUp) && !attacker.unit.isSetUpForSiege()) {
                 attacker.unit.action = UnitActionType.SetUp.value
                 attacker.unit.useMovementPoints(1f)
