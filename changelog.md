@@ -1,3 +1,17 @@
+## 3.18.1
+
+Performance improvements
+
+Resolved edge-case AI crashes
+
+Solved map editor bug for rulesets without grassland
+
+Regions part 2 - City state placements, start normalization  - By SimonCeder
+
+By xlenstra:
+- Split Vanilla & G&K rulesets
+- Removed a wrongly implemented BNW-only building
+
 ## 3.18.0
 
 Performance improvements!
