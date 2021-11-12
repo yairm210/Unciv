@@ -37,11 +37,38 @@ You would presumably have to interrupt the main Kotlin-side thread anyway in ord
 Plus, letting the script interpreter run completely in parallel would probably introduce potential for all sorts of issues with non-deterministic synchronicity, and performance issues  Calling the script interpreter from the Kotlin side means that the state of the Kotlin side is more predictable at the moment of script execution.
 */
 
-//interface ScriptingReplManager {
-//} TODO
+abstract class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {
+}
 
 
-class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {
+class ScriptingRawReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
+    // REPL manager that sends and receives only raw code and print strings to a black box. Allows interacting with an external script interpreter, but not suitable for exposing internal API in external scripts.
+    
+    override fun motd(): String {
+        return "${exec("motd()\n")}\n"
+    }
+    
+    override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
+        return AutocompleteResults()
+    }
+    
+    override fun exec(command: String): String {
+        if (!blackbox.readyForWrite) {
+            throw IllegalStateException("REPL not ready: ${blackbox}")
+        } else {
+            blackbox.write(command)
+            return blackbox.readAll(block=true).joinToString("\n")
+        }
+    }
+    
+    override fun terminate(): Exception? {
+        return blackbox.stop()
+    }
+}
+
+
+class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
+    // REPL manager that uses the IPC protocol defined in ScriptingProtocol to communicate with a black box. Suitable for presenting arbitrary access to Kotlin/JVM state to scripting APIs. See file-level comment.
     
     val instanceSaver = mutableListOf<Any?>()
     // ScriptingProtocol puts references to pre-tokenized returned objects in here.

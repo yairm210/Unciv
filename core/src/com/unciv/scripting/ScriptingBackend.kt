@@ -5,10 +5,11 @@ import com.badlogic.gdx.files.FileHandle
 
 import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.protocol.ScriptingReplManager
+import com.unciv.scripting.protocol.ScriptingProtocolReplManager
+import com.unciv.scripting.protocol.ScriptingRawReplManager
 import com.unciv.scripting.protocol.SubprocessBlackbox
 import com.unciv.scripting.utils.ApiSpecGenerator
 import com.unciv.scripting.utils.Blackbox
-import com.unciv.scripting.utils.DummyBlackbox
 import com.unciv.scripting.utils.SourceManager
 import com.unciv.scripting.utils.SyntaxHighlighter
 import kotlin.reflect.full.*
@@ -403,8 +404,8 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
     
     abstract val blackbox: Blackbox
     
-    val replManager: ScriptingReplManager by lazy { ScriptingReplManager(scriptingScope, blackbox) }
-    // Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way. And the liberal use of `lazy` should naturally make sure the properties will always be initialized in the right order.
+    abstract val replManager: ScriptingReplManager
+    // Should be lazy. Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way. And the liberal use of `lazy` should naturally make sure the properties will always be initialized in the right order.
     // Downside: Potential latency on first command, or possibly depending on `motd()` for immediate initialization.
     
     override fun motd(): String {
@@ -447,13 +448,22 @@ abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): Black
     
     override val blackbox by lazy { SubprocessBlackbox(processCmd) }
     
+    override val replManager: ScriptingReplManager by lazy { ScriptingRawReplManager(scriptingScope, blackbox) }
+    
     override fun motd(): String {
         return "\n\nWelcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system `${processCmd.firstOrNull()}` command as a subprocess.\n\nIf you do not have an interactive REPL below, then please make sure the below command is valid on your system:\n\n${processCmd.joinToString(" ")}\n\n${super.motd()}\n"
     }
 }
 
 
-class SpyScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
+abstract class ProtocolSubprocessScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
+    
+    override val replManager by lazy { ScriptingProtocolReplManager(scriptingScope, blackbox) }
+    
+}
+
+
+class SpyScriptingBackend(scriptingScope: ScriptingScope): ProtocolSubprocessScriptingBackend(scriptingScope) {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = SpyScriptingBackend(scriptingScope)

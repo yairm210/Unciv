@@ -36,5 +36,3 @@ interface Blackbox {
     
 }
 
-class DummyBlackbox(): Blackbox {
-}
