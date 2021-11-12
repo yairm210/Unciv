@@ -278,9 +278,6 @@ object GameStarter {
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
 
-            if(civ.isCityState())
-                addCityStateLuxury(gameInfo, startingLocation)
-
             for (tile in startingLocation.getTilesInDistance(3)) {
                 if (tile.improvement != null
                     && tile.getTileImprovement()!!.isAncientRuinsEquivalent()
@@ -450,29 +447,5 @@ object GameStarter {
             }
         }
         return preferredTiles.lastOrNull() ?: freeTiles.last()
-    }
-
-    private fun addCityStateLuxury(gameInfo: GameInfo, spawn: TileInfo) {
-        // Every city state should have at least one luxury to trade
-        val relevantTiles = spawn.getTilesInDistance(2).shuffled()
-
-        for (tile in relevantTiles) {
-            if(tile.resource != null && tile.tileResource.resourceType == ResourceType.Luxury)
-                return  // At least one luxury; all set
-        }
-
-        for (tile in relevantTiles) {
-            // Add a luxury to the first eligible tile
-            if (tile.resource != null)
-                continue
-
-            val luxuryToAdd = gameInfo.ruleSet.tileResources.values
-                .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) && it.resourceType == ResourceType.Luxury }
-                .randomOrNull()
-            if (luxuryToAdd != null) {
-                tile.resource = luxuryToAdd.name
-                return
-            }
-        }
     }
 }
