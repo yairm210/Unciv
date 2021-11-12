@@ -31,7 +31,7 @@ class AutocompleteManager:
 				_bdepth = 1
 				prefixsplit -= 1
 				while _bdepth and prefixsplit:
-					# Skip over whole  blocks of matched brackets.
+					# Skip over whole blocks of matched brackets.
 					char = command[prefixsplit]
 					if char == '[':
 						_bdepth -= 1
@@ -56,11 +56,11 @@ class AutocompleteManager:
 
 
 class PyAutocompleteManager(AutocompleteManager):
-	"""Advanced autocompleter. Returns keys when accessing mappings. Implements API that returns docstrings as help text for callables."""
+	"""Advanced autocompleter. Returns keys when accessing mappings. Implements API that returns docstrings as help text for callables. Adds opening round and square brackets to autocomplete matches to show callables and mappings."""
 	def Evaled(self, path):
-		return eval(path, self.scope, self.scope)
-		#Seems safe. Well, I'm checking before calling here that there's no closing brackets that could mean a function call. Let's check again, I guess.
 		assert ')' not in path, f"Closing brackets not currently allowed in autocomplete eval: {path}"
+		return eval(path, self.scope, self.scope)
+		#Seems safe. Well, I'm already checking before calling here that there's no closing brackets that could mean a function call. Let's check again, I guess.
 	def GetAutocomplete(self, command, cursorpos=None):
 		try:
 			if cursorpos is None:

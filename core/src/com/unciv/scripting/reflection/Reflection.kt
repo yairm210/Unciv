@@ -43,8 +43,16 @@ object Reflection {
     fun setInstanceItem(instance: Any, keyOrIndex: Any, value: Any?): Unit {
         if (keyOrIndex is Int) {
             (instance as MutableList<Any?>)[keyOrIndex] = value
-        } else{
+        } else {
             (instance as MutableMap<Any, Any?>)[keyOrIndex] = value
+        }
+    }
+    
+    fun removeInstanceItem(instance: Any, keyOrIndex: Any): Unit {
+        if (keyOrIndex is Int) {
+            (instance as MutableList<Any?>).removeAt(keyOrIndex)
+        } else {
+            (instance as MutableMap<Any, Any?>).remove(keyOrIndex)
         }
     }
 
@@ -263,6 +271,31 @@ object Reflection {
             }
             PathElementType.Call -> {
                 throw UnsupportedOperationException("Cannot assign to function call.")
+            }
+            else -> {
+                throw UnsupportedOperationException("Unknown path element type: ${leafelement.type}")
+            }
+        }
+    }
+    
+    fun removeInstancePath(instance: Any, path: List<PathElement>): Unit {
+        val leafobj = resolveInstancePath(instance, path.slice(0..path.size-2))
+        val leafelement = path[path.size - 1]
+        when (leafelement.type) {
+            PathElementType.Property -> {
+                throw UnsupportedOperationException("Cannot remove instance property.")
+            }
+            PathElementType.Key -> {
+                removeInstanceItem(
+                    leafobj!!,
+                    if (leafelement.doEval)
+                        evalKotlinString(instance, leafelement.name)!!
+                    else
+                        leafelement.params[0]!!
+                )
+            }
+            PathElementType.Call -> {
+                throw UnsupportedOperationException("Cannot remove function call.")
             }
             else -> {
                 throw UnsupportedOperationException("Unknown path element type: ${leafelement.type}")

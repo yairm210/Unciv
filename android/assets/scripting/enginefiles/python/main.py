@@ -88,6 +88,10 @@ civInfo.removeUnit(unit)
 # Token string gets get transformed back into original `MapUnit()` when used as function argument.
 ```
 
+The rules for which classes are serialized as JSON values and which are serialized as token strings may be a little bit fuzzy and variable, as they are designed to maximise use cases.
+
+In general, Kotlin/JVM instances that *can* be cast into a type compatible with a JSON type will be serialized as such— Unless they are of classes defined within the Unciv packages themselves, in which case they will always be tokenized. The exemption for certain classes prevents everything that inherits from iterable interfaces— Like `Building()`, which inherits from `Stats:Iterable<Stats.StatValuePair>`— From being stripped down into JSON arrays when having having references to and members of their instances is much more useful.
+
 ---
 
 Sometimes, you may want to access a path or call a method on an object that you have only as a token string— For example, an object returned from a foreign function or method call.
@@ -100,18 +104,21 @@ The `apiHelpers.registeredInstances` helper object can be used for this:
 
 ```python3
 token = civInfo.cities[0].getCenterTile()
+# Token string representing a `TileInfo()` instance.
 
 print(type(token))
 # <class 'str'>. Cannot be used for attribute access.
 
 apiHelpers.registeredInstances["centertile"] = token
+# Token string gets transformed back into `TileInfo()` in Kotlin/JVM assignment.
 
 print(type(apiHelpers.registeredInstances["centertile"]))
 # <class 'ForeignObject'>. Is now a full wrapper with path, and can be used for full attribute, key, and method access.
 
-apiHelpers.registeredInstances["centertile"].baseTerrain
+print(apiHelpers.registeredInstances["centertile"].baseTerrain)
+# Successful attribute access.
 
-apiHelpers.registeredInstances.remove("centertile")
+del apiHelpers.registeredInstances["centertile"]
 # Delete the reference so it doesn't become a memory leak.
 ```
 
@@ -119,7 +126,23 @@ In order to use this technique properly, the assignment of an object to a concre
 
 **It is very important that you delete concrete paths you have set after you are done with them.** Any objects held at paths you do not delete will continue to occupy system memory for the remaining run time of the application's lifespan. We can't rely on Python's garbage collection in this case because it doesn't control the Kotlin objects, nor can we rely on the JVM's garbage collector because it doesn't know whether Python code still needs the objects in question, so you will have to manage the memory yourself by keeping a reference as long as you need an object and deleting it to free up memory afterwards.
 
-For any complicated script in Python, it is suggested that you write a context manager class to automatically take care of saving and freeing each object for you where appropriate.
+For any complicated script in Python, it is suggested that you write a context manager class to automatically take care of saving and freeing each object where appropriate.
+
+It is also recommended that all scripts create a separate mapping with a unique and identifiable key in `apiHelpers.registeredInstances`, instead of assigning directly to the top level.
+
+```python3
+apiHelpers.registeredInstances["myCoolScript"] = {}
+
+memalloc = apiHelpers.registeredInstances["myCoolScript"]
+
+memalloc["capitaltile"] = civInfo.cities[0].getCenterTile()
+
+worldScreen.mapHolder.setCenterPosition(memalloc["capitaltile"].position, True, True)
+
+del memalloc["capitaltile"]
+
+del apiHelpers.registeredInstances["myCoolScript"]
+```
 
 ---
 

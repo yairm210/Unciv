@@ -87,7 +87,7 @@ def stringPathList(pathlist):
 _magicmeths = (
 	'__lt__',
 	'__le__',
-	'__eq__', # Kinda undefined behaviour for comparision with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in InstanceTokenizer.kt, on every `._getvalue_()`, so I think even the same `ForeignObject()` will never equal itself.
+	'__eq__', # Kinda undefined behaviour for comparison with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in InstanceTokenizer.kt, on every `._getvalue_()`, so I think even the same `ForeignObject()` will never equal itself.
 	'__ne__',
 	'__ge__',
 	'__gt__',
@@ -263,6 +263,16 @@ class ForeignObject:
 			}
 		},
 		'assign_response',
+		foreignErrmsgChecker)
+	@ForeignRequestMethod
+	def __delitem__(self, key):
+		return ({
+			'action': 'delete',
+			'data': {
+				'path': self[key]._getpath_()
+			}
+		},
+		'delete_response',
 		foreignErrmsgChecker)
 	@ForeignRequestMethod
 	def __len__(self):
