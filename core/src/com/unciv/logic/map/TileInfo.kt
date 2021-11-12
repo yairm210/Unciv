@@ -795,7 +795,7 @@ open class TileInfo {
     
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
         resource = newResource.name
-        
+
         if (newResource.resourceType != ResourceType.Strategic) return
         
         for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles)) {
@@ -804,12 +804,21 @@ open class TileInfo {
                 return
             }
         }
-        
-        // Stick to default for now
-        resourceAmount = if (majorDeposit)
-            newResource.majorDepositAmount.default
-        else
-            newResource.minorDepositAmount.default
+
+        resourceAmount = when (tileMap.mapParameters.mapResources) {
+            MapResources.sparse -> {
+                if (majorDeposit) newResource.majorDepositAmount.sparse
+                else newResource.minorDepositAmount.sparse
+            }
+            MapResources.abundant -> {
+                if (majorDeposit) newResource.majorDepositAmount.abundant
+                else newResource.minorDepositAmount.abundant
+            }
+            else -> {
+                if (majorDeposit) newResource.majorDepositAmount.default
+                else newResource.minorDepositAmount.default
+            }
+        }
     }
 
 

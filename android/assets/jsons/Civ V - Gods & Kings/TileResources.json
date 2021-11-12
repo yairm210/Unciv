@@ -76,6 +76,7 @@
 		"production": 1,
 		"improvement": "Pasture",
 		"improvementStats": {"production": 1},
+		"uniques": ["Guaranteed with Strategic Balance resource option"],
 		"majorDepositAmount": {"sparse": 4, "default": 4, "abundant": 6},
 		"minorDepositAmount": {"sparse": 1, "default": 2, "abundant": 3}
 	},
@@ -87,13 +88,14 @@
 		"production": 1,
 		"improvement": "Mine",
 		"improvementStats": {"production": 1},
+		"uniques": ["Guaranteed with Strategic Balance resource option"],
 		"majorDepositAmount": {"sparse": 4, "default": 6, "abundant": 9},
 		"minorDepositAmount": {"sparse": 1, "default": 2, "abundant": 3}
 	},
 	{
 		"name": "Coal",
 		"resourceType": "Strategic",
-		"revealedBy": "Industrialization",
+		"revealedBy": "Scientific Theory",
 		"terrainsCanBeFoundOn": ["Grassland","Plains","Hill"],
 		"production": 1,
 		"improvement": "Mine",
@@ -109,7 +111,7 @@
 		"production": 1,
 		"improvement": "Oil well",
 		"improvementStats": {"production": 3},
-		"uniques": ["Deposits in [Water] tiles always provide [4] resources"],
+		"uniques": ["Deposits in [Water] tiles always provide [4] resources", "Guaranteed with Strategic Balance resource option"],
 		"majorDepositAmount": {"sparse": 5, "default": 7, "abundant": 9},
 		"minorDepositAmount": {"sparse": 2, "default": 3, "abundant": 3}
 	},

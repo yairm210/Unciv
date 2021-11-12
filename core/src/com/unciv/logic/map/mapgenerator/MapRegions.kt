@@ -2,12 +2,9 @@ package com.unciv.logic.map.mapgenerator
 
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapShape
-import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
@@ -236,7 +233,7 @@ class MapRegions (val ruleset: Ruleset){
         }
         // Normalize starts
         for (region in regions) {
-            normalizeStart(tileMap[region.startPosition!!], minorCiv = false)
+            normalizeStart(tileMap[region.startPosition!!], tileMap, minorCiv = false)
         }
 
         val coastBiasCivs = civilizations.filter { ruleset.nations[it.civName]!!.startBias.contains("Coast") }
@@ -476,7 +473,7 @@ class MapRegions (val ruleset: Ruleset){
      *  Relies on startPosition having been set previously.
      *  Assumes unchanged baseline values ie citizens eat 2 food each, similar production costs
      *  If [minorCiv] is true, different weightings will be used. */
-    private fun normalizeStart(startTile: TileInfo, minorCiv: Boolean) {
+    private fun normalizeStart(startTile: TileInfo, tileMap: TileMap, minorCiv: Boolean) {
         // Remove ice-like features adjacent to start
         for (tile in startTile.neighbors) {
             val lastTerrain = tile.getTerrainFeatures().lastOrNull { it.impassable }
@@ -505,7 +502,15 @@ class MapRegions (val ruleset: Ruleset){
             }
         }
 
-        // TODO: Strategic Balance Resources
+        // Place Strategic Balance Resources
+        if (tileMap.mapParameters.mapResources == MapResources.strategicBalance) {
+            println("Strategic balance resources:")
+            val candidateTiles = startTile.getTilesInDistanceRange(1..2).shuffled() + startTile.getTilesAtDistance(3).shuffled()
+            for (resource in ruleset.tileResources.values.filter { it.hasUnique(UniqueType.StrategicBalanceResource) }) {
+                println("Trying ${resource.name}")
+                tryAddingResourceToTiles(resource, 1, candidateTiles, majorDeposit = true)
+            }
+        }
 
         // If bad early production, add a small strategic resource to SECOND ring (not for minors)
         if (!minorCiv && innerProduction < 3 && earlyProduction < 6) {
@@ -561,8 +566,8 @@ class MapRegions (val ruleset: Ruleset){
                 else -> 0
             }
         }
-
-        // TODO: Legendary start? +2
+        if (tileMap.mapParameters.mapResources == MapResources.legendaryStart)
+            bonusesNeeded += 2
 
         // Attempt to place one grassland at a plains-only spot (nor for minors)
         if (!minorCiv && bonusesNeeded < 3 && totalNativeTwoFood == 0) {
@@ -1115,21 +1120,19 @@ class MapRegions (val ruleset: Ruleset){
         placeImpact(ImpactType.Fish,    tile, 3)
         placeImpact(ImpactType.Marble,  tile, 4)
 
-        normalizeStart(tile, minorCiv = true)
+        normalizeStart(tile, tileMap, minorCiv = true)
     }
 
     /** Places all Luxuries onto [tileMap]. Assumes that assignLuxuries and placeMinorCivs have been called. */
     private fun placeLuxuries(tileMap: TileMap) {
         // First place luxuries at major civ start locations
+        val averageFertilityDensity = regions.sumOf { it.totalFertility } / regions.sumOf { it.tiles.count() }.toFloat()
         for (region in regions) {
             var targetLuxuries = 1
-            // TODO: Legendary start + 1
-            /*if (region.totalFertility / region.rect.area() < 2.5f) { // Low fertility for rectangle size
-                println("extra luxury for region ${regions.indexOf(region)} due to fertility per rect ${region.totalFertility / region.rect.area()}")
+            if (tileMap.mapParameters.mapResources == MapResources.legendaryStart)
                 targetLuxuries++
-            }*/
-            if (region.totalFertility / region.tiles.count() < 4) { // Low fertility per actual land plot
-                println("extra luxury for region ${regions.indexOf(region)} due to fertility per land ${region.totalFertility / region.tiles.count()}")
+            if (region.totalFertility / region.tiles.count().toFloat() < averageFertilityDensity) {
+                println("extra luxury for region ${regions.indexOf(region)} due to fertility per land ${region.totalFertility / region.tiles.count().toFloat()}")
                 targetLuxuries++
             }
             println("Attempting to place $targetLuxuries ${region.luxury} around ${region.startPosition} in region ${regions.indexOf(region)}")
@@ -1179,7 +1182,13 @@ class MapRegions (val ruleset: Ruleset){
         // The target number depends on map size and how close we are to an "ideal number" of civs for the map
         val idealCivs = max(2, tileData.size / 500)
         println("Map of size ${tileData.size}, ideal civs $idealCivs")
-        val regionTargetNumber = max(1, (tileData.size / 600) - (0.3f * abs(regions.count() - idealCivs)).toInt())
+        var regionTargetNumber =(tileData.size / 600) - (0.3f * abs(regions.count() - idealCivs)).toInt()
+        regionTargetNumber += when (tileMap.mapParameters.mapResources) {
+            MapResources.abundant -> 1
+            MapResources.sparse -> -1
+            else -> 0
+        }
+        regionTargetNumber = max(1, regionTargetNumber)
         println("Adding regional extra luxuries, target number $regionTargetNumber")
         for (region in regions) {
             tryAddingResourceToTiles(ruleset.tileResources[region.luxury]!!, regionTargetNumber, region.tiles.asSequence().shuffled(), 0.4f,
@@ -1187,10 +1196,15 @@ class MapRegions (val ruleset: Ruleset){
         }
         // Fourth add random luxuries
         if (randomLuxuries.isNotEmpty()) {
-            // TODO: Modify this by sparse or abundant resource settings
             var targetRandomLuxuries = tileData.size.toFloat().pow(0.45f).toInt() // Approximately
+            targetRandomLuxuries *= when (tileMap.mapParameters.mapResources) {
+                MapResources.sparse -> 80
+                MapResources.abundant -> 133
+                else -> 100
+            }
+            targetRandomLuxuries /= 100
             targetRandomLuxuries += Random.nextInt(regions.count()) // Add random number based on number of civs
-            var minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
+            val minimumRandomLuxuries = tileData.size.toFloat().pow(0.2f).toInt() // Approximately
             println("Placing random luxuries, targets $targetRandomLuxuries total and $minimumRandomLuxuries per.")
             val worldTiles = tileMap.values.asSequence().shuffled()
             for ((index, luxury) in randomLuxuries.shuffled().withIndex()) {
@@ -1212,13 +1226,13 @@ class MapRegions (val ruleset: Ruleset){
         specialLuxuries.forEach { placedSpecials[it.name] = 0 } // init map
 
         // Fifth, on resource settings other than sparse, add an extra luxury to starts
-        println("Adding extra luxuries")
-        if (true) { // TODO: Not if sparse
+        if (tileMap.mapParameters.mapResources != MapResources.sparse) {
+            println("Adding extra luxuries")
             for (region in regions) {
                 val tilesToCheck = tileMap[region.startPosition!!].getTilesInDistanceRange(1..2)
                 val candidateLuxuries = randomLuxuries.shuffled().toMutableList()
-                //TODO: Disallow marble if strategic balance
-                candidateLuxuries += specialLuxuries.shuffled().map { it.name } // Include marble!
+                if (tileMap.mapParameters.mapResources != MapResources.strategicBalance)
+                    candidateLuxuries += specialLuxuries.shuffled().map { it.name } // Include marble!
                 candidateLuxuries += cityStateLuxuries.shuffled()
                 candidateLuxuries += regions.mapNotNull { it.luxury }.shuffled()
                 for (luxury in candidateLuxuries) {
@@ -1232,7 +1246,11 @@ class MapRegions (val ruleset: Ruleset){
         }
         // Sixth, top up marble-type specials if needed
         for (special in specialLuxuries) {
-            val targetNumber = (regions.count() * 0.75f).toInt() // TODO: Sparse 0.5, abundant 0.9
+            val targetNumber = when (tileMap.mapParameters.mapResources) {
+                MapResources.sparse -> (regions.count() * 0.5f).toInt()
+                MapResources.abundant -> (regions.count() * 0.9f).toInt()
+                else -> (regions.count() * 0.75f).toInt()
+            }
             val numberToPlace = max(2, targetNumber - placedSpecials[special.name]!!)
             println("Trying to top up ${special.name} with target number $targetNumber, placing $numberToPlace")
             tryAddingResourceToTiles(special, numberToPlace, tileMap.values.asSequence().shuffled(), 1f,
@@ -1243,7 +1261,8 @@ class MapRegions (val ruleset: Ruleset){
     /** Attempts to place [amount] [resource] on [tiles], checking tiles in order. A [ratio] below 1 means skipping
      *  some tiles, ie ratio = 0.25 will put a resource on every 4th eligible tile. Returns number of placed resources. */
     private fun tryAddingResourceToTiles(resource: TileResource, amount: Int, tiles: Sequence<TileInfo>, ratio: Float = 1f,
-                                         respectImpacts: Boolean = false, baseImpact: Int = -1, randomImpact: Int = 0): Int {
+                                         respectImpacts: Boolean = false, baseImpact: Int = -1, randomImpact: Int = 0,
+                                         majorDeposit: Boolean = false): Int {
         if (amount <= 0) return 0
         var amountAdded = 0
         var ratioProgress = 1f
@@ -1257,7 +1276,7 @@ class MapRegions (val ruleset: Ruleset){
             if (tile.resource == null && tile.getLastTerrain().name in resource.terrainsCanBeFoundOn) {
                 if (ratioProgress >= 1f &&
                         !(respectImpacts && tileData[tile.position]!!.impacts.containsKey(impactType))) {
-                    tile.setTileResource(resource)
+                    tile.setTileResource(resource, majorDeposit)
                     ratioProgress -= 1f
                     amountAdded++
                     if (baseImpact + randomImpact >= 0)
