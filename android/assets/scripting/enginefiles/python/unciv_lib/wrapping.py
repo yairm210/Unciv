@@ -5,7 +5,7 @@ from . import ipc, api
 
 
 class ForeignRequestMethod:
-	"""Decorator for methods that return values from foreign requests."""
+	"""Decorator and descriptor protocol implementation for methods of ForeignObject subclasses that return values from foreign requests."""
 	def __init__(self, func):
 		self.func = func
 		try:

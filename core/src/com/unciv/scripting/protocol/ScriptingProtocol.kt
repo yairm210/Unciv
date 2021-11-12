@@ -221,6 +221,12 @@ Flags are string values for communicating extra information that doesn't need a 
         //Not implemented. Currently Kotlin-side exceptions while processing a request are communicated to the script interpreter with an error message at an expected place in the data field of the response, and exceptions in the script interpreter while executing a command are stringified and returned to the Kotlin side the same as any REPL output. Miight be useful for a modding API, though.
     ```
     
+    ```
+//    'BeginIteration'
+//    'StopIteration'
+//        //Not implemented. Probably needed if iteration over non-sized objects is needed. Probably not worth the trouble.
+    ```
+    
 ---
     
 Thus, at the IPC level, all foreign backends will actually use the same language, which is this JSON-based protocol. Differences between Python, JS, Lua, etc. will all be down to how they interpret the "exec", "autocomplete", and "motd" requests differently, which each high-level scripting language is free to implement as works best for it.

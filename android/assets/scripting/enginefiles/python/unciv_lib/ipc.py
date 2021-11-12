@@ -6,8 +6,8 @@ stdout = sys.stdout
 ##	return eval(path, scope, scope)
 #	raise NotImplementedError()
 
-
 class IpcJsonEncoder(json.JSONEncoder):
+	"""JSONEncoder that lets classes define a special ._ipcjson_() method to control how they'll be serialized. Used by ForeignObject to send its resolved value."""
 	def default(self, obj):
 		if hasattr(obj.__class__, '_ipcjson_'):
 			return obj._ipcjson_()
@@ -15,12 +15,14 @@ class IpcJsonEncoder(json.JSONEncoder):
 
 
 def MakeUniqueId():
+	"""Return a string that should never repeat or collide. Used for IPC packet identity fields."""
 	return f"{time.time_ns()}-{random.getrandbits(30)}"
 
 class ForeignError(RuntimeError):
 	pass
 
 class ForeignPacket:
+	"""Class for IPC packet conforming to spec in ScriptingProtocol.kt."""
 	def __init__(self, action, identifier, data, flags=()):
 		self.action = action
 		self.identifier = identifier
@@ -30,6 +32,7 @@ class ForeignPacket:
 		return self.__class__.__name__+"(**"+str(self.as_dict())+")"
 	@classmethod
 	def deserialized(cls, serialized):
+		"""Return a packet object from a JSON string."""
 		return cls(**json.loads(serialized))
 	def enforce_type(self, expect_action=None, expect_identifier=None):
 		if expect_action is not None and self.action != expect_action:
@@ -47,8 +50,6 @@ class ForeignPacket:
 	def serialized(self):
 		return json.dumps(self.as_dict(), cls=IpcJsonEncoder)
 
-# Flags: 'FinishEval', 'BeginIteration', 'StopIteration'
-
 
 class ForeignActionManager:
 	def __init__(self, sender=None, receiver=None):
@@ -64,20 +65,11 @@ class ForeignActionManager:
 			print(message, file=stdout)
 	def receiver(self):
 		return sys.stdin.readline()
-#	def EncodeForeignAction(self, action, identifier=None, **data):
-#		return ForeignPacket(
-#			action = action,
-#			identifier = identifier,
-#			data = data
-#		).serialized()
 
 
 class ForeignActionSender(ForeignActionManager):
-#	def MakeUniqueID(self):
-#		return 4 # Chosen by fair dice roll. Guaranteed to be random.
 	def SendForeignAction(self, actionparams):
 		self.sender(ForeignPacket(**actionparams).serialized())
-		
 	def GetForeignActionResponse(self, actionparams, responsetype):
 		identifier = MakeUniqueId()
 		self.SendForeignAction({**actionparams, 'identifier': identifier})
@@ -125,6 +117,7 @@ class ForeignActionReceiver(ForeignActionManager):
 
 
 class FakeStdout:
+	"""Context manager that returns a StringIO and sets sys.stdout to it on entrance, then restores it to its original value on exit."""
 	def __init__(self):
 		self.stdout = sys.stdout
 	def __enter__(self):

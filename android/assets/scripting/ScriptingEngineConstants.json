@@ -2,13 +2,13 @@
 	engines: {
 		python: {
 			files: [
-				unciv/
-				unciv/__init__.py
-				unciv/api.py
-				unciv/autocompletion.py
-				unciv/ipc.py
-				unciv/utils.py
-				unciv/wrapping.py
+				unciv_lib/
+				unciv_lib/__init__.py
+				unciv_lib/api.py
+				unciv_lib/autocompletion.py
+				unciv_lib/ipc.py
+				unciv_lib/utils.py
+				unciv_lib/wrapping.py
 				main.py
 			]
 			syntaxHighlightingRegexStack: [
