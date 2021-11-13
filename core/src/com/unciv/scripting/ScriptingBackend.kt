@@ -16,10 +16,13 @@ import kotlin.reflect.full.*
 import java.util.*
 
 
-data class AutocompleteResults(val matches:List<String> = listOf(), val isHelpText:Boolean = false, val helpText:String = "")
+data class AutocompleteResults(val matches: List<String> = listOf(), val isHelpText: Boolean = false, val helpText: String = "")
 
 
 abstract class ScriptingBackend_metadata {
+    /**
+     * @return A new instance of the parent class of which this object is a companion.
+     */
     abstract fun new(scriptingScope: ScriptingScope): ScriptingBackendBase
     abstract val displayName: String
     val syntaxHighlighting: SyntaxHighlighter? = null
@@ -35,41 +38,54 @@ abstract class EnvironmentedScriptBackend_metadata: ScriptingBackend_metadata() 
 
 interface ScriptingBackend {
 
+    /**
+     * @return Message to print on launch. Should be called exactly once per instance, and prior to calling any of the other methods defined here.
+     */
     fun motd(): String {
-        // Message to print on launch. Should be called exactly once per instance, and prior to calling any of the other methods defined here.
         return "\n\nWelcome to the Unciv CLI!\nYou are currently running the dummy backend, which will echo all commands but never do anything.\n"
     }
 
+    /**
+     * @return AutocompleteResults object that represents either a List of full autocompletion matches or a help string to print.
+     */
     fun autocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
-        // Return either an AutocompleteResults object that represents either a List of full autocompletion matches or a help string to print.
         return AutocompleteResults(listOf(command+"_autocomplete"))
     }
 
+    /**
+     * @param command Code to execute
+     * @return REPL printout.
+     */
     fun exec(command: String): String {
-        // Execute code and return output.
         return command
     }
 
+    /**
+     * @return `null` on successful termination, an `Exception()` otherwise.
+     */
     fun terminate(): Exception? {
-        // Return `null` on successful termination, an `Exception()` otherwise.
         return null
     }
-    
+
 }
 
 
 open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBackend {
 
+    /**
+     * For the UI, a way is needed to list all available scripting backend types with 1. A readable display name and 2. A way to create new instances.
+     * So every ScriptngBackend has a Metadata:ScriptingBackend_metadata companion object, which is stored in the ScriptingBackendType enums.
+     */
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = ScriptingBackendBase(scriptingScope)
-        override val displayName:String = "Dummy"
+        override val displayName: String = "Dummy"
     }
-    // For the UI, a way is needed to list all available scripting backend types with 1. A readable display name and 2. A way to create new instances.
-    // So every ScriptngBackend has a Metadata:ScriptingBackend_metadata companion object, which is stored in the ScriptingBackendType enums.
 
+    /**
+     * Let the companion object of the correct subclass be accessed in subclass instances.
+     */
     open val metadata
         get(): ScriptingBackend_metadata = this::class.companionObjectInstance as ScriptingBackend_metadata
-        // Let the companion object of the correct subclass be accessed in subclass instances.
 
 }
 
@@ -78,7 +94,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
 
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = HardcodedScriptingBackend(scriptingScope)
-        override val displayName:String = "Hardcoded"
+        override val displayName: String = "Hardcoded"
     }
 
     val commandshelp = mapOf<String, String>(
@@ -99,7 +115,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
         "supercharge" to "supercharge [true|false] - Massively boost all empire growth stats.\n\tRun with no arguments to toggle. (Requires cheats.)"
     )
 
-    var cheats:Boolean = false
+    var cheats: Boolean = false
 
     override fun motd(): String {
         return "\n\nWelcome to the hardcoded demo CLI backend.\n\nPlease run \"help\" or press [TAB] to see a list of available commands.\nPress [TAB] at any time to see help for currently typed command.\n\nPlease note that the available commands are meant as a DEMO for the CLI.\n"
@@ -140,7 +156,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                 appendOut(scriptingScope.civInfo!!.cities.size.toString())
             }
             "locatebuildings" -> {
-                var buildingcities:List<String> = listOf()
+                var buildingcities: List<String> = listOf()
                 if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (args.size > 1) {
                     var searchfor = args.slice(1..args.size-1).joinToString(" ").trim(' ')
@@ -156,7 +172,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                 appendOut(buildingcities.joinToString(", "))
             }
             "missingbuildings" -> {
-                var buildingcities:List<String> = listOf()
+                var buildingcities: List<String> = listOf()
                 if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (args.size > 1) {
                     var searchfor = args.slice(1..args.size-1).joinToString(" ").trim(' ')
@@ -281,7 +297,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
 
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = ReflectiveScriptingBackend(scriptingScope)
-        override val displayName:String = "Reflective"
+        override val displayName: String = "Reflective"
     }
 
     private val commandparams = mapOf("get" to 1, "set" to 2, "typeof" to 1) //showprivates?
@@ -300,7 +316,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
     override fun motd(): String {
         return "\n\nWelcome to the reflective Unciv CLI backend.\n\nCommands you enter will be parsed as a path consisting of property reads, key and index accesses, function calls, and string, numeric, boolean, and null literals.\nKeys, indices, and function arguments are parsed recursively.\nProperties can be both read from and written to.\n\nExamples:\n${examples.map({"> ${it}"}).joinToString("\n")}\n\nPress [TAB] at any time to trigger autocompletion for all known leaf names at the currently entered path.\n"
     }
-    
+
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
         try {
             var comm = commandparams.keys.find{ command.startsWith(it+" ") }
@@ -330,7 +346,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
             return AutocompleteResults(listOf(), true, "Could not get autocompletion: ${e}")
         }
     }
-    
+
     override fun exec(command: String): String{
         var parts = command.split(' ', limit=2)
         var out = "\n> ${command}\n"
@@ -372,7 +388,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
 
 
 abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
-    
+
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         // Need full metadata companion here, or else won't compile.
         // Ideally would be able to just declare that subclasses must define a companion of the correct type, but ah well.
@@ -384,16 +400,16 @@ abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): Sc
     override val metadata
         // Since the companion object type is different, we have to define a new getter for the subclass instance companion getter to get its new members.
         get() = this::class.companionObjectInstance as EnvironmentedScriptBackend_metadata
-    
+
     val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(metadata.engine) }
     // This requires the overridden values for `engine`, so setting it in the constructor causes a null error... May be fixed since moving `engine` to the companions.
     // Also, BlackboxScriptingBackend inherits from this, but not all subclasses of BlackboxScriptingBackend might need it. So as long as it's not accessed, it won't be intialized.
-    
+
 }
 
 
 abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): EnvironmentedScriptingBackend(scriptingScope) {
-    
+
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         // Need full metadata companion here, or else won't compile.
         // Ideally would be able to just declare that subclasses must define a companion of the correct type, but ah well.
@@ -401,13 +417,13 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
         override fun new(scriptingScope: ScriptingScope) = throw UnsupportedOperationException("Base scripting backend class not meant to be instantiated.")
         override val engine = ""
     }
-    
+
     abstract val blackbox: Blackbox
-    
+
     abstract val replManager: ScriptingReplManager
-    // Should be lazy. Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way. And the liberal use of `lazy` should naturally make sure the properties will always be initialized in the right order.
+    // Should be lazy in implementations. Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way. And the liberal use of `lazy` should naturally make sure the properties will always be initialized in the right order.
     // Downside: Potential latency on first command, or possibly depending on `motd()` for immediate initialization.
-    
+
     override fun motd(): String {
         try {
             return replManager.motd()
@@ -415,7 +431,7 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
             return "No MOTD for ${metadata.engine} backend: ${e}\n"
         }
     }
-    
+
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
         try {
             return replManager.autocomplete(command, cursorPos)
@@ -423,7 +439,7 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
             return AutocompleteResults(isHelpText = true, helpText = "Autocomplete error: ${e}")
         }
     }
-    
+
     override fun exec(command: String): String {
         try {
             return replManager.exec("${command}\n")
@@ -431,7 +447,7 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
             return "${e}"
         }
     }
-        
+
     override fun terminate(): Exception? {
         try {
             return replManager.terminate()
@@ -443,13 +459,13 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
 
 
 abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): BlackboxScriptingBackend(scriptingScope) {
-    
+
     abstract val processCmd: Array<String>
-    
+
     override val blackbox by lazy { SubprocessBlackbox(processCmd) }
-    
+
     override val replManager: ScriptingReplManager by lazy { ScriptingRawReplManager(scriptingScope, blackbox) }
-    
+
     override fun motd(): String {
         return "\n\nWelcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system `${processCmd.firstOrNull()}` command as a subprocess.\n\nIf you do not have an interactive REPL below, then please make sure the below command is valid on your system:\n\n${processCmd.joinToString(" ")}\n\n${super.motd()}\n"
     }
@@ -457,9 +473,9 @@ abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): Black
 
 
 abstract class ProtocolSubprocessScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
-    
+
     override val replManager by lazy { ScriptingProtocolReplManager(scriptingScope, blackbox) }
-    
+
 }
 
 
@@ -467,12 +483,12 @@ class SpyScriptingBackend(scriptingScope: ScriptingScope): ProtocolSubprocessScr
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = SpyScriptingBackend(scriptingScope)
-        override val displayName:String = "System Python"
+        override val displayName: String = "System Python"
         override val engine = "python"
     }
-    
+
     override val processCmd = arrayOf("python3", "-u", "-X", "utf8", folderHandle.child("main.py").toString())
-        
+
 }
 
 
@@ -480,12 +496,12 @@ class SqjsScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = SqjsScriptingBackend(scriptingScope)
-        override val displayName:String = "System QuickJS"
+        override val displayName: String = "System QuickJS"
         override val engine = "qjs"
     }
-    
+
     override val processCmd = arrayOf("qjs", "--std", "--script", folderHandle.child("main.js").toString())
-    
+
 }
 
 
@@ -493,12 +509,12 @@ class SluaScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = SluaScriptingBackend(scriptingScope)
-        override val displayName:String = "System Lua"
+        override val displayName: String = "System Lua"
         override val engine = "lua"
     }
-    
+
     override val processCmd = arrayOf("lua", folderHandle.child("main.lua").toString())
-    
+
 }
 
 
@@ -508,26 +524,26 @@ class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend
 
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = DevToolsScriptingBackend(scriptingScope)
-        override val displayName:String = "DevTools"
+        override val displayName: String = "DevTools"
     }
-    
+
     val commands = listOf(
         "PrintFlatApiDefs",
         "PrintClassApiDefs",
         "WriteOutApiFile <outfile>",
         "WriteOutApiFile android/assets/scripting/sharedfiles/ScriptAPI.json"
     )
-    
+
     override fun motd() = """
-    
+
         You have launched the DevTools CLI backend."
         This tool is meant to help update code files.
-        
+
         Available commands:
     """.trimIndent()+"\n"+commands.map{ "> ${it}" }.joinToString("\n")+"\n\n"
-    
+
     override fun autocomplete(command: String, cursorPos: Int?) = AutocompleteResults(commands.filter{ it.startsWith(command) })
-    
+
     override fun exec(command: String): String {
         val commv = command.split(' ', limit=2)
         var out = "> ${command}\n"
@@ -543,7 +559,7 @@ class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend
                     out += "Unknown command: ${commv[0]}\n"
                 }
             }
-                
+
         } catch (e: Exception) {
             out += e.toString()
         }
@@ -560,11 +576,12 @@ enum class ScriptingBackendType(val metadata: ScriptingBackend_metadata) {
     SystemPython(SpyScriptingBackend),
     SystemQuickJS(SqjsScriptingBackend),
     SystemLua(SluaScriptingBackend),
-    DevTools(DevToolsScriptingBackend),
+//    DevTools(DevToolsScriptingBackend),
     //For running ApiSpecGenerator. Comment in releases. Uncomment if needed.
 }
 
 
-fun SpawnNamedScriptingBackend(backendtype:ScriptingBackendType, scriptingScope: ScriptingScope): ScriptingBackendBase {
+fun SpawnNamedScriptingBackend(backendtype: ScriptingBackendType, scriptingScope: ScriptingScope): ScriptingBackendBase {
+    // Seems unnecessary?
     return backendtype.metadata.new(scriptingScope)
 }

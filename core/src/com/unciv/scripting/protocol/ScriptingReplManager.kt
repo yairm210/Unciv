@@ -8,50 +8,23 @@ import com.unciv.scripting.protocol.ScriptingProtocol
 import com.unciv.scripting.utils.Blackbox
 
 
-/*
-1. A scripted action is initiated from the Kotlin side, by sending a command string to the script interpreter.
-    1.a. While the script interpreter is running, it has a chance to request values from the Kotlin side by sending back packets encoding attribute/property, key, and call, and assignment stacks.
-    1.b. When the Kotlin side receives a request for a value, it uses reflection to access the requested property or call the requested method, and it sends the result to the script interpreter.
-    1.c. When the script interpreter finishes running, it sends a special packet to the Kotlin side communicating that the script interpreter has no more requests to make. The script interpreter then sends the REPL output of the command to the Kotlin side.
-2. When the Kotlin interpreter receives the packet marking the end of the command run, it stops listening for value requests packets. It then receives the commnad result as the next value, and passes it back to the console screen or script handler.
-
-From Kotlin:
-```
-fun ExecuteCommand(command:String):
-    SendToInterpreter(command)
-    while True:
-        packet:Packet = ReceiveFromInterpreter().parsed()
-        if isPropertyRequest(packet):
-            SendToInterpreter(ResolvePacket(scriptingScope, packet))
-        else if isCommandEndPacket(packet):
-            break
-    PrintToConsole(ReceiveFromInterpreter().parsed().data:String)
-```
-
-The "packets" should probably all be encoded as strings, probably JSON. The technique used to connect the script interpreter to the Kotlin code shouldn't matter, as long as it's wrapped up in and implements the `Blackbox` interface. IPC/embedding based on pipes, STDIN/STDOUT, sockets, queues, embedding, JNI, etc. should all be interchangeable and equally functional.
-
-I'm not sure if there'd be much point to or a good technique for letting the script interpreter run constantly and initiate actions on its own, instead of waiting for commands from the Kotlin side.
-
-You would presumably have to interrupt the main Kotlin-side thread anyway in order to safely run any actions initiated by the script interpreter— Which means that you may as well just register a handler to call the script interpreter at that point.
-
-Plus, letting the script interpreter run completely in parallel would probably introduce potential for all sorts of issues with non-deterministic synchronicity, and performance issues  Calling the script interpreter from the Kotlin side means that the state of the Kotlin side is more predictable at the moment of script execution.
-*/
-
 abstract class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {
 }
 
 
+/**
+ * REPL manager that sends and receives only raw code and prints raw strings with a black box. Allows interacting with an external script interpreter, but not suitable for exposing Kotlin-side API in external scripts.
+ */
 class ScriptingRawReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
-    // REPL manager that sends and receives only raw code and print strings to a black box. Allows interacting with an external script interpreter, but not suitable for exposing internal API in external scripts.
-    
+
     override fun motd(): String {
         return "${exec("motd()\n")}\n"
     }
-    
+
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
         return AutocompleteResults()
     }
-    
+
     override fun exec(command: String): String {
         if (!blackbox.readyForWrite) {
             throw IllegalStateException("REPL not ready: ${blackbox}")
@@ -60,25 +33,30 @@ class ScriptingRawReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox
             return blackbox.readAll(block=true).joinToString("\n")
         }
     }
-    
+
     override fun terminate(): Exception? {
         return blackbox.stop()
     }
 }
 
 
+/**
+ * REPL manager that uses the IPC protocol defined in ScriptingProtocol.kt to communicate with a black box. Suitable for presenting arbitrary access to Kotlin/JVM state to scripting APIs. See Module.md for a description of the REPL loop.
+ */
 class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
-    // REPL manager that uses the IPC protocol defined in ScriptingProtocol to communicate with a black box. Suitable for presenting arbitrary access to Kotlin/JVM state to scripting APIs. See file-level comment.
-    
+
+    /**
+     * ScriptingProtocol puts references to pre-tokenized returned objects in here.
+     * Should be cleared here at the end of each REPL execution.
+     *
+     * This makes sure a single script execution doesn't get its tokenized Kotlin/JVM objects garbage collected, and has a chance to save them elsewhere (E.G. ScriptingScope.apiHelpers) if it needs them later.
+     * Should preserve each instance, not just each value, so should be List and not Set.
+     * To test in Python console backend: x = apiHelpers.Factories.Vector2(1,2); civInfo.endTurn(); print(apiHelpers.toString(x))
+     */
     val instanceSaver = mutableListOf<Any?>()
-    // ScriptingProtocol puts references to pre-tokenized returned objects in here.
-    // Should be cleared here at the end of each REPL execution.
-    // This makes sure a single script execution doesn't get its tokenized Kotlin/JVM objects garbage collected, and has a chance to save them elsewhere (E.G. ScriptingScope.apiHelpers) if it needs them later.
-    // Should preserve each instance, not just each value, so should be List and not Set.
-    // To test in Python console backend: x = apiHelpers.Factories.Vector2(1,2); civInfo.endTurn(); print(apiHelpers.toString(x))
-    
+
     val scriptingProtocol = ScriptingProtocol(scriptingScope, instanceSaver = instanceSaver)
-    
+
     fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true, execLoop: () -> Unit = fun(){}): ScriptingPacket {
         blackbox.write(packetToSend.toJson() + "\n")
         execLoop()
@@ -89,10 +67,12 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
         instanceSaver.clear() // Clear saved references to objects in response, now that the script has had a chance to save them elsewhere.
         return response
     }
-    
+
+    /**
+     * Listens to requests for values from the black box, and replies to them, during script execution.
+     * Terminates loop after receiving a request with a the 'PassMic' flag.
+     */
     fun foreignExecLoop() {
-        // Listens to requests for values from the black box, and replies to them, during script execution.
-        // Terminates loop after receiving a request with a the 'PassMic' flag.
         while (true) {
             val request = ScriptingPacket.fromJson(blackbox.read(block=true))
             if (request.action != null) {
@@ -104,7 +84,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
             }
         }
     }
-    
+
     override fun motd(): String {
         return ScriptingProtocol.parseActionResponses.motd(
             getRequestResponse(
@@ -113,7 +93,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
             )
         )
     }
-    
+
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
         return ScriptingProtocol.parseActionResponses.autocomplete(
             getRequestResponse(
@@ -122,7 +102,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
             )
         )
     }
-    
+
     override fun exec(command: String): String {
         if (!blackbox.readyForWrite) {
             throw IllegalStateException("REPL not ready: ${blackbox}")
@@ -135,7 +115,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
             )
         }
     }
-    
+
     override fun terminate(): Exception? {
         try {
             val msg = ScriptingProtocol.parseActionResponses.terminate(

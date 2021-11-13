@@ -1,10 +1,13 @@
 package com.unciv.scripting.utils
 
 
+/**
+ * Namespace in ScriptingScope().apiHelpers, for scripts to do their own memory management by keeping references to objects alive. Wraps a MutableMap<>().
+ *
+ * Currently all it does is throw an exception on an assignment colliding with an existing key, and reads and removals for non-existent keys..
+ * Was going to have functions named to fit creating and freeing fields, but so far Python's item assignment and deletion syntaxes are plenty clean
+ */
 class InstanceRegistry(): MutableMap<String, Any?> {
-    // Namespace in ScriptingScope().apiHelpers, for scripts to do their own memory management by keeping references to objects alive. Wraps a MutableMap<>().
-    // Currently all it does is throw an exception on an assignment colliding with an existing key, and reads and removals for non-existent keys..
-    // Was going to have functions named to fit creating and freeing fields, but so far Python's item assignment and deletion syntaxes are plenty clean 
     private val backingMap = mutableMapOf<String, Any?>()
     override val entries
         get() = backingMap.entries

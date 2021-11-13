@@ -30,7 +30,7 @@ Likewise, assigning to an attribute or an index/key on a wrapper object sends an
 
 ```python3
 civInfo.cities[0].name = "Metropolis"
-# Uses IPC request to modify Kotlin/JVM object.
+# Uses IPC request to modify Kotlin/JVM property.
 
 civInfo.cities[0].cityConstructions.constructionQueue[0] = "Missile Cruiser"
 # Uses IPC request to modify Kotlin/JVM container.
@@ -73,7 +73,7 @@ isForeignToken(uncivGame)
 # True. This is actually a wrapper, but `isForeignToken` returns True based on evaluated results.
 ```
 
-The original instance is stored in the JVM in a mapping as a weak reference. The string doesn't have (m)any special properties as a Python object. But if it is sent back to Kotlin/the JVM at any point, then it will be parsed and substitued with the original instance (provided the original instance still exists).
+The original instance is stored in the JVM in a mapping as a weak reference. The string doesn't have any special properties as a Python object. But if it is sent back to Kotlin/the JVM at any point, then it will be parsed and substituted with the original instance (provided the original instance still exists).
 
 This is meant to allow Kotlin/JVM instances to be, E.G., used as function arguments and mapping keys from scripts.
 
@@ -164,35 +164,36 @@ The Python-specific behaviour is also not meant as a hard standard, in that it d
 
 """
 
+
 try:
-	
+
 	import sys, types
 
 	stdout = sys.stdout
-	
+
 	import unciv_lib
-	
-	
+
+
 	uncivModule = types.ModuleType(name='unciv', doc=__doc__)
-	
+
 	sys.modules['unciv'] = uncivModule
-	
+
 	apiScope = uncivModule.__dict__
 	# None of this will work on Upy.
-	
+
 	apiScope.update(unciv_lib.api.Expose)
-	
+
 	apiScope['help'] = lambda *a, **kw: print(__doc__) if thing is None else help(*a, **kw)
-	
-	
+
+
 	foreignAutocompleter = unciv_lib.autocompletion.PyAutocompleteManager(apiScope, **unciv_lib.api.autocompleterkwargs)
-	
+
 	foreignActionReceiver = unciv_lib.api.UncivReplTransciever(scope=apiScope, autocompleter=foreignAutocompleter)
-	
+
 	foreignActionReceiver.ForeignREPL()
-	
+
 	raise RuntimeError("No REPL. Did you forget to uncomment a line in `main.py`?")
-	
+
 except Exception as e:
 #	try:
 #		import unciv_lib.utils

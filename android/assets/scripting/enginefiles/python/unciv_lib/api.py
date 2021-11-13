@@ -2,6 +2,7 @@ import json, os, builtins, sys
 
 from . import ipc, utils
 
+
 enginedir = os.path.dirname(__file__)
 
 def readlibfile(fp):
@@ -14,7 +15,7 @@ def readlibfile(fp):
 		# For debug with standalone Python, `sharedfiles` has to be accessed manually.
 		with open(os.path.join(enginedir, "../../../sharedfiles", fp)) as file:
 			return file.read()
-		
+
 apiconstants = json.loads(readlibfile("ScriptAPIConstants.json"))
 
 
@@ -46,7 +47,7 @@ def get_doc(obj):
 			return obj.__doc__
 	except AttributeError:
 		return None
-		
+
 
 @expose()
 def callable(obj):
@@ -127,7 +128,7 @@ Press [TAB] at any time to trigger autocompletion at the current cursor position
 			finally:
 				self.passMic()
 				return fakeout.getvalue()
-			
+
 	@ipc.receiverMethod('terminate', 'terminate_response')
 	def EvalForeignTerminate(self, packet):
 		return None

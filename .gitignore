@@ -149,3 +149,6 @@ GameSettings.json
 # Python
 *.pyc
 __pycache__
+
+# Geany
+.geany

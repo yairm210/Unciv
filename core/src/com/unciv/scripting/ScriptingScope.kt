@@ -8,13 +8,22 @@ import com.unciv.scripting.utils.InstanceRegistry
 import com.unciv.ui.worldscreen.WorldScreen
 
 
+/**
+ * Holds references to all internal game data that the console has access to.
+ *
+ * Also where to put any future `PlayerAPI`, `CheatAPI`, `ModAPI`, etc.
+ *
+ * For `LuaScriptingBackend`, `UpyScriptingBackend`, `QjsScriptingBackend`, etc, the hierarchy of data under this class definition should probably directly mirror the wrappers in the namespace exposed to the scripting language.
+ *
+ * `WorldScreen` gives access to `UnitTable.selectedUnit`, `MapHolder.selectedTile`, etc. Useful for contextual operations.
+ */
 class ScriptingScope(
         var civInfo: CivilizationInfo?,
         var gameInfo: GameInfo?,
         var uncivGame: UncivGame?,
         var worldScreen: WorldScreen?
     ) {
-        
+
     val apiHelpers = ApiHelpers(this)
 
     class ApiHelpers(val scriptingScope: ScriptingScope) {
@@ -27,11 +36,5 @@ class ScriptingScope(
         fun printLn(msg: Any?) = println(msg)
         fun toString(obj: Any?) = obj.toString()
     }
-        
-    // Holds references to all internal game data that the console has access to.
-    // Also where to put any `PlayerAPI`, `CheatAPI`, `ModAPI`, etc.
-    // For `LuaScriptingBackend`, `UpyScriptingBackend`, `QjsScriptingBackend`, etc, the hierarchy of data under this class definition should probably directly mirror the wrappers in the namespace exposed to the scripting language.
-    // `WorldScreen` gives access to `UnitTable.selectedUnit`, `MapHolder.selectedTile`, etc. Useful for contextual operations.
-    
-    // 
+
 }

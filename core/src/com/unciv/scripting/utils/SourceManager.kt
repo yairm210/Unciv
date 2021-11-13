@@ -14,11 +14,17 @@ object SourceManager {
         return ScriptingConstants.assetFolders.enginefilesAssets.child("${engine}/")
     }
 
+    /**
+     * Set up a directory tree with all known libraries and files for a scripting engine/language type.
+     *
+     * Creates temporary directory.
+     * Copies directory tree under `android/assets/scripting/sharedfiles/` into it, as specified in `ScriptingEngineConstants.json`
+     * Copies directory tree under `android/assets/scripting/enginefiles/{engine}` into it, as specified in `ScriptingEngineConstants.json`.
+     *
+     * @param engine Name of the engine type, as defined in scripting constants.
+     * @return `FileHandle()` for the temporary directory.
+     */
     fun setupInterpreterEnvironment(engine: String): FileHandle {
-        // Creates temporary directory.
-        // Copies directory tree under `android/assets/scripting/sharedfiles/` into it, as specified by `SharedData.json` 
-        // Copies directory tree under `android/assets/scripting/enginefiles/{engine}` into it, as specified by `{engine}.json`.
-        // Returns `FileHandle()` for the temporary directory.
         val enginedir = getEngineLibraries(engine)
         val outdir = FileHandle.tempDirectory("unciv-${engine}_")
         fun addfile(sourcedir: FileHandle, path: String) {

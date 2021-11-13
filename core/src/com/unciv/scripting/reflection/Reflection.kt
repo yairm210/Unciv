@@ -18,7 +18,7 @@ object Reflection {
             .first { it.name == propertyName } as KProperty1<Any, *>
         return property.get(instance) as R?
     }
-    
+
     fun readInstanceMethod(instance: Any, methodName: String): KCallable<Any> {
         val method = instance::class.members
             .first { it.name == methodName } as KCallable<Any>
@@ -39,7 +39,7 @@ object Reflection {
             .first { it.name == propertyName } as KMutableProperty1<Any, T?>
         property.set(instance, value)
     }
-    
+
     fun setInstanceItem(instance: Any, keyOrIndex: Any, value: Any?): Unit {
         if (keyOrIndex is Int) {
             (instance as MutableList<Any?>)[keyOrIndex] = value
@@ -47,7 +47,7 @@ object Reflection {
             (instance as MutableMap<Any, Any?>)[keyOrIndex] = value
         }
     }
-    
+
     fun removeInstanceItem(instance: Any, keyOrIndex: Any): Unit {
         if (keyOrIndex is Int) {
             (instance as MutableList<Any?>).removeAt(keyOrIndex)
@@ -67,9 +67,11 @@ object Reflection {
     data class PathElement(
         val type: PathElementType,
         val name: String,
+        /**
+         * For key and index accesses, and function calls, whether to evaluate `name` instead of using `params` for arguments/key.
+         * Default should be false, so deserialized JSON path lists are configured correctly in ScriptingProtocol.kt.
+         */
         val doEval: Boolean = false,
-        //For key and index accesses, and function calls, evaluate `name` instead of using `params` for arguments/key.
-        //Default should be false, so deserialized JSON path lists are configured correctly in ScriptingProtocol.kt.
         val params: List<@Serializable(with=TokenizingJson.TokenizingSerializer::class) Any?> = listOf()
 //        val params: List<@Contextual Any?> = listOf()
     )
@@ -86,7 +88,7 @@ object Reflection {
     )
 
     fun parseKotlinPath(code: String): List<PathElement> {
-        var path:MutableList<PathElement> = ArrayList<PathElement>()
+        var path: MutableList<PathElement> = ArrayList<PathElement>()
         var curr_type = PathElementType.Property
         var curr_name = ArrayList<Char>()
         var curr_brackets = ""
@@ -157,21 +159,21 @@ object Reflection {
 
     fun stringifyKotlinPath() {
     }
-    
+
     private val closingbrackets = null
-    
+
     data class OpenBracket(
         val char: Char,
         var offset: Int
     )
-    
+
     //class OpenBracketIterator() {
     //}
-    
-    
+
+
     //fun getOpenBracketStack() {
     //}
-    
+
     fun splitToplevelExprs(code: String, delimiters: String = ","): List<String> {
         return code.split(',').map{ it.trim(' ') }
         var segs = ArrayList<String>()
@@ -277,7 +279,7 @@ object Reflection {
             }
         }
     }
-    
+
     fun removeInstancePath(instance: Any, path: List<PathElement>): Unit {
         val leafobj = resolveInstancePath(instance, path.slice(0..path.size-2))
         val leafelement = path[path.size - 1]

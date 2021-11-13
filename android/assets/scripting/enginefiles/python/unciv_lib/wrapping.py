@@ -54,16 +54,16 @@ def ReversedMethod(func):
 
 def dummyForeignRequester(actionparams, responsetype):
 	return actionparams, responsetype
-	
-	
+
+
 def foreignValueParser(packet, *, raise_exceptions=True):
-	"""Value parse that reads a foreign request packet fitting a common structure."""
+	"""Value parser that reads a foreign request packet fitting a common structure."""
 	if packet.data["exception"] is not None and raise_exceptions:
 		raise ipc.ForeignError(packet.data["exception"])
 	return packet.data["value"]
 
 def foreignErrmsgChecker(packet):
-	"""Value parse that processes a foreign request packet fitting a simple structure."""
+	"""Value parser that processes a foreign request packet fitting a simple structure."""
 	if packet.data is not None:
 		raise ipc.ForeignError(packet.data)
 
@@ -160,7 +160,7 @@ def ResolveForOperators(cls):
 
 @ResolveForOperators
 class ForeignObject:
-	"""Wrapper for a foreign object."""
+	"""Wrapper for a foreign object Implements ScriptingProtocol."""
 	def __init__(self, path, foreignrequester=dummyForeignRequester):
 		object.__setattr__(self, '_path', (makePathElement(name=path),) if isinstance(path, str) else tuple(path))
 		object.__setattr__(self, '_foreignrequester', foreignrequester)
@@ -283,7 +283,7 @@ class ForeignObject:
 			}
 		},
 		'length_response',
-		foreignValueParser)	
+		foreignValueParser)
 	@ForeignRequestMethod
 	def __contains__(self, item):
 		return ({
@@ -304,7 +304,7 @@ class ForeignObject:
 			}
 		},
 		'keys_response',
-		foreignValueParser)	
+		foreignValueParser)
 	def values(self):
 		return (self[k] for k in self.keys())
 	def entries(self):

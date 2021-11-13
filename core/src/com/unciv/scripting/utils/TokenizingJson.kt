@@ -16,14 +16,16 @@ import kotlinx.serialization.modules.SerializersModule
 
 
 
+/**
+ * Json serialization that accepts `Any?`, and converts non-primitive values to string keys from `InstanceTokenizer`.
+ */
 object TokenizingJson {
 
-    // Json serialization that accepts `Any?`, and converts non-primitive values to string keys from `InstanceTokenizer`.
 
     object TokenizingSerializer: KSerializer<Any?> {
-    
+
         // Adapted from https://stackoverflow.com/a/66158603/12260302
-    
+
         override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Any?")
 
         @Suppress("UNCHECKED_CAST")
@@ -73,7 +75,7 @@ object TokenizingJson {
         encodeDefaults = true;
 //        serializersModule = serializersModule
     }
-    
+
     private fun isTokenizationMandatory(value: Any?): Boolean {
 //        // Forbid some objects from being serialized as normal JSON values.
 //        // com.unciv.models.ruleset.Building(), for example, and resumably all other types that inherit from Stats(), implement Iterable<*> and thus get serialized as JSON Arrays by default even though it's probably better to tokenize them.
@@ -85,18 +87,18 @@ object TokenizingJson {
         val qualname = value::class.qualifiedName
         return qualname != null && qualname.startsWith("com.unciv")
     }
-    
-    
+
+
     fun getJsonElement(value: Any?): JsonElement {
         if (value is JsonElement) {
             return value
         }
         if (!isTokenizationMandatory(value)) {
-            if (value is Map<*, *>) { //TODO: Decide what to do with the keys.
+            if (value is Map<*, *>) { //TODO: Decide what to do with non-string keys... I guess I could tokenize them?
                 return JsonObject( (value as Map<String, Any?>).mapValues{ getJsonElement(it.value) } )
             }
             if (value is Iterable<*>) {
-                // Apparently ::class.java.isArray can be used to check for primitive arrays, but it breaks 
+                // Apparently ::class.java.isArray can be used to check for primitive arrays, but it breaks
                 return JsonArray(value.map{ getJsonElement(it) })
             }
             if (value is Sequence<*>) {
@@ -105,13 +107,13 @@ object TokenizingJson {
                 println(v[0]!!::class.qualifiedName)
                 return getJsonElement(v)
             }
-            if (value is String) { 
+            if (value is String) {
                 return JsonPrimitive(value as String)
             }
-            if (value is Int || value is Long || value is Float || value is Double) { 
+            if (value is Int || value is Long || value is Float || value is Double) {
                 return JsonPrimitive(value as Number)
             }
-            if (value is Boolean) { //TODO: Arrays?
+            if (value is Boolean) { //TODO: Arrays and primitive arrays?
                 return JsonPrimitive(value as Boolean)
             }
             if (value == null) {
@@ -120,7 +122,7 @@ object TokenizingJson {
         }
         return JsonPrimitive(InstanceTokenizer.getToken(value))
     }
-    
+
     fun getJsonReal(value: JsonElement): Any? {
         if (value is JsonNull || value == JsonNull) {
             return null
