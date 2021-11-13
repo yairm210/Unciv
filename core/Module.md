@@ -282,4 +282,4 @@ Thus, at the IPC level, all foreign backends will actually use the same language
 
 ## Python Binding Implementation
 
-A description of how this REPL loop and IPC protocol are used to build scripting langauage bindings is in the module-level docstring of `/android/assets/scripting/enginefiles/python/main.py`.
+A description of how this REPL loop and IPC protocol are used to build scripting langauage bindings [is at `/android/assets/scripting/enginefiles/python/PythonScripting.md`](../android/assets/scripting/enginefiles/python/PythonScripting.md).
