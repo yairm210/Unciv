@@ -34,7 +34,6 @@ def ResolvingFunction(op, *, allowforeigntokens=False):
 		if not allowforeigntokens:
 			# Forbid foreign token strings from being manipulated through this operation.
 			for l in (args, kwargs.values()):
-				#TODO: Test this.
 				for o in l:
 					if api.isForeignToken(o):
 						raise TypeError(f"Not allowed to call `{op.__name__}()` function with foreign object token: {o}")
@@ -172,7 +171,7 @@ class ForeignObject:
 		return tuple(self._path)
 		#return ''.join(self._path)
 	def __getattr__(self, name):
-		# TODO: Shouldn't I calling get_doc or _docstring_ here?
+		# TODO: Shouldn't I special-casing get_doc or _docstring_ here? Wait, no, I think I thought it would be accessed on the class.
 		return self.__class__((*self._path, makePathElement(name=name)), self._foreignrequester)
 	def __getitem__(self, key):
 		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester)

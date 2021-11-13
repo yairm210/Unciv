@@ -37,7 +37,7 @@ def get_keys(obj):
 		return ()
 
 def get_doc(obj):
-	"""Get docstring of object. Fail silently if it has none, or generate one if it's a ForeignObject(). Used for PyAutocompleter."""
+	"""Get docstring of object. Fail silently if it has none, or get one through its IPC methods if it's a ForeignObject(). Used for PyAutocompleter."""
 	try:
 		if isinstance(obj, wrapping.ForeignObject):
 			doc = f"\n\n{str(obj._docstring_() or wrapping.stringPathList(obj._getpath_()))}\n\nArguments:\n"
@@ -52,7 +52,7 @@ def get_doc(obj):
 
 @expose()
 def callable(obj):
-	"""Return whether or not an object is callable. Used to let PyAutocompleter work with ForeignObject"""
+	"""Return whether or not an object is callable. Used to let PyAutocompleter work with ForeignObject by calling the latters' IPC callability method."""
 	if isinstance(obj, wrapping.ForeignObject):
 		return obj._callable_(raise_exceptions=False)
 	else:
@@ -68,7 +68,7 @@ autocompleterkwargs = {
 
 @expose()
 def real(obj):
-	"""Evaluate a foreign object wrapper into a real Python value, or return a value unchanged if it is not a foreign object wrapper."""
+	"""Evaluate a foreign object wrapper into a real Python value, or return a value unchanged if not given a foreign object wrapper."""
 	if isinstance(obj, wrapping.ForeignObject):
 		return obj._getvalue_()
 	return obj
@@ -80,19 +80,23 @@ def isForeignToken(obj):
 	return isinstance(resolved, str) and resolved.startswith(apiconstants['kotlinInstanceTokenPrefix'])
 
 
-class UncivReplTransciever(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
+class UncivReplTransceiver(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
 	"""Class that implements the Unciv IPC and scripting protocol by receiving and responding to its packets."""
-	def __init__(self, *args, autocompleter=None, **kwargs):
+	def __init__(self, *args, apiscope=None, autocompleter=None, **kwargs):
 		ipc.ForeignActionReceiver.__init__(self, *args, **kwargs)
 		self.autocompleter = autocompleter
+		self.apiscope = {} if apiscope is None else apiscope
 	def populateApiScope(self):
 		"""Use dir() on a foreign object wrapper with an empty path to populate the execution scope with all available names."""
 		names = dir(wrapping.ForeignObject((), foreignrequester=self.GetForeignActionResponse))
 		for n in names:
-			if n not in self.scope:
-				self.scope[n] = wrapping.ForeignObject(n, foreignrequester=self.GetForeignActionResponse)
+			if n not in self.apiscope:
+				self.apiscope[n] = wrapping.ForeignObject(n, foreignrequester=self.GetForeignActionResponse)
+		self.scope.update({**self.apiscope, **self.scope})
+		# TODO: Replace this update with Kotlin-side init?
 	def passMic(self):
 		"""Send a 'PassMic' packet."""
+		#TODO: This should use ForeignPacket(), no?
 		self.SendForeignAction({'action':None, 'identifier': None, 'data':None, 'flags':('PassMic',)})
 	@ipc.receiverMethod('motd', 'motd_response')
 	def EvalForeignMotd(self, packet):
@@ -101,6 +105,10 @@ class UncivReplTransciever(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
 		self.passMic()
 		return f"""
 sys.implementation == {str(sys.implementation)}
+
+Current imports:
+	from unciv import *
+	from unciv_pyhelpers import *
 
 Press [TAB] at any time to trigger autocompletion at the current cursor position, or display help text for an empty function call.
 

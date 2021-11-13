@@ -14,6 +14,8 @@ fun <T> ArrayList<T>.clipIndexToBounds(index: Int, extendsize: Int = 0): Int {
 }
 
 
+// TODO: Replace Exception types with Throwable? Wait, no. Apparently that just includes "serious problems that a reasonable application should not try to catch."
+
 /**
  * Make sure an index is valid for this array.
  *

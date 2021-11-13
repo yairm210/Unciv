@@ -19,7 +19,7 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import java.util.UUID
 
 
-// See Module.md a description of the protocol.
+// See Module.md for a description of the protocol.
 
 
 @Serializable
@@ -139,10 +139,9 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
     }
 
     fun makeActionResponse(packet: ScriptingPacket): ScriptingPacket {
-//        var action: String? = null
         val action = ScriptingProtocol.responseTypes[packet.action]!!
         var data: JsonElement? = null
-        var flags = mutableListOf<String>()
+        val flags = mutableListOf<String>()
         var value: JsonElement = JsonNull
         var exception: JsonElement = JsonNull
         when (packet.action) {

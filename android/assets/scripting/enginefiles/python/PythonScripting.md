@@ -1,3 +1,7 @@
+The Python API described by this document is built on the [IPC protocols and execution model described in `/core/Module.md`](../../../../../core/Module.md#package-comuncivscriptingprotocol).
+
+---
+
 There are basically two types of Python objects in this API:
 
 	*	Wrappers.
@@ -41,6 +45,18 @@ When a Kotlin/JVM class implements a property for size or keys, Python wrappers 
 print([real(city.name)+str(real(city.population.population)) for city in civInfo.cities])
 print({name: real(empire.cities and empire.cities[0]) for name, empire in gameInfo.ruleSet.nations.entries()})
 ```
+
+In the Python implementation of the IPC protocol, wrapper objects are automatically serialized as their evaluated values when used in IPC requests and responses.
+
+```python3
+somePythonVariable = gameInfo.turns
+# Assigns a wrapper object to somePythonVariable. Does not evaluate real value for `gameInfo.turns`.
+
+civInfo.tech.freeTechs = real(gameInfo.turns)
+# Explicitly evaluate gameInfo.turns before
+
+
+
 
 ---
 

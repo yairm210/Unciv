@@ -10,7 +10,14 @@
 				unciv_lib/utils.py
 				unciv_lib/wrapping.py
 				PythonScripting.md
+				unciv_pyhelpers.py
 				main.py
+				unciv_scripting_examples/
+				unciv_scripting_examples/__init__.py
+				unciv_scripting_examples/EndTimes.py
+				unciv_scripting_examples/Merfolk.py
+				unciv_scripting_examples/ExternalPipe.py
+				unciv_scripting_examples/PlayerMacros.py
 			]
 			syntaxHighlightingRegexStack: [
 			]

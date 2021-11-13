@@ -105,14 +105,14 @@ class PyAutocompleteManager(AutocompleteManager):
 					+ working_base
 					+ working_dot
 					+ (
-						f"{a}[" 
+						f"{a}["
 							if self.get_keys(get_a(a)) else
 						f"{a}("
 							if self.check_callable(get_a(a)) else
 						a
 					)
 					+ suffix
-				for a in attrs
+				for a in sorted(attrs)
 					if a.startswith(working_leaf)
 			])
 		except Exception as e:
@@ -137,4 +137,4 @@ class RlAutocompleteManager(AutocompleteManager):
 		else:
 			matches = [*self.scope.keys()]#, *keyword.kwlist]
 		return tuple([prefix+m+suffix for m in matches])
-		
+

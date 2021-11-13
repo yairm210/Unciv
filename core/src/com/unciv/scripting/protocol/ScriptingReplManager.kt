@@ -42,7 +42,7 @@ class ScriptingRawReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox
 
 
 /**
- * REPL manager that uses the IPC protocol defined in ScriptingProtocol.kt to communicate with a black box. Suitable for presenting arbitrary access to Kotlin/JVM state to scripting APIs. See Module.md for a description of the REPL loop.
+ * REPL manager that uses the IPC protocol defined in ScriptingProtocol.kt to communicate with a black box. Suitable for presenting arbitrary access to Kotlin/JVM state to scripting APIs. See Module.md for a detailed description of the REPL loop.
  */
 class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
 

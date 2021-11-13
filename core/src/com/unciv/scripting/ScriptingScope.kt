@@ -22,6 +22,7 @@ class ScriptingScope(
         var gameInfo: GameInfo?,
         var uncivGame: UncivGame?,
         var worldScreen: WorldScreen?
+        //val _availableNames = listOf("civInfo", "gameInfo", "uncivGame", "worldScreen", "apiHelpers")
     ) {
 
     val apiHelpers = ApiHelpers(this)
@@ -34,6 +35,8 @@ class ScriptingScope(
         val registeredInstances = InstanceRegistry()
         fun unchanged(obj: Any?) = obj //Debug/dev identity function for both Kotlin and scripts. Check if value survives serialization, force something to be added to ScriptingProtocol.instanceSaver, etc.
         fun printLn(msg: Any?) = println(msg)
+        //fun readLine
+        //Return a line from the main game process's STDIN.
         fun toString(obj: Any?) = obj.toString()
     }
 
