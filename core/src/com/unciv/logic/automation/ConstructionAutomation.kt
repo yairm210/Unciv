@@ -107,13 +107,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         if (civInfo.isPlayerCivilization()) return // don't want the ai to control what a player uses faith for
 
-        val chosenItem: ConstructionChoice = relativeCostEffectiveness.asSequence()
+        val chosenItem = relativeCostEffectiveness.asSequence()
             .filter { it.choiceModifier > 1f }
-            .filter { (it as INonPerpetualConstruction).canBePurchasedWithStat(cityInfo, Stat.Faith) }
             .filterNot { it.choice == chosenConstruction }
             .maxByOrNull { it.choiceModifier } ?: return
 
+        for (i in relativeCostEffectiveness)
+            println(i.choice)
 
+
+
+
+        cityConstructions.purchaseConstruction(chosenItem.choice, -1, false, stat=Stat.Faith)
 
     }
 
@@ -347,8 +352,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         var modifier = 50000f
 
         val missionary = cityConstructions.getConstructableUnits()
-                .filter { it -> it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion" }}
+            .filter { it.hasUnique("Can [] [] Times") }
             .firstOrNull()
+        println(missionary?.name)
+
 
         if (preferredVictoryType == VictoryType.Domination) return
         if (civInfo.religionManager.religion?.name == null) return
@@ -367,8 +374,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
 
-        if (buildMissionary > buildInqusitor && missionary != null) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary)
-        else if(missionary != null) addChoice(relativeCostEffectiveness, missionary.name, buildMissionary) // will change later when I add inquisitor AI
+        if (buildMissionary > buildInqusitor && missionary != null) addChoice(relativeCostEffectiveness, missionary.name, 90000f)
+        else if(missionary != null) addChoice(relativeCostEffectiveness, missionary.name, 90000f) // will change later when I add inquisitor AI
 
 
     }
