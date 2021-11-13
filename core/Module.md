@@ -1,3 +1,13 @@
+# Package com.unciv
+
+## Table of Contents
+
+* [Package `com.unciv.scripting`](#package-comuncivscripting)
+	* [Class Overview](#class-overview)
+* [Package `com.unciv.scripting.protocol`](#package-comuncivscriptingprotocol)
+	* [REPL Loop](#repl-loop)
+	* [IPC Protocol](#ipc-protocol)
+	* [Python Binding Implementation](#python-binding-implementation)
 
 # Package com.unciv.scripting
 
