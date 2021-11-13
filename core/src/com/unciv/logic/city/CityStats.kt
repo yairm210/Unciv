@@ -614,11 +614,11 @@ class CityStats(val cityInfo: CityInfo) {
         var foodEatenBySpecialists = 2f * cityInfo.population.getNumberOfSpecialists()
 
         // Deprecated since 3.16.11
-            for (unique in cityInfo.civInfo.getMatchingUniques("-[]% food consumption by specialists"))
+            for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.FoodConsumptionBySpecialistsDeprecated))
                 foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
         //
 
-        for (unique in cityInfo.getMatchingUniques("[]% food consumption by specialists []"))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
             if (cityInfo.matchesFilter(unique.params[1]))
                 foodEatenBySpecialists *= unique.params[0].toPercent()
 

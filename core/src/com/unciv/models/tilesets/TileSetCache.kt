@@ -22,8 +22,8 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
         val mods = mutableListOf("")
         if (UncivGame.isCurrentInitialized()) {
             mods.addAll(UncivGame.Current.settings.visualMods)
-            mods.addAll(ruleSetMods)
         }
+        mods.addAll(ruleSetMods)
         clear()
         for (mod in mods.distinct()) {
             val entry = allConfigs.entries.firstOrNull { it.key.mod == mod } ?: continue

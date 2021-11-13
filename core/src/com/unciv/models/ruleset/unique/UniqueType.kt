@@ -155,6 +155,15 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
 
+    FoodConsumptionBySpecialists("[amount]% food consumption by specialists [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.18.2", ReplaceWith("[-amount]% food consumption by specialists [cityFilter]"), DeprecationLevel.WARNING)
+    FoodConsumptionBySpecialistsDeprecated("-[amount]% food consumption by specialists [cityFilter]", UniqueTarget.Global),
+
+    ExcessHappinessToGlobalStat("[amount]% of excess happiness converted to [stat]", UniqueTarget.Global),
+    @Deprecated("As of 3.18.2", ReplaceWith("[50]% of excess happiness converted to [Culture]"), DeprecationLevel.WARNING)
+    ExcessHappinessToCultureDeprecated("50% of excess happiness added to culture towards policies", UniqueTarget.Global),
+
+
     // There is potential to merge these
     BuyUnitsIncreasingCost("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global),
     BuyBuildingsIncreasingCost("May buy [buildingFilter] buildings for [amount] [stat] [cityFilter] at an increasing price ([amount])", UniqueTarget.Global),
