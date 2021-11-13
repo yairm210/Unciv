@@ -9,6 +9,7 @@ import com.unciv.scripting.utils.Blackbox
 
 
 abstract class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {
+    //Thus, separate partly as a semantic distinction. ScriptingBackend is designed mostly to interact with ScriptingState and (indirectly, through ScriptingState) ConsoleScreen by presenting a clean interface to shallower classes in the call stack. This class is designed to do the opposite, and keep all the code for wrapping the interfaces of the deeper and more complicated ScriptingProtocol and Blackbox classes in one place.
 }
 
 

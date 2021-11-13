@@ -51,9 +51,9 @@ TokenizingJson() // Serializer and functions that use InstanceTokenizer.
 ## REPL Loop
 
 1. A scripted action is initiated from the Kotlin side, by sending a command string to the script interpreter.
-	1.a. While the script interpreter is running, it has a chance to request values from the Kotlin side by sending back packets encoding attribute/property, key, and call, and assignment stacks.
-	1.b. When the Kotlin side receives a request for a value, it uses reflection to access the requested property or call the requested method, and it sends the result to the script interpreter.
-	1.c. When the script interpreter finishes running, it sends a special packet to the Kotlin side communicating that the script interpreter has no more requests to make. The script interpreter then sends the REPL output of the command to the Kotlin side.
+	1. While the script interpreter is running, it has a chance to request values from the Kotlin side by sending back packets encoding attribute/property, key, and call, and assignment stacks.
+	2. When the Kotlin side receives a request for a value, it uses reflection to access the requested property or call the requested method, and it sends the result to the script interpreter.
+	3. When the script interpreter finishes running, it sends a special packet to the Kotlin side communicating that the script interpreter has no more requests to make. The script interpreter then sends the REPL output of the command to the Kotlin side.
 2. When the Kotlin interpreter receives the packet marking the end of the command run, it stops listening for value requests packets. It then receives the commnad result as the next value, and passes it back to the console screen or script handler.
 
 From Kotlin:
@@ -151,7 +151,7 @@ Example subsequent request packet from script interpreter using the token string
 }
 ```
 
-Equivalent Kotlin-side assignment operation resulting from this request packet:
+Equivalent Kotlin-side assignment operation resulting from this later request packet:
 
 ```
 someProperty = listOf(5, "ActualStringValue", SomeKotlinInstance@M3mAdDr)

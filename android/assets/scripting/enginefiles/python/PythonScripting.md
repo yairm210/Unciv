@@ -89,7 +89,7 @@ civInfo.removeUnit(unit)
 
 The rules for which classes are serialized as JSON values and which are serialized as token strings may be a little bit fuzzy and variable, as they are designed to maximise use cases.
 
-In general, Kotlin/JVM instances that *can* be cast into a type compatible with a JSON type will be serialized as such— Unless they are of classes defined within the Unciv packages themselves, in which case they will always be tokenized. The exemption for certain classes prevents everything that inherits from iterable interfaces— Like `Building()`, which inherits from `Stats:Iterable<Stats.StatValuePair>`— From being stripped down into JSON arrays when having having references to and members of their instances is much more useful.
+In general, Kotlin/JVM instances that *can* be cast into a type compatible with a JSON type will be serialized as such— Unless they are of classes defined within the Unciv packages themselves, in which case they will always be tokenized. The exemption for certain classes prevents everything that inherits from iterable interfaces— Like `Building()`, which inherits from `Stats:Iterable<Stats.StatValuePair>`— From being stripped down into JSON arrays when having access to their members and instances is much more useful.
 
 ---
 
@@ -112,7 +112,7 @@ apiHelpers.registeredInstances["centertile"] = token
 # Token string gets transformed back into `TileInfo()` in Kotlin/JVM assignment.
 
 print(type(apiHelpers.registeredInstances["centertile"]))
-# <class 'ForeignObject'>. Is now a full wrapper with path, and can be used for full attribute, key, and method access.
+# <class 'ForeignObject'>. A full wrapper with path, that can be used for full attribute, key, and method access.
 
 print(apiHelpers.registeredInstances["centertile"].baseTerrain)
 # Successful attribute access.
@@ -147,9 +147,13 @@ del apiHelpers.registeredInstances["myCoolScript"]
 
 The top-level namespace of the API can be accessed as a module in any script imported from it.
 
-This is useful when loading external scripts.
+This is useful when writing modules that are meant to be imported from the main Unciv Python namespace.
+
+In a file in your `PYTHONPATH`/`sys.path`:
 
 ```python3
+#MyCoolModule.py
+
 import unciv
 
 def printCivilizations():
@@ -157,6 +161,13 @@ def printCivilizations():
 		print(f"{unciv.real(civ.nation.name)}: {len(civ.cities)} cities")
 ```
 
+In Unciv:
+
+```python3
+>>> import MyCoolModule
+>>> MyCoolModule.printCivilizations()
+```
+
 ---
 
-The Python-specific behaviour is also not meant as a hard standard, in that it doesn't have to be copied exactly in any other languages. Some other design may be more suited for ECMAScript, Lua, and other possible backends. If implementing another language, I think some attempt should still be made to keep a similar API and feature parity, though.
+The Python-specific behaviour is not meant as a hard standard, in that it doesn't have to be copied exactly in any other languages. Some other design may be more suited for ECMAScript, Lua, and other possible backends. If implementing another language, I think some attempt should still be made to keep a similar API and feature equivalence, though.

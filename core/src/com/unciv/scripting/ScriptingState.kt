@@ -13,8 +13,16 @@ fun <T> ArrayList<T>.clipIndexToBounds(index: Int, extendsize: Int = 0): Int {
     return max(0, min(this.size-1+extendsize, index))
 }
 
+
+/**
+ * Make sure an index is valid for this array.
+ *
+ * Doing all checks with the same function and error message is probably easier to debug than letting an array access fail at the point of access.
+ *
+ * @param index Index to check.
+ * @throws IndexOutOfBoundsException if given invalid index.
+ */
 fun <T> ArrayList<T>.enforceValidIndex(index: Int) {
-    // Doing all checks with the same function and error message is probably easier to debug than letting an array access fail.
     if (index < 0 || this.size <= index) {
         throw IndexOutOfBoundsException("Index {index} is out of range of ArrayList().")
     }
@@ -35,7 +43,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     var activeCommandHistory: Int = 0
     // Actually inverted, because history items are added to end of list and not start. 0 means nothing, 1 means most recent command at end of list.
 
-
+    //Wrapper for property of scriptingScope.
     var civInfo: CivilizationInfo?
         get() = scriptingScope.civInfo
         set(value) { scriptingScope.civInfo = value }

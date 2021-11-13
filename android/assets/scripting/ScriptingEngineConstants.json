@@ -9,6 +9,7 @@
 				unciv_lib/ipc.py
 				unciv_lib/utils.py
 				unciv_lib/wrapping.py
+				PythonScripting.md
 				main.py
 			]
 			syntaxHighlightingRegexStack: [

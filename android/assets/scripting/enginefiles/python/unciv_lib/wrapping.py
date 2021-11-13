@@ -172,6 +172,7 @@ class ForeignObject:
 		return tuple(self._path)
 		#return ''.join(self._path)
 	def __getattr__(self, name):
+		# TODO: Shouldn't I calling get_doc or _docstring_ here?
 		return self.__class__((*self._path, makePathElement(name=name)), self._foreignrequester)
 	def __getitem__(self, key):
 		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester)

@@ -1,8 +1,12 @@
 try:
-	with open("PythonScripting.md", 'r') as f:
+	import os
+	with open(os.path.join(os.path.dirname(__file__), "PythonScripting.md"), 'r') as f:
 		__doc__ = f.read()
-except:
-	pass
+except Exception as e:
+	try:
+		__doc__ = f"{repr(e)}"
+	except:
+		pass
 
 
 try:
@@ -23,7 +27,7 @@ try:
 
 	apiScope.update(unciv_lib.api.Expose)
 
-	apiScope['help'] = lambda *a, **kw: print(__doc__) if thing is None else help(*a, **kw)
+	apiScope['help'] = lambda thing=None: print(__doc__) if thing is None else print(unciv_lib.api.get_doc(thing)) if isinstance(thing, unciv_lib.wrapping.ForeignObject) else help(thing)
 
 
 	foreignAutocompleter = unciv_lib.autocompletion.PyAutocompleteManager(apiScope, **unciv_lib.api.autocompleterkwargs)

@@ -41,6 +41,7 @@ def get_doc(obj):
 	try:
 		if isinstance(obj, wrapping.ForeignObject):
 			doc = f"\n\n{str(obj._docstring_() or wrapping.stringPathList(obj._getpath_()))}\n\nArguments:\n"
+			# TODO: This should proably be in ForeignObject.__getattr__/__getattribute__.
 			doc += "\n".join(f"\t{argname}: {argtype}" for argname, argtype in obj._args_())
 			return doc
 		else:
