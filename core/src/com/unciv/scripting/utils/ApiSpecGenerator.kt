@@ -11,6 +11,9 @@ import com.badlogic.gdx.utils.Json
 // Automatically running this should probably be a part of the build process.
 // Probably do whatever is done with `TranslationFileWriter`.
 
+@Retention(AnnotationRetention.RUNTIME)
+annotation class ExposeScriptingApi
+
 data class ApiSpecDef(
     var path: String,
     var isIterable: Boolean,
@@ -18,7 +21,7 @@ data class ApiSpecDef(
     var isCallable: Boolean,
     var callableArgs: List<String?>,
     // These are the basic values that are needed to implement a scripting API.
-    
+
     var _type: String? = null,
     //_docstring: String? = null,
     var _repeatedReferenceTo: String? = null,
@@ -44,7 +47,7 @@ fun makeMemberSpecDef(member: KCallable<*>): ApiSpecDef {
     }*/
     //val tmp: Collection<String> = kclass.members.filter{ it.name != null }.map{ it.name!! }
     //submembers.addAll(tmp)
-    //Using a straight `.map` 
+    //Using a straight `.map`
     return ApiSpecDef(
         path = member.name,
         isIterable = "iterator" in submembers,
@@ -60,7 +63,7 @@ class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
     fun isUncivClass(cls: KClass<*>): Boolean {
         return cls.qualifiedName!!.startsWith("com.unciv")
     }
-    
+
     fun getAllUncivClasses(): Set<KClass<*>> {
         val searchclasses = mutableListOf<KClass<*>>(scriptingScope::class)
         val encounteredclasses = mutableSetOf<KClass<*>>()
@@ -85,11 +88,15 @@ class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
         }
         return encounteredclasses
     }
-    
+
+    fun generateRootsApi(): List<String> {
+        return listOf()
+    }
+
     fun generateFlatApi(): List<String> {
         return scriptingScope::class.members.map{ it.name }
     }
-    
+
     fun generateClassApi(): Map<String, List<ApiSpecDef>> {
         // Provide options for the scripting languages. This function
         val classes = getAllUncivClasses()

@@ -50,6 +50,13 @@ def ReversedMethod(func):
 	_reversedop.__doc__ = f"{func.__doc__ or name + ' operator.'}\n\nReversed version."
 	return _reversedop
 
+def InplaceMethod(func):
+	"""Return a wrapped a function that calls ._setvalue_() on its first self argument with its original result."""
+	def _inplacemethod(self, *args, **kwargs):
+		self._setvalue_(func(self, *args, **kwargs))
+		return self
+	return _inplacemethod
+
 
 def dummyForeignRequester(actionparams, responsetype):
 	return actionparams, responsetype
@@ -138,6 +145,22 @@ _rmagicmeths = (
 	'__ror__',
 )
 
+_imagicmethods = (
+	'__iadd__',
+	'__isub__',
+	'__imul__',
+	'__imatmul__',
+	'__itruediv__',
+	'__ifloordiv__',
+	'__imod__',
+	'__ipow__',
+	'__ilshift__',
+	'__irshift__',
+	'__iand__',
+	'__ixor__',
+	'__ior__'
+)
+
 def ResolveForOperators(cls):
 	"""Decorator. Adds missing magic methods to a class, which resolve their arguments with `api.real(a)`."""
 	def alreadyhas(name):
@@ -154,6 +177,11 @@ def ResolveForOperators(cls):
 		normalname = rmeth.replace('__r', '__', 1)
 		if not alreadyhas(rmeth) and hasattr(cls, normalname):
 			setattr(cls, rmeth, ReversedMethod(getattr(cls, normalname)))
+	for imeth in _imagicmethods:
+		normalname = imeth.replace('__i', '__', 1)
+		if not alreadyhas(imeth) and hasattr(cls, normalname):
+			normalfunc = getattr(cls, normalname)
+			setattr(cls, imeth, InplaceMethod(normalfunc))
 	return cls
 
 
@@ -182,6 +210,10 @@ class ForeignObject:
 			return iter(self.keys())
 		except:
 			return (self[i] for i in range(0, len(self)))
+	def __setattr__(self, name, value):
+		return getattr(self, name)._setvalue_(value)
+	def __setitem__(self, key, value):
+		return self[key]._setvalue_(value)
 	@ForeignRequestMethod
 	def _getvalue_(self):
 		return ({
@@ -192,6 +224,17 @@ class ForeignObject:
 		},
 		'read_response',
 		foreignValueParser)
+	@ForeignRequestMethod
+	def _setvalue_(self, value):
+		return ({
+			'action': 'assign',
+			'data': {
+				'path': self._getpath_(),
+				'value': value
+			}
+		},
+		'assign_response',
+		foreignErrmsgChecker)
 	@ForeignRequestMethod
 	def _callable_(self, *, raise_exceptions=True):
 		return ({
@@ -233,17 +276,6 @@ class ForeignObject:
 		'dir_response',
 		foreignValueParser)
 	@ForeignRequestMethod
-	def __setattr__(self, name, value):
-		return ({
-			'action': 'assign',
-			'data': {
-				'path': getattr(self, name)._getpath_(),
-				'value': value
-			}
-		},
-		'assign_response',
-		foreignErrmsgChecker)
-	@ForeignRequestMethod
 	def __call__(self, *args):
 		return ({
 			'action': 'read',
@@ -253,17 +285,6 @@ class ForeignObject:
 		},
 		'read_response',
 		foreignValueParser)
-	@ForeignRequestMethod
-	def __setitem__(self, key, value):
-		return ({
-			'action': 'assign',
-			'data': {
-				'path': self[key]._getpath_(),
-				'value': value
-			}
-		},
-		'assign_response',
-		foreignErrmsgChecker)
 	@ForeignRequestMethod
 	def __delitem__(self, key):
 		return ({

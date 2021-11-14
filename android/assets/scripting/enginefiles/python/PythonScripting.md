@@ -13,7 +13,7 @@ A **wrapper** is an object that stores a list of attribute names, keys, and func
 
 A wrapper object does not store any more values than that. When it is evaluated, it uses a simple IPC protocol to request an up-to-date real value from the game's Kotlin code. The `unciv_lib.api.real()` function can be used to manually get a real Python value from a foreign instance wrapper.
 
-However, because the wrapper class implements many Magic Methods that automatically call its evaluation method, many programming idioms common in Python are possible with them even without manual evaluation. Comparisons, equality, arithmetic, concatenation, inplace operations and more are all supported.
+However, because the wrapper class implements many Magic Methods that automatically call its evaluation method, many programming idioms common in Python are possible with them even without manual evaluation. Comparisons, equality, arithmetic, concatenation, in-place operations and more are all supported.
 
 Accessing an attribute on a wrapper object returns a new wrapper object that has an additional name set to "Property" at the end of its path list. Performing an array or dictionary index returns a new wrapper with an additional "Key" element in its path list.
 
@@ -53,10 +53,34 @@ somePythonVariable = gameInfo.turns
 # Assigns a wrapper object to somePythonVariable. Does not evaluate real value for `gameInfo.turns`.
 
 civInfo.tech.freeTechs = real(gameInfo.turns)
-# Explicitly evaluate gameInfo.turns before
+# Explicitly evaluate gameInfo.turns before using it in IPC assignment.
+# 1. Makes IPC request for gameInfo.turns.
+# 2. Receives IPC response for gameInfo.turns as integer.
+# 3. Makes IPC request to assign resulting integer to civInfo.tech.freeTechs.
 
+civInfo.techs.freeTechs = gameInfo.turns
+# Does the same thing as above, because the gameInfo.turns wrapper object is resolved at the point of serialization.
+```
 
+The magic methods implemented on wrapper objects automatically evaluate wrappers into real Python values if they are used in Python-space operations.
 
+```python3
+gameInfo.turns + 5
+5 + gameInfo.turns
+x = 5
+x += gameInfo.turns
+# All works, because the gameInfo.turns wrapper is automatically resolved into an integer when it's added.
+```
+
+In-place operations on wrapper objects are implemented by performing the operation using Python semantics and then making an IPC request to assign the result in Kotlin/the JVM.
+
+```python3
+gameInfo.turns += 5
+
+# Equivalent to:
+
+gameInfo.turns = real(gameInfo.turns) + real(5)
+```
 
 ---
 
@@ -139,6 +163,27 @@ del apiHelpers.registeredInstances["centertile"]
 
 In order to use this technique properly, the assignment of an object to a concrete path should be done within the same REPL loop as the generation of the token used to assign it. This is because the Kotlin code responsible for generating tokens and managing the REPL loop keeps references to all returned objects within each REPL loop. Afterwards, these references are immediately cleared, so any objects that do not have references elsewhere in Kotlin/the JVM are liable to be garbage-collected.
 
+```python3
+>>> apiHelpers.registeredInstances["x"] = apiHelpers.Factories.Vector2(1,2)
+>>> worldScreen.mapHolder.setCenterPosition(apiHelpers.registeredInstances["x"], True, True)
+# Works, because the instance creation and token-based assignment in Kotlin are done in the same REPL execution.
+
+>>> x = apiHelpers.Factories.Vector2(1,2); civInfo.endTurn(); apiHelpers.registeredInstances["x"] = x
+>>> worldScreen.mapHolder.setCenterPosition(apiHelpers.registeredInstances["x"], True, True)
+# Also works.
+```
+
+```python3
+>>> x = apiHelpers.Factories.Vector2(1,2)
+>>> apiHelpers.registeredInstances["x"] = x
+>>> worldScreen.mapHolder.setCenterPosition(apiHelpers.registeredInstances["x"], True, True)
+# May not work, because the created instance has no reference in Kotlin between the two script executions and can be garbage-collected.
+
+>>> x = apiHelpers.Factories.Vector2(1,2)
+>>> worldScreen.mapHolder.setCenterPosition(x, True, True)
+# Also may not work.
+```
+
 **It is very important that you delete concrete paths you have set after you are done with them.** Any objects held at paths you do not delete will continue to occupy system memory for the remaining run time of the application's lifespan. We can't rely on Python's garbage collection in this case because it doesn't control the Kotlin objects, nor can we rely on the JVM's garbage collector because it doesn't know whether Python code still needs the objects in question, so you will have to manage the memory yourself by keeping a reference as long as you need an object and deleting it to free up memory afterwards.
 
 For any complicated script in Python, it is suggested that you write a context manager class to automatically take care of saving and freeing each object where appropriate.
@@ -161,7 +206,8 @@ del apiHelpers.registeredInstances["myCoolScript"]
 
 ---
 
-The top-level namespace of the API can be accessed as a module in any script imported from it.
+The top-level namespace of the API can be imported as the `unciv` module in any script started running in the same interpreter as it.\
+Further tools can be imported as `unciv_pyhelpers`.
 
 This is useful when writing modules that are meant to be imported from the main Unciv Python namespace.
 
@@ -171,10 +217,11 @@ In a file in your `PYTHONPATH`/`sys.path`:
 #MyCoolModule.py
 
 import unciv
+import unciv_pyhelpers
 
 def printCivilizations():
 	for civ in unciv.gameInfo.civilizations:
-		print(f"{unciv.real(civ.nation.name)}: {len(civ.cities)} cities")
+		print(f"{unciv_pyhelpers.real(civ.nation.name)}: {len(civ.cities)} cities")
 ```
 
 In Unciv:

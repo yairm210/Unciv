@@ -56,7 +56,7 @@ TokenizingJson() // Serializer and functions that use InstanceTokenizer.
 	1. While the script interpreter is running, it has a chance to request values from the Kotlin side by sending back packets encoding attribute/property, key, and call, and assignment stacks.
 	2. When the Kotlin side receives a request for a value, it uses reflection to access the requested property, call the requested method, or assign to the requested property, and it sends the result to the script interpreter. No changes to gameInfo state should happen during this loop except for what is specifically requested by the running script.
 	3. When the script interpreter finishes running, it sends a special packet to the Kotlin side communicating that the script interpreter has no more requests to make. The script interpreter then sends the REPL output of the command to the Kotlin side.
-2. When the Kotlin interpreter receives the packet marking the end of the command run, it stops listening for value requests packets. It then receives the commnad result as the next value, and passes it back to the console screen or script handler.
+2. When the Kotlin interpreter receives the packet marking the end of the command run, it stops listening for value requests packets. It then receives the command result as the next value, and passes it back to the console screen or script handler.
 
 From Kotlin:
 ```
@@ -174,7 +174,7 @@ someProperty = listOf(5, "ActualStringValue", SomeKotlinInstance@M3mAdDr)
 
 ---
 
-Some action types, data formats, and expected response data formats for packets sent from the Kotlin side to the script interpreter include:
+Some action types, data formats, and expected response types and data formats for packets sent from the Kotlin side to the script interpreter include:
 
 *Implemented by `class ScriptingProtocol(){}` and `class UncivReplTransceiver()`*
 
@@ -205,7 +205,7 @@ The above are basically a mirror of ScriptingBackend, so the same interface can 
 
 ---
 
-Some action types, data formats, and expected response types and formats for packets sent from the script interpreter to the Kotlin side include:
+Some action types, data formats, and expected response types and data formats for packets sent from the script interpreter to the Kotlin side include:
 
 *Implemented by `class ScriptingProtocol(){}` and `class ForeignObject()`*
 
@@ -307,8 +307,8 @@ Flags are string values for communicating extra information that doesn't need a 
 
 ---
 
-Thus, at the IPC level, all foreign backends will actually use the same language, which is this JSON-based protocol. Differences between Python, JS, Lua, etc. will all be down to how they interpret the "exec", "autocomplete", and "motd" requests differently, which each high-level scripting language is free to implement as works best for it.
+Thus, at the IPC level, all foreign backends will actually use the same language, which is this JSON-based protocol. Differences between Python, JS, Lua, etc. will all be down to how they interpret the "exec", "autocomplete", and "motd" requests differently, and how they use and expose the Kotlin/JVM-access request types differently, which each high-level scripting language is free to implement as works best for it.
 
 ## Python Binding Implementation
 
-A description of how this REPL loop and IPC protocol are used to build scripting langauage bindings [is at `/android/assets/scripting/enginefiles/python/PythonScripting.md`](../android/assets/scripting/enginefiles/python/PythonScripting.md).
+A description of how this REPL loop and IPC protocol are used to build a scripting langauage binding [is at `/android/assets/scripting/enginefiles/python/PythonScripting.md`](../android/assets/scripting/enginefiles/python/PythonScripting.md).
