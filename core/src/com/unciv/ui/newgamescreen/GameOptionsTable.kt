@@ -43,7 +43,6 @@ class GameOptionsTable(
             modCheckboxes = getModCheckboxes(isPortrait = true)
         } else {
             modCheckboxes = getModCheckboxes()
-            add(modCheckboxes).row()
         }
 
         add(Table().apply {
@@ -68,7 +67,8 @@ class GameOptionsTable(
         checkboxTable.addReligionCheckbox(cityStateSlider)
         add(checkboxTable).center().row()
 
-        
+        if (!isPortrait)
+            add(modCheckboxes).row()
 
         pack()
     }
