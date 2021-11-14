@@ -162,7 +162,7 @@ class NewGameScreen(
         }).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
 
-        topTable.add(newGameOptionsTable.getModCheckboxes(isPortrait = true)).expandX().fillX().row()
+        topTable.add(newGameOptionsTable.modCheckboxes).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
         
         topTable.add(ExpanderTab("Map Options") {

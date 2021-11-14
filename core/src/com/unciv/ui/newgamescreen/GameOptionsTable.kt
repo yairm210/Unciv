@@ -15,13 +15,14 @@ import com.unciv.ui.utils.*
 
 class GameOptionsTable(
     val previousScreen: IPreviousScreen,
-    val withoutMods: Boolean = false,
+    val isPortrait: Boolean = false,
     val updatePlayerPickerTable:(desiredCiv:String)->Unit
 ) : Table(CameraStageBaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
     var locked = false
-    private var modCheckboxes: ModCheckboxTable? = null
+    var modCheckboxes: ModCheckboxTable? = null
+    private set;
 
     init {
         getGameOptionsTable()
@@ -38,7 +39,11 @@ class GameOptionsTable(
         defaults().pad(5f)
 
         // We assign this first to make sure addBaseRulesetSelectBox doesn't reference a null object
-        if (!withoutMods) modCheckboxes = getModCheckboxes()
+        if (isPortrait) {
+            modCheckboxes = getModCheckboxes(isPortrait = true)
+        } else {
+            modCheckboxes = getModCheckboxes()
+        }
 
         add(Table().apply {
             defaults().pad(5f)
@@ -62,7 +67,8 @@ class GameOptionsTable(
         checkboxTable.addReligionCheckbox(cityStateSlider)
         add(checkboxTable).center().row()
 
-        if (!withoutMods) add(modCheckboxes).row()
+        if (!isPortrait)
+            add(modCheckboxes).row()
 
         pack()
     }
