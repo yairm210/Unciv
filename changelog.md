@@ -1,3 +1,19 @@
+## 3.18.2
+
+Pre-solved potential bugs
+
+Fixed tileset config conflicts between mods
+
+Fixed crashing music bug
+
+Caught out of memory errors when updating tiles with a catch-all popup
+
+Performance improvements, should help mitigate existing ANRs
+
+Resolved crashes in game options table when changing base ruleset before the mod list was defined
+
+Fixed a crash when changing the base ruleset while in portrait mode - By xlenstra
+
 ## 3.18.1
 
 Performance improvements
