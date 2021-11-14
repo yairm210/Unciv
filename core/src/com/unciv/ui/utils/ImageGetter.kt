@@ -66,7 +66,8 @@ object ImageGetter {
         loadModAtlases("", Gdx.files.internal(""))
 
         // These are from the mods
-        for (mod in UncivGame.Current.settings.visualMods + ruleset.mods) {
+        val visualMods = UncivGame.Current.settings.visualMods + ruleset.mods
+        for (mod in visualMods) {
             loadModAtlases(mod, Gdx.files.local("mods/$mod"))
         }
 

@@ -37,7 +37,7 @@ object Battle {
             /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
              * so we expended all of our movement points!
              */
-            if (attacker.unit.currentMovement != attackableTile.movementLeftAfterMovingToAttackTile)
+            if (attacker.unit.currentMovement == 0f)
                 return
             if (attacker.unit.hasUnique(UniqueType.MustSetUp) && !attacker.unit.isSetUpForSiege()) {
                 attacker.unit.action = UnitActionType.SetUp.value

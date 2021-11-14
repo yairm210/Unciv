@@ -396,8 +396,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
-        if (fogOfWar) mapHolder.updateTiles(selectedCiv)
-        else mapHolder.updateTiles(viewingCiv)
+
+        try { // Most memory errors occur here, so this is a sort of catch-all
+            if (fogOfWar) mapHolder.updateTiles(selectedCiv)
+            else mapHolder.updateTiles(viewingCiv)
+        } catch (outOfMemoryError: OutOfMemoryError) {
+            ToastPopup("Not enough memory on phone to load game!", this)
+        }
 
         topBar.update(selectedCiv)
 

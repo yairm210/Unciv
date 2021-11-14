@@ -38,6 +38,14 @@ class GameOptionsTable(
         top()
         defaults().pad(5f)
 
+        // We assign this first to make sure addBaseRulesetSelectBox doesn't reference a null object
+        if (isPortrait) {
+            modCheckboxes = getModCheckboxes(isPortrait = true)
+        } else {
+            modCheckboxes = getModCheckboxes()
+            add(modCheckboxes).row()
+        }
+
         add(Table().apply {
             defaults().pad(5f)
             addBaseRulesetSelectBox()
@@ -61,12 +69,6 @@ class GameOptionsTable(
         add(checkboxTable).center().row()
 
         
-        if (isPortrait) {
-            modCheckboxes = getModCheckboxes(isPortrait = true)
-        } else {
-            modCheckboxes = getModCheckboxes()
-            add(modCheckboxes).row()
-        }
 
         pack()
     }
@@ -155,7 +157,7 @@ class GameOptionsTable(
             gameParameters.baseRuleset
         ) { newBaseRuleset ->
             val previousSelection = gameParameters.baseRuleset
-            if (newBaseRuleset == gameParameters.baseRuleset) return@addSelectBox null 
+            if (newBaseRuleset == gameParameters.baseRuleset) return@addSelectBox null
             
             // Check if this mod is well-defined
             val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
@@ -177,10 +179,7 @@ class GameOptionsTable(
                 val toastMessage =
                     "This base ruleset is not compatible with the previously selected\nextension mods. They have been disabled.".tr()
                 ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
-                
-                // _technically_, [modCheckBoxes] can be [null] at this point, 
-                // but only if you change the option while the table is still loading, 
-                // but the timeframe for that is so small I'm just going to ignore that
+
                 modCheckboxes!!.disableAllCheckboxes()
             } else if (modLinkErrors.isWarnUser()) {
                 val toastMessage =

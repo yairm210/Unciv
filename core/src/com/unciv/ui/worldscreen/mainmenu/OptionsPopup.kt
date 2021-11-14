@@ -400,7 +400,8 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
 
         tileSetSelectBox.onChange {
             settings.tileSet = tileSetSelectBox.selected
-            TileSetCache.assembleTileSetConfigs()
+            // ImageGetter ruleset should be correct no matter what screen we're on
+            TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
             reloadWorldAndOptions()
         }
     }

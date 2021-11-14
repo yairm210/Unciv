@@ -87,7 +87,7 @@ class MusicController {
     /** @return the path of the playing track or null if none playing */
     private fun currentlyPlaying(): String = when(state) {
         ControllerState.Playing, ControllerState.PlaySingle, ControllerState.Pause ->
-            musicHistory.peekLast()
+            musicHistory.peekLast() ?: ""
         else -> ""
     }
 

@@ -342,11 +342,12 @@ class CivilizationInfo {
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
+    // This function should be removed and replaced by marking where uniques originate from, hopefully.
     fun getCivWideBuildingUniques(cityItIsFor: CityInfo?): Sequence<Unique> = 
         cities.asSequence().flatMap {
             city ->
                 if (cityItIsFor != null && city == cityItIsFor)
-                    city.getAllUniquesWithNonLocalEffects().filter { it.params.none { param -> param == "in other cities" || param == "in all cities" } }
+                    city.getAllUniquesWithNonLocalEffects().filter { !it.isAntiLocalEffect }
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
