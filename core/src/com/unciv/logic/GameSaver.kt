@@ -149,24 +149,15 @@ object GameSaver {
     }
 
     fun autoSaveSingleThreaded(gameInfo: GameInfo) {
-/*
-        ... out of order until further notice, see #3898
-        // If the user has chosen a custom save location outside of the usual game directories,
-        // they'll probably expect us to overwrite that instead. E.g. if the user is saving their
-        // game to their Google Drive folder, they'll probably want that progress to be synced to
-        // other devices automatically so they don't have to remember to manually save before
-        // exiting the game.
-        if (gameInfo.customSaveLocation != null) {
-            // GameName is unused here since we're just overwriting the existing file
-            saveGame(gameInfo, "", false)
-            return
+        try {
+            saveGame(gameInfo, "Autosave")
+        } catch (oom: OutOfMemoryError) {
+            return  // not much we can do here
         }
-*/
-
-        saveGame(gameInfo, "Autosave")
 
         // keep auto-saves for the last 10 turns for debugging purposes
-        val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfo.turns}"
+        val newAutosaveFilename =
+            saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfo.turns}"
         getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
 
         fun getAutosaves(): Sequence<FileHandle> {
