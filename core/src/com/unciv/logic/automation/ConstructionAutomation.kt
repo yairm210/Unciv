@@ -48,11 +48,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         choices.add(ConstructionChoice(choice,choiceModifier,cityConstructions.getRemainingWork(choice)))
     }
 
-    fun buyWithFaithChoice(toBeBuilt: String, choiceModifier: Float){
-        faithConstructionList.add(ConstructionChoice(toBeBuilt, choiceModifier, 0))
-
-
-    }
 
     fun chooseNextConstruction() {
         if (!UncivGame.Current.settings.autoAssignCityProduction
@@ -106,11 +101,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         cityConstructions.currentConstructionFromQueue = chosenConstruction
 
         if (civInfo.isPlayerCivilization()) return // don't want the ai to control what a player uses faith for
+        println(civInfo.isPlayerCivilization())
+        println(civInfo.religionManager.storedFaith)
 
         val chosenItem = relativeCostEffectiveness.asSequence()
             .filter { it.choiceModifier > 1f }
             .filterNot { it.choice == chosenConstruction }
             .maxByOrNull { it.choiceModifier } ?: return
+
 
         for (i in relativeCostEffectiveness)
             println(i.choice)
@@ -352,9 +350,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         var modifier = 50000f
 
         val missionary = cityConstructions.getConstructableUnits()
-            .filter { it.hasUnique("Can [] [] Times") }
+            .filter { it.name == "Missionary" }
             .firstOrNull()
-        println(missionary?.name)
+
 
 
         if (preferredVictoryType == VictoryType.Domination) return
