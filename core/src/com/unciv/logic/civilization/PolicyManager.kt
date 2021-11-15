@@ -42,17 +42,6 @@ class PolicyManager {
     fun getPolicyByName(name: String): Policy = civInfo.gameInfo.ruleSet.policies[name]!!
 
     fun setTransients() {
-        // Deprecated "Patronage " policy since 3.16.15
-            if (adoptedPolicies.contains("Patronage ")) {
-                adoptedPolicies.remove("Patronage ")
-                adoptedPolicies.add("Patronage")
-            }
-            if (adoptedPolicies.contains("Patronage  Complete")) {
-                adoptedPolicies.remove("Patronage  Complete")
-                adoptedPolicies.add("Patronage Complete")
-            }
-        //
-        
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
     }
