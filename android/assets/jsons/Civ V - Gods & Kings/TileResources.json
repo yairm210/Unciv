@@ -6,7 +6,9 @@
 		"terrainsCanBeFoundOn": ["Grassland"],
 		"food": 1,
 		"improvement": "Pasture",
-		"improvementStats": {"production": 1}
+		"improvementStats": {"production": 1},
+		"uniques": ["Generated on every [18] tiles <in [Featureless] [Grassland] tiles>",
+					"Generated on every [22] tiles <in [Featureless] [Grassland] tiles> <in [Hill] Regions>"]
 	},
 	{
 		"name": "Sheep",
@@ -14,7 +16,9 @@
 		"terrainsCanBeFoundOn": ["Plains","Hill"],
 		"food": 1,
 		"improvement": "Pasture",
-		"improvementStats": {"food": 1}
+		"improvementStats": {"food": 1},
+		"uniques": ["Generated on every [13] tiles <in [Hill] tiles>",
+					"Generated on every [10] tiles <in [Dry] [Hill] tiles> <in [Hill] Regions>"]
 	},
 	{
 		"name": "Deer",
@@ -22,7 +26,13 @@
 		"terrainsCanBeFoundOn": ["Forest","Tundra"],
 		"food": 1,
 		"improvement": "Camp",
-		"improvementStats": {"production": 1}
+		"improvementStats": {"production": 1},
+		"uniques": ["Generated on every [8] tiles <in [Tundra] [Forest] tiles>",
+					"Generated on every [12] tiles <in [Featureless] [Tundra] tiles>",
+					"Generated on every [25] tiles <in [Plains] [Forest] tiles> <in [Lowland] tiles>",
+					"Generated on every [25] tiles <in [Grassland] [Forest] tiles> <in [Lowland] tiles>",
+					"Generated on every [16] tiles <in [Featureless] [Tundra] tiles> <in [Hill] Regions>",
+					"Generated on every [28] tiles <in [Forest] tiles> <in [Hill] Regions>"]
 	},
 	{
 		"name": "Bananas",
@@ -30,7 +40,9 @@
 		"terrainsCanBeFoundOn": ["Jungle"],
 		"food": 1,
 		"improvement": "Plantation",
-		"improvementStats": {"food": 2,"production": -1}
+		"improvementStats": {"food": 2,"production": -1},
+		"uniques": ["Generated on every [14] tiles <in [Jungle] tiles>",
+					"Generated on every [16] tiles <in [Jungle] tiles> <in [Hill] Regions>"]
 	},
 	{
 		"name": "Wheat",
@@ -38,15 +50,21 @@
 		"terrainsCanBeFoundOn": ["Plains","Flood plains","Desert"],
 		"food": 1,
 		"improvement": "Farm",
-		"improvementStats": {"food": 1}
+		"improvementStats": {"food": 1},
+		"uniques": ["Generated on every [27] tiles <in [Featureless] [Plains] tiles>",
+					"Generated on every [10] tiles <in [Desert] [Fresh Water] tiles>",
+					"Generated on every [20] tiles <in [Featureless] [Plains] tiles> <in [Hill] Regions>"]
 	},
 	{
 		"name": "Stone",
 		"resourceType": "Bonus",
-		"terrainsCanBeFoundOn": ["Plains","Desert","Snow"],
+		"terrainsCanBeFoundOn": ["Grassland","Desert","Tundra"],
 		"production": 1,
 		"improvement": "Quarry",
 		"improvementStats": {"production": 1},
+		"uniques": ["Generated on every [20] tiles <in [Featureless] [Grassland] tiles> <in [Fresh Water] tiles>",
+					"Generated on every [15] tiles <in [Featureless] [Tundra] tiles>",
+					"Generated on every [19] tiles <in [Featureless] [Desert] tiles>"]
 	},
 	{
 		"name": "Fish",
@@ -54,7 +72,8 @@
 		"terrainsCanBeFoundOn": ["Coast"],
 		"food": 1,
 		"improvement": "Fishing Boats",
-		"improvementStats": {"food": 1}
+		"improvementStats": {"food": 1},
+		"uniques": ["Generated on every [10] tiles <in [Coast] tiles>"]
 	},
 	/*
 	{
@@ -72,11 +91,18 @@
 		"name": "Horses",
 		"resourceType": "Strategic",
 		"revealedBy": "Animal Husbandry",
-		"terrainsCanBeFoundOn": ["Plains","Grassland","Hill","Desert"],
+		"terrainsCanBeFoundOn": ["Plains","Grassland","Hill","Desert","Tundra"],
 		"production": 1,
 		"improvement": "Pasture",
 		"improvementStats": {"production": 1},
-		"uniques": ["Guaranteed with Strategic Balance resource option"],
+		"uniques": ["Guaranteed with Strategic Balance resource option",
+					"Generated with weight [100] <in [Featureless] [Grassland] tiles>",
+					"Generated with weight [100] <in [Featureless] [Plains] tiles>",
+					"Minor deposits generated with weight [10] <in [Grassland] [Hill] tiles>",
+					"Minor deposits generated with weight [10] <in [Plains] [Hill] tiles>",
+					"Minor deposits generated with weight [100] <in [Featureless] [Grassland] tiles> <in [Fresh Water] tiles>",
+					"Minor deposits generated with weight [20] <in [Featureless] [Grassland] tiles> <in [Dry] tiles>",
+					"Minor deposits generated with weight [30] <in [Featureless] [Plains] tiles>"],
 		"majorDepositAmount": {"sparse": 4, "default": 4, "abundant": 6},
 		"minorDepositAmount": {"sparse": 1, "default": 2, "abundant": 3}
 	},
@@ -88,7 +114,20 @@
 		"production": 1,
 		"improvement": "Mine",
 		"improvementStats": {"production": 1},
-		"uniques": ["Guaranteed with Strategic Balance resource option"],
+		"uniques": ["Guaranteed with Strategic Balance resource option",
+					"Generated with weight [45] <in [Featureless] [Tundra] tiles>",
+					"Generated with weight [25] <in [Featureless] [Snow] tiles>",
+					"Generated with weight [35] <in [Featureless] [Desert] tiles>",
+					"Generated with weight [26] <in [Hill] tiles>",
+					"Minor deposits generated with weight [10] <in [Marsh] tiles>",
+					"Minor deposits generated with weight [10] <in [Jungle] [Hill] tiles>",
+					"Minor deposits generated with weight [20] <in [Forest] tiles>",
+					"Minor deposits generated with weight [20] <in [Hill] tiles>",
+					"Minor deposits generated with weight [30] <in [Featureless] [Grassland] tiles> <in [Dry] tiles>",
+					"Minor deposits generated with weight [20] <in [Featureless] [Plains] tiles>",
+					"Minor deposits generated with weight [10] <in [Featureless] [Desert] tiles>",
+					"Minor deposits generated with weight [10] <in [Featureless] [Tundra] tiles>",
+					"Minor deposits generated with weight [10] <in [Featureless] [Snow] tiles>"],
 		"majorDepositAmount": {"sparse": 4, "default": 6, "abundant": 9},
 		"minorDepositAmount": {"sparse": 1, "default": 2, "abundant": 3}
 	},
@@ -100,6 +139,17 @@
 		"production": 1,
 		"improvement": "Mine",
 		"improvementStats": {"production": 2},
+		"uniques": ["Generated with weight [35] <in [Hill] tiles>",
+					"Generated with weight [30] <in [Jungle] tiles>",
+					"Generated with weight [30] <in [Forest] tiles>",
+					"Minor deposits generated with weight [10] <in [Marsh] tiles>",
+					"Minor deposits generated with weight [10] <in [Jungle] tiles>",
+					"Minor deposits generated with weight [10] <in [Forest] tiles>",
+					"Minor deposits generated with weight [20] <in [Grassland] [Hill] tiles>",
+					"Minor deposits generated with weight [20] <in [Plains] [Hill] tiles>",
+					"Minor deposits generated with weight [30] <in [Desert] [Hill] tiles>",
+					"Minor deposits generated with weight [30] <in [Tundra] [Hill] tiles>",
+					"Minor deposits generated with weight [30] <in [Snow] [Hill] tiles>"],
 		"majorDepositAmount": {"sparse": 5, "default": 7, "abundant": 10},
 		"minorDepositAmount": {"sparse": 2, "default": 3, "abundant": 3}
 	},
@@ -111,7 +161,18 @@
 		"production": 1,
 		"improvement": "Oil well",
 		"improvementStats": {"production": 3},
-		"uniques": ["Deposits in [Water] tiles always provide [4] resources", "Guaranteed with Strategic Balance resource option"],
+		"uniques": ["Deposits in [Coast] tiles always provide [4] resources",
+					"Guaranteed with Strategic Balance resource option",
+					"Generated with weight [65] <in [Marsh] tiles>",
+					"Generated with weight [40] <in [Featureless] [Tundra] tiles>",
+					"Generated with weight [60] <in [Featureless] [Snow] tiles>",
+					"Generated with weight [65] <in [Featureless] [Desert] tiles>",
+					"Generated with weight [100] <in [Coast] tiles>",
+					"Minor deposits generated with weight [20] <in [Marsh] tiles>",
+					"Minor deposits generated with weight [10] <in [Jungle] [Lowland] tiles>",
+					"Minor deposits generated with weight [10] <in [Featureless] [Desert] tiles>",
+					"Minor deposits generated with weight [20] <in [Featureless] [Tundra] tiles>",
+					"Minor deposits generated with weight [20] <in [Featureless] [Snow] tiles>"],
 		"majorDepositAmount": {"sparse": 5, "default": 7, "abundant": 9},
 		"minorDepositAmount": {"sparse": 2, "default": 3, "abundant": 3}
 	},
@@ -123,6 +184,11 @@
 		"production": 1,
 		"improvement": "Mine",
 		"improvementStats": {"production": 2},
+		"uniques": ["Generated with weight [15] <in [Featureless] [Tundra] tiles>",
+					"Generated with weight [15] <in [Featureless] [Snow] tiles>",
+					"Generated with weight [39] <in [Hill] tiles>",
+					"Minor deposits generated with weight [20] <in [Jungle] tiles>",
+					"Minor deposits generated with weight [10] <in [Featureless] [Desert] tiles>"],
 		"majorDepositAmount": {"sparse": 5, "default": 8, "abundant": 10},
 		"minorDepositAmount": {"sparse": 2, "default": 3, "abundant": 3}
 	},
@@ -134,6 +200,12 @@
 		"production": 1,
 		"improvement": "Mine",
 		"improvementStats": {"production": 2},
+		"uniques": ["Generated with weight [35] <in [Marsh] tiles>",
+					"Generated with weight [70] <in [Jungle] tiles>",
+					"Generated with weight [70] <in [Forest] tiles>",
+					"Minor deposits generated with weight [10] <in [Forest] tiles>",
+					"Minor deposits generated with weight [10] <in [Featureless] [Tundra] tiles>",
+					"Minor deposits generated with weight [10] <in [Featureless] [Snow] tiles>"],
 		"majorDepositAmount": {"sparse": 2, "default": 4, "abundant": 4},
 		"minorDepositAmount": {"sparse": 1, "default": 2, "abundant": 3}
 	},
@@ -146,9 +218,9 @@
 		"gold": 2,
 		"improvement": "Camp",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Tundra] regions with weight [40]",
-					"Appears in [Forest] regions with weight [10]",
-					"Appears near City States with weight [15]"]
+		"uniques": ["Generated with weight [40] <in [Tundra] Regions>",
+					"Generated with weight [10] <in [Forest] Regions>",
+					"Generated near City States with weight [15]"]
 	},
 	{
 		"name": "Cotton",
@@ -157,10 +229,10 @@
 		"gold": 2,
 		"improvement": "Plantation",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Desert] regions with weight [15]",
-					"Appears in [Grassland] regions with weight [30]",
-					"Appears in [Hybrid] regions with weight [15]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [15] <in [Desert] Regions>",
+					"Generated with weight [30] <in [Grassland] Regions>",
+					"Generated with weight [15] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Dyes",
@@ -169,10 +241,10 @@
 		"gold": 2,
 		"improvement": "Plantation",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Tundra] regions with weight [5]",
-					"Appears in [Jungle] regions with weight [5]",
-					"Appears in [Forest] regions with weight [30]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [5] <in [Tundra] Regions>",
+					"Generated with weight [5] <in [Jungle] Regions>",
+					"Generated with weight [30] <in [Forest] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Gems",
@@ -181,12 +253,12 @@
 		"gold": 3,
 		"improvement": "Mine",
 		"improvementStats": {"production": 1},
-		"uniques": ["Appears in [Tundra] regions with weight [5]",
-					"Appears in [Jungle] regions with weight [20]",
-					"Appears in [Hill] regions with weight [15]",
-					"Appears in [Grassland] regions with weight [5]",
-					"Appears in [Hybrid] regions with weight [5]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [5] <in [Tundra] Regions>",
+					"Generated with weight [20] <in [Jungle] Regions>",
+					"Generated with weight [15] <in [Hill] Regions>",
+					"Generated with weight [5] <in [Grassland] Regions>",
+					"Generated with weight [5] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Gold Ore", // Not called "Gold" in order to not conflict with siege type units for translations
@@ -195,11 +267,11 @@
 		"gold": 2,
 		"improvement": "Mine",
 		"improvementStats": {"production": 1},
-		"uniques": ["Appears in [Desert] regions with weight [25]",
-					"Appears in [Hill] regions with weight [30]",
-					"Appears in [Plains] regions with weight [5]",
-					"Appears in [Hybrid] regions with weight [5]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [25] <in [Desert] Regions>",
+					"Generated with weight [30] <in [Hill] Regions>",
+					"Generated with weight [5] <in [Plains] Regions>",
+					"Generated with weight [5] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Silver",
@@ -208,11 +280,11 @@
 		"gold": 2,
 		"improvement": "Mine",
 		"improvementStats": {"production": 1},
-		"uniques": ["Appears in [Tundra] regions with weight [25]",
-					"Appears in [Hill] regions with weight [30]",
-					"Appears in [Grassland] regions with weight [20]",
-					"Appears in [Hybrid] regions with weight [10]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [25] <in [Tundra] Regions>",
+					"Generated with weight [30] <in [Hill] Regions>",
+					"Generated with weight [20] <in [Grassland] Regions>",
+					"Generated with weight [10] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Incense",
@@ -221,10 +293,10 @@
 		"gold": 2,
 		"improvement": "Plantation",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Desert] regions with weight [35]",
-					"Appears in [Plains] regions with weight [10]",
-					"Appears in [Hybrid] regions with weight [5]",
-					"Appears near City States with weight [15]"]
+		"uniques": ["Generated with weight [35] <in [Desert] Regions>",
+					"Generated with weight [10] <in [Plains] Regions>",
+					"Generated with weight [5] <in [Hybrid] Regions>",
+					"Generated near City States with weight [15]"]
 	},
 	{
 		"name": "Ivory",
@@ -233,9 +305,9 @@
 		"gold": 2,
 		"improvement": "Camp",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Plains] regions with weight [35]",
-					"Appears in [Hybrid] regions with weight [15]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [35] <in [Plains] Regions>",
+					"Generated with weight [15] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Silk",
@@ -244,10 +316,10 @@
 		"gold": 2,
 		"improvement": "Plantation",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Jungle] regions with weight [5]",
-					"Appears in [Forest] regions with weight [30]",
-					"Appears in [Hybrid] regions with weight [5]",
-					"Appears near City States with weight [15]"]
+		"uniques": ["Generated with weight [5] <in [Jungle] Regions>",
+					"Generated with weight [30] <in [Forest] Regions>",
+					"Generated with weight [5] <in [Hybrid] Regions>",
+					"Generated near City States with weight [15]"]
 	},
 	{
 		"name": "Spices",
@@ -256,12 +328,12 @@
 		"gold": 2,
 		"improvement": "Plantation",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Jungle] regions with weight [30]",
-					"Appears in [Forest] regions with weight [10]",
-					"Appears in [Plains] regions with weight [5]",
-					"Appears in [Grassland] regions with weight [5]",
-					"Appears in [Hybrid] regions with weight [5]",
-					"Appears near City States with weight [15]"]
+		"uniques": ["Generated with weight [30] <in [Jungle] Regions>",
+					"Generated with weight [10] <in [Forest] Regions>",
+					"Generated with weight [5] <in [Plains] Regions>",
+					"Generated with weight [5] <in [Grassland] Regions>",
+					"Generated with weight [5] <in [Hybrid] Regions>",
+					"Generated near City States with weight [15]"]
 	},
 	{
 		"name": "Wine",
@@ -270,9 +342,9 @@
 		"gold": 2,
 		"improvement": "Plantation",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Plains] regions with weight [35]",
-					"Appears in [Hybrid] regions with weight [15]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [35] <in [Plains] Regions>",
+					"Generated with weight [15] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Sugar",
@@ -281,11 +353,11 @@
 		"gold": 2,
 		"improvement": "Plantation",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Jungle] regions with weight [20]",
-					"Appears in [Desert] regions with weight [15]",
-					"Appears in [Grassland] regions with weight [20]",
-					"Appears in [Hybrid] regions with weight [5]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [20] <in [Jungle] Regions>",
+					"Generated with weight [15] <in [Desert] Regions>",
+					"Generated with weight [20] <in [Grassland] Regions>",
+					"Generated with weight [5] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Marble",
@@ -305,13 +377,13 @@
 		"gold": 1,
 		"improvement": "Fishing Boats",
 		"improvementStats": {"food": 1},
-		"uniques": ["Appears in [Tundra] regions with weight [35]",
-					"Appears in [Forest] regions with weight [10]",
-					"Appears in [Hill] regions with weight [10]",
-					"Appears in [Plains] regions with weight [5]",
-					"Appears in [Grassland] regions with weight [10]",
-					"Appears in [Hybrid] regions with weight [20]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [35] <in [Tundra] Regions>",
+					"Generated with weight [10] <in [Forest] Regions>",
+					"Generated with weight [10] <in [Hill] Regions>",
+					"Generated with weight [5] <in [Plains] Regions>",
+					"Generated with weight [10] <in [Grassland] Regions>",
+					"Generated with weight [20] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Pearls",
@@ -320,14 +392,14 @@
 		"gold": 2,
 		"improvement": "Fishing Boats",
 		"improvementStats": {"food": 1},
-		"uniques": ["Appears in [Jungle] regions with weight [20]",
-					"Appears in [Forest] regions with weight [10]",
-					"Appears in [Desert] regions with weight [5]",
-					"Appears in [Hill] regions with weight [15]",
-					"Appears in [Plains] regions with weight [5]",
-					"Appears in [Grassland] regions with weight [10]",
-					"Appears in [Hybrid] regions with weight [20]",
-					"Appears near City States with weight [15]"]
+		"uniques": ["Generated with weight [20] <in [Jungle] Regions>",
+					"Generated with weight [10] <in [Forest] Regions>",
+					"Generated with weight [5] <in [Desert] Regions>",
+					"Generated with weight [15] <in [Hill] Regions>",
+					"Generated with weight [5] <in [Plains] Regions>",
+					"Generated with weight [10] <in [Grassland] Regions>",
+					"Generated with weight [20] <in [Hybrid] Regions>",
+					"Generated near City States with weight [15]"]
 	},
 	{
 		"name": "Jewelry",
@@ -349,11 +421,11 @@
 		"gold": 1,
 		"improvement": "Plantation",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Jungle] regions with weight [35]",
-					"Appears in [Forest] regions with weight [5]",
-					"Appears in [Desert] regions with weight [5]",
-					"Appears in [Hybrid] regions with weight [5]",
-					"Appears near City States with weight [15]"]
+		"uniques": ["Generated with weight [35] <in [Jungle] Regions>",
+					"Generated with weight [5] <in [Forest] Regions>",
+					"Generated with weight [5] <in [Desert] Regions>",
+					"Generated with weight [5] <in [Hybrid] Regions>",
+					"Generated near City States with weight [15]"]
 	},
 	{
 		"name": "Copper",
@@ -362,14 +434,14 @@
 		"gold": 2,
 		"improvement": "Mine",
 		"improvementStats": {"production": 2},
-		"uniques": ["Appears in [Tundra] regions with weight [15]",
-					"Appears in [Jungle] regions with weight [5]",
-					"Appears in [Forest] regions with weight [5]",
-					"Appears in [Desert] regions with weight [10]",
-					"Appears in [Hill] regions with weight [30]",
-					"Appears in [Grassland] regions with weight [20]",
-					"Appears in [Hybrid] regions with weight [20]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [15] <in [Tundra] Regions>",
+					"Generated with weight [5] <in [Jungle] Regions>",
+					"Generated with weight [5] <in [Forest] Regions>",
+					"Generated with weight [10] <in [Desert] Regions>",
+					"Generated with weight [30] <in [Hill] Regions>",
+					"Generated with weight [20] <in [Grassland] Regions>",
+					"Generated with weight [20] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	/* 
 	{
@@ -390,14 +462,14 @@
 		"gold": 1,
 		"improvement": "Fishing Boats",
 		"improvementStats": {"food": 1},
-		"uniques": ["Appears in [Tundra] regions with weight [30]",
-					"Appears in [Jungle] regions with weight [5]",
-					"Appears in [Forest] regions with weight [10]",
-					"Appears in [Hill] regions with weight [10]",
-					"Appears in [Plains] regions with weight [5]",
-					"Appears in [Grassland] regions with weight [20]",
-					"Appears in [Hybrid] regions with weight [20]",
-					"Appears near City States with weight [15]"]
+		"uniques": ["Generated with weight [30] <in [Tundra] Regions>",
+					"Generated with weight [5] <in [Jungle] Regions>",
+					"Generated with weight [10] <in [Forest] Regions>",
+					"Generated with weight [10] <in [Hill] Regions>",
+					"Generated with weight [5] <in [Plains] Regions>",
+					"Generated with weight [20] <in [Grassland] Regions>",
+					"Generated with weight [20] <in [Hybrid] Regions>",
+					"Generated near City States with weight [15]"]
 	},
 	{
 		"name": "Salt",
@@ -407,13 +479,13 @@
 		"food": 1,
 		"improvement": "Mine",
 		"improvementStats": {"food": 1,"production":1},
-		"uniques": ["Appears in [Tundra] regions with weight [15]",
-					"Appears in [Forest] regions with weight [5]",
-					"Appears in [Desert] regions with weight [15]",
-					"Appears in [Hill] regions with weight [10]",
-					"Appears in [Plains] regions with weight [25]",
-					"Appears in [Hybrid] regions with weight [15]",
-					"Appears near City States with weight [10]"]
+		"uniques": ["Generated with weight [15] <in [Tundra] Regions>",
+					"Generated with weight [5] <in [Forest] Regions>",
+					"Generated with weight [15] <in [Desert] Regions>",
+					"Generated with weight [10] <in [Hill] Regions>",
+					"Generated with weight [25] <in [Plains] Regions>",
+					"Generated with weight [15] <in [Hybrid] Regions>",
+					"Generated near City States with weight [10]"]
 	},
 	{
 		"name": "Truffles",
@@ -422,11 +494,11 @@
 		"gold": 2,
 		"improvement": "Camp",
 		"improvementStats": {"gold": 1},
-		"uniques": ["Appears in [Jungle] regions with weight [5]",
-					"Appears in [Forest] regions with weight [30]",
-					"Appears in [Plains] regions with weight [5]",
-					"Appears in [Grassland] regions with weight [5]",
-					"Appears in [Hybrid] regions with weight [10]",
-					"Appears near City States with weight [15]"]
+		"uniques": ["Generated with weight [5] <in [Jungle] Regions>",
+					"Generated with weight [30] <in [Forest] Regions>",
+					"Generated with weight [5] <in [Plains] Regions>",
+					"Generated with weight [5] <in [Grassland] Regions>",
+					"Generated with weight [10] <in [Hybrid] Regions>",
+					"Generated near City States with weight [15]"]
 	}
 ]

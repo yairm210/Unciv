@@ -117,7 +117,8 @@ enum class UniqueParameterType(val parameterName:String) {
     TerrainFilter("terrainFilter") {
         private val knownValues = setOf("All",
             "Coastal", "River", "Open terrain", "Rough terrain", "Water resource",
-            "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy")
+            "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
+            "Featureless", "Lowland", "Fresh Water", "Dry")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null

@@ -83,8 +83,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 || (state.unit != null && state.unit.matchesFilter(condition.params[0]))
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
-            UniqueType.ConditionalInTiles -> 
+            UniqueType.ConditionalInTiles,
+            UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0])
+            UniqueType.ConditionalInTilesAnd ->
+                state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0]) && state.attackedTile.matchesFilter(condition.params[1])
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0

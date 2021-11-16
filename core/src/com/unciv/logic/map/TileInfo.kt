@@ -364,7 +364,7 @@ open class TileInfo {
                 return terrain.getMatchingUniques(UniqueType.OverrideFertility).first().params[0].toInt()
             else
                 fertility += terrain.getMatchingUniques(UniqueType.AddFertility)
-                        .sumBy { it.params[0].toInt() }
+                        .sumOf { it.params[0].toInt() }
         }
         if (isAdjacentToRiver()) fertility += 1
         if (isAdjacentToFreshwater) fertility += 1 // meaning total +2 for river
@@ -530,6 +530,10 @@ open class TileInfo {
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
+            "Featureless" -> terrainFeatures.isEmpty()
+            "Lowland" -> getTerrainFeatures().none { it.hasUnique(UniqueType.VisibilityElevation) }
+            "Fresh Water" -> isAdjacentToFreshwater
+            "Dry" -> !isAdjacentToFreshwater
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (hasUnique(filter)) return true
@@ -797,9 +801,9 @@ open class TileInfo {
         resource = newResource.name
 
         if (newResource.resourceType != ResourceType.Strategic) return
-        
+
         for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles)) {
-            if (matchesTerrainFilter(unique.params[0])) {
+            if (matchesFilter(unique.params[0])) {
                 resourceAmount = unique.params[1].toInt()
                 return
             }

@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.equalsPlaceholderText
@@ -46,6 +47,11 @@ class MapRegions (val ruleset: Ruleset){
                 7 to listOf(0.20f, 0.20f, 0.15f, 0.15f, 0.10f, 0.10f, 0.10f),
                 8 to listOf(0.20f, 0.15f, 0.15f, 0.10f, 0.10f, 0.10f, 0.10f, 0.10f)
         )
+
+        // This number is 23 in G&K, but there's a bug where hills are exempt so this number brings
+        // the result closer to the density and distribution that was probably intended.
+        const val baseMinorDepositFrequency = 30
+
     }
 
     private val regions = ArrayList<Region>()
@@ -352,7 +358,6 @@ class MapRegions (val ruleset: Ruleset){
         placeImpact(ImpactType.Luxury,  tile, 3)
         placeImpact(ImpactType.Strategic,tile, 0)
         placeImpact(ImpactType.Bonus,   tile, 3)
-        placeImpact(ImpactType.Fish,    tile, 3)
         placeImpact(ImpactType.NaturalWonder, tile, 4)
     }
 
@@ -792,7 +797,7 @@ class MapRegions (val ruleset: Ruleset){
         assignLuxuries()
         placeMinorCivs(tileMap, minorCivs)
         placeLuxuries(tileMap)
-        // TODO: place strategic and bonus resources
+        placeStrategicAndBonuses(tileMap)
     }
 
     /** Assigns a luxury to each region. No luxury can be assigned to too many regions.
@@ -802,7 +807,7 @@ class MapRegions (val ruleset: Ruleset){
         // If there are any weightings defined in json, assume they are complete. If there are none, use flat weightings instead
         val fallbackWeightings = ruleset.tileResources.values.none {
             it.resourceType == ResourceType.Luxury &&
-                (it.hasUnique(UniqueType.LuxuryWeighting) || it.hasUnique(UniqueType.LuxuryWeightingForCityStates)) }
+                (it.uniqueObjects.any { unique -> unique.isOfType(UniqueType.ResourceWeighting) } || it.hasUnique(UniqueType.LuxuryWeightingForCityStates)) }
 
         val maxRegionsWithLuxury = when {
             regions.count() > 12 -> 3
@@ -824,11 +829,12 @@ class MapRegions (val ruleset: Ruleset){
                 .forEach { amountRegionsWithLuxury[it.name] = 0 }
 
         for (region in regions.sortedBy { getRegionPriority(ruleset.terrains[it.type]) } ) {
+            val regionConditional = StateForConditionals(region = region)
             var candidateLuxuries = assignableLuxuries.filter {
                 amountRegionsWithLuxury[it.name]!! < maxRegionsWithLuxury &&
                 // Check that it has a weight for this region type
                 (fallbackWeightings ||
-                    it.getMatchingUniques(UniqueType.LuxuryWeighting).any { unique -> unique.params[0] == region.type } ) &&
+                    it.hasUnique(UniqueType.ResourceWeighting, regionConditional)) &&
                 // Check that there is enough coast if it is a water based resource
                 ((region.terrainCounts["Coastal"] ?: 0) >= 12 ||
                     it.terrainsCanBeFoundOn.any { terrain -> ruleset.terrains[terrain]!!.type != TerrainType.Water } )
@@ -856,12 +862,11 @@ class MapRegions (val ruleset: Ruleset){
 
             // Pick a luxury at random. Weight is reduced if the luxury has been picked before
             val modifiedWeights = candidateLuxuries.map {
-                val weightingUnique = it.getMatchingUniques(UniqueType.LuxuryWeighting)
-                        .filter { unique -> unique.params[0] == region.type }.firstOrNull()
+                val weightingUnique = it.getMatchingUniques(UniqueType.ResourceWeighting, regionConditional).firstOrNull()
                 if (weightingUnique == null)
                     1f / (1f + amountRegionsWithLuxury[it.name]!!)
                 else
-                    weightingUnique.params[1].toFloat() / (1f + amountRegionsWithLuxury[it.name]!!)
+                    weightingUnique.params[0].toFloat() / (1f + amountRegionsWithLuxury[it.name]!!)
             }
             region.luxury = candidateLuxuries.randomWeighted(modifiedWeights).name
             amountRegionsWithLuxury[region.luxury!!] = amountRegionsWithLuxury[region.luxury]!! + 1
@@ -1117,13 +1122,12 @@ class MapRegions (val ruleset: Ruleset){
         placeImpact(ImpactType.Luxury,  tile, 3)
         placeImpact(ImpactType.Strategic,tile, 0)
         placeImpact(ImpactType.Bonus,   tile, 3)
-        placeImpact(ImpactType.Fish,    tile, 3)
-        placeImpact(ImpactType.Marble,  tile, 4)
 
         normalizeStart(tile, tileMap, minorCiv = true)
     }
 
     /** Places all Luxuries onto [tileMap]. Assumes that assignLuxuries and placeMinorCivs have been called. */
+    // TODO: Can't place coastal luxuries !!!!
     private fun placeLuxuries(tileMap: TileMap) {
         // First place luxuries at major civ start locations
         val averageFertilityDensity = regions.sumOf { it.totalFertility } / regions.sumOf { it.tiles.count() }.toFloat()
@@ -1258,8 +1262,197 @@ class MapRegions (val ruleset: Ruleset){
         }
     }
 
+    private fun placeStrategicAndBonuses(tileMap: TileMap) {
+        println("Placing strategic resources...")
+        val strategicResources = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
+        // As usual, if there are any relevant json definitions, assume they are complete
+        val fallbackWeightings = ruleset.tileResources.values.none {
+            it.resourceType == ResourceType.Strategic &&
+                    it.uniqueObjects.any { unique -> unique.isOfType(UniqueType.ResourceWeighting) }
+        }
+        if (fallbackWeightings)
+            println("Using fallback weightings!")
+        /* There are a couple competing/complementary distribution systems at work here. First, major
+           deposits are placed according to a frequency defined in the terrains themselves, for each
+           tile that is eligible to get a major deposit, there is a weighted random choice between
+           resource types.
+           Minor deposits are placed by randomly picking a number of land tiles from anywhere on the
+           map (so not stratified by terrain type) and assigning a weighted randomly picked resource.
+           Bonuses are placed according to a frequency for a rule like "every 8 jungle hills", here
+           implemented as a conditional.
+           We need to build lists of all tiles with a given terrain type, for major deposits, land
+           tiles for minor deposits, and for tiles following a given rule for bonuses. */
+
+        // Determines number tiles per resource
+        val bonusMultiplier = when (tileMap.mapParameters.mapResources) {
+            MapResources.sparse -> 1.5f
+            MapResources.abundant -> 0.6667f
+            else -> 1f
+        }
+        // Go through the entire map and build a ton of lists.
+        val interestingTerrains = ruleset.tileResources.values.filter {
+            it.resourceType == ResourceType.Strategic ||
+                    it.resourceType == ResourceType.Bonus
+        }.flatMap { it.terrainsCanBeFoundOn }.toSet()
+        println("Interesting terrains: $interestingTerrains")
+        val tileLists = HashMap<Terrain, MutableList<TileInfo>>() // For major deposits
+        ruleset.terrains.values.filter { it.name in interestingTerrains }.forEach {
+            tileLists[it] = ArrayList()
+        }
+        val landList = ArrayList<TileInfo>() // For minor deposits
+        val ruleLists = HashMap<Unique, MutableList<TileInfo>>() // For bonuses
+        ruleset.tileResources.values.forEach {
+            for (rule in it.uniqueObjects.filter { unique -> unique.type == UniqueType.ResourceFrequency }) {
+                val simpleRule = anonymizeUnique(rule)
+                if (ruleLists.keys.none { otherRule -> otherRule.text == simpleRule.text }) // Need to do text comparison since the uniques will not be equal otherwise
+                    ruleLists[simpleRule] = ArrayList()
+            }
+        }
+        // Now go through the entire map to build lists
+        for (tile in tileMap.values.shuffled()) {
+            if (tile.isLand)
+                landList.add(tile)
+            val terrainCondition = StateForConditionals(attackedTile = tile, region = regions.firstOrNull { tile in it.tiles })
+            for ((rule, list) in ruleLists) {
+                if (rule.conditionalsApply(terrainCondition)) {
+                    list.add(tile)
+                }
+            }
+            if (tile.terrainFeatures.count() > 1) continue // Not interested in forest hill situations for major deposits, too complicated
+            val lastTerrain = tile.getLastTerrain()
+            if (lastTerrain.name in interestingTerrains) {
+                tileLists[lastTerrain]!!.add(tile)
+            }
+        }
+        println("Rules: \n${ruleLists.keys.map { it.text + ": " + ruleLists[it]!!.count().toString() + "\n" }}")
+        // Keep track of total placed strategic resources in case we need to top them up later
+        val totalPlaced = HashMap<TileResource, Int>()
+        strategicResources.forEach { totalPlaced[it] = 0 }
+
+        // First place major deposits on land
+        for ((terrain, tileList) in tileLists) {
+            if (terrain.type == TerrainType.Water) continue // Save water deposits for last
+            totalPlaced += placeMajorDeposits(tileList, terrain, fallbackWeightings, 2, 2)
+        }
+
+        // Second add some small deposits of modern strategic resources to city states
+        val lastEra = ruleset.eras.values.maxOf { it.eraNumber }
+        val modernOptions = strategicResources.filter {
+            it.revealedBy != null &&
+                    ruleset.eras[ruleset.technologies[it.revealedBy]!!.era()]!!.eraNumber >= lastEra / 2
+        }
+        println("Modern strategics: ${modernOptions.map { it.name }}")
+        for (cityStateLocation in tileMap.startingLocationsByNation.filterKeys { ruleset.nations[it]!!.isCityState() }.values.map { it.first() }) {
+            val resourceToPlace = modernOptions.random()
+            totalPlaced[resourceToPlace] =
+                    totalPlaced[resourceToPlace]!! + tryAddingResourceToTiles(resourceToPlace, 1, cityStateLocation.getTilesInDistanceRange(1..3))
+        }
+        println("Total placed after placing majors: $totalPlaced")
+
+        // Third add some minor deposits to land tiles
+        // Note: In G&K there is a bug where minor deposits are never placed on hills. We're not replicating that.
+        val frequency = (baseMinorDepositFrequency * bonusMultiplier).toInt()
+        val minorDepositsToAdd = (landList.count() / frequency) + 1
+        var minorDepositsAdded = 0
+        println("Adding minor deposits, target nr $minorDepositsToAdd..")
+        for (tile in landList) {
+            if (tile.resource != null || tileData[tile.position]!!.impacts.containsKey(ImpactType.Strategic))
+                continue
+            val conditionalTerrain = StateForConditionals(attackedTile = tile)
+            val weightings = strategicResources.map {
+                if (fallbackWeightings) {
+                    if (tile.getLastTerrain().name in it.terrainsCanBeFoundOn) 1f else 0f
+                } else {
+                    val uniques = it.getMatchingUniques(UniqueType.MinorDepositWeighting, conditionalTerrain).toList()
+                    uniques.sumOf { unique -> unique.params[0].toInt() }.toFloat()
+                }
+            }
+            println("Considering a tile with ${tile.getAllTerrains().toList().map { it.name }}, candidates are ${strategicResources.filter { weightings[strategicResources.indexOf(it)] > 0f }.map { it.name + ": " + weightings[strategicResources.indexOf(it)] }}")
+            if (weightings.sum() <= 0) {
+                println("No good options")
+                continue
+            }
+            val resourceToPlace = strategicResources.randomWeighted(weightings)
+            println("Let's go with ${resourceToPlace.name}.")
+            tile.setTileResource(resourceToPlace, majorDeposit = false)
+            placeImpact(ImpactType.Strategic, tile, Random.nextInt(2) + Random.nextInt(2))
+            totalPlaced[resourceToPlace] = totalPlaced[resourceToPlace]!! + 1
+            minorDepositsAdded++
+            if (minorDepositsAdded >= minorDepositsToAdd)
+                break
+        }
+
+        // Fourth add water-based major deposits. Extra impact because we don't want them too clustered and there is usually lots to go around
+        for ((terrain, tileList) in tileLists) {
+            if (terrain.type != TerrainType.Water) continue // Now we're doing the water ones
+            totalPlaced += placeMajorDeposits(tileList, terrain, fallbackWeightings, 4, 3)
+        }
+        println("Total placed: ${totalPlaced.mapKeys { it.key.name }}")
+
+        // Fifth place up to 2 extra deposits of each resource type if there is < 1 per civ
+        for (resource in strategicResources) {
+            var extraNeeded = min(2, regions.count() - totalPlaced[resource]!!)
+            if (extraNeeded > 0) {
+                println("Very little ${resource.name}, placing $extraNeeded more.")
+                for (list in tileLists.filter {
+                    it.key.name in resource.terrainsCanBeFoundOn &&
+                            it.value.isNotEmpty()
+                }.values) {
+                    extraNeeded -= tryAddingResourceToTiles(resource, extraNeeded, list.asSequence(), respectImpacts = true)
+                    if (extraNeeded <= 0)
+                        break
+                }
+            }
+        }
+
+        // Figure out if bonus generation rates are defined in json. Assume that if there are any, the definitions are complete.
+        val fallbackBonuses = ruleset.tileResources.values.none { it.uniqueObjects.any { unique -> unique.type == UniqueType.ResourceFrequency } }
+
+        // Sixth place bonus resources (and other resources that might have been assigned frequency-based generation).
+        // Water-based bonuses go last and have extra impact, because coasts are very common and we don't want too much clustering
+        val sortedResourceList = ruleset.tileResources.values.sortedBy { isWaterOnlyResource(it) }
+        for (resource in sortedResourceList) {
+            val extraImpact = if (isWaterOnlyResource(resource)) 1 else 0
+            for (rule in resource.uniqueObjects.filter { it.type == UniqueType.ResourceFrequency }) {
+                // Figure out which list applies
+                val simpleRule = anonymizeUnique(rule)
+                val list = ruleLists.filterKeys { it.text == simpleRule.text }.values.first()
+                // Place the resources
+                placeResourcesInTiles((rule.params[0].toFloat() * bonusMultiplier).toInt(), list, listOf(resource), 0 + extraImpact, 2 + extraImpact, false)
+            }
+            if(fallbackBonuses && resource.resourceType == ResourceType.Bonus) {
+                // Since we haven't been able to generate any rule-based lists, just generate new ones on the fly
+                // Increase impact to avoid clustering since there is no terrain type stratification.
+                val fallbackList = tileMap.values.filter { it.getLastTerrain().name in resource.terrainsCanBeFoundOn }.shuffled()
+                placeResourcesInTiles((20 * bonusMultiplier).toInt(), fallbackList, listOf(resource), 2 + extraImpact, 2 + extraImpact, false)
+            }
+        }
+
+        // Seventh (and finally!) place an extra bonus in the THIRD ring of each start to make it slightly more attractive
+        for (region in regions) {
+            println("Adding sexy bonus to region ${regions.indexOf(region)}")
+            val terrain = if (region.type == "Hybrid") region.terrainCounts.filterNot { it.key == "Coastal" }.maxByOrNull { it.value }!!.key
+                else region.type
+            val resourceUnique = ruleset.terrains[terrain]!!.getMatchingUniques(UniqueType.RegionExtraResource).firstOrNull()
+            // If this region has an explicit "this is the bonus" unique go with that, else random appropriate
+            val resource = if (resourceUnique != null) ruleset.tileResources[resourceUnique.params[0]]!!
+                else ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && terrain in it.terrainsCanBeFoundOn }.random()
+            val candidateTiles = tileMap[region.startPosition!!].getTilesAtDistance(3).shuffled()
+            val amount = if (resourceUnique != null) 2 else 1 // Place an extra if the region type requests it
+            if (tryAddingResourceToTiles(resource, amount, candidateTiles) == 0) {
+                // We couldn't place any, try adding a fish instead
+                val fishyBonus = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus &&
+                    it.terrainsCanBeFoundOn.any { terrainName -> ruleset.terrains[terrainName]!!.type == TerrainType.Water } }
+                        .randomOrNull()
+                if (fishyBonus != null)
+                    tryAddingResourceToTiles(fishyBonus, 1, candidateTiles)
+            }
+        }
+    }
+
     /** Attempts to place [amount] [resource] on [tiles], checking tiles in order. A [ratio] below 1 means skipping
-     *  some tiles, ie ratio = 0.25 will put a resource on every 4th eligible tile. Returns number of placed resources. */
+     *  some tiles, ie ratio = 0.25 will put a resource on every 4th eligible tile. Can optionally respect impact flags,
+     *  and places impact if [baseImpact] >= 0. Returns number of placed resources. */
     private fun tryAddingResourceToTiles(resource: TileResource, amount: Int, tiles: Sequence<TileInfo>, ratio: Float = 1f,
                                          respectImpacts: Boolean = false, baseImpact: Int = -1, randomImpact: Int = 0,
                                          majorDeposit: Boolean = false): Int {
@@ -1290,47 +1483,121 @@ class MapRegions (val ruleset: Ruleset){
         return amountAdded
     }
 
+    /** Attempts to place major deposits in a [tileList] consisting exclusively of [terrain] tiles.
+     *  Lifted out of the main function to allow postponing water resources.
+     *  @return a map of resource types to placed deposits. */
+    private fun placeMajorDeposits(tileList: List<TileInfo>, terrain: Terrain, fallbackWeightings: Boolean, baseImpact: Int, randomImpact: Int): Map<TileResource, Int> {
+        if (tileList.isEmpty())
+            return mapOf()
+        val frequency = if (terrain.hasUnique(UniqueType.MajorStrategicFrequency))
+            terrain.getMatchingUniques(UniqueType.MajorStrategicFrequency).first().params[0].toInt()
+        else 25
+        val conditionalTerrain = StateForConditionals(attackedTile = tileList.first())
+        val resourceOptions = ruleset.tileResources.values.filter {
+            it.resourceType == ResourceType.Strategic &&
+                    ((fallbackWeightings && terrain.name in it.terrainsCanBeFoundOn) ||
+                    it.hasUnique(UniqueType.ResourceWeighting, conditionalTerrain))
+        }
+        return if (resourceOptions.isNotEmpty())
+            placeResourcesInTiles(frequency, tileList, resourceOptions, baseImpact, randomImpact, true)
+        else
+            mapOf()
+    }
+
+    /** Given a [tileList] and possible [resourceOptions], will place a resource on every [frequency] tiles.
+     *  Goes through the list in order, so pre-shuffle it!
+     *  Assumes all tiles in the list are of the same terrain type when generating weightings, irrelevant if only one option.
+     *  @return a map of the resources in the options list to number placed. */
+    private fun placeResourcesInTiles(frequency: Int, tileList: List<TileInfo>, resourceOptions: List<TileResource>, baseImpact: Int, randomImpact: Int, majorDeposit: Boolean): Map<TileResource, Int> {
+        if (tileList.isEmpty() || resourceOptions.isEmpty()) return mapOf()
+        val impactType = when (resourceOptions.first().resourceType) {
+            ResourceType.Strategic -> ImpactType.Strategic
+            ResourceType.Bonus -> ImpactType.Bonus
+            ResourceType.Luxury -> ImpactType.Luxury
+        }
+        val conditionalTerrain = StateForConditionals(attackedTile = tileList.firstOrNull())
+        val weightings = resourceOptions.map {
+            val unique = it.getMatchingUniques(UniqueType.ResourceWeighting, conditionalTerrain).firstOrNull()
+            if (unique != null)
+                unique.params[0].toFloat()
+            else
+                1f
+        }
+        val singleResourceMode = resourceOptions.count() == 1
+        val amountToPlace = (tileList.count() / frequency) + 1
+        var amountPlaced = 0
+        val detailedPlaced = HashMap<TileResource, Int>()
+        resourceOptions.forEach { detailedPlaced[it] = 0 }
+        val fallbackTiles = ArrayList<TileInfo>()
+        print("Attempting to place $amountToPlace ${resourceOptions.map { it.name + ": " + weightings[resourceOptions.indexOf(it)].toString() }} on ${tileList.count()} ${tileList.first().getLastTerrain().name}:")
+        // First pass - avoid impacts entirely
+        for (tile in tileList) {
+            if (tile.resource != null || (singleResourceMode && tile.getLastTerrain().name !in resourceOptions.first().terrainsCanBeFoundOn ))
+                continue // Can't place here, can't be a fallback tile
+            if (tileData[tile.position]!!.impacts.containsKey(impactType)) {
+                fallbackTiles.add(tile) // Taken but might be a viable fallback tile
+            } else {
+                // Add a resource to the tile
+                val resourceToPlace = resourceOptions.randomWeighted(weightings)
+                print("+${resourceToPlace.name.first()}")
+                tile.setTileResource(resourceToPlace, majorDeposit)
+                placeImpact(impactType, tile, baseImpact + Random.nextInt(randomImpact + 1))
+                amountPlaced++
+                detailedPlaced[resourceToPlace] = detailedPlaced[resourceToPlace]!! + 1
+                if (amountPlaced >= amountToPlace) {
+                    print("\n")
+                    return detailedPlaced
+                }
+            }
+        }
+        // Second pass - place on least impacted tiles
+        while (amountPlaced < amountToPlace && fallbackTiles.isNotEmpty()) {
+            // Sorry, we do need to re-sort the list for every pass since new impacts are made with every placement
+            val bestTile = fallbackTiles.minByOrNull { tileData[it.position]!!.impacts[impactType]!! }!!
+            fallbackTiles.remove(bestTile)
+            val resourceToPlace = resourceOptions.randomWeighted(weightings)
+            print("-${resourceToPlace.name.first()}")
+            bestTile.setTileResource(resourceToPlace, majorDeposit)
+            placeImpact(impactType, bestTile, baseImpact + Random.nextInt(randomImpact + 1))
+            amountPlaced++
+            detailedPlaced[resourceToPlace] = detailedPlaced[resourceToPlace]!! + 1
+        }
+        print("\n")
+        return detailedPlaced
+    }
+
     /** Adds numbers to tileData in a similar way to closeStartPenalty, but for different types */
     private fun placeImpact(type: ImpactType, tile: TileInfo, radius: Int) {
         // Epicenter
-        if (type == ImpactType.Fish || type == ImpactType.Marble)
-            tileData[tile.position]!!.impacts[type] = 1 // These use different values
-        else
-            tileData[tile.position]!!.impacts[type] = 99
+        tileData[tile.position]!!.impacts[type] = 99
         if (radius <= 0) return
 
         for (ring in 1..radius) {
             val ringValue = radius - ring + 1
             for (outerTile in tile.getTilesAtDistance(ring)) {
                 val data = tileData[outerTile.position]!!
-                when (type) {
-                    ImpactType.Marble,
-                    ImpactType.MinorCiv -> data.impacts[type] = 1
-                    ImpactType.Fish -> {
-                        if (data.impacts.containsKey(type))
-                            data.impacts[type] = min(10, max(ringValue, data.impacts[type]!!) + 1)
-                        else
-                            data.impacts[type] = ringValue
-                    }
-                    else -> {
-                        if (data.impacts.containsKey(type))
-                            data.impacts[type] = min(50, max(ringValue, data.impacts[type]!!) + 2)
-                        else
-                            data.impacts[type] = ringValue
-                    }
-                }
+                if (data.impacts.containsKey(type))
+                    data.impacts[type] = min(50, max(ringValue, data.impacts[type]!!) + 2)
+                else
+                    data.impacts[type] = ringValue
             }
         }
     }
+
+    /** @return the same unique but with params removed from the unique itself but not conditionals.
+     *  Used to save some memory when building bonus lists. */
+    private fun anonymizeUnique(unique: Unique) = Unique(
+        unique.placeholderText + unique.conditionals.joinToString(prefix = " ", separator = " ") { "<" + it.text + ">" })
+
+    private fun isWaterOnlyResource(resource: TileResource) = resource.terrainsCanBeFoundOn
+            .all { terrainName -> ruleset.terrains[terrainName]!!.type == TerrainType.Water }
 
     enum class ImpactType {
         Strategic,
         Luxury,
         Bonus,
-        Fish,
         MinorCiv,
-        NaturalWonder,
-        Marble,
+        NaturalWonder
     }
 
     // Holds a bunch of tile info that is only interesting during map gen
