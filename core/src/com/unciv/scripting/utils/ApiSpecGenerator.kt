@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Json
 
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ExposeScriptingApi
+// Eventually use this to whitelist safe API accessible members for security.
 
 data class ApiSpecDef(
     var path: String,

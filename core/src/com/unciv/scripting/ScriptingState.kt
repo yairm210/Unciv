@@ -147,7 +147,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
 
     fun exec(command: String): String {
         if (command.length > 0) {
-            commandHistory.add(command)
+            commandHistory.add(command) // TODO: Also don't add duplicates.
             while (commandHistory.size > maxCommandHistory) {
                 commandHistory.removeAt(0)
                 // No need to restrict activeCommandHistory to valid indices here because it gets set to zero anyway.

@@ -111,7 +111,7 @@ class PyAutocompleteManager(AutocompleteManager):
 							if self.check_callable(get_a(a)) else
 						a
 					)
-					+ suffix
+					+ suffix#TODO: Merge end of matches with beginnnings of suffixes if there's overlap.
 				for a in sorted(attrs)
 					if a.startswith(working_leaf)
 			])

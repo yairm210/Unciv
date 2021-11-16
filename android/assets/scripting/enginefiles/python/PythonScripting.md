@@ -11,7 +11,7 @@ There are basically two types of Python objects in this API:
 
 A **wrapper** is an object that stores a list of attribute names, keys, and function call parameters corresponding to a path in the Kotlin/JVM namespace. E.G.: `"civInfo.civilizations[0].population.setPopulation"` is a string representation of a wrapped path that begins with two attribute accesses, followed by one array index, and two more attribute names.
 
-A wrapper object does not store any more values than that. When it is evaluated, it uses a simple IPC protocol to request an up-to-date real value from the game's Kotlin code. The `unciv_lib.api.real()` function can be used to manually get a real Python value from a foreign instance wrapper.
+A wrapper object does not store any more values than that. When it is evaluated, it uses a simple IPC protocol to request an up-to-date real value from the game's Kotlin code. The `unciv_lib.api.real()`/`unciv_pyhelpers.real()` function can be used to manually get a real Python value from a foreign instance wrapper.
 
 However, because the wrapper class implements many Magic Methods that automatically call its evaluation method, many programming idioms common in Python are possible with them even without manual evaluation. Comparisons, equality, arithmetic, concatenation, in-place operations and more are all supported.
 
@@ -46,7 +46,7 @@ print([real(city.name)+str(real(city.population.population)) for city in civInfo
 print({name: real(empire.cities and empire.cities[0]) for name, empire in gameInfo.ruleSet.nations.entries()})
 ```
 
-In the Python implementation of the IPC protocol, wrapper objects are automatically serialized as their evaluated values when used in IPC requests and responses.
+In the Python implementation of the IPC protocol, wrapper objects are automatically evaluated and serialized as their resolved values when used in IPC requests and responses.
 
 ```python3
 somePythonVariable = gameInfo.turns
@@ -62,14 +62,14 @@ civInfo.techs.freeTechs = gameInfo.turns
 # Does the same thing as above, because the gameInfo.turns wrapper object is resolved at the point of serialization.
 ```
 
-The magic methods implemented on wrapper objects automatically evaluate wrappers into real Python values if they are used in Python-space operations.
+The magic methods implemented on wrapper objects also automatically evaluate wrappers into real Python values if they are used in Python-space operations.
 
 ```python3
 gameInfo.turns + 5
 5 + gameInfo.turns
 x = 5
 x += gameInfo.turns
-# All works, because the gameInfo.turns wrapper is automatically resolved into an integer when it's added.
+# All works, because the gameInfo.turns wrapper automatically sends and receives IPC packets to resolve into its real value as an integer when it's added.
 ```
 
 In-place operations on wrapper objects are implemented by performing the operation using Python semantics and then making an IPC request to assign the result in Kotlin/the JVM.

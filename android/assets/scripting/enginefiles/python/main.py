@@ -1,3 +1,7 @@
+# This should never be used to run untrusted code. AFAICT, Python is basically impossible to sandbox, short of running it in a VM.
+# Example: https://lwn.net/Articles/574215/
+# Even if Python's sandboxed, the full reflective access on the Kotlin/JVM side isn't.
+
 try:
 	import os
 	with open(os.path.join(os.path.dirname(__file__), "PythonScripting.md"), 'r') as f:

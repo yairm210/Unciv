@@ -98,7 +98,7 @@ _magicmeths = (
 	'__ge__',
 	'__gt__',
 	'__not__',
-	('__bool__', 'truth'),
+	('__bool__', 'truth'),#TODO: Allow foreign tokens for this, and other unary operators.
 #	@is # This could get messy. It's probably best to just not support identity comparison. What do you compare? JVM Kotlin value? Resolved Python value? Python data path? Token strings from InstanceTokenizer.kt— Which are currently randomly re-generated for multiple accesses to the same Kotlin object, and thus always unique, and which would require another protocol-level guarantee to not do that, in addition to being (kinda by design) procedurally indistinguishable from "real" resovled Python values?
 #	@is_not # Also, these aren't even magic methods.
 	'__abs__',
@@ -202,7 +202,7 @@ class ForeignObject:
 		# TODO: Shouldn't I special-casing get_doc or _docstring_ here? Wait, no, I think I thought it would be accessed on the class.
 		return self.__class__((*self._path, makePathElement(name=name)), self._foreignrequester)
 	def __getitem__(self, key):
-		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester)
+		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester) #TODO: Should negative indexing from end be supported?
 #	def __hash__(self):
 #		return hash(stringPathList(self._getpath_()))
 	def __iter__(self):

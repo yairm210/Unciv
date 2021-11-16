@@ -1,5 +1,5 @@
 """
-Example automations to quickly do repititive tasks.
+Example automations to quickly do repetitive in-game tasks.
 
 Currently enables actions that break game rules to be done.
 

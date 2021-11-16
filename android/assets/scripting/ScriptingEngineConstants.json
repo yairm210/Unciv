@@ -18,6 +18,7 @@
 				unciv_scripting_examples/Merfolk.py
 				unciv_scripting_examples/ExternalPipe.py
 				unciv_scripting_examples/PlayerMacros.py
+				unciv_scripting_examples/Tests.py
 			]
 			syntaxHighlightingRegexStack: [
 			]

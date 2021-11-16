@@ -126,6 +126,7 @@ Press [TAB] at any time to trigger autocompletion at the current cursor position
 		with ipc.FakeStdout() as fakeout:
 			print(f">>> {str(line)}")
 			try:
+				# TODO: See if you can use signals to catch infinite loops/excess run duration.
 				try:
 					code = compile(line, 'STDIN', 'eval')
 				except SyntaxError:
