@@ -316,6 +316,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     RegionExtraResource("Starts in regions of this type receive an extra [resource]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    BlocksResources("Never receives any resources", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
     HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
@@ -408,6 +409,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalInTilesAnd("in [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalInTilesNot("in tiles without [tileFilter]", UniqueTarget.Conditional),
 
     /////// region conditionals
     ConditionalOnWaterMaps("on water maps", UniqueTarget.Conditional),

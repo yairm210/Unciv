@@ -139,7 +139,8 @@
 			    "Occurs at temperature between [-0.6] and [-0.5] and humidity between [0] and [0.2]",
 				"Always Fertility [-1] for Map Generation",
 				"Considered [Undesirable] when determining start locations",
-				"Every [17] tiles with this terrain will receive a major deposit of a strategic resource."]
+				"Every [17] tiles with this terrain will receive a major deposit of a strategic resource.",
+				"Never receives any resources <in [Hill] tiles>"]
 	},
 
 	// Terrain features

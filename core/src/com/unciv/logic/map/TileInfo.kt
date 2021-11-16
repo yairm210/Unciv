@@ -531,9 +531,7 @@ open class TileInfo {
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
-            "Lowland" -> getTerrainFeatures().none { it.hasUnique(UniqueType.VisibilityElevation) }
             "Fresh Water" -> isAdjacentToFreshwater
-            "Dry" -> !isAdjacentToFreshwater
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (hasUnique(filter)) return true

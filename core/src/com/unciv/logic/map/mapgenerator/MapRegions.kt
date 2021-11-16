@@ -513,7 +513,15 @@ class MapRegions (val ruleset: Ruleset){
             val candidateTiles = startTile.getTilesInDistanceRange(1..2).shuffled() + startTile.getTilesAtDistance(3).shuffled()
             for (resource in ruleset.tileResources.values.filter { it.hasUnique(UniqueType.StrategicBalanceResource) }) {
                 println("Trying ${resource.name}")
-                tryAddingResourceToTiles(resource, 1, candidateTiles, majorDeposit = true)
+                if (tryAddingResourceToTiles(resource, 1, candidateTiles, majorDeposit = true) == 0) {
+                    // Fallback mode - force placement, even on an otherwise inappropriate terrain. Do still respect water!
+                    if (isWaterOnlyResource(resource))
+                        placeResourcesInTiles(999, candidateTiles.filter { it.isWater }.toList(), listOf(resource), majorDeposit = true, forcePlacement = true)
+                    else
+                        placeResourcesInTiles(999, candidateTiles.filter { it.isLand }.toList(), listOf(resource), majorDeposit = true, forcePlacement = true)
+                    println("Forcing ${resource.name}")
+
+                }
             }
         }
 
@@ -525,16 +533,11 @@ class MapRegions (val ruleset: Ruleset){
                 it.resourceType == ResourceType.Strategic &&
                         (it.revealedBy == null ||
                         ruleset.technologies[it.revealedBy]!!.era() in earlyEras)
-            }
-
-            if (validResources.isNotEmpty()) {
-                for (tile in startTile.getTilesAtDistance(2).shuffled()) {
-                    val resourceToPlace = validResources.filter { tile.getLastTerrain().name in it.terrainsCanBeFoundOn }.randomOrNull()
-                    if (resourceToPlace != null) {
-                        tile.setTileResource(resourceToPlace, majorDeposit = false)
-                        break
-                    }
-                }
+            }.shuffled()
+            val candidateTiles = startTile.getTilesAtDistance(2).shuffled()
+            for (resource in validResources) {
+                if (tryAddingResourceToTiles(resource, 1, candidateTiles, majorDeposit = false) > 0)
+                    break
             }
         }
 
@@ -609,6 +612,8 @@ class MapRegions (val ruleset: Ruleset){
         while (bonusesNeeded > 0 && candidatePlots.isNotEmpty()) {
             val plot = candidatePlots.first()
             candidatePlots.remove(plot) // remove the plot as it has now been tried, whether successfully or not
+            if (plot.getBaseTerrain().hasUnique(UniqueType.BlocksResources, StateForConditionals(attackedTile = plot)))
+                continue // Don't put bonuses on snow hills
 
             val validBonuses = ruleset.tileResources.values.filter {
                 it.resourceType == ResourceType.Bonus &&
@@ -1127,7 +1132,6 @@ class MapRegions (val ruleset: Ruleset){
     }
 
     /** Places all Luxuries onto [tileMap]. Assumes that assignLuxuries and placeMinorCivs have been called. */
-    // TODO: Can't place coastal luxuries !!!!
     private fun placeLuxuries(tileMap: TileMap) {
         // First place luxuries at major civ start locations
         val averageFertilityDensity = regions.sumOf { it.totalFertility } / regions.sumOf { it.tiles.count() }.toFloat()
@@ -1186,7 +1190,7 @@ class MapRegions (val ruleset: Ruleset){
         // The target number depends on map size and how close we are to an "ideal number" of civs for the map
         val idealCivs = max(2, tileData.size / 500)
         println("Map of size ${tileData.size}, ideal civs $idealCivs")
-        var regionTargetNumber =(tileData.size / 600) - (0.3f * abs(regions.count() - idealCivs)).toInt()
+        var regionTargetNumber = (tileData.size / 600) - (0.3f * abs(regions.count() - idealCivs)).toInt()
         regionTargetNumber += when (tileMap.mapParameters.mapResources) {
             MapResources.abundant -> 1
             MapResources.sparse -> -1
@@ -1195,7 +1199,13 @@ class MapRegions (val ruleset: Ruleset){
         regionTargetNumber = max(1, regionTargetNumber)
         println("Adding regional extra luxuries, target number $regionTargetNumber")
         for (region in regions) {
-            tryAddingResourceToTiles(ruleset.tileResources[region.luxury]!!, regionTargetNumber, region.tiles.asSequence().shuffled(), 0.4f,
+            val resource = ruleset.tileResources[region.luxury]!!
+            if (isWaterOnlyResource(resource))
+                tryAddingResourceToTiles(resource, regionTargetNumber,
+                        tileMap.getTilesInRectangle(region.rect).filter { it.isWater && it.neighbors.any { neighbor -> neighbor.getContinent() == region.continentID } }.shuffled(),
+                        0.4f, true, 4, 2)
+            else
+                tryAddingResourceToTiles(resource, regionTargetNumber, region.tiles.asSequence().shuffled(), 0.4f,
                     true, 4, 2)
         }
         // Fourth add random luxuries
@@ -1310,9 +1320,11 @@ class MapRegions (val ruleset: Ruleset){
         }
         // Now go through the entire map to build lists
         for (tile in tileMap.values.shuffled()) {
+            val terrainCondition = StateForConditionals(attackedTile = tile, region = regions.firstOrNull { tile in it.tiles })
+            if (tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, terrainCondition))
+                continue // Don't count snow hills
             if (tile.isLand)
                 landList.add(tile)
-            val terrainCondition = StateForConditionals(attackedTile = tile, region = regions.firstOrNull { tile in it.tiles })
             for ((rule, list) in ruleLists) {
                 if (rule.conditionalsApply(terrainCondition)) {
                     list.add(tile)
@@ -1359,6 +1371,8 @@ class MapRegions (val ruleset: Ruleset){
             if (tile.resource != null || tileData[tile.position]!!.impacts.containsKey(ImpactType.Strategic))
                 continue
             val conditionalTerrain = StateForConditionals(attackedTile = tile)
+            if (tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain))
+                continue
             val weightings = strategicResources.map {
                 if (fallbackWeightings) {
                     if (tile.getLastTerrain().name in it.terrainsCanBeFoundOn) 1f else 0f
@@ -1466,7 +1480,9 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         for (tile in tiles) {
-            if (tile.resource == null && tile.getLastTerrain().name in resource.terrainsCanBeFoundOn) {
+            if (tile.resource == null &&
+                    tile.getLastTerrain().name in resource.terrainsCanBeFoundOn &&
+                    !tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, StateForConditionals(attackedTile = tile))) {
                 if (ratioProgress >= 1f &&
                         !(respectImpacts && tileData[tile.position]!!.impacts.containsKey(impactType))) {
                     tile.setTileResource(resource, majorDeposit)
@@ -1505,10 +1521,13 @@ class MapRegions (val ruleset: Ruleset){
     }
 
     /** Given a [tileList] and possible [resourceOptions], will place a resource on every [frequency] tiles.
+     *  Tries to avoid impacts, but falls back to lowest impact otherwise.
      *  Goes through the list in order, so pre-shuffle it!
      *  Assumes all tiles in the list are of the same terrain type when generating weightings, irrelevant if only one option.
+     *  Respects terrainsCanBeFoundOn when there is only one option, unless [forcePlacement] is true.
      *  @return a map of the resources in the options list to number placed. */
-    private fun placeResourcesInTiles(frequency: Int, tileList: List<TileInfo>, resourceOptions: List<TileResource>, baseImpact: Int, randomImpact: Int, majorDeposit: Boolean): Map<TileResource, Int> {
+    private fun placeResourcesInTiles(frequency: Int, tileList: List<TileInfo>, resourceOptions: List<TileResource>,
+                                      baseImpact: Int = 0, randomImpact: Int = 0, majorDeposit: Boolean = false, forcePlacement: Boolean = false): Map<TileResource, Int> {
         if (tileList.isEmpty() || resourceOptions.isEmpty()) return mapOf()
         val impactType = when (resourceOptions.first().resourceType) {
             ResourceType.Strategic -> ImpactType.Strategic
@@ -1523,7 +1542,7 @@ class MapRegions (val ruleset: Ruleset){
             else
                 1f
         }
-        val singleResourceMode = resourceOptions.count() == 1
+        val testTerrains = (resourceOptions.count() == 1) && !forcePlacement
         val amountToPlace = (tileList.count() / frequency) + 1
         var amountPlaced = 0
         val detailedPlaced = HashMap<TileResource, Int>()
@@ -1532,7 +1551,9 @@ class MapRegions (val ruleset: Ruleset){
         print("Attempting to place $amountToPlace ${resourceOptions.map { it.name + ": " + weightings[resourceOptions.indexOf(it)].toString() }} on ${tileList.count()} ${tileList.first().getLastTerrain().name}:")
         // First pass - avoid impacts entirely
         for (tile in tileList) {
-            if (tile.resource != null || (singleResourceMode && tile.getLastTerrain().name !in resourceOptions.first().terrainsCanBeFoundOn ))
+            if (tile.resource != null ||
+                    (testTerrains && tile.getLastTerrain().name !in resourceOptions.first().terrainsCanBeFoundOn ) ||
+                    tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain))
                 continue // Can't place here, can't be a fallback tile
             if (tileData[tile.position]!!.impacts.containsKey(impactType)) {
                 fallbackTiles.add(tile) // Taken but might be a viable fallback tile
