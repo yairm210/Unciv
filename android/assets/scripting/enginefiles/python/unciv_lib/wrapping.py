@@ -98,7 +98,7 @@ _magicmeths = (
 	'__ge__',
 	'__gt__',
 	'__not__',
-	('__bool__', 'truth'),#TODO: Allow foreign tokens for this, and other unary operators.
+	('__bool__', 'truth'),#TODO: Allow foreign tokens for this, and other unary operators. # Wait, no. That wouldn't make any sense.
 #	@is # This could get messy. It's probably best to just not support identity comparison. What do you compare? JVM Kotlin value? Resolved Python value? Python data path? Token strings from InstanceTokenizer.kt— Which are currently randomly re-generated for multiple accesses to the same Kotlin object, and thus always unique, and which would require another protocol-level guarantee to not do that, in addition to being (kinda by design) procedurally indistinguishable from "real" resovled Python values?
 #	@is_not # Also, these aren't even magic methods.
 	'__abs__',

@@ -9,6 +9,8 @@ import com.unciv.scripting.utils.Blackbox
 
 
 abstract class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {
+    //
+
     //Thus, separate partly as a semantic distinction. ScriptingBackend is designed mostly to interact with ScriptingState and (indirectly, through ScriptingState) ConsoleScreen by presenting a clean interface to shallower classes in the call stack. This class is designed to do the opposite, and keep all the code for wrapping the interfaces of the deeper and more complicated ScriptingProtocol and Blackbox classes in one place.
 }
 
@@ -58,7 +60,9 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
 
     val scriptingProtocol = ScriptingProtocol(scriptingScope, instanceSaver = instanceSaver)
 
+    //TODO: Doc
     fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true, execLoop: () -> Unit = fun(){}): ScriptingPacket {
+        // Please update the specifications in Module.md if you change the basic structure of this REPL loop.
         blackbox.write(packetToSend.toJson() + "\n")
         execLoop()
         val response = ScriptingPacket.fromJson(blackbox.read(block=true))

@@ -22,7 +22,7 @@ class ForeignError(RuntimeError):
 	pass
 
 class ForeignPacket:
-	"""Class for IPC packet conforming to spec in ScriptingProtocol.kt."""
+	"""Class for IPC packet conforming to specification in Module.md and ScriptingProtocol.kt."""
 	def __init__(self, action, identifier, data, flags=()):
 		self.action = action
 		self.identifier = identifier
@@ -139,7 +139,7 @@ class FakeStdout:
 #		pass
 
 #class ForeignActionBindingReceiver(ForeignActionReceiver):
-#	# This is nice to have, but basically useless, right? In the current model, there shouldn't be any circumstances where the Kotlin code explicitly changes or is even aware of the state of the scripting interpreter, since the Kotlin side has to deal with any number of languages, all the data lives on the Kotlin side and it's thus the scripting interpreter's job to request what it needs, and all communication is through standardized requests for either Kotlin-side reflection or a handful of REPL functions and raw code eval on the scripting side
+#	# This is nice to have, but basically useless, right? In the current model, there shouldn't be any circumstances where the Kotlin code explicitly changes or is even aware of the state of the script interpreter, since the Kotlin side has to deal with any number of languages, all the data lives on the Kotlin side and it's thus the script interpreter's job to request what it needs, and all communication is through standardized requests for either Kotlin-side reflection or a handful of REPL functions and raw code eval on the scripting side
 #	def foreignCallEvaluator(func):
 #		def _foreignCallEvaluator(self, *args, **kwargs):
 #			try:

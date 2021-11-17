@@ -20,8 +20,18 @@ import java.util.UUID
 
 
 // See Module.md for a description of the protocol.
+// Please update the specifications there if you add, remove, or change any action types or packet structures here.
 
 
+
+/**
+ * Implementation of IPC packet specified in Module.md.
+ *
+ * @property action String or null specifying request or response type of packet.
+ * @property identifier Randomly generated String, or null, that should be shared by and unique to each request-response pair.
+ * @property data Arbitratry hierarchy of containers and values.
+ * @property flags Collection of Strings that communicate extra information in this packet. Can be used with null action.
+ */
 @Serializable
 data class ScriptingPacket(
     var action: String?,
@@ -32,32 +42,70 @@ data class ScriptingPacket(
 ) {
 
     companion object {
+        /**
+         * Parse a JSON string into a ScriptingPacket instance.
+
+         * Uses automatic Kotlin object tokenization by InstanceTokenizer through TokenizingJson.
+
+         * @param string Valid JSON string.
+         * @return ScriptingPacket instance with properties and data field hierarchy of JSON string.
+         */
         fun fromJson(string: String): ScriptingPacket = TokenizingJson.json.decodeFromString<ScriptingPacket>(string)
     }
 
+    /**
+     * Encode this packet into a JSON string.
+
+     * Uses automatic Kotlin object tokenization by InstanceTokenizer through TokenizingJson.
+
+     * @return Valid JSON string.
+     */
     fun toJson() = TokenizingJson.json.encodeToString(this)
 
+    /**
+     * @param flag Flag type to check for.
+     * @return Whether the given flag is present in this packet's flags field.
+     */
     fun hasFlag(flag: ScriptingProtocol.KnownFlag) = flag.value in flags
 
 }
 
 
+/**
+ * Implementation of IPC communication protocol specified in Module.md.
+ *
+ * Does not handle transmission or reception. Only creates responses and requests.
+ * Agnostic to Unciv types. Protocol spec should be generic enough to apply to all Kotlin objects.
+ * Uses automatic Kotlin/JVM object tokenization by InstanceTokenizer through TokenizingJson.
+ *
+ * @property scope Kotlin/JVM object that represents the hierarchical root of actions that require recursively resolving a property path through reflection.
+ * @property instanceSaver Mutable list in which to save response values, to prevent created instances from being garbage collected before the other end of the IPC can save or use them. List, not Set, to preserve instance identity and not value. Not automatically cleared. Should be manually cleared when not needed.
+ */
 class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = null) {
 
-    // Adds all returned and potentially tokenized instances in responses to `instanceSaver` to save them from garbage collection.
-    // `instanceSaver` should not be usd as long-term storage.
-    // Whatever's using this protocol instance should clear `instanceSaver` as soon as whatever's running at the other end of the protocol has had a chance to create references elsewhere (E.G. ScriptingScope.apiHelpers) for any instances that it needs.
-
+    /**
+     * Enum class of valid items for the flag field in scripting packets.
+     *
+     * The flag field requires strings, so currently the .value property is usually used when constructing and working with scripting packets.
+     *
+     * @property value Serialized string value of this flag.
+     */
     enum class KnownFlag(val value: String) {
-        PassMic("PassMic")
+        PassMic("PassMic")//TODO: Would getting rid of the string value work? I think I may have decided that having KotlinX Serialization implicitly coerce enums to/from strings would be worse than explicitly accessing the string even if raw enums do work.
     }
 
     companion object {
 
+        /**
+         * @return Unique, never-repeating ID string.
+         */
         fun makeUniqueId(): String {
             return "${System.nanoTime()}-${Random.nextBits(30)}-${UUID.randomUUID().toString()}"
         }
 
+        /**
+         * Map of valid request action types to their required response action types.
+         */
         val responseTypes = mapOf<String?, String?>(
             // Deliberately repeating myself because I don't want to imply a hard specification for the name of response packets.
             "motd" to "motd_response",
@@ -76,18 +124,36 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
             "docstring" to "docstring_response"
         )
 
-        fun enforceIsResponse(original: ScriptingPacket, response: ScriptingPacket): ScriptingPacket {
+        /**
+         * Ensure that a response packet is a valid response for a request packet.
+         *
+         * This function only checks the action type and unique identifier metadata of the packets.
+         * It should catch desynchronization arising from E.G. race conditions, or if one side either forgets to send an expected packet or erroneously sends an unexpected packet.
+         * But as the data field of each packet is variable, and defined more by convention/convergence than by specification, it will not catch if the data contained in the request or response is malformed or invalid. That task is left up to the sender and receiver of the packet.
+         *
+         * @param request Original packet. Sets action type and identifier.
+         * @param response Response packet. Should have matching action type and same identifier as request.
+         * @throws IllegalStateException If response and request mismatched.
+         */
+        fun enforceIsResponse(request: ScriptingPacket, response: ScriptingPacket): ScriptingPacket {
             if (!(
-                (response.action == responseTypes[original.action]!!)
-                && response.identifier == original.identifier
+                (response.action == responseTypes[request.action]!!)
+                && response.identifier == request.identifier
             )) {
-                throw IllegalStateException("Scripting packet response does not match request ID and type: ${original}, ${response}")
+                throw IllegalStateException("Scripting packet response does not match request ID and type: ${request}, ${response}")
             }
             return response
         }
 
     }
 
+
+    /**
+     * Functions to generate requests to send to a script interpreter.
+     *
+     * Implements the specifications on packet field and structure in Module.md.
+     * Function names and call arguments parallel ScriptingBackend.
+     */
     object makeActionRequests {
         fun motd() = ScriptingPacket(
             "motd",
@@ -113,6 +179,12 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
         )
     }
 
+    /**
+     * Functions to parse a response packet received after a request packet sent to a scripting interpreter.
+     *
+     * Implements the specifications on packet field and structure in Module.md.
+     * Function names and return types parallel ScriptingBackend.
+     */
     object parseActionResponses {
         fun motd(packet: ScriptingPacket): String = (packet.data as JsonPrimitive).content
 
@@ -131,13 +203,28 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                 RuntimeException((packet.data as JsonPrimitive).content)
     }
 
-    fun trySaveObject(obj: Any?): Any? {
+    /**
+     * Save an instance in the mutable list cache that prevents generated responses from being garbage-collected before the other end of the protocol can use them.
+     *
+     * @param obj Instance to save.
+     * @return Same instance as given, unchanged. Allows this function to be chained, or used to pass through an anonymous instance.
+     */
+    fun trySaveInstance(obj: Any?): Any? {
         if (instanceSaver != null) {
             instanceSaver.add(obj)
-        }
+        }//TODO: I should use this in more of the request types.
         return obj
     }
 
+    /**
+     * Return a valid response packet for a request packet from a script interpreter.
+     *
+     * This is what allows scripts to access Kotlin/JVM properties, methods, keys, etc.
+     * Implements the specifications on action and response types, structures, and behaviours in Module.md.
+     *
+     * @param packet Packet to respond to.
+     * @return Response packet.
+     */
     fun makeActionResponse(packet: ScriptingPacket): ScriptingPacket {
         val action = ScriptingProtocol.responseTypes[packet.action]!!
         var data: JsonElement? = null
@@ -150,7 +237,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
             // This is kinda the reference (and only) implementation of the protocol spec. So the serialization and such can be and is handled with functions, but the actual structure and logic of each response should be hardcoded manually IMO.
             "read" -> {
                 try {
-                    value = TokenizingJson.getJsonElement(trySaveObject(
+                    value = TokenizingJson.getJsonElement(trySaveInstance(
                         Reflection.resolveInstancePath(
                             scope,
                             TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)

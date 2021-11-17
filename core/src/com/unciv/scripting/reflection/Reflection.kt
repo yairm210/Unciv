@@ -68,7 +68,7 @@ object Reflection {
         val type: PathElementType,
         val name: String,
         /**
-         * For key and index accesses, and function calls, whether to evaluate `name` instead of using `params` for arguments/key.
+         * For key and index accesses, and function calls, whether to evaluate name instead of using params for arguments/key.
          * Default should be false, so deserialized JSON path lists are configured correctly in ScriptingProtocol.kt.
          */
         val doEval: Boolean = false,

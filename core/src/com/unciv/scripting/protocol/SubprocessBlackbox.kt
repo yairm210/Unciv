@@ -4,32 +4,57 @@ import com.unciv.scripting.utils.Blackbox
 import java.io.*
 
 
+/**
+ * Blackbox that launches and wraps a child process, allowing interacting with it using a common interface.
+ *
+ * @property processCmd String Array of the command to run to start the child process.
+ */
 class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
 
+    /**
+     * The wrapped process.
+     */
     var process: java.lang.Process? = null
-    
+
+    /**
+     * STDOUT of the wrapped process, or null.
+     */
     var inStream: BufferedReader? = null
+    /**
+     * STDIN of the wrapped process, or null.
+     */
     var outStream: BufferedWriter? = null
-    
+
+    /**
+     * Null, or error message string if launching the process produced an exception.
+     */
     var processLaunchFail: String? = null
-    
+
     override val isAlive: Boolean
         get() = process != null && process!!.isAlive()
-    
+
     override val readyForWrite: Boolean
         get() = isAlive
-        
+
     override val readyForRead: Int
         get() = if (isAlive && inStream!!.ready()) 1 else 0
-    
+
     init {
         start()
     }
-    
+
     override fun toString(): String {
         return "${this::class.simpleName}(process=${process}).apply{ inStream=${inStream}; outStream=${outStream}; processLaunchFail=${processLaunchFail} }"
     }
-    
+
+    /**
+     * Launch the child process.
+     *
+     * Set the inStream and outStream to readers and writers for its STDOUT and STDIN respectively if successful.
+     * Set processLauchFail to the exception raised if launching produces an exception.
+     *
+     * @throws RuntimeException if the process is already running.
+     */
     override fun start() {
         if (isAlive) {
             throw RuntimeException("Process is already running: ${process}")
@@ -44,7 +69,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
         inStream = BufferedReader(InputStreamReader(process!!.getInputStream()))
         outStream = BufferedWriter(OutputStreamWriter(process!!.getOutputStream()))
     }
-    
+
     override fun stop(): Exception? {
         try {
             if (isAlive) {
@@ -64,7 +89,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
         }
         return null
     }
-    
+
     override fun read(block: Boolean): String {
         if (block || readyForRead > 0) {
             return inStream!!.readLine()
@@ -72,10 +97,10 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
             throw IllegalStateException("Empty STDOUT for ${process}.")
         }
     }
-    
+
      override fun write(string: String) {
         outStream!!.write(string)
         outStream!!.flush()
     }
 
-} 
+}

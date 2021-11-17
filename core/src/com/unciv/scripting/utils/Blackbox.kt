@@ -1,6 +1,11 @@
 package com.unciv.scripting.utils
 
 
+/**
+ * Unified interface for anything that receives and responds to input without any access to or relevance for its internal states.
+ *
+ * Should be able to wrap STDIN/STDOUT, pipes, JNI, NDK, network sockets, external processes, embeded code, etc, and make them all interchangeable.
+ */
 interface Blackbox {
 
     fun start() {  }
@@ -16,19 +21,30 @@ interface Blackbox {
      */
     fun stop(): Exception? = null
 
+    /**
+     * Whether this black box is "running", and able to receive and respond to input.
+     */
     val isAlive: Boolean
         get() = false
 
     /**
-     * Return approximate number of items ready to be read. Should try to always return 0 correctly, but may return 1 if a greater number of items are available.
+     * Approximate number of items ready to be read. Should try to always return 0 correctly, but may return 1 if a greater number of items are available.
      */
     val readyForRead: Int
         get() = 0
 
+    /**
+     * Whether this black box is ready to be written to.
+     */
     val readyForWrite: Boolean
         get() = false
 
-    fun read(block: Boolean = true): String = ""// Return a single string if either blocking or ready to read, or throw an IllegalStateException() otherwise.
+    /**
+     * @param block Whether to wait for the next available output, or throw an exception if none are available.
+     * @throws IllegalStateException if blocking is disabled and black box is not ready for read.
+     * @return String output from black box.
+     */
+    fun read(block: Boolean = true): String = ""
 
     /**
      * Read out all lines up to a limit if given a limit greater than zero.
@@ -37,6 +53,7 @@ interface Blackbox {
      * @return Empty list if no lines are available and blocking is disabled. List of at least one string if blocking is allowed.
      */
     fun readAll(block: Boolean = true, limit: Int = 0): List<String> {
+        //Should probably be Final.
         val lines = ArrayList<String>()
         var i = 0
         if (block) {
@@ -50,6 +67,11 @@ interface Blackbox {
         return lines
     }
 
+    /**
+     * Write a single string to the black box.
+     *
+     * @param string String to be written.
+     */
     fun write(string: String) {  }
 
 }

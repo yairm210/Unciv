@@ -17,21 +17,29 @@ import kotlinx.serialization.modules.SerializersModule
 
 
 /**
- * Json serialization that accepts `Any?`, and converts non-primitive values to string keys from `InstanceTokenizer`.
+ * Json serialization that accepts Any?, and converts non-primitive values to string keys using InstanceTokenizer.
  */
 object TokenizingJson {
 
-
+    /**
+     * KotlinX serializer that automatically converts non-primitive values to string tokens on serialization, and automatically replaces string tokens with the real Kotlin/JVM objects they represent on detokenization.
+     *
+     * I tested the serialization function, but I'm not sure it's actually used anywhere since I think PathElements (which use it for params) are only ever received and not sent.
+     *
+     * Adapted from https://stackoverflow.com/a/66158603/12260302
+     */
     object TokenizingSerializer: KSerializer<Any?> {
 
-        // Adapted from https://stackoverflow.com/a/66158603/12260302
 
         override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Any?")
 
+        /**
+         * Only these types will be serialized. Everything else will be replaced with a string key from InstanceTokenizer.
+         */
         @Suppress("UNCHECKED_CAST")
         private val dataTypeSerializers: Map<String, KSerializer<Any?>> =
-            //Tried replacing this with a generic `fun <T> serialize` and `serializer<T>`. The change in signature prevents `serialize` from being overridden correctly, I guess.
-            //Also tried generic `fun <T> getSerializer(v: T) = serialize<T>() as KSerializer<Any?>`.
+            //Tried replacing this with a generic fun<T>serialize and serializer<T>. The change in signature prevents serialize from being overridden correctly, I guess.
+            //Also tried generic fun<T>getSerializer(v:T)=serialize<T>() as KSerializer<Any?>.
             mapOf(
                 "Boolean" to serializer<Boolean>(),
                 "Byte" to serializer<Byte>(),
@@ -42,7 +50,6 @@ object TokenizingJson {
                 "Long" to serializer<Long>(),
                 "Short" to serializer<Short>(),
                 "String" to serializer<String>()
-                // Only these types will be serialized. Everything else will be replaced with a string key from InstanceTokenizer.
             ).mapValues { (_, v) -> v as KSerializer<Any?> }
 
         override fun serialize(encoder: Encoder, value: Any?) {
@@ -70,17 +77,26 @@ object TokenizingJson {
         }
     }
 
+    /**
+     * KotlinX JSON entrypoint with default properties to make it easier to make and work with IPC packets.
+     */
     val json = Json {
         explicitNulls = true; //Disable these if it becomes a problem.
         encodeDefaults = true;
 //        serializersModule = serializersModule
     }
 
+    /**
+     * Forbid some objects from being serialized as normal JSON values.
+     *
+     * com.unciv.models.ruleset.Building, for example, and resumably all other types that inherit from Stats, implements Iterable<*> and thus gets serialized as JSON Arrays by default even though it's probably better to tokenize them.
+     * Python example: civInfo.cities[0].cityConstructions.getBuildableBuildings()
+     * (Should return list of Building tokens, not list of lists of tokens for seemingly unrelated stats.)
+     *
+     * @param value Value or instance to check.
+     * @return Whether the given value is required to be tokenized.
+     */
     private fun isTokenizationMandatory(value: Any?): Boolean {
-//        // Forbid some objects from being serialized as normal JSON values.
-//        // com.unciv.models.ruleset.Building(), for example, and resumably all other types that inherit from Stats(), implement Iterable<*> and thus get serialized as JSON Arrays by default even though it's probably better to tokenize them.
-//        // Python example: civInfo.cities[0].cityConstructions.getBuildableBuildings()
-//        // (Should return list of Building tokens, not list of lists of tokens for seemingly unrelated stats.)
         if (value == null) {
             return false
         }
@@ -89,6 +105,12 @@ object TokenizingJson {
     }
 
 
+    /**
+     * Get a KotlinX JsonElement for any Kotlin/JVM value or instance.
+     *
+     * @param value Any Kotlin/JVM value or instance to turn into a JsonElement.
+     * @return Input value unchanged if value is already a JsonElement, otherwise JsonElement best representing value— Generally best effort to create JsonObject, JsonArray, JsonPrimitive, or JsonNull directly from value, and token string JsonPrimitive if best effort fails or tokenization is mandatory for the given value.
+     */
     fun getJsonElement(value: Any?): JsonElement {
         if (value is JsonElement) {
             return value
@@ -123,6 +145,12 @@ object TokenizingJson {
         return JsonPrimitive(InstanceTokenizer.getToken(value))
     }
 
+    /**
+     * Get a real value or instance from any KotlinX JsonElement.
+     *
+     * @param value JsonElement to make into a real instance.
+     * @return Detokenized instance from input value if input value represents a token string, direct conversion of input value into a Kotlin/JVM primitive or container otherwise.
+     */
     fun getJsonReal(value: JsonElement): Any? {
         if (value is JsonNull || value == JsonNull) {
             return null
@@ -142,7 +170,7 @@ object TokenizingJson {
                     ?: v.content.toDoubleOrNull()
                     ?: v.content.toBooleanStrictOrNull()
                     ?: v.content
-            }
+            }//TODO: This may be better ternary.
         }
         throw IllegalArgumentException("Unrecognized type of JsonElement: ${value::class}/${value}")
     }

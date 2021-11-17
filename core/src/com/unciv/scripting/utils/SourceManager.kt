@@ -8,8 +8,14 @@ import com.unciv.scripting.ScriptingConstants
 import kotlin.concurrent.thread
 
 
+/**
+ * Object for managing, and using (copying/instantiating) internal assets associated with each script interpreter engine type.
+ */
 object SourceManager {
 
+    /**
+     * Return a file handle for a specific engine type's internal assets directory.
+     */
     private fun getEngineLibraries(engine: String): FileHandle {
         return ScriptingConstants.assetFolders.enginefilesAssets.child("${engine}/")
     }
@@ -18,11 +24,11 @@ object SourceManager {
      * Set up a directory tree with all known libraries and files for a scripting engine/language type.
      *
      * Creates temporary directory.
-     * Copies directory tree under `android/assets/scripting/sharedfiles/` into it, as specified in `ScriptingEngineConstants.json`
-     * Copies directory tree under `android/assets/scripting/enginefiles/{engine}` into it, as specified in `ScriptingEngineConstants.json`.
+     * Copies directory tree under android/assets/scripting/sharedfiles/ into it, as specified in ScriptingEngineConstants.json
+     * Copies directory tree under android/assets/scripting/enginefiles/{engine} into it, as specified in ScriptingEngineConstants.json.
      *
      * @param engine Name of the engine type, as defined in scripting constants.
-     * @return `FileHandle()` for the temporary directory.
+     * @return FileHandle() for the temporary directory.
      */
     fun setupInterpreterEnvironment(engine: String): FileHandle {
         val enginedir = getEngineLibraries(engine)
@@ -42,7 +48,7 @@ object SourceManager {
             addfile(enginedir, fp)
         }
         Runtime.getRuntime().addShutdownHook(
-            // Delete temporary directory on JVM shutdown, not on backend object destruction/termination. The copied files shouldn't be huge anyway, there's no reference to a `ScriptingBackend()` here, and I trust the shutdown hook to be run more reliably.
+            // Delete temporary directory on JVM shutdown, not on backend object destruction/termination. The copied files shouldn't be huge anyway, there's no reference to a ScriptingBackend() here, and I trust the shutdown hook to be run more reliably.
             thread(start = false, name = "Delete ${outdir.toString()}.") {
                 outdir.deleteDirectory()
             }

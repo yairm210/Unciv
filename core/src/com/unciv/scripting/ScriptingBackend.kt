@@ -16,9 +16,22 @@ import kotlin.reflect.full.*
 import java.util.*
 
 
+/**
+ * Data class representing an autocompletion result.
+ *
+ * @property matches List of valid matches. Each match should be a full input string after applying autocompletion (I.E. Don't truncate to the cursor position).
+ * @property helpText String to print out instead of showing autocomplete matches.
+ */
+//TODO: Probably replace isHelpText with a nullable helpText.
 data class AutocompleteResults(val matches: List<String> = listOf(), val isHelpText: Boolean = false, val helpText: String = "")
 
 
+/**
+ * Base class for required companion objects of ScriptingBackend implementations.
+ *
+ * Subtypes (or specifically, companions of subtypes) of ScriptingBackend are organized in an Enum.
+ * Companion objects allow new instances of the correct subtype to be created directly from the Enum constants.
+ */
 abstract class ScriptingBackend_metadata {
     /**
      * @return A new instance of the parent class of which this object is a companion.
@@ -27,15 +40,19 @@ abstract class ScriptingBackend_metadata {
     abstract val displayName: String
     val syntaxHighlighting: SyntaxHighlighter? = null
     // Putting the syntax highlighters here makes the most sense semantically as they should be singletons.
-    // But it'd also be nice to let subclasses define ways of generating new their syntax highlighters based on their other parameters. (E.G.: Read a JSON of REGEXs, based on `EnvironmentedScriptingBackend().engine`.
-    // Hm. I think the solution in that case is to subclass `ScriptingBackend_metadata`, and put those properties in the companion, which I will now do.
+    // But it'd also be nice to let subclasses define ways of generating new their syntax highlighters based on their other parameters. (E.G.: Read a JSON of REGEXs, based on EnvironmentedScriptingBackend().engine.
+    // Hm. I think the solution in that case is to subclass ScriptingBackend_metadata, and put those properties in the companion, which I will now do.
 }
 
 abstract class EnvironmentedScriptBackend_metadata: ScriptingBackend_metadata() {
     abstract val engine: String
+    //Why did I put this here? There was probably a reason, because it was a lot of trouble.
 }
 
 
+/**
+ * Interface for a single object that parses, interprets, and executes scripts.
+ */
 interface ScriptingBackend {
 
     /**
@@ -46,7 +63,9 @@ interface ScriptingBackend {
     }
 
     /**
-     * @return AutocompleteResults object that represents either a List of full autocompletion matches or a help string to print.
+     * @param command Current input to run autocomplete on.
+     * @param cursorPos Active cursor position in the current command input.
+     * @return AutocompleteResults object that represents either a List of full autocompletion matches or a help string to print for the current input.
      */
     fun autocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
         return AutocompleteResults(listOf(command+"_autocomplete"))
@@ -57,11 +76,12 @@ interface ScriptingBackend {
      * @return REPL printout.
      */
     fun exec(command: String): String {
+        //TODO: To support modding (and more specifically, error catching in mod development and use), this (and everything that parallels/implements it) should eventually support returning a Boolean to flag the REPL printout as an error message, in addition to the
         return command
     }
 
     /**
-     * @return `null` on successful termination, an `Exception()` otherwise.
+     * @return null on successful termination, an Exception() otherwise.
      */
     fun terminate(): Exception? {
         return null
@@ -89,7 +109,9 @@ open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBa
 
 }
 
+//Test, reference, example, and backup
 
+//Has
 class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata() {
@@ -402,7 +424,7 @@ abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): Sc
         get() = this::class.companionObjectInstance as EnvironmentedScriptBackend_metadata
 
     val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(metadata.engine) }
-    // This requires the overridden values for `engine`, so setting it in the constructor causes a null error... May be fixed since moving `engine` to the companions.
+    // This requires the overridden values for engine, so setting it in the constructor causes a null error... May be fixed since moving engine to the companions.
     // Also, BlackboxScriptingBackend inherits from this, but not all subclasses of BlackboxScriptingBackend might need it. So as long as it's not accessed, it won't be intialized.
 
 }
@@ -421,14 +443,15 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
     abstract val blackbox: Blackbox
 
     abstract val replManager: ScriptingReplManager
-    // Should be lazy in implementations. Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way. And the liberal use of `lazy` should naturally make sure the properties will always be initialized in the right order.
-    // Downside: Potential latency on first command, or possibly depending on `motd()` for immediate initialization.
+    // Should be lazy in implementations. Was originally a method that could be called by subclasses' constructors. This seems cleaner. Subclasses don't even have to define any functions this way. And the liberal use of lazy should naturally make sure the properties will always be initialized in the right order.
+    // Downside: Potential latency on first command, or possibly depending on motd() for immediate initialization.
 
     override fun motd(): String {
         try {
             return replManager.motd()
         } catch (e: Exception) {
             return "No MOTD for ${metadata.engine} backend: ${e}\n"
+            //TODO: Can't you access companion properties directly from instances?
         }
     }
 
@@ -467,7 +490,7 @@ abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): Black
     override val replManager: ScriptingReplManager by lazy { ScriptingRawReplManager(scriptingScope, blackbox) }
 
     override fun motd(): String {
-        return "\n\nWelcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system `${processCmd.firstOrNull()}` command as a subprocess.\n\nIf you do not have an interactive REPL below, then please make sure the below command is valid on your system:\n\n${processCmd.joinToString(" ")}\n\n${super.motd()}\n"
+        return "\n\nWelcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system ${processCmd.firstOrNull()} command as a subprocess.\n\nIf you do not have an interactive REPL below, then please make sure the below command is valid on your system:\n\n${processCmd.joinToString(" ")}\n\n${super.motd()}\n"
     }
 }
 

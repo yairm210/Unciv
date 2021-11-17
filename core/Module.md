@@ -15,7 +15,7 @@
 
 The major classes involved in the scripting API are structured as follows. `UpperCamelCase()` and parentheses means a new instantiation of a class. `lowerCamelCase` means a reference to an already-existing instance. An asterisk at the start of an item means zero or multiple instances of that class may be held. A question mark at the start of an item means that it may not exist in all implementations of the parent base class/interface. A question mark at the end of an item means that it is nullable, or otherwise may not be available in all states.
 
-```
+```JS
 UncivGame():
 	ScriptingState(): // Persistent per UncivGame().
 		ScriptingScope():
@@ -59,7 +59,7 @@ TokenizingJson() // Serializer and functions that use InstanceTokenizer.
 2. When the Kotlin interpreter receives the packet marking the end of the command run, it stops listening for value requests packets. It then receives the command result as the next value, and passes it back to the console screen or script handler.
 
 From Kotlin:
-```
+```Python
 fun ExecuteCommand(command:String):
 	SendToInterpreter(command)
 	LockGameInfo()
@@ -104,9 +104,9 @@ Both the Kotlin side and the script interpreter can send and receive packets, bu
 
 A single packet is a JSON string of the form:
 
-*Implemented by `data class ScriptingPacket(){}` and `class ForeignPacket().`*
+*Implemented by `data class ScriptingPacket(){}` and `class ForeignPacket()`.*
 
-```
+```JS
 {
 	"action": String?,
 	"identifier": String?,
@@ -132,13 +132,13 @@ If the original instance of a received token string no longer exists, then an ex
 
 Example Kotlin-side instance requested by script interpreter:
 
-```
+```Kotlin
 SomeKotlinInstance@M3mAdDr
 ```
 
 Example response packet to send script interpreter this instance:
 
-```
+```JSON
 {
 	"action": "read_response",
 	"identifier": "ABC001",
@@ -152,7 +152,7 @@ Example response packet to send script interpreter this instance:
 
 Example subsequent request packet from script interpreter using the token string:
 
-```
+```JSON
 {
 	"action": "assign",
 	"identifier": "CDE002",
@@ -166,7 +166,7 @@ Example subsequent request packet from script interpreter using the token string
 
 Equivalent Kotlin-side assignment operation resulting from this later request packet:
 
-```
+```Kotlin
 someProperty = listOf(5, "ActualStringValue", SomeKotlinInstance@M3mAdDr)
 ```
 
@@ -176,7 +176,7 @@ someProperty = listOf(5, "ActualStringValue", SomeKotlinInstance@M3mAdDr)
 
 Some action types, data formats, and expected response types and data formats for packets sent from the Kotlin side to the script interpreter include:
 
-*Implemented by `class ScriptingProtocol(){}` and `class UncivReplTransceiver()`*
+*Implemented by `class ScriptingProtocol(){}` and `class UncivReplTransceiver()`.*
 
 	```
 	'motd': null ->
@@ -207,7 +207,7 @@ The above are basically a mirror of ScriptingBackend, so the same interface can 
 
 Some action types, data formats, and expected response types and data formats for packets sent from the script interpreter to the Kotlin side include:
 
-*Implemented by `class ScriptingProtocol(){}` and `class ForeignObject()`*
+*Implemented by `class ScriptingProtocol(){}` and `class ForeignObject()`.*
 
 	```
 	'read': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->

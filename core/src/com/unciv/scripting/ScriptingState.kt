@@ -30,6 +30,16 @@ fun <T> ArrayList<T>.enforceValidIndex(index: Int) {
     }
 }
 
+
+/**
+ * Self-contained instance of scripting API use.
+ *
+ * Abstracts available scope, running backends, command history
+ * Should be unique per isolated use of scripting. E.G. One for the [~]-key console screen, one for each mod/all mods per save file (or whatever works best), etc.
+ *
+ * @property scriptingScope ScriptingScope instance at the root of all scripting API.
+ */
+//TODO: Probably deprecate/remove initialBackendType.
 class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: ScriptingBackendType? = null){
 
     val scriptingBackends: ArrayList<ScriptingBackendBase> = ArrayList<ScriptingBackendBase>()
@@ -87,7 +97,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
 
     fun switchToBackend(backend: ScriptingBackendBase) {
         for ((i, b) in scriptingBackends.withIndex()) {
-            // TODO: Apparently there's a bunch of extensions like `.withIndex()`, `.indices`, and `.lastIndex` that I can use to replace a lot of stuff currently done with `.size`.
+            // TODO: Apparently there's a bunch of extensions like .withIndex(), .indices, and .lastIndex that I can use to replace a lot of stuff currently done with .size.
             if (b == backend) {
                 switchToBackend(index = i)
             }
@@ -96,6 +106,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     }
 
     fun switchToBackend(displayname: String) {
+        //TODO
     }
 
     fun termBackend(index: Int): Exception? {
@@ -123,13 +134,13 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         outputHistory.add(text)
         while (outputHistory.size > maxOutputHistory) {
             outputHistory.removeAt(0)
-            // If these are ArrayLists, performance will probably be `O(n)` relative ot maxOutputHistory.
+            // If these are ArrayLists, performance will probably be O(n) relative to maxOutputHistory.
             // But premature optimization would be bad.
         }
     }
 
     fun autocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
-        // Deliberately not calling `echo()` to add into history because I consider autocompletion a protocol/API level feature
+        // Deliberately not calling echo() to add into history because I consider autocompletion a protocol/API/UI level feature
         if (!(hasBackend())) {
             return AutocompleteResults(listOf(), false, "")
         }

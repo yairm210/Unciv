@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Json
 
 
 // Automatically running this should probably be a part of the build process.
-// Probably do whatever is done with `TranslationFileWriter`.
+// Probably do whatever is done with TranslationFileWriter.
 
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ExposeScriptingApi
@@ -48,7 +48,7 @@ fun makeMemberSpecDef(member: KCallable<*>): ApiSpecDef {
     }*/
     //val tmp: Collection<String> = kclass.members.filter{ it.name != null }.map{ it.name!! }
     //submembers.addAll(tmp)
-    //Using a straight `.map`
+    //Using a straight .map
     return ApiSpecDef(
         path = member.name,
         isIterable = "iterator" in submembers,
@@ -79,7 +79,7 @@ class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
                     println("Skipping property ${m.name} in ${cls.qualifiedName} because of ${e}")
                     continue
                 }
-                //kclass.members //Directly accessing kclass.members gets a `KotlinInternalReflectionError`, but iterating through `searchclasses` seems to work just fine.
+                //kclass.members //Directly accessing kclass.members gets a KotlinInternalReflectionError, but iterating through searchclasses seems to work just fine.
                 if (isUncivClass(kclass!!) && kclass!! !in encounteredclasses) {
                     encounteredclasses.add(kclass!!)
                     searchclasses.add(kclass!!)
@@ -101,7 +101,7 @@ class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
     fun generateClassApi(): Map<String, List<ApiSpecDef>> {
         // Provide options for the scripting languages. This function
         val classes = getAllUncivClasses()
-        var c = 0 // Test count. Something like 5,400, IIRC. For now, it's easier to just dynamically generate the API using Python's magic methods and the reflective tools in ScriptingProtocol. JS has proxies too, but other languages may not be so dynamic. // TBF I think some of those might have been GDX/Kotlin/JVM classes, which I should filter oout by `.qualifiedName`.
+        var c = 0 // Test count. Something like 5,400, IIRC. For now, it's easier to just dynamically generate the API using Python's magic methods and the reflective tools in ScriptingProtocol. JS has proxies too, but other languages may not be so dynamic. // TBF I think some of those might have been GDX/Kotlin/JVM classes, which I should filter oout by .qualifiedName.
         val output = mutableMapOf<String, List<ApiSpecDef>>(
             *classes.map{
                 it.qualifiedName!! to it.members.map{ c += 1; makeMemberSpecDef(it) }

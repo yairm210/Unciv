@@ -10,13 +10,13 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 
 /**
- * Holds references to all internal game data that the console has access to.
+ * Holds references to all internal game data that scripting backends have access to.
  *
- * Also where to put any future `PlayerAPI`, `CheatAPI`, `ModAPI`, etc.
+ * Also where to put any future PlayerAPI, CheatAPI, ModAPI, etc.
  *
- * For `LuaScriptingBackend`, `UpyScriptingBackend`, `QjsScriptingBackend`, etc, the hierarchy of data under this class definition should probably directly mirror the wrappers in the namespace exposed to the scripting language.
+ * For LuaScriptingBackend, UpyScriptingBackend, QjsScriptingBackend, etc, the hierarchy of data under this class definition should probably directly mirror the wrappers in the namespace exposed to the scripting language.
  *
- * `WorldScreen` gives access to `UnitTable.selectedUnit`, `MapHolder.selectedTile`, etc. Useful for contextual operations.
+ * WorldScreen gives access to UnitTable.selectedUnit, MapHolder.selectedTile, etc. Useful for contextual operations.
  */
 class ScriptingScope(
         var civInfo: CivilizationInfo?,
