@@ -68,12 +68,6 @@ def foreignValueParser(packet, *, raise_exceptions=True):
 		raise ipc.ForeignError(packet.data)
 	return packet.data
 
-# def foreignErrmsgChecker(packet):
-	# """Value parser that processes a foreign request packet fitting a simple structure."""
-	# if packet.data is not None:
-		# raise ipc.ForeignError(packet.data)
-#Redundant since replacing 'exception' key in data field with 'Exception' in flags field.
-
 
 def makePathElement(ttype='Property', name='', params=()):
 	assert ttype in ('Property', 'Key', 'Call'), f"{repr(ttype)} not a valid path element type."
@@ -301,6 +295,7 @@ class ForeignObject:
 		# },
 		# 'hash_response',
 		# foreignValueParser)
+	# Implemented and works, but disabled for now. See ScriptingProtocol.kt and Module.md.
 	@ForeignRequestMethod
 	def __call__(self, *args):
 		return ({

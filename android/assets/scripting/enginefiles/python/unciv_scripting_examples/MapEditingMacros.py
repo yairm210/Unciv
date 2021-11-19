@@ -25,7 +25,7 @@ del t
 
 terrainbases = {t['name']: t for t in terrainsjson if t['type'] in ('Water', 'Land')}
 terrainfeatures = {t['name']: t for t in terrainsjson if t['type'] == 'TerrainFeature'}
-# del terrainfeatures['Fallout']
+
 
 def genValidTerrains(*, forbid=('Fallout',)):
 	#Searches only two layers deep. I.E. Only combinations with at most two TerrainFeatures will be found.
@@ -82,16 +82,6 @@ _hardterrainsequence = (
 	"Snow/Ice"
 )
 
-#[(setattr(t, "baseTerrain", "Mountain") if real(t) else None) for r in gameInfo.tileMap.tileMatrix for t in r]
-#Apparently there's no distinction between base terrain types and terrain features.
-#[([setattr(t, "baseTerrain", "Grassland" if t.position.x % 2 else "Coast"), setattr(t, "naturalWonder", None if t.position.y%3 else "Krakatoa")] if real(t) else None) for r in gameInfo.tileMap.tileMatrix for t in r]
-
-
-# def hexCoordToRectCoord(vector):
-	# pass
-
-# def rectCoordToHexCoord(vector):
-	# pass
 
 def indexClipped(items, index):
 	return items[max(0, min(len(items)-1, index))]
@@ -125,12 +115,6 @@ def setTerrain(tileInfo, terraintype):
 	tileInfo.terrainFeatures.clear()
 	for f in features:
 		tileInfo.terrainFeatures.add(f)
-	#setTerrain(mapEditorScreen.tileMap.values[0], "")
-
-
-# def checkValidValue(value, checktype="TileType"):
-	# if value not in unciv.mapEditorScreen.ruleset.whatever:
-		# raise Exception()
 
 
 def spreadResources(resourcetype="Horses", mode="random", restrictfrom=(), restrictto=None):
@@ -143,7 +127,6 @@ def spreadResources(resourcetype="Horses", mode="random", restrictfrom=(), restr
 
 
 def dilateTileTypes(tiletypes=("Coast", "Flood Plains"), chance=1.0, forbidreplace=("Ocean", "Mountain"), dilateas=("Desert/Flood Plains", "Coast"), iterations=1):
-	# .terrainFeatures and .baseTerrain
 	pass
 
 def erodeTileType(tiletypes=("Mountains", "Plains/Hill", "Grassland/Hill")):
@@ -155,15 +138,12 @@ def floodFillSelected(start=None, fillas=None, *, alsopropagateto=()):
 
 mandlebrotpresets = {
 	"Minibrot": {'center': (-0.105, -0.925), 'viewport': 0.006, 'indexer': "round((1/(i/8+1))*len(terrains))"},
-	# "Minibrot2": {'center': (-1.786440683703552459, 0), 'viewport': 5E-8},
-	# "cruciform": {'center': (-1.7859974480735000169, -0.00021290140715606698619), 'viewport': 9.1739918430357151341e-07, 'iterations': 900},
 	"Hat": {'center': (-1.301, -0.063), 'viewport': 2E-2, 'iterations': 300, 'indexer': "round(i/300*len(terrains))"},
 	"TwinLakes": {'center': (-1.4476, -0.0048), 'viewport': 1E-3, 'iterations': 50, 'indexer': "round(i/200*len(terrains))"},
 	"Curly": {'center': (-0.221, -0.651), 'viewport': 6E-3, 'iterations': 70, 'indexer': "round((1/(i/6+1))*len(terrains))"},
 	"Crater": {'center': (-1.447858, -0.004673), 'viewport': 3.5E-5, 'iterations': 80, 'indexer': "round((1-1/(i+1))*len(terrains))"},
 	"Rift": {'center': (-0.700, -0.295), 'viewport': 3E-3, 'iterations': 100},
 	"Spiral": {'center': (-0.676, -0.362), 'viewport': 3E-3, 'iterations': 100, 'indexer': "round((1-1/(i+1))*len(terrains))"},
-	# "": {'center': (), 'viewport': , 'iterations': },
 	"Pentabrot": {'expo': 6}
 }
 
@@ -203,9 +183,6 @@ def makeMandelbrot(tileMap=None, *, viewport=4, center=(-0.5,0), iterations=100,
 				)
 			)
 		)
-
-
-#from unciv_scripting_examples.MapEditingMacros import *
 
 
 def graph2D(tileMap=None, expr="sin(x/3)*5", north="Ocean", south="Desert"):
@@ -269,16 +246,6 @@ def loadImageHeightmap(tileMap=None, imagepath="EarthTopography.png", transform=
 			imagepath = _fallbackpath
 			print(f"Invalid image path given. Interpreting as example path at {repr(imagepath)}")
 		del _fallbackpath
-	# if imagepath is None:
-		# imagepath = os.path.join(os.path.dirname(__file__), "EarthTopography.png")
-		#https://visibleearth.nasa.gov/images/73934/topography
-		#https://visibleearth.nasa.gov/images/73963/bathymetry
-		#NASA stuff is usually public domain by law.
-	# longitudes, latitudes = ([real(getattr(t, a)) for t in tileMap.values] for a in ('longitude', 'latitude'))
-	# min_long, max_long, min_lat, max_lat = (f(c) for c in (longitudes, latitudes) for f in (min, max))
-	# del longitudes, latitudes
-	# width = max_long - min_long
-	# height = max_lat - min_lat
 	transform = compile(transform, filename="transform", mode='eval')
 
 	def pixinterp(pixel):
@@ -290,25 +257,6 @@ def loadImageHeightmap(tileMap=None, imagepath="EarthTopography.png", transform=
 
 	with PIL.Image.open(imagepath) as image:
 		setMapFromImage(tileMap=tileMap, image=image, pixelinterpreter=pixinterp)
-		# width_fac = (image.size[0] - 1) / width
-		# height_fac = (image.size[1] - 1) / height
-		# for tile in tileMap.values:
-			# x = round((-tile.longitude + max_long) * width_fac)
-			# y = round((-tile.latitude + max_lat) * height_fac)
-			# print(x, y)
-			# v = image.getpixel((x, y))
-			# if isinstance(v, tuple):
-				# v = sum(v)/len(v)
-			# v /= normalizevalues
-			# v = round(eval(transform, {'v': v, 'terrains': terrains}))
-			# print(v)
-			# setTerrain(
-				# tile,
-				# indexClipped(
-					# terrains,
-					# v
-				# )
-			# )
 
 
 
@@ -324,7 +272,6 @@ def compositedTerrainImage(terrain):
 		with PIL.Image.open(io.BytesIO(base64.b64decode(unciv.apiHelpers.assetImageB64(terrainImagePath(feature))))) as layer:
 			image.alpha_composite(layer, (0, image.size[1]-layer.size[1]))
 	return image
-	#compositedTerrainImage("Desert/Hill,Jungle").show()
 
 def getImageAverageRgb(image):
 	#image.convert('P', palette=PIL.Image.ADAPTIVE, colors=1)
@@ -355,20 +302,6 @@ def computeTerrainAverageColours(terrains=naturalterrains):
 	return {terrain: tuple(round(n) for n in terraincol(terrain)) for terrain in terrains}
 
 
-# _terraincolours = None
-
-# def _computeTerrainColours(terraintypes):
-	# global _terraincolours
-	# #This will requires some kind of access to GDX internal files.
-
-# def requireComputedColours(terraintypes, allowcompute=False):
-	# global _
-	# if not _ or not all(t in _ for t in terraintypes):
-		# if allow_compute_colours:
-			# pass
-		# else:
-			# print(f"This function requires the average colour to be computed for the following terrain types:\n{terraintypes}\n\nDoing so may take a long time. The interface will be unresponsive during the process.\nPass `allow_compute_colours=True` to this function, or run `_computeTerrainColours({terraintypes})`, in order to compute the required colours.")
-
 class _TerrainColourInterpreter:
 	# To actually look good, this should use CIE, YUV, or at least HSV with a compressed saturation axis.
 	def __init__(self, terraincolours, maxdither=0):
@@ -387,7 +320,7 @@ class _TerrainColourInterpreter:
 		for i, (c_target, c_final, error_current) in enumerate(zip(rgb, rgb_final, self.dithererror)):
 			self.dithererror[i] = max(-self.maxdither*256, min(self.maxdither*256, error_current + (c_final - c_target)))
 			#Because the "colour palette" is usually very limited in range, and particularly because it often doesn't have any low-green values to bring the green error down (I.E. the mean channel value over the whole image may well be darker than the minimum available colour), limiting the maximum accumulatable error is necessary to avoid it running away.
-		# print(self.dithererror)
+		# print(self.dithererror) # This should generally tend back towards [0,0,0].
 		return terrain
 	def __call__(self, pixel):
 		if self.maxdither:

@@ -28,9 +28,6 @@ import java.util.UUID
 //  Add to makeActionRequests and parseActionResponses, or to makeActionResponse.
 //  Use in scripting backend, E.G. wrapping.py
 
-//TODO: Hash request.
-
-//TODO: Remove "exception" packet fields, and instead unify error handling with exception flag.
 
 /**
  * Implementation of IPC packet specified in Module.md.
@@ -304,6 +301,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
 //                    flags.add(KnownFlag.Exception.value)
 //                }
 //            }
+            // Implemented and works, but disabled for now. See Module.md.
             "keys" -> {
                 try {
                     val leaf = Reflection.resolveInstancePath(

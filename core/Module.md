@@ -275,7 +275,7 @@ Some action types, data formats, and expected response types and data formats fo
 	//'isiterable': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		//'isiterable_response': Boolean or String
 		//Response must be String if sent with Exception flag.
-		//Not implemented.
+		//Not implemented. Implement if needed.
 	```
 
 	```
