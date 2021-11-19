@@ -49,7 +49,7 @@ class MapEditorGenerateTab(
         val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
         if (message != null) {
             Gdx.app.postRunnable {
-                ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
                 newTab.mapParametersTable.run { mapParameters.mapSize.also {
                     customMapSizeRadius.text = it.radius.toString()
                     customMapWidth.text = it.width.toString()
@@ -114,7 +114,7 @@ class MapEditorGenerateTab(
 
     class MapEditorNewMapTab(
         private val parent: MapEditorGenerateTab
-    ): Table(CameraStageBaseScreen.skin) {
+    ): Table(BaseScreen.skin) {
         val generateButton = "".toTextButton()
         val mapParametersTable = MapParametersTable(parent.editorScreen.newMapParameters, isEmptyMapAllowed = true)
 
@@ -130,7 +130,7 @@ class MapEditorGenerateTab(
 
     class MapEditorGenerateStepsTab(
         private val parent: MapEditorGenerateTab
-    ): Table(CameraStageBaseScreen.skin) {
+    ): Table(BaseScreen.skin) {
         private val optionGroup = ButtonGroup<CheckBox>()
         val generateButton = "".toTextButton()
         private var choice = MapGeneratorSteps.None

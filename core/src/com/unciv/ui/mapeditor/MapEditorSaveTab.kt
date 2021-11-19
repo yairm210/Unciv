@@ -17,7 +17,7 @@ import kotlin.concurrent.thread
 class MapEditorSaveTab(
     private val editorScreen: MapEditorScreenV2,
     headerHeight: Float
-): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageActivation {
     private val mapFiles = MapEditorFilesTable(editorScreen.getToolsWidth() - 40f, this::selectFile)
 
     private val saveButton: TextButton

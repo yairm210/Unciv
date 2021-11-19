@@ -12,14 +12,14 @@ import com.unciv.ui.utils.*
 
 class MapEditorModsTab(
     private val editorScreen: MapEditorScreenV2
-): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageActivation {
     private var mods = editorScreen.newMapParameters.mods
     private var modsTable: ModCheckboxTable
     private val modsTableCell: Cell<ModCheckboxTable>
     private val applyButton = "Change ruleset".toTextButton()
 
     init {
-        modsTable = ModCheckboxTable(mods, editorScreen, false) {
+        modsTable = ModCheckboxTable(mods, editorScreen.newMapParameters.baseRuleset, editorScreen, false) {
             enableApplyButton()
         }
 
@@ -50,7 +50,7 @@ class MapEditorModsTab(
         enableApplyButton()
         if (!editorScreen.modsTabNeedsRefresh) return
         mods = editorScreen.tileMap.mapParameters.mods
-        modsTable = ModCheckboxTable(mods, editorScreen, false) {
+        modsTable = ModCheckboxTable(mods, editorScreen.tileMap.mapParameters.baseRuleset, editorScreen, false) {
             enableApplyButton()
         }
         modsTableCell.setActor(modsTable)
@@ -66,7 +66,7 @@ class MapEditorModsTab(
     }
 
     private class AskFitMapToRulesetPopup(
-        editorScreen: CameraStageBaseScreen,
+        editorScreen: BaseScreen,
         incompatibilities: List<String>,
         onOK: () -> Unit
     ): Popup(editorScreen) {

@@ -47,7 +47,7 @@ open class TabbedPager(
     private val highlightColor: Color = Color.BLUE,
     backgroundColor: Color = ImageGetter.getBlue().lerp(Color.BLACK, 0.5f),
     private val headerPadding: Float = 10f,
-    private val parentScreen: CameraStageBaseScreen? = null,
+    private val parentScreen: BaseScreen? = null,
     capacity: Int = 4
 ) : Table() {
     /** Pages added via [addPage] can implement this to get notified when they are [activated] or [deactivated].

@@ -30,7 +30,7 @@ internal interface IMapEditorEditSubTabs {
 class MapEditorEditTerrainTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset
-): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
+): Table(BaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
         defaults().pad(10f).fillX().left()
@@ -59,7 +59,7 @@ class MapEditorEditTerrainTab(
 class MapEditorEditFeaturesTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset
-): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
+): Table(BaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
         defaults().pad(10f).fillX().left()
@@ -99,7 +99,7 @@ class MapEditorEditFeaturesTab(
 class MapEditorEditWondersTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset
-): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
+): Table(BaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
         defaults().pad(10f).fillX().left()
@@ -130,7 +130,7 @@ class MapEditorEditWondersTab(
 class MapEditorEditResourcesTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset
-): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
+): Table(BaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
         defaults().pad(10f).fillX().left()
@@ -169,7 +169,7 @@ class MapEditorEditResourcesTab(
 class MapEditorEditImprovementsTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset
-): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
+): Table(BaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
         defaults().pad(10f).fillX().left()
@@ -224,7 +224,7 @@ class MapEditorEditImprovementsTab(
 class MapEditorEditStartsTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset
-): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
+): Table(BaseScreen.skin), IMapEditorEditSubTabs {
     private val collator = UncivGame.Current.settings.getCollatorFromLocale()
 
     init {
@@ -273,7 +273,7 @@ class MapEditorEditStartsTab(
 class MapEditorEditRiversTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset
-): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs, TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), IMapEditorEditSubTabs, TabbedPager.IPageActivation {
     private val iconSize = 50f
     private val showOnTerrain = ruleset.terrains.values.asSequence()
         .filter { it.type.isBaseTerrain && !it.isRough() }
@@ -409,7 +409,7 @@ class MapEditorEditRiversTab(
 class MapEditorEditUnitsTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset
-): Table(CameraStageBaseScreen.skin), IMapEditorEditSubTabs {
+): Table(BaseScreen.skin), IMapEditorEditSubTabs {
     init {
         top()
         defaults().pad(10f).left()

@@ -17,7 +17,7 @@ import com.unciv.ui.utils.*
 class MapEditorEditTab(
     private val editorScreen: MapEditorScreenV2,
     headerHeight: Float
-): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageActivation {
     private val subTabs: TabbedPager
     private val brushTable = Table(skin)
     private val brushSlider: UncivSlider
@@ -258,7 +258,7 @@ class MapEditorEditTab(
 
         brushAction(tile)
         tile.setTerrainTransients()
-        tile.normalizeToRuleset(ruleset)
+        tile.normalizeToRuleset(ruleset)    // todo: this does not do what we need
         if (!paintedTile.isSimilarEnough(tile)) {
             // revert tile to original state
             tile.applyFrom(savedTile)

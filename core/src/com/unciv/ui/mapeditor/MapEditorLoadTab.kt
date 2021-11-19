@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
 class MapEditorLoadTab(
     private val editorScreen: MapEditorScreenV2,
     headerHeight: Float
-): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageActivation {
     private val mapFiles = MapEditorFilesTable(editorScreen.getToolsWidth() - 40f, this::selectFile)
 
     private val loadButton: TextButton

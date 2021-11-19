@@ -10,13 +10,10 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ZoomableScrollPane
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 
 class EditorMapHolderV2(
-    parentScreen: CameraStageBaseScreen,
+    parentScreen: BaseScreen,
     internal val tileMap: TileMap,
     private val ruleset: Ruleset,
     private val onTileClick: (TileInfo) -> Unit

@@ -81,8 +81,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * ALL objects that were related to the old context - need to be recreated.
          * So far we have:
          * - All textures (hence the texture atlas)
-         * - SpriteBatch (hence CameraStageBaseScreen uses a new SpriteBatch for each screen)
-         * - Skin (hence CameraStageBaseScreen.setSkin())
+         * - SpriteBatch (hence BaseScreen uses a new SpriteBatch for each screen)
+         * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = GameSaver.getGeneralSettings() // needed for the screen

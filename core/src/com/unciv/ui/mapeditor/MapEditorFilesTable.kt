@@ -6,13 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.MapSaver
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.onClick
 
 class MapEditorFilesTable(
     initWidth: Float,
     private val onSelect: (FileHandle) -> Unit
-): Table(CameraStageBaseScreen.skin) {
+): Table(BaseScreen.skin) {
     var selectedIndex = -1
         private set
     private lateinit var sortedFiles: List<FileHandle>
@@ -52,7 +52,7 @@ class MapEditorFilesTable(
         clear()
         sortedFiles = MapSaver.getMaps().sortedByDescending { it.lastModified() }
         for (mapFile in sortedFiles) {
-            val mapButton = TextButton(mapFile.name(), CameraStageBaseScreen.skin)
+            val mapButton = TextButton(mapFile.name(), BaseScreen.skin)
             mapButton.onClick {
                 markSelection(mapButton)
             }

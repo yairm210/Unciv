@@ -20,7 +20,7 @@ import com.unciv.ui.utils.*
 
 class MapEditorViewTab(
     private val editorScreen: MapEditorScreenV2
-): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageActivation {
     private var tileDataCell: Cell<Table>? = null
     private val mockCiv = createMockCiv(editorScreen.ruleset)
     private val naturalWonders = Counter<String>()

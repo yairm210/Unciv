@@ -8,14 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.addSeparatorVertical
 import kotlin.math.abs
 
 class MapEditorToolsDrawer(
     tabs: MapEditorMainTabs,
     initStage: Stage
-): Table(CameraStageBaseScreen.skin) {
+): Table(BaseScreen.skin) {
     companion object {
         const val handleWidth = 10f
     }

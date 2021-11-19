@@ -11,7 +11,7 @@ import com.unciv.ui.utils.*
 
 class MapEditorOptionsTab(
     private val editorScreen: MapEditorScreenV2
-): Table(CameraStageBaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageActivation {
     private val seedLabel = "".toLabel(Color.GOLD)
     private val copySeedButton = "Copy to clipboard".toTextButton()
     private val tileMatchGroup = ButtonGroup<CheckBox>()
