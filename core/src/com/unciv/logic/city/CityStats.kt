@@ -257,7 +257,7 @@ class CityStats(val cityInfo: CityInfo) {
         //
 
         for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCities)) {
-            if (!unique.conditionalsApply(StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo))) continue
+            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             if (cityInfo.matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
@@ -273,7 +273,7 @@ class CityStats(val cityInfo: CityInfo) {
                 sequenceOf()
             }
         for (unique in uniquesToCheck) {
-            if (!unique.conditionalsApply(StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo))) continue
+            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
             if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
                 stats.production += unique.params[0].toInt()
         }

@@ -1,3 +1,11 @@
+## 3.18.3
+
+Caught out of memory errors on autosave
+
+By xlenstra:
+- Updated vanilla policies and fixed a few oversights from G&K policies
+- Cleaned religion from the Vanilla ruleset
+
 ## 3.18.2
 
 Pre-solved potential bugs
