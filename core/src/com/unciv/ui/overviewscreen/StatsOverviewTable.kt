@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*

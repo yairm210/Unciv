@@ -1,7 +1,6 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import kotlin.concurrent.thread
 
 /**

@@ -7,7 +7,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr

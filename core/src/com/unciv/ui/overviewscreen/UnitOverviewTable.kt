@@ -2,7 +2,6 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr

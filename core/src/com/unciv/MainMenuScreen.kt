@@ -17,7 +17,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen

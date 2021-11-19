@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.ModCheckboxTable

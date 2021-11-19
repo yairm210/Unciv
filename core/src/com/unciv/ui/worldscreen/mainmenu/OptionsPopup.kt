@@ -21,7 +21,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.civilopedia.SimpleCivilopediaText
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip

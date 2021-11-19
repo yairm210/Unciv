@@ -3,7 +3,6 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
