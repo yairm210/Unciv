@@ -20,7 +20,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Unit): CameraStageBaseScreen() {
+class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Unit): BaseScreen() {
 
     private val layoutTable: Table = Table()
 

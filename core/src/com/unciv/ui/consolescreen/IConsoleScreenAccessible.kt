@@ -5,29 +5,29 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.scripting.ScriptingState
 import com.unciv.ui.consolescreen.ConsoleScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.mapeditor.MapEditorScreen
 
-//Interface that extends CameraStageBaseScreen with methods for exposing the global ConsoleScreen.
+//Interface that extends BaseScreen with methods for exposing the global ConsoleScreen.
 interface IConsoleScreenAccessible {
 
-    val CameraStageBaseScreen.consoleScreen: ConsoleScreen
+    val BaseScreen.consoleScreen: ConsoleScreen
         get() = this.game.consoleScreen
 
-    val CameraStageBaseScreen.scriptingState: ScriptingState
+    val BaseScreen.scriptingState: ScriptingState
         get() = this.game.scriptingState
 
 
     //Set the console screen tilde hotkey.
-    fun CameraStageBaseScreen.setOpenConsoleScreenHotkey() {
+    fun BaseScreen.setOpenConsoleScreenHotkey() {
         this.keyPressDispatcher[Input.Keys.GRAVE] = { this.game.setConsoleScreen() }
     }
 
     //Set the console screen to return to the right screen when closed.
 
     //Defaults to setting the game's screen to this instance. Can also use a lambda, for E.G. WorldScreen and UncivGame.setWorldScreen().
-    fun CameraStageBaseScreen.setConsoleScreenCloseAction(closeAction: (() -> Unit)? = null) {
+    fun BaseScreen.setConsoleScreenCloseAction(closeAction: (() -> Unit)? = null) {
         this.consoleScreen.closeAction = closeAction ?: { this.game.setScreen(this) }
     }
 
@@ -38,7 +38,7 @@ interface IConsoleScreenAccessible {
     //@param gameInfo Active GameInfo.
     //@param civInfo Active CivilizationInfo.
     //@param worldScreen Active WorldScreen.
-    fun CameraStageBaseScreen.updateScriptingState(
+    fun BaseScreen.updateScriptingState(
         gameInfo: GameInfo? = null,
         civInfo: CivilizationInfo? = null,
         worldScreen: WorldScreen? = null,
