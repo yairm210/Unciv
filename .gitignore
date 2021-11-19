@@ -117,7 +117,6 @@ Thumbs.db
 !/ios-moe/xcode/*.xcodeproj/xcshareddata
 !/ios-moe/xcode/*.xcodeproj/project.pbxproj
 /ios-moe/xcode/native/
-SaveFiles/
 android/android-release.apk
 android/assets/GameSettings.json
 android/release/output.json
@@ -142,3 +141,16 @@ android/assets/music/
 
 # Visual Studio Code
 .vscode/
+
+# Unciv
+maps/
+mods/
+SaveFiles/
+GameSettings.json
+
+# Python
+*.pyc
+__pycache__
+
+# Geany
+.geany
