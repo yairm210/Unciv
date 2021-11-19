@@ -170,9 +170,11 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             ruleset.modOptions = newRuleset.modOptions
 
             mapEditorScreen.tileMap.removeMissingTerrainModReferences(ruleset)
-            mapEditorScreen.mapHolder.updateTileGroups()
 
             ImageGetter.setNewRuleset(ruleset)
+
+            // Recreate screen, since the improvementss, nations etc. could be outdated
+            mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap))
         }
         
     }
