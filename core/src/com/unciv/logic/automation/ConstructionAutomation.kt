@@ -40,7 +40,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
 
     val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
-    val faithConstructionList = arrayListOf<ConstructionChoice>()
+
+    private val faithConstruction = arrayListOf<BaseUnit>()
 
     data class ConstructionChoice(val choice:String, var choiceModifier:Float,val remainingWork:Int)
 
@@ -101,22 +102,21 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         cityConstructions.currentConstructionFromQueue = chosenConstruction
 
         if (civInfo.isPlayerCivilization()) return // don't want the ai to control what a player uses faith for
-        println(civInfo.isPlayerCivilization())
+        println(civInfo.civName)
         println(civInfo.religionManager.storedFaith)
 
-        val chosenItem = relativeCostEffectiveness.asSequence()
-            .filter { it.choiceModifier > 1f }
-            .filterNot { it.choice == chosenConstruction }
-            .maxByOrNull { it.choiceModifier } ?: return
 
 
-        for (i in relativeCostEffectiveness)
-            println(i.choice)
+        val chosenItem = faithConstruction.asSequence()
+            .filterNotNull()
+            .filter { it.getStatBuyCost(cityInfo, stat = Stat.Faith)!! <= civInfo.religionManager.storedFaith }
+            .filter { it.name == "Missionary" }
+            .filter { it.name == "Inquisitor" }
+            .firstOrNull() ?: return
 
 
-
-
-        cityConstructions.purchaseConstruction(chosenItem.choice, -1, false, stat=Stat.Faith)
+        println(chosenItem.name)
+        cityConstructions.purchaseConstruction(chosenItem.name, -1, false, stat=Stat.Faith)
 
     }
 
@@ -349,10 +349,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         var modifier = 50000f
 
-        val missionary = cityConstructions.getConstructableUnits()
+        val missionary = cityInfo.getRuleset().units.values
+            .asSequence()
+            .filter { it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
             .filter { it.name == "Missionary" }
             .firstOrNull()
-
 
 
         if (preferredVictoryType == VictoryType.Domination) return
@@ -372,8 +373,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
 
-        if (buildMissionary > buildInqusitor && missionary != null) addChoice(relativeCostEffectiveness, missionary.name, 90000f)
-        else if(missionary != null) addChoice(relativeCostEffectiveness, missionary.name, 90000f) // will change later when I add inquisitor AI
+        if (buildMissionary > buildInqusitor && missionary != null) faithConstruction.add(missionary)
+        else if(missionary != null) faithConstruction.add(missionary) // will change later when I add inquisitor AI
 
 
     }
