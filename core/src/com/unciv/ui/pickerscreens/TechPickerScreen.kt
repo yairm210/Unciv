@@ -59,7 +59,7 @@ class TechPickerScreen(
 
         descriptionLabel.onClick {
             if (selectedTech != null)
-                game.setScreen(CivilopediaScreen(civInfo.gameInfo.ruleSet, CivilopediaCategories.Technology, selectedTech!!.name))
+                game.setScreen(CivilopediaScreen(civInfo.gameInfo.ruleSet, this, CivilopediaCategories.Technology, selectedTech!!.name))
         }
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)

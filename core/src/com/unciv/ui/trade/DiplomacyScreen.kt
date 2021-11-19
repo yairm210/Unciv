@@ -159,6 +159,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
                 wrapper.onClick {
                     val pedia = CivilopediaScreen(
                         UncivGame.Current.gameInfo.ruleSet,
+                        this,
                         link = "Resource/$name"
                     )
                     UncivGame.Current.setScreen(pedia)

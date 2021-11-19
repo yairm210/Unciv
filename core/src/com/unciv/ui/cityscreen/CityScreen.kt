@@ -51,7 +51,7 @@ class CityScreen(
     private var tileTable = CityScreenTileTable(this)
 
     /** Displays selected construction info, alternate with tileTable - sits on BOTTOM RIGHT */
-    private var selectedConstructionTable = ConstructionInfoTable(this.city)
+    private var selectedConstructionTable = ConstructionInfoTable(this)
 
     /** Displays city name, allows switching between cities - sits on BOTTOM CENTER */
     private var cityPickerTable = CityScreenCityPickerTable(this)

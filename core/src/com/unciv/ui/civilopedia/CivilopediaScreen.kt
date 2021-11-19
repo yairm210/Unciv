@@ -23,9 +23,10 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
  *             overriding the [category] parameter, or just `entry` to complement it.
  */
 class CivilopediaScreen(
-    val ruleset: Ruleset
-    , category: CivilopediaCategories = CivilopediaCategories.Tutorial
-    , link: String = ""
+    val ruleset: Ruleset,
+    val previousScreen: BaseScreen,
+    category: CivilopediaCategories = CivilopediaCategories.Tutorial,
+    link: String = ""
 ) : BaseScreen() {
 
     /** Container collecting data per Civilopedia entry
@@ -168,7 +169,7 @@ class CivilopediaScreen(
 
     init {
         val imageSize = 50f
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        onBackButtonClicked { game.setScreen(previousScreen) }
 
         val hideReligionItems = !game.gameInfo.isReligionEnabled()
 
@@ -306,7 +307,7 @@ class CivilopediaScreen(
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(CivilopediaScreen(game.worldScreen.gameInfo.ruleSet, currentCategory, currentEntry))
+            game.setScreen(CivilopediaScreen(game.worldScreen.gameInfo.ruleSet, previousScreen, currentCategory, currentEntry))
         }
     }
 }

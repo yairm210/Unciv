@@ -130,7 +130,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 }
                 unitIconNameGroup.clearListeners()
                 unitIconNameGroup.onClick {
-                    worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, unit.name))
+                    worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, worldScreen, CivilopediaCategories.Unit, unit.name))
                 }
 
                 unitDescriptionTable.clear()

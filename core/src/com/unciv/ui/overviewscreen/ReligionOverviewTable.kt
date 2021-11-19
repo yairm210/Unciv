@@ -143,7 +143,7 @@ class ReligionOverviewTable(
                 yieldAll(getCivilopediaTextLines(gameInfo.ruleSet, true))
             } }.toList()
         ) {
-            UncivGame.Current.setScreen(CivilopediaScreen(gameInfo.ruleSet, link = it))
+            UncivGame.Current.setScreen(CivilopediaScreen(gameInfo.ruleSet, overviewScreen, link = it))
         }.apply {
             background = ImageGetter.getBackground(ImageGetter.getBlue())
         }
