@@ -89,12 +89,11 @@ _magicmeths = (
 	'__lt__',
 	'__le__',
 	'__eq__', # Kinda undefined behaviour for comparison with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in InstanceTokenizer.kt, on every `._getvalue_()`, so I think even the same `ForeignObject()` will never equal itself.
-	# TODO: Add hash to protocol, magic methods, and hardcoded (in-)equality comparison. Actually, no. Hm. Hash-based equality implementation would be messy to account for token strings, and hash collisions are still a thing. Implement hash, but make user explicitly call it for comparisons.
 	'__ne__',
 	'__ge__',
 	'__gt__',
 	'__not__',
-	('__bool__', 'truth'),#TODO: Allow foreign tokens for this, and other unary operators. # Wait, no. That wouldn't make any sense.
+	('__bool__', 'truth'),
 #	@is # This could get messy. It's probably best to just not support identity comparison. What do you compare? JVM Kotlin value? Resolved Python value? Python data path? Token strings from InstanceTokenizer.kt— Which are currently randomly re-generated for multiple accesses to the same Kotlin object, and thus always unique, and which would require another protocol-level guarantee to not do that, in addition to being (kinda by design) procedurally indistinguishable from "real" resovled Python values?
 #	@is_not # Also, these aren't even magic methods.
 	'__abs__',
@@ -349,8 +348,7 @@ class ForeignObject:
 		foreignValueParser)
 	def values(self):
 		return (self[k] for k in self.keys())
-	def entries(self):
+	def items(self):
 		return ((k, self[k]) for k in self.keys())
-		# FIXME: This should be .items, not .entries.
 
 

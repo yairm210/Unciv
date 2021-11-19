@@ -62,7 +62,7 @@ When a Kotlin/JVM class implements a property for size or keys, Python wrappers 
 
 ```python3
 print([real(city.name)+str(real(city.population.population)) for city in civInfo.cities])
-print({name: real(empire.cities and empire.cities[0]) for name, empire in gameInfo.ruleSet.nations.entries()})
+print({name: real(empire.cities and empire.cities[0]) for name, empire in gameInfo.ruleSet.nations.items()})
 ```
 
 In the Python implementation of the IPC protocol, wrapper objects are automatically evaluated and serialized as their resolved values when used in IPC requests and responses.

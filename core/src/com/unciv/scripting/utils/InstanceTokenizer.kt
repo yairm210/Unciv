@@ -20,6 +20,9 @@ object InstanceTokenizer {
      */
     private val instances = mutableMapOf<String, WeakReference<Any>>()
 
+//    private val instanceHashes = mutableMapOf<Pair<Int, arrayListOf<Pair<String, WeakReference<Any>>>()>>()
+    // TODO: See note under clean().
+
     /**
      * Prefix that all generated token strings should start with.
      *
@@ -64,7 +67,7 @@ object InstanceTokenizer {
      */
     fun clean(): Unit {
         //FIXME (if I become a problem): Because a new unique token is currently generated even if the instance is already tokenized as something else, this will eventually get slower over time if a script makes lots of requests that result in new instance tokens for objects that last a long time (E.G. uncivGame). And since any stored instances should ideally be WeakReferences to prevent garbage collection from being broken for *all* instances, fixing that may not be as simple as checking for existing tokens to reuse them.
-        //TODO: Probably keep another map of instance hashes to weakrefs and their existing token?
+        //TODO: Probably keep another map of instance hashes to weakrefs and their existing token? The hashes will have to have counts instead of just containment, since otherwise a hash collision would cause the earlier token to become inaccessible.
         val badtokens = mutableListOf<String>()
         for ((t, o) in instances) {
             if (o.get() == null) {

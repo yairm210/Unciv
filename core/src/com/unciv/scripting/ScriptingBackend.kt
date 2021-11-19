@@ -76,7 +76,7 @@ interface ScriptingBackend {
      * @return REPL printout.
      */
     fun exec(command: String): String {
-        //TODO: To support modding (and more specifically, error catching in mod development and use), this (and everything that parallels/implements it) should eventually support returning a Boolean to flag the REPL printout as an error message, in addition to the
+        //TODO: To support modding (and more specifically, error catching in mod development and use), this (and everything that parallels/implements it) should eventually support returning a Boolean to flag the REPL printout as an error message, in addition to the fake STDOUT printout.
         return command
     }
 

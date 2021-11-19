@@ -20,5 +20,4 @@ fun stringifyException(exception: Exception): String {
         *causes.asReversed().map{ it.toString() }.toTypedArray()
     ).joinToString("\n")
 }
-// TODO: Recursively add .getcause too.
 // TODO: Move this to ExtensionFunctions.kt.
