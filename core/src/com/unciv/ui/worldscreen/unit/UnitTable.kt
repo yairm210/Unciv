@@ -27,7 +27,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val unitNameLabel = "".toLabel()
     private val unitIconNameGroup = Table()
     private val promotionsTable = Table()
-    private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
+    private val unitDescriptionTable = Table(BaseScreen.skin)
 
     val selectedUnit : MapUnit?
         get() = selectedUnits.firstOrNull()

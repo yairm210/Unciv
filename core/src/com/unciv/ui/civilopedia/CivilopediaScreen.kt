@@ -26,7 +26,7 @@ class CivilopediaScreen(
     val ruleset: Ruleset
     , category: CivilopediaCategories = CivilopediaCategories.Tutorial
     , link: String = ""
-) : CameraStageBaseScreen() {
+) : BaseScreen() {
 
     /** Container collecting data per Civilopedia entry
      * @param name From [Ruleset] object [INamed.name]

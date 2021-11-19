@@ -25,7 +25,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.concurrent.thread
 
-class MainMenuScreen: CameraStageBaseScreen() {
+class MainMenuScreen: BaseScreen() {
     private val autosave = "Autosave"
     private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()

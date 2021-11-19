@@ -46,14 +46,14 @@ import kotlin.concurrent.timer
  * Unciv's world screen
  * @param gameInfo The game state the screen should represent
  * @param viewingCiv The currently active [civilization][CivilizationInfo]
- * @property shouldUpdate When set, causes the screen to update in the next [render][CameraStageBaseScreen.render] event
+ * @property shouldUpdate When set, causes the screen to update in the next [render][BaseScreen.render] event
  * @property isPlayersTurn (readonly) Indicates it's the player's ([viewingCiv]) turn
  * @property selectedCiv Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
  * @property canChangeState (readonly) `true` when it's the player's turn unless he is a spectator
  * @property mapHolder A [MinimapHolder] instance
  * @property bottomUnitTable Bottom left widget holding information about a selected unit or city
  */
-class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
+class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : BaseScreen() {
 
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
         private set     // only this class is allowed to make changes

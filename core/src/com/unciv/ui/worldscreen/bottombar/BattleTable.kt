@@ -23,7 +23,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     init {
         isVisible = false
-        skin = CameraStageBaseScreen.skin
+        skin = BaseScreen.skin
         background = ImageGetter.getBackground(ImageGetter.getBlue())
 
         defaults().pad(5f)

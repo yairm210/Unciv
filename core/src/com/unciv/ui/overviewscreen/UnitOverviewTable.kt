@@ -17,7 +17,7 @@ import kotlin.math.abs
 class UnitOverviewTable(
     private val viewingPlayer: CivilizationInfo,
     private val overviewScreen: EmpireOverviewScreen
-) : Table(CameraStageBaseScreen.skin) {
+) : Table(BaseScreen.skin) {
 
     init {
         add(getUnitSupplyTable()).top().padRight(25f)
@@ -26,7 +26,7 @@ class UnitOverviewTable(
     }
 
     private fun getUnitSupplyTable(): Table {
-        val unitSupplyTable = Table(CameraStageBaseScreen.skin)
+        val unitSupplyTable = Table(BaseScreen.skin)
         unitSupplyTable.defaults().pad(5f)
         unitSupplyTable.apply {
             add("Unit Supply".tr()).colspan(2).center().row()
@@ -62,7 +62,7 @@ class UnitOverviewTable(
 
     private fun getUnitListTable(): Table {
         val game = overviewScreen.game
-        val unitListTable = Table(CameraStageBaseScreen.skin)
+        val unitListTable = Table(BaseScreen.skin)
         unitListTable.defaults().pad(5f)
         unitListTable.apply {
             add("Name".tr())

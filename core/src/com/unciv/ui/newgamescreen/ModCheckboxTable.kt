@@ -12,7 +12,7 @@ import com.unciv.ui.utils.*
 class ModCheckboxTable(
     private val mods: LinkedHashSet<String>,
     private var baseRuleset: String,
-    private val screen: CameraStageBaseScreen,
+    private val screen: BaseScreen,
     isPortrait: Boolean = false,
     onUpdate: (String) -> Unit
 ): Table(){

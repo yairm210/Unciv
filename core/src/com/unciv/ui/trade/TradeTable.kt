@@ -7,7 +7,7 @@ import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen): Table(CameraStageBaseScreen.skin) {
+class TradeTable(val otherCivilization: CivilizationInfo, stage: DiplomacyScreen): Table(BaseScreen.skin) {
     val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     var tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }

@@ -9,11 +9,11 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toLabel
 
-class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStageBaseScreen.skin) {
+class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen.skin) {
     init {
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
     }

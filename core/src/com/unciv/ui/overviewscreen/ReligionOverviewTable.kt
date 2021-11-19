@@ -25,13 +25,13 @@ class ReligionOverviewTable(
     
     val gameInfo = viewingPlayer.gameInfo
     
-    private val civStatsTable = Table(CameraStageBaseScreen.skin)
+    private val civStatsTable = Table(BaseScreen.skin)
     
-    private val religionsTable = Table(CameraStageBaseScreen.skin)
-    private val topButtons = Table(CameraStageBaseScreen.skin)
+    private val religionsTable = Table(BaseScreen.skin)
+    private val topButtons = Table(BaseScreen.skin)
     private val topButtonLabel = "Click an icon to see the stats of this religion".toLabel()
-    private val statsTable = Table(CameraStageBaseScreen.skin)
-    private val beliefsTable = Table(CameraStageBaseScreen.skin)
+    private val statsTable = Table(BaseScreen.skin)
+    private val beliefsTable = Table(BaseScreen.skin)
     private var selectedReligion: String? = null
     
     init {
@@ -79,11 +79,11 @@ class ReligionOverviewTable(
                     ImageGetter.getNationIndicator(gameInfo.getCivilization(religion.foundingCivName).nation, 60f)
                 else
                     ImageGetter.getRandomNationIndicator(60f)
-                button = Button(image, CameraStageBaseScreen.skin)
+                button = Button(image, BaseScreen.skin)
             } else {
                 button = Button(
                     ImageGetter.getCircledReligionIcon(religion.getIconName(), 60f),
-                    CameraStageBaseScreen.skin
+                    BaseScreen.skin
                 )
             }
             

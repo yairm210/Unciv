@@ -19,7 +19,7 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 
-class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin) {
+class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScreen.skin) {
     private val tileSetLocation = "TileSets/" + UncivGame.Current.settings.tileSet + "/"
 
     var tileAction: (TileInfo) -> Unit = {}

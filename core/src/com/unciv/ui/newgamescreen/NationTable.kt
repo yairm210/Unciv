@@ -14,7 +14,7 @@ import com.unciv.ui.utils.*
 
 // The ruleset also acts as a secondary parameter to determine if this is the right or self side of the player picker
 class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: Ruleset? = null)
-    : Table(CameraStageBaseScreen.skin) {
+    : Table(BaseScreen.skin) {
     val innerTable = Table()
 
     init {

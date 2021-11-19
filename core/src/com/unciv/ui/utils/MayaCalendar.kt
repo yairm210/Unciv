@@ -67,7 +67,7 @@ object MayaCalendar {
     }
 
     // User interface to explain changed year display
-    fun openPopup(previousScreen: CameraStageBaseScreen, civInfo: CivilizationInfo, year: Int) {
+    fun openPopup(previousScreen: BaseScreen, civInfo: CivilizationInfo, year: Int) {
         Popup(previousScreen).apply {
             name = "MayaCalendar"
             addGoodSizedLabel("The Mayan Long Count", 24).apply {

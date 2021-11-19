@@ -27,13 +27,13 @@ import java.util.*
 
 /**
  * This [Table] is used to pick or edit players information for new game creation.
- * Could be inserted to [NewGameScreen], [GameParametersScreen] or any other [Screen][CameraStageBaseScreen]
+ * Could be inserted to [NewGameScreen], [GameParametersScreen] or any other [Screen][BaseScreen]
  * which provides [GameSetupInfo] and [Ruleset].
  * Upon player changes updates property [gameParameters]. Also updates available nations when mod changes.
  * In case it is used in map editor, as a part of [GameParametersScreen], additionally tries to
  * update units/starting location on the [previousScreen] when player deleted or
  * switched nation.
- * @param previousScreen A [Screen][CameraStageBaseScreen] where the player table is inserted, should provide [GameSetupInfo] as property, updated when a player is added/deleted/changed
+ * @param previousScreen A [Screen][BaseScreen] where the player table is inserted, should provide [GameSetupInfo] as property, updated when a player is added/deleted/changed
  * @param gameParameters contains info about number of players.
  * @param blockWidth sets a width for the Civ "blocks". If too small a third of the stage is used.
  */
@@ -157,7 +157,7 @@ class PlayerPickerTable(
         }
         if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human) {
 
-            val playerIdTextField = TextField(player.playerId, CameraStageBaseScreen.skin)
+            val playerIdTextField = TextField(player.playerId, BaseScreen.skin)
             playerIdTextField.messageText = "Please input Player ID!".tr()
             playerTable.add(playerIdTextField).colspan(2).fillX().pad(5f)
             val errorLabel = "✘".toLabel(Color.RED)
@@ -244,7 +244,7 @@ class PlayerPickerTable(
 private class NationPickerPopup(
     private val playerPicker: PlayerPickerTable,
     private val player: Player
-) : Popup(playerPicker.previousScreen as CameraStageBaseScreen) {
+) : Popup(playerPicker.previousScreen as BaseScreen) {
     companion object {
         // These are used for the Close/OK buttons in the lower left/right corners:
         const val buttonsCircleSize = 70f

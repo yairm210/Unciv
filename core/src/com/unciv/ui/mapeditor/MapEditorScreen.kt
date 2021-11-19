@@ -18,7 +18,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-class MapEditorScreen(): CameraStageBaseScreen() {
+class MapEditorScreen(): BaseScreen() {
     var mapName = ""
     var tileMap = TileMap()
     var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) }

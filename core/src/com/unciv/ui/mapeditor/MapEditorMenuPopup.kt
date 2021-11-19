@@ -51,7 +51,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                 ImageGetter.setNewRuleset(ruleset)
             }
             
-            val combinedTable = Table(CameraStageBaseScreen.skin)
+            val combinedTable = Table(BaseScreen.skin)
             
             val baseRulesetSelectionBox = getBaseRulesetSelectBox()
             if (baseRulesetSelectionBox != null) {
@@ -108,7 +108,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             if (sortedBaseRulesets.size < 2) return null
 
             rulesetSelectionBox.add("{Base Ruleset}:".toLabel()).left()
-            val selectBox = TranslatedSelectBox(sortedBaseRulesets, mapParameters.baseRuleset, CameraStageBaseScreen.skin)
+            val selectBox = TranslatedSelectBox(sortedBaseRulesets, mapParameters.baseRuleset, BaseScreen.skin)
 
             val onChange = onChange@{ newBaseRuleset: String ->
                 val previousSelection = mapParameters.baseRuleset

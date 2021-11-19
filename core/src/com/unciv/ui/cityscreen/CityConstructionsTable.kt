@@ -33,7 +33,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private var preferredBuyStat = Stat.Gold  // Used for keyboard buy
     var improvementBuildingToConstruct: Building? = null
 
-    private val upperTable = Table(CameraStageBaseScreen.skin)
+    private val upperTable = Table(BaseScreen.skin)
     private val showCityInfoTableButton = "Show stats drilldown".toTextButton()
     private val constructionsQueueScrollPane: ScrollPane
     private val constructionsQueueTable = Table()

@@ -22,7 +22,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
 class NewGameScreen(
-    private val previousScreen: CameraStageBaseScreen,
+    private val previousScreen: BaseScreen,
     _gameSetupInfo: GameSetupInfo? = null
 ): IPreviousScreen, PickerScreen() {
 
@@ -110,7 +110,7 @@ class NewGameScreen(
                 val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
                 if (message != null) {
                     Gdx.app.postRunnable {
-                        ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                        ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
                         with (mapOptionsTable.generatedMapOptionsTable) {
                             customMapSizeRadius.text = mapSize.radius.toString()
                             customMapWidth.text = mapSize.width.toString()

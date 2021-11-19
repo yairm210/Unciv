@@ -10,7 +10,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
@@ -42,7 +42,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     private fun addMapTypeSelection() {
         val mapTypes = arrayListOf("Generated")
         if (mapFilesSequence.any()) mapTypes.add(MapType.custom)
-        mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
+        mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", BaseScreen.skin)
 
         savedMapOptionsTable.defaults().pad(5f)
         savedMapOptionsTable.add("{Map file}:".toLabel()).left()
@@ -84,7 +84,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     }
 
     private fun createMapFileSelectBox(): SelectBox<FileHandleWrapper> {
-        val mapFileSelectBox = SelectBox<FileHandleWrapper>(CameraStageBaseScreen.skin)
+        val mapFileSelectBox = SelectBox<FileHandleWrapper>(BaseScreen.skin)
         mapFileSelectBox.onChange {
             val mapFile = mapFileSelectBox.selected.fileHandle
             val map: TileMap

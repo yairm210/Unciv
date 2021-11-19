@@ -42,7 +42,7 @@ class MapParametersTable(
     private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
     init {
-        skin = CameraStageBaseScreen.skin
+        skin = BaseScreen.skin
         defaults().pad(5f, 10f)
         addMapShapeSelectBox()
         addMapTypeSelectBox()

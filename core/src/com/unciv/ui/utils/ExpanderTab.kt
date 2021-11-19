@@ -33,7 +33,7 @@ class ExpanderTab(
     private val persistenceID: String? = null,
     private val onChange: (() -> Unit)? = null,
     initContent: ((Table) -> Unit)? = null
-): Table(CameraStageBaseScreen.skin) {
+): Table(BaseScreen.skin) {
     private companion object {
         const val arrowSize = 18f
         const val arrowImage = "OtherIcons/BackArrow"

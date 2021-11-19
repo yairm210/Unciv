@@ -168,13 +168,13 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun getOverviewButton(): Table {
-        val rightTable = Table(CameraStageBaseScreen.skin).apply{ defaults().pad(10f) }
+        val rightTable = Table(BaseScreen.skin).apply{ defaults().pad(10f) }
 
         val unitSupplyImage = ImageGetter.getImage("OtherIcons/ExclamationMark")
             .apply { color = Color.FIREBRICK }
             .onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units")) }
 
-        val overviewButton = Button(CameraStageBaseScreen.skin)
+        val overviewButton = Button(BaseScreen.skin)
         overviewButton.add("Overview".toLabel()).pad(10f)
         overviewButton.addTooltip('e')
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }

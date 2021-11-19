@@ -95,7 +95,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             settings.tileSet = "FantasyHex"
         }
 
-        CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
+        BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
@@ -140,7 +140,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    fun setScreen(screen: CameraStageBaseScreen) {
+    fun setScreen(screen: BaseScreen) {
         Gdx.input.inputProcessor = screen.stage
         super.setScreen(screen)
     }
@@ -199,7 +199,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 }
 
-private class LoadingScreen : CameraStageBaseScreen() {
+private class LoadingScreen : BaseScreen() {
     init {
         val happinessImage = ImageGetter.getExternalImage("LoadScreen.png")
         happinessImage.center(stage)

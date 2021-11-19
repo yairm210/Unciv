@@ -18,7 +18,7 @@ class CityScreen(
     internal val city: CityInfo,
     var selectedConstruction: IConstruction? = null,
     var selectedTile: TileInfo? = null
-): CameraStageBaseScreen() {
+): BaseScreen() {
     companion object {
         /** Distance from stage edges to floating widgets */
         const val posFromEdge = 5f

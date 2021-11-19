@@ -13,7 +13,7 @@ import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPage: String = "") : CameraStageBaseScreen(){
+class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPage: String = "") : BaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply { defaults().pad(5f) }
 

@@ -32,7 +32,7 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() {
+class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
     private val leftSideTable = Table().apply { defaults().pad(10f) }
     private val rightSideTable = Table()

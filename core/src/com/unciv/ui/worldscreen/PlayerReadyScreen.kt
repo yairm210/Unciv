@@ -5,12 +5,12 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
-class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) : CameraStageBaseScreen(){
+class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) : BaseScreen(){
     init {
         val table= Table()
         table.touchable= Touchable.enabled

@@ -53,7 +53,7 @@ class TabbedPager(
         var scrollX = 0f
         var scrollY = 0f
 
-        var button: Button = Button(CameraStageBaseScreen.skin)
+        var button: Button = Button(BaseScreen.skin)
         var buttonX = 0f
         var buttonW = 0f
     }
@@ -73,7 +73,7 @@ class TabbedPager(
     var activePage = -1
         private set
 
-    private val header = Table(CameraStageBaseScreen.skin)
+    private val header = Table(BaseScreen.skin)
     private val headerScroll = AutoScrollPane(header)
     private var headerHeight = 0f
 
@@ -279,8 +279,8 @@ class TabbedPager(
      * is shown to ensure proper popup stacking.
      */
     fun askForPassword(secretHashCode: Int = 0) {
-        class PassPopup(screen: CameraStageBaseScreen, unlockAction: ()->Unit, lockAction: ()->Unit) : Popup(screen) {
-            val passEntry = TextField("", CameraStageBaseScreen.skin)
+        class PassPopup(screen: BaseScreen, unlockAction: ()->Unit, lockAction: ()->Unit) : Popup(screen) {
+            val passEntry = TextField("", BaseScreen.skin)
             init {
                 passEntry.isPasswordMode = true
                 add(passEntry).row()
@@ -294,7 +294,7 @@ class TabbedPager(
         if (!UncivGame.isCurrentInitialized() || askPasswordLock || deferredSecretPages.isEmpty()) return
         askPasswordLock = true  // race condition: Popup closes _first_, then deferredSecretPages is emptied -> parent shows and calls us again
 
-        PassPopup(UncivGame.Current.screen as CameraStageBaseScreen, {
+        PassPopup(UncivGame.Current.screen as BaseScreen, {
             addDeferredSecrets()
         }, {
             deferredSecretPages.clear()

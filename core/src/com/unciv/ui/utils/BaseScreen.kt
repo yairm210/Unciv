@@ -18,7 +18,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import kotlin.concurrent.thread
 
-open class CameraStageBaseScreen : Screen {
+open class BaseScreen : Screen {
 
     val game: UncivGame = UncivGame.Current
     val stage: Stage
@@ -129,7 +129,7 @@ open class CameraStageBaseScreen : Screen {
         thread(name="WaitForRotation") {
             var waited = 0
             while (true) {
-                val newScreen = (UncivGame.Current.screen as? CameraStageBaseScreen)
+                val newScreen = (UncivGame.Current.screen as? BaseScreen)
                 if (waited >= 10000 || newScreen!=null && !newScreen.isPortrait() ) {
                     Gdx.app.postRunnable { OptionsPopup(newScreen ?: this).open(true) }
                     break

@@ -17,7 +17,7 @@ class GameOptionsTable(
     val previousScreen: IPreviousScreen,
     val isPortrait: Boolean = false,
     val updatePlayerPickerTable:(desiredCiv:String)->Unit
-) : Table(CameraStageBaseScreen.skin) {
+) : Table(BaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
     var locked = false
@@ -132,7 +132,7 @@ class GameOptionsTable(
 
     private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?) {
         add(text.toLabel()).left()
-        val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
+        val selectBox = TranslatedSelectBox(values, initialState, BaseScreen.skin)
         selectBox.isDisabled = locked
         selectBox.onChange { 
             val changedValue = onChange(selectBox.selected.value) 
@@ -163,7 +163,7 @@ class GameOptionsTable(
             val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
             if (baseRulesetErrors.isError()) {
                 val toastMessage = "The mod you selected is incorrectly defined!".tr() + "\n\n${baseRulesetErrors.getErrorText()}"
-                ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
+                ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
                 return@addSelectBox previousSelection
             }
             
@@ -178,14 +178,14 @@ class GameOptionsTable(
                 reloadRuleset()
                 val toastMessage =
                     "This base ruleset is not compatible with the previously selected\nextension mods. They have been disabled.".tr()
-                ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
+                ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
 
                 modCheckboxes!!.disableAllCheckboxes()
             } else if (modLinkErrors.isWarnUser()) {
                 val toastMessage =
                     "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr() + 
                     "\n\n${modLinkErrors.getErrorText()}"
-                ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
+                ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
             }
             
             modCheckboxes!!.setBaseRuleset(newBaseRuleset)
@@ -244,7 +244,7 @@ class GameOptionsTable(
     }
 
     fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
-        return ModCheckboxTable(gameParameters.mods, gameParameters.baseRuleset, previousScreen as CameraStageBaseScreen, isPortrait) {
+        return ModCheckboxTable(gameParameters.mods, gameParameters.baseRuleset, previousScreen as BaseScreen, isPortrait) {
             onChooseMod(it)
         }
     }

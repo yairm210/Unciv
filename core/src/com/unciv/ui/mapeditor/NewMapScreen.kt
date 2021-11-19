@@ -85,7 +85,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
             if (message != null) {
                 Gdx.app.postRunnable {
-                    ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                    ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
                     with (mapParameters.mapSize) {
                         mapParametersTable.customMapSizeRadius.text = radius.toString()
                         mapParametersTable.customMapWidth.text = width.toString()

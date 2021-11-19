@@ -29,7 +29,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         // If peripheral keyboard not detected, hotkeys will not be displayed
         val key = if (keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
 
-        val actionButton = Button(CameraStageBaseScreen.skin)
+        val actionButton = Button(BaseScreen.skin)
         actionButton.add(icon).size(20f).pad(5f)
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
