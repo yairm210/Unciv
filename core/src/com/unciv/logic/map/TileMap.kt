@@ -429,6 +429,20 @@ class TileMap {
         }
     }
 
+    fun removeMissingTerrainModReferences(ruleSet: Ruleset) {
+        for (tile in this.values) {
+            for (terrainFeature in tile.terrainFeatures.filter { !ruleSet.terrains.containsKey(it) })
+                tile.terrainFeatures.remove(terrainFeature)
+            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
+                tile.resource = null
+            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
+                tile.improvement = null
+        }
+        for (startingLocation in startingLocations.toList())
+            if (startingLocation.nation !in ruleSet.nations.keys)
+                startingLocations.remove(startingLocation)
+    }
+
     /** Tries to place the [unitName] into the [TileInfo] closest to the given [position]
      * @param position where to try to place the unit (or close - max 10 tiles distance)
      * @param unitName name of the [BaseUnit][com.unciv.models.ruleset.unit.BaseUnit] to create and place

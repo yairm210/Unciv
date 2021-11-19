@@ -169,6 +169,9 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             ruleset.mods += mapParameters.mods
             ruleset.modOptions = newRuleset.modOptions
 
+            mapEditorScreen.tileMap.removeMissingTerrainModReferences(ruleset)
+            mapEditorScreen.mapHolder.updateTileGroups()
+
             ImageGetter.setNewRuleset(ruleset)
         }
         

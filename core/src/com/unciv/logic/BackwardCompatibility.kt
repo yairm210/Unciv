@@ -22,14 +22,9 @@ object BackwardCompatibility {
      * This function removes them so the game doesn't crash when it tries to access them.
      */
     fun GameInfo.removeMissingModReferences() {
-        for (tile in tileMap.values) {
-            for (terrainFeature in tile.terrainFeatures.filter{ !ruleSet.terrains.containsKey(it) })
-                tile.terrainFeatures.remove(terrainFeature)
-            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
-                tile.resource = null
-            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
-                tile.improvement = null
+        tileMap.removeMissingTerrainModReferences(ruleSet)
 
+        for (tile in tileMap.values) {
             for (unit in tile.getUnits()) {
                 if (!ruleSet.units.containsKey(unit.name)) tile.removeUnit(unit)
 
