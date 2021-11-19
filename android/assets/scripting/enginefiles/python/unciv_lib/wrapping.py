@@ -64,14 +64,15 @@ def dummyForeignRequester(actionparams, responsetype):
 
 def foreignValueParser(packet, *, raise_exceptions=True):
 	"""Value parser that reads a foreign request packet fitting a common structure."""
-	if packet.data["exception"] is not None and raise_exceptions:
-		raise ipc.ForeignError(packet.data["exception"])
-	return packet.data["value"]
-
-def foreignErrmsgChecker(packet):
-	"""Value parser that processes a foreign request packet fitting a simple structure."""
-	if packet.data is not None:
+	if 'Exception' in packet.flags and raise_exceptions:
 		raise ipc.ForeignError(packet.data)
+	return packet.data
+
+# def foreignErrmsgChecker(packet):
+	# """Value parser that processes a foreign request packet fitting a simple structure."""
+	# if packet.data is not None:
+		# raise ipc.ForeignError(packet.data)
+#Redundant since replacing 'exception' key in data field with 'Exception' in flags field.
 
 
 def makePathElement(ttype='Property', name='', params=()):
@@ -94,6 +95,7 @@ _magicmeths = (
 	'__lt__',
 	'__le__',
 	'__eq__', # Kinda undefined behaviour for comparison with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in InstanceTokenizer.kt, on every `._getvalue_()`, so I think even the same `ForeignObject()` will never equal itself.
+	# TODO: Add hash to protocol, magic methods, and hardcoded (in-)equality comparison. Actually, no. Hm. Hash-based equality implementation would be messy to account for token strings, and hash collisions are still a thing. Implement hash, but make user explicitly call it for comparisons.
 	'__ne__',
 	'__ge__',
 	'__gt__',
@@ -197,14 +199,18 @@ class ForeignObject:
 		return self._getvalue_()
 	def _getpath_(self):
 		return tuple(self._path)
-		#return ''.join(self._path)
 	def __getattr__(self, name):
-		# TODO: Shouldn't I special-casing get_doc or _docstring_ here? Wait, no, I think I thought it would be accessed on the class.
+		# TODO: Shouldn't I special-casing get_help or _docstring_ here? Wait, no, I think I thought it would be accessed on the class.
 		return self.__class__((*self._path, makePathElement(name=name)), self._foreignrequester)
+	def __getattribute__(self, name):
+		if name in ('values', 'keys', 'items'):
+			# Don't expose real .keys, .values, or .entries unless wrapping a foreign mapping. This prevents foreign members like TileMap.values from being blocked.
+			if not self._ismapping_():
+				return self.__getattr__(name)
+		return object.__getattribute__(self, name)
 	def __getitem__(self, key):
-		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester) #TODO: Should negative indexing from end be supported?
-#	def __hash__(self):
-#		return hash(stringPathList(self._getpath_()))
+		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester)
+		#TODO: Should negative indexing from end be supported?
 	def __iter__(self):
 		try:
 			return iter(self.keys())
@@ -234,7 +240,17 @@ class ForeignObject:
 			}
 		},
 		'assign_response',
-		foreignErrmsgChecker)
+		foreignValueParser)
+	@ForeignRequestMethod
+	def _ismapping_(self):
+		return ({
+			'action': 'ismapping',
+			'data': {
+				'path': self._getpath_()
+			}
+		},
+		'ismapping_response',
+		foreignValueParser)
 	@ForeignRequestMethod
 	def _callable_(self, *, raise_exceptions=True):
 		return ({
@@ -275,6 +291,16 @@ class ForeignObject:
 		},
 		'dir_response',
 		foreignValueParser)
+	# @ForeignRequestMethod
+	# def __hash__(self):
+		# return ({
+			# 'action': 'hash',
+			# 'data': {
+				# 'path': self._getpath_()
+			# }
+		# },
+		# 'hash_response',
+		# foreignValueParser)
 	@ForeignRequestMethod
 	def __call__(self, *args):
 		return ({
@@ -294,7 +320,7 @@ class ForeignObject:
 			}
 		},
 		'delete_response',
-		foreignErrmsgChecker)
+		foreignValueParser)
 	@ForeignRequestMethod
 	def __len__(self):
 		return ({
@@ -330,5 +356,6 @@ class ForeignObject:
 		return (self[k] for k in self.keys())
 	def entries(self):
 		return ((k, self[k]) for k in self.keys())
+		# FIXME: This should be .items, not .entries.
 
 

@@ -125,8 +125,6 @@ object TokenizingJson {
             }
             if (value is Sequence<*>) {
                 var v = (value as Sequence<Any?>).toList()
-                println(v)
-                println(v[0]!!::class.qualifiedName)
                 return getJsonElement(v)
             }
             if (value is String) {

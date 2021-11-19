@@ -117,7 +117,7 @@ class ForeignActionReceiver(ForeignActionManager):
 
 
 class FakeStdout:
-	"""Context manager that returns a StringIO and sets sys.stdout to it on entrance, then restores it to its original value on exit."""
+	"""Context manager that returns a StringIO and sets sys.stdout to it on entrance, then restores sys.stdout to its original value on exit."""
 	def __init__(self):
 		self.stdout = sys.stdout
 	def __enter__(self):

@@ -15,11 +15,10 @@ import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.scripting.ScriptingState
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.consolescreen.ConsoleScreen
+import com.unciv.ui.consolescreen.IConsoleScreenAccessible
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
@@ -27,16 +26,10 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.concurrent.thread
 
-class MainMenuScreen: BaseScreen() {
+class MainMenuScreen: BaseScreen(), IConsoleScreenAccessible {
     private val autosave = "Autosave"
     private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
-
-    private val consoleScreen: ConsoleScreen
-        get() = game.consoleScreen
-
-    private val scriptingState: ScriptingState
-        get() = game.scriptingState
 
     /** Create one **Main Menu Button** including onClick/key binding
      *  @param text      The text to display on the button
@@ -157,11 +150,9 @@ class MainMenuScreen: BaseScreen() {
             ExitGamePopup(this)
         }
 
-        keyPressDispatcher[Input.Keys.GRAVE] = { game.setConsoleScreen() }
-        consoleScreen.closeAction = { game.setScreen(this) }
-        scriptingState.gameInfo = null
-        scriptingState.civInfo = null
-        scriptingState.worldScreen = null
+        setOpenConsoleScreenHotkey()
+        setConsoleScreenCloseAction()
+        updateScriptingState()
     }
 
 

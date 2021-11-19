@@ -22,7 +22,15 @@ import java.util.UUID
 // See Module.md for a description of the protocol.
 // Please update the specifications there if you add, remove, or change any action types or packet structures here.
 
+// To add a new packet type:
+//  Add to Module.md.
+//  Add to responseTypes.
+//  Add to makeActionRequests and parseActionResponses, or to makeActionResponse.
+//  Use in scripting backend, E.G. wrapping.py
 
+//TODO: Hash request.
+
+//TODO: Remove "exception" packet fields, and instead unify error handling with exception flag.
 
 /**
  * Implementation of IPC packet specified in Module.md.
@@ -91,7 +99,8 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
      * @property value Serialized string value of this flag.
      */
     enum class KnownFlag(val value: String) {
-        PassMic("PassMic")//TODO: Would getting rid of the string value work? I think I may have decided that having KotlinX Serialization implicitly coerce enums to/from strings would be worse than explicitly accessing the string even if raw enums do work.
+        PassMic("PassMic"),//TODO: Would getting rid of the string value work? I think I may have decided that having KotlinX Serialization implicitly coerce enums to/from strings would be worse than explicitly accessing the string even if raw enums do work.
+        Exception("Exception")
     }
 
     companion object {
@@ -107,7 +116,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
          * Map of valid request action types to their required response action types.
          */
         val responseTypes = mapOf<String?, String?>(
-            // Deliberately repeating myself because I don't want to imply a hard specification for the name of response packets.
+            // Deliberately repeating myself because I don't want to imply a hard specification for the names of response packets.
             "motd" to "motd_response",
             "autocomplete" to "autocomplete_response",
             "exec" to "exec_response",
@@ -116,9 +125,11 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
             "assign" to "assign_response",
             "delete" to "delete_response",
             "dir" to "dir_response",
+//            "hash" to "hash_response",
             "keys" to "keys_response",
             "length" to "length_response",
             "contains" to "contains_response",
+            "ismapping" to "ismapping_response",
             "callable" to "callable_response",
             "args" to "args_response",
             "docstring" to "docstring_response"
@@ -229,28 +240,22 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
         val action = ScriptingProtocol.responseTypes[packet.action]!!
         var data: JsonElement? = null
         val flags = mutableListOf<String>()
-        var value: JsonElement = JsonNull
-        var exception: JsonElement = JsonNull
         when (packet.action) {
             // There's a lot of repetition here, because I don't want to enforce any specification on what form the request and response data fields for actions must take.
             // I prefer to try to keep the code for each response type independent enough to be readable on its own.
             // This is kinda the reference (and only) implementation of the protocol spec. So the serialization and such can be and is handled with functions, but the actual structure and logic of each response should be hardcoded manually IMO.
             "read" -> {
                 try {
-                    value = TokenizingJson.getJsonElement(trySaveInstance(
+                    data = TokenizingJson.getJsonElement(trySaveInstance(
                         Reflection.resolveInstancePath(
                             scope,
                             TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                         )
                     ))
                 } catch (e: Exception) {
-                    value = JsonNull
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
                 }
-                data = JsonObject(mapOf(
-                    "value" to value,
-                    "exception" to exception
-                ))
             }
             "assign" -> {
                 try {
@@ -260,9 +265,9 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         TokenizingJson.getJsonReal((packet.data as JsonObject)["value"]!!)
                     )
                 } catch (e: Exception) {
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
                 }
-                data = exception
             }
             "delete" -> {
                 try {
@@ -271,9 +276,9 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
                 } catch (e: Exception) {
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
                 }
-                data = exception
             }
             "dir" -> {
                 try {
@@ -281,31 +286,35 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    value = TokenizingJson.getJsonElement(leaf!!::class.members.map{it.name})
+                    data = TokenizingJson.getJsonElement(leaf!!::class.members.map{it.name})
                 } catch (e: Exception) {
-                    value = JsonNull
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
                 }
-                data = JsonObject(mapOf(
-                    "value" to value,
-                    "exception" to exception
-                ))
             }
+//            "hash" -> {
+//                try {
+//                    val leaf = Reflection.resolveInstancePath(
+//                        scope,
+//                        TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
+//                    )
+//                    data = TokenizingJson.getJsonElement(leaf.hashCode())
+//                } catch (e: Exception) {
+//                    data = JsonPrimitive(stringifyException(e))
+//                    flags.add(KnownFlag.Exception.value)
+//                }
+//            }
             "keys" -> {
                 try {
                     val leaf = Reflection.resolveInstancePath(
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    value = TokenizingJson.getJsonElement((leaf as Map<Any, *>).keys)
+                    data = TokenizingJson.getJsonElement((leaf as Map<Any, *>).keys)
                 } catch (e: Exception) {
-                    value = JsonNull
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
                 }
-                data = JsonObject(mapOf(
-                    "value" to value,
-                    "exception" to exception
-                ))
             }
             "length" -> {
                 try {
@@ -314,23 +323,19 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
                     try {
-                        value = TokenizingJson.getJsonElement((leaf as Array<*>).size)
-                        // Once/If I get Reflection working with properties/Transients/whatever, I could replace these casts with a single reflective call.
+                        data = TokenizingJson.getJsonElement((leaf as Array<*>).size)
+                        // AFAICT avoiding these casts/checks would require reflection.
                     } catch (e: Exception) {
                         try {
-                            value = TokenizingJson.getJsonElement((leaf as Map<*, *>).size)
+                            data = TokenizingJson.getJsonElement((leaf as Map<*, *>).size)
                         } catch (e: Exception) {
-                            value = TokenizingJson.getJsonElement((leaf as Collection<*>).size)
+                            data = TokenizingJson.getJsonElement((leaf as Collection<*>).size)
                         }
                     }
                 } catch (e: Exception) {
-                    value = JsonNull
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
                 }
-                data = JsonObject(mapOf(
-                    "value" to value,
-                    "exception" to exception
-                ))
             }
             "contains" -> {
                 try {
@@ -340,18 +345,32 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                     val _check = TokenizingJson.getJsonReal((packet.data as JsonObject)["value"]!!)
                     try {
-                        value = TokenizingJson.getJsonElement(_check in (leaf as Map<Any?, Any?>))
+                        data = TokenizingJson.getJsonElement(_check in (leaf as Map<Any?, Any?>))
                     } catch (e: Exception) {
-                        value = TokenizingJson.getJsonElement(_check in (leaf as Collection<Any?>))
+                        data = TokenizingJson.getJsonElement(_check in (leaf as Collection<Any?>))
                     }
                 } catch (e: Exception) {
-                    value = JsonNull
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
                 }
-                data = JsonObject(mapOf(
-                    "value" to value,
-                    "exception" to exception
-                ))
+            }
+            "ismapping" -> {
+                try {
+                    val leaf = Reflection.resolveInstancePath(
+                        scope,
+                        TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
+                    )
+                    try {
+                        leaf as Map<Any, *>
+                        //Ensure same behaviour as "keys" action.
+                        data = TokenizingJson.getJsonElement(true)
+                    } catch (e: Exception) {
+                        data = TokenizingJson.getJsonElement(false)
+                    }
+                } catch (e: Exception) {
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
+                }
             }
             "callable" -> {
                 try {
@@ -359,15 +378,11 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    value = TokenizingJson.getJsonElement(leaf is KCallable<*>)
+                    data = TokenizingJson.getJsonElement(leaf is KCallable<*>)
                 } catch (e: Exception) {
-                    value = JsonNull
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
                 }
-                data = JsonObject(mapOf(
-                    "value" to value,
-                    "exception" to exception
-                ))
             }
             "args" -> {
                 try {
@@ -375,15 +390,11 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    value = TokenizingJson.getJsonElement((leaf as KCallable<*>).parameters.map { listOf<String>(it.name.toString(), it.type.toString()) })
+                    data = TokenizingJson.getJsonElement((leaf as KCallable<*>).parameters.map { listOf<String>(it.name.toString(), it.type.toString()) })
                 } catch (e: Exception) {
-                    value = JsonNull
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                        flags.add(KnownFlag.Exception.value)
                 }
-                data = JsonObject(mapOf(
-                    "value" to value,
-                    "exception" to exception
-                ))
             }
             "docstring" -> {
                 try {
@@ -391,15 +402,11 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    value = TokenizingJson.getJsonElement(leaf.toString())
+                    data = TokenizingJson.getJsonElement(leaf.toString())
                 } catch (e: Exception) {
-                    value = JsonNull
-                    exception = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(stringifyException(e))
+                    flags.add(KnownFlag.Exception.value)
                 }
-                data = JsonObject(mapOf(
-                    "value" to value,
-                    "exception" to exception
-                ))
             }
             else -> {
                 throw IllegalArgumentException("Unknown action received in scripting request packet: ${packet.action}")

@@ -3,6 +3,8 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
@@ -127,7 +129,7 @@ fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Flo
 
 /**
  * Create a vertical separator as an empty Container with a colored background.
- * 
+ *
  * Note: Unlike the horizontal [addSeparator] this cannot automatically span several rows. Repeat the separator if needed.
  */
 fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Image> {
@@ -237,11 +239,11 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
 fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null)
     = CheckBox(this.tr(), BaseScreen.skin).apply {
         isChecked = startsOutChecked
-        if (changeAction != null) onChange { 
+        if (changeAction != null) onChange {
             changeAction(isChecked)
         }
         // Add a little distance between the icon and the text. 0 looks glued together,
-        // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".  
+        // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".
         imageCell.padRight(1f)
     }
 
@@ -286,6 +288,37 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
             return this[i]
     }
     return this.last()
+}
+
+/**
+ * Turn a TextureRegion into a Pixmap.
+ *
+ * Originally a function defined in the Fonts Object and used only in Fonts.kt.
+ * Turned into an extension method to 1. Clean up the syntax and 2. Use it to expose internal, packed images to scripts in class ScriptingScope.
+ *
+ * @return New Pixmap with all the size and pixel data from this TextureRegion copied into it.
+ */
+// From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
+fun TextureRegion.toPixmap(): Pixmap {
+    val textureData = this.texture.textureData
+    if (!textureData.isPrepared) {
+        textureData.prepare()
+    }
+    val pixmap = Pixmap(
+            this.regionWidth,
+            this.regionHeight,
+            textureData.format
+    )
+    pixmap.drawPixmap(
+            textureData.consumePixmap(), // The other Pixmap
+            0, // The target x-coordinate (top left corner)
+            0, // The target y-coordinate (top left corner)
+            this.regionX, // The source x-coordinate (top left corner)
+            this.regionY, // The source y-coordinate (top left corner)
+            this.regionWidth, // The width of the area from the other Pixmap in pixels
+            this.regionHeight // The height of the area from the other Pixmap in pixels
+    )
+    return pixmap
 }
 
 /**

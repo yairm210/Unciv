@@ -211,8 +211,9 @@ Some action types, data formats, and expected response types and data formats fo
 
 	```
 	'read': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
-		'read_reponse': {'value': Any?, 'exception': String?}
+		'read_reponse': Any? or String
 		//Attribute/property access, by list of `PathElement` properties.
+		//Response must be String if sent with Exception flag.
 	```
 
 	```
@@ -237,45 +238,73 @@ Some action types, data formats, and expected response types and data formats fo
 
 	```
 	'dir': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
-		'dir_response': {'value': Collection<String>, 'exception': String?}
+		'dir_response': Collection<String> or String
 		//Names of all members/properties/attributes/methods.
+		//Response must be String if sent with Exception flag.
+	```
+
+	```
+	//'hash': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+		//'hash_response': Any? or String
+		//Response must be String if sent with Exception flag.
+		//Implemented, but disabled. I'm not actually sure what the use of this would be. Hashes are usually just a shortcut for (in)equality, so I think a Kotlin-side equality or identity operator might be needed for this to be useful.
 	```
 
 	```
 	'keys': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
-		'keys_response': {'value': Collection<Any?>, 'exception': String?}
+		'keys_response': Collection<Any?> or String
+		//Response must be String if sent with Exception flag.
 		//Keys of Map-interfaced instances. Used by Python bindings for iteration and autocomplete.
 	```
 
 	```
 	'length': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
-		'length_response': {'value': Int?, 'exception': String?}
+		'length_response': Int or String
+		//Response must be String if sent with Exception flag.
 		//Used by Python bindings for length and also for iteration.
 	```
 
 	```
 	'contains': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>, 'value': Any?} ->
-		'contains_response': {'value': Boolean?, 'exception': String?}
+		'contains_response': Boolean or String
 		//Doing this through an IPC call instead of in the script interpreter should let tokenized instances be checked for properly.
+		//Response must be String if sent with Exception flag.
+	```
+
+	```
+	//'isiterable': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+		//'isiterable_response': Boolean or String
+		//Response must be String if sent with Exception flag.
+		//Not implemented.
+	```
+
+	```
+	'ismapping': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+		'isiterable_response': Boolean or String
+		//Response must be String if sent with Exception flag.
+		//Used by Python bindings to hide Python-emulating .values, .keys, and .entries to allow access to Kotlin objects when not a mapping.
 	```
 
 	```
 	'callable': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
-		'callable_response': {'value': Boolean?, 'exception': String?}
+		'callable_response': Boolean or String
+		//Response must be String if sent with Exception flag.
 		//Used by Python autocompleter to add opening bracket to methods and function suggestions. Quite useful for exploring API at a glance.
 	```
 
 	```
 	'args': 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
-		'args_response': {'value': List<Pair<String?, String>>?, 'exception': String?}
+		'args_response': List<Pair<String?, String>> or String
 		//Names and types of arguments accepted by a function.
+		//Response must be String if sent with Exception flag.
 		//Currently just used by Python autocompleter to generate help text.
 		//Could also be used to control functions in scripting environment. If so, then names of types should be standardized.
 	```
 
 	```
 	'docstring': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
-		'docstring_response': {'value': String?, 'exception': String?}
+		'docstring_response': String or String
+		//Response must be String if sent with Exception flag.
 		//Used by Python wrappers and autocompleter to get help text showing arguments and types for callables. Useful for exploring API without having to browse code.
 	```
 
@@ -294,9 +323,9 @@ Flags are string values for communicating extra information that doesn't need a 
 	```
 
 	```
-	//'Exception'
+	'Exception'
 		//Indicates that this packet is associated with an error.
-		//Not implemented. Currently Kotlin-side exceptions while processing a request are communicated to the script interpreter with an error message at an expected place in the data field of the response, and exceptions in the script interpreter while executing a command are stringified and returned to the Kotlin side the same as any REPL output. Miight be useful for a modding API, though.
+		//Currently sent only by Kotlin side and handled only by Python backend. Modding API and build tests will need this to be implemented in the other direction too.
 	```
 
 	```

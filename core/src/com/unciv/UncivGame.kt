@@ -73,10 +73,11 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val translations = Translations()
 
     lateinit var scriptingState: ScriptingState
-    lateinit var consoleScreen: ConsoleScreen // Keep same ConsoleScreen() when possible, to avoid having to manually persist/restore history, input field, etc.
+    lateinit var consoleScreen: ConsoleScreen
+    // Keep same ConsoleScreen() when possible, to avoid having to manually persist/restore history, input field, etc.
 
     override fun create() {
-    
+
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false
@@ -157,10 +158,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         scriptingState = ScriptingState(
             ScriptingScope(
-                null,
-                null,
-                this,
-                null
+                uncivGame = this
             )
         )
 

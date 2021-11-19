@@ -14,11 +14,17 @@
 				main.py
 				unciv_scripting_examples/
 				unciv_scripting_examples/__init__.py
+				unciv_scripting_examples/EarthTerrainFantasyHex.png
+				unciv_scripting_examples/EarthTerrainRaw.png
+				unciv_scripting_examples/EarthTopography.png
 				unciv_scripting_examples/EndTimes.py
-				unciv_scripting_examples/Merfolk.py
 				unciv_scripting_examples/ExternalPipe.py
+				unciv_scripting_examples/MapEditingMacros.py
+				unciv_scripting_examples/Merfolk.py
 				unciv_scripting_examples/PlayerMacros.py
+				unciv_scripting_examples/StarryNight.jpg
 				unciv_scripting_examples/Tests.py
+				unciv_scripting_examples/TurboRainbow.png
 			]
 			syntaxHighlightingRegexStack: [
 			]

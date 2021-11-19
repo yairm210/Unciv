@@ -250,6 +250,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             settings.enableScriptingConsole) {
             settings.enableScriptingConsole = it
         }
+        //TODO: Persist command history.
+        //TODO: Startup macros per backend type.
 
         if (previousScreen.game.limitOrientationsHelper != null) {
             addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {

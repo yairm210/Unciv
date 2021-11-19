@@ -23,21 +23,21 @@ import kotlin.math.min
 class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Unit): CameraStageBaseScreen() {
 
     private val layoutTable: Table = Table()
-    
+
     private val topBar: Table = Table()
     private var backendsScroll: ScrollPane
     private val backendsAdders: Table = Table()
     private val closeButton: TextButton = Constants.close.toTextButton()
-    
+
     private var middleSplit: SplitPane
     private var printScroll: ScrollPane
     private val printHistory: Table = Table()
     private val runningContainer: Table = Table()
     private val runningList: Table = Table()
-    
+
     private val inputBar: Table = Table()
     private val inputField: TextField = TextField("", skin)
-    
+
     private val inputControls: Table = Table()
     private val tabButton: TextButton = "TAB".toTextButton()
     private val upButton: Image = ImageGetter.getImage("OtherIcons/Up")
@@ -50,7 +50,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     var inputText: String
         get() = inputField.text
         set(value: String) { inputField.setText(value) }
-    
+
     var cursorPos: Int
         get() = inputField.getCursorPosition()
         set(value: Int) {
@@ -58,7 +58,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         }
 
     init {
-        
+
         backendsAdders.add("Launch new backend:".toLabel()).padRight(30f).padLeft(20f)
         for (backendtype in ScriptingBackendType.values()) {
             var backendadder = backendtype.metadata.displayName.toTextButton()
@@ -69,86 +69,86 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             backendsAdders.add(backendadder)
         }
         backendsScroll = ScrollPane(backendsAdders)
-        
+
         backendsAdders.left()
-        
+
         val cell_backendsScroll = topBar.add(backendsScroll)
         layoutUpdators.add( { cell_backendsScroll.minWidth(stage.width - closeButton.getPrefWidth()) } )
         topBar.add(closeButton)
-        
+
         printHistory.left()
         printHistory.bottom()
         printScroll = ScrollPane(printHistory)
-        
+
         runningContainer.add("Active Backends:".toLabel()).row()
         runningContainer.add(runningList)
-        
+
         middleSplit = SplitPane(printScroll, runningContainer, false, skin)
         middleSplit.setSplitAmount(0.8f)
-        
+
         inputControls.add(tabButton)
         inputControls.add(upButton.surroundWithCircle(40f))
         inputControls.add(downButton.surroundWithCircle(40f))
         inputControls.add(runButton)
-        
+
         val cell_inputField = inputBar.add(inputField)
         layoutUpdators.add( { cell_inputField.minWidth(stage.width - inputControls.getPrefWidth()) } )
         inputBar.add(inputControls)
-        
+
         layoutUpdators.add( { layoutTable.setSize(stage.width, stage.height) } )
-        
+
         val cell_topBar = layoutTable.add(topBar)
         layoutUpdators.add( { cell_topBar.minWidth(stage.width) } )
         cell_topBar.row()
-        
+
         val cell_middleSplit = layoutTable.add(middleSplit)
         layoutUpdators.add( { cell_middleSplit.minWidth(stage.width).minHeight(stage.height - topBar.getPrefHeight() - inputBar.getPrefHeight()) } )
         cell_middleSplit.row()
-        
+
         layoutTable.add(inputBar)
-        
+
         runButton.onClick({ run() })
         keyPressDispatcher[Input.Keys.ENTER] = { run() }
         keyPressDispatcher[Input.Keys.NUMPAD_ENTER] = { run() }
-        
+
         tabButton.onClick({ autocomplete() })
         keyPressDispatcher[Input.Keys.TAB] = { autocomplete() }
-        
+
         upButton.onClick({ navigateHistory(1) })
         keyPressDispatcher[Input.Keys.UP] = { navigateHistory(1) }
         downButton.onClick({ navigateHistory(-1) })
         keyPressDispatcher[Input.Keys.DOWN] = { navigateHistory(-1) }
-        
+
         onBackButtonClicked({ closeConsole() })
         closeButton.onClick({ closeConsole() })
-        
+
         updateLayout()
-        
+
         stage.addActor(layoutTable)
-        
+
         echoHistory()
-        
+
         updateRunning()
     }
-    
+
     fun updateLayout() {
         for (func in layoutUpdators) {
             func()
         }
     }
-    
+
     fun openConsole() {
         game.setScreen(this)
         keyPressDispatcher.install(stage)
         this.isOpen = true
     }
-    
+
     fun closeConsole() {
         closeAction()
         keyPressDispatcher.uninstall()
         this.isOpen = false
     }
-    
+
     private fun updateRunning() {
         runningList.clearChildren()
         var i = 0
@@ -175,11 +175,11 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             i += 1
         }
     }
-    
+
     private fun clear() {
         printHistory.clearChildren()
     }
-    
+
     fun setText(text: String, cursormode: SetTextCursorMode=SetTextCursorMode.End) {
         val originaltext = inputText
         val originalcursorpos = cursorPos
@@ -192,21 +192,21 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             (SetTextCursorMode.SelectAfter) -> { throw UnsupportedOperationException("NotImplemented.") }
         }
     }
-    
+
     fun setScroll(x: Float, y: Float, animate: Boolean = true) {
         printScroll.scrollTo(x, y, 1f, 1f)
         if (!animate) {
             printScroll.updateVisualScroll()
         }
     }
-    
+
     private fun echoHistory() {
         // Doesn't restore autocompletion. I guess that's by design. Autocompletion is a protocol/UI-level feature IMO, and not part of the emulated STDIN/STDOUT. Call `echo()` in `ScriptingState`'s `autocomplete` method if that's a problem.
         for (hist in scriptingState.getOutputHistory()) {
             echo(hist)
         }
     }
-    
+
     private fun autocomplete() {
         val original = inputText
         val cursorpos = cursorPos
@@ -239,11 +239,11 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             // Splice the longest starting substring with the text after the cursor, to let autocomplete implementations work on the middle of current input.
         }
     }
-    
+
     private fun navigateHistory(increment:Int) {
         setText(scriptingState.navigateHistory(increment), SetTextCursorMode.End)
     }
-    
+
     private fun echo(text: String) {
         val label = Label(text, skin)
         val width = stage.width * 0.75f
@@ -260,12 +260,12 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         printHistory.invalidate()
         setScroll(0f,0f)
     }
-    
+
     private fun run() {
         echo(scriptingState.exec(inputText))
         setText("")
     }
-    
+
     fun clone(): ConsoleScreen {
         return ConsoleScreen(scriptingState, closeAction).also {
             it.inputText = inputText
@@ -273,7 +273,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             it.setScroll(printScroll.getScrollX(), printScroll.getScrollY(), animate = false)
         }
     }
-    
+
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) { // Right. Actually resizing seems painful.
             game.consoleScreen = clone()
@@ -283,7 +283,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             }
         }
     }
-    
+
     enum class SetTextCursorMode() {
         End(),
         Unchanged(),

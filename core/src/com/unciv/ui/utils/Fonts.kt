@@ -86,22 +86,22 @@ class NativeBitmapFontData(
     private fun getPixmapFromChar(ch: Char): Pixmap {
         // Images must be 50*50px so they're rendered at the same height as the text - see Fonts.ORIGINAL_FONT_SIZE
         return when (ch) {
-            Fonts.strength -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Strength").region)
-            Fonts.rangedStrength -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/RangedStrength").region)
-            Fonts.range -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Range").region)
-            Fonts.movement -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Movement").region)
-            Fonts.turn -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Turn").region)
-            Fonts.production -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Production").region)
-            Fonts.gold -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Gold").region)
-            Fonts.food -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Food").region)
-            Fonts.science -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Science").region)
-            Fonts.culture -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Culture").region)
-            Fonts.faith -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Faith").region)
-            Fonts.happiness -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Happiness").region)
-            MayaCalendar.tun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.tunIcon).region)
-            MayaCalendar.katun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.katunIcon).region)
-            MayaCalendar.baktun -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.baktunIcon).region)
-            in MayaCalendar.digits -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable(MayaCalendar.digitIcon(ch)).region)
+            Fonts.strength -> ImageGetter.getDrawable("StatIcons/Strength").region.toPixmap()
+            Fonts.rangedStrength -> ImageGetter.getDrawable("StatIcons/RangedStrength").region.toPixmap()
+            Fonts.range -> ImageGetter.getDrawable("StatIcons/Range").region.toPixmap()
+            Fonts.movement -> ImageGetter.getDrawable("StatIcons/Movement").region.toPixmap()
+            Fonts.turn -> ImageGetter.getDrawable("EmojiIcons/Turn").region.toPixmap()
+            Fonts.production -> ImageGetter.getDrawable("EmojiIcons/Production").region.toPixmap()
+            Fonts.gold -> ImageGetter.getDrawable("EmojiIcons/Gold").region.toPixmap()
+            Fonts.food -> ImageGetter.getDrawable("EmojiIcons/Food").region.toPixmap()
+            Fonts.science -> ImageGetter.getDrawable("EmojiIcons/Science").region.toPixmap()
+            Fonts.culture -> ImageGetter.getDrawable("EmojiIcons/Culture").region.toPixmap()
+            Fonts.faith -> ImageGetter.getDrawable("EmojiIcons/Faith").region.toPixmap()
+            Fonts.happiness -> ImageGetter.getDrawable("EmojiIcons/Happiness").region.toPixmap()
+            MayaCalendar.tun -> ImageGetter.getDrawable(MayaCalendar.tunIcon).region.toPixmap()
+            MayaCalendar.katun -> ImageGetter.getDrawable(MayaCalendar.katunIcon).region.toPixmap()
+            MayaCalendar.baktun -> ImageGetter.getDrawable(MayaCalendar.baktunIcon).region.toPixmap()
+            in MayaCalendar.digits -> ImageGetter.getDrawable(MayaCalendar.digitIcon(ch)).region.toPixmap()
             else -> fontImplementation.getCharPixmap(ch)
         }
     }
@@ -133,29 +133,6 @@ object Fonts {
         val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
         font = BitmapFont(fontData, fontData.regions, false)
         font.setOwnsTexture(true)
-    }
-
-    // From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
-    fun extractPixmapFromTextureRegion(textureRegion:TextureRegion):Pixmap {
-        val textureData = textureRegion.texture.textureData
-        if (!textureData.isPrepared) {
-            textureData.prepare()
-        }
-        val pixmap = Pixmap(
-                textureRegion.regionWidth,
-                textureRegion.regionHeight,
-                textureData.format
-        )
-        pixmap.drawPixmap(
-                textureData.consumePixmap(), // The other Pixmap
-                0, // The target x-coordinate (top left corner)
-                0, // The target y-coordinate (top left corner)
-                textureRegion.regionX, // The source x-coordinate (top left corner)
-                textureRegion.regionY, // The source y-coordinate (top left corner)
-                textureRegion.regionWidth, // The width of the area from the other Pixmap in pixels
-                textureRegion.regionHeight // The height of the area from the other Pixmap in pixels
-        )
-        return pixmap
     }
 
     const val turn = '⏳'               // U+23F3 'hourglass'

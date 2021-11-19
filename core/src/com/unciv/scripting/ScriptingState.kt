@@ -56,21 +56,25 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     // Actually inverted, because history items are added to end of list and not start. 0 means nothing, 1 means most recent command at end of list.
 
     //Wrapper for property of scriptingScope.
-    var civInfo: CivilizationInfo?
-        get() = scriptingScope.civInfo
-        set(value) { scriptingScope.civInfo = value }
+//    var civInfo: CivilizationInfo?
+//        get() = scriptingScope.civInfo
+//        set(value) { scriptingScope.civInfo = value }
 
-    var gameInfo: GameInfo?
-        get() = scriptingScope.gameInfo
-        set(value) { scriptingScope.gameInfo = value }
+//    var gameInfo: GameInfo?
+//        get() = scriptingScope.gameInfo
+//        set(value) { scriptingScope.gameInfo = value }
 
-    var uncivGame: UncivGame?
-        get() = scriptingScope.uncivGame
-        set(value) { scriptingScope.uncivGame = value }
+//    var uncivGame: UncivGame?
+//        get() = scriptingScope.uncivGame
+//        set(value) { scriptingScope.uncivGame = value }
 
-    var worldScreen: WorldScreen?
-        get() = scriptingScope.worldScreen
-        set(value) { scriptingScope.worldScreen = value }
+//    var worldScreen: WorldScreen?
+//        get() = scriptingScope.worldScreen
+//        set(value) { scriptingScope.worldScreen = value }
+
+//    var worldScreen: WorldScreen?
+//        get() = scriptingScope.worldScreen
+//        set(value) { scriptingScope.worldScreen = value }
 
 
     init {

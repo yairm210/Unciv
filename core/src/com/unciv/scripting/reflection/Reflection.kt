@@ -4,11 +4,15 @@ import com.unciv.scripting.utils.TokenizingJson
 import kotlin.collections.ArrayList
 import kotlin.reflect.KCallable
 import kotlin.reflect.KMutableProperty1
+//import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty1
+//import kotlin.reflect.KType
 //import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.util.*
 
+
+//TODO: Method dispatch to right methods?
 
 object Reflection {
     @Suppress("UNCHECKED_CAST")
@@ -18,6 +22,39 @@ object Reflection {
             .first { it.name == propertyName } as KProperty1<Any, *>
         return property.get(instance) as R?
     }
+/*
+    class InstanceMethodDispatcher(val instance: Any, val methodName: String) {
+        val methods: List<KCallable<Any>> by lazy { instance::class.members.filter{ it.name == methodName }.map{ it as KCallable<Any> } }
+        fun call(arguments: Array<Any?>): Any? {
+            val matches = methods.filter {
+                    val params = it.parameters
+                    params.size == arguments.size + 1
+                    // Check that the parameters size is same as arguments size plus one for the receiver.
+                    && (arguments zip params.slice(1..arguments.size)).all{
+                        (arg, kparam) ->
+                            // Check that every argument can be cast to the expected type.
+                            if (arg == null)
+                                kparam.type.isMarkedNullable
+                            else
+                                kparam.type in arg::class.supertypes
+                                // Not totally sure if these KTypes are singleton-like. Hopefully equality-comparison works for containment here even if they aren't?
+                    }
+                }
+            if (matches.size < 1) {
+                throw IllegalArgumentException("No matching signatures found for calling ${instance::class?.simpleName}.${methodName} with given arguments: (${arguments.map{if (it == null) "null" else it::class?.simpleName ?: "null"}.joinToString(", ")})")
+                //FIXME: A lot of non-null assertions and null checks can probably be replaced with safe calls.
+            }
+            if (matches.size > 1) {
+                //I guess could also allow this, producing ambiguous behaviour and leaving it up to the methods to avoid creating such scenarios. Actually no, that sounds like a terrible idea reading it back.
+                //TODO: Should try to choose most specific signatures based on inheritance hierarchy.
+                throw IllegalArgumentException("Multiple matching signatures found for calling ${methodName}:\n\t${matches.map{it.toString()}.joinToString("\n\t")}")
+            }
+            return matches[0]!!.call(
+                    instance,
+                    *arguments
+                )
+        }
+    }*/
 
     fun readInstanceMethod(instance: Any, methodName: String): KCallable<Any> {
         val method = instance::class.members

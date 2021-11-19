@@ -49,6 +49,7 @@ object SourceManager {
         }
         Runtime.getRuntime().addShutdownHook(
             // Delete temporary directory on JVM shutdown, not on backend object destruction/termination. The copied files shouldn't be huge anyway, there's no reference to a ScriptingBackend() here, and I trust the shutdown hook to be run more reliably.
+            // I guess you could wrap the outdir folder handler in something with a .finalize(), then keep it around for the duration of each backend, if you wanted to clear scripting runtimes when they're no longer in use. May become more pressing if a modding API is implemented and it involves spinning up new ScriptingStates/ScriptingBackends for every loaded game, I guess.
             thread(start = false, name = "Delete ${outdir.toString()}.") {
                 outdir.deleteDirectory()
             }

@@ -36,7 +36,7 @@ def get_keys(obj):
 	except (AttributeError, ipc.ForeignError):
 		return ()
 
-def get_doc(obj):
+def get_help(obj):
 	"""Get docstring of object. Fail silently if it has none, or get one through its IPC methods if it's a ForeignObject(). Used for PyAutocompleter."""
 	try:
 		if isinstance(obj, wrapping.ForeignObject):
@@ -45,9 +45,12 @@ def get_doc(obj):
 			doc += "\n".join(f"\t{argname}: {argtype}" for argname, argtype in obj._args_())
 			return doc
 		else:
-			return obj.__doc__
-	except AttributeError:
-		return None
+			with ipc.FakeStdout() as fakeout:
+				print()
+				help(obj)
+				return fakeout.getvalue()
+	except Exception as e:
+		return f"Error accessing help text: {repr(e)}"
 
 
 @expose()
@@ -61,7 +64,7 @@ def callable(obj):
 
 autocompleterkwargs = {
 	'get_keys': get_keys,
-	'get_doc': get_doc,
+	'get_help': get_help,
 	'check_callable': callable
 }
 
@@ -110,9 +113,15 @@ Current imports:
 	from unciv import *
 	from unciv_pyhelpers import *
 
+Run "help()", or read PythonScripting.md, for an overview of this API.
+
+Extensive example scripts can be imported as the "unciv_scripting_examples" module.
+These can also also accessed from the game files either externally or through the API:
+	print(apiHelpers.assetFileString())
+
 Press [TAB] at any time to trigger autocompletion at the current cursor position, or display help text for an empty function call.
 
-"""
+"""#TODO: Replace current imports with startup command managed by ConsoleScreen and GameSettings.
 	@ipc.receiverMethod('autocomplete', 'autocomplete_response')
 	def EvalForeignAutocomplete(self, packet):
 		assert 'PassMic' in packet.flags, f"Expected 'PassMic' in packet flags: {packet}"
@@ -132,8 +141,9 @@ Press [TAB] at any time to trigger autocompletion at the current cursor position
 				except SyntaxError:
 					exec(compile(line, 'STDIN', 'exec'), self.scope, self.scope)
 				else:
-					print(eval(code, self.scope, self.scope))
+					print(repr(eval(code, self.scope, self.scope)))
 			except Exception as e:
+				#TODO: Return 'Exception' flag in packet here.
 				print(utils.formatException(e))
 			finally:
 				self.passMic()

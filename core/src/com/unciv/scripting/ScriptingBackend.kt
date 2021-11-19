@@ -94,10 +94,12 @@ open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBa
 
     /**
      * For the UI, a way is needed to list all available scripting backend types with 1. A readable display name and 2. A way to create new instances.
+     *
      * So every ScriptngBackend has a Metadata:ScriptingBackend_metadata companion object, which is stored in the ScriptingBackendType enums.
      */
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = ScriptingBackendBase(scriptingScope)
+        // Trying to instantiate from a KClass seems messy when the constructors are expected to be called normally. This is easier.
         override val displayName: String = "Dummy"
     }
 
@@ -490,7 +492,15 @@ abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): Black
     override val replManager: ScriptingReplManager by lazy { ScriptingRawReplManager(scriptingScope, blackbox) }
 
     override fun motd(): String {
-        return "\n\nWelcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system ${processCmd.firstOrNull()} command as a subprocess.\n\nIf you do not have an interactive REPL below, then please make sure the below command is valid on your system:\n\n${processCmd.joinToString(" ")}\n\n${super.motd()}\n"
+        return """
+
+            Welcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system ${processCmd.firstOrNull()} command as a subprocess.
+
+            If you do not have an interactive REPL below, then please make sure the following command is valid on your system:
+
+            ${processCmd.joinToString(" ")}
+
+        """.trimIndent() + super.motd()
     }
 }
 

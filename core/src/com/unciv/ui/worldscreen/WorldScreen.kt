@@ -25,10 +25,9 @@ import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
-import com.unciv.scripting.ScriptingState
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.consolescreen.ConsoleScreen
+import com.unciv.ui.consolescreen.IConsoleScreenAccessible
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.*
 import com.unciv.ui.saves.LoadGameScreen
@@ -57,7 +56,7 @@ import kotlin.concurrent.timer
  * @property mapHolder A [MinimapHolder] instance
  * @property bottomUnitTable Bottom left widget holding information about a selected unit or city
  */
-class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : BaseScreen() {
+class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : BaseScreen(), IConsoleScreenAccessible {
 
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
         private set     // only this class is allowed to make changes
@@ -87,12 +86,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
-
-    private val consoleScreen: ConsoleScreen
-        get() = game.consoleScreen
-
-    private val scriptingState: ScriptingState
-        get() = game.scriptingState
 
     companion object {
         /** Switch for console logging of next turn duration */
@@ -200,11 +193,12 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         //  know what the viewing civ is.
         shouldUpdate = true
 
-        consoleScreen.closeAction = { game.setWorldScreen() }
-        scriptingState.gameInfo = gameInfo
-        scriptingState.civInfo = selectedCiv
-        scriptingState.worldScreen = this
-
+        setConsoleScreenCloseAction({ game.setWorldScreen() })
+        updateScriptingState(
+            gameInfo = gameInfo,
+            civInfo = selectedCiv,
+            worldScreen = this
+        )
     }
 
     private fun stopMultiPlayerRefresher() {
@@ -253,7 +247,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
 
         // Space and N are assigned in createNextTurnButton
-        keyPressDispatcher[Input.Keys.GRAVE] = { game.setConsoleScreen() } // CLI console
+        setOpenConsoleScreenHotkey() // CLI console
         keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
         keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*

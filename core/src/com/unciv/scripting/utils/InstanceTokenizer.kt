@@ -47,7 +47,6 @@ object InstanceTokenizer {
         var stringified = value.toString()
         if (stringified.length > tokenMaxLength) {
             stringified = stringified.slice(0..tokenMaxLength-4) + "..."
-            println("Slicing.")
         }
         return "${tokenPrefix}${System.identityHashCode(value)}:${if (value == null) "null" else value::class.qualifiedName}/${stringified}:${UUID.randomUUID().toString()}"
     }
@@ -65,6 +64,7 @@ object InstanceTokenizer {
      */
     fun clean(): Unit {
         //FIXME (if I become a problem): Because a new unique token is currently generated even if the instance is already tokenized as something else, this will eventually get slower over time if a script makes lots of requests that result in new instance tokens for objects that last a long time (E.G. uncivGame). And since any stored instances should ideally be WeakReferences to prevent garbage collection from being broken for *all* instances, fixing that may not be as simple as checking for existing tokens to reuse them.
+        //TODO: Probably keep another map of instance hashes to weakrefs and their existing token?
         val badtokens = mutableListOf<String>()
         for ((t, o) in instances) {
             if (o.get() == null) {

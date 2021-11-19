@@ -16,9 +16,10 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.translations.tr
+import com.unciv.ui.consolescreen.IConsoleScreenAccessible
 import com.unciv.ui.utils.*
 
-class MapEditorScreen(): BaseScreen() {
+class MapEditorScreen(): BaseScreen(), IConsoleScreenAccessible {
     var mapName = ""
     var tileMap = TileMap()
     var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) }
@@ -140,6 +141,12 @@ class MapEditorScreen(): BaseScreen() {
                 isPainting = false
             }
         })
+
+        setOpenConsoleScreenHotkey()
+        setConsoleScreenCloseAction()
+        updateScriptingState(
+            mapEditorScreen = this
+        )
     }
 
     private fun checkAndFixMapSize() {

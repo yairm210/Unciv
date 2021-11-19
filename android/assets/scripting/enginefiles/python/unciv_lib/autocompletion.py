@@ -9,11 +9,11 @@ class AutocompleteManager:
 		scope=None,
 		*,
 		get_keys=lambda o: o.keys() if hasattr(o, 'keys') else (),
-		get_doc=lambda o: getattr(o, '__doc__', None),
+		get_help=lambda o: getattr(o, '__doc__', None),
 		check_callable=lambda o: callable(o)
 	):
 		self.scope = globals() if scope is None else scope
-		self.get_keys, self.get_doc, self.check_callable = get_keys, get_doc, check_callable
+		self.get_keys, self.get_help, self.check_callable = get_keys, get_help, check_callable
 	def GetCommandComponents(self, command):
 		"""Try to return the the last atomic evaluable expression in a statement, everything before it, and the token at the end of everything before it."""
 		#Call recursively if you need to resolve multiple values. Test string:
@@ -41,6 +41,7 @@ class AutocompleteManager:
 				char = None
 				continue
 			if char in '([:,;+-*/|&<>=%{~^@':
+				# Should probably split at multi-character tokens like 'in', 'for', 'if', etc. too.
 				prefixsplit += 1
 				lasttoken = char
 				break
@@ -87,7 +88,7 @@ class PyAutocompleteManager(AutocompleteManager):
 					if lasttoken == '(' and (not workingcode):
 #						return f"Show docstring of {prefix_workingcode}."
 						func_obj = self.Evaled(prefix_workingcode)
-						return (self.get_doc(func_obj) or "No documentation available.") + "\n"
+						return (self.get_help(func_obj) or "No help text available.") + "\n"
 #			return f"Return attributes to complete {workingcode}."
 			whitespaceadjusted_workingcode = workingcode.lstrip()
 			whitespaceadjusted_prefix = prefix + workingcode[:len(workingcode)-len(whitespaceadjusted_workingcode)]
