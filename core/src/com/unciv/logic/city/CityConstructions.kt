@@ -601,10 +601,13 @@ class CityConstructions {
 
     fun addToQueue(constructionName: String) {
         if (isQueueFull()) return
+        val construction = getConstruction(constructionName)
+        if (!construction.isBuildable(this)) return
+        if (construction is Building && isBeingConstructedOrEnqueued(constructionName)) return
         if (currentConstructionFromQueue == "" || currentConstructionFromQueue == "Nothing") {
             currentConstructionFromQueue = constructionName
         } else if (getConstruction(constructionQueue.last()) is PerpetualConstruction) {
-            if (getConstruction(constructionName) is PerpetualConstruction) {  // perpetual constructions will replace each other
+            if (construction is PerpetualConstruction) {  // perpetual constructions will replace each other
                 constructionQueue.removeAt(constructionQueue.size - 1)
                 constructionQueue.add(constructionName)
             } else
