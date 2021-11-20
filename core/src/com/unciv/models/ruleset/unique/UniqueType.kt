@@ -272,6 +272,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
 
+    NoMaintenance("Costs no Maintenance", UniqueTarget.Unit),
+
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.1 - removed as of 3.17.13", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.ERROR)

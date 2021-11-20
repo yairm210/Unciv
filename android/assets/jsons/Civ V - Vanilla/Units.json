@@ -1147,6 +1147,7 @@
 		"range": 8,
 		"cost": 150,
 		"requiredTech": "Satellites",
+		"uniques": ["Costs no Maintenance"],
 		"attackSound": "missile"
 	},
 	{

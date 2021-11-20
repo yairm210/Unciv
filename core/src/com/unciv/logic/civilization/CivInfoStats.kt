@@ -32,6 +32,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             unitsToPayFor = unitsToPayFor.filterNot {
                 it.getTile().isCityCenter() && it.canGarrison()
             }
+        // Count number of No Maintenance units
+        freeUnits += unitsToPayFor.filter{
+            it.hasUnique(UniqueType.NoMaintenance)
+        }.count()
 
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)

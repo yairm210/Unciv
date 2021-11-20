@@ -1474,6 +1474,7 @@
 		"range": 8,
 		"cost": 150,
 		"requiredTech": "Advanced Ballistics",
+		"uniques": ["Costs no Maintenance"],
 		"attackSound": "missile"
 	},
 	{
