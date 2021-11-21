@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.toPercent
 import kotlin.math.min
@@ -184,13 +185,38 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
+
+    /**
+     * Intended to replace getStatsFromUniques
+     * getStatsFromUniques is one of many functions that takes getCivWideBuildingUniques as an input
+     * That function is too performance-heavy and we need to get rid of it
+     * The proper way is by converting the "get uniques by object type then filter by uniquetype and map to stats"
+     *   to "get uniques by uniquetype then map to stats and sort by object type"
+     * That way we use the nice hashmaps we have everywhere to only get the relevant uniques
+     *   and not iterate on ALL of them
+     */
+    private fun getStatsFromUniquesBySource():StatMap {
+        val sourceToStats = StatMap()
+        val cityConditionals = StateForConditionals(cityInfo.civInfo, cityInfo)
+        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.Stats, cityConditionals))
+            sourceToStats.add(unique.sourceObjectType?.name ?: "", unique.stats)
+
+        fun rename(source: String, displayedSource: String) {
+            if (!sourceToStats.containsKey(source)) return
+            sourceToStats.add(displayedSource, sourceToStats[source]!!)
+            sourceToStats.remove(source)
+        }
+        rename("Wonder", "Wonders")
+        rename("Building", "Buildings")
+        rename("Policy", "Policies")
+
+        return sourceToStats
+    }
+
     private fun getStatsFromUniques(uniques: Sequence<Unique>): Stats {
         val stats = Stats()
 
         for (unique in uniques.toList()) { // Should help mitigate getConstructionButtonDTOs concurrency problems.
-            if (unique.isOfType(UniqueType.Stats) && unique.conditionalsApply(cityInfo.civInfo, cityInfo)) {
-                stats.add(unique.stats)
-            }
 
             if (unique.isOfType(UniqueType.StatsPerCity)
                 && cityInfo.matchesFilter(unique.params[1])
@@ -406,8 +432,8 @@ class CityStats(val cityInfo: CityInfo) {
         var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
 
         // Deprecated since 3.16.11
-            for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
-                unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
+        for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
+            unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
         //
 
         for (unique in cityInfo.getMatchingUniques("[]% unhappiness from specialists []")) {
@@ -415,7 +441,8 @@ class CityStats(val cityInfo: CityInfo) {
                 unhappinessFromSpecialists *= unique.params[0].toPercent()
         }
 
-        unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists().toFloat() - unhappinessFromSpecialists
+        unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists()
+            .toFloat() - unhappinessFromSpecialists
 
         if (cityInfo.isPuppet)
             unhappinessFromCitizens *= 1.5f
@@ -428,24 +455,36 @@ class CityStats(val cityInfo: CityInfo) {
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
-        val happinessFromPolicies = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
+        val happinessFromPolicies =
+            getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
 
         newHappinessList["Policies"] = happinessFromPolicies
 
         if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city
 
-        val happinessFromSpecialists = getStatsFromSpecialists(cityInfo.population.getNewSpecialists()).happiness.toInt().toFloat()
+        val happinessFromSpecialists =
+            getStatsFromSpecialists(cityInfo.population.getNewSpecialists()).happiness.toInt()
+                .toFloat()
         if (happinessFromSpecialists > 0) newHappinessList["Specialists"] = happinessFromSpecialists
 
         newHappinessList["Buildings"] = statsFromBuildings.happiness.toInt().toFloat()
 
-        newHappinessList["National ability"] = getStatsFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()).happiness
+        newHappinessList["National ability"] =
+            getStatsFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()).happiness
 
-        newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques(cityInfo)).happiness
+        newHappinessList["Wonders"] =
+            getStatsFromUniques(civInfo.getCivWideBuildingUniques(cityInfo)).happiness
 
         newHappinessList["Religion"] = getStatsFromUniques(cityInfo.religion.getUniques()).happiness
 
         newHappinessList["Tile yields"] = statsFromTiles.happiness
+
+        val happinessBySource = getStatsFromUniquesBySource()
+        for ((source, stats) in happinessBySource)
+            if (stats.happiness != 0f) {
+                if (newHappinessList.containsKey(source)) newHappinessList[source] = 0f
+                newHappinessList[source] = newHappinessList[source]!! + stats.happiness
+            }
 
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
@@ -453,7 +492,7 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
     private fun updateBaseStatList(statsFromBuildings: Stats) {
-        val newBaseStatList = LinkedHashMap<String, Stats>() // we don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
+        val newBaseStatList = StatMap() // we don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
         val civInfo = cityInfo.civInfo
 
         newBaseStatList["Population"] = Stats(
@@ -469,6 +508,10 @@ class CityStats(val cityInfo: CityInfo) {
         newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.getCivWideBuildingUniques(cityInfo))
         newBaseStatList["City-States"] = getStatsFromCityStates()
         newBaseStatList["Religion"] = getStatsFromUniques(cityInfo.religion.getUniques())
+
+        val statMap = getStatsFromUniquesBySource()
+        for((source, stats) in statMap)
+            newBaseStatList.add(source, stats)
 
         baseStatList = newBaseStatList
     }
