@@ -364,7 +364,7 @@ open class TileInfo {
                 return terrain.getMatchingUniques(UniqueType.OverrideFertility).first().params[0].toInt()
             else
                 fertility += terrain.getMatchingUniques(UniqueType.AddFertility)
-                        .sumBy { it.params[0].toInt() }
+                    .sumOf { it.params[0].toInt() }
         }
         if (isAdjacentToRiver()) fertility += 1
         if (isAdjacentToFreshwater) fertility += 1 // meaning total +2 for river
