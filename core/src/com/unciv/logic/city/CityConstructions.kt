@@ -88,33 +88,7 @@ class CityConstructions {
         val stats = Stats()
         for (building in getBuiltBuildings())
             stats.add(building.getStats(cityInfo))
-        
-        // Why only the local matching uniques you ask? Well, the non-local uniques are evaluated in
-        // CityStats.getStatsFromUniques(uniques). This function gets a list of uniques and one of
-        // the placeholderTexts it filters for is "[] per [] population []". Why doesn't that function
-        // then not also handle the local (i.e. cityFilter == "in this city") versions?
-        // This is because of what it is used for. The only time time a unique with this placeholderText
-        // is actually contained in `uniques`, is when `getStatsFromUniques` is called for determining
-        // the stats a city receives from wonders. It is then called with `unique` being the list
-        // of all specifically non-local uniques of all cities.
-        // 
-        // This averts the problem, albeit barely, and it might change in the future without
-        // anyone noticing, which might lead to further bugs. So why can't these two unique checks
-        // just be merged then? Because of another problem.
-        //
-        // As noted earlier, `getStatsFromUniques` is called in that case to calculate the stats
-        // this city received from wonders, both local and non-local. This function, `getStats`,
-        // is only called to calculate the stats the city receives from local buildings.
-        // In the current codebase with the current JSON objects it just so happens to be that
-        // all non-local uniques with this placeholderText from other cities belong to wonders, 
-        // while the local uniques with this placeholderText are from buildings, but this is in no
-        // way a given. In reality, there should be functions getBuildingStats and getWonderStats,
-        // to solve this, with getStats merely adding these two together. 
-        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.StatsPerPopulation)
-                .filter { cityInfo.matchesFilter(it.params[2])}
-        ) {
-            stats.add(unique.stats.times(cityInfo.population.population / unique.params[1].toFloat()))
-        }
+
         
         // Deprecated since 3.17.11
             for (unique in cityInfo.getLocalMatchingUniques(UniqueType.StatsWithTech)) {

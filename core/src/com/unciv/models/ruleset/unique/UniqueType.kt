@@ -76,6 +76,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     StatsFromSpecialistDeprecated("[stats] from every specialist", UniqueTarget.Global),
 
     StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global),
+    StatsFromXPopulation("[stats] in cities with [amount] or more population", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatsFromCitiesBefore("[stats] per turn from cities before [tech/policy]", UniqueTarget.Global),
+
 
     StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
     StatsFromTiles("[stats] from [tileFilter] tiles [cityFilter]", UniqueTarget.Global),
