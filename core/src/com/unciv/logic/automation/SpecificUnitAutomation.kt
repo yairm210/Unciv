@@ -304,7 +304,7 @@ object SpecificUnitAutomation {
         println("hello world")
 
         if (unit.currentTile.owningCity != null && unit.currentTile.getCity()!!.religion.getMajorityReligion()!!.name == unit.religion){
-            var actionList: java.util.ArrayList<UnitAction> = ArrayList()
+            val actionList: java.util.ArrayList<UnitAction> = ArrayList()
 
             UnitActions.addSpreadReligionActions(unit, actionList, destination.owningCity!!)
             for (action in actionList){
