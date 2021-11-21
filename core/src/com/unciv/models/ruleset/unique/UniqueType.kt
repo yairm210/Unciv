@@ -197,6 +197,16 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
 
+    NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
+    //UniqueType added in 3.18.4
+    @Deprecated("As of 3.16.11", ReplaceWith("Not displayed as an available construction without [buildingName]"), DeprecationLevel.WARNING)
+    NotDisplayedUnlessOtherBuildingBuilt("Not displayed as an available construction unless [buildingName] is built", UniqueTarget.Building),
+
+    MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
+    MustNotBeOn("Must not be on [terrainFilter]", UniqueTarget.Building),
+    MustBeNextTo("Must be next to [terrainFilter]", UniqueTarget.Building),
+    MustNotBeNextTo("Must not be next to [terrainFilter]", UniqueTarget.Building),
+
 
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
 
