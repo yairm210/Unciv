@@ -198,8 +198,24 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getStatsFromUniquesBySource():StatMap {
         val sourceToStats = StatMap()
         val cityConditionals = StateForConditionals(cityInfo.civInfo, cityInfo)
-        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.Stats, cityConditionals))
+        fun addUniqueStats(unique:Unique) =
             sourceToStats.add(unique.sourceObjectType?.name ?: "", unique.stats)
+
+        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.Stats, cityConditionals))
+            addUniqueStats(unique)
+
+        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.StatsPerCity, cityConditionals))
+            if (cityInfo.matchesFilter(unique.params[1]))
+                addUniqueStats(unique)
+
+
+        // "[stats] per [amount] population [cityFilter]"
+        for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.StatsPerPopulation, cityConditionals))
+            if (cityInfo.matchesFilter(unique.params[2])) {
+                val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
+                sourceToStats.add(unique.sourceObjectType?.name ?: "", unique.stats.times(amountOfEffects))
+            }
+
 
         fun rename(source: String, displayedSource: String) {
             if (!sourceToStats.containsKey(source)) return
@@ -217,19 +233,6 @@ class CityStats(val cityInfo: CityInfo) {
         val stats = Stats()
 
         for (unique in uniques.toList()) { // Should help mitigate getConstructionButtonDTOs concurrency problems.
-
-            if (unique.isOfType(UniqueType.StatsPerCity)
-                && cityInfo.matchesFilter(unique.params[1])
-                && unique.conditionalsApply(cityInfo.civInfo, cityInfo)
-            ) {
-                stats.add(unique.stats)
-            }
-
-            // "[stats] per [amount] population [cityFilter]"
-            if (unique.isOfType(UniqueType.StatsPerPopulation) && cityInfo.matchesFilter(unique.params[2])) {
-                val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
-                stats.add(unique.stats.times(amountOfEffects))
-            }
 
             // "[stats] in cities with [amount] or more population
             if (unique.placeholderText == "[] in cities with [] or more population" && cityInfo.population.population >= unique.params[1].toInt())
