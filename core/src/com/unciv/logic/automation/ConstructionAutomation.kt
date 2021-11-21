@@ -105,13 +105,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         println(civInfo.civName)
         println(civInfo.religionManager.storedFaith)
 
+        for (i in faithConstruction)
+            println(i.name)
 
 
         val chosenItem = faithConstruction.asSequence()
             .filterNotNull()
             .filter { it.getStatBuyCost(cityInfo, stat = Stat.Faith)!! <= civInfo.religionManager.storedFaith }
-            .filter { it.name == "Missionary" }
-            .filter { it.name == "Inquisitor" }
             .firstOrNull() ?: return
 
 

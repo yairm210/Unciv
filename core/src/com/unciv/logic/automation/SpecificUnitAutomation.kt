@@ -287,25 +287,35 @@ object SpecificUnitAutomation {
 
     fun automateMissionary(unit: MapUnit){
 
-        println(unit.currentTile.getCity()!!.religion.getMajorityReligion())
+        println(unit.currentTile.position)
 
-        val possibleCities: Sequence<CityInfo> = unit.civInfo.cities.asSequence()
+
+        val cities = unit.civInfo.cities.asSequence()
+            .filterNot { it.religion.getMajorityReligion()?.name == null }
             .filter { it.religion.getMajorityReligion()!!.name != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
-            .filter { unit.movement.canMoveTo(it.getCenterTile()) }
+            .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) } ?: return
 
-
-        val destination: CityInfo = possibleCities
-            .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
-            ?: return
+        val destination = cities.getTiles().asSequence()
+            .filterNot { it.militaryUnit == null }
+            .filterNot { it.civilianUnit == null }
+            .filter { unit.movement.canReach(it) }
+            .minByOrNull { it.aerialDistanceTo(unit.currentTile) } ?: return
+        println("hello world")
 
         if (unit.currentTile.owningCity != null && unit.currentTile.getCity()!!.religion.getMajorityReligion()!!.name == unit.religion){
             var actionList: java.util.ArrayList<UnitAction> = ArrayList()
-            UnitActions.addSpreadReligionActions(unit, actionList, destination)
 
-
+            UnitActions.addSpreadReligionActions(unit, actionList, destination.owningCity!!)
+            for (action in actionList){
+                action.action!!.invoke()
+            }
         }
+
+        unit.movement.headTowards(destination)
     }
+
+
 
 
 

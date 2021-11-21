@@ -159,7 +159,8 @@ object UnitAutomation {
             if (unit.hasUnique("Can construct []"))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
-            if (unit.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spreads Religon"  }){
+            if (unit.name == "Missionary"){
+                println("success")
                 return SpecificUnitAutomation.automateMissionary(unit)
             }
 
