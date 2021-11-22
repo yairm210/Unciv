@@ -133,7 +133,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     /////// Other global uniques
 
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
-    UnitMaintenanceDiscount("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
+    UnitMaintenanceDiscountGlobal("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
     @Deprecated("As of 3.16.16 - removed as of 3.17.11", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.ERROR)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UniqueTarget.Global),
     @Deprecated("As of 3.16.16 - removed as of 3.17.11", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.ERROR)
@@ -272,7 +272,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
 
-    NoMaintenance("Costs no Maintenance", UniqueTarget.Unit),
+    UnitMaintenanceDiscount("[amount]% maintenance costs", UniqueTarget.Unit),
 
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
