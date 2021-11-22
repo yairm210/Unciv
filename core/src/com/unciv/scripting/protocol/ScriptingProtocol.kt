@@ -5,7 +5,6 @@ import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.utils.stringifyException
 import com.unciv.scripting.utils.TokenizingJson
 import kotlin.random.Random
-import kotlin.reflect.KCallable
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
@@ -376,8 +375,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    throw Exception()
-//                    data = TokenizingJson.getJsonElement(leaf is KCallable<*>)
+                    data = TokenizingJson.getJsonElement(leaf is Reflection.InstanceMethodDispatcher)
                 } catch (e: Exception) {
                     data = JsonPrimitive(stringifyException(e))
                     flags.add(KnownFlag.Exception.value)
@@ -389,8 +387,14 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    throw Exception()
-//                    data = TokenizingJson.getJsonElement((leaf as KCallable<*>).parameters.map { listOf<String>(it.name.toString(), it.type.toString()) })
+                    data = TokenizingJson.getJsonElement(
+                        mapOf<String, List<List<String?>>>(
+                            *((leaf as Reflection.InstanceMethodDispatcher).methods.map {
+                                it.toString() to it.parameters.map{ listOf<String?>(it.name?.toString(), it.type.toString()) }
+                            }).toTypedArray()
+                            // The innermost listOf should semantically be a Pair as per the spec in Module.md, but a List seems safer to serialize.
+                        )
+                    )
                 } catch (e: Exception) {
                     data = JsonPrimitive(stringifyException(e))
                         flags.add(KnownFlag.Exception.value)

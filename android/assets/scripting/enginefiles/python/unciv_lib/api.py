@@ -40,9 +40,11 @@ def get_help(obj):
 	"""Get docstring of object. Fail silently if it has none, or get one through its IPC methods if it's a ForeignObject(). Used for PyAutocompleter."""
 	try:
 		if isinstance(obj, wrapping.ForeignObject):
-			doc = f"\n\n{str(obj._docstring_() or wrapping.stringPathList(obj._getpath_()))}\n\nArguments:\n"
-			# TODO: This should proably be in ForeignObject.__getattr__/__getattribute__.
-			doc += "\n".join(f"\t{argname}: {argtype}" for argname, argtype in obj._args_())
+			doc = f"\n\n{str(obj._docstring_() or wrapping.stringPathList(obj._getpath_()))}\n"
+			# TODO: Can this be in ForeignObject.__getattr__/__getattribute__?
+			for funcsig, funcargs in obj._args_().items():
+				doc += f"\n{funcsig}\n"
+				doc += "\n".join(f"\t{argname}: {argtype}" for argname, argtype in funcargs)
 			return doc
 		else:
 			with ipc.FakeStdout() as fakeout:

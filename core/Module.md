@@ -294,8 +294,8 @@ Some action types, data formats, and expected response types and data formats fo
 
 	```
 	'args': 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
-		'args_response': List<Pair<String?, String>> or String
-		//Names and types of arguments accepted by a function.
+		'args_response': Map<String, List<Pair<String?, String>>> or String
+		//Map of dispatchable signatures as strings to lists of pairs of names and types of arguments accepted by a function.
 		//Response must be String if sent with Exception flag.
 		//Currently just used by Python autocompleter to generate help text.
 		//Could also be used to control functions in scripting environment. If so, then names of types should be standardized.
