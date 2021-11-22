@@ -85,11 +85,114 @@ object NextTurnAutomation {
             if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv)) {
                 tradeLogic.acceptTrade()
                 otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationIcon.Trade, civInfo.civName)
+            } else if (tradeRequest.requestingCounteroffer){
+                val counteroffer = getCounteroffer(civInfo, tradeRequest)
+                if (counteroffer != null)
+                    otherCiv.tradeRequests.add(counteroffer)
+                else
+                    otherCiv.addNotification("[${civInfo.civName}] is not interested in anything you have", NotificationIcon.Trade, civInfo.civName)
             } else {
                 otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", NotificationIcon.Trade, civInfo.civName)
             }
         }
         civInfo.tradeRequests.clear()
+    }
+
+    /** @return a TradeRequest with the same ourOffers as [tradeRequest] but with enough theirOffers
+     *  added to make the deal acceptable. Will find a valid counteroffer if any exist, but is not
+     *  guaranteed to find the best or closest one. */
+    private fun getCounteroffer(civInfo: CivilizationInfo, tradeRequest: TradeRequest): TradeRequest? {
+        val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
+        val evaluation = TradeEvaluation()
+        var delta = evaluation.getTradeAcceptability(tradeRequest.trade, civInfo, otherCiv)
+        if (delta < 0) delta = (delta * 1.1f).toInt() // They seem very interested in this deal, let's push it a bit.
+        val tradeLogic = TradeLogic(civInfo, otherCiv)
+        tradeLogic.currentTrade.set(tradeRequest.trade.reverse())
+
+        // What do they have that we would want???
+        val potentialAsks = HashMap<TradeOffer, Int>()
+        val counterofferAsks = HashMap<TradeOffer, Int>()
+        val counterofferGifts = ArrayList<TradeOffer>()
+
+        for (offer in tradeLogic.theirAvailableOffers) {
+            if (offer.type == TradeType.Gold && tradeRequest.trade.ourOffers.any { it.type == TradeType.Gold } ||
+                offer.type == TradeType.Gold_Per_Turn && tradeRequest.trade.ourOffers.any { it.type == TradeType.Gold_Per_Turn })
+                    continue // Don't want to counteroffer straight gold for gold, that's silly
+            if (offer.amount == 0)
+                continue // For example resources gained by trade or CS
+            val value = evaluation.evaluateBuyCost(offer, civInfo, otherCiv)
+            if (value > 0)
+                potentialAsks[offer] = value
+        }
+
+        while (potentialAsks.isNotEmpty() && delta < 0) {
+            // Keep adding their worst offer until we get above the threshold
+            val offerToAdd = potentialAsks.minByOrNull { it.value }!!
+            delta += offerToAdd.value
+            counterofferAsks[offerToAdd.key] = offerToAdd.value
+            potentialAsks.remove(offerToAdd.key)
+        }
+        if (delta < 0)
+            return null // We couldn't get a good enough deal
+
+        // At this point we are sure to find a good counteroffer
+        while (delta > 0) {
+            // Now remove the best offer valued below delta until the deal is barely acceptable
+            val offerToRemove = counterofferAsks.filter { it.value <= delta }.maxByOrNull { it.value }
+            if (offerToRemove == null)
+                break // Nothing more can be removed, at least en bloc
+            delta -= offerToRemove.value
+            counterofferAsks.remove(offerToRemove.key)
+        }
+
+        // Only ask for enough of each resource to get maximum price
+        for (ask in counterofferAsks.keys.filter { it.type == TradeType.Luxury_Resource || it.type == TradeType.Strategic_Resource }) {
+            // Remove 1 amount as long as doing so does not change the price
+            val originalValue = counterofferAsks[ask]!!
+            while (ask.amount > 1
+                    && originalValue == evaluation.evaluateBuyCost(
+                            TradeOffer(ask.name, ask.type, ask.amount - 1, ask.duration),
+                            civInfo, otherCiv) ) {
+                ask.amount--
+            }
+        }
+
+        // Adjust any gold asked for
+        val toRemove = ArrayList<TradeOffer>()
+        for (goldAsk in counterofferAsks.keys
+                .filter { it.type == TradeType.Gold_Per_Turn || it.type == TradeType.Gold }
+                .sortedByDescending { it.type.ordinal }) { // Do GPT first
+            val valueOfOne = evaluation.evaluateBuyCost(TradeOffer(goldAsk.name, goldAsk.type, 1, goldAsk.duration), civInfo, otherCiv)
+            val amountCanBeRemoved = delta / valueOfOne
+            if (amountCanBeRemoved >= goldAsk.amount) {
+                delta -= counterofferAsks[goldAsk]!!
+                toRemove.add(goldAsk)
+            } else {
+                delta -= valueOfOne * amountCanBeRemoved
+                goldAsk.amount -= amountCanBeRemoved
+            }
+        }
+
+        // If the delta is still very in our favor consider sweetening the pot with some gold
+        if (delta >= 100) {
+            delta = (delta * 2) / 3 // Only compensate some of it though, they're the ones asking us
+            // First give some GPT, then lump sum - but only if they're not already offering the same
+            for (ourGold in tradeLogic.ourAvailableOffers
+                    .filter { it.type == TradeType.Gold || it.type == TradeType.Gold_Per_Turn }
+                    .sortedByDescending { it.type.ordinal }) {
+                if (tradeLogic.currentTrade.theirOffers.none { it.type == ourGold.type } &&
+                        counterofferAsks.keys.none { it.type == ourGold.type } ) {
+                    val valueOfOne = evaluation.evaluateSellCost(TradeOffer(ourGold.name, ourGold.type, 1, ourGold.duration), civInfo, otherCiv)
+                    val amountToGive = min(delta / valueOfOne, ourGold.amount)
+                    delta -= amountToGive * valueOfOne
+                    counterofferGifts.add(TradeOffer(ourGold.name, ourGold.type, amountToGive, ourGold.duration))
+                }
+            }
+        }
+
+        tradeLogic.currentTrade.ourOffers.addAll(counterofferAsks.keys)
+        tradeLogic.currentTrade.theirOffers.addAll(counterofferGifts)
+        return TradeRequest(civInfo.civName, tradeLogic.currentTrade)
     }
 
     private fun respondToPopupAlerts(civInfo: CivilizationInfo) {
