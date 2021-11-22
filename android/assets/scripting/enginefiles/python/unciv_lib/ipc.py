@@ -5,6 +5,7 @@ stdout = sys.stdout
 #def ResolvePath(path, scope):
 ##	return eval(path, scope, scope)
 #	raise NotImplementedError()
+	# Needed if access to Python internals from Kotlin is ever implemented. But that would go against the current execution model. (See Module.md/REPL Loop.)
 
 class IpcJsonEncoder(json.JSONEncoder):
 	"""JSONEncoder that lets classes define a special ._ipcjson_() method to control how they'll be serialized. Used by ForeignObject to send its resolved value."""
@@ -106,11 +107,6 @@ class ForeignActionReceiver(ForeignActionManager):
 		self.sender(ForeignPacket(raction, decoded.identifier, rdata).serialized())
 	def AwaitForeignAction(self):#, *, ignoreempty=True):
 		self.RespondForeignAction(self.receiver())
-#		while True:
-#			line = self.receiver()
-#			if line or not ignoreempty:
-#				self.RespondForeignAction(line)
-#				break
 	def ForeignREPL(self):
 		while True:
 			self.AwaitForeignAction()

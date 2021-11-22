@@ -11,9 +11,6 @@ import com.badlogic.gdx.utils.Json
 // Automatically running this should probably be a part of the build process.
 // Probably do whatever is done with TranslationFileWriter.
 
-@Retention(AnnotationRetention.RUNTIME)
-annotation class ExposeScriptingApi
-// Eventually use this to whitelist safe API accessible members for security.
 
 data class ApiSpecDef(
     var path: String,
@@ -104,7 +101,7 @@ class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
         var c = 0 // Test count. Something like 5,400, IIRC. For now, it's easier to just dynamically generate the API using Python's magic methods and the reflective tools in ScriptingProtocol. JS has proxies too, but other languages may not be so dynamic. // TBF I think some of those might have been GDX/Kotlin/JVM classes, which I should filter oout by .qualifiedName.
         val output = mutableMapOf<String, List<ApiSpecDef>>(
             *classes.map{
-                it.qualifiedName!! to it.members.map{ c += 1; makeMemberSpecDef(it) }
+                it.qualifiedName!! to it.members.map{ c += 1; makeMemberSpecDef(it) } //Reflective function reference instead of wrapping lambda?
             }.toTypedArray()
         )
         println("\nGathered ${c} property specifications across ${classes.size} classes.\n")

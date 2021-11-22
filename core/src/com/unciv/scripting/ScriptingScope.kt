@@ -26,9 +26,11 @@ import java.io.ByteArrayOutputStream
  *
  * WorldScreen gives access to UnitTable.selectedUnit, MapHolder.selectedTile, etc. Useful for contextual operations.
  *
- * The members of this class and its subclasses should not be used in implementing the protocol level of scripting backends.
+ * The members of this class and its nested classes should be designed for use by running scripts, not for in implementing the protocol or API of scripting backends.
  * E.G.: If you need access to a file to build the scripting environment, then add it to ScriptingEngineConstants.json instead of using apiHelpers.assetFileB64. If you need access to some new type of property, then geneneralize it as much as possible and add an IPC request type for it in ScriptingProtocol.kt.
  * API calls are for running scripts, and may be less stable. Building the scripting environment itself should be done directly using the IPC protocol and other lower-level constructs.
+ *
+ * To reduce the chance of E.G. name collisions in .apiHelpers.registeredInstances, or one misbehaving mod breaking everything by unassigning .gameInfo, different ScriptingState()s should each have their own ScriptingScope().
  */
 class ScriptingScope(
         //If this is going to be exposed to downloaded mods, then every declaration here, as well as *every* declaration that is safe for scripts to have access to, should probably be whitelisted with annotations and checked or errored at the point of reflection.
@@ -70,19 +72,18 @@ class ScriptingScope(
         // @param path Path of an internal image as exposed in ImageGetter as a TextureRegionDrawable from an atlas.
         // @return The image encoded as a PNG file encoded as a Base64 string.
         fun assetImageB64(path: String): String {
+            // When/if letting scripts make UI elements becomes a thing, these should probably be organized together with the factories for that.
             // To test in Python:
             // import PIL.Image, io, base64; PIL.Image.open(io.BytesIO(base64.b64decode(apiHelpers.assetImage("StatIcons/Resistance")))).show()
             val fakepng = ByteArrayOutputStream()
-            //Close this? Well, the docs say doing so "has no effect", and it should clearly get GC'd anyway.
+            //Close this steam? Well, the docs say doing so "has no effect", and it should clearly get GC'd anyway.
             val pixmap = ImageGetter.getDrawable(path).getRegion().toPixmap()
             val exporter = PixmapIO.PNG()
             exporter.setFlipY(false)
             exporter.write(fakepng, pixmap)
             pixmap.dispose() // Doesn't seem to help with the memory leak.
-            exporter.dispose() // Both of these should be called automatically by GC anyway.
+            exporter.dispose() // This one should be called automatically by GC anyway.
             return String(Base64Coder.encode(fakepng.toByteArray()))
-
-//            return String(Base64Coder.encode((ImageGetter.getDrawable(path).getRegion().getTexture().getTextureData() as FileTextureData).getFileHandle().readBytes())) // Cool. This works. But it freezes everything for several dozen seconds on the first run, and it returns the massive packed file.
         }
     }
 

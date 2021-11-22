@@ -43,18 +43,27 @@ def addCitiesProduction(cities, queue=()):
 	return cities
 
 def clearCitiesSpecialists(cities):
+	"""Unassign all specialist jobs in given cities."""
 	for city in cities:
 		city.population.specialistAllocations.clear()
 	return cities
 
 def focusCitiesFood(cities):
+	"""Assign all unassigned population in given cities to focus on food production."""
 	for city in cities:
 		city.population.autoAssignPopulation(999)
 	return cities
 
-def buildCitiesQueue(cities, queue):
+def buildCitiesQueue(cities, order):
+	"""Assign all given cities to follow a given build order after their current queue."""
 	for city in cities:
-		apiHelpers.registeredObjects["x"] = city.cityConstructions.getBuildableBuildings()
+		with TokensAsWrappers(city.cityConstructions.getBuildableBuildings()) as queue:
+			pass
+		#apiHelpers.registeredObjects["x"] = city.cityConstructions.getBuildableBuildings()
+
+def rebaseUnitsEvenly(units=('Guided Missile',), ):
+	if isinstance(units, str):
+		units = (units,)
 
 #import os, sys; sys.path.append(os.path.join(os.getcwd(), "../..")); from democomms import *
 

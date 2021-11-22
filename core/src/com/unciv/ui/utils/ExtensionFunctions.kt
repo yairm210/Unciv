@@ -310,7 +310,7 @@ fun TextureRegion.toPixmap(): Pixmap {
             textureData.format
     )
     pixmap.drawPixmap(
-            textureData.consumePixmap(), // The other Pixmap
+            textureData.consumePixmap(), // The other Pixmap //FIXME: This may be a memory leak.
             0, // The target x-coordinate (top left corner)
             0, // The target y-coordinate (top left corner)
             this.regionX, // The source x-coordinate (top left corner)

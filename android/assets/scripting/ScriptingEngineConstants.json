@@ -14,7 +14,7 @@
 				main.py
 				unciv_scripting_examples/
 				unciv_scripting_examples/__init__.py
-				unciv_scripting_examples/EarthTerrainFantasyHex.png
+				unciv_scripting_examples/EarthTerrainFantasyHex.jpg
 				unciv_scripting_examples/EarthTerrainRaw.png
 				unciv_scripting_examples/EarthTopography.png
 				unciv_scripting_examples/EndTimes.py
@@ -25,6 +25,7 @@
 				unciv_scripting_examples/StarryNight.jpg
 				unciv_scripting_examples/Tests.py
 				unciv_scripting_examples/TurboRainbow.png
+				unciv_scripting_examples/WheatField.jpg
 			]
 			syntaxHighlightingRegexStack: [
 			]

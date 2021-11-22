@@ -114,8 +114,8 @@ open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBa
 //Test, reference, example, and backup
 
 //Has
+// Non-essential. Nothing should depend on this. Should always be removable from the game's code.
 class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
-
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = HardcodedScriptingBackend(scriptingScope)
         override val displayName: String = "Hardcoded"
@@ -317,6 +317,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
 }
 
 
+//Nothing should depend on this.
 class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata() {

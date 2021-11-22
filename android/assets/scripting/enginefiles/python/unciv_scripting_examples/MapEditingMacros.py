@@ -5,7 +5,7 @@ Shows benefits of using the scripting language:
 User modifiability, rapid development, idiomatic and expressive syntax, and dynamic access to system libraries.
 
 These example features below would be a nightmare to implement and maintain in the Kotlin code.
-But in Python, they can be drafted up fairly quickly, and it doesn't even matter if they break, because they can't really interfere with anything else.
+But in Python, they can be drafted up fairly quickly, and it's not a critical issue if they break, because they can't really interfere with anything else.
 
 And most importantly, they can be made and distributed by the user themselves as external files in their interpreter's library path. This lets very obscure and niche features be implemented and used by those who want them, without adding anything to the maintenance burden for the core Unciv codebase.
 """
@@ -328,17 +328,17 @@ class _TerrainColourInterpreter:
 		else:
 			return self.get_terrainandcolour(pixel)[0]
 
-def loadImageColours(tileMap=None, imagepath="EarthTerrainFantasyHex.png", terraincolours=None, maxdither=0, visualspace=True):
+def loadImageColours(tileMap=None, imagepath="EarthTerrainFantasyHex.jpg", terraincolours=None, maxdither=0, visualspace=True):
 	"""
 	Set a given tileMap or the active tileMap's terrain based on an image file and a mapping of terrain strings to RGB tuples.
 
-	Recommended example values for imagepath: EarthTerrainFantasyHex.png, StarryNight.jpg, TurboRainbow.png (Try maxdither=0.5.)
+	Recommended example values for imagepath: EarthTerrainFantasyHex.png, StarryNight.jpg, TurboRainbow.png (Try maxdither=0.5.), WheatField.jpg
 	"""
 	#https://visibleearth.nasa.gov/images/73801/september-blue-marble-next-generation-w-topography-and-bathymetry
 	#Generate TurboRainbow.png: from matplotlib import cm; from PIL import Image, ImageDraw; width=512; image = Image.new('RGB', (width,1), "white"); draw=ImageDraw.Draw(image); [draw.point((x,0), tuple(int(c*256) for c in cm.turbo(x/width)[:3])) for x in range(width)]; image.show("TurboRainbow.png"); image.close()
+	import PIL.Image
 	assert visualspace
 	tileMap = defaultArgTilemap(tileMap)
-	import PIL.Image
 	if not os.path.exists(imagepath):
 		_fallbackpath = os.path.join(os.path.dirname(__file__), imagepath)
 		if os.path.exists(_fallbackpath):

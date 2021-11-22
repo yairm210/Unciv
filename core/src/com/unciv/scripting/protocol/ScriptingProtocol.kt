@@ -83,7 +83,7 @@ data class ScriptingPacket(
  * Agnostic to Unciv types. Protocol spec should be generic enough to apply to all Kotlin objects.
  * Uses automatic Kotlin/JVM object tokenization by InstanceTokenizer through TokenizingJson.
  *
- * @property scope Kotlin/JVM object that represents the hierarchical root of actions that require recursively resolving a property path through reflection.
+ * @property scope Kotlin/JVM object that represents the hierarchical root of actions that require recursively resolving a property path through reflection. In practice, this should never be set to anything other than an instance of ScriptingScope. But that's an API-level implementation and use case detail, so the protocol is typed for and should never assume anything more specific than Any.
  * @property instanceSaver Mutable list in which to save response values, to prevent created instances from being garbage collected before the other end of the IPC can save or use them. List, not Set, to preserve instance identity and not value. Not automatically cleared. Should be manually cleared when not needed.
  */
 class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = null) {
@@ -376,7 +376,8 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    data = TokenizingJson.getJsonElement(leaf is KCallable<*>)
+                    throw Exception()
+//                    data = TokenizingJson.getJsonElement(leaf is KCallable<*>)
                 } catch (e: Exception) {
                     data = JsonPrimitive(stringifyException(e))
                     flags.add(KnownFlag.Exception.value)
@@ -388,7 +389,8 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    data = TokenizingJson.getJsonElement((leaf as KCallable<*>).parameters.map { listOf<String>(it.name.toString(), it.type.toString()) })
+                    throw Exception()
+//                    data = TokenizingJson.getJsonElement((leaf as KCallable<*>).parameters.map { listOf<String>(it.name.toString(), it.type.toString()) })
                 } catch (e: Exception) {
                     data = JsonPrimitive(stringifyException(e))
                         flags.add(KnownFlag.Exception.value)

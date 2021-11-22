@@ -216,9 +216,9 @@ For any complicated script in Python, it is suggested that you write a context m
 It is also recommended that all scripts create a separate mapping with a unique and identifiable key in `apiHelpers.registeredInstances`, instead of assigning directly to the top level.
 
 ```python3
-apiHelpers.registeredInstances["myCoolScript"] = {}
+apiHelpers.registeredInstances["module:myName/myCoolScript.py"] = {}
 
-memalloc = apiHelpers.registeredInstances["myCoolScript"]
+memalloc = apiHelpers.registeredInstances["module:myName/myCoolScript.py"]
 
 memalloc["capitaltile"] = civInfo.cities[0].getCenterTile()
 
@@ -226,13 +226,13 @@ worldScreen.mapHolder.setCenterPosition(memalloc["capitaltile"].position, True, 
 
 del memalloc["capitaltile"]
 
-del apiHelpers.registeredInstances["myCoolScript"]
+del apiHelpers.registeredInstances["module:myName/myCoolScript.py"]
 ```
 
 ```python3
-apiHelpers.registeredInstances["myCoolScript"] = {}
+apiHelpers.registeredInstances["module:myName/myCoolScript.py"] = {}
 
-memalloc = apiHelpers.registeredInstances["myCoolScript"]
+memalloc = apiHelpers.registeredInstances["module:myName/myCoolScript.py"]
 
 class MyForeignContextManager:
 	def __init__(self, *tokens):
@@ -252,7 +252,13 @@ class MyForeignContextManager:
 with MyForeignContextManager(apiHelpers.Factories.MapUnit(), ) as mapUnit, :
 	mapUnit
 
-del apiHelpers.registeredInstances["myCoolScript"]
+del apiHelpers.registeredInstances["module:myName/myCoolScript.py"]
+```
+
+The recommended format for keys added to `apiHelpers.registeredInstances` is as follows:
+
+```
+<'mod'|'module'|'package'>:<Author>/<Filename>.<Language Extension>
 ```
 
 ---
@@ -283,6 +289,10 @@ In Unciv:
 >>> import MyCoolModule
 >>> MyCoolModule.printCivilizations()
 ```
+
+---
+
+## Examples
 
 ---
 

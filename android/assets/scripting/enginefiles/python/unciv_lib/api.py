@@ -98,7 +98,7 @@ class UncivReplTransceiver(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
 		self.scope.update({**self.apiscope, **self.scope})
 		# TODO: Replace this update with Kotlin-side init?
 	def passMic(self):
-		"""Send a 'PassMic' packet."""
+		"""Send a 'PassMic' packet. See Module.md."""
 		#TODO: This should use ForeignPacket(), no?
 		self.SendForeignAction({'action':None, 'identifier': None, 'data':None, 'flags':('PassMic',)})
 	@ipc.receiverMethod('motd', 'motd_response')
@@ -117,7 +117,7 @@ Run "help()", or read PythonScripting.md, for an overview of this API.
 
 Extensive example scripts can be imported as the "unciv_scripting_examples" module.
 These can also also accessed from the game files either externally or through the API:
-	print(apiHelpers.assetFileString())
+	print(apiHelpers.assetFileString("scripting/enginefiles/python/unciv_scripting_examples/PlayerMacros.py"))
 
 Press [TAB] at any time to trigger autocompletion at the current cursor position, or display help text for an empty function call.
 
@@ -136,6 +136,7 @@ Press [TAB] at any time to trigger autocompletion at the current cursor position
 			print(f">>> {str(line)}")
 			try:
 				# TODO: See if you can use signals to catch infinite loops/excess run duration.
+				# Actually, no. Interactivity should be retained from the Kotlin side by running/calling ScriptingState in a different thread.
 				try:
 					code = compile(line, 'STDIN', 'eval')
 				except SyntaxError:
@@ -155,4 +156,4 @@ Press [TAB] at any time to trigger autocompletion at the current cursor position
 
 
 from . import wrapping
-# Should only need it at run time anyway, so import at end makes a circular import more predictable. Basically, this whole file gets prepended to `wrapping` under the `api` name.
+# Should only need it at run time anyway, so import at end makes a circular import more predictable. Basically, this whole file gets prepended to wrapping under the api name.

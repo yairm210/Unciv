@@ -4,9 +4,14 @@ import com.unciv.scripting.utils.TokenizingJson
 import kotlin.collections.ArrayList
 import kotlin.reflect.KCallable
 import kotlin.reflect.KMutableProperty1
-//import kotlin.reflect.KParameter
+import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty1
 //import kotlin.reflect.KType
+//import kotlin.reflect.full.allSupertypes
+//import kotlin.reflect.full.defaultType
+//import kotlin.reflect.full.createType
+import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.jvm.jvmErasure
 //import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.util.*
@@ -22,31 +27,91 @@ object Reflection {
             .first { it.name == propertyName } as KProperty1<Any, *>
         return property.get(instance) as R?
     }
-/*
+
     class InstanceMethodDispatcher(val instance: Any, val methodName: String) {
+        // This isn't just a nice-to-have feature. Before I implemented it, identical calls from demo scripts to methods with multiple dispatches (E.G. ArrayList().add()) would rarely but randomly fail because the member/signature that was found would change between runs or compilations.
+        // TODO: This is going to need unit tests.
+        // Could try to implement KCallable interface. But not sure it's be worth it or map closely enough— What do lambdas do? I guess isOpen, isAbstract, etc should just all be False?
         val methods: List<KCallable<Any>> by lazy { instance::class.members.filter{ it.name == methodName }.map{ it as KCallable<Any> } }
-        fun call(arguments: Array<Any?>): Any? {
-            val matches = methods.filter {
-                    val params = it.parameters
-                    params.size == arguments.size + 1
-                    // Check that the parameters size is same as arguments size plus one for the receiver.
-                    && (arguments zip params.slice(1..arguments.size)).all{
-                        (arg, kparam) ->
-                            // Check that every argument can be cast to the expected type.
-                            if (arg == null)
-                                kparam.type.isMarkedNullable
-                            else
-                                kparam.type in arg::class.supertypes
-                                // Not totally sure if these KTypes are singleton-like. Hopefully equality-comparison works for containment here even if they aren't?
-                    }
+        //Also filter down to is KCallable if name collisions with properties are a possible issue.
+
+        fun debugprint(v: Any?): Unit {
+            if (false) {
+                println(v)
+            }
+        }
+
+    //        private fun ktypeQualified(ktype: KType): String {
+    //            return ktype.toString()//.classifier.qualifiedName
+            // Identical to ktype.toString(), I believe.
+    //        }
+
+    //    private fun checkKtypeGeneric(ktype: KType): Boolean {
+    //        //I'm not seeing any way to check for this in the API... Maybe seeing if .jvmErasure or .classifier errors.
+    //        //But the single capital letter convention seems pretty universal. And I think real classes will have a dot in their name. So this will hopefully catch all cases.
+    //        debugprint("checkKtypeGeneric")
+    //        debugprint(ktype::class)
+    //        return false
+    //        return ktype.classifier !is KClass<*> //Interfaces?
+    //
+    //    }
+
+        //@OptIn(kotlin.ExperimentalStdlibApi::class) //Required for typeOf<>()
+        private fun checkParameterMatches(kparam: KParameter, arg: Any?): Boolean {
+            // Check that every argument can be cast to the expected type.
+            debugprint("\n\ncheckParameterMatches()")
+            //if (arg != null) debugprint("kparam.type: ${kparam.type}\nkparam.type.classifier: ${kparam.type.classifier}\n\narg::class.createType(): ${arg::class.createType()}\n\narg::class.allSupertypes: ${arg::class.allSupertypes}")
+            if (arg == null) {
+                // Multiple dispatch of null between Any and Any? seems ambiguous in Kotlin even without reflection.
+                // Here, I'm resolving it myself, so it seems fine.
+                // However, with generics, even if I find the right KCallable, it seems that a nullable argument T? will usually (but not always, depending on when you compiled) be sent to the non-nullable T version of the function.
+                // KCallable.toString() shows the nullable signature, and KParam.name shows the argument name from the nullable version. But an exception is still thrown, and its text will use the argument name from the non-nullable version.
+                return kparam.type.isMarkedNullable
+    //        } else if (checkKtypeGeneric(kparam.type)) {
+    //            //Generics are erased at runtime. Type arguments aren't allowed for type parameters, so I can't try to do some kind of "inline fun <C, reified T: Any> typeofany(l: C<T>) = T::class" either to get the instance's type arguments. So the best I'm going to try to do is to treat them like Any?.
+    //            return true
+            } else {
+                return kparam.type.jvmErasure.isSuperclassOf(arg::class)
+                    //Seems to also work for generics, I guess.
+                    //|| kparam.type in arg::class.allSupertypes
+                    // Not totally sure if these KTypes are singleton-like. Hopefully equality-comparison works for containment here even if they aren't?
+            }
+        }
+
+        private fun checkCallableMatches(callable: KCallable<Any>, arguments: Array<Any?>): Boolean {
+            val params = callable.parameters
+            debugprint("\n\ncheckCallableMatches()")
+            debugprint("params: ${params.map{ it.type }}")
+            return params.size == arguments.size + 1 // Check that the parameters size is same as arguments size plus one for the receiver.
+                && (params.slice(1..arguments.size) zip arguments).all {
+                    (kparam, arg) -> checkParameterMatches(kparam, arg)
                 }
+        }
+
+        fun getMatchingCallables(arguments: Array<Any?>): List<KCallable<Any>> {
+            debugprint("\ngetMatchingCallables()")
+            debugprint("instance::class.typeParameters: ${instance::class.typeParameters}")
+            debugprint("\narguments: ${arguments.toList()}")
+            return methods.filter { checkCallableMatches(it, arguments) }
+        }
+
+        fun call(arguments: Array<Any?>): Any? {
+            // KCallable's .call() takes varargs instead of an array object. But spreads are expensive.
+            // To test from Python:
+            // gameInfo.civilizations.add(1, civInfo)
+            // gameInfo.civilizations.add(civInfo)
+            // Both need to work.
+            debugprint("call()")
+            val matches = getMatchingCallables(arguments)
+            //println("matches: $matches")
+            //println(arguments.toList())//
             if (matches.size < 1) {
                 throw IllegalArgumentException("No matching signatures found for calling ${instance::class?.simpleName}.${methodName} with given arguments: (${arguments.map{if (it == null) "null" else it::class?.simpleName ?: "null"}.joinToString(", ")})")
-                //FIXME: A lot of non-null assertions and null checks can probably be replaced with safe calls.
+                //FIXME: A lot of non-null assertions and null checks (not here, but generally in the codebase) can probably be replaced with safe calls.
             }
             if (matches.size > 1) {
                 //I guess could also allow this, producing ambiguous behaviour and leaving it up to the methods to avoid creating such scenarios. Actually no, that sounds like a terrible idea reading it back.
-                //TODO: Should try to choose most specific signatures based on inheritance hierarchy.
+                //Could try to choose most specific signatures based on inheritance hierarchy. Does Kotlin do that? Probably not. So shouldn't do it here, then, if that's the case.
                 throw IllegalArgumentException("Multiple matching signatures found for calling ${methodName}:\n\t${matches.map{it.toString()}.joinToString("\n\t")}")
             }
             return matches[0]!!.call(
@@ -54,13 +119,14 @@ object Reflection {
                     *arguments
                 )
         }
-    }*/
-
-    fun readInstanceMethod(instance: Any, methodName: String): KCallable<Any> {
-        val method = instance::class.members
-            .first { it.name == methodName } as KCallable<Any>
-        return method
     }
+
+//    fun readInstanceMethod(instance: Any, methodName: String): KCallable<Any> {
+//        val method = instance::class.members
+//            .first { it.name == methodName } as KCallable<Any>
+//        return method
+//    }
+    fun readInstanceMethod(instance: Any, methodName: String) = InstanceMethodDispatcher(instance, methodName)
 
     fun readInstanceItem(instance: Any, keyOrIndex: Any): Any? {
         if (keyOrIndex is Int) {
@@ -110,7 +176,8 @@ object Reflection {
          */
         val doEval: Boolean = false,
         val params: List<@Serializable(with=TokenizingJson.TokenizingSerializer::class) Any?> = listOf()
-//        val params: List<@Contextual Any?> = listOf()
+        //val namedParams
+        //Probably not worth it. But if you want to add support for named arguments in calls (which will also require changing InstanceMethodDispatcher's multiple dispatch resolution, and which respect default arguments), then it will probably have to be in a new field.
     )
 
 
@@ -222,6 +289,7 @@ object Reflection {
 
 
     fun resolveInstancePath(instance: Any, path: List<PathElement>): Any? {
+        //TODO: Allow passing an ((Any?)->Unit)? (or maybe Boolean) function as a parameter that gets called at every stage of resolution, to let exceptions be thrown if accessing something not whitelisted.
         var obj: Any? = instance
         var lastobj0: Any? = null
         var lastobj1: Any? = null // Keep the second last object traversed, for function calls to bind to.
@@ -246,15 +314,16 @@ object Reflection {
                     )
                 }
                 PathElementType.Call -> {
-                    obj = (obj as KCallable<Any>).call(
-                        lastobj1!!,
-                        *(
-                            if (element.doEval)
-                                splitToplevelExprs(element.name).map{ evalKotlinString(instance!!, it) }
-                            else
-                                element.params
-                        ).toTypedArray()
-                    )
+//                    obj = (obj as KCallable<Any>).call(
+//                        lastobj1!!,
+//                        *(
+//                            if (element.doEval)
+//                                splitToplevelExprs(element.name).map{ evalKotlinString(instance!!, it) }
+//                            else
+//                                element.params
+//                        ).toTypedArray()
+//                    )
+                    obj = (obj as InstanceMethodDispatcher).call(element.params.toTypedArray())
                 }
                 else -> {
                     throw UnsupportedOperationException("Unknown path element type: ${element.type}")

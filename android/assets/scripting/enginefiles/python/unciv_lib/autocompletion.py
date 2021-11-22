@@ -117,7 +117,6 @@ class PyAutocompleteManager(AutocompleteManager):
 					if a.startswith(working_leaf)
 			])
 		except Exception as e:
-#		except (NameError, AttributeError, KeyError, IndexError, SyntaxError, AssertionError) as e:
 			return "No autocompletion found: "+utils.formatException(e)
 
 
