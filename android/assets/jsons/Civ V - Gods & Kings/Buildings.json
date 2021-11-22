@@ -1050,6 +1050,12 @@
 		"uniques": ["Must be next to [Desert]", "Cannot be built with [Nuclear Plant]"]
 	},
 	{
+		"name": "Recycling Center",
+		"maintenance": 3,
+		"requiredTech": "Ecology",
+		"uniques": ["Provides [2] [Aluminium]","Can have [5] of this building in your empire at most"]
+	},
+	{
 		"name": "Sydney Opera House",
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 2},

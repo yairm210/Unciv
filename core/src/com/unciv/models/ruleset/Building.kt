@@ -515,6 +515,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.HiddenWithoutReligion.text ->
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
+
+                UniqueType.MaxNumberBuilding.text ->
+                    if (civInfo.cities.count{
+                                it.cityConstructions.containsBuildingOrEquivalent(name) ||
+                                        it.cityConstructions.isBeingConstructedOrEnqueued(name)}
+                            >= unique.params[0].toInt())
+                        rejectionReasons.add(RejectionReason.MaxNumberBuilding)
             }
         }
 

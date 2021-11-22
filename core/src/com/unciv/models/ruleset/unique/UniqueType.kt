@@ -196,6 +196,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
+    MaxNumberBuilding("Can have [amount] of this building in your empire at most", UniqueTarget.Building),
 
 
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
