@@ -50,7 +50,7 @@ class UniqueDocsWriter {
                 }
 
                 lines += "#### " + uniqueType.text
-                lines += "Example: \"${replaceExamples(uniqueType.text)}\""
+                lines += "Example: \"${replaceExamples(uniqueType.text)}\"\n"
                 lines += "Applicable to: " + uniqueType.targetTypes.joinToString()
                 lines += ""
             }
