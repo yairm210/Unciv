@@ -43,6 +43,10 @@ internal object DesktopLauncher {
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
+        if(versionFromJar == "Desktop") {
+            UniqueDocsWriter().write()
+        }
+
         val desktopParameters = UncivGameParameters(
                 versionFromJar,
                 cancelDiscordEvent = { discordTimer?.cancel() },
