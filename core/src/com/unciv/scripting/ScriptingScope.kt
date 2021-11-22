@@ -78,10 +78,10 @@ class ScriptingScope(
             val fakepng = ByteArrayOutputStream()
             //Close this steam? Well, the docs say doing so "has no effect", and it should clearly get GC'd anyway.
             val pixmap = ImageGetter.getDrawable(path).getRegion().toPixmap()
-            val exporter = PixmapIO.PNG()
+            val exporter = PixmapIO.PNG() // Could be kept and "reused to encode multiple PNGs with minimal allocation", according to the docs. I don't see it as a sufficient bottleneck yet to necesarily justify the complexity and risk, though.
             exporter.setFlipY(false)
             exporter.write(fakepng, pixmap)
-            pixmap.dispose() // Doesn't seem to help with the memory leak.
+            pixmap.dispose() // In theory needed to avoid memory leak. Doesn't seem to actually have any impact, compared to the .dispose() inside .toPixmap(). Maybe the exporter's dispose also calls this?
             exporter.dispose() // This one should be called automatically by GC anyway.
             return String(Base64Coder.encode(fakepng.toByteArray()))
         }

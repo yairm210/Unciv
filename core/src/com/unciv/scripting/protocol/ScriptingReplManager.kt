@@ -52,7 +52,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
      * ScriptingProtocol puts references to pre-tokenized returned objects in here.
      * Should be cleared here at the end of each REPL execution.
      *
-     * This makes sure a single script execution doesn't get its tokenized Kotlin/JVM objects garbage collected, and has a chance to save them elsewhere (E.G. ScriptingScope.apiHelpers) if it needs them later.
+     * This makes sure a single script execution doesn't get its tokenized Kotlin/JVM objects garbage collected, and has a chance to save them elsewhere (E.G. ScriptingScope.apiHelpers.registeredInstances) if it needs them later.
      * Should preserve each instance, not just each value, so should be List and not Set.
      * To test in Python console backend: x = apiHelpers.Factories.Vector2(1,2); civInfo.endTurn(); print(apiHelpers.toString(x))
      */

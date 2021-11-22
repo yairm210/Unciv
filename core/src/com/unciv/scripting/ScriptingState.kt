@@ -13,6 +13,9 @@ fun <T> ArrayList<T>.clipIndexToBounds(index: Int, extendsize: Int = 0): Int {
     return max(0, min(this.size-1+extendsize, index))
 }
 
+// TODO: Check for places to use Sequences.
+// Hm. It seems that Sequence performance isn't even a simple question of number of loops, and is also affected by boxed types and who know what else.
+// Premature optimization and such. Clearly long chains of loops can be rewritten as sequences.
 
 // TODO: Replace Exception types with Throwable? Wait, no. Apparently that just includes "serious problems that a reasonable application should not try to catch."
 

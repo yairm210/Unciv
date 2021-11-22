@@ -296,6 +296,8 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
  * Originally a function defined in the Fonts Object and used only in Fonts.kt.
  * Turned into an extension method to 1. Clean up the syntax and 2. Use it to expose internal, packed images to scripts in class ScriptingScope.
  *
+ * .dispose() must be called on the returned Pixmap when it is no longer needed, or else it will leave a memory leak behind.
+ *
  * @return New Pixmap with all the size and pixel data from this TextureRegion copied into it.
  */
 // From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
@@ -309,8 +311,9 @@ fun TextureRegion.toPixmap(): Pixmap {
             this.regionHeight,
             textureData.format
     )
+    val textureDataPixmap = textureData.consumePixmap()
     pixmap.drawPixmap(
-            textureData.consumePixmap(), // The other Pixmap //FIXME: This may be a memory leak.
+            textureDataPixmap, // The other Pixmap
             0, // The target x-coordinate (top left corner)
             0, // The target y-coordinate (top left corner)
             this.regionX, // The source x-coordinate (top left corner)
@@ -318,6 +321,7 @@ fun TextureRegion.toPixmap(): Pixmap {
             this.regionWidth, // The width of the area from the other Pixmap in pixels
             this.regionHeight // The height of the area from the other Pixmap in pixels
     )
+    textureDataPixmap.dispose() // Prevent memory leak.
     return pixmap
 }
 

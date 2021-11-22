@@ -86,7 +86,7 @@ def isForeignToken(obj):
 
 
 class UncivReplTransceiver(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
-	"""Class that implements the Unciv IPC and scripting protocol by receiving and responding to its packets."""
+	"""Class that implements the Unciv IPC and scripting protocol by receiving and responding to its packets. See Module.md."""
 	def __init__(self, *args, apiscope=None, autocompleter=None, **kwargs):
 		ipc.ForeignActionReceiver.__init__(self, *args, **kwargs)
 		self.autocompleter = autocompleter
@@ -100,7 +100,7 @@ class UncivReplTransceiver(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
 		self.scope.update({**self.apiscope, **self.scope})
 		# TODO: Replace this update with Kotlin-side init?
 	def passMic(self):
-		"""Send a 'PassMic' packet. See Module.md."""
+		"""Send a 'PassMic' packet."""
 		#TODO: This should use ForeignPacket(), no?
 		self.SendForeignAction({'action':None, 'identifier': None, 'data':None, 'flags':('PassMic',)})
 	@ipc.receiverMethod('motd', 'motd_response')

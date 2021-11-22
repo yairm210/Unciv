@@ -228,6 +228,7 @@ def setMapFromImage(tileMap, image, pixelinterpreter=lambda pixel: "Ocean"):
 
 	for tile in tileMap.values:
 		# Since this just uses PIL images, we could also blur the image, or perhaps just jitter the sampled coordinates, by the projected tile radius here. Or could have earlier functions in the call stack wrap the image in a class that does that.
+		# See if reducing the Kotlin/JVM reflection depth by assigning tile to apiHelpers.registeredInstances reduces run time here.
 		setTerrain(
 			tile,
 			pixelinterpreter(image.getpixel((

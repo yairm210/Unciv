@@ -158,7 +158,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
     /**
      * Functions to generate requests to send to a script interpreter.
      *
-     * Implements the specifications on packet field and structure in Module.md.
+     * Implements the specifications on packet fields and structure in Module.md.
      * Function names and call arguments parallel ScriptingBackend.
      */
     object makeActionRequests {
@@ -189,7 +189,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
     /**
      * Functions to parse a response packet received after a request packet sent to a scripting interpreter.
      *
-     * Implements the specifications on packet field and structure in Module.md.
+     * Implements the specifications on packet fields and structure in Module.md.
      * Function names and return types parallel ScriptingBackend.
      */
     object parseActionResponses {
@@ -420,5 +420,3 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
     }
 
 }
-
-

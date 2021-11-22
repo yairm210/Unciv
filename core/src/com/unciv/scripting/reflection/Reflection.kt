@@ -30,7 +30,7 @@ object Reflection {
      * @property methodName The name of the method to resolve and call.
      */
     class InstanceMethodDispatcher(val instance: Any, val methodName: String) {
-        // This isn't just a nice-to-have feature. Before I implemented it, identical calls from demo scripts to methods with multiple dispatches (E.G. ArrayList().add()) would rarely but randomly fail because the member/signature that was found would change between runs or compilations.
+        // This isn't just a nice-to-have feature. Before I implemented it, identical calls from demo scripts to methods with multiple versions (E.G. ArrayList().add()) would rarely but randomly fail because the member/signature that was found would change between runs or compilations.
         // TODO: This is going to need unit tests.
         // Could try to implement KCallable interface. But not sure it's be worth it or map closely enough— What do lambdas do? I guess isOpen, isAbstract, etc should just all be False?
 
@@ -50,10 +50,11 @@ object Reflection {
          */
         private fun checkParameterMatches(kparam: KParameter, arg: Any?): Boolean {
             // These could be static.
+            // TODO: Inline these, actually.
             if (arg == null) {
                 // Multiple dispatch of null between Any and Any? seems ambiguous in Kotlin even without reflection.
                 // Here, I'm resolving it myself, so it seems fine.
-                // However, with generics, even if I find the right KCallable, it seems that a nullable argument T? will usually (but not always, depending on when you compiled) be sent to the non-nullable T version of the function if one has been defined.
+                // However, with generics, even if I find the right KCallable, it seems that a nullable argument T? will usually (but not always, depending on each time you compile) be sent to the non-nullable T version of the function if one has been defined.
                 // KCallable.toString() shows the nullable signature, and KParam.name shows the argument name from the nullable version. But an exception is still thrown on .call(), and its text will use the argument name from the non-nullable version.
                 // I suppose it's not a problem as it seems broken in Kotlin generally.
                 return kparam.type.isMarkedNullable
@@ -156,6 +157,8 @@ object Reflection {
         val name: String,
         /**
          * For key and index accesses, and function calls, whether to evaluate name instead of using params for arguments/key.
+         * This lets simple parsers be written and used, that can simply break up a common subset of many programming languages into string components without themselves having to analyze or understand any more complex semantics.
+         *
          * Default should be false, so deserialized JSON path lists are configured correctly in ScriptingProtocol.kt.
          */
         val doEval: Boolean = false,
@@ -245,15 +248,15 @@ object Reflection {
     }
 
 
-    fun stringifyKotlinPath() {
-    }
+//    fun stringifyKotlinPath() {
+//    }
 
-    private val closingbrackets = null
+//    private val closingbrackets = null
 
-    data class OpenBracket(
-        val char: Char,
-        var offset: Int
-    )
+//    data class OpenBracket(
+//        val char: Char,
+//        var offset: Int
+//    )
 
     //class OpenBracketIterator() {
     //}
@@ -275,11 +278,7 @@ object Reflection {
     fun resolveInstancePath(instance: Any, path: List<PathElement>): Any? {
         //TODO: Allow passing an ((Any?)->Unit)? (or maybe Boolean) function as a parameter that gets called at every stage of resolution, to let exceptions be thrown if accessing something not whitelisted.
         var obj: Any? = instance
-        var lastobj0: Any? = null
-        var lastobj1: Any? = null // Keep the second last object traversed, for function calls to bind to.
         for (element in path) {
-            lastobj1 = lastobj0
-            lastobj0 = obj
             when (element.type) {
                 PathElementType.Property -> {
                     try {
@@ -298,16 +297,14 @@ object Reflection {
                     )
                 }
                 PathElementType.Call -> {
-//                    obj = (obj as KCallable<Any>).call(
-//                        lastobj1!!,
-//                        *(
-//                            if (element.doEval)
-//                                splitToplevelExprs(element.name).map{ evalKotlinString(instance!!, it) }
-//                            else
-//                                element.params
-//                        ).toTypedArray()
-//                    )
-                    obj = (obj as InstanceMethodDispatcher).call(element.params.toTypedArray())
+                    obj = (obj as InstanceMethodDispatcher).call(
+                        (
+                            if (element.doEval)
+                                splitToplevelExprs(element.name).map{ evalKotlinString(instance!!, it) }
+                            else
+                                element.params
+                        ).toTypedArray()
+                    )
                 }
                 else -> {
                     throw UnsupportedOperationException("Unknown path element type: ${element.type}")

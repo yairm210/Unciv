@@ -182,7 +182,7 @@ def ResolveForOperators(cls):
 
 @ResolveForOperators
 class ForeignObject:
-	"""Wrapper for a foreign object Implements ScriptingProtocol."""
+	"""Wrapper for a foreign object. Implements the specifications on IPC packet action types and data structures in Module.md."""
 	def __init__(self, path, foreignrequester=dummyForeignRequester):
 		object.__setattr__(self, '_path', (makePathElement(name=path),) if isinstance(path, str) else tuple(path))
 		object.__setattr__(self, '_foreignrequester', foreignrequester)
