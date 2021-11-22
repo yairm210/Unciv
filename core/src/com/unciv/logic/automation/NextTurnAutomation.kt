@@ -85,14 +85,13 @@ object NextTurnAutomation {
             if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade, civInfo, otherCiv)) {
                 tradeLogic.acceptTrade()
                 otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationIcon.Trade, civInfo.civName)
-            } else if (tradeRequest.requestingCounteroffer){
-                val counteroffer = getCounteroffer(civInfo, tradeRequest)
-                if (counteroffer != null)
-                    otherCiv.tradeRequests.add(counteroffer)
-                else
-                    otherCiv.addNotification("[${civInfo.civName}] is not interested in anything you have", NotificationIcon.Trade, civInfo.civName)
             } else {
-                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", NotificationIcon.Trade, civInfo.civName)
+                val counteroffer = getCounteroffer(civInfo, tradeRequest)
+                if (counteroffer != null) {
+                    otherCiv.addNotification("[${civInfo.civName}] has made a counteroffer to your trade request", NotificationIcon.Trade, civInfo.civName)
+                    otherCiv.tradeRequests.add(counteroffer)
+                } else
+                    otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", NotificationIcon.Trade, civInfo.civName)
             }
         }
         civInfo.tradeRequests.clear()

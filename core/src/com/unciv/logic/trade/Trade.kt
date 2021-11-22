@@ -44,16 +44,14 @@ class Trade{
 class TradeRequest {
 
     lateinit var requestingCiv: String
-    var requestingCounteroffer = false
 
     /** Their offers are what they offer us, and our offers are what they want in return */
     lateinit var trade: Trade
 
     constructor()  // for json serialization
 
-    constructor(requestingCiv: String, trade: Trade, requestingCounteroffer: Boolean = false) {
+    constructor(requestingCiv: String, trade: Trade) {
         this.requestingCiv = requestingCiv
         this.trade = trade
-        this.requestingCounteroffer = requestingCounteroffer
     }
 }
