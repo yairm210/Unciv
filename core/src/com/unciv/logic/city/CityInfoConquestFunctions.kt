@@ -102,6 +102,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
                 if (reconqueredCityWhileStillInResistance || foundingCiv == receivingCiv.civName) 0
                 else population.population // I checked, and even if you puppet there's resistance for conquering
         }
+        conqueringCiv.updateViewableTiles() // Might see new tiles from this city
     }
 
 

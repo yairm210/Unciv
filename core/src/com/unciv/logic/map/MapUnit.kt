@@ -349,7 +349,8 @@ class MapUnit {
             return 1
         }
         
-        visibilityRange += getMatchingUniques(UniqueType.Sight, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
+        visibilityRange += getMatchingUniques(UniqueType.Sight, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
 
         // Deprecated since 3.17.5
             for (unique in getMatchingUniques(UniqueType.SightUnits))

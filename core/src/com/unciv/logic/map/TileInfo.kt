@@ -364,7 +364,7 @@ open class TileInfo {
                 return terrain.getMatchingUniques(UniqueType.OverrideFertility).first().params[0].toInt()
             else
                 fertility += terrain.getMatchingUniques(UniqueType.AddFertility)
-                        .sumBy { it.params[0].toInt() }
+                    .sumOf { it.params[0].toInt() }
         }
         if (isAdjacentToRiver()) fertility += 1
         if (isAdjacentToFreshwater) fertility += 1 // meaning total +2 for river
@@ -483,7 +483,7 @@ open class TileInfo {
             // Tiles with no terrains, and no turns to build, are like great improvements - they're placeable
             improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0 && isLand -> true
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
-            improvement.uniqueObjects.filter { it.placeholderText == "Must be next to []" }.any {
+            improvement.uniqueObjects.filter { it.type == UniqueType.MustBeNextTo }.any {
                 val filter = it.params[0]
                 if (filter == "River") return@any !isAdjacentToRiver()
                 else return@any !neighbors.any { neighbor -> neighbor.matchesFilter(filter) }

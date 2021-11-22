@@ -1,3 +1,17 @@
+## 3.18.4
+
+Can safely convert maps between rulesets!
+
+Policy screen keeps scroll position when adding new policy
+
+Cannot add 2 of the same buildings to the queue visually
+
+Viewable tiles update after capturing city
+
+AI won't declare war at the very beginning of games for little reason
+
+Exiting Civilopedia always brings you o the previous screen
+
 ## 3.18.3
 
 Caught out of memory errors on autosave

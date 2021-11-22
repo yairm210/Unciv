@@ -51,7 +51,13 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             if (game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()) {
                 game.setWorldScreen()
                 dispose()
-            } else game.setScreen(PolicyPickerScreen(worldScreen))  // update policies
+            } else {
+                val policyScreen = PolicyPickerScreen(worldScreen)
+                policyScreen.scrollPane.scrollPercentX = scrollPane.scrollPercentX
+                policyScreen.scrollPane.scrollPercentY = scrollPane.scrollPercentY
+                policyScreen.scrollPane.updateVisualScroll()
+                game.setScreen(policyScreen)  // update policies
+            }
         }
 
         if (!worldScreen.canChangeState)

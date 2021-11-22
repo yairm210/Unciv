@@ -379,7 +379,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         val civInfo = cityConstructions.cityInfo.civInfo
-        for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
+        for (unique in uniqueObjects.filter { it.type == UniqueType.NotDisplayedWithout }) {
             val filter = unique.params[0]
             if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
                     || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))

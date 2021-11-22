@@ -76,6 +76,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     StatsFromSpecialistDeprecated("[stats] from every specialist", UniqueTarget.Global),
 
     StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global),
+    StatsFromXPopulation("[stats] in cities with [amount] or more population", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatsFromCitiesBefore("[stats] per turn from cities before [tech/policy]", UniqueTarget.Global),
+
 
     StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
     StatsFromTiles("[stats] from [tileFilter] tiles [cityFilter]", UniqueTarget.Global),
@@ -196,6 +200,16 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
+
+    NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
+    //UniqueType added in 3.18.4
+    @Deprecated("As of 3.16.11", ReplaceWith("Not displayed as an available construction without [buildingName]"), DeprecationLevel.WARNING)
+    NotDisplayedUnlessOtherBuildingBuilt("Not displayed as an available construction unless [buildingName] is built", UniqueTarget.Building),
+
+    MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
+    MustNotBeOn("Must not be on [terrainFilter]", UniqueTarget.Building),
+    MustBeNextTo("Must be next to [terrainFilter]", UniqueTarget.Building),
+    MustNotBeNextTo("Must not be next to [terrainFilter]", UniqueTarget.Building),
 
 
     ///////////////////////////////////////// UNIT UNIQUES /////////////////////////////////////////
@@ -458,9 +472,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     
-    @Deprecated("As of 3.16.15", ReplaceWith("Provides the cheapest [stat] building in your first [amount] cities for free"))
+    @Deprecated("As of 3.16.15 - removed 3.18.4", ReplaceWith("Provides the cheapest [stat] building in your first [amount] cities for free"), DeprecationLevel.ERROR)
     FreeStatBuildingsDeprecated("Immediately creates the cheapest available cultural building in each of your first [amount] cities for free", UniqueTarget.Global),
-    @Deprecated("As of 3.16.15", ReplaceWith("Provides a [buildingName] in your first [amount] cities for free"))
+    @Deprecated("As of 3.16.15 - removed 3.18.4", ReplaceWith("Provides a [buildingName] in your first [amount] cities for free"), DeprecationLevel.ERROR)
     FreeSpecificBuildingsDeprecated("Immediately creates a [buildingName] in each of your first [amount] cities for free", UniqueTarget.Global),
     
     ///////////////////////////////////////////// META /////////////////////////////////////////////
