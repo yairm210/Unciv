@@ -259,7 +259,7 @@ class CityStats(val cityInfo: CityInfo) {
 
         // Deprecated since 3.17.0
             // For instance "+[50]% [Production]
-            for (unique in uniques.filter { it.placeholderText == "+[]% [] in all cities"})
+            for (unique in uniques.filter { it.type == UniqueType.StatPercentBonusCitiesDeprecated2})
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         //
 
@@ -293,45 +293,15 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.production += unique.params[0].toInt()
         }
 
-        // Deprecated since 3.17.10
-            if (currentConstruction is Building && !currentConstruction.isAnyWonder())
-                for (unique in uniqueMap.getUniques(UniqueType.PercentProductionStatBuildings)) {
-                    val stat = Stat.valueOf(unique.params[1])
-                    if (currentConstruction.isStatRelated(stat))
-                        stats.production += unique.params[0].toInt()
-                }
-            for (unique in uniqueMap.getUniques(UniqueType.PercentProductionConstructions)) {
-                if (constructionMatchesFilter(currentConstruction, unique.params[1]))
-                    stats.production += unique.params[0].toInt()
-            }
-            // Used for specific buildings (e.g. +100% Production when constructing a Factory)
-            for (unique in uniqueMap.getUniques(UniqueType.PercentProductionBuildingName)) {
-                if (constructionMatchesFilter(currentConstruction, unique.params[1]))
-                    stats.production += unique.params[0].toInt()
-            }
-
-            //  "+[amount]% Production when constructing [constructionFilter] [cityFilter]"
-            for (unique in uniqueMap.getUniques(UniqueType.PercentProductionConstructionsCities)) {
-                if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
-                    stats.production += unique.params[0].toInt()
-            }
-
-            // "+[amount]% Production when constructing [unitFilter] units [cityFilter]"
-            for (unique in uniqueMap.getUniques(UniqueType.PercentProductionUnitsDeprecated)) {
-                if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
-                    stats.production += unique.params[0].toInt()
-            }
-        //
 
         // Deprecated since 3.17.1
             if (cityInfo.civInfo.getHappiness() >= 0) {
-                // todo convert to uniquetype
-                for (unique in uniques.filter { it.placeholderText == "[]% [] while the empire is happy"})
+                for (unique in uniques.filter { it.type == UniqueType.StatPercentBonusCitiesDeprecatedWhileEmpireHappy})
                     stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
             }
         //
 
-        for (unique in uniques.filter { it.placeholderText == "[]% [] from every follower, up to []%" })
+        for (unique in uniques.filter { it.type == UniqueType.StatPercentFromReligionFollowers })
             stats.add(
                 Stat.valueOf(unique.params[1]),
                 min(
@@ -581,7 +551,6 @@ class CityStats(val cityInfo: CityInfo) {
         }
 
 
-        //
         /* Okay, food calculation is complicated.
         First we see how much food we generate. Then we apply production bonuses to it.
         Up till here, business as usual.

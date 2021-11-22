@@ -10,13 +10,12 @@ import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.models.MultiHashMap
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -315,17 +314,6 @@ class MapUnit {
         movement += getMatchingUniques(UniqueType.Movement, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
-        // Deprecated since 3.17.5
-            for (unique in getMatchingUniques(UniqueType.MovementUnits, checkCivInfoUniques = true))
-                if (matchesFilter(unique.params[1]))
-                    movement += unique.params[0].toInt()
-    
-            if (civInfo.goldenAges.isGoldenAge() &&
-                civInfo.hasUnique(UniqueType.MovementGoldenAge)
-            )
-                movement += 1
-        //
-
         
         if (movement < 1) movement = 1
 
@@ -348,17 +336,6 @@ class MapUnit {
         
         visibilityRange += getMatchingUniques(UniqueType.Sight, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
-
-        // Deprecated since 3.17.5
-            for (unique in getMatchingUniques(UniqueType.SightUnits))
-                if (matchesFilter(unique.params[1]))
-                    visibilityRange += unique.params[0].toInt()
-        
-        
-            visibilityRange += getMatchingUniques(UniqueType.VisibilityRange).sumOf { it.params[0].toInt() }
-        
-            if (hasUnique(UniqueType.LimitedVisibility)) visibilityRange -= 1
-        //
 
         // Maybe add the uniques of the tile a unit is standing on to the tempUniques of the unit?
         for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
@@ -1114,12 +1091,6 @@ class MapUnit {
 
     fun getPressureAddedFromSpread(): Int {
         var pressureAdded = baseUnit.religiousStrength.toFloat()
-
-        // Deprecated since 3.17.5
-            for (unique in civInfo.getMatchingUniques(UniqueType.SpreadReligionStrengthUnits))
-                if (matchesFilter(unique.params[0]))
-                    pressureAdded *= unique.params[0].toPercent()
-        //
 
         for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, checkCivInfoUniques = true))
             pressureAdded *= unique.params[0].toPercent()
