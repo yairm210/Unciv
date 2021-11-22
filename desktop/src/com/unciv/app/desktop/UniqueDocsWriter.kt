@@ -6,12 +6,26 @@ import java.io.File
 
 class UniqueDocsWriter {
     fun toLink(string: String): String {
-        return "#" + string.split(' ').map { it.lowercase() }.joinToString("-")
+        return "#" + string.split(' ').joinToString("-") { it.lowercase() }
     }
 
     fun write() {
         val lines = ArrayList<String>()
         val targetTypesToUniques = UniqueType.values().groupBy { it.targetTypes.first() }
+
+        fun replaceExamples(text:String):String {
+            return text.replace("[amount]", "[20]")
+                .replace("[stat]", "[Culture]")
+                .replace("[stats]", "[+1 Gold, +2 Production]")
+                .replace("[cityFilter]", "[in all cities]")
+                .replace("[buildingName]", "[Library]")
+                .replace("[tileFilter]", "[Farm]")
+                .replace("[terrainFilter]", "[Grassland]")
+                .replace("[baseUnitFilter]", "[Melee]")
+                .replace("[mapUnitFilter]", "[Wounded]")
+                .replace("[resource]", "[Iron]")
+                .replace("[beliefType]", "[Follower]")
+        }
 
         lines += "## Table of Contents\n"
         for (targetType in targetTypesToUniques) {
@@ -20,6 +34,7 @@ class UniqueDocsWriter {
         }
         lines += " - [Deprecated uniques](#deprecated-uniques)"
         lines += ""
+
 
 
         val deprecatedUniques = ArrayList<UniqueType>()
@@ -35,6 +50,7 @@ class UniqueDocsWriter {
                 }
 
                 lines += "#### " + uniqueType.text
+                lines += "Example: \"${replaceExamples(uniqueType.text)}\""
                 lines += "Applicable to: " + uniqueType.targetTypes.joinToString()
                 lines += ""
             }
