@@ -38,32 +38,21 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // Initialize maintenance cost per unit, default 1 aka 100%
         // Note all discounts are in the form of -X%, such as -25 for 25% reduction
         for (unit in unitsToPayFor){
-            if (unit.hasUnique(UniqueType.UnitMaintenanceDiscount)){
-                unit.maintenance = 1f + unit.getMatchingUniques(UniqueType.UnitMaintenanceDiscount).first().params[0].toFloat()/100f
-            }else{
-                unit.maintenance = 1f
+            unit.maintenance = 1f
+            for (unique in unit.getMatchingUniques(UniqueType.UnitMaintenanceDiscount)){
+                unit.maintenance = 1f + unique.params[0].toPercent()
             }
         }
         // Apply global discounts
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscountGlobal, StateForConditionals(civInfo))) {
             for (unit in unitsToPayFor.filter{it.matchesFilter(unique.params[1])}){
-                unit.maintenance *= 1f + unique.params[0].toFloat()/100f
+                unit.maintenance *= 1f + unique.params[0].toPercent()
             }
         }
         // Sort by descending maintenance, then drop most expensive X units to make them free
         // If more free than units left, returns empty sequence
         unitsToPayFor = unitsToPayFor.sortedByDescending { it.maintenance }.drop(freeUnits)
         val numberOfUnitsToPayFor = max(0.0, unitsToPayFor.sumOf { it.maintenance.toDouble() }).toFloat()
-
-//        var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
-//
-//        for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscountGlobal, StateForConditionals(civInfo))) {
-//            val numberOfUnitsWithDiscount = min(
-//                numberOfUnitsToPayFor,
-//                unitsToPayFor.count { it.matchesFilter(unique.params[1]) }.toFloat()
-//            )
-//            numberOfUnitsToPayFor += numberOfUnitsWithDiscount * unique.params[0].toFloat() / 100f
-//        }
 
         val turnLimit =
             BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
