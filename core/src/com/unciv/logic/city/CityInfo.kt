@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -313,7 +314,7 @@ class CityInfo {
                 cityResources.add(resource, -amount, "Buildings")
             }
         }
-        
+        // TODO: separate Tiles from Buildings
         for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources)) { // E.G "Provides [1] [Iron]"
             if (!unique.conditionalsApply(civInfo, this)) continue
             val resource = getRuleset().tileResources[unique.params[1]]
