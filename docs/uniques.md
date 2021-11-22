@@ -1,75 +1,26 @@
-## Improvement uniques
-#### [stats]
-Applicable to: Improvement, Global, FollowerBelief
+## Table of Contents
 
-#### Provides [amount] [resource]
-Applicable to: Improvement, Building
-
-#### Can also be built on tiles adjacent to fresh water
-Applicable to: Improvement
-
-#### [stats] from [tileFilter] tiles
-Applicable to: Improvement
-
-#### [stats] on [tileFilter] tiles once [tech] is discovered
-Applicable to: Improvement
-
-#### [stats] once [tech] is discovered
-Applicable to: Improvement, Building
-
-#### [stats] for each adjacent [tileFilter]
-Applicable to: Improvement
-
-#### Can be built outside your borders
-Applicable to: Improvement
-
-#### Can be built just outside your borders
-Applicable to: Improvement
-
-#### Cannot be built on [tileFilter] tiles until [tech] is discovered
-Applicable to: Improvement
-
-#### Cannot be built on [tileFilter] tiles
-Applicable to: Improvement
-
-#### Does not need removal of [tileFilter]
-Applicable to: Improvement
-
-#### Gives a defensive bonus of [amount]%
-Applicable to: Improvement
-
-#### Costs [amount] gold per turn when in your territory
-Applicable to: Improvement
-
-#### Deal [amount] damage to adjacent enemy units
-Applicable to: Improvement
-
-#### Deal 30 damage to adjacent enemy units
-Applicable to: Improvement
-
-#### Great Improvement
-Applicable to: Improvement
-
-#### Provides a random bonus when entered
-Applicable to: Improvement
-
-#### Unpillagable
-Applicable to: Improvement
-
-#### Indestructible
-Applicable to: Improvement
+ - [Global uniques](#global-uniques)
+ - [Building uniques](#building-uniques)
+ - [CityState uniques](#citystate-uniques)
+ - [Nation uniques](#nation-uniques)
+ - [Unit uniques](#unit-uniques)
+ - [Terrain uniques](#terrain-uniques)
+ - [Resource uniques](#resource-uniques)
+ - [Improvement uniques](#improvement-uniques)
+ - [Conditional uniques](#conditional-uniques)
+ - [Ruins uniques](#ruins-uniques)
+ - [Promotion uniques](#promotion-uniques)
+ - [Deprecated uniques](#deprecated-uniques)
 
 ## Global uniques
+#### [stats]
+Applicable to: Global, FollowerBelief, Improvement
+
 #### [stats] [cityFilter]
 Applicable to: Global
 
-#### [stats] if this city has at least [amount] specialists
-Applicable to: Global
-
 #### [stats] from every specialist [cityFilter]
-Applicable to: Global
-
-#### [stats] from every specialist
 Applicable to: Global
 
 #### [stats] per [amount] population [cityFilter]
@@ -105,15 +56,6 @@ Applicable to: Global
 #### [amount]% [stat] [cityFilter]
 Applicable to: Global
 
-#### +[amount]% [stat] [cityFilter]
-Applicable to: Global
-
-#### +[amount]% [stat] in all cities
-Applicable to: Global
-
-#### [amount]% [stat] while the empire is happy
-Applicable to: Global
-
 #### [amount]% [stat] from every follower, up to [amount]%
 Applicable to: Global, FollowerBelief
 
@@ -126,28 +68,7 @@ Applicable to: Global
 #### [amount]% Production when constructing [baseUnitFilter] units [cityFilter]
 Applicable to: Global
 
-#### +[amount]% Production when constructing [stat] buildings
-Applicable to: Global
-
-#### +[amount]% Production when constructing [constructionFilter]
-Applicable to: Global
-
-#### +[amount]% Production when constructing a [buildingName]
-Applicable to: Global
-
-#### +[amount]% Production when constructing [constructionFilter] [cityFilter]
-Applicable to: Global
-
-#### +[amount]% Production when constructing [baseUnitFilter] units [cityFilter]
-Applicable to: Global
-
 #### [amount]% unhappiness from population [cityFilter]
-Applicable to: Global
-
-#### Unhappiness from population decreased by [amount]%
-Applicable to: Global
-
-#### Unhappiness from population decreased by [amount]% [cityFilter]
 Applicable to: Global
 
 #### Military Units gifted from City-States start with [amount] XP
@@ -171,25 +92,10 @@ Applicable to: Global
 #### [amount]% maintenance costs for [mapUnitFilter] units
 Applicable to: Global
 
-#### -[amount]% [mapUnitFilter] unit maintenance costs
-Applicable to: Global
-
-#### -[amount]% unit upkeep costs
-Applicable to: Global
-
 #### [amount]% growth [cityFilter]
 Applicable to: Global, FollowerBelief
 
-#### +[amount]% growth [cityFilter]
-Applicable to: Global
-
-#### +[amount]% growth [cityFilter] when not at war
-Applicable to: Global
-
 #### Gain a free [buildingName] [cityFilter]
-Applicable to: Global
-
-#### Provides a free [buildingName] [cityFilter]
 Applicable to: Global
 
 #### May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion
@@ -201,13 +107,7 @@ Applicable to: Global
 #### [amount]% food consumption by specialists [cityFilter]
 Applicable to: Global
 
-#### -[amount]% food consumption by specialists [cityFilter]
-Applicable to: Global
-
 #### [amount]% of excess happiness converted to [stat]
-Applicable to: Global
-
-#### 50% of excess happiness added to culture towards policies
 Applicable to: Global
 
 #### May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])
@@ -234,38 +134,20 @@ Applicable to: Global, FollowerBelief
 #### May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost
 Applicable to: Global, FollowerBelief
 
-#### May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])
-Applicable to: Global
+#### [amount]% Strength
+Applicable to: Global, Unit
 
-#### [mapUnitFilter] units deal +[amount]% damage
-Applicable to: Global
+#### [amount] Movement
+Applicable to: Global, Unit
 
-#### +10% Strength for all units during Golden Age
-Applicable to: Global
+#### [amount] Sight
+Applicable to: Global, Unit
 
-#### [amount]% Strength for [mapUnitFilter] units in [tileFilter]
-Applicable to: Global
+#### [amount]% Spread Religion Strength
+Applicable to: Global, Unit
 
-#### +15% Combat Strength for all units when attacking Cities
-Applicable to: Global
-
-#### Increases embarked movement +1
-Applicable to: Global
-
-#### +1 Movement for all embarked units
-Applicable to: Global
-
-#### +[amount] Movement for all [mapUnitFilter] units
-Applicable to: Global
-
-#### +1 Movement for all units during Golden Age
-Applicable to: Global
-
-#### [amount] Sight for all [mapUnitFilter] units
-Applicable to: Global
-
-#### [amount]% Spread Religion Strength for [mapUnitFilter] units
-Applicable to: Global
+#### Normal vision when embarked
+Applicable to: Global, Unit
 
 #### Free [baseUnitFilter] appears
 Applicable to: Global
@@ -321,15 +203,27 @@ Applicable to: Global
 #### Provides a [buildingName] in your first [amount] cities for free
 Applicable to: Global
 
-#### Immediately creates the cheapest available cultural building in each of your first [amount] cities for free
-Applicable to: Global
-
-#### Immediately creates a [buildingName] in each of your first [amount] cities for free
-Applicable to: Global
-
 ## Building uniques
 #### Remove extra unhappiness from annexed cities
 Applicable to: Building
+
+#### Consumes [amount] [resource]
+Applicable to: Building, Unit, Improvement
+
+#### Provides [amount] [resource]
+Applicable to: Building, Improvement
+
+#### Unbuildable
+Applicable to: Building, Unit
+
+#### Cannot be purchased
+Applicable to: Building, Unit
+
+#### Can be purchased with [stat] [cityFilter]
+Applicable to: Building, Unit
+
+#### Can be purchased for [amount] [stat] [cityFilter]
+Applicable to: Building, Unit
 
 #### Cost increases by [amount] per owned city
 Applicable to: Building
@@ -340,8 +234,8 @@ Applicable to: Building
 #### Requires a [buildingName] in this city
 Applicable to: Building
 
-#### Not displayed as an available construction unless [buildingName] is built
-Applicable to: Building
+#### Not displayed as an available construction without [buildingName/tech/resource/policy]
+Applicable to: Building, Unit
 
 #### Must be on [terrainFilter]
 Applicable to: Building
@@ -382,24 +276,6 @@ Applicable to: Nation
 Applicable to: Nation
 
 ## Unit uniques
-#### Consumes [amount] [resource]
-Applicable to: Unit, Improvement, Building
-
-#### Unbuildable
-Applicable to: Unit, Building
-
-#### Cannot be purchased
-Applicable to: Unit, Building
-
-#### Can be purchased with [stat] [cityFilter]
-Applicable to: Unit, Building
-
-#### Can be purchased for [amount] [stat] [cityFilter]
-Applicable to: Unit, Building
-
-#### Not displayed as an available construction without [buildingName/tech/resource/policy]
-Applicable to: Unit, Building
-
 #### Founds a new city
 Applicable to: Unit
 
@@ -412,50 +288,8 @@ Applicable to: Unit
 #### Can see invisible [mapUnitFilter] units
 Applicable to: Unit
 
-#### [amount]% Strength
-Applicable to: Unit, Global
-
 #### [amount]% Strength decreasing with distance from the capital
 Applicable to: Unit
-
-#### +[amount]% Strength
-Applicable to: Unit
-
-#### -[amount]% Strength
-Applicable to: Unit
-
-#### +[amount]% Strength vs [combatantFilter]
-Applicable to: Unit
-
-#### -[amount]% Strength vs [combatantFilter]
-Applicable to: Unit
-
-#### +[amount]% Combat Strength
-Applicable to: Unit
-
-#### +[amount]% Strength when attacking
-Applicable to: Unit
-
-#### +[amount]% Strength when defending
-Applicable to: Unit
-
-#### [amount]% Strength when defending vs [mapUnitFilter] units
-Applicable to: Unit
-
-#### +[amount]% defence in [tileFilter] tiles
-Applicable to: Unit
-
-#### +[amount]% Strength in [tileFilter]
-Applicable to: Unit
-
-#### [amount] Movement
-Applicable to: Unit, Global
-
-#### [amount] Sight
-Applicable to: Unit, Global
-
-#### [amount]% Spread Religion Strength
-Applicable to: Unit, Global
 
 #### May found a religion
 Applicable to: Unit
@@ -463,19 +297,10 @@ Applicable to: Unit
 #### May enhance a religion
 Applicable to: Unit
 
-#### Normal vision when embarked
-Applicable to: Unit, Global
-
 #### Cannot attack
 Applicable to: Unit
 
 #### Must set up to ranged attack
-Applicable to: Unit
-
-#### [amount] Visibility Range
-Applicable to: Unit
-
-#### Limited Visibility
 Applicable to: Unit
 
 #### Blast radius [amount]
@@ -494,15 +319,6 @@ Applicable to: Unit
 Applicable to: Unit
 
 #### Double movement in [terrainFilter]
-Applicable to: Unit
-
-#### Double movement in coast
-Applicable to: Unit
-
-#### Double movement rate through Forest and Jungle
-Applicable to: Unit
-
-#### Double movement in Snow, Tundra and Hills
 Applicable to: Unit
 
 #### All tiles cost 1 movement
@@ -531,9 +347,6 @@ Applicable to: Unit
 
 #### Never appears as a Barbarian unit
 Applicable to: Unit
-
-#### Hidden when religion is disabled
-Applicable to: Unit, Ruins, Building
 
 ## Terrain uniques
 #### Must be adjacent to [amount] [simpleTerrain] tiles
@@ -654,6 +467,52 @@ Applicable to: Resource
 #### Can only be created by Mercantile City-States
 Applicable to: Resource
 
+## Improvement uniques
+#### Can also be built on tiles adjacent to fresh water
+Applicable to: Improvement
+
+#### [stats] from [tileFilter] tiles
+Applicable to: Improvement
+
+#### [stats] for each adjacent [tileFilter]
+Applicable to: Improvement
+
+#### Can be built outside your borders
+Applicable to: Improvement
+
+#### Can be built just outside your borders
+Applicable to: Improvement
+
+#### Cannot be built on [tileFilter] tiles until [tech] is discovered
+Applicable to: Improvement
+
+#### Cannot be built on [tileFilter] tiles
+Applicable to: Improvement
+
+#### Does not need removal of [tileFilter]
+Applicable to: Improvement
+
+#### Gives a defensive bonus of [amount]%
+Applicable to: Improvement
+
+#### Costs [amount] gold per turn when in your territory
+Applicable to: Improvement
+
+#### Deal [amount] damage to adjacent enemy units
+Applicable to: Improvement
+
+#### Great Improvement
+Applicable to: Improvement
+
+#### Provides a random bonus when entered
+Applicable to: Improvement
+
+#### Unpillagable
+Applicable to: Improvement
+
+#### Indestructible
+Applicable to: Improvement
+
 ## Conditional uniques
 #### when at war
 Applicable to: Conditional
@@ -764,6 +623,9 @@ Applicable to: Ruins
 #### This Unit upgrades for free including special upgrades
 Applicable to: Ruins
 
+#### Hidden when religion is disabled
+Applicable to: Ruins, Building, Unit
+
 #### Hidden before founding a Pantheon
 Applicable to: Ruins
 
@@ -779,3 +641,56 @@ Applicable to: Ruins
 ## Promotion uniques
 #### Heal this unit by [amount] HP
 Applicable to: Promotion
+
+## Deprecated uniques
+ - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
+ - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
+ - "+[amount]% [stat] [cityFilter]" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [cityFilter]"
+ - "+[amount]% [stat] in all cities" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [in all cities]"
+ - "[amount]% [stat] while the empire is happy" - Deprecated As of 3.17.1, replace with "[amount]% [stat] [in all cities] <while the empire is happy>"
+ - "+[amount]% Production when constructing [stat] buildings" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
+ - "+[amount]% Production when constructing [constructionFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
+ - "+[amount]% Production when constructing a [buildingName]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
+ - "+[amount]% Production when constructing [constructionFilter] [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
+ - "+[amount]% Production when constructing [baseUnitFilter] units [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[+amount]% Production when constructing [baseUnitFilter] units [cityFilter]"
+ - "Unhappiness from population decreased by [amount]%" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[amount]% unhappiness from population [cityFilter]"
+ - "Unhappiness from population decreased by [amount]% [cityFilter]" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[amount]% unhappiness from population [cityFilter]"
+ - "-[amount]% [mapUnitFilter] unit maintenance costs" - Deprecated As of 3.16.16 - removed as of 3.17.11, replace with "[amount]% maintenance costs for [mapUnitFilter] units"
+ - "-[amount]% unit upkeep costs" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[amount]% maintenance costs for [mapUnitFilter] units"
+ - "+[amount]% growth [cityFilter]" - Deprecated As of 3.16.14 - removed 3.17.11, replace with "[amount]% growth [cityFilter]"
+ - "+[amount]% growth [cityFilter] when not at war" - Deprecated As of 3.16.14 - removed 3.17.11, replace with "[amount]% growth [cityFilter] <when not at war>"
+ - "Provides a free [buildingName] [cityFilter]" - Deprecated As of 3.17.7, replace with "Gain a free [buildingName] [cityFilter]"
+ - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated As of 3.18.2, replace with "[-amount]% food consumption by specialists [cityFilter]"
+ - "50% of excess happiness added to culture towards policies" - Deprecated As of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
+ - "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])" - Deprecated As of 3.17.9, replace with "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"
+ - "[mapUnitFilter] units deal +[amount]% damage" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <for [mapUnitFilter] units>"
+ - "+10% Strength for all units during Golden Age" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[+10]% Strength <for [All] units> <during a Golden Age>"
+ - "[amount]% Strength for [mapUnitFilter] units in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <for [mapUnitFilter] units> <when fighting in [tileFilter] tiles>"
+ - "+15% Combat Strength for all units when attacking Cities" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[+15]% Strength <for [All] units> <vs cities> <when attacking>"
+ - "Increases embarked movement +1" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[+1] Movement <for [Embarked] units>"
+ - "+1 Movement for all embarked units" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[+1] Movement <for [Embarked] units>"
+ - "+[amount] Movement for all [mapUnitFilter] units" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Movement <for [mapUnitFilter] units>"
+ - "+1 Movement for all units during Golden Age" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Movement <for [All] units> <during a Golden Age>"
+ - "[amount] Sight for all [mapUnitFilter] units" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight <for [mapUnitFilter] units>"
+ - "[amount]% Spread Religion Strength for [mapUnitFilter] units" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Spread Religion Strength <for [mapUnitFilter] units>"
+ - "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides the cheapest [stat] building in your first [amount] cities for free"
+ - "Immediately creates a [buildingName] in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides a [buildingName] in your first [amount] cities for free"
+ - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
+ - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
+ - "+[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"
+ - "-[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"
+ - "+[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"
+ - "-[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"
+ - "+[amount]% Combat Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"
+ - "+[amount]% Strength when attacking" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when attacking>"
+ - "+[amount]% Strength when defending" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <shen defending>"
+ - "[amount]% Strength when defending vs [mapUnitFilter] units" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when defending> <vs [mapUnitFilter] units>"
+ - "+[amount]% defence in [tileFilter] tiles" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles> <when defending>"
+ - "+[amount]% Strength in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
+ - "[amount] Visibility Range" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
+ - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
+ - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
+ - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
+ - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
+ - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
+ - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"
