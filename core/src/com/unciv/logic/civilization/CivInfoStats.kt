@@ -40,13 +40,13 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         for (unit in unitsToPayFor){
             unit.maintenance = 1f
             for (unique in unit.getMatchingUniques(UniqueType.UnitMaintenanceDiscount)){
-                unit.maintenance = 1f + unique.params[0].toPercent()
+                unit.maintenance *= unique.params[0].toPercent()
             }
         }
         // Apply global discounts
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscountGlobal, StateForConditionals(civInfo))) {
             for (unit in unitsToPayFor.filter{it.matchesFilter(unique.params[1])}){
-                unit.maintenance *= 1f + unique.params[0].toPercent()
+                unit.maintenance *= unique.params[0].toPercent()
             }
         }
         // Sort by descending maintenance, then drop most expensive X units to make them free
