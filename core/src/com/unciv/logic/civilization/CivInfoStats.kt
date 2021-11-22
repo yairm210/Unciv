@@ -290,66 +290,53 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
 
         if (civInfo.religionManager.religion != null) {
-            statMap["Religion"] = 0f
+            var religionHappiness = 0f
             for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
                 .flatMap { it.uniqueObjects }) {
                 if (unique.placeholderText == "[] for each global city following this religion") {
-                    statMap["Religion"] =
-                        statMap["Religion"]!! +
-                                unique.stats.happiness * civInfo.religionManager.numberOfCitiesFollowingThisReligion()
-                            .toFloat()
+                    val followingCities =
+                        civInfo.religionManager.numberOfCitiesFollowingThisReligion()
+                    religionHappiness += unique.stats.happiness * followingCities
                 }
                 if (unique.placeholderText == "[] for every [] global followers []") {
-                    statMap["Religion"] =
-                        statMap["Religion"]!! +
-                                unique.stats.happiness *
-                                civInfo.religionManager.numberOfFollowersFollowingThisReligion(
-                                    unique.params[2]
-                                ).toFloat() /
-                                unique.params[1].toFloat()
+                    val followers =
+                        civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2])
+                    religionHappiness +=
+                        unique.stats.happiness * (followers / unique.params[1].toInt())
                 }
             }
-            if (statMap["Religion"] == 0f)
-                statMap.remove("Religion")
+            if (religionHappiness > 0) statMap["Religion"] = religionHappiness
         }
 
         //From city-states
+        var cityStatesHappiness = 0f
         for (otherCiv in civInfo.getKnownCivs()) {
             val relationshipLevel = otherCiv.getDiplomacyManager(civInfo).relationshipLevel()
-            if (otherCiv.isCityState() && relationshipLevel >= RelationshipLevel.Friend) {
-                val eraInfo = civInfo.getEra()
+            if (!otherCiv.isCityState() || relationshipLevel < RelationshipLevel.Friend) continue
 
-                if (!eraInfo.undefinedCityStateBonuses()) {
-                    for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
-                        if (!bonus.conditionalsApply(otherCiv)) continue
-                        if (bonus.isOfType(UniqueType.CityStateHappiness)) {
-                            if (statMap.containsKey("City-States"))
-                                statMap["City-States"] =
-                                    statMap["City-States"]!! + bonus.params[0].toFloat()
-                            else
-                                statMap["City-States"] = bonus.params[0].toFloat()
-                        }
-                    }
-                } else {
-                    // Deprecated, assume Civ V values for compatibility
-                    if (otherCiv.cityStateType == CityStateType.Mercantile) {
-                        val happinessBonus = if (civInfo.getEraNumber() in 0..1) 2f else 3f
-                        if (statMap.containsKey("City-States"))
-                            statMap["City-States"] = statMap["City-States"]!! + happinessBonus
-                        else
-                            statMap["City-States"] = happinessBonus
-                    }
+            val eraInfo = civInfo.getEra()
+            // Deprecated, assume Civ V values for compatibility
+            if (!eraInfo.undefinedCityStateBonuses()) {
+                for (bonus in eraInfo.getCityStateBonuses(otherCiv.cityStateType, relationshipLevel)) {
+                    if (!bonus.conditionalsApply(otherCiv)) continue
+                    if (bonus.isOfType(UniqueType.CityStateHappiness))
+                        cityStatesHappiness += bonus.params[0].toFloat()
                 }
+            } else if (otherCiv.cityStateType == CityStateType.Mercantile) {
+                // compatibility mode for
+                cityStatesHappiness += if (civInfo.getEraNumber() in 0..1) 2f else 3f
             }
         }
 
         // Just in case
-        if (statMap.containsKey("City-States")) {
+        if (cityStatesHappiness > 0) {
             for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
                 if (unique.params[1] == Stat.Happiness.name)
-                    statMap["City-States"] = statMap["City-States"]!! * unique.params[0].toPercent()
+                    cityStatesHappiness *= unique.params[0].toPercent()
             }
         }
+
+        if (cityStatesHappiness > 0) statMap["City-States"] = cityStatesHappiness
 
         return statMap
     }
