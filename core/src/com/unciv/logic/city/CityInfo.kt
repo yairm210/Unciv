@@ -63,6 +63,9 @@ class CityInfo {
     var turnAcquired = 0
     var health = 200
 
+    @Deprecated("As of 3.18.4", ReplaceWith("CityFlags.Resistance"), DeprecationLevel.WARNING)
+    var resistanceCounter = 0
+
     var religion = CityInfoReligionManager()
     var population = PopulationManager()
     var cityConstructions = CityConstructions()
@@ -157,10 +160,6 @@ class CityInfo {
         }
 
         triggerCitiesSettledNearOtherCiv()
-
-        // Seed resource demand countdown
-        setFlag(CityFlags.ResourceDemand,
-                (if (isOriginalCapital) 25 else 15) + Random().nextInt(10))
     }
 
     private fun addStartingBuildings(civInfo: CivilizationInfo, startingEra: String) {
@@ -498,6 +497,11 @@ class CityInfo {
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)
+
+        if (resistanceCounter > 0) {
+            setFlag(CityFlags.Resistance, resistanceCounter)
+            resistanceCounter = 0
+        }
     }
 
     fun startTurn() {
@@ -516,6 +520,12 @@ class CityInfo {
         if (!hasFlag(CityFlags.WeLoveTheKing))
             tryWeLoveTheKing()
         nextTurnFlags()
+
+        // Seed resource demand countdown
+        if(demandedResource == "" && !hasFlag(CityFlags.ResourceDemand)) {
+            setFlag(CityFlags.ResourceDemand,
+                    (if (isCapital()) 25 else 15) + Random().nextInt(10))
+        }
     }
 
     // cf DiplomacyManager nextTurnFlags
@@ -697,13 +707,13 @@ class CityInfo {
         }
 
         demandedResource = chosenResource.name
-        civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City)
+        civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource")
     }
 
     private fun tryWeLoveTheKing() {
         if (demandedResource == "") return
         if (civInfo.getCivResourcesByName()[demandedResource]!! > 0) {
-            setFlag(CityFlags.WeLoveTheKing, 20)
+            setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
             civInfo.addNotification(
                     "Because they have [$demandedResource], the citizens of [$name] are celebrating We Love The King Day!",
                     location, NotificationIcon.City, NotificationIcon.Happiness)
