@@ -244,6 +244,14 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
+    private fun getStatPercentBonusesFromWeLoveTheKingDay(isWLTKD: Boolean): Stats {
+        val stats = Stats()
+        if (isWLTKD) {
+            stats.food += 25f
+        }
+        return stats
+    }
+
     private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniqueSequence: Sequence<Unique>): Stats {
         val stats = Stats()
         val uniques = uniqueSequence.toList().asSequence()
@@ -463,6 +471,7 @@ class CityStats(val cityInfo: CityInfo) {
     private fun updateStatPercentBonusList(currentConstruction: IConstruction, localBuildingUniques: Sequence<Unique>) {
         val newStatPercentBonusList = LinkedHashMap<String, Stats>()
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
+        newStatPercentBonusList["We Love The King Day"] = getStatPercentBonusesFromWeLoveTheKingDay(cityInfo.isWeLoveTheKingDay())
         newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
         newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, localBuildingUniques)
                 .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
