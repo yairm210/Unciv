@@ -3,6 +3,7 @@
 ## Table of Contents
 
 * [Package `com.unciv.scripting`](#package-comuncivscripting)
+	* [Design Principles](#design-principles)
 	* [Class Overview](#class-overview)
 * [Package `com.unciv.scripting.protocol`](#package-comuncivscriptingprotocol)
 	* [REPL Loop](#repl-loop)
@@ -11,7 +12,7 @@
 
 # Package com.unciv.scripting
 
-## Design rinciples
+## Design Principles
 
 **The Kotlin/JVM code should neither know nor care about the language running on the other end of its scripting API.** If a behaviour is specific to a particular language, then it's also too messy and complex to try to take special account for from the other side of an IPC channel. Instead, the complexity of each specific scripting language should be handled entirely within that language itself, such that the only thing exposed to the Kotlin code is a common interface built around structures that exist in most computer programming languages (like command strings, attributes, keys, calls, assignments, collections, etc). This not only keeps the scripting protocols and interfaces compatible with multiple backends, it also serves as a test that helps keep their design relatively clean and maintainable by forcing messy or complicated behaviours to be implemented in more appropriate places.
 

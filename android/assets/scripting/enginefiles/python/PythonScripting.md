@@ -315,6 +315,7 @@ def slow():
 		#  +1 IPC "read" action for the current .naturalWonder if reaching the "else" block. (Only gets resolved on serialization in the next step.)
 		#  +1 IPC "assign" action to update .naturalWonder, even if it's not changing.
 		# This happens once for every tile— Hundreds or thousands of times in total.
+# Total IPC actions: ~1,000 to ~15,000. Just below 3 on average for every tile on the map.
 
 def faster():
 	sizex = len(gameInfo.tileMap.tileMatrix) - 1
@@ -333,11 +334,12 @@ def faster():
 			# Only done after already selecting coordinates and checking validity.
 			i += 1
 			# Only iterate for as long as needed to make the wanted changes
+# Total IPC actions: ~40 to ~60. Only one assignment, plus one check, for each tile that actually changes.
 
 def fastest():
 	apiHelpers.scatterRandomFeature("Krakatoa", random.randint(15, 25))
-	# Only 1 IPC "assign" action.
-	# This function doesn't actually exist. But the point is that when available, a single IPC call that causes all of the work to then be done in the JVM is likely to be faster than a script-micromanaged solution. E.G., use one call to List<*>.addAll() instead of many calls to List<*>.add().
+# Total IPC actions: 1. All the heavy lifting is done in the Kotlin function it calls.
+# The "scatterRandomFeature" function doesn't actually exist. But the point is that when available, a single IPC call that causes all of the work to then be done in the JVM is likely to be faster than a script-micromanaged solution. E.G., use one call to List<*>.addAll() instead of many calls to List<*>.add().
 ```
 
 Every time you access an attribute or item on a foreign wrapper in Python creates and initializes a new foreign wrapper object. So for code blocks that use a wrapper object at the same path multiple times, it may be worth saving a single wrapper at the start instead.
