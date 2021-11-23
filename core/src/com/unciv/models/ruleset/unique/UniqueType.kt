@@ -193,6 +193,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     MayanGainGreatPerson("Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.", UniqueTarget.Nation),
     MayanCalendarDisplay("Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.", UniqueTarget.Nation),
 
+    RetainHappinessFromLuxury("Retain [amount]% of the happiness from a luxury after the last copy has been traded away", UniqueTarget.Nation),
+
 
     ///////////////////////////////////////// CONSTRUCTION UNIQUES /////////////////////////////////////////
 
