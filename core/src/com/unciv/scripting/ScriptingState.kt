@@ -149,7 +149,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
             while (commandHistory.size > maxCommandHistory) {
                 commandHistory.removeAt(0)
                 // No need to restrict activeCommandHistory to valid indices here because it gets set to zero anyway.
-                // Also O(n).
+                // Also probably O(n) to remove from start..
             }
         }
         activeCommandHistory = 0
@@ -162,4 +162,15 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         echo(out)
         return out
     }
+
+//    fun acquireUiLock() {
+//        scriptingScope.worldScreen?.isPlayersTurn = false
+        //TODO
+        //Not perfect. I think scriptingScope also exposes mutating the GUI itself, and many things that aren't protected by this? Then again, a script that *wants* to cause a crash/ANR will always be able to do so by just assigning an invalid value or deleting a required node somewhere. Could make mod handlers outside of worldScreen blocking, with written stipulations on (dis)recommended size, and then
+//    }
+
+//    fun releaseUiLock() {
+//        scriptingScope.worldScreen?.isPlayersTurn = true
+        //Hm. Should return to original value, not necessarily true. That means keeping a property, which means I'd rather put this in its own class.
+//    }
 }

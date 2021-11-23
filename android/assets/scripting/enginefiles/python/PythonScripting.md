@@ -331,8 +331,8 @@ def faster():
 			gameInfo.tileMap.tileMatrix[x][y] = "Krakatoa"
 			# +1 IPC "assign" action.
 			# Only done after already selecting coordinates and checking validity.
-		i += 1
-		# Only iterate for as long as needed to make the wanted changes
+			i += 1
+			# Only iterate for as long as needed to make the wanted changes
 
 def fastest():
 	apiHelpers.scatterRandomFeature("Krakatoa", random.randint(15, 25))
@@ -345,7 +345,7 @@ Every time you access an attribute or item on a foreign wrapper in Python create
 ```python3
 def slow():
 	for i in len(civInfo.cities[0].cityStats.cityInfo.tilesInRange):
-		print(civInfo.cities[0].cityStats.cityInfo.tilesInRange[i])
+		print(civInfo.cities[0].cityStats.cityInfo.tilesInRange[i]) # FIXME: This doesn't actually take indices, does it?
 		# Every loop starts out with civInfo, and then constructs a new wrapper object in Python for every attribute and item access.
 
 def faster():
@@ -360,7 +360,7 @@ Every element in the path sent by a wrapper object to Kotlin/the JVM also requir
 ```python3
 def slow():
 	for i in range(1000):
-		pass
+		pass # TODO
 
 
 def alsoSlow():
