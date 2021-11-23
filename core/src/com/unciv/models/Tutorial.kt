@@ -43,6 +43,7 @@ enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.start
     SpreadingReligion("Spreading_Religion"),
     Inquisitors("Inquisitors"),
     MayanCalendar("Maya_Long_Count_calendar_cycle"),
+    WeLoveTheKingDay("We_Love_The_King_Day"),
     ;
 
     companion object {
