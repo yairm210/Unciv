@@ -91,14 +91,16 @@ class TradeEvaluation {
             }
 
             TradeType.Luxury_Resource -> {
-                return if(!civInfo.hasResource(offer.name)) { // we can't trade on resources, so we are only interested in 1 copy for ourselves
-                    when { // We're a lot more interested in luxury if low on happiness (AI is never low on happiness though)
-                        civInfo.getHappiness() < 0 -> 450
-                        civInfo.getHappiness() < 10 -> 350
-                        else -> 300 // Higher than corresponding sell cost since a trade is mutually beneficial!
-                    }
-                } else
-                    0
+                val weLoveTheKingPotential = civInfo.cities.count { it.demandedResource == offer.name } * 50
+                return weLoveTheKingPotential +
+                    if(!civInfo.hasResource(offer.name)) { // we can't trade on resources, so we are only interested in 1 copy for ourselves
+                        when { // We're a lot more interested in luxury if low on happiness (AI is never low on happiness though)
+                            civInfo.getHappiness() < 0 -> 450
+                            civInfo.getHappiness() < 10 -> 350
+                            else -> 300 // Higher than corresponding sell cost since a trade is mutually beneficial!
+                        }
+                    } else
+                        0
             }
 
             TradeType.Strategic_Resource -> {
