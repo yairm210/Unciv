@@ -19,6 +19,8 @@ fun <T> ArrayList<T>.clipIndexToBounds(index: Int, extendsize: Int = 0): Int {
 
 // TODO: Replace Exception types with Throwable? Wait, no. Apparently that just includes "serious problems that a reasonable application should not try to catch."
 
+// See https://github.com/yairm210/Unciv/pull/5592/commits/a1f51e08ab782ab46bda220e0c4aaae2e8ba21a4 for example of running locking operation in separate thread.
+
 /**
  * Make sure an index is valid for this array.
  *

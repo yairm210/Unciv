@@ -270,10 +270,9 @@ Further tools can be imported as `unciv_pyhelpers`.
 
 This is useful when writing modules that are meant to be imported from the main Unciv Python namespace.
 
-In a file in your `PYTHONPATH`/`sys.path`:
-
 ```python3
-#MyCoolModule.py
+# MyCoolModule.py
+# In PYTHONPATH/sys.path.
 
 import unciv
 import unciv_pyhelpers
@@ -283,9 +282,9 @@ def printCivilizations():
 		print(f"{unciv_pyhelpers.real(civ.nation.name)}: {len(civ.cities)} cities")
 ```
 
-In Unciv:
-
 ```python3
+# In Unciv.
+
 >>> import MyCoolModule
 >>> MyCoolModule.printCivilizations()
 ```
@@ -293,6 +292,113 @@ In Unciv:
 ---
 
 ## Examples
+
+---
+
+## Performance and Gotchas
+
+Initiating a foreign actions is likely to be expensive. They have to be encoded as request packets, serialized as JSON, sent to Kotlin/the JVM, decoded there, and evaluated in Kotlin/JVM using slow reflective mechanisms. The results then have to go through this entire process in reverse in order to return a value to Python.
+
+However, code running in Kotlin/the JVM is also likely to be much faster than code running in Python. The danger is in wasting lots of time bouncing back and forth just to exchange small amounts of data.
+
+Efficient scripts should try to do as much of their work in the same environment as possible.
+
+If something can be done with a single foreign action, then it probably should be, as that way the statically compiled and JIT-optimized JVM bytecode can do most of the heavy lifting. However, if a task can't be done in a single foreign action, then as much work should be done completely in Python as possible, in order to reduce the number of high-overhead IPC calls used.
+
+```python3
+def slow():
+	for tile in gameInfo.tileMap.values:
+	# Iteration implicitly uses 1 IPC "length" action at the start.
+		tile.naturalWonder = "Krakatoa" if random.random() < 1/len(gameInfo.tileMap.values)*20 else tile.naturalWonder
+		# On every loop:
+		#  +1 IPC "length" action in the "if".
+		#  +1 IPC "read" action for the current .naturalWonder if reaching the "else" block. (Only gets resolved on serialization in the next step.)
+		#  +1 IPC "assign" action to update .naturalWonder, even if it's not changing.
+		# This happens once for every tile— Hundreds or thousands of times in total.
+
+def faster():
+	sizex = len(gameInfo.tileMap.tileMatrix) - 1
+	sizey = len(gameInfo.tileMap.tileMatrix[0]) - 1
+	# 2 IPC "read" actions for max map bounds at the start.
+	targetcount = random.randint(15, 25)
+	i = 0
+	while i < targetcount:
+		x = random.randint(0, sizex)
+		y = random.randint(0, sizey)
+		if real(gameInfo.tileMap.tileMatrix[x][y]) is not None:
+			# +1 IPC "read" action.
+			# On hexagonal maps, check for validity. To be faster yet, could numerically do this in Python.
+			gameInfo.tileMap.tileMatrix[x][y] = "Krakatoa"
+			# +1 IPC "assign" action.
+			# Only done after already selecting coordinates and checking validity.
+		i += 1
+		# Only iterate for as long as needed to make the wanted changes
+
+def fastest():
+	apiHelpers.scatterRandomFeature("Krakatoa", random.randint(15, 25))
+	# Only 1 IPC "assign" action.
+	# This function doesn't actually exist. But the point is that when available, a single IPC call that causes all of the work to then be done in the JVM is likely to be faster than a script-micromanaged solution. E.G., use one call to List<*>.addAll() instead of many calls to List<*>.add().
+```
+
+Every time you access an attribute or item on a foreign wrapper in Python creates and initializes a new foreign wrapper object. So for code blocks that use a wrapper object at the same path multiple times, it may be worth saving a single wrapper at the start instead.
+
+```python3
+def slow():
+	for i in len(civInfo.cities[0].cityStats.cityInfo.tilesInRange):
+		print(civInfo.cities[0].cityStats.cityInfo.tilesInRange[i])
+		# Every loop starts out with civInfo, and then constructs a new wrapper object in Python for every attribute and item access.
+
+def faster():
+	tilesInRange = civInfo.cities[0].cityStats.cityInfo.tilesInRange
+	for i in len(tilesInRange):
+		print(tilesInRange[i])
+		# Saves 5 Python object instantiations with every loop!
+```
+
+Every element in the path sent by a wrapper object to Kotlin/the JVM also requires the Kotlin side to perform an additional reflective member resolution step.
+
+```python3
+def slow():
+	for i in range(1000):
+		pass
+
+
+def alsoSlow():
+	uselesscache =
+	for i in range(1000):
+		uselesscache +=
+	# Assigning the wrapper object to a name in Python saves on Python attribute time. But it doesn't actually shorten its Kotlin/JVM path, so the same number of steps still have to be taken when the Kotlin/JVM side processes the packet sent by Python.
+
+def fast():
+	apiHelpers.registeredInstances["usefulcache"] =
+	usefulcache = apiHelpers.registeredInstances["usefulcache"]
+	for i in range(1000):
+		usefulcache. +=
+		# Assigning the leaf wrapper to a single Python name reduces the number of new wrapper objects built in Python each loop to .
+		# Assigning the foreign object to
+	del apiHelpers.registeredInstances["usefulcache"]
+
+```
+
+Because iteration over wrapper objects is currently implemented in Python by returning a new wrapper for every index within their length, foreign set-like containers without indices and generator-like iterables without fixed lengths cannot be idiomatically iterated over from Python.
+
+To get around this, you can simply resolve them into their serialized JSON forms. This turns them into JSON arrays and Python lists of primitive values and foreign token strings, on which regular Python iteration can take operate.
+
+```python3
+for e in civInfo.cities[0].cityStats.cityInfo.tiles:
+	print(e)
+	# Fails. CityInfo.tiles is a set-like instance that does not take indices.
+
+for i in range(len(civInfo.cities[0].cityStats.currentCityStats.values)):
+	print(i)
+	# Also fails. CityStats.currentCityStats.values is an iterator-like instance without a known length.
+
+for e in real(civInfo.cities[0].cityStats.currentCityStats.values):
+	print(e)
+	# Works.
+```
+
+Because the elements yielded this way do not have equivalent paths in the Kotlin/JVM namespace, and are not foreign object wrappers, any complex objects will have to be assigned as token strings to a concrete path in order to do anything with them.
 
 ---
 

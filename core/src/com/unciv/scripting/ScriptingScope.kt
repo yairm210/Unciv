@@ -17,6 +17,8 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.io.ByteArrayOutputStream
 
 
+// TODO: Move this, and all nested objects and classes, to api/?
+
 /**
  * Holds references to all internal game data that scripting backends have access to.
  *
@@ -26,8 +28,9 @@ import java.io.ByteArrayOutputStream
  *
  * WorldScreen gives access to UnitTable.selectedUnit, MapHolder.selectedTile, etc. Useful for contextual operations.
  *
- * The members of this class and its nested classes should be designed for use by running scripts, not for in implementing the protocol or API of scripting backends.
- * E.G.: If you need access to a file to build the scripting environment, then add it to ScriptingEngineConstants.json instead of using apiHelpers.assetFileB64. If you need access to some new type of property, then geneneralize it as much as possible and add an IPC request type for it in ScriptingProtocol.kt.
+ * The members of this class and its nested classes should be designed for use by running scripts, not for implementing the protocol or API of scripting backends.
+ * E.G.: If you need access to a file to build the scripting environment, then add it to ScriptingEngineConstants.json instead of using apiHelpers.assetFileB64. If you need access to some new type of property, then geneneralize it as much as possible and add an IPC request type for it in ScriptingProtocol.kt or add support for it in Reflection.kt.
+ * In Python terms, that means that magic methods all directly send and parse IPC packets, while running scripts transparently use those magic methods to access the functions here.
  * API calls are for running scripts, and may be less stable. Building the scripting environment itself should be done directly using the IPC protocol and other lower-level constructs.
  *
  * To reduce the chance of E.G. name collisions in .apiHelpers.registeredInstances, or one misbehaving mod breaking everything by unassigning .gameInfo, different ScriptingState()s should each have their own ScriptingScope().
@@ -46,6 +49,7 @@ class ScriptingScope(
 
     class ApiHelpers(val scriptingScope: ScriptingScope) {
         // This could probably eventually include ways for scripts to create and inject their own UI elements too. Create, populate, show even popups for mods, inject buttons that execute script strings for macros.
+        // TODO: The vast majority of these don't need scriptingScope access, and thus can be put on singletons.
         val isInGame: Boolean
             get() = (scriptingScope.civInfo != null && scriptingScope.gameInfo != null && scriptingScope.uncivGame != null)
         val Factories = InstanceFactories
@@ -85,6 +89,8 @@ class ScriptingScope(
             exporter.dispose() // This one should be called automatically by GC anyway.
             return String(Base64Coder.encode(fakepng.toByteArray()))
         }
+//        fun applyProperties(instance: Any, properties: Map<String, Any?>) {
+//        }
     }
 
 }

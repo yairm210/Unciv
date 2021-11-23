@@ -18,6 +18,7 @@ object Reflection {
         // From https://stackoverflow.com/a/35539628/12260302
         val property = instance::class.members
             .first { it.name == propertyName } as KProperty1<Any, *>
+            // If scripting member access performance becomes an issue, memoizing this could be a potential first step.
         return property.get(instance) as R?
     }
 
@@ -55,8 +56,8 @@ object Reflection {
                 // Multiple dispatch of null between Any and Any? seems ambiguous in Kotlin even without reflection.
                 // Here, I'm resolving it myself, so it seems fine.
                 // However, with generics, even if I find the right KCallable, it seems that a nullable argument T? will usually (but not always, depending on each time you compile) be sent to the non-nullable T version of the function if one has been defined.
-                // KCallable.toString() shows the nullable signature, and KParam.name shows the argument name from the nullable version. But an exception is still thrown on .call(), and its text will use the argument name from the non-nullable version.
-                // I suppose it's not a problem as it seems broken in Kotlin generally.
+                // KCallable.toString() shows the nullable signature, and KParam.name shows the argument name from the nullable version. But an exception is still thrown on .call() with null, and its text will use the argument name from the non-nullable version.
+                // I suppose it's not a problem here as it seems broken in Kotlin generally.
                 return kparam.type.isMarkedNullable
             } else {
                 return kparam.type.jvmErasure.isSuperclassOf(arg::class)

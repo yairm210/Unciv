@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.Json
 // Automatically running this should probably be a part of the build process.
 // Probably do whatever is done with TranslationFileWriter.
 
+// TODO: See UniqueDocsWriter.kt. https://github.com/yairm210/Unciv/commit/4617bc21a70f4f4bd29dc80ba7d648349c9fc3f8
+
 
 data class ApiSpecDef(
     var path: String,

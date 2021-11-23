@@ -60,6 +60,7 @@ def buildCitiesQueue(cities, order):
 		with TokensAsWrappers(city.cityConstructions.getBuildableBuildings()) as queue:
 			pass
 		#apiHelpers.registeredObjects["x"] = city.cityConstructions.getBuildableBuildings()
+		#civInfo.cities[0].cityStats.cityInfo.cityConstructions.builtBuildings # HashSet(). Can do "in" via IPC magic, and made real(). But not iterable since __iter__ requires indexing.
 
 def rebaseUnitsEvenly(units=('Guided Missile',), ):
 	if isinstance(units, str):

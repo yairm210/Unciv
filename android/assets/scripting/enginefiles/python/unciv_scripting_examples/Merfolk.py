@@ -24,6 +24,7 @@ Call onUnitMove(worldScreen.bottomUnitTable.selectedUnit) every time a unit move
 # Seed the oceans with basic and luxury resources.
 # If you really piss them off, flood/destroy your capital and displace its population.
 
+#civInfo.cities[0].cityStats.cityInfo.resistanceCounter
 
 def onGameStart():
 	pass

@@ -11,6 +11,18 @@
 
 # Package com.unciv.scripting
 
+## Principles
+
+**The Kotlin/JVM code should neither know nor care about the language running on the other end of its scripting API.** If a behaviour is specific to a particular language, then it's also too messy and complex to try to take special account for from the other side of an IPC channel. Instead, the complexity of each specific scripting language should be handled entirely within that language itself, such that the only thing exposed to the Kotlin code is a common interface built around structures that exist in most computer programming languages (like command strings, attributes, keys, calls, assignments, collections, etc). This not only keeps the scripting protocols and interfaces compatible with multiple backends, it also serves as a test that helps keep their design relatively clean and maintainable by forcing messy or complicated behaviours to be implemented in more appropriate places.
+
+**Parts should be kept as modular and interchangeable as possible.** Each component type should have a somewhat well-defined job, and should not contain or be inseparably entwined with code that does things aside from that job. If a base class's primary role is to expose an REPL, for example, then extra features like undo history or implementation details like running a subprocess can be moved into either another class or a subclass. Again, IMO this both makes it easy to support versatile configurations and helps with keeping a reasonably neat codebase and architecture.
+
+**Different levels of execution/evaluation should not mix.** The IPC protocol defines the the packet structures, types, and communication order that are for *implementing* scripting language semantics for accessing Kotlin/JVM data. Therefore, the IPC protocol should not itself become a *part of* scripting language semantics; No user/mod script in any language should ever have to manually create and send or receive and parse IPC packets. Certain API functions have been defined to provide additional capabilities that are *accessible through* scripting language semantics (in class ApiHelpers). Therefore, those functions should never be used in *implementing* scripting language semantics; No overloaded operator presented to a user script as part of the core Unciv API should ever implicitly call such a method as part of its basic functionality. The entrypoints for the scripting system have the roles of taking code strings (from user input, from mods, etc) and returning a result string (to print out, log, etc) (and possibly an exception Boolean flag). Therefore, they should never have to understand, or even be able to use, any data aside from opaque strings (such as IPC packets or structured return results).
+
+**In an API meant for dynamic scripting languages, dynamic behaviours are better than static ones.** The Unciv Kotlin codebase was around 60k lines when I started on this scripting API. By using reflection in the JVM and operator overloading in scripting languages, nearly all of the classes and structures defined in there can be mirrored directly in the scripting environment without having to write or maintain a single line of hardcoded API. When the class structure in Kotlin changes, the attributes and methods available from all scripting backends also immediately match the new Kotlin code.
+
+**In the IPC mechanisms, the specification and architecture comes before implementation.** IPC actions aren't statically checked like the Kotlin code is. They aren't even syntax-checked like Python code. I do have them spitting out exceptions showing the offending packets in both Kotlin and Python in cases of obvious desync, but even that's breakable. The only thing really keeping them working is simultaneous adherence on both ends to a common protocol, which is easier when the protocol is fairly simple. If implementing a particular syntax for a scripting language would require adding a new packet type or changing the REPL loop flow, consider whether the use case for it would be better served by adding an API-level function instead.
+
 ## Class Overview
 
 The major classes involved in the scripting API are structured as follows. `UpperCamelCase()` and parentheses means a new instantiation of a class. `lowerCamelCase` means a reference to an already-existing instance. An asterisk at the start of an item means zero or multiple instances of that class may be held. A question mark at the start of an item means that it may not exist in all implementations of the parent base class/interface. A question mark at the end of an item means that it is nullable, or otherwise may not be available in all states.
@@ -330,8 +342,10 @@ Flags are string values for communicating extra information that doesn't need a 
 
 	```
 	//'BeginIteration'
-	//'StopIteration'
+	//'EndIteration'
 		//Not implemented. Probably needed if iteration over non-sized objects is needed. Probably not worth the trouble.
+		//Deprecated without ever being implemented. Lack of indices for such objects means you wouldn't be able to directly do anything with their iterated results anyway in the same way that you can for "lists" "iterated" by appending indices to their paths, as you wouldn't have a path by which to refer back to them.
+		//Alternate solutions: Sets are already serialized as JSON arrays, which can be resolved in running scripts. Script-accessible Kotlin-side helper functions can be defined to convert other containers to lists, or if needed, to yield their values per call. Instance tokens arising from these operations can be assigned by running scripts to a name on the Kotlin side, creating a concrete path by which to reflectively access their own members.
 	```
 
 ---

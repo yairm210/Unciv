@@ -197,18 +197,19 @@ class ForeignObject:
 		return self.__class__((*self._path, makePathElement(name=name)), self._foreignrequester)
 	def __getattribute__(self, name):
 		if name in ('values', 'keys', 'items'):
-			# Don't expose real .keys, .values, or .entries unless wrapping a foreign mapping. This prevents foreign members like TileMap.values from being blocked.
+			# Don't expose real .keys, .values, or .items unless wrapping a foreign mapping. This prevents foreign attributes like TileMap.values from being blocked.
 			if not self._ismapping_():
 				return self.__getattr__(name)
 		return object.__getattribute__(self, name)
 	def __getitem__(self, key):
 		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester)
 		#TODO: Should negative indexing from end be supported?
+		#IIRC I decided "No". Not entirely sure why. Probably a mix of needing a __len__ IPC call for that, plus incongruency with Kotlin (and other languages') behaviour, and complexity here.
 	def __iter__(self):
 		try:
 			return iter(self.keys())
 		except:
-			return (self[i] for i in range(0, len(self)))
+			return (self[i] for i in range(0, len(self))) #TODO: Obviously this won't work for sets. Practical example why that's a problem: CityInfo stores HashSet()s of tiles. Workaround: Call real() on the whole set, and use the resulting values or foreign tokens. Unindexability/potential unorderedness of sets means that iteration would have to be handled from the Kotlin side, which means, at minimum implementing the BeginIteration and EndIteration flags, plus an entire new type of PassMic loop. Even then, without indexes, you'd only get the raw value or foreign token anyway
 	def __setattr__(self, name, value):
 		return getattr(self, name)._setvalue_(value)
 	def __setitem__(self, key, value):

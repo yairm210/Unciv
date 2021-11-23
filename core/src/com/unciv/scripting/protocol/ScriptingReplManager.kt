@@ -48,6 +48,8 @@ class ScriptingRawReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox
  */
 class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
 
+// TODO: scriptingScope can be an Any.
+
     /**
      * ScriptingProtocol puts references to pre-tokenized returned objects in here.
      * Should be cleared here at the end of each REPL execution.
