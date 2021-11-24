@@ -14,11 +14,11 @@ Call scrambleTechTree() to keep all current technologies but randomize the order
 
 import random
 
-# from unciv import *
-# from unciv_pyhelpers import *
+from unciv import *
+from unciv_pyhelpers import *
 
 
-# techtree = gameInfo.ruleSet.technologies
+def techtree(): return gameInfo.ruleSet.technologies
 
 name_parts = {
 	"Building": (
@@ -91,9 +91,9 @@ def extendTechTree(iterations=1):
 	pass
 
 def clearTechTree(*, safe=True):
-	for name in techtree.keys():
+	for name in techtree().keys():
 		if (not safe) or not any(name in civinfo.tech.techsResearched or name in civinfo.tech.techsInProgress or name == civinfo.tech.currentTechnologyName() for civinfo in gameInfo.civilizations):
-			del techtree[name]
+			del techtree()[name]
 
 def scrambleTechTree():
 	pass

@@ -22,9 +22,11 @@
 				unciv_scripting_examples/MapEditingMacros.py
 				unciv_scripting_examples/Merfolk.py
 				unciv_scripting_examples/PlayerMacros.py
+				unciv_scripting_examples/ProceduralTechtree.py
 				unciv_scripting_examples/StarryNight.jpg
 				unciv_scripting_examples/Tests.py
 				unciv_scripting_examples/TurboRainbow.png
+				unciv_scripting_examples/Utils.py
 				unciv_scripting_examples/WheatField.jpg
 			]
 			syntaxHighlightingRegexStack: [

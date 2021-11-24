@@ -140,7 +140,8 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
     fun openConsole() {
         game.setScreen(this)
         keyPressDispatcher.install(stage)
-        //TODO: See if can activate text input automatically. Already checked, but check again.
+        stage.setKeyboardFocus(inputField)
+        inputField.getOnscreenKeyboard().show(true)
         this.isOpen = true
     }
 

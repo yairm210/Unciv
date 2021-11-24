@@ -3,9 +3,11 @@ package com.unciv.scripting.reflection
 import com.unciv.scripting.utils.TokenizingJson
 import kotlin.collections.ArrayList
 import kotlin.reflect.KCallable
+//import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty1
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 import kotlinx.serialization.Serializable
@@ -13,6 +15,7 @@ import java.util.*
 
 
 object Reflection {
+
     @Suppress("UNCHECKED_CAST")
     fun <R> readInstanceProperty(instance: Any, propertyName: String): R? {
         // From https://stackoverflow.com/a/35539628/12260302
@@ -22,18 +25,27 @@ object Reflection {
         return property.get(instance) as R?
     }
 
+
     /**
      * Dynamic multiple dispatch for Any Kotlin instances by methodName.
      *
      * Uses reflection to first find all members matching the expected method name, and then to narrow them down to members that have the correct signature for a given array of arguments.
      *
+     * Varargs can be used, but they must be supplied as a single correctly typed array instead of separate arguments.
+     *
      * @property instance The receiver on which to find and call a method.
      * @property methodName The name of the method to resolve and call.
+     * @property matchNumbersLeniently Whether to treat all numeric types as the same. Useful for E.G. untyped deserialized data.
+     * @property matchClassesQualnames Whether to treat classes as the same if they have the same qualifiedName. Useful for E.G. ignoring the invariant arrays representing vararg parameters.
      */
-    class InstanceMethodDispatcher(val instance: Any, val methodName: String) {
+    class InstanceMethodDispatcher(val instance: Any, val methodName: String, val matchNumbersLeniently: Boolean = false, val matchClassesQualnames: Boolean = false) {
         // This isn't just a nice-to-have feature. Before I implemented it, identical calls from demo scripts to methods with multiple versions (E.G. ArrayList().add()) would rarely but randomly fail because the member/signature that was found would change between runs or compilations.
+
         // TODO: This is going to need unit tests.
+
         // Could try to implement KCallable interface. But not sure it's be worth it or map closely enough— What do lambdas do? I guess isOpen, isAbstract, etc should just all be False?
+
+        // Not supporting varargs for now. Doing so would require rebuilding the arguments array to move all vararg arguments into a new array for KCallable.call().
 
         /**
          * Lazily evaluated list of KCallables for every method that matches the given name.
@@ -50,8 +62,7 @@ object Reflection {
          * @return Whether a given argument value can be cast to the type of a given KParameter.
          */
         private fun checkParameterMatches(kparam: KParameter, arg: Any?): Boolean {
-            // These could be static.
-            // TODO: Inline these, actually.
+            // TODO: If performance becomes an issue, try inlining these. Then again, the JVM presumably optimizes it at runtime already (and there's far more calls than this containing function).
             if (arg == null) {
                 // Multiple dispatch of null between Any and Any? seems ambiguous in Kotlin even without reflection.
                 // Here, I'm resolving it myself, so it seems fine.
@@ -59,10 +70,20 @@ object Reflection {
                 // KCallable.toString() shows the nullable signature, and KParam.name shows the argument name from the nullable version. But an exception is still thrown on .call() with null, and its text will use the argument name from the non-nullable version.
                 // I suppose it's not a problem here as it seems broken in Kotlin generally.
                 return kparam.type.isMarkedNullable
-            } else {
-                return kparam.type.jvmErasure.isSuperclassOf(arg::class)
-                //Seems to also work for generics, I guess.
             }
+            val argcls = arg::class
+            val kparamcls = kparam.type.jvmErasure
+            if (matchNumbersLeniently && argcls.isSubclassOf(Number::class) && kparamcls.isSubclassOf(Number::class)) {
+                // I think/hope this basically causes Java-style implicit conversions (or Kotlin implicit casts?).
+                // NOTE: However, doesn't correctly forbid unconvertible types.
+                // Info: https://docs.oracle.com/javase/specs/jls/se7/html/jls-5.html#jls-5.1.2
+                return true
+            }
+            return kparamcls.isSuperclassOf(argcls)
+            // Seems to also work for generics, I guess.
+                || (matchClassesQualnames && kparamcls.qualifiedName != null && argcls.qualifiedName != null && kparamcls.qualifiedName == argcls.qualifiedName)
+                // Lets different types be matched to invariants, such as for vararg arrays.
+                // However, the JVM still throws its own error in that case, so leaving this disabled for now.
         }
 
         /**
@@ -75,6 +96,34 @@ object Reflection {
                 && (params.slice(1..arguments.size) zip arguments).all { // Check argument classes match parameter types, skipping the receiver.
                     (kparam, arg) -> checkParameterMatches(kparam, arg)
                 }
+            /* TODO: Dead code.
+            when {
+                useVararg -> { // Checking for varargs is somewhat more complex/slower, so hide it behind a flag.
+                    for ((kparam, arg) in params.slice(1..params.size-1) zip arguments) {
+                        // Check each argument's class matches its coresponding parameter type, skipping the receiver.
+                        if (kparam.isVararg) {
+                            // Wait, varargs probably need to be an array in KCallable.call(), which means using them would require reformatting the arguments, which, to do efficiently, would require bubbling reults from this check out all the way out to this.call(). (Could do something with nullable array return, I guess.)
+                            return true
+                        }
+                        if (!checkParameterMatches(kparam, arg)) {
+                            return false
+                        }
+                    }
+                    if (params.size != arguments.size + 1) {
+                        // Check that the parameters size is same as arguments size plus one for the receiver.
+                        // Because the entire parameter list has to be iterated through to handle vararg, this has to come at the end.
+                        return false
+                    }
+                    return true
+                }
+                else -> {
+                    return params.size == arguments.size + 1 // Check that the parameters size is same as arguments size plus one for the receiver.
+                        && (params.slice(1..arguments.size) zip arguments).all { // Check argument classes match parameter types, skipping the receiver.
+                            (kparam, arg) -> checkParameterMatches(kparam, arg)
+                        }
+                }
+            }
+            */
         }
 
         /**
@@ -110,9 +159,10 @@ object Reflection {
             return matches[0]!!.call(
                     instance,
                     *arguments
-                )
+            )
         }
     }
+
 
     fun readInstanceItem(instance: Any, keyOrIndex: Any): Any? {
         if (keyOrIndex is Int) {
@@ -285,7 +335,7 @@ object Reflection {
                     try {
                         obj = readInstanceProperty(obj!!, element.name)
                     } catch (e: ClassCastException) {
-                        obj = InstanceMethodDispatcher(obj!!, element.name)
+                        obj = InstanceMethodDispatcher(obj!!, element.name, matchNumbersLeniently = true, matchClassesQualnames = false)
                     }
                 }
                 PathElementType.Key -> {

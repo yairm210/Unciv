@@ -27,15 +27,14 @@ def scatterFallout(focus, improvementtype, maxdistance, tileselector=lambda t: T
 	pass
 
 def spawnNewDisasters(naturalwonder, *falloutparams):
-	# Foreign calls are expensive. So instead of iterating over every tile on the map, we generate the coords in Python and then only work with the foreign object when we've already chosen the coordinates.
-	# Every attribute access in Python creates a new ForeignObject() wrapper, and every path element requires an extra reflective member resolution in Kotlin. So we reduce the overhead by reusing the same wrapper in Python, and by storing its target at a shorter path in the JVM.
 	pass
 
 def spreadFalloutType(improvementtype, tilepermitter=lambda t: True):
 	pass
 
-
-
+#worldScreen.mapHolder.selectedTile.position in civInfo.exploredTiles
+#civInfo.addNotification("A volcano has risen from the Earth!", worldScreen.mapHolder.selectedTile.position, apiHelpers.Factories.arrayOfString(["TileSets/FantasyHex/Tiles/Krakatoa"]))
+#civInfo.exploredTiles.add(worldScreen.mapHolder.selectedTile.position)
 
 def eruptVolcanoes():
 	pass

@@ -326,6 +326,7 @@ def faster():
 	while i < targetcount:
 		x = random.randint(0, sizex)
 		y = random.randint(0, sizey)
+		# Instead of iterating over every tile on the map, generate the coords in Python, and then work with foreign objects only after having determined the coordinates.
 		if real(gameInfo.tileMap.tileMatrix[x][y]) is not None:
 		# +1 IPC "read" action.
 		# On hexagonal maps, check for validity. To be faster yet, this could also be done numerically in Python, or short-circuited on rectangular maps.
@@ -369,7 +370,7 @@ def alsoSlow():
 	uselesscache =
 	for i in range(1000):
 		uselesscache +=
-	# Assigning the wrapper object to a name in Python saves on Python attribute time. But it doesn't actually shorten its Kotlin/JVM path, so the same number of steps still have to be taken when the Kotlin/JVM side processes the packet sent by Python.
+	# Assigning the wrapper object to a name in Python saves on Python attribute access time. But it doesn't actually shorten its Kotlin/JVM path, so the same number of steps still have to be taken when the Kotlin/JVM side processes the packet sent by Python.
 
 def fast():
 	apiHelpers.registeredInstances["usefulcache"] =
@@ -397,7 +398,7 @@ for i in range(len(civInfo.cities[0].cityStats.currentCityStats.values)):
 
 for e in real(civInfo.cities[0].cityStats.currentCityStats.values):
 	print(e)
-	# Works. But yields only primitive JSON-serializable values and token strings, not wrappers.
+	# Works. But yields only primitive JSON-serializable values and/or token strings, not wrappers.
 ```
 
 Because the elements yielded this way do not have equivalent paths in the Kotlin/JVM namespace, and are not foreign object wrappers, any complex objects will have to be assigned as token strings to a concrete path in order to do anything with them.
@@ -439,6 +440,10 @@ The only major caveat to the robustness of this error handling is that it does n
 >>> del gameInfo.ruleSet.technologies["Sailing"]
 # Executes and removes "Sailing" technology from tech tree successfully.
 # But the game crashes if you try to select any techs that required "Sailing", because they still have "Sailing" in their dependencies.
+
+>>> civInfo.cities[0].tiles.add("Crash")
+# Executes and adds "Crash" string to set containing capital's tiles' coordinates.
+# But the game breaks when you press "Next Turn", because the JVM thread processing the turn tries to use the string "Crash" as a Vector2.
 ```
 
 ---

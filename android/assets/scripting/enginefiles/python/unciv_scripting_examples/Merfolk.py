@@ -26,5 +26,15 @@ Call onUnitMove(worldScreen.bottomUnitTable.selectedUnit) every time a unit move
 
 #civInfo.cities[0].cityStats.cityInfo.resistanceCounter
 
+#civInfo.addNotification("Test", civInfo.cities[0].location, apiHelpers.Factories.arrayOfString(["StatIcons/Gold"]))
+
+def moveCity():
+	tileInfo.owningCity = city #Seems to be used for rendering only.
+	#city.tiles.add(tile) Causes exception in worker thread in next turn.
+	cities.tiles.add(tileInfo.position) #Requires next turn for visual update.
+	tileInfo.improvement = None #Requires next turn for visual update.
+	tileInfo.improvement = "City center"
+	city.location.x, city.location.y  = x, y
+
 def onGameStart():
 	pass

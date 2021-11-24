@@ -94,6 +94,8 @@ class ScriptingScope(
 //        fun applyProperties(instance: Any, properties: Map<String, Any?>) {
 //        }
         //setTimeout?
+        fun lambdifyScript(code: String ): () -> Unit = fun(){ scriptingScope.uncivGame!!.scriptingState.exec(code); return } // FIXME: Requires awareness of which scriptingState and which backend to use.
+        //Directly invoking the resulting lambda from a running script will almost certainly break the REPL loop/IPC protocol.
     }
 
 }
