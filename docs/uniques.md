@@ -1,6 +1,5 @@
 ## Table of Contents
 
- - [Improvement uniques](#improvement-uniques)
  - [Global uniques](#global-uniques)
  - [Building uniques](#building-uniques)
  - [CityState uniques](#citystate-uniques)
@@ -8,98 +7,18 @@
  - [Unit uniques](#unit-uniques)
  - [Terrain uniques](#terrain-uniques)
  - [Resource uniques](#resource-uniques)
+ - [Improvement uniques](#improvement-uniques)
  - [Conditional uniques](#conditional-uniques)
  - [Ruins uniques](#ruins-uniques)
  - [Promotion uniques](#promotion-uniques)
  - [Deprecated uniques](#deprecated-uniques)
 
-## Improvement uniques
+## Global uniques
 #### [stats]
 Example: "[+1 Gold, +2 Production]"
 
-Applicable to: Improvement, Global, FollowerBelief
+Applicable to: Global, FollowerBelief, Improvement
 
-#### Provides [amount] [resource]
-Example: "Provides [20] [Iron]"
-
-Applicable to: Improvement, Building
-
-#### Can also be built on tiles adjacent to fresh water
-Example: "Can also be built on tiles adjacent to fresh water"
-
-Applicable to: Improvement
-
-#### [stats] from [tileFilter] tiles
-Example: "[+1 Gold, +2 Production] from [Farm] tiles"
-
-Applicable to: Improvement
-
-#### [stats] for each adjacent [tileFilter]
-Example: "[+1 Gold, +2 Production] for each adjacent [Farm]"
-
-Applicable to: Improvement
-
-#### Can be built outside your borders
-Example: "Can be built outside your borders"
-
-Applicable to: Improvement
-
-#### Can be built just outside your borders
-Example: "Can be built just outside your borders"
-
-Applicable to: Improvement
-
-#### Cannot be built on [tileFilter] tiles until [tech] is discovered
-Example: "Cannot be built on [Farm] tiles until [tech] is discovered"
-
-Applicable to: Improvement
-
-#### Cannot be built on [tileFilter] tiles
-Example: "Cannot be built on [Farm] tiles"
-
-Applicable to: Improvement
-
-#### Does not need removal of [tileFilter]
-Example: "Does not need removal of [Farm]"
-
-Applicable to: Improvement
-
-#### Gives a defensive bonus of [amount]%
-Example: "Gives a defensive bonus of [20]%"
-
-Applicable to: Improvement
-
-#### Costs [amount] gold per turn when in your territory
-Example: "Costs [20] gold per turn when in your territory"
-
-Applicable to: Improvement
-
-#### Deal [amount] damage to adjacent enemy units
-Example: "Deal [20] damage to adjacent enemy units"
-
-Applicable to: Improvement
-
-#### Great Improvement
-Example: "Great Improvement"
-
-Applicable to: Improvement
-
-#### Provides a random bonus when entered
-Example: "Provides a random bonus when entered"
-
-Applicable to: Improvement
-
-#### Unpillagable
-Example: "Unpillagable"
-
-Applicable to: Improvement
-
-#### Indestructible
-Example: "Indestructible"
-
-Applicable to: Improvement
-
-## Global uniques
 #### [stats] [cityFilter]
 Example: "[+1 Gold, +2 Production] [in all cities]"
 
@@ -295,6 +214,31 @@ Example: "May buy [buildingFilter] buildings with [Culture] for [20] times their
 
 Applicable to: Global, FollowerBelief
 
+#### [amount]% Strength
+Example: "[20]% Strength"
+
+Applicable to: Global, Unit
+
+#### [amount] Movement
+Example: "[20] Movement"
+
+Applicable to: Global, Unit
+
+#### [amount] Sight
+Example: "[20] Sight"
+
+Applicable to: Global, Unit
+
+#### [amount]% Spread Religion Strength
+Example: "[20]% Spread Religion Strength"
+
+Applicable to: Global, Unit
+
+#### Normal vision when embarked
+Example: "Normal vision when embarked"
+
+Applicable to: Global, Unit
+
 #### Free [baseUnitFilter] appears
 Example: "Free [Melee] appears"
 
@@ -391,6 +335,36 @@ Example: "Remove extra unhappiness from annexed cities"
 
 Applicable to: Building
 
+#### Consumes [amount] [resource]
+Example: "Consumes [20] [Iron]"
+
+Applicable to: Building, Unit, Improvement
+
+#### Provides [amount] [resource]
+Example: "Provides [20] [Iron]"
+
+Applicable to: Building, Improvement
+
+#### Unbuildable
+Example: "Unbuildable"
+
+Applicable to: Building, Unit
+
+#### Cannot be purchased
+Example: "Cannot be purchased"
+
+Applicable to: Building, Unit
+
+#### Can be purchased with [stat] [cityFilter]
+Example: "Can be purchased with [Culture] [in all cities]"
+
+Applicable to: Building, Unit
+
+#### Can be purchased for [amount] [stat] [cityFilter]
+Example: "Can be purchased for [20] [Culture] [in all cities]"
+
+Applicable to: Building, Unit
+
 #### Cost increases by [amount] per owned city
 Example: "Cost increases by [20] per owned city"
 
@@ -405,6 +379,11 @@ Applicable to: Building
 Example: "Requires a [Library] in this city"
 
 Applicable to: Building
+
+#### Not displayed as an available construction without [buildingName/tech/resource/policy]
+Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
+
+Applicable to: Building, Unit
 
 #### Must be on [terrainFilter]
 Example: "Must be on [Grassland]"
@@ -469,36 +448,6 @@ Example: "Once The Long Count activates, the year on the world screen displays a
 Applicable to: Nation
 
 ## Unit uniques
-#### Consumes [amount] [resource]
-Example: "Consumes [20] [Iron]"
-
-Applicable to: Unit, Improvement, Building
-
-#### Unbuildable
-Example: "Unbuildable"
-
-Applicable to: Unit, Building
-
-#### Cannot be purchased
-Example: "Cannot be purchased"
-
-Applicable to: Unit, Building
-
-#### Can be purchased with [stat] [cityFilter]
-Example: "Can be purchased with [Culture] [in all cities]"
-
-Applicable to: Unit, Building
-
-#### Can be purchased for [amount] [stat] [cityFilter]
-Example: "Can be purchased for [20] [Culture] [in all cities]"
-
-Applicable to: Unit, Building
-
-#### Not displayed as an available construction without [buildingName/tech/resource/policy]
-Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
-
-Applicable to: Unit, Building
-
 #### Founds a new city
 Example: "Founds a new city"
 
@@ -519,30 +468,10 @@ Example: "Can see invisible [Wounded] units"
 
 Applicable to: Unit
 
-#### [amount]% Strength
-Example: "[20]% Strength"
-
-Applicable to: Unit, Global
-
 #### [amount]% Strength decreasing with distance from the capital
 Example: "[20]% Strength decreasing with distance from the capital"
 
 Applicable to: Unit
-
-#### [amount] Movement
-Example: "[20] Movement"
-
-Applicable to: Unit, Global
-
-#### [amount] Sight
-Example: "[20] Sight"
-
-Applicable to: Unit, Global
-
-#### [amount]% Spread Religion Strength
-Example: "[20]% Spread Religion Strength"
-
-Applicable to: Unit, Global
 
 #### May found a religion
 Example: "May found a religion"
@@ -553,11 +482,6 @@ Applicable to: Unit
 Example: "May enhance a religion"
 
 Applicable to: Unit
-
-#### Normal vision when embarked
-Example: "Normal vision when embarked"
-
-Applicable to: Unit, Global
 
 #### Cannot attack
 Example: "Cannot attack"
@@ -643,11 +567,6 @@ Applicable to: Unit
 Example: "Never appears as a Barbarian unit"
 
 Applicable to: Unit
-
-#### Hidden when religion is disabled
-Example: "Hidden when religion is disabled"
-
-Applicable to: Unit, Ruins, Building
 
 ## Terrain uniques
 #### Must be adjacent to [amount] [simpleTerrain] tiles
@@ -846,6 +765,82 @@ Example: "Can only be created by Mercantile City-States"
 
 Applicable to: Resource
 
+## Improvement uniques
+#### Can also be built on tiles adjacent to fresh water
+Example: "Can also be built on tiles adjacent to fresh water"
+
+Applicable to: Improvement
+
+#### [stats] from [tileFilter] tiles
+Example: "[+1 Gold, +2 Production] from [Farm] tiles"
+
+Applicable to: Improvement
+
+#### [stats] for each adjacent [tileFilter]
+Example: "[+1 Gold, +2 Production] for each adjacent [Farm]"
+
+Applicable to: Improvement
+
+#### Can be built outside your borders
+Example: "Can be built outside your borders"
+
+Applicable to: Improvement
+
+#### Can be built just outside your borders
+Example: "Can be built just outside your borders"
+
+Applicable to: Improvement
+
+#### Cannot be built on [tileFilter] tiles until [tech] is discovered
+Example: "Cannot be built on [Farm] tiles until [tech] is discovered"
+
+Applicable to: Improvement
+
+#### Cannot be built on [tileFilter] tiles
+Example: "Cannot be built on [Farm] tiles"
+
+Applicable to: Improvement
+
+#### Does not need removal of [tileFilter]
+Example: "Does not need removal of [Farm]"
+
+Applicable to: Improvement
+
+#### Gives a defensive bonus of [amount]%
+Example: "Gives a defensive bonus of [20]%"
+
+Applicable to: Improvement
+
+#### Costs [amount] gold per turn when in your territory
+Example: "Costs [20] gold per turn when in your territory"
+
+Applicable to: Improvement
+
+#### Deal [amount] damage to adjacent enemy units
+Example: "Deal [20] damage to adjacent enemy units"
+
+Applicable to: Improvement
+
+#### Great Improvement
+Example: "Great Improvement"
+
+Applicable to: Improvement
+
+#### Provides a random bonus when entered
+Example: "Provides a random bonus when entered"
+
+Applicable to: Improvement
+
+#### Unpillagable
+Example: "Unpillagable"
+
+Applicable to: Improvement
+
+#### Indestructible
+Example: "Indestructible"
+
+Applicable to: Improvement
+
 ## Conditional uniques
 #### when at war
 Example: "when at war"
@@ -1028,6 +1023,11 @@ Example: "This Unit upgrades for free including special upgrades"
 
 Applicable to: Ruins
 
+#### Hidden when religion is disabled
+Example: "Hidden when religion is disabled"
+
+Applicable to: Ruins, Building, Unit
+
 #### Hidden before founding a Pantheon
 Example: "Hidden before founding a Pantheon"
 
@@ -1055,9 +1055,6 @@ Example: "Heal this unit by [20] HP"
 Applicable to: Promotion
 
 ## Deprecated uniques
- - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
- - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
- - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "+[amount]% [stat] [cityFilter]" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [cityFilter]"
@@ -1091,6 +1088,7 @@ Applicable to: Promotion
  - "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides the cheapest [stat] building in your first [amount] cities for free"
  - "Immediately creates a [buildingName] in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides a [buildingName] in your first [amount] cities for free"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
+ - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
  - "+[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"
  - "-[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"
  - "+[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"
@@ -1106,3 +1104,5 @@ Applicable to: Promotion
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
+ - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
+ - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"
