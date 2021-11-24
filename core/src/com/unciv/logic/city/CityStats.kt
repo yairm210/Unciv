@@ -244,14 +244,6 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
-    private fun getStatPercentBonusesFromWeLoveTheKingDay(isWLTKD: Boolean): Stats {
-        val stats = Stats()
-        if (isWLTKD) {
-            stats.food += 25f
-        }
-        return stats
-    }
-
     private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniqueSequence: Sequence<Unique>): Stats {
         val stats = Stats()
         val uniques = uniqueSequence.toList().asSequence()
@@ -471,7 +463,6 @@ class CityStats(val cityInfo: CityInfo) {
     private fun updateStatPercentBonusList(currentConstruction: IConstruction, localBuildingUniques: Sequence<Unique>) {
         val newStatPercentBonusList = LinkedHashMap<String, Stats>()
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-        newStatPercentBonusList["We Love The King Day"] = getStatPercentBonusesFromWeLoveTheKingDay(cityInfo.isWeLoveTheKingDay())
         newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
         newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, localBuildingUniques)
                 .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
@@ -541,7 +532,6 @@ class CityStats(val cityInfo: CityInfo) {
         baseStatList = LinkedHashMap(baseStatList).apply { put("Construction", statsFromProduction) } // concurrency-safe addition
         newFinalStatList["Construction"] = statsFromProduction
 
-        val isUnhappy = cityInfo.civInfo.getHappiness() < 0
         for (entry in newFinalStatList.values) {
             entry.gold *= statPercentBonusesSum.gold.toPercent()
             entry.culture *= statPercentBonusesSum.culture.toPercent()
@@ -559,33 +549,38 @@ class CityStats(val cityInfo: CityInfo) {
             entry.science *= statPercentBonusesSum.science.toPercent()
         }
 
-
         /* Okay, food calculation is complicated.
         First we see how much food we generate. Then we apply production bonuses to it.
         Up till here, business as usual.
         Then, we deduct food eaten (from the total produced).
-        Now we have the excess food, which has its own things. If we're unhappy, cut it by 1/4.
-        Some policies have bonuses for excess food only, not general food production.
-         */
+        Now we have the excess food, to which "growth" modifiers apply
+        Some policies have bonuses for growth only, not general food production. */
 
         updateFoodEaten()
         newFinalStatList["Population"]!!.food -= foodEaten
 
         var totalFood = newFinalStatList.values.map { it.food }.sum()
 
-        if (isUnhappy && totalFood > 0) { // Reduce excess food to 1/4 per the same
-            val foodReducedByUnhappiness = Stats(food = totalFood * (-3 / 4f))
-            baseStatList = LinkedHashMap(baseStatList).apply { put("Unhappiness", foodReducedByUnhappiness) } // concurrency-safe addition
-            newFinalStatList["Unhappiness"] = foodReducedByUnhappiness
-        }
-
-        totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate because of previous change
-
-        // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
-        if (totalFood > 0 && !isUnhappy) { // Percentage Growth bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
-            val foodFromGrowthBonuses = getGrowthBonusFromPoliciesAndWonders() * totalFood
-            newFinalStatList.add("Growth bonus", Stats(food = foodFromGrowthBonuses))  // Why Policies? Wonders can also provide this?
-            totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate again
+        // Apply growth modifier only when positive food
+        if (totalFood > 0) {
+            // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
+            // All bonuses except We Love The King do apply even when unhappy
+            val foodFromGrowthBonuses = Stats(food = getGrowthBonusFromPoliciesAndWonders() * totalFood)
+            newFinalStatList.add("Growth bonus", foodFromGrowthBonuses)
+            val happiness = cityInfo.civInfo.getHappiness()
+            if (happiness < 0) {
+                // Unhappiness -75% to -100%
+                val foodReducedByUnhappiness = if (happiness <= -10) Stats(food = totalFood * -1)
+                    else Stats(food = (totalFood * -3) / 4)
+                newFinalStatList.add("Unhappiness", foodReducedByUnhappiness)
+            } else if (cityInfo.isWeLoveTheKingDay()) {
+                // We Love The King Day +25%, only if not unhappy
+                val weLoveTheKingFood = Stats(food = totalFood / 4)
+                newFinalStatList.add("We Love The King Day", weLoveTheKingFood)
+            }
+            // recalculate only when all applied - growth bonuses are not multiplicative
+            // bonuses can allow a city to grow even with -100% unhappiness penalty, this is intended
+            totalFood = newFinalStatList.values.map { it.food }.sum()
         }
 
         val buildingsMaintenance = getBuildingMaintenanceCosts(citySpecificUniques) // this is AFTER the bonus calculation!
