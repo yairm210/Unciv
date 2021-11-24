@@ -48,7 +48,7 @@ class ScriptingRawReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox
  */
 class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
 
-// TODO: scriptingScope can be an Any.
+// TODO: scriptingScope can be an Any. Hm. "scriptingScope" is more readable within Unciv, but Any communicate a cleaner design and cleaner design constraints. Hm. That means "scriptingScope" communicates the wrong thing with its readability. It's called "scope" in ScriptingProtocol, which should be plently clear enough.
 
     /**
      * ScriptingProtocol puts references to pre-tokenized returned objects in here.
@@ -96,7 +96,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
         return ScriptingProtocol.parseActionResponses.motd(
             getRequestResponse(
                 ScriptingProtocol.makeActionRequests.motd(),
-                execLoop = { foreignExecLoop() }
+                execLoop = { foreignExecLoop() } //TODO: Replace with reflective method access?
             )
         )
     }

@@ -36,6 +36,8 @@ import java.io.ByteArrayOutputStream
  * To reduce the chance of E.G. name collisions in .apiHelpers.registeredInstances, or one misbehaving mod breaking everything by unassigning .gameInfo, different ScriptingState()s should each have their own ScriptingScope().
  */
 class ScriptingScope(
+        // This entire API should still be considered unstable. It may be drastically changed at any time.
+
         //If this is going to be exposed to downloaded mods, then every declaration here, as well as *every* declaration that is safe for scripts to have access to, should probably be whitelisted with annotations and checked or errored at the point of reflection.
         var civInfo: CivilizationInfo? = null,
         var gameInfo: GameInfo? = null,

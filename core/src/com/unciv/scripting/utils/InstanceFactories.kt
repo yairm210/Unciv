@@ -19,7 +19,7 @@ object InstanceFactories {
     object GUI {
     }
     fun Array() = "NotImplemented"
-    fun Vector2(x: Float, y: Float) = com.badlogic.gdx.math.Vector2(x, y)
+    fun Vector2(x: Float, y: Float) = com.badlogic.gdx.math.Vector2(x, y) //TODO: Accept number and cast instead.
     fun MapUnit() = "NotImplemented"
     fun Technology() = "NotImplemented"
 }

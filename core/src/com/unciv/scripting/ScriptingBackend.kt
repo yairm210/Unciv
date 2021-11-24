@@ -91,6 +91,10 @@ interface ScriptingBackend {
 
 
 open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBackend {
+//A little bit confusing.
+//Hm. Couldn't the metadata getter go on the interface?
+//That would mean this exists only as a code example for defining the companion object.
+//TODO: Move getter, delete class or rename to DummyScriptingBackend?
 
     /**
      * For the UI, a way is needed to list all available scripting backend types with 1. A readable display name and 2. A way to create new instances.

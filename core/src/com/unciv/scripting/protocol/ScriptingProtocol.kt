@@ -28,6 +28,9 @@ import java.util.UUID
 //  Use in scripting backend, E.G. wrapping.py
 
 
+// FIXME: ...Numerical types are annoying: civInfo.cities[0].location.x += 1.
+
+
 /**
  * Implementation of IPC packet specified in Module.md.
  *

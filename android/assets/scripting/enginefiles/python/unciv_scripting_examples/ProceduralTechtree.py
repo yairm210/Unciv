@@ -27,7 +27,7 @@ name_parts = {
 	),
 	"Unit": (
 		("Combat ", "Missile ", "Patrol ", "Gun-", "Tac-", "Xeno ", "Rock-", "Battle-", "LEV ", "Drone ", "Auto-", "Nano-", "Gelio-", "All-", "Laser-", "Phasal ", "Solar ", "Wolf ", "Raptor ", "Siege ", "Sea ", "Hydra-", "Tide-", "Under-", "Needle-", "Evolved ", "True ", "Prime ", "First ", "Master ", "Elder "),
-		("Explorer", "Soldier", "Ranger", "Rover", "Boat", "Submarine", "Carrier", "Jet", "Swar", "Cavalry", "Octopus", "Titan", "Suit", "Aegis", "Tank", "Destroyer", "CNDR", "CARVR", "SABR", "ANGEL", "Immortal", "Architect", "Throne", "Cage", "Sled", "Golem", "Hive", "Pod", "Aquilon", "Seer", "Matrix", "Laser", "Carver", "Siren", "Batle", "Bug", "Worm", "Drones", "Manticore", "Dragon", "Kraken", "Coral", "Makara", "Ripper", "Scarab", "Marine", "Brawler", "Sentinel", "Disciple", "Maurauder", "Centurion", "Apostle", "Champion", "Eidolon", "Hellion", "Striker", "Guardian", "Overseer", "Shredder", "Warden", "Executor", "Kodiak", "Virtuoso", "Fury", "Armor", "Viper", "Lancer", "Prophet", "Cobra", "Dragoon", "Redeemer", "Gladiator", "Maestro", "Savage", "Artillery", "Centaur", "Punisher", "Educator", "Minotaur", "Devastator", "Ambassador", "Cutter", "Screamer", "Broadside", "Tenet", "Reaver", "Cannonade", "Edict", "Argo", "Baron", "Vortex", "Cruiser", "Triton", "Destroyer", "Arbiter", "Poseidon", "Dreadnought", "Vindicator", "Mako", "Countess", "Wrath", "Hunter", "Lurker", "Taker", "Whisper", "Leviathan", "Eradicator", "Shroud", "Hydra", "Bastion", "Shepherd", "Locust", "Raider", "Herald", "Shrike", "Predator", "Seraph")
+		("Explorer", "Soldier", "Ranger", "Rover", "Boat", "Submarine", "Carrier", "Jet", "Swarm", "Cavalry", "Octopus", "Titan", "Suit", "Aegis", "Tank", "Destroyer", "CNDR", "CARVR", "SABR", "ANGEL", "Immortal", "Architect", "Throne", "Cage", "Sled", "Golem", "Hive", "Pod", "Aquilon", "Seer", "Matrix", "Laser", "Carver", "Siren", "Batle", "Bug", "Worm", "Drones", "Manticore", "Dragon", "Kraken", "Coral", "Makara", "Ripper", "Scarab", "Marine", "Brawler", "Sentinel", "Disciple", "Maurauder", "Centurion", "Apostle", "Champion", "Eidolon", "Hellion", "Striker", "Guardian", "Overseer", "Shredder", "Warden", "Executor", "Kodiak", "Virtuoso", "Fury", "Armor", "Viper", "Lancer", "Prophet", "Cobra", "Dragoon", "Redeemer", "Gladiator", "Maestro", "Savage", "Artillery", "Centaur", "Punisher", "Educator", "Minotaur", "Devastator", "Ambassador", "Cutter", "Screamer", "Broadside", "Tenet", "Reaver", "Cannonade", "Edict", "Argo", "Baron", "Vortex", "Cruiser", "Triton", "Destroyer", "Arbiter", "Poseidon", "Dreadnought", "Vindicator", "Mako", "Countess", "Wrath", "Hunter", "Lurker", "Taker", "Whisper", "Leviathan", "Eradicator", "Shroud", "Hydra", "Bastion", "Shepherd", "Locust", "Raider", "Herald", "Shrike", "Predator", "Seraph")
 	),
 	"Wonder": (
 		("Spy ", "Culper ", "Tessellation ", "Machine-Assisted ", "Dimensional ", "Folding ", "Dimensional Folding ", "Quantum ", "Temporal ", "Relativistic ", "Abyssal ", "Archimedes ", "Arma-", "Benthic ", "Byte-", "Daedaleus ", "Deep ", "Drone ", "Ecto-", "Genesis ", "Euphotic ", "Faraday ", "Gene ", "Guo Pu ", "Holon ", "Human ", "Markov ", "Mass ", "Master ", "Memet-", "Nano-", "New Terran ", "Pan-", "Precog ", "Promethean ", "Quantum ", "Resurrection ", "Stellar ", "Tectonic ", "The ", "Xeno-", "Emancipation ", "Exodus ", "Mind ", "Transcendental ", "Decode "),
@@ -42,12 +42,20 @@ def genRandomName(nametype): #Mix and match from BE.
 	prefixes, suffixes = name_parts[nametype]
 	prefix, suffix = random.sample(prefixes, 1)[0], random.sample(suffixes, 1)[0]
 	return prefix[:-1]+suffix[0].lower()+suffix[1:] if prefix[-1] == "-" else prefix+suffix
+	# Could make first letter fit second letter's capitalization.
 
-def genRandomNameUnused(nametype):
-	name = None
-	while name is None or name in usedNames:
+def genRandomNameUnused(nametype, *, maxattempts=1000):
+	for i in range(maxattempts):
 		name = genRandomName(nametype)
+		if name not in usedNames:
+			break
+	else:
+		raise Exception()
+	usedNames.add(name)
 	return name
+
+def genRandomIcon():
+	pass #Define randomized number of randomized shapes. Randomize order. Draw area union. Draw layer-occluded boundary lines separately. Subtract edges from area.
 
 # def genRandomEra():
 	# pass

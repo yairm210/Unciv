@@ -74,3 +74,5 @@ def rebaseUnitsEvenly(units=('Guided Missile',), ):
 #focusCitiesFood(clearCitiesSpecialists(civInfo.cities))
 
 #apiHelpers.toString(worldScreen.bottomUnitTable.selectedCity.cityConstructions.getBuildableBuildings())
+
+#worldScreen.mapHolder.selectedTile.terrainFeatures.addAll([k for k, v in gameInfo.ruleSet.terrains.items() if v.type.name == 'NaturalWonder'])

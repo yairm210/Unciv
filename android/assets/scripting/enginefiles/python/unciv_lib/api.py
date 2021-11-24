@@ -2,6 +2,7 @@ import json, os, builtins, sys
 
 from . import ipc, utils
 
+#TODO: Expose ForeignError class.
 
 enginedir = os.path.dirname(__file__)
 

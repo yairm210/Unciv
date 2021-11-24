@@ -297,7 +297,7 @@ def printCivilizations():
 
 ## Performance and Gotchas
 
-Initiating a foreign actions is likely to be expensive. They have to be encoded as request packets, serialized as JSON, sent to Kotlin/the JVM, decoded there, and evaluated in Kotlin/JVM using slow reflective mechanisms. The results then have to go through this entire process in reverse in order to return a value to Python.
+Initiating a foreign action is likely to be expensive. They have to be encoded as request packets, serialized as JSON, sent to Kotlin/the JVM, decoded there, and evaluated in Kotlin/JVM using slow reflective mechanisms. The results then have to go through this entire process in reverse in order to return a value to Python.
 
 However, code running in Kotlin/the JVM is also likely to be much faster than code running in Python. The danger is in wasting lots of time bouncing back and forth just to exchange small amounts of data.
 
@@ -312,7 +312,7 @@ def slow():
 		tile.naturalWonder = "Krakatoa" if random.random() < 1/len(gameInfo.tileMap.values)*20 else tile.naturalWonder
 		# On every loop:
 		#  +1 IPC "length" action in the "if".
-		#  +1 IPC "read" action for the current .naturalWonder if reaching the "else" block. (Only gets resolved on serialization in the next step.)
+		#  +1 IPC "read" action for the current .naturalWonder if reaching the "else" expression. (Only gets resolved on serialization in the next step.)
 		#  +1 IPC "assign" action to update .naturalWonder, even if it's not changing.
 		# This happens once for every tile— Hundreds or thousands of times in total.
 # Total IPC actions: ~1,000 to ~15,000. Just below 3 on average for every tile on the map.
@@ -327,13 +327,13 @@ def faster():
 		x = random.randint(0, sizex)
 		y = random.randint(0, sizey)
 		if real(gameInfo.tileMap.tileMatrix[x][y]) is not None:
-			# +1 IPC "read" action.
-			# On hexagonal maps, check for validity. To be faster yet, could numerically do this in Python.
-			gameInfo.tileMap.tileMatrix[x][y] = "Krakatoa"
+		# +1 IPC "read" action.
+		# On hexagonal maps, check for validity. To be faster yet, this could also be done numerically in Python, or short-circuited on rectangular maps.
+			gameInfo.tileMap.tileMatrix[x][y].naturalWonder = "Krakatoa"
 			# +1 IPC "assign" action.
 			# Only done after already selecting coordinates and checking validity.
 			i += 1
-			# Only iterate for as long as needed to make the wanted changes
+			# Only iterate for as long as needed to change the target number of tiles.
 # Total IPC actions: ~40 to ~60. Only one assignment, plus one check, for each tile that actually changes.
 
 def fastest():
@@ -397,10 +397,49 @@ for i in range(len(civInfo.cities[0].cityStats.currentCityStats.values)):
 
 for e in real(civInfo.cities[0].cityStats.currentCityStats.values):
 	print(e)
-	# Works.
+	# Works. But yields only primitive JSON-serializable values and token strings, not wrappers.
 ```
 
 Because the elements yielded this way do not have equivalent paths in the Kotlin/JVM namespace, and are not foreign object wrappers, any complex objects will have to be assigned as token strings to a concrete path in order to do anything with them.
+
+---
+
+## Error Handling
+
+Usually, errors in Kotlin/the JVM during foreign calls are caught by the Kotlin implementation of the IPC protocol. They are then gracefully serialized and returned in a specially flagged packet, which causes a `unciv_lib.ipc.ForeignError()`/`unciv_pyhelpers.ForeignError()` to be raised in Python.
+
+```python3
+>>> uncivGame.fakeAttributeName
+#TODO
+
+>>> civInfo.addGold("Fifty-Nine")
+
+```
+
+Because of this, malformed foreign actions requested by Python usually cannot crash Unciv. In fact, it is possible to catch such errors in Python to create Python-style exception-controlled program flow.
+
+```python3
+try:
+	print(gameInfo.civilizations)
+	# gameInfo is null in the main menu screen.
+except ForeignError:
+	# Comes here with ForeignError("java.lang.NullPointerException").
+	print("Currently not in game!")
+
+# (I still don't like it personally. I guess it doesn't incur any major overhead since you'd need an IPC action anyway to check validity/LBYL, but this seems kinda gross.)
+```
+
+The only major caveat to the robustness of this error handling is that it does not protect against valid Kotlin/JVM actions that lead to unexpected states which then cause exceptions in later use by unrelated game code. Assigning an inappropriate value to a Kotlin/JVM member, or deleting a key-value pair where it is required by internal game code, for example, will likely cause the core game to crash the next time the invalid value is used.
+
+```
+>>> gameInfo.tileMap.values[0].naturalWonder = "Crash"
+# Executes and sets .naturalWonder to "Crash" successfully.
+# But the game crashes when you click on the changed tile because there aren't any textures or stats for the "Crash" natural wonder.
+
+>>> del gameInfo.ruleSet.technologies["Sailing"]
+# Executes and removes "Sailing" technology from tech tree successfully.
+# But the game crashes if you try to select any techs that required "Sailing", because they still have "Sailing" in their dependencies.
+```
 
 ---
 
