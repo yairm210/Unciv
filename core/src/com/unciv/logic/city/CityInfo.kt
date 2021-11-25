@@ -685,28 +685,24 @@ class CityInfo {
 
     private fun demandNewResource() {
         val candidates = getRuleset().tileResources.values.filter {
-            // 1. Luxury
-            it.resourceType == ResourceType.Luxury &&
-            // 2. Not a city-state only resource eg jewelry
-            !it.hasUnique(UniqueType.CityStateOnlyResource) &&
-            // 3. Not the same as last
-            it.name != demandedResource &&
-            // 4. Not found nearby
-            getCenterTile().getTilesInDistance(3).none { nearTile -> nearTile.resource == it.name }
-        }.shuffled()
-
-        // Keep trying until we get one that actually exists on the map
-        val chosenResource = candidates.firstOrNull { tileMap.values.any { tile -> tile.resource == it.name } }
-
-        // This shouldn't happen normally but perhaps in mods with few luxury types
-        if (chosenResource == null) {
-            demandedResource = ""
-            setFlag(CityFlags.ResourceDemand, 10 + Random().nextInt(10))
-            return
+            it.resourceType == ResourceType.Luxury && // Must be luxury
+            !it.hasUnique(UniqueType.CityStateOnlyResource) && // Not a city-state only resource eg jewelry
+            it.name != demandedResource && // Not same as last time
+            !civInfo.hasResource(it.name) && // Not one we already have
+            it.name in tileMap.resources && // Must exist somewhere on the map
+            getCenterTile().getTilesInDistance(3).none { nearTile -> nearTile.resource == it.name } // Not in this city's radius
         }
 
-        demandedResource = chosenResource.name
-        civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource")
+        val chosenResource = candidates.randomOrNull()
+        /* What if we had a WLTKD before but now the player has every resource in the game? We can't
+           pick a new resource, so the resource will stay stay the same and the city will demand it
+           again even if the player still has it. But we shouldn't punish success. */
+        if (chosenResource != null)
+            demandedResource = chosenResource.name
+        if (demandedResource == "") // Failed to get a valid resource, try again some time later
+            setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
+        else
+            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource")
     }
 
     private fun tryWeLoveTheKing() {
