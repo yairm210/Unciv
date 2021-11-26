@@ -15,6 +15,8 @@ import math, random, os, json, re, base64, io
 import unciv
 from unciv_pyhelpers import *
 
+from . import Utils
+
 # If you modify this file, please add any new functions to the build tests.
 
 
@@ -119,7 +121,7 @@ def setTerrain(tileInfo, terraintype):
 
 def spreadResources(resourcetype="Horses", mode="random", restrictfrom=(), restrictto=None):
 	if mode == "random":
-		pass
+		raise NotImplementedError()
 	elif mode in ("jittered", "grid", "clustered", "bluenoise"):
 		raise NotImplementedError(f"")
 	else:
@@ -127,13 +129,13 @@ def spreadResources(resourcetype="Horses", mode="random", restrictfrom=(), restr
 
 
 def dilateTileTypes(tiletypes=("Coast", "Flood Plains"), chance=1.0, forbidreplace=("Ocean", "Mountain"), dilateas=("Desert/Flood Plains", "Coast"), iterations=1):
-	pass
+	raise NotImplementedError()
 
 def erodeTileType(tiletypes=("Mountains", "Plains/Hill", "Grassland/Hill")):
-	pass
+	raise NotImplementedError()
 
 def floodFillSelected(start=None, fillas=None, *, alsopropagateto=()):
-	pass
+	raise NotImplementedError()
 
 
 mandlebrotpresets = {
@@ -238,17 +240,22 @@ def setMapFromImage(tileMap, image, pixelinterpreter=lambda pixel: "Ocean"):
 		)
 
 
-def loadImageHeightmap(tileMap=None, imagepath="EarthTopography.png", transform="pixel*len(terrains)", terrains=_altitudeterrainsequence, normalizevalues=255):
-	tileMap = defaultArgTilemap(tileMap)
-	import PIL.Image
+def _imageFallbackPath(imagepath):
 	if not os.path.exists(imagepath):
-		_fallbackpath = os.path.join(os.path.dirname(__file__), imagepath)
+		_fallbackpath = Utils.exampleAssetPath(imagepath)
 		if os.path.exists(_fallbackpath):
 			imagepath = _fallbackpath
 			print(f"Invalid image path given. Interpreting as example path at {repr(imagepath)}")
 		del _fallbackpath
-	transform = compile(transform, filename="transform", mode='eval')
+	return imagepath
 
+
+
+def loadImageHeightmap(tileMap=None, imagepath="EarthTopography.png", transform="pixel*len(terrains)", terrains=_altitudeterrainsequence, normalizevalues=255):
+	tileMap = defaultArgTilemap(tileMap)
+	import PIL.Image
+	transform = compile(transform, filename="transform", mode='eval')
+	imagepath = _imageFallbackPath(imagepath)
 	def pixinterp(pixel):
 		if isinstance(pixel, tuple):
 			pixel = sum(pixel)/len(pixel)
@@ -275,7 +282,7 @@ def compositedTerrainImage(terrain):
 	return image
 
 def getImageAverageRgb(image):
-	#image.convert('P', palette=PIL.Image.ADAPTIVE, colors=1)
+	#image.convert('P', palette=PIL.Image.ADAPTIVE, colors=1) (Doesn't work by nearest.)
 	depth = 255
 	assert image.mode in ("RGB", "RGBA")
 	hasalpha = image.mode == "RGBA"
@@ -296,7 +303,6 @@ def getImageAverageRgb(image):
 
 
 def computeTerrainAverageColours(terrains=naturalterrains):
-	# FIXME: Increases memory use with each run.
 	def terraincol(terrain):
 		with compositedTerrainImage(terrain) as i:
 			return getImageAverageRgb(i)
@@ -340,12 +346,7 @@ def loadImageColours(tileMap=None, imagepath="EarthTerrainFantasyHex.jpg", terra
 	import PIL.Image
 	assert visualspace
 	tileMap = defaultArgTilemap(tileMap)
-	if not os.path.exists(imagepath):
-		_fallbackpath = os.path.join(os.path.dirname(__file__), imagepath)
-		if os.path.exists(_fallbackpath):
-			imagepath = _fallbackpath
-			print(f"\nInvalid image path given. Interpreting as example path at {repr(imagepath)}")
-		del _fallbackpath
+	imagepath = _imageFallbackPath(imagepath)
 	if terraincolours is None:
 		print(f"\nNo terrain colours given. Computing average tile colours based on FantasyHex tileset. This may take several seconds.")
 		terraincolours = computeTerrainAverageColours(naturalterrains)

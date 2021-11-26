@@ -1,6 +1,11 @@
 """
 Example and developmental test case for potential future modding API.
 
+Adds scripted events that dynamically modify map and civilization state.
+
+Watch out for volcanoes, meteor strikes, wildfires, and alien invaders!
+
+
 Call onNewTurn() on every new turn.
 
 Call onUnitMove(worldScreen.bottomUnitTable.selectedUnit) every time a unit moves.
@@ -14,6 +19,14 @@ import unciv
 # But randomness is entropy, so random changes to the world around you are by definition apocalyptic.
 # ...At which point, the lore writes itself.
 
+
+# Could inject new tiles for wildfires, fissures, etc into the ruleset.
+# Nah. Let's try to keep this and Merfolk.py save-compatible, and leave the ruleset modification to ProceduralTechTree.
+
+# Midgame: Defanged unkillable Barbarian "alien" scouts.
+# Late game: Barbarian GDS, Helis.
+# I guess could also give positive bonuses from alien encounters.
+
 turnNotifications = []
 
 
@@ -21,6 +34,10 @@ def gaussianTileSelector(focus):
 	def _gaussianTileSelector(tile):
 		return True
 	return _gaussianTileSelector
+
+
+def depopulateCity(city, migrationsuccess=0.5):
+	pass
 
 
 def scatterFallout(focus, improvementtype, maxdistance, tileselector=lambda t: True):
@@ -50,7 +67,7 @@ def depopulateBurningCities():
 	# Meh. I'll comfort myself by telling myself I go to war less than most Civ players.
 	pass
 
-def landAlienInvaders():
+def landAlienInvaders():#TileMap.placeUnitNearTile
 	pass
 
 def erodeMountains():

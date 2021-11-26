@@ -1,4 +1,4 @@
-{
+{ // Internal directories can't be identified, traversed, or copied on Desktop because all assets are indistinguishable on the classpath or something. So manually list out all files that are part of each engine's runtime environment instead.
 	engines: {
 		python: {
 			files: [
@@ -14,20 +14,21 @@
 				main.py
 				unciv_scripting_examples/
 				unciv_scripting_examples/__init__.py
-				unciv_scripting_examples/EarthTerrainFantasyHex.jpg
-				unciv_scripting_examples/EarthTerrainRaw.png
-				unciv_scripting_examples/EarthTopography.png
 				unciv_scripting_examples/EndTimes.py
 				unciv_scripting_examples/ExternalPipe.py
 				unciv_scripting_examples/MapEditingMacros.py
 				unciv_scripting_examples/Merfolk.py
 				unciv_scripting_examples/PlayerMacros.py
 				unciv_scripting_examples/ProceduralTechtree.py
-				unciv_scripting_examples/StarryNight.jpg
 				unciv_scripting_examples/Tests.py
-				unciv_scripting_examples/TurboRainbow.png
 				unciv_scripting_examples/Utils.py
-				unciv_scripting_examples/WheatField.jpg
+				unciv_scripting_examples/example_assets/EarthTerrainFantasyHex.jpg
+				unciv_scripting_examples/example_assets/EarthTerrainRaw.png
+				unciv_scripting_examples/example_assets/EarthTopography.png
+				unciv_scripting_examples/example_assets/Elizabeth300
+				unciv_scripting_examples/example_assets/StarryNight.jpg
+				unciv_scripting_examples/example_assets/TurboRainbow.png
+				unciv_scripting_examples/example_assets/WheatField.jpg
 			]
 			syntaxHighlightingRegexStack: [
 			]

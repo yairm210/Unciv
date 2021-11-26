@@ -210,6 +210,7 @@ Some action types, data formats, and expected response types and data formats fo
 	'exec': String ->
 		'exec_response': String
 		//REPL print.
+		//Response may include 'Exception' flag. (Not implemented.)
 	```
 
 	```

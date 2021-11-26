@@ -186,11 +186,16 @@ del apiHelpers.registeredInstances["centertile"]
 
 In order to use this technique properly, the assignment of an object to a concrete path should be done within the same REPL loop as the generation of the token used to assign it. This is because the Kotlin code responsible for generating tokens and managing the REPL loop keeps references to all returned objects within each REPL loop. Afterwards, these references are immediately cleared, so any objects that do not have references elsewhere in Kotlin/the JVM are liable to be garbage-collected in between REPL loops.
 
+Note that because of this, it is also perfectly safe to use token strings as arguments for foreign functions without assigning them to concrete paths, as long as they are requested and used within the same REPL loop.
+
 ```python3
-# Each ">>>" represents a new script execution called from Kotlin— E.G., A new command entered into the console screen, or a new handler execution from the modding API— And not just a new line of code. Code on multiple lines can still be run in the same REPL loop, as long as the script's control isn't ended and handed back to Kotlin/the JVM between their running.
+# Each ">>>" represents a new script execution initiated from Kotlin— E.G., A new command entered into the console screen, or a new handler execution from the modding API— And not just a new line of code. Code on multiple lines can still be run in the same REPL loop, as long as the script's control isn't handed back to Kotlin/the JVM in between.
+
+>>> worldScreen.mapHolder.setCenterPosition(apiHelpers.Factories.Vector2(1,2), True, True)
+# Works, because the instance creation and the call with a tokenized argument happen in the same REPL execution.
 
 >>> apiHelpers.registeredInstances["x"] = apiHelpers.Factories.Vector2(1,2)
->>> worldScreen.mapHolder.setCenterPosition(apiHelpers.registeredInstances["x"], True, True)
+>>> worldScreen.mapHolder.setCenterPosition(apiHelpers.registeredInstances["x"], True, True) #TODO: This doesn't actually use any subpath.
 # Works, because the instance creation and token-based assignment in Kotlin are done in the same REPL execution.
 
 >>> x = apiHelpers.Factories.Vector2(1,2); civInfo.endTurn(); apiHelpers.registeredInstances["x"] = x
@@ -216,9 +221,9 @@ For any complicated script in Python, it is suggested that you write a context m
 It is also recommended that all scripts create a separate mapping with a unique and identifiable key in `apiHelpers.registeredInstances`, instead of assigning directly to the top level.
 
 ```python3
-apiHelpers.registeredInstances["module:myName/myCoolScript.py"] = {}
+apiHelpers.registeredInstances["python-module:myName/myCoolScript"] = {}
 
-memalloc = apiHelpers.registeredInstances["module:myName/myCoolScript.py"]
+memalloc = apiHelpers.registeredInstances["python-module:myName/myCoolScript"]
 
 memalloc["capitaltile"] = civInfo.cities[0].getCenterTile()
 
@@ -226,13 +231,14 @@ worldScreen.mapHolder.setCenterPosition(memalloc["capitaltile"].position, True, 
 
 del memalloc["capitaltile"]
 
-del apiHelpers.registeredInstances["module:myName/myCoolScript.py"]
+del apiHelpers.registeredInstances["python-module:myName/myCoolScript"]
 ```
 
 ```python3
-apiHelpers.registeredInstances["module:myName/myCoolScript.py"] = {}
+apiHelpers.registeredInstances["python-module:myName/myCoolScript"] = {}
 
-memalloc = apiHelpers.registeredInstances["module:myName/myCoolScript.py"]
+memalloc = apiHelpers.registeredInstances["python-module:myName/myCoolScript"]
+# Wrapper object.
 
 class MyForeignContextManager:
 	def __init__(self, *tokens):
@@ -240,7 +246,9 @@ class MyForeignContextManager:
 		self.memallocKeys = []
 	def __enter__(self):
 		for token in self.tokens:
-			key = f"{random.random()}_{time.time_ns()}"
+			assert isForeignToken(token)
+			key = f"{random.getrandbits(30)}_{time.time_ns()}"
+			# Actual uses should locally check for key uniqueness.
 			memalloc[key] = token
 			self.memallocKeys.append(key)
 		return tuple(memalloc[k] for k in self.memallocKeys)
@@ -252,13 +260,13 @@ class MyForeignContextManager:
 with MyForeignContextManager(apiHelpers.Factories.MapUnit(), ) as mapUnit, :
 	mapUnit
 
-del apiHelpers.registeredInstances["module:myName/myCoolScript.py"]
+del apiHelpers.registeredInstances["python-module:myName/myCoolScript"]
 ```
 
 The recommended format for keys added to `apiHelpers.registeredInstances` is as follows:
 
 ```
-<'mod'|'module'|'package'>:<Author>/<Filename>.<Language Extension>
+<Language>-<'mod'|'module'|'package'>:<Author>/<Filename>
 ```
 
 ---
@@ -393,6 +401,7 @@ for e in civInfo.cities[0].cityStats.cityInfo.tiles:
 	# Fails. CityInfo.tiles is a set-like instance that does not take indices.
 
 for i in range(len(civInfo.cities[0].cityStats.currentCityStats.values)):
+	#civInfo.units() returns a sequence.
 	print(i)
 	# Also fails. CityStats.currentCityStats.values is an iterator-like instance without a known length.
 

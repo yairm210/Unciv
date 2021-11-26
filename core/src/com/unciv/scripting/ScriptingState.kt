@@ -77,6 +77,11 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         return motd
     }
 
+    fun spawnBackendAndReturnMotd(backendtype: ScriptingBackendType, switchTo: Boolean = true) {
+        // TODO
+        // The script manager/handler dispatcher for mods is going to want to keep track of which backends belong to which mods.
+    }
+
     fun switchToBackend(index: Int) {
         scriptingBackends.enforceValidIndex(index)
         activeBackend = index
@@ -85,6 +90,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     fun switchToBackend(backend: ScriptingBackendBase) {
         for ((i, b) in scriptingBackends.withIndex()) {
             // TODO: Apparently there's a bunch of extensions like .withIndex(), .indices, and .lastIndex that I can use to replace a lot of stuff currently done with .size.
+            // TODO: Why didn't I use indexOf?
             if (b == backend) {
                 switchToBackend(index = i)
             }

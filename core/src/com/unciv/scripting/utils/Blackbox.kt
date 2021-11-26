@@ -13,9 +13,11 @@ interface Blackbox {
     /**
      * Try to shut down this black box.
      *
-     * Because there might be normal situations where a "black box" isn't viable to cleanly shut down, I'm thinking that letting exceptions be returned will let those situations be distinguished from actual errors.
+     * Because there might be normal situations where a "black box" isn't viable to cleanly shut down, I'm thinking that letting exceptions be returned instead of thrown will let those situations be distinguished from actual errors.
      *
      * E.G.: Making an invalid API call to a requests library should still throw the Exception as usual, but making the right call only to find out that the network's down or a process is frozen would be a more "normal" and uncontrollable situation, so in that case the exception should be a return value instead of being thrown.
+     *
+     * This way, the entire call stack between where a predictable error happens and where it's eventually handled doesn't have to be wrapped in an overly broad try{} block.
      *
      * @return null on success, or an Exception() on failure.
      */

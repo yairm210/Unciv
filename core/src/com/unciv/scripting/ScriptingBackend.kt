@@ -26,6 +26,10 @@ import java.util.*
 data class AutocompleteResults(val matches: List<String> = listOf(), val isHelpText: Boolean = false, val helpText: String = "")
 
 
+data class ExecResult(val resultPrint: String, val isException: Boolean = false)
+//TODO: Use this.
+
+
 /**
  * Base class for required companion objects of ScriptingBackend implementations.
  *
@@ -84,6 +88,10 @@ interface ScriptingBackend {
      * @return null on successful termination, an Exception() otherwise.
      */
     fun terminate(): Exception? {
+        // The same reasoning for returning instead of throwing an Exception() as for Blackbox.stop() also applies here.
+        // Namely: Some errors may be expected, and thus not exceptional enough to warrant exceptional flow control via try/catch. Let those be propagated and handled or ignored more easily as return values.
+        // This protects the distinction between errors that are an expected and predictable part of normal operation (Network down, zombie process, etc), which don't cause executed code blocks to be broken out of at arbitrary points, and legitimately exceptional runtime errors where the program is doing something it shouldn't be, which break normal control flow by breaking out of code blocks mid-execution.
+        // So if an exception is raised, it can be caught and turned into a return value at the point where it happens, without having to wrap a try{} block around the entire call stack between there and the point where it's eventually handled.
         return null
     }
 

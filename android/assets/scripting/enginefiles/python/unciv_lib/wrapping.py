@@ -180,6 +180,12 @@ def ResolveForOperators(cls):
 	return cls
 
 
+# class ForeignToken(str):
+	# __slots__ = ()
+	# TODO: Could do this for more informative error messages, hidden magic methods that don't make sense.
+	# Would have to instantiate in the JSON decoder, though.
+	# I'm not sure it's necessary, since tokens will still have to be encoded as strings in JSON, which means you'd still need apiconstants['kotlinInstanceTokenPrefix'] and isForeignToken in api.py.
+
 @ResolveForOperators
 class ForeignObject:
 	"""Wrapper for a foreign object. Implements the specifications on IPC packet action types and data structures in Module.md."""
@@ -193,6 +199,7 @@ class ForeignObject:
 	def _getpath_(self):
 		return tuple(self._path)
 	def __getattr__(self, name):
+		# Due to lazy IPC calling, hasattr will never work with this. Instead, check for in dir().
 		# TODO: Shouldn't I special-casing get_help or _docstring_ here? Wait, no, I think I thought it would be accessed on the class.
 		return self.__class__((*self._path, makePathElement(name=name)), self._foreignrequester)
 	def __getattribute__(self, name):

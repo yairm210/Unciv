@@ -2,6 +2,9 @@ function motd() {
 	return "\nThis backend is HIGHLY EXPERIMENTAL. It does not implement any API bindings yet, and it may not be stable. Use it at your own risk!\n\n"
 }
 
+// So... cashapp/zipline is clearly the best JS library to use for this (which in turn means that embedded QuickJS, and not Webview V8 or anything will indeed be the engine).
+// Maybe LiquidCore? But I assume that's way heavier.
+
 
 `
 Due to the basic design of Python, any Python environment that you lock down enough to be safe will also be nearly useless.

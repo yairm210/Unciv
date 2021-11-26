@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.scripting.utils.ScriptingApiEnums
 import com.unciv.scripting.utils.InstanceFactories
@@ -18,6 +19,9 @@ import java.io.ByteArrayOutputStream
 
 
 // TODO: Move this, and all nested objects and classes, to api/?
+
+// TODO: Search core code for Transient lazy init caches (E.G. natural wonders saved in TileMap apparently, and TileMap.resources), and add functions to refresh them.
+
 
 /**
  * Holds references to all internal game data that scripting backends have access to.
@@ -47,6 +51,8 @@ class ScriptingScope(
         //val _availableNames = listOf("civInfo", "gameInfo", "uncivGame", "worldScreen", "apiHelpers") // Nope. Annotate instead.
     ) {
 
+    val GameSaver = com.unciv.logic.GameSaver //TODO: Organize.
+
     val apiHelpers = ApiHelpers(this)
 
     class ApiHelpers(val scriptingScope: ScriptingScope) {
@@ -59,8 +65,8 @@ class ScriptingScope(
         val registeredInstances = InstanceRegistry()
         //Debug/dev identity function for both Kotlin and scripts. Check if value survives serialization, force something to be added to ScriptingProtocol.instanceSaver, etc.
         fun unchanged(obj: Any?) = obj
-        fun printLn(msg: Any?) = println(msg)
-        //fun readLn()
+        fun printLine(msg: Any?) = println(msg) // Different name from Kotlin's is deliberate, to abstract for scripts.
+        //fun readLine()
         //Return a line from the main game process's STDIN.
         fun toString(obj: Any?) = obj.toString()
         fun copyToClipboard(value: Any?) {

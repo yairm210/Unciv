@@ -139,7 +139,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
 
     fun openConsole() {
         game.setScreen(this)
-        keyPressDispatcher.install(stage)
+        keyPressDispatcher.install(stage) //TODO: Can this be moved to UncivGame.setScreen?
         stage.setKeyboardFocus(inputField)
         inputField.getOnscreenKeyboard().show(true)
         this.isOpen = true

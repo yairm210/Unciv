@@ -42,6 +42,7 @@ class AutocompleteManager:
 				continue
 			if char in '([:,;+-*/|&<>=%{~^@':
 				# Should probably split at multi-character tokens like 'in', 'for', 'if', etc. too.
+				# TODO: Maybe just put read spaces as a token type for now?
 				prefixsplit += 1
 				lasttoken = char
 				break

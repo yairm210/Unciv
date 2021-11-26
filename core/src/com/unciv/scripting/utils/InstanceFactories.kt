@@ -1,5 +1,8 @@
 package com.unciv.scripting.utils
 
+import com.unciv.MainMenuScreen
+import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.logic.map.TileMap
 import com.badlogic.gdx.math.Vector2
 
 
@@ -10,13 +13,17 @@ import com.badlogic.gdx.math.Vector2
  */
 object InstanceFactories {
     //This, and possible ApiHelpers itself, need better nested namespaces.
-    object Math {
+    val Game = object {
     }
-    object Rulesets {
+    val Math = object {
     }
-    object Kotlin {
+    val Rulesets = object {
     }
-    object GUI {
+    val Kotlin = object {
+    }
+    val Gui = object {
+        fun MainMenuScreen() = com.unciv.MainMenuScreen()
+        fun MapEditorScreen(map: TileMap) = com.unciv.ui.mapeditor.MapEditorScreen(map)
     }
     fun arrayOf(elements: Collection<Any?>): Array<*> = elements.toTypedArray()
     fun arrayOfAny(elements: Collection<Any>): Array<Any> = elements.toTypedArray()

@@ -12,6 +12,10 @@ Call scrambleTechTree() to keep all current technologies but randomize the order
 """
 
 
+# This means that some kind of handler for the modding API, once it's implemented, would have to be called before the JVM has a chance to crash, so the script can read its own serialized data out of GameInfo and inject items into the ruleset… You can already provably have a GameInfo with invalid values that doesn't crash until WorldScreen tries to render it, so running onGameLoad immediately after deserializing the save might be good enough.
+# Or I guess there could be a Kotlin-side mechanism for serializing injected rules. But on the Kotlin side, I think it would be cleaner to just let the script handle everything. Such a mechanism still may not cover the entire range of wild behaviours that can be done by scripts, and the entire point of having a dynamic scripting API is to avoid having to statically hard-code niche or esoteric uses.
+
+
 import random
 
 from unciv import *
@@ -57,6 +61,8 @@ def genRandomNameUnused(nametype, *, maxattempts=1000):
 def genRandomIcon():
 	pass #Define randomized number of randomized shapes. Randomize order. Draw area union. Draw layer-occluded boundary lines separately. Subtract edges from area.
 
+
+
 # def genRandomEra():
 	# pass
 
@@ -87,7 +93,9 @@ def _getInvalidTechs():
 	pass
 
 
+
 def extendTechTree(iterations=1):
+	raise NotImplementedError()
 	pass
 
 def clearTechTree(*, safe=True):
@@ -96,4 +104,5 @@ def clearTechTree(*, safe=True):
 			del techtree()[name]
 
 def scrambleTechTree():
+	raise NotImplementedError()
 	pass

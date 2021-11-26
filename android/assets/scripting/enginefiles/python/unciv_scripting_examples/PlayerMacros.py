@@ -56,6 +56,7 @@ def focusCitiesFood(cities):
 
 def buildCitiesQueue(cities, order):
 	"""Assign all given cities to follow a given build order after their current queue."""
+	raise NotImplementedError()
 	for city in cities:
 		with TokensAsWrappers(city.cityConstructions.getBuildableBuildings()) as queue:
 			pass
@@ -63,6 +64,7 @@ def buildCitiesQueue(cities, order):
 		#civInfo.cities[0].cityStats.cityInfo.cityConstructions.builtBuildings # HashSet(). Can do "in" via IPC magic, and made real(). But not iterable since __iter__ requires indexing.
 
 def rebaseUnitsEvenly(units=('Guided Missile',), ):
+	raise NotImplementedError()
 	if isinstance(units, str):
 		units = (units,)
 
@@ -76,3 +78,9 @@ def rebaseUnitsEvenly(units=('Guided Missile',), ):
 #apiHelpers.toString(worldScreen.bottomUnitTable.selectedCity.cityConstructions.getBuildableBuildings())
 
 #worldScreen.mapHolder.selectedTile.terrainFeatures.addAll([k for k, v in gameInfo.ruleSet.terrains.items() if v.type.name == 'NaturalWonder'])
+
+##[setattr(city, 'civInfo', gameInfo.getCivilization(city.previousOwner)) for civ in gameInfo.civilizations for city in civ.cities if real(city.previousOwner)]
+##[(lambda prev: [city.civInfo.cities.remove(city), prev.cities.add(city)] if 'remove' in dir(city.civInfo.cities) and 'add' in dir(prev.cities) else None )(next(ci for ci in gameInfo.civilizations if ci.nation.name == city.previousOwner)) for civ in gameInfo.civilizations for city in civ.cities if real(city.previousOwner)]
+#[setattr(city, 'resistanceCounter', 0) for civ in gameInfo.civilizations for city in civ.cities if real(city.previousOwner)]
+#[setattr(city, 'isPuppet', False) for civ in gameInfo.civilizations for city in civ.cities if real(city.previousOwner)]
+#[setattr(city, 'previousOwner', "") for civ in gameInfo.civilizations for city in civ.cities if real(city.previousOwner)]

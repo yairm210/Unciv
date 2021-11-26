@@ -3,7 +3,7 @@ Example and developmental test case for potential future modding API.
 
 Adds peaceful, playful Merpeople communities.
 
-But they won't hesitate to defend themselves if you bully them or others!
+But they won't hesitate to defend themselves with powerful magic if you bully them or others!
 
 
 Call onGameStart() **once** at start of game.
@@ -25,6 +25,7 @@ Call onUnitMove(worldScreen.bottomUnitTable.selectedUnit) every time a unit move
 # If you really piss them off, flood/destroy your capital and displace its population.
 
 #civInfo.cities[0].cityStats.cityInfo.resistanceCounter
+#CityFlags.Resistance
 
 #civInfo.addNotification("Test", civInfo.cities[0].location, apiHelpers.Factories.arrayOfString(["StatIcons/Gold"]))
 
@@ -35,6 +36,14 @@ def moveCity():
 	tileInfo.improvement = None #Requires next turn for visual update.
 	tileInfo.improvement = "City center"
 	city.location.x, city.location.y  = x, y
+
+
+def hammerOfTheOceans():
+	pass
+
+
+#TileMap.placeUnitNearTile
+
 
 def onGameStart():
 	pass

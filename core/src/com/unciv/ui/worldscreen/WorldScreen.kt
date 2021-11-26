@@ -81,7 +81,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val diplomacyButtonHolder = Table()
     private val fogOfWarButton = createFogOfWarButton()
     private val nextTurnButton = createNextTurnButton()
-    private var nextTurnAction: () -> Unit = {}
+    private var nextTurnAction: () -> Unit = {} // TODO: Expose to scripting API. Also: Break up and expose individual actions, checking for order validity. Status: Lambdas not supported in Reflection.kt.
     private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
