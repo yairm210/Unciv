@@ -40,6 +40,7 @@ interface IScreenHistoryAccessible {
             screenClosersStack.add(closeAction ?: { game.setScreen(this) })
             openScreens.add(screen)
             this.game.setScreen(screen)
+            return
         }
         throw IllegalArgumentException("Trying to use screen history stack with ${screen}, which doesn't inherit from IScreenHistoryAccessible.")
     }
