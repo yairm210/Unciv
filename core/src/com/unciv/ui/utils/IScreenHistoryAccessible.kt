@@ -53,15 +53,14 @@ interface IScreenHistoryAccessible {
      * @throws IllegalStateException if there are no previous screens to return to.
      */
     fun BaseScreen.closeToPreviousScreen() {
-        if (!(this in openScreens)) {
+        if (this !in openScreens) {
             throw IllegalStateException("${this} was not opened using the screen history stack!")
         }
-        val gotoprevious = screenClosersStack.removeLast()
+        openScreens.remove(this)
+        screenClosersStack.removeLast()()
         // Since we already check for desync above, removeLast() should never fail.
 //        if (gotoprevious == null) {
 //            throw IllegalStateException("No previous screen to return to from ${this}!")
 //        }
-        openScreens.remove(this)
-        gotoprevious()
     }
 }
