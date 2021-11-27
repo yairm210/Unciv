@@ -86,7 +86,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             conqueringCiv.addGold(goldPlundered)
             conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", getCenterTile().position, NotificationIcon.Gold)
 
-            val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && resistanceCounter != 0
+            val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && isInResistance()
 
             destroyBuildingsOnCapture()
             
@@ -98,9 +98,10 @@ class CityInfoConquestFunctions(val city: CityInfo){
             if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignPopulation()
 
-            resistanceCounter = 
+            setFlag(CityFlags.Resistance,
                 if (reconqueredCityWhileStillInResistance || foundingCiv == receivingCiv.civName) 0
                 else population.population // I checked, and even if you puppet there's resistance for conquering
+            )
         }
         conqueringCiv.updateViewableTiles() // Might see new tiles from this city
     }
