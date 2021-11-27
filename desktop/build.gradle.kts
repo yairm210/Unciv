@@ -21,9 +21,11 @@ val assetsDir = file("../android/assets")
 val discordDir = file("discord_rpc")
 val deployFolder = file("../deploy")
 
+// See https://github.com/libgdx/libgdx/wiki/Starter-classes-and-configuration#common-issues
+// and https://github.com/yairm210/Unciv/issues/5679
+val jvmArgsForMac = listOf("-XstartOnFirstThread", "-Djava.awt.headless=true")
 tasks.register<JavaExec>("run") {
-
-    jvmArgs = listOf("-XstartOnFirstThread") // See https://github.com/libgdx/libgdx/wiki/Starter-classes-and-configuration#common-issues
+    jvmArgs = jvmArgsForMac
 
     dependsOn(tasks.getByName("classes"))
 
@@ -35,6 +37,7 @@ tasks.register<JavaExec>("run") {
 }
 
 tasks.register<JavaExec>("debug") {
+    jvmArgs = jvmArgsForMac
     dependsOn(tasks.getByName("classes"))
     main = mainClassName
     classpath = sourceSets.main.get().runtimeClasspath
@@ -132,7 +135,11 @@ for (platform in PackrConfig.Platform.values()) {
                         " --executable Unciv" +
                         " --classpath $jarFile" +
                         " --mainclass $mainClassName" +
-                        " --vmargs Xmx1G " + (if (platform == PackrConfig.Platform.MacOS) "XstartOnFirstThread" else "") +
+                        " --vmargs Xmx1G " +
+                        (if (platform == PackrConfig.Platform.MacOS) jvmArgsForMac.joinToString(" ") {
+                            it.removePrefix("-")
+                        }
+                        else "") +
                         " --output ${config.outDir}"
                 command.runCommand(rootDir)
             }
