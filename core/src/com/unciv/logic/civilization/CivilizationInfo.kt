@@ -1008,7 +1008,7 @@ class CivilizationInfo {
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", placedUnit.getTile().position, unit.name)
         }
 
-        if (placedUnit.hasUnique("Religious Unit") && gameInfo.isReligionEnabled()) {
+        if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && gameInfo.isReligionEnabled()) {
             placedUnit.religion =
                 when {
                     placedUnit.hasUnique("Takes your religion over the one in their birth city")

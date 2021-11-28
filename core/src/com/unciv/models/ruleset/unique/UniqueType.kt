@@ -287,6 +287,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[-1] Sight"), DeprecationLevel.ERROR)
     LimitedVisibility("Limited Visibility", UniqueTarget.Unit),
 
+    SixTilesAlwaysVisible("6 tiles in every direction always visible", UniqueTarget.Unit),
+
     @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Spread Religion Strength <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
     SpreadReligionStrengthUnits("[amount]% Spread Religion Strength for [mapUnitFilter] units", UniqueTarget.Global),
 
@@ -315,6 +317,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
     CannotBeBarbarian("Never appears as a Barbarian unit", UniqueTarget.Unit, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    CanEnterForeignTiles("May enter foreign tiles without open borders", UniqueTarget.Unit),
+    CanEnterForeignTilesButLosesReligiousStrength("May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there", UniqueTarget.Unit),
+
+    ReligiousUnit("Religious Unit", UniqueTarget.Unit),
 
     ///////////////////////////////////////// TILE UNIQUES /////////////////////////////////////////
 
@@ -433,6 +439,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     ConditionalDefending("when defending", UniqueTarget.Conditional),
     ConditionalInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalForeignContinent("on foreign continents", UniqueTarget.Conditional),
+    ConditionalAboveHP("when above [amount] HP", UniqueTarget.Conditional),
+    ConditionalBelowHP("when below [amount] HP", UniqueTarget.Conditional),
 
     /////// tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),

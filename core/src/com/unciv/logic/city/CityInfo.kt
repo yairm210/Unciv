@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -24,6 +25,12 @@ import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
+
+enum class CityFlags {
+    WeLoveTheKing,
+    ResourceDemand,
+    Resistance
+}
 
 class CityInfo {
     @Suppress("JoinDeclarationAndAssignment")
@@ -54,6 +61,8 @@ class CityInfo {
     var previousOwner = ""
     var turnAcquired = 0
     var health = 200
+
+    @Deprecated("As of 3.18.4", ReplaceWith("CityFlags.Resistance"), DeprecationLevel.WARNING)
     var resistanceCounter = 0
 
     var religion = CityInfoReligionManager()
@@ -81,6 +90,11 @@ class CityInfo {
      * while the _current_ capital can be any other city after the original one is captured.
      * It is important to distinguish them since the original cannot be razed and defines the Domination Victory. */
     var isOriginalCapital = false
+
+    /** For We Love the King Day */
+    var demandedResource = ""
+
+    private var flagsCountdown = HashMap<String, Int>()
 
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
@@ -233,11 +247,12 @@ class CityInfo {
         toReturn.lockedTiles = lockedTiles
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
-        toReturn.resistanceCounter = resistanceCounter
         toReturn.foundingCiv = foundingCiv
         toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
         toReturn.isOriginalCapital = isOriginalCapital
+        toReturn.flagsCountdown.putAll(flagsCountdown)
+        toReturn.demandedResource = demandedResource
         return toReturn
     }
 
@@ -264,7 +279,11 @@ class CityInfo {
 
     }
 
-    fun isInResistance() = resistanceCounter > 0
+    fun hasFlag(flag: CityFlags) = flagsCountdown.containsKey(flag.name)
+    fun getFlag(flag: CityFlags) = flagsCountdown[flag.name]!!
+
+    fun isWeLoveTheKingDay() = hasFlag(CityFlags.WeLoveTheKing)
+    fun isInResistance() = hasFlag(CityFlags.Resistance)
 
     /** @return the number of tiles 4 out from this city that could hold a city, ie how lonely this city is */
     fun getFrontierScore() = getCenterTile().getTilesAtDistance(4).count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == civInfo ) }
@@ -477,6 +496,11 @@ class CityInfo {
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)
+
+        if (resistanceCounter > 0) {
+            setFlag(CityFlags.Resistance, resistanceCounter)
+            resistanceCounter = 0
+        }
     }
 
     fun startTurn() {
@@ -488,17 +512,52 @@ class CityInfo {
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
-        if (isInResistance()) {
-            resistanceCounter--
-            if (!isInResistance())
-                civInfo.addNotification(
-                    "The resistance in [$name] has ended!",
-                    location,
-                    "StatIcons/Resistance"
-                )
-        }
 
         if (isPuppet) reassignPopulation()
+
+        // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
+        if (!hasFlag(CityFlags.WeLoveTheKing))
+            tryWeLoveTheKing()
+        nextTurnFlags()
+
+        // Seed resource demand countdown
+        if(demandedResource == "" && !hasFlag(CityFlags.ResourceDemand)) {
+            setFlag(CityFlags.ResourceDemand,
+                    (if (isCapital()) 25 else 15) + Random().nextInt(10))
+        }
+    }
+
+    // cf DiplomacyManager nextTurnFlags
+    private fun nextTurnFlags() {
+        for (flag in flagsCountdown.keys.toList()) {
+            if (flagsCountdown[flag]!! > 0)
+                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+            if (flagsCountdown[flag] == 0) {
+                flagsCountdown.remove(flag)
+
+                when (flag) {
+                    CityFlags.ResourceDemand.name -> {
+                        demandNewResource()
+                    }
+                    CityFlags.WeLoveTheKing.name -> {
+                        civInfo.addNotification(
+                                "We Love The King Day in [$name] has ended.",
+                                location, NotificationIcon.City)
+                        demandNewResource()
+                    }
+                    CityFlags.Resistance.name -> {
+                        civInfo.addNotification(
+                                "The resistance in [$name] has ended!",
+                                location,"StatIcons/Resistance")
+                    }
+                }
+            }
+        }
+    }
+
+    fun setFlag(flag: CityFlags, amount: Int) {
+        flagsCountdown[flag.name] = amount
     }
 
     fun reassignPopulation() {
@@ -622,6 +681,38 @@ class CityInfo {
         population.autoAssignPopulation()
         cityStats.update()
         civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
+    }
+
+    private fun demandNewResource() {
+        val candidates = getRuleset().tileResources.values.filter {
+            it.resourceType == ResourceType.Luxury && // Must be luxury
+            !it.hasUnique(UniqueType.CityStateOnlyResource) && // Not a city-state only resource eg jewelry
+            it.name != demandedResource && // Not same as last time
+            !civInfo.hasResource(it.name) && // Not one we already have
+            it.name in tileMap.resources && // Must exist somewhere on the map
+            getCenterTile().getTilesInDistance(3).none { nearTile -> nearTile.resource == it.name } // Not in this city's radius
+        }
+
+        val chosenResource = candidates.randomOrNull()
+        /* What if we had a WLTKD before but now the player has every resource in the game? We can't
+           pick a new resource, so the resource will stay stay the same and the city will demand it
+           again even if the player still has it. But we shouldn't punish success. */
+        if (chosenResource != null)
+            demandedResource = chosenResource.name
+        if (demandedResource == "") // Failed to get a valid resource, try again some time later
+            setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
+        else
+            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource")
+    }
+
+    private fun tryWeLoveTheKing() {
+        if (demandedResource == "") return
+        if (civInfo.getCivResourcesByName()[demandedResource]!! > 0) {
+            setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
+            civInfo.addNotification(
+                    "Because they have [$demandedResource], the citizens of [$name] are celebrating We Love The King Day!",
+                    location, NotificationIcon.City, NotificationIcon.Happiness)
+        }
     }
 
     /*

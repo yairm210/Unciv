@@ -3,6 +3,7 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.city.CityFlags
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -79,7 +80,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.add(turnsToExpansionString.toLabel()).row()
         innerTable.add(turnsToPopString.toLabel()).row()
         if (cityInfo.isInResistance())
-            innerTable.add("In resistance for another [${cityInfo.resistanceCounter}] turns".toLabel()).row()
+            innerTable.add("In resistance for another [${cityInfo.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
+        if (cityInfo.isWeLoveTheKingDay())
+            innerTable.add("We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel()).row()
+        else if (cityInfo.demandedResource != "")
+            innerTable.add("Demanding [${cityInfo.demandedResource}]".toLabel()).row()
     }
 
     private fun addReligionInfo() {
