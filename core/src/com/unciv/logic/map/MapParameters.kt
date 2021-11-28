@@ -57,7 +57,7 @@ class MapSizeNew {
         this.radius = getEquivalentHexagonalRadius(width, height)
     }
 
-    fun clone() = MapSizeNew().also { 
+    fun clone() = MapSizeNew().also {
         it.name = name
         it.radius = radius
         it.width = width
@@ -142,7 +142,7 @@ class MapParameters {
 
     /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
-    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the Rulesetcache is not yet initialized when starting up 
+    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the Rulesetcache is not yet initialized when starting up
 
     /** Unciv Version of creation for support cases */
     var createdWithVersion = ""

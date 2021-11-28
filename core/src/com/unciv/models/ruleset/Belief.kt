@@ -25,7 +25,7 @@ class Belief : RulesetObject() {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         return getCivilopediaTextLines(ruleset, false)
     }
-    
+
     fun getCivilopediaTextLines(ruleset: Ruleset, centerType: Boolean): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
         if (type != BeliefType.None)

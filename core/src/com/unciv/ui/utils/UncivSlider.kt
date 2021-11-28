@@ -13,14 +13,14 @@ import com.unciv.models.UncivSound
 
 /**
  * Modified Gdx [Slider]
- * 
+ *
  * Has +/- buttons at the end for easier single steps
  * Shows a timed tip with the actual value every time it changes
  * Disables listeners of any ScrollPanes this is nested in while dragging
- * 
+ *
  * Note: No attempt is made to distinguish sources of value changes, so the initial setting
  * of the value when a screen is initialized will also trigger the 'tip'. This is intentional.
- * 
+ *
  * @param min           Initializes [Slider.min]
  * @param max           Initializes [Slider.max]
  * @param step          Initializes [Slider.stepSize]
@@ -109,9 +109,9 @@ class UncivSlider (
             minusButton.onClick {
                 value -= stepSize
             }
-            add(minusButton).apply { 
+            add(minusButton).apply {
                 if (vertical) padBottom(padding) else padLeft(padding)
-            } 
+            }
             if (vertical) row()
         } else minusButton = null
 
@@ -122,7 +122,7 @@ class UncivSlider (
             plusButton = "+".toLabel(Color.BLACK, plusMinusFontSize)
                 .apply { setAlignment(Align.center) }
                 .surroundWithCircle(plusMinusCircleSize)
-            plusButton.onClick { 
+            plusButton.onClick {
                 value += stepSize
             }
             add(plusButton).apply {
@@ -131,7 +131,7 @@ class UncivSlider (
         } else plusButton = null
 
         row()
-        value = initial  // set initial value late so the tooltip can work with the layout 
+        value = initial  // set initial value late so the tooltip can work with the layout
 
         // Add the listener late so the setting of the initial value is silent
         slider.addListener(object : ChangeListener() {

@@ -38,7 +38,7 @@ class WrappableLabel(
 
     private fun getMeasuredWidth(): Float = if (wrap) _measuredWidth else super.getPrefWidth()
 
-    override fun getMinWidth() = 48f  // ~ 2 chars 
+    override fun getMinWidth() = 48f  // ~ 2 chars
     override fun getPrefWidth() = min(getMeasuredWidth(), expectedWidth)
     override fun getMaxWidth() = getMeasuredWidth()
 }

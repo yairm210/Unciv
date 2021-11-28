@@ -57,7 +57,7 @@ class CityReligionInfoTable(
     private fun getIconAndLabel(religionName: String?) =
         getIconAndLabel(gameInfo.religions[religionName])
     private fun getIconAndLabel(religion: Religion?): Pair<String, String> {
-        return if (religion == null) "Religion" to "None" 
+        return if (religion == null) "Religion" to "None"
             else religion.getIconName() to religion.getReligionDisplayName()
     }
 

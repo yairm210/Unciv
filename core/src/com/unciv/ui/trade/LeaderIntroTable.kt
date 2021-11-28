@@ -10,7 +10,7 @@ import com.unciv.ui.utils.toLabel
 /**
  * This is meant to be used for any kind of civ introduction - [DiplomacyScreen],
  * [AlertPopup][com.unciv.ui.worldscreen.AlertPopup] [types][com.unciv.logic.civilization.AlertType] WarDeclaration, FirstContact etc.
- * 
+ *
  * @param civInfo The civilization to display
  * @param hello Optional additional message
  */
@@ -19,9 +19,9 @@ class LeaderIntroTable (
     hello: String = ""
 ): Table(BaseScreen.skin) {
     /**
-     * Build either a Table(icon, leaderName <br> hello) or 
+     * Build either a Table(icon, leaderName <br> hello) or
      * a Table(Portrait, Table(leaderName, icon <br> hello))
-     * 
+     *
      * City states in vanilla have leaderName=="" - but don't test CS, test leaderName to allow modding CS to have portraits
      */
     init {

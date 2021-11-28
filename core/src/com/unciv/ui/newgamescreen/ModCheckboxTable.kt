@@ -40,8 +40,8 @@ class ModCheckboxTable(
             }).padTop(padTop).growX().row()
         }
     }
-    
-    fun setBaseRuleset(newBaseRuleset: String) { baseRuleset = newBaseRuleset } 
+
+    fun setBaseRuleset(newBaseRuleset: String) { baseRuleset = newBaseRuleset }
     fun disableAllCheckboxes() {
         for (checkBox in extensionRulesetModButtons) {
             checkBox.isChecked = false
@@ -70,9 +70,9 @@ class ModCheckboxTable(
                 val toastMessage = (
                     if (complexModLinkCheck.isError()) "The mod combination you selected is incorrectly defined!".tr()
                     else "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr()
-                ) + 
+                ) +
                     "\n\n${complexModLinkCheck.getErrorText()}"
-                
+
                 lastToast = ToastPopup(toastMessage, screen, 5000L)
 
                 if (complexModLinkCheck.isError()) {

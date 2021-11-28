@@ -45,7 +45,7 @@ class TranslationTests {
     fun allUnitActionsHaveTranslation() {
         val actions: MutableSet<String> = HashSet()
         for (action in UnitActionType.values()) {
-            actions.add( 
+            actions.add(
                 when(action) {
                     UnitActionType.Upgrade -> "Upgrade to [unitType] ([goldCost] gold)"
                     UnitActionType.Create -> "Create [improvement]"
@@ -185,11 +185,11 @@ class TranslationTests {
             allWordsTranslatedCorrectly
         )
     }
-    
+
     @Test
     fun wordBoundaryTranslationIsFormattedCorrectly() {
         val translationEntry = translations["\" \""]!!
-                
+
         var allTranslationsCheckedOut = true
         for ((language, translation) in translationEntry) {
             if (!translation.startsWith("\"")
@@ -200,19 +200,19 @@ class TranslationTests {
                 println("Translation of the word boundary in $language was incorrectly formatted")
             }
         }
-        
+
         Assert.assertTrue(
             "This test will only pass when the word boundrary translation succeeds",
             allTranslationsCheckedOut
         )
     }
-    
+
 //    @Test
 //    fun allConditionalsAreContainedInConditionalOrderTranslation() {
 //        val orderedConditionals = Translations.englishConditionalOrderingString
 //        val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
 //        val translationEntry = translations[orderedConditionals]!!
-//        
+//
 //        var allTranslationsCheckedOut = true
 //        for ((language, translation) in translationEntry) {
 //            val translationConditionals = translation.getConditionals().map { it.placeholderText }
@@ -223,7 +223,7 @@ class TranslationTests {
 //                println("Not all or double parameters found in the conditional ordering for $language")
 //            }
 //        }
-//        
+//
 //        Assert.assertTrue(
 //            "This test will only pass when each of the conditionals exists exactly once in the translations for the conditional ordering",
 //            allTranslationsCheckedOut

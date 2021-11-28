@@ -39,7 +39,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         init {
             val mods = mapParameters.mods
             val baseRuleset = mapParameters.baseRuleset
-            
+
             checkboxTable = ModCheckboxTable(mods, baseRuleset, mapEditorScreen) {
                 ruleset.clear()
                 val newRuleset = RulesetCache.getComplexRuleset(mods, baseRuleset)
@@ -49,9 +49,9 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
 
                 ImageGetter.setNewRuleset(ruleset)
             }
-            
+
             val combinedTable = Table(BaseScreen.skin)
-            
+
             val baseRulesetSelectionBox = getBaseRulesetSelectBox()
             if (baseRulesetSelectionBox != null) {
                 // TODO: For some reason I'm unable to get these two tables to be equally wide
@@ -61,9 +61,9 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                 checkboxTable.width = maxWidth
                 combinedTable.add(baseRulesetSelectionBox).row()
             }
-            
+
             combinedTable.add(checkboxTable)
-            
+
             add(ScrollPane(combinedTable)).maxHeight(mapEditorScreen.stage.height * 0.8f).colspan(2).row()
 
             addButtonInRow("Save", KeyCharAndCode.RETURN) {
@@ -176,7 +176,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             // Recreate screen, since the improvementss, nations etc. could be outdated
             mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap))
         }
-        
+
     }
 
 }

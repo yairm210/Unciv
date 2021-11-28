@@ -52,7 +52,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
         val mapSizePercent = if (minimapSize < 22) minimapSize + 9 else minimapSize * 5 - 75
         val smallerWorldSize = mapHolder.worldScreen.stage.let { min(it.width,it.height) }
         val groupSize = smallerWorldSize * mapSizePercent / 100 / effectiveRadius
-        
+
         for (tileInfo in mapHolder.tileMap.values) {
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
@@ -121,7 +121,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
         val miniViewport = worldViewport.invertY(mapHolder.maxY) * worldToMiniFactor
         // This _could_ place parts of the 'camera' icon outside the minimap if it were a standard Image, thus the ClippingImage helper class
         scrollPositionIndicators[0].setViewport(miniViewport)
-        
+
         // If world wrap enabled, draw another 2 viewports at proper offset to simulate wrapping
         if (scrollPositionIndicators.size != 1) {
           miniViewport.x -= allTiles.width

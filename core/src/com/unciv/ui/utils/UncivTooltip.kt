@@ -11,13 +11,13 @@ import com.unciv.models.translations.tr
 
 /**
  * A **Replacement** for Gdx [Tooltip], placement does not follow the mouse.
- * 
+ *
  * Usage: [group][Group].addTooltip([text][String], size) builds a [Label] as tip actor and attaches it to your [Group].
  *
  * @param target        The widget the tooltip will be added to - take care this is the same for which addListener is called
  * @param content       The actor to display as Tooltip
  * @param targetAlign   Point on the [target] widget to align the Tooltip to
- * @param tipAlign      Point on the Tooltip to align with the given point on the [target] 
+ * @param tipAlign      Point on the Tooltip to align with the given point on the [target]
  * @param offset        Additional offset for Tooltip position after alignment
  * @param animate       Use show/hide animations
  * @param forceContentSize  Force virtual [content] width/height for alignment calculation
@@ -149,9 +149,9 @@ class UncivTooltip <T: Actor>(
     companion object {
         /**
          * Add a [Label]-based Tooltip with a rounded-corner background to a [Table] or other [Group].
-         * 
+         *
          * Tip is positioned over top right corner, slightly overshooting the receiver widget, longer tip [text]s will extend to the left.
-         * 
+         *
          * @param text Automatically translated tooltip text
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
@@ -164,7 +164,7 @@ class UncivTooltip <T: Actor>(
 
             val background = ImageGetter.getRoundedEdgeRectangle(Color.LIGHT_GRAY)
             // This controls text positioning relative to the background.
-            // The minute fiddling makes both single caps and longer text look centered. 
+            // The minute fiddling makes both single caps and longer text look centered.
             @Suppress("SpellCheckingInspection")
             val skewPadDescenders = if (",;gjpqy".any { it in text }) 0f else 2.5f
             val horizontalPad = if (text.length > 1) 10f else 6f

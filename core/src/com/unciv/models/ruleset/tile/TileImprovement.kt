@@ -80,7 +80,7 @@ class TileImprovement : RulesetStatsObject() {
      * a terrain feature, thus the unique name.
      */
     fun isAllowedOnFeature(name: String) = getMatchingUniques(UniqueType.NoFeatureRemovalNeeded).any { it.params[0] == name }
-    
+
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             name -> true
@@ -176,7 +176,7 @@ class TileImprovement : RulesetStatsObject() {
         }
 
         val unit = ruleset.units.asSequence().firstOrNull {
-            entry -> entry.value.uniques.any { 
+            entry -> entry.value.uniques.any {
                 it.startsWith("Can construct [$name]")
             }
         }?.key

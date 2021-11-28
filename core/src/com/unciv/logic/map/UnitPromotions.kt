@@ -8,7 +8,7 @@ class UnitPromotions {
     // saved game and as usual the json deserializer needs a default constructor.
     // Initialization occurs in setTransients() - called as part of MapUnit.setTransients,
     // or copied in clone() as part of the UnitAction `Upgrade`.
-    @Transient 
+    @Transient
     private lateinit var unit: MapUnit
 
     /** Experience this unit has accumulated on top of the last promotion */
@@ -91,10 +91,10 @@ class UnitPromotions {
             .asSequence()
             .filter { unit.type.name in it.unitTypes && it.name !in promotions }
             .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
-            .filter { 
-                it.uniqueObjects.none { 
-                    unique -> unique.placeholderText == "Incompatible with []" 
-                    && promotions.any { chosenPromotions -> chosenPromotions == unique.params[0] } 
+            .filter {
+                it.uniqueObjects.none {
+                    unique -> unique.placeholderText == "Incompatible with []"
+                    && promotions.any { chosenPromotions -> chosenPromotions == unique.params[0] }
                 }
             }
     }

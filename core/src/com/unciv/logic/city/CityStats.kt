@@ -20,12 +20,12 @@ import kotlin.math.min
 
 
 /** Holds and calculates [Stats] for a city.
- * 
+ *
  * No field needs to be saved, all are calculated on the fly,
  * so its field in [CityInfo] is @Transient and no such annotation is needed here.
  */
 class CityStats(val cityInfo: CityInfo) {
-    //region Fields, Transient 
+    //region Fields, Transient
 
     var baseStatList = LinkedHashMap<String, Stats>()
 
@@ -113,7 +113,7 @@ class CityStats(val cityInfo: CityInfo) {
                 }
             }
         }
-        
+
         for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
             stats[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
         }
@@ -492,8 +492,8 @@ class CityStats(val cityInfo: CityInfo) {
         // We calculate this here for concurrency reasons
         // If something needs this, we pass this through as a parameter
         val localBuildingUniques = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
-        
-        // Is This line really necessary? There is only a single unique that actually uses this, 
+
+        // Is This line really necessary? There is only a single unique that actually uses this,
         // and it is passed to functions at least 3 times for that
         // It's the only reason `cityInfo.getMatchingUniques` has a localUniques parameter,
         // which clutters readability, and also the only reason `CityInfo.getAllLocalUniques()`

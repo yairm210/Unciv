@@ -96,7 +96,7 @@ class PolicyManager {
      * Note: branch completion policies are automatic and therefore not adoptable in this test.
      * @param policy The Policy to check
      * @param checkEra Include era test (with false the function returns whether the policy is adoptable now or in the future)
-     * @return `true` if the policy can be adopted, `false` if some rule prevents it (including when it's already adopted) 
+     * @return `true` if the policy can be adopted, `false` if some rule prevents it (including when it's already adopted)
      */
     fun isAdoptable(policy: Policy, checkEra: Boolean = true): Boolean {
         if (isAdopted(policy.name)) return false
@@ -162,7 +162,7 @@ class PolicyManager {
         }
         for (civ in civInfo.gameInfo.civilizations) {
             if (civ == civInfo) continue
-            val defaultNotificationText = 
+            val defaultNotificationText =
                 if (civ.getKnownCivs().contains(civInfo)) {
                     "[${civInfo.civName}] has adopted the [${policy.name}] policy"
                 } else {

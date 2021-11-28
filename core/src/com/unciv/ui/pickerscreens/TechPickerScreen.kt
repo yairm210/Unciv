@@ -276,11 +276,11 @@ class TechPickerScreen(
 
         val label = "Research [${tempTechsToResearch[0]}]".tr()
         val techProgression = getTechProgressLabel(tempTechsToResearch)
-        
+
         pick("${label}\n${techProgression}")
         setButtonsInfo()
     }
-    
+
     private fun getTechProgressLabel(techs: List<String>): String {
         val progress = techs.sumOf { tech -> civTech.researchOfTech(tech) }
         val techCost = techs.sumOf { tech -> civInfo.tech.costOfTech(tech) }

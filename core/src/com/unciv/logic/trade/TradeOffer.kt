@@ -11,9 +11,9 @@ import com.unciv.models.ruleset.tile.ResourceSupply
 data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, var duration: Int = -1) {
 
     init {
-        // Duration needs to be part of the variables defined in the primary constructor, 
+        // Duration needs to be part of the variables defined in the primary constructor,
         // so that it will be copied over with the automatically generated copy()
-        
+
         duration =
             if (type.isImmediate) -1 // -1 for offers that are immediate (e.g. gold transfer)
             else {
@@ -46,7 +46,7 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, v
 
         if (type.numberType == TradeTypeNumberType.Simple || name == Constants.researchAgreement) offerText += " ($amount)"
         else if (type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount${Fonts.gold})"
-       
+
         if (duration > 0) offerText += "\n" + duration + Fonts.turn
 
         if (untradable == 1) {

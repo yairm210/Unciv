@@ -90,7 +90,7 @@ object CivilopediaImageGetters {
     val belief = { name: String, size: Float ->
         // Kludge until we decide how exactly to show Religions
         fun getInvertedCircledReligionIcon(iconName: String, size: Float) =
-            ImageGetter.getCircledReligionIcon(iconName, size).apply { 
+            ImageGetter.getCircledReligionIcon(iconName, size).apply {
                 circle.color = Color.WHITE
                 actor.color = Color.BLACK
             }
@@ -108,7 +108,7 @@ object CivilopediaImageGetters {
 /** Enum used as keys for Civilopedia "pages" (categories).
  *
  *  Note names are singular on purpose - a "link" allows both key and label
- *  Order of values determines ordering of the categories in the Civilopedia top bar 
+ *  Order of values determines ordering of the categories in the Civilopedia top bar
  *
  * @param label Translatable caption for the Civilopedia button
  */

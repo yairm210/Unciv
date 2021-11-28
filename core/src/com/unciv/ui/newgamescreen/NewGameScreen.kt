@@ -153,7 +153,7 @@ class NewGameScreen(
         topTable.add(playerPickerTable)  // No ScrollPane, PlayerPickerTable has its own
                 .width(stage.width / 3).top()
     }
-    
+
     private fun initPortrait() {
         scrollPane.setScrollingDisabled(false,false)
 
@@ -164,7 +164,7 @@ class NewGameScreen(
 
         topTable.add(newGameOptionsTable.modCheckboxes).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
-        
+
         topTable.add(ExpanderTab("Map Options") {
             it.add(mapOptionsTable).row()
         }).expandX().fillX().row()
@@ -284,7 +284,7 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         items = array
         selected = array.firstOrNull { it.value == default } ?: array.first()
     }
-    
+
     fun setSelected(newValue: String) {
         selected = items.firstOrNull { it == TranslatedString(newValue) } ?: return
     }

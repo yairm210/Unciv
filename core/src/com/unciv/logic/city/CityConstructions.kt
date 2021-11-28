@@ -45,7 +45,7 @@ class CityConstructions {
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstructionFromQueue: String
         get() {
-            return if (constructionQueue.isEmpty()) "" 
+            return if (constructionQueue.isEmpty()) ""
                 else constructionQueue.first()
         }
         set(value) {
@@ -58,7 +58,7 @@ class CityConstructions {
 
     // Maps cities to the buildings they received
     val freeBuildingsProvidedFromThisCity: HashMap<String, HashSet<String>> = hashMapOf()
-    
+
     //region pure functions
     fun clone(): CityConstructions {
         val toReturn = CityConstructions()
@@ -89,14 +89,14 @@ class CityConstructions {
         for (building in getBuiltBuildings())
             stats.add(building.getStats(cityInfo))
 
-        
+
         // Deprecated since 3.17.11
             for (unique in cityInfo.getLocalMatchingUniques(UniqueType.StatsWithTech)) {
                 if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
                     stats.add(unique.stats)
             }
         //
-        
+
         return stats
     }
 
@@ -106,13 +106,13 @@ class CityConstructions {
     fun getMaintenanceCosts(): Int {
         var maintenanceCost = 0
         val freeBuildings = cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
-        
+
         for (building in getBuiltBuildings()) {
             if (building.name !in freeBuildings) {
                 maintenanceCost += building.maintenance
             }
         }
-        
+
         return maintenanceCost
     }
 
@@ -136,7 +136,7 @@ class CityConstructions {
         }
         return result
     }
-    
+
     fun addFreeBuildings() {
         // "Gain a free [buildingName] [cityFilter]"
         val uniqueList = cityInfo.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo)).toMutableList()
@@ -149,7 +149,7 @@ class CityConstructions {
                 "in other cities" -> cityInfo.civInfo.cities.filter { it !== cityInfo }
                 else -> cityInfo.civInfo.cities.filter { it.matchesFilter(unique.params[1]) }
             }
-            
+
             for (city in citiesThatApply) {
                 if (city.cityConstructions.containsBuildingOrEquivalent(freeBuildingName)) continue
                 city.cityConstructions.addBuilding(freeBuildingName)
@@ -233,7 +233,7 @@ class CityConstructions {
         // if the construction name is the same as the current construction, it isn't the first
         return constructionQueueIndex == constructionQueue.indexOfFirst { it == name }
     }
-    
+
 
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = cityInfo.getRuleset()
@@ -381,8 +381,8 @@ class CityConstructions {
             val construction = getConstruction(constructionName)
             // Perpetual constructions should always still be valid (I hope)
             if (construction is PerpetualConstruction) continue
-            
-            val rejectionReasons = 
+
+            val rejectionReasons =
                 (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
             if (rejectionReasons.hasAReasonToBeRemovedFromQueue()) {
@@ -499,9 +499,9 @@ class CityConstructions {
      *  @return                 Success (false e.g. unit cannot be placed
      */
     fun purchaseConstruction(
-        constructionName: String, 
-        queuePosition: Int, 
-        automatic: Boolean, 
+        constructionName: String,
+        queuePosition: Int,
+        automatic: Boolean,
         stat: Stat = Stat.Gold
     ): Boolean {
         if (!(getConstruction(constructionName) as INonPerpetualConstruction).postBuildEvent(this, stat))
@@ -515,7 +515,7 @@ class CityConstructions {
             cityInfo.addStat(stat, -1 * constructionCost)
 
             val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-            
+
             if ((
                     cityInfo.civInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState) +
                     cityInfo.civInfo.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
@@ -538,7 +538,7 @@ class CityConstructions {
 
         return true
     }
-    
+
     fun hasBuildableStatBuildings(stat: Stat): Boolean {
         return getBasicStatBuildings(stat)
             .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }

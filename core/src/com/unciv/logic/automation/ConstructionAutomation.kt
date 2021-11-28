@@ -201,7 +201,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             return 3f
         // Only start building if we are the city that would complete it the soonest
         if (wonder.uniques.contains("Triggers a Cultural Victory upon completion") && cityInfo == civInfo.cities.minByOrNull {
-                it.cityConstructions.turnsToConstruction(wonder.name) 
+                it.cityConstructions.turnsToConstruction(wonder.name)
             }!!)
             return 10f
         if (wonder.isStatRelated(Stat.Science)) {

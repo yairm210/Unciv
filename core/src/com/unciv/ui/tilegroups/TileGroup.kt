@@ -484,7 +484,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 // This is some crazy voodoo magic so I'll explain.
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
-                
+
                 val innerBorderImage = ImageGetter.getImage("BorderImages/${borderShapeString}Inner")
                 if (isConcaveConvex) {
                     innerBorderImage.scaleX = -innerBorderImage.scaleX
@@ -601,10 +601,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
                 militaryUnit.baseUnit.replaces != null &&
                         ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces) ->
                     tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces
-                
+
                 militaryUnit.civInfo.gameInfo.ruleSet.units.values.any {
                     it.unitType == unitType.name && ImageGetter.unitIconExists(it.name)
-                } -> 
+                } ->
                     {
                         val unitWithSprite = militaryUnit.civInfo.gameInfo.ruleSet.units.values.first {
                             it.unitType == unitType.name && ImageGetter.unitIconExists(it.name)

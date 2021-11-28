@@ -18,6 +18,6 @@ enum class TradeType(val numberType: TradeTypeNumberType, val isImmediate: Boole
     Introduction        (TradeTypeNumberType.None, true),
     WarDeclaration      (TradeTypeNumberType.None, true),
     City                (TradeTypeNumberType.None, true);
-    
+
     enum class TradeTypeNumberType { None, Simple, Gold }
 }

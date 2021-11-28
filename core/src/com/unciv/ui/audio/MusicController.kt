@@ -12,7 +12,7 @@ import kotlin.concurrent.timer
 
 /**
  * Play, choose, fade-in/out and generally manage music track playback.
- * 
+ *
  * Main methods: [chooseTrack], [pause], [resume], [setModList], [isPlaying], [gracefulShutdown]
  */
 class MusicController {
@@ -227,7 +227,7 @@ class MusicController {
             // Then just pick the first one. Not as wasteful as it looks - need to check all names anyway
             )).firstOrNull()
         // Note: shuffled().sortedWith(), ***not*** .sortedWith(.., Random)
-        // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive. 
+        // the latter worked with older JVM's, current ones *crash* you when a compare is not transitive.
     }
 
     //endregion
@@ -246,7 +246,7 @@ class MusicController {
      * Chooses and plays a music track using an adaptable approach - for details see the wiki.
      * Called without parameters it will choose a new ambient music track and start playing it with fade-in/out.
      * Will do nothing when no music files exist or the master volume is zero.
-     * 
+     *
      * @param prefix file name prefix, meant to represent **Context** - in most cases a Civ name
      * @param suffix file name suffix, meant to represent **Mood** - e.g. Peace, War, Theme, Defeat, Ambient
      * (Ambient is the default when a track ends and exists so War Peace and the others are not chosen in that case)
@@ -255,7 +255,7 @@ class MusicController {
      */
     fun chooseTrack (
         prefix: String = "",
-        suffix: String = "Ambient", 
+        suffix: String = "Ambient",
         flags: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
     ): Boolean {
         if (baseVolume == 0f) return false
@@ -324,7 +324,7 @@ class MusicController {
 
     /**
      * Pause playback with fade-out
-     * 
+     *
      * @param speedFactor accelerate (>1) or slow down (<1) the fade-out. Clamped to 1/1000..1000.
      */
     fun pause(speedFactor: Float = 1f) {

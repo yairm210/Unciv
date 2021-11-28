@@ -28,7 +28,7 @@ import kotlin.collections.LinkedHashSet
  *  @see    String.tr   for more explanations (below)
  */
 class Translations : LinkedHashMap<String, TranslationEntry>(){
-    
+
     var percentCompleteOfLanguages = HashMap<String,Int>()
             .apply { put("English",100) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
@@ -186,11 +186,11 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationFilesTime = System.currentTimeMillis() - startTime
         println("Loading percent complete of languages - ${translationFilesTime}ms")
     }
-    
+
     fun getConditionalOrder(language: String): String {
         return getText(englishConditionalOrderingString, language, null)
     }
-    
+
     fun placeConditionalsAfterUnique(language: String): Boolean {
         if (get(conditionalUniqueOrderString, language, null)?.get(language) == "before")
             return false
@@ -204,15 +204,15 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translation = getText("\" \"", language, null)
         return translation.substring(1, translation.length-1)
     }
-    
+
     fun shouldCapitalize(language: String): Boolean {
         return get(shouldCapitalizeString, language, null)?.get(language)?.toBoolean() ?: true
     }
-    
+
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
-        // It is mostly used as the template for translating the order of conditionals   
-        const val englishConditionalOrderingString = 
+        // It is mostly used as the template for translating the order of conditionals
+        const val englishConditionalOrderingString =
             "<for [mapUnitFilter] units> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <before the [era]> <starting from the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
@@ -254,12 +254,12 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
  */
 fun String.tr(): String {
     val activeMods = with(UncivGame.Current) {
-        if (isGameInfoInitialized()) 
-            gameInfo.gameParameters.mods + gameInfo.gameParameters.baseRuleset 
+        if (isGameInfoInitialized())
+            gameInfo.gameParameters.mods + gameInfo.gameParameters.baseRuleset
         else translations.translationActiveMods
     }.toHashSet()
     val language = UncivGame.Current.settings.language
-    
+
     if (contains('<')) { // Conditionals!
         /**
          * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
@@ -269,21 +269,21 @@ fun String.tr(): String {
          * of the rest of the translatable string.
          * All of this nesting makes it quite difficult to translate, and is the reason we check
          * for these first.
-         * 
+         *
          * The plan: First translate each of the conditionals on its own, and then combine them
          * together into the final fully translated string.
          */
-        
+
         var translatedBaseUnique = this.removeConditionals().tr()
-        
+
         val conditionals = this.getConditionals().map { it.placeholderText }
         val conditionsWithTranslation: HashMap<String, String> = hashMapOf()
-        
+
         for (conditional in this.getConditionals())
             conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr()
-        
+
         val translatedConditionals: MutableList<String> = mutableListOf()
-        
+
         // Somewhere, we asked the translators to reorder all possible conditionals in a way that
         // makes sense in their language. We get this ordering, and than extract each of the
         // translated conditionals, removing the <> surrounding them, and removing param values
@@ -295,7 +295,7 @@ fun String.tr(): String {
                 conditionsWithTranslation.remove(placedConditional)
             }
         }
-        
+
         // If the translated string that should contain all conditionals doesn't contain
         // a few conditionals used here, just add the translations of these to the end.
         // We do test for this, but just in case.
@@ -309,7 +309,7 @@ fun String.tr(): String {
                 translatedBaseUnique = translatedBaseUnique.replaceFirstChar { it.lowercase() }
             translatedConditionals.add(translatedBaseUnique)
         }
-        
+
         var fullyTranslatedString = translatedConditionals.joinToString(UncivGame.Current.translations.getSpaceEquivalent(language))
         if (UncivGame.Current.translations.shouldCapitalize(language))
             fullyTranslatedString = fullyTranslatedString.replaceFirstChar { it.uppercase() }

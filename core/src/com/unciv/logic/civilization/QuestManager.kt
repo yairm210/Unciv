@@ -117,7 +117,7 @@ class QuestManager {
 
         tryStartNewGlobalQuest()
         tryStartNewIndividualQuests()
-        
+
         tryBarbarianInvasion()
         tryEndWarWithMajorQuests()
     }
@@ -539,7 +539,7 @@ class QuestManager {
         val totalMilitaryUnits = attacker.getCivUnits().count { !it.isCivilian() }
         val unitsToKill = max(3, totalMilitaryUnits / 4)
         unitsToKillForCiv[attacker.civName] = unitsToKill
-        
+
 
         val location = if (civInfo.cities.isEmpty()) null
             else civInfo.getCapital().location
@@ -577,12 +577,12 @@ class QuestManager {
             endWarWithMajorQuest(killed)
         }
     }
-    
+
     /** Called when a major civ meets the city-state for the first time. Mainly for war with major pseudo-quest. */
     fun justMet(otherCiv: CivilizationInfo) {
         val location = if (civInfo.cities.isEmpty()) null
             else civInfo.getCapital().location
-        
+
         for ((attackerName, unitsToKill) in unitsToKillForCiv) {
             if (location != null)
                 otherCiv.addNotification("[${civInfo.civName}] is being attacked by [$attackerName]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
@@ -613,15 +613,15 @@ class QuestManager {
         unitsToKillForCiv.remove(attacker.civName)
         unitsKilledFromCiv.remove(attacker.civName)
     }
-    
+
     fun warWithMajorActive(target: CivilizationInfo): Boolean {
         return unitsToKillForCiv.containsKey(target.civName)
     }
-    
+
     fun unitsToKill(target: CivilizationInfo): Int {
         return unitsToKillForCiv[target.civName] ?: 0
     }
-    
+
     fun unitsKilledSoFar(target: CivilizationInfo, viewingCiv: CivilizationInfo): Int {
         val killMap = unitsKilledFromCiv[target.civName] ?: return 0
         return killMap[viewingCiv.civName] ?: 0

@@ -66,15 +66,15 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     }
                     try {
                         val map = MapSaver.loadMap(chosenMap!!, checkSizeErrors = false)
-                        
+
                         val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
                         // [TEMPORARY] conversion of old maps with a base ruleset contained in the mods
                             val newBaseRuleset = map.mapParameters.mods.filter { it !in missingMods }.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
                             if (newBaseRuleset != null) map.mapParameters.baseRuleset = newBaseRuleset
                         //
-                        
+
                         if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
-                        
+
                         if (missingMods.isNotEmpty()) {
                             Gdx.app.postRunnable {
                                 needPopup = false
@@ -90,7 +90,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                                     map.mapParameters.baseRuleset = modBaseRuleset
                                     map.mapParameters.mods -= modBaseRuleset
                                 }
-                                    
+
                                 game.setScreen(MapEditorScreen(map))
                                 dispose()
                             } catch (ex: Throwable) {
@@ -191,7 +191,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                 chosenMap = map
                 mapNameTextField.text = map.name()
                 mapNameTextField.setSelection(Int.MAX_VALUE,Int.MAX_VALUE)  // sets caret to end of text
-                
+
                 deleteButton.enable()
                 deleteButton.color = Color.RED
             }

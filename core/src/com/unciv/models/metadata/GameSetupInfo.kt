@@ -25,7 +25,7 @@ class GameSetupInfo(
          *          Unciv installation can QuickStart with a different difficulty than New Game defaults to.
          */
         fun fromSettings(defaultDifficulty: String? = null) = UncivGame.Current.settings.run {
-            if (lastGameSetup == null) GameSetupInfo().apply { 
+            if (lastGameSetup == null) GameSetupInfo().apply {
                 if (defaultDifficulty != null) gameParameters.difficulty = defaultDifficulty
             }
             else GameSetupInfo(lastGameSetup!!).apply {

@@ -15,7 +15,7 @@ class DiplomaticVotePickerScreen(private val votingCiv: CivilizationInfo) : Pick
     init {
         setDefaultCloseAction()
         rightSideButton.setText("Choose a civ to vote for".tr())
-        
+
         descriptionLabel.setText("Choose who should become the world leader and win a diplomatic victory!".tr())
 
         val choosableCivs = votingCiv.gameInfo.civilizations.filter { it.isMajorCiv() && it != votingCiv && !it.isDefeated() }

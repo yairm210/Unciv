@@ -136,11 +136,11 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             statsTable.add(faithLabel).padLeft(20f)
             val faithImage = ImageGetter.getStatIcon("Faith")
             statsTable.add(faithImage).padBottom(6f).size(20f)
-            
+
             val invokeFaithOverview = {
                 worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Religion"))
             }
-            
+
             faithLabel.onClick(invokeFaithOverview)
             faithImage.onClick(invokeFaithOverview)
         } else {
@@ -284,7 +284,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getHappinessText(civInfo: CivilizationInfo): String {
         var happinessText = civInfo.getHappiness().toString()
         val goldenAges = civInfo.goldenAges
-        happinessText += 
+        happinessText +=
             if (goldenAges.isGoldenAge())
                 "    {GOLDEN AGE}(${goldenAges.turnsLeftForCurrentGoldenAge})".tr()
             else

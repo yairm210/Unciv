@@ -12,7 +12,7 @@ import java.util.zip.ZipFile
 
 /**
  * Utility managing Github access (except the link in WorldScreenCommunityPopup)
- * 
+ *
  * Singleton - RateLimit is shared app-wide and has local variables, and is not tested for thread safety.
  * Therefore, additional effort is required should [tryGetGithubReposWithTopic] ever be called non-sequentially.
  * [download] and [downloadAndExtract] should be thread-safe as they are self-contained.
@@ -25,8 +25,8 @@ object Github {
     /**
      * Helper opens am url and accesses its input stream, logging errors to the console
      * @param url String representing a [URL] to download.
-     * @param action Optional callback that will be executed between opening the connection and 
-     *          accessing its data - passes the [connection][HttpURLConnection] and allows e.g. reading the response headers. 
+     * @param action Optional callback that will be executed between opening the connection and
+     *          accessing its data - passes the [connection][HttpURLConnection] and allows e.g. reading the response headers.
      * @return The [InputStream] if successful, `null` otherwise.
      */
     fun download(url: String, action: (HttpURLConnection) -> Unit = {}): InputStream? {
@@ -118,7 +118,7 @@ object Github {
                 if (file().renameTo(dest.child(name()).file())) return
             else
                 if (file().renameTo(dest.file())) return
-        } 
+        }
         moveTo(dest)
     }
 
@@ -229,7 +229,7 @@ object Github {
                     RateLimit.notifyHttpResponse(it)
                     retries++   // An extra retry so the 403 is ignored in the retry count
                 }
-            } ?: continue       
+            } ?: continue
             return GameSaver.json().fromJson(RepoSearch::class.java, inputStream.bufferedReader().readText())
         }
         return null
@@ -369,7 +369,7 @@ object Zip {
             if (!entry.isDirectory) {
                 streamCopy ( zip.getInputStream(entry), destFile)
             }
-            // The new file has a current last modification time 
+            // The new file has a current last modification time
             // and not the  one stored in the archive - we could:
             //  'destFile.file().setLastModified(entry.time)'
             // but later handling will throw these away anyway,

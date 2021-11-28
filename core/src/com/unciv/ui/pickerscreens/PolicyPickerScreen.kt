@@ -26,7 +26,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         displayTutorial(Tutorial.CultureAndPolicies)
 
         if (viewingCiv.gameInfo.ruleSet.policies.values.none {
-                viewingCiv.policies.isAdoptable(it, checkEra = false) 
+                viewingCiv.policies.isAdoptable(it, checkEra = false)
         })
             rightSideButton.setText("All policies adopted".tr())
         else
@@ -75,7 +75,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         // plan a nice geometry
         if (scrollPane.width < scrollPane.height) {
             // Portrait - arrange more in the vertical direction
-            if (numBranchesX < 2.5f) rowChangeCount = 2    
+            if (numBranchesX < 2.5f) rowChangeCount = 2
             else rowChangeWidth = scrollPane.width + 10f  // 10f to ignore 1 horizontal padding
         } else {
             // Landscape - arrange in as few rows as looks nice
@@ -142,7 +142,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             game.setScreen(PolicyPickerScreen(worldScreen))
         }
         pickedPolicy = policy
-        
+
         descriptionLabel.setText(policy.getDescription())
     }
 
@@ -175,10 +175,10 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         }
 
         branchGroup.add(branchTable).height(150f).row()
-        
+
         // Add the finisher button.
         branchGroup.add(getPolicyButton(branch.policies.last(), false)).padTop(15f)
-        
+
         // Ensure dimensions are calculated
         branchGroup.pack()
         return branchGroup

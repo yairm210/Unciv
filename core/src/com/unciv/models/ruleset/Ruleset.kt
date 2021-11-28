@@ -45,7 +45,7 @@ class ModOptions : IHasUniques {
     var modUrl = ""
     var author = ""
     var modSize = 0
- 
+
     val maxXPfromBarbarians = 30
 
     override var uniques = ArrayList<String>()
@@ -192,16 +192,16 @@ class Ruleset {
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
         // Using a map sidesteps this problem
         eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
-        
+
         val unitTypesFile = folderHandle.child("UnitTypes.json")
         if (unitTypesFile.exists()) unitTypes += createHashmap(jsonParser.getFromJson(Array<UnitType>::class.java, unitTypesFile))
-        
+
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
-        
+
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(jsonParser.getFromJson(Array<Quest>::class.java, questsFile))
 
@@ -235,7 +235,7 @@ class Ruleset {
         val ruinRewardsFile = folderHandle.child("Ruins.json")
         if (ruinRewardsFile.exists())
             ruinRewards += createHashmap(jsonParser.getFromJson(Array<RuinReward>::class.java, ruinRewardsFile))
-        
+
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
@@ -555,7 +555,7 @@ class Ruleset {
             if (nation.favoredReligion != null && nation.favoredReligion !in religions)
                 lines += "${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!"
         }
-        
+
         for (policy in policies.values) {
             if (policy.requires != null)
                 for (prereq in policy.requires!!)
@@ -595,10 +595,10 @@ object RulesetCache : HashMap<String,Ruleset>() {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
-            val fileHandle = 
+            val fileHandle =
                 if (consoleMode) FileHandle(fileName)
                 else Gdx.files.internal(fileName)
-            this[ruleset.fullName] = Ruleset().apply { 
+            this[ruleset.fullName] = Ruleset().apply {
                 load(fileHandle, printOutput)
                 name = ruleset.fullName
             }
@@ -654,25 +654,25 @@ object RulesetCache : HashMap<String,Ruleset>() {
             )
         )
     }
-    
+
     /**
      * Creates a combined [Ruleset] from a list of mods. If no baseRuleset is listed in [mods],
      * then the vanilla Ruleset is included automatically.
      */
     fun getComplexRuleset(mods: LinkedHashSet<String>, optionalBaseRuleset: String? = null): Ruleset {
         val newRuleset = Ruleset()
-        
+
         val baseRuleset =
             if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
             else getBaseRuleset()
-        
-        
+
+
         val loadedMods = mods
             .filter { containsKey(it) }
             .map { this[it]!! }
-            .filter { !it.modOptions.isBaseRuleset } + 
+            .filter { !it.modOptions.isBaseRuleset } +
             baseRuleset
-        
+
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             newRuleset.add(mod)
             newRuleset.mods += mod.name

@@ -63,7 +63,7 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
         }
 
         //load mod TileSets
-        val modsHandles = 
+        val modsHandles =
             if (consoleMode) FileHandle("mods").list()
             else Gdx.files.local("mods").list()
 

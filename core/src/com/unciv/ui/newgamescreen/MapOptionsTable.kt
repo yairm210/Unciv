@@ -109,7 +109,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
         }
         return mapFileSelectBox
     }
-    
+
     private fun fillMapFileSelectBox() {
         if (!mapFileSelectBox.items.isEmpty) return
         val mapFiles = Array<FileHandleWrapper>()
@@ -130,5 +130,5 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     class FileHandleWrapper(val fileHandle: FileHandle) {
         override fun toString(): String = fileHandle.name()
     }
-    
+
 }

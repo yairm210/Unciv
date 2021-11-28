@@ -354,7 +354,7 @@ class CivilizationInfo {
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = getMatchingUniques(uniqueType, stateForConditionals).any()
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
-        
+
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null, cityToIgnore: CityInfo? = null) = sequence {
@@ -375,7 +375,7 @@ class CivilizationInfo {
     }.filter {
         it.conditionalsApply(stateForConditionals)
     }
-    
+
     fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null) = sequence {
         yieldAll(nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate })
         yieldAll(cities.asSequence()
@@ -459,7 +459,7 @@ class CivilizationInfo {
         val baseUnit = gameInfo.ruleSet.units[baseUnitName]
             ?: throw UncivShowableException("Unit $baseUnitName doesn't seem to exist!")
         return getEquivalentUnit(baseUnit)
-    } 
+    }
     fun getEquivalentUnit(baseUnit: BaseUnit): BaseUnit {
         if (baseUnit.replaces != null)
             return getEquivalentUnit(baseUnit.replaces!!) // Equivalent of unique unit is the equivalent of the replaced unit
@@ -483,7 +483,7 @@ class CivilizationInfo {
 
         if (isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
-        
+
         if (!(isCityState() && otherCiv.isMajorCiv())) return
         if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
 
@@ -512,7 +512,7 @@ class CivilizationInfo {
         }
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
-        
+
         questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
 
@@ -553,7 +553,7 @@ class CivilizationInfo {
             .minByOrNull { it.columnNumber }
             ?.era
             ?: return maxEra
-        
+
         val minEra = gameInfo.ruleSet.eras[minEraName]!!
 
         return if (minEra.eraNumber > maxEra.eraNumber) minEra
@@ -684,7 +684,7 @@ class CivilizationInfo {
         goldenAges.civInfo = this
 
         civConstructions.setTransients(civInfo = this)
-        
+
         policies.civInfo = this
         if (policies.adoptedPolicies.size > 0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !Policy.isBranchCompleteByName(it) }
@@ -865,18 +865,18 @@ class CivilizationInfo {
 
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-            
+
         }
         handleDiplomaticVictoryFlags()
     }
-    
+
     private fun handleDiplomaticVictoryFlags() {
         if (flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
             gameInfo.diplomaticVictoryVotesCast.clear()
             removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
             removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
         }
-        
+
         if (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0) {
             if (gameInfo.civilizations.any { it.victoryManager.hasWon() } ) {
                 removeFlag(CivFlags.TurnsTillNextDiplomaticVote.name)
@@ -885,14 +885,14 @@ class CivilizationInfo {
                 addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
             }
         }
-        
+
         if (flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name] == 0) {
             addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
         }
     }
 
     fun addFlag(flag: String, count: Int) = flagsCountdown.set(flag, count)
-    
+
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)
 
     fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
@@ -903,7 +903,7 @@ class CivilizationInfo {
     fun getTurnsTillCallForBarbHelp() = flagsCountdown[CivFlags.TurnsTillCallForBarbHelp.name]
 
     fun mayVoteForDiplomaticVictory() =
-        getTurnsTillNextDiplomaticVote() == 0 
+        getTurnsTillNextDiplomaticVote() == 0
         && civName !in gameInfo.diplomaticVictoryVotesCast.keys
 
     fun diplomaticVoteForCiv(chosenCivName: String?) {
@@ -1009,7 +1009,7 @@ class CivilizationInfo {
         }
 
         if (placedUnit.hasUnique("Religious Unit") && gameInfo.isReligionEnabled()) {
-            placedUnit.religion = 
+            placedUnit.religion =
                 when {
                     placedUnit.hasUnique("Takes your religion over the one in their birth city")
                     && religionManager.religion?.isMajorReligion() == true ->
@@ -1026,7 +1026,7 @@ class CivilizationInfo {
                 passableImpassables.add(unique.params[0])   // Add to list of passable impassables
             }
         }
-        
+
         return placedUnit
     }
 
@@ -1158,7 +1158,7 @@ class CivilizationInfo {
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) {
         cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
     }
-    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()    
+    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
     fun addProtectorCiv(otherCiv: CivilizationInfo) {
         cityStateFunctions.addProtectorCiv(otherCiv)

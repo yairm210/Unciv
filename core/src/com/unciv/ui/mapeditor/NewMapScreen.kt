@@ -44,15 +44,15 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
 
     init {
         setDefaultCloseAction(MainMenuScreen())
-        
-        // To load in the mods selected last time this screen was exited 
+
+        // To load in the mods selected last time this screen was exited
         reloadRuleset()
-                
+
         mapParametersTable = MapParametersTable(mapParameters, isEmptyMapAllowed = true)
         val newMapScreenOptionsTable = Table(skin).apply {
             pad(10f)
             add("Map Options".toLabel(fontSize = 24)).row()
-            
+
             // Add the selector for the base ruleset
             val baseRulesetBox = getBaseRulesetSelectBox()
             if (baseRulesetBox != null) {
@@ -63,9 +63,9 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
                 mapParametersTable.width = maxWidth
                 add(getBaseRulesetSelectBox()).row()
             }
-            
+
             add(mapParametersTable).row()
-            
+
             modCheckBoxes = ModCheckboxTable(mapParameters.mods, mapParameters.baseRuleset, this@NewMapScreen) {
                 reloadRuleset()
             }
@@ -135,7 +135,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             rightSideButton.setText("Working...".tr())
         }
     }
-    
+
     private fun getBaseRulesetSelectBox(): Table? {
         val rulesetSelectionBox = Table()
 
@@ -183,19 +183,19 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
 
             null
         }
-        
-        
+
+
         selectBox.onChange {
             val changedValue = onChange(selectBox.selected.value)
             if (changedValue != null) selectBox.setSelected(changedValue)
         }
 
         onChange(mapParameters.baseRuleset)
-        
+
         rulesetSelectionBox.add(selectBox).fillX().row()
         return rulesetSelectionBox
     }
-    
+
     private fun reloadRuleset() {
         ruleset.clear()
         val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods, mapParameters.baseRuleset)

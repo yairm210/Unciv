@@ -133,8 +133,8 @@ class GameOptionsTable(
         add(text.toLabel()).left()
         val selectBox = TranslatedSelectBox(values, initialState, BaseScreen.skin)
         selectBox.isDisabled = locked
-        selectBox.onChange { 
-            val changedValue = onChange(selectBox.selected.value) 
+        selectBox.onChange {
+            val changedValue = onChange(selectBox.selected.value)
             if (changedValue != null) selectBox.setSelected(changedValue)
         }
         onChange(selectBox.selected.value)
@@ -149,7 +149,7 @@ class GameOptionsTable(
     private fun Table.addBaseRulesetSelectBox() {
         val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
         if (sortedBaseRulesets.size < 2) return
-        
+
         addSelectBox(
             "{Base Ruleset}:",
             sortedBaseRulesets,
@@ -157,7 +157,7 @@ class GameOptionsTable(
         ) { newBaseRuleset ->
             val previousSelection = gameParameters.baseRuleset
             if (newBaseRuleset == gameParameters.baseRuleset) return@addSelectBox null
-            
+
             // Check if this mod is well-defined
             val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
             if (baseRulesetErrors.isError()) {
@@ -165,7 +165,7 @@ class GameOptionsTable(
                 ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
                 return@addSelectBox previousSelection
             }
-            
+
             // If so, add it to the current ruleset
             gameParameters.baseRuleset = newBaseRuleset
             onChooseMod(newBaseRuleset)
@@ -182,13 +182,13 @@ class GameOptionsTable(
                 modCheckboxes!!.disableAllCheckboxes()
             } else if (modLinkErrors.isWarnUser()) {
                 val toastMessage =
-                    "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr() + 
+                    "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr() +
                     "\n\n${modLinkErrors.getErrorText()}"
                 ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
             }
-            
+
             modCheckboxes!!.setBaseRuleset(newBaseRuleset)
-            
+
             null
         }
     }
@@ -237,7 +237,7 @@ class GameOptionsTable(
         ruleset.mods += gameParameters.baseRuleset
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
-        
+
         ImageGetter.setNewRuleset(ruleset)
         UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())
     }
@@ -247,7 +247,7 @@ class GameOptionsTable(
             onChooseMod(it)
         }
     }
-    
+
     private fun onChooseMod(mod: String) {
         val activeMods: LinkedHashSet<String> = LinkedHashSet(gameParameters.getModsAndBaseRuleset())
         UncivGame.Current.translations.translationActiveMods = activeMods

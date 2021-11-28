@@ -55,7 +55,7 @@ class MainMenuScreen: BaseScreen() {
                 keyPressDispatcher[key] = function
             table.addTooltip(key, 32f)
         }
-        
+
         table.pack()
         return table
     }
@@ -168,10 +168,10 @@ class MainMenuScreen: BaseScreen() {
                 screen.game.setScreen(newMapScreen)
                 screen.dispose()
             }
-            val newMapButton = screen.getMenuButton("New map", "OtherIcons/New", 'n', true, newMapAction) 
+            val newMapButton = screen.getMenuButton("New map", "OtherIcons/New", 'n', true, newMapAction)
             newMapButton.background = tableBackground
             add(newMapButton).row()
-            keyPressDispatcher['n'] = newMapAction 
+            keyPressDispatcher['n'] = newMapAction
 
             val loadMapAction = {
                 val loadMapScreen = SaveAndLoadMapScreen(null, false, screen)
@@ -179,7 +179,7 @@ class MainMenuScreen: BaseScreen() {
                 screen.game.setScreen(loadMapScreen)
                 screen.dispose()
             }
-            val loadMapButton = screen.getMenuButton("Load map", "OtherIcons/Load", 'l', true, loadMapAction) 
+            val loadMapButton = screen.getMenuButton("Load map", "OtherIcons/Load", 'l', true, loadMapAction)
             loadMapButton.background = tableBackground
             add(loadMapButton).row()
             keyPressDispatcher['l'] = loadMapAction

@@ -78,7 +78,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (defender == null || (!includeFriendly && defender.getCivInfo() == attackerCiv))
             return null  // no enemy combatant in tile
 
-        val canSeeDefender = 
+        val canSeeDefender =
             if (UncivGame.Current.viewEntireMapForDebug) true
             else {
                 when {
@@ -229,17 +229,17 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
-        
+
         val canNuke = Battle.mayUseNuke(attacker, targetTile)
 
         val blastRadius =
             if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
             else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
-        
+
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
             val defender = tryGetDefenderAtTile(tile, true) ?: continue
-            
+
             val defenderLabel = Label(defender.getName().tr(), skin)
             when (defender) {
                 is MapUnitCombatant ->

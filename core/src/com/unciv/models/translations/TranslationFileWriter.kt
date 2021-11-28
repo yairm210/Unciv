@@ -115,7 +115,7 @@ object TranslationFileWriter {
                 }
 
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
-                val hashMapKey = 
+                val hashMapKey =
                     if (translationKey == Translations.englishConditionalOrderingString)
                         Translations.englishConditionalOrderingString
                     else translationKey

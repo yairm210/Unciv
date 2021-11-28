@@ -207,7 +207,7 @@ object HexMath {
     }
 
     // Statically allocate the Vectors (in World coordinates)
-    // of the 6 clock directions for border and road drawing in TileGroup 
+    // of the 6 clock directions for border and road drawing in TileGroup
     private val clockPositionToWorldVectorMap: Map<Int,Vector2> = mapOf(
         2 to hex2WorldCoords(Vector2(0f, -1f)),
         4 to hex2WorldCoords(Vector2(1f, 0f)),

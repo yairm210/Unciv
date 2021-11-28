@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
  * @param errorText Text that will be shown when an error is detected
  * @param maxLength The maximal amount of characters the user may input
  * @param validate Function that should return `true` when a valid input is entered, false otherwise
- * @param actionOnOk Lambda that will be executed after pressing 'OK'. 
+ * @param actionOnOk Lambda that will be executed after pressing 'OK'.
  * Gets the text the user inputted as a parameter.
  */
 class AskTextPopup(
@@ -25,26 +25,26 @@ class AskTextPopup(
     validate: (input: String) -> Boolean = { true },
     actionOnOk: (input: String) -> Unit = {},
 ) : Popup(screen) {
-    
+
     val illegalChars = "[]{}\"\\<>"
-    
+
     init {
         val wrapper = Table()
         wrapper.add(icon).padRight(10f)
         wrapper.add(label.toLabel())
         add(wrapper).colspan(2).row()
-        
+
         val nameField = TextField(defaultText, skin)
         nameField.textFieldFilter = TextField.TextFieldFilter { _, char -> char !in illegalChars}
         nameField.maxLength = maxLength
-        
+
         add(nameField).growX().colspan(2).row()
-        
+
         val errorLabel = errorText.toLabel()
         errorLabel.color = Color.RED
 
         addOKButton(
-            validate = { 
+            validate = {
                 val errorFound = nameField.text == "" || !validate(nameField.text)
                 if (errorFound) add(errorLabel).colspan(2).center()
                 !errorFound

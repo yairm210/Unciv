@@ -78,7 +78,7 @@ class ReligionManager {
         if (!civInfo.isMajorCiv()) return false
         if (civInfo.gameInfo.ruleSet.beliefs.values.none { isPickablePantheonBelief(it) })
             return false
-        if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion }) 
+        if (civInfo.gameInfo.civilizations.any { it.religionManager.religionState == ReligionState.EnhancedReligion })
             return false
         return storedFaith >= faithForPantheon()
     }
@@ -96,7 +96,7 @@ class ReligionManager {
         religion!!.followerBeliefs.add(belief.name)
         civInfo.gameInfo.religions[belief.name] = religion!!
         for (city in civInfo.cities)
-            city.religion.addPressure(belief.name, 200 * city.population.population) 
+            city.religion.addPressure(belief.name, 200 * city.population.population)
         religionState = ReligionState.Pantheon
     }
 
@@ -104,9 +104,9 @@ class ReligionManager {
     // Game files (globaldefines.xml)
     fun faithForNextGreatProphet(): Int {
         val greatProphetsEarned = civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!] ?: 0
-        
-        var faithCost = 
-            (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) * 
+
+        var faithCost =
+            (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) *
             civInfo.gameInfo.gameParameters.gameSpeed.modifier
 
         for (unique in civInfo.getMatchingUniques("[]% Faith cost of generating Great Prophet equivalents"))
@@ -124,14 +124,14 @@ class ReligionManager {
         if (civInfo.hasUnique("May not generate great prophet equivalents naturally")) return false
         return true
     }
-    
+
     fun getGreatProphetEquivalent(): String? {
         return civInfo.gameInfo.ruleSet.units.values.firstOrNull { it.hasUnique(UniqueType.MayFoundReligion) }?.name
     }
 
     private fun generateProphet() {
         val prophetUnitName = getGreatProphetEquivalent() ?: return // No prophet units in this mod
-        
+
         val prophetSpawnChange = (5f + storedFaith - faithForNextGreatProphet()) / 100f
 
         if (Random(civInfo.gameInfo.turns).nextFloat() < prophetSpawnChange) {
@@ -144,12 +144,12 @@ class ReligionManager {
             civInfo.civConstructions.boughtItemsWithIncreasingPrice.add(prophetUnitName, 1)
         }
     }
-    
+
     fun amountOfFoundableReligions() = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } / 2 + 1
 
     fun mayFoundReligionAtAll(prophet: MapUnit): Boolean {
         if (!civInfo.gameInfo.isReligionEnabled()) return false // No religion
-        
+
         if (religionState >= ReligionState.Religion) return false // Already created a major religion
 
         // Already used its power for other things
@@ -163,7 +163,7 @@ class ReligionManager {
 
         if (foundedReligionsCount >= amountOfFoundableReligions())
             return false // Too bad, too many religions have already been founded
-        
+
         if (foundedReligionsCount >= civInfo.gameInfo.ruleSet.religions.count())
             return false // Mod maker did not provide enough religions for the amount of civs present
 
@@ -182,8 +182,8 @@ class ReligionManager {
     fun mayFoundReligionNow(prophet: MapUnit): Boolean {
         if (!mayFoundReligionAtAll(prophet)) return false
         if (!prophet.getTile().isCityCenter()) return false
-        if (prophet.getTile().getCity()!!.isHolyCity()) return false 
-        // No double holy cities. Not sure if these were allowed in the base game 
+        if (prophet.getTile().getCity()!!.isHolyCity()) return false
+        // No double holy cities. Not sure if these were allowed in the base game
         return true
     }
 
@@ -200,7 +200,7 @@ class ReligionManager {
         beliefsToChoose.add(BeliefType.Follower, 1)
         if (shouldChoosePantheonBelief)
             beliefsToChoose.add(BeliefType.Pantheon, 1)
-            
+
         for (unique in civInfo.getMatchingUniques(UniqueType.FreeExtraBeliefs)) {
             if (unique.params[2] != "founding") continue
             beliefsToChoose.add(BeliefType.valueOf(unique.params[1]), unique.params[0].toInt())
@@ -209,7 +209,7 @@ class ReligionManager {
             if (unique.params[1] != "founding") continue
             beliefsToChoose.add(BeliefType.Any, unique.params[0].toInt())
         }
-        
+
         return beliefsToChoose
     }
 
@@ -254,7 +254,7 @@ class ReligionManager {
         foundingCityId = null
         shouldChoosePantheonBelief = false
 
-        for (unit in civInfo.getCivUnits()) 
+        for (unit in civInfo.getCivUnits())
             if (unit.hasUnique("Religious Unit") && unit.hasUnique("Takes your religion over the one in their birth city"))
                 unit.religion = newReligion.name
     }
@@ -267,13 +267,13 @@ class ReligionManager {
         if (prophet.abilityUsesLeft.any { it.value != prophet.maxAbilityUses[it.key] }) return false
         if (!civInfo.isMajorCiv()) return false // Only major civs
 
-        if (civInfo.gameInfo.ruleSet.beliefs.values.none { 
-            it.type == BeliefType.Follower 
+        if (civInfo.gameInfo.ruleSet.beliefs.values.none {
+            it.type == BeliefType.Follower
             && civInfo.gameInfo.religions.values.none { religion -> religion.getBeliefs(BeliefType.Follower).contains(it) }
         }) return false // Mod maker did not provide enough follower beliefs
 
-        if (civInfo.gameInfo.ruleSet.beliefs.values.none { 
-            it.type == BeliefType.Enhancer 
+        if (civInfo.gameInfo.ruleSet.beliefs.values.none {
+            it.type == BeliefType.Enhancer
             && civInfo.gameInfo.religions.values.none { religion -> religion.getBeliefs(BeliefType.Enhancer).contains(it) }
         }) return false // Mod maker did not provide enough enhancer beliefs
 
@@ -304,7 +304,7 @@ class ReligionManager {
             if (unique.params[1] != "enhancing") continue
             beliefsToChoose.add(BeliefType.Any, unique.params[0].toInt())
         }
-        
+
         return beliefsToChoose
     }
 

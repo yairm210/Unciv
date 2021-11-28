@@ -113,7 +113,7 @@ class TechManager {
 
     fun researchOfTech(TechName: String?) = techsInProgress[TechName] ?: 0
     // Was once duplicated as fun scienceSpentOnTech(tech: String): Int
-    
+
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
     fun turnsToTech(techName: String) = when {

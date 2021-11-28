@@ -133,7 +133,7 @@ class BarbarianManager {
                     tile = viableTiles.random()
             } else
                 tile = viableTiles.random()
-            
+
             tile.improvement = Constants.barbarianEncampment
             val newCamp = Encampment(tile.position)
             newCamp.gameInfo = gameInfo

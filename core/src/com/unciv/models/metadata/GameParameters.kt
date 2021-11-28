@@ -28,7 +28,7 @@ class GameParameters { // Default values are the default new game
     var religionEnabled = false
 
     // By default, all victory types except Diplomacy as it is quite new
-    var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)  
+    var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
@@ -73,7 +73,7 @@ class GameParameters { // Default values are the default new game
             yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")
-    
+
     fun getModsAndBaseRuleset(): HashSet<String> {
         return mods.toHashSet().apply { add(baseRuleset) }
     }

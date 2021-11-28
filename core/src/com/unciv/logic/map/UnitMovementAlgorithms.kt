@@ -72,7 +72,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (unit.noFilteredDoubleMovementUniques)
             return terrainCost + extraCost
-        if (unit.doubleMovementInTerrain.any { 
+        if (unit.doubleMovementInTerrain.any {
             it.value == MapUnit.DoubleMovementTerrainTarget.Filter &&
                 to.matchesFilter(it.key)
         })
@@ -441,7 +441,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // Cache this in case something goes wrong
 
         var lastReachedEnterableTile = unit.getTile()
-        var previousTile = unit.getTile() 
+        var previousTile = unit.getTile()
         var passingMovementSpent = 0f // Movement points spent since last tile we could end our turn on
 
         unit.removeFromTile()
@@ -461,7 +461,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // This fixes a bug where tiles in the fog of war would always only cost 1 mp
             if (!unit.civInfo.gameInfo.gameParameters.godMode)
                 passingMovementSpent += getMovementCostBetweenAdjacentTiles(previousTile, tile, unit.civInfo)
-            
+
             // In case something goes wrong, cache the last tile we were able to end on
             // We can assume we can pass through this tile, as we would have broken earlier
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {

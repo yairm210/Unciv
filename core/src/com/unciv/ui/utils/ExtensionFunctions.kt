@@ -114,7 +114,7 @@ fun Table.addSeparator(color: Color = Color.WHITE, colSpan: Int = 0, height: Flo
 
 /**
  * Create a vertical separator as an empty Container with a colored background.
- * 
+ *
  * Note: Unlike the horizontal [addSeparator] this cannot automatically span several rows. Repeat the separator if needed.
  */
 fun Table.addSeparatorVertical(color: Color = Color.WHITE, width: Float = 2f): Cell<Image> {
@@ -209,11 +209,11 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
 fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null)
     = CheckBox(this.tr(), BaseScreen.skin).apply {
         isChecked = startsOutChecked
-        if (changeAction != null) onChange { 
+        if (changeAction != null) onChange {
             changeAction(isChecked)
         }
         // Add a little distance between the icon and the text. 0 looks glued together,
-        // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".  
+        // 5 is about half an uppercase letter, and 1 about the width of the vertical line in "P".
         imageCell.padRight(1f)
     }
 

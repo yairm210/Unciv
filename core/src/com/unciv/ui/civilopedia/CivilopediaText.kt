@@ -107,8 +107,8 @@ class FormattedLine (
     val displayColor: Color by lazy { parseColor() }
 
     /** Returns true if this formatted line will not display anything */
-    fun isEmpty(): Boolean = text.isEmpty() && extraImage.isEmpty() && 
-            !starred && icon.isEmpty() && link.isEmpty() 
+    fun isEmpty(): Boolean = text.isEmpty() && extraImage.isEmpty() &&
+            !starred && icon.isEmpty() && link.isEmpty()
 
     /** Self-check to potentially support the mod checker
      * @return `null` if no problems found, or multiline String naming problems.
@@ -185,7 +185,7 @@ class FormattedLine (
             val result = HashMap<String,CivilopediaCategories>()
             allObjectMapsSequence.filter { !it.first.hide }
                 .flatMap { pair -> pair.second.keys.asSequence().map { key -> pair.first to key } }
-                .forEach { 
+                .forEach {
                     result[it.second] = it.first
                     //println("  ${it.second} is a ${it.first}")
                 }
@@ -229,7 +229,7 @@ class FormattedLine (
     /**
      * Renders the formatted line as a scene2d [Actor] (currently always a [Table])
      * @param labelWidth Total width to render into, needed to support wrap on Labels.
-     * @param iconDisplay Flag to omit link or all images. 
+     * @param iconDisplay Flag to omit link or all images.
      */
     fun render(labelWidth: Float, iconDisplay: IconDisplay = IconDisplay.All): Actor {
         if (extraImage.isNotEmpty()) {
@@ -437,7 +437,7 @@ interface ICivilopediaText {
      *
      * Please do not rely on a UncivGame.Current.gameInfo being initialized, this should be able to run from the main menu.
      * (And the info displayed should be about the **ruleset**, not the player situation)
-     * 
+     *
      * Default implementation is empty - no need to call super in overrides.
      *
      * @param ruleset The current ruleset for the Civilopedia viewer

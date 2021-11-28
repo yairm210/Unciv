@@ -119,8 +119,8 @@ class TileImprovementConstructionTests {
             if (resource.improvement == null) continue
             val improvement = ruleSet.tileImprovements[resource.improvement]!!
             if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) continue
-            val wrongResource = ruleSet.tileResources.values.firstOrNull { 
-                it != resource && it.improvement != improvement.name 
+            val wrongResource = ruleSet.tileResources.values.firstOrNull {
+                it != resource && it.improvement != improvement.name
             } ?: continue
             val tile = getTile()
             tile.baseTerrain = "Plains"

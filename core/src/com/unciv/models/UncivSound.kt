@@ -34,7 +34,7 @@ class UncivSound private constructor (
 /*
     init {
         // Checking contract "use non-custom *w/o* filename OR custom *with* one
-        // Removed due to private constructor 
+        // Removed due to private constructor
         if ((type == UncivSoundConstants.Custom) == filename.isNullOrEmpty()) {
             throw IllegalArgumentException("Invalid UncivSound constructor arguments")
         }
@@ -67,7 +67,7 @@ class UncivSound private constructor (
 
     // overrides ensure usability as hash key
     override fun hashCode(): Int {
-        return type.hashCode() xor value.hashCode() 
+        return type.hashCode() xor value.hashCode()
     }
     override fun equals(other: Any?): Boolean {
         if (other == null || other !is UncivSound) return false

@@ -26,7 +26,7 @@ private object WorkerAutomationConst {
  * Contains the logic for worker automation.
  *
  * This is instantiated from [CivilizationInfo.getWorkerAutomation] and cached there.
- * 
+ *
  * @param civInfo       The Civilization - data common to all automated workers is cached once per Civ
  * @param cachedForTurn The turn number this was created for - a recreation of the instance is forced on different turn numbers
  */
@@ -86,9 +86,9 @@ class WorkerAutomation(
     }
 
     /** Caches BFS by city locations (cities needing connecting).
-     * 
+     *
      *  key: The city to connect from as [hex position][Vector2].
-     *  
+     *
      *  value: The [BFS] searching from that city, whether successful or not.
      */
     //todo: If BFS were to deal in vectors instead of TileInfos, we could copy this on cloning
@@ -114,7 +114,7 @@ class WorkerAutomation(
         fun evaluateFortPlacement(tile: TileInfo, civInfo: CivilizationInfo, isCitadel: Boolean): Boolean {
             return civInfo.getWorkerAutomation().evaluateFortPlacement(tile, isCitadel)
         }
-        
+
         /** For console logging only */
         private fun MapUnit.label() = toString() + " " + getTile().position.toString()
     }
@@ -299,7 +299,7 @@ class WorkerAutomation(
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
-            
+
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
             && tile.tileResource.improvement != tile.improvement
             && (unit == null || chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable

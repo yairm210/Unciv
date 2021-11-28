@@ -45,11 +45,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
-    val specialUpgradesTo: String? by lazy { 
+    val specialUpgradesTo: String? by lazy {
         uniqueObjects
         .filter { it.placeholderText == "May upgrade to [] through ruins-like effects"}
         .map { it.params[0] }
-        .firstOrNull() 
+        .firstOrNull()
     }
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -234,8 +234,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         unit.civInfo = civInfo
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
-        // and the civInfo is required for using `hasUnique` when determining its movement options  
-        unit.setTransients(civInfo.gameInfo.ruleSet) 
+        // and the civInfo is required for using `hasUnique` when determining its movement options
+        unit.setTransients(civInfo.gameInfo.ruleSet)
 
         return unit
     }
@@ -255,7 +255,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (cityInfo == null) return super.canBePurchasedWithStat(cityInfo, stat)
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-        
+
         return (
             cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
                 .any {
@@ -402,25 +402,25 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (hasUnique(UniqueType.Unbuildable))
             rejectionReasons.add(RejectionReason.Unbuildable)
 
-        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
-            rejectionReasons.add(RejectionReason.RequiresTech.apply { this.errorMessage = "$requiredTech not researched" }) 
+        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
+            rejectionReasons.add(RejectionReason.RequiresTech.apply { this.errorMessage = "$requiredTech not researched" })
         if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
             rejectionReasons.add(RejectionReason.Obsoleted.apply { this.errorMessage = "Obsolete by $obsoleteTech" })
 
-        if (uniqueTo != null && uniqueTo != civInfo.civName) 
+        if (uniqueTo != null && uniqueTo != civInfo.civName)
             rejectionReasons.add(RejectionReason.UniqueToOtherNation.apply { this.errorMessage = "Unique to $uniqueTo" })
         if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique.apply { this.errorMessage = "Our unique unit replaces this" })
 
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon())
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
         for (unique in uniqueObjects) {
             if (unique.placeholderText != "Unlocked with []" && unique.placeholderText != "Requires []") continue
             val filter = unique.params[0]
             when {
-                ruleSet.technologies.contains(filter) -> 
-                    if (!civInfo.tech.isResearched(filter)) 
+                ruleSet.technologies.contains(filter) ->
+                    if (!civInfo.tech.isResearched(filter))
                         rejectionReasons.add(RejectionReason.RequiresTech.apply { errorMessage = unique.text })
                 ruleSet.policies.contains(filter) ->
                     if (!civInfo.policies.isAdopted(filter))
@@ -472,11 +472,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         // If this unit has special abilities that need to be kept track of, start doing so here
         if (unit.hasUnique("Religious Unit") && civInfo.gameInfo.isReligionEnabled()) {
-            unit.religion =  
+            unit.religion =
                 if (unit.hasUnique("Takes your religion over the one in their birth city"))
                     civInfo.religionManager.religion?.name
                 else cityConstructions.cityInfo.religion.getMajorityReligionName()
-            
+
             unit.setupAbilityUses(cityConstructions.cityInfo)
         }
 
@@ -500,7 +500,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             if (unit.matchesFilter(unique.params[0]))
                 XP += unique.params[1].toInt()
         }
-        unit.promotions.XP = XP        
+        unit.promotions.XP = XP
 
         for (unique in cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) }) {
@@ -607,7 +607,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             && (uniqueObjects + getType().uniqueObjects)
                 .any { it.isOfType(UniqueType.Strength)
                     && it.params[0].toInt() > 0
-                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) } 
+                    && it.conditionals.any { conditional -> conditional.isOfType(UniqueType.ConditionalVsCity) }
                 }
         )
 
@@ -656,7 +656,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         unique.conditionals.any {
                             it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
                             || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
-                            || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus 
+                            || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus
                             || it.isOfType(UniqueType.ConditionalInTiles) } // Bonus in terrain or feature - half the bonus
                     ) {
                         power *= (unique.params[0].toInt() / 2f).toPercent()

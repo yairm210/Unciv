@@ -44,7 +44,7 @@ class Technology: RulesetObject() {
                         lineList += "[${unique.params[0]}] from every [${improvement.name}]"
                     else if (unique.isOfType(UniqueType.StatsOnTileWithTech) && unique.params.last() == name)
                         lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
-                    else 
+                    else
                 //
                 if (unique.isOfType(UniqueType.Stats)) {
                     val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)

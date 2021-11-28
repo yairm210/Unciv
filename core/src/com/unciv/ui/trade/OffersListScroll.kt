@@ -76,7 +76,7 @@ class OffersListScroll(
                         tradeButton.add(ImageGetter.getNationIndicator(UncivGame.Current.gameInfo.ruleSet.nations[offer.name]!!, 30f))
                     else -> Unit // Remove warning
                 }
-                
+
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1

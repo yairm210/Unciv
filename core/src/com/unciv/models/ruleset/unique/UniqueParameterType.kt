@@ -100,7 +100,7 @@ enum class UniqueParameterType(val parameterName:String) {
             if (Stat.values().any { it.name == parameterText }) return null
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
-        } 
+        }
     },
     // Only used in values deprecated in 3.17.10
         ConstructionFilter("constructionFilter") {

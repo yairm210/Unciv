@@ -38,7 +38,7 @@ class MapParametersTable(
     // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders
     // in a HashMap for reuse later - in the reset to defaults button. Better here as field than as closure.
     // A HashMap indexed on a Widget is problematic, as it does not define its own hashCode and equals
-    // overrides nor is a Widget a data class. Seems to work anyway.  
+    // overrides nor is a Widget a data class. Seems to work anyway.
     private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
     init {

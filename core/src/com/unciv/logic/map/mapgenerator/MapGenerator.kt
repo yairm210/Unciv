@@ -239,8 +239,8 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun raiseMountainsAndHills(tileMap: TileMap) {
         val mountain = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInChains) }?.name
         val hill = ruleset.terrains.values.firstOrNull { it.hasUnique(UniqueType.OccursInGroups) }?.name
-        val flat = ruleset.terrains.values.firstOrNull { 
-            !it.impassable && it.type == TerrainType.Land && !it.hasUnique(UniqueType.RoughTerrain) 
+        val flat = ruleset.terrains.values.firstOrNull {
+            !it.impassable && it.type == TerrainType.Land && !it.hasUnique(UniqueType.RoughTerrain)
         }?.name
 
         if (flat == null) {
@@ -368,7 +368,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
         val temperatureExtremeness = tileMap.mapParameters.temperatureExtremeness
-        
+
         class TerrainOccursRange(
             val terrain: Terrain,
             val tempFrom: Float, val tempTo: Float,
@@ -376,7 +376,7 @@ class MapGenerator(val ruleset: Ruleset) {
         )
         // List is OK here as it's only sequentially scanned
         val limitsMap: List<TerrainOccursRange> =
-            ruleset.terrains.values.flatMap { terrain -> 
+            ruleset.terrains.values.flatMap { terrain ->
                 terrain.getMatchingUniques(UniqueType.TileGenerationConditions)
                 .map { unique ->
                     TerrainOccursRange(terrain,

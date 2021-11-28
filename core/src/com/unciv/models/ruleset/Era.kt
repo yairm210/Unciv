@@ -72,6 +72,6 @@ class Era : INamed, IHasUniques {
 
     fun getHexColor() = "#" + getColor().toString().substring(0, 6)
 
-    /** This is used for display purposes in templates */ 
+    /** This is used for display purposes in templates */
     override fun toString() = name
 }

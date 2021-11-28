@@ -19,7 +19,7 @@ class BattleDamageModifier(val vs:String, val modificationAmount:Float){
 }
 
 object BattleDamage {
-    
+
     private fun getModifierStringFromUnique(unique: Unique): String {
         return when (unique.sourceObjectType) {
             UniqueTarget.Unit -> "Unit ability"
@@ -212,7 +212,7 @@ object BattleDamage {
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): Counter<String> {
         val modifiers = getGeneralModifiers(defender, attacker, CombatAction.Defend)
         val tile = defender.getTile()
-    
+
         if (defender is MapUnitCombatant) {
 
             if (defender.unit.isEmbarked()) {
@@ -245,7 +245,7 @@ object BattleDamage {
 
         return modifiers
     }
-    
+
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 

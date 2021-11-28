@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
  *      (Exception: international keyboard AltGr-combos)
  * An update supporting easy declarations for any modifier combos would need to use Gdx.input.isKeyPressed()
  * Gdx seems to omit support for a modifier mask (e.g. Ctrl-Alt-Shift) so we would need to reinvent this
- * 
+ *
  * Note: It is important that KeyCharAndCode is an immutable data class to support usage as HashMap key
  */
 
@@ -46,7 +46,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
             else -> "\"$char\""
         }
     }
-    
+
     companion object {
         // Convenience shortcuts for frequently used constants
         /** Android back, assigns ESC automatically as well */
@@ -68,7 +68,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
 
         /** mini-factory for KeyCharAndCode values to be compared by character, not by code */
         fun ascii(char: Char) = KeyCharAndCode(char.lowercaseChar(), 0)
-        
+
         /** factory maps a Char to a keyCode if possible, returns a Char-based instance otherwise */
         fun mapChar(char: Char): KeyCharAndCode {
             val code = Input.Keys.valueOf(char.uppercaseChar().toString())
@@ -88,7 +88,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
  *      keyPressDispatcher['+'] = { zoomIn() }
  *  ```
  *  Optionally use [setCheckpoint] and [revertToCheckPoint] to remember and restore one state.
- *  
+ *
  *  @param name Optional name of the container screen or popup for debugging
  */
 class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (() -> Unit)>() {
@@ -187,7 +187,7 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
                     // see if we want to handle this key, and if not, let it propagate
                     if (!contains(key) || (checkIgnoreKeys?.invoke() == true))
                         return super.keyDown(event, keycode)
-                    
+
                     // try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                     try {
                         this@KeyPressDispatcher[key]?.invoke()

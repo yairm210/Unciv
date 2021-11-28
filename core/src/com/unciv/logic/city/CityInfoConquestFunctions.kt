@@ -32,7 +32,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
     }
 
     private fun destroyBuildingsOnCapture() {
-        city.apply {            
+        city.apply {
             // Possibly remove other buildings
             for (building in cityConstructions.getBuiltBuildings()) {
                 when {
@@ -49,7 +49,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
         }
     }
-    
+
     private fun removeBuildingsOnMoveToCiv(oldCiv: CivilizationInfo) {
         city.apply {
             // Remove all buildings provided for free to this city
@@ -76,9 +76,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
         }
     }
 
-    /** Function for stuff that should happen on any capture, be it puppet, annex or liberate. 
+    /** Function for stuff that should happen on any capture, be it puppet, annex or liberate.
      * Stuff that should happen any time a city is moved between civs, so also when trading,
-     * should go in `this.moveToCiv()`, which this function also calls. 
+     * should go in `this.moveToCiv()`, which this function also calls.
      */
     private fun conquerCity(conqueringCiv: CivilizationInfo, conqueredCiv: CivilizationInfo, receivingCiv: CivilizationInfo) {
         val goldPlundered = getGoldForCapturingCity(conqueringCiv)
@@ -89,7 +89,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && resistanceCounter != 0
 
             destroyBuildingsOnCapture()
-            
+
             this@CityInfoConquestFunctions.moveToCiv(receivingCiv)
 
             Battle.destroyIfDefeated(conqueredCiv, conqueringCiv)
@@ -98,7 +98,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignPopulation()
 
-            resistanceCounter = 
+            resistanceCounter =
                 if (reconqueredCityWhileStillInResistance || foundingCiv == receivingCiv.civName) 0
                 else population.population // I checked, and even if you puppet there's resistance for conquering
         }
@@ -255,11 +255,11 @@ class CityInfoConquestFunctions(val city: CityInfo){
                 population.autoAssignPopulation()
             }
 
-    
+
             // Remove their free buildings from this city and remove free buildings provided by the city from their cities
             removeBuildingsOnMoveToCiv(oldCiv)
             // Add our free buildings to this city and add free buildings provided by the city to other cities
-            civInfo.civConstructions.tryAddFreeBuildings() 
+            civInfo.civConstructions.tryAddFreeBuildings()
 
             // Place palace for newCiv if this is the only city they have
             if (newCivInfo.cities.count() == 1) {

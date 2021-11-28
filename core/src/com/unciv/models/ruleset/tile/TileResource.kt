@@ -16,7 +16,7 @@ class TileResource : RulesetStatsObject() {
     var revealedBy: String? = null
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
-    
+
     override fun getUniqueTarget() = UniqueTarget.Resource
 
 
@@ -84,7 +84,7 @@ class TileResource : RulesetStatsObject() {
 
         return textList
     }
-    
+
     class DepositAmount {
         var sparse: Int = 1
         var default: Int = 2

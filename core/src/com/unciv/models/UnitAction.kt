@@ -24,7 +24,7 @@ data class UnitAction(
     fun getIcon(): Actor {
         if (type.imageGetter != null) return type.imageGetter.invoke()
         return when {
-            type == UnitActionType.Upgrade 
+            type == UnitActionType.Upgrade
                     && title.equalsPlaceholderText("Upgrade to [] ([] gold)") -> {
                 ImageGetter.getUnitIcon(title.getPlaceholderParameters()[0])
             }
@@ -36,14 +36,14 @@ data class UnitAction(
                     && title.equalsPlaceholderText("Spread []") -> {
                 val religionName = title.getPlaceholderParameters()[0]
                 ImageGetter.getReligionImage(
-                    if (ImageGetter.religionIconExists(religionName)) religionName 
+                    if (ImageGetter.religionIconExists(religionName)) religionName
                     else "Pantheon"
                 ).apply { color = Color.BLACK }
             }
             type == UnitActionType.Fortify || type == UnitActionType.FortifyUntilHealed -> {
                 val match = fortificationRegex.matchEntire(title)
                 val percentFortified = match?.groups?.get(1)?.value?.toInt() ?: 0
-                ImageGetter.getImage("OtherIcons/Shield").apply { 
+                ImageGetter.getImage("OtherIcons/Shield").apply {
                     color = Color.BLACK.cpy().lerp(Color.GREEN, percentFortified / 80f)
                 }
             }
@@ -56,7 +56,7 @@ data class UnitAction(
 }
 
 /** Unit Actions - generic enum with static properties
- * 
+ *
  * @param value         _default_ label to display, can be overridden in UnitAction instantiation
  * @param imageGetter   optional lambda to get an Icon - `null` if icon is dependent on outside factors and needs special handling
  * @param key           keyboard binding - can be a [KeyCharAndCode], a [Char], or omitted.
@@ -99,7 +99,7 @@ enum class UnitActionType(
         { imageGetPromote() }, 'o', UncivSound.Promote),
     Upgrade("Upgrade",
         null, 'u', UncivSound.Upgrade),
-    Pillage("Pillage", 
+    Pillage("Pillage",
         { ImageGetter.getImage("OtherIcons/Pillage") }, 'p'),
     Paradrop("Paradrop",
         { ImageGetter.getUnitIcon("Paratrooper") }, 'p'),

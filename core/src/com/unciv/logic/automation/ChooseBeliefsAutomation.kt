@@ -12,10 +12,10 @@ import kotlin.math.min
 import kotlin.random.Random
 
 object ChooseBeliefsAutomation {
-    
+
     fun rateBelief(civInfo: CivilizationInfo, belief: Belief): Float {
         var score = 0f
-        
+
         for (city in civInfo.cities) {
             for (tile in city.getCenterTile().getTilesInDistance(3)) {
                 val tileScore = beliefBonusForTile(belief, tile, city)
@@ -23,29 +23,29 @@ object ChooseBeliefsAutomation {
                     city.workedTiles.contains(tile.position) -> 8
                     tile.getCity() == city -> 5
                     else -> 3
-                } * (Random.nextFloat() * 0.05f + 0.975f) 
+                } * (Random.nextFloat() * 0.05f + 0.975f)
             }
-            
+
             score += beliefBonusForCity(civInfo, belief, city) * (Random.nextFloat() * 0.1f + 0.95f)
         }
-        
+
         score += beliefBonusForPlayer(civInfo, belief) * (Random.nextFloat() * 0.3f + 0.85f)
 
         // All of these Random.nextFloat() don't exist in the original, but I've added them to make things a bit more random.
-        
+
         if (belief.type == BeliefType.Pantheon)
             score *= 0.9f
-        
+
         return score
     }
-    
+
     private fun beliefBonusForTile(belief: Belief, tile: TileInfo, city: CityInfo): Float {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
             when (unique.placeholderText) {
                 UniqueType.StatsFromObject.placeholderText -> if (tile.matchesFilter(unique.params[1]))
                     bonusYield += unique.stats.values.sum()
-                "[] from [] tiles without [] []" -> 
+                "[] from [] tiles without [] []" ->
                     if (city.matchesFilter(unique.params[3])
                         && tile.matchesFilter(unique.params[1])
                         && !tile.matchesFilter(unique.params[2])
@@ -55,14 +55,14 @@ object ChooseBeliefsAutomation {
         }
         return bonusYield
     }
-    
+
     private fun beliefBonusForCity(civInfo: CivilizationInfo, belief: Belief, city: CityInfo): Float {
         var score = 0f
         val ruleSet = civInfo.gameInfo.ruleSet
         for (unique in belief.uniqueObjects) {
             var modifier = 1f
             if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalWar) || it.isOfType(UniqueType.ConditionalNotWar) })
-                modifier *= 0.5f 
+                modifier *= 0.5f
             // Multiply by 3/10 if has an obsoleted era
             // Multiply by 2 if enough pop/followers (best implemented with conditionals, so left open for now)
             // If obsoleted, continue
@@ -73,17 +73,17 @@ object ChooseBeliefsAutomation {
                 "[] Units adjacent to this city heal [] HP per turn when healing" -> unique.params[1].toFloat() / 10f
                 "+[]% Production when constructing []" -> unique.params[0].toFloat() / 3f
                 UniqueType.StatsFromCitiesOnSpecificTiles.placeholderText ->
-                    if (city.getCenterTile().matchesFilter(unique.params[1])) 
-                        unique.stats.values.sum() // Modified by personality 
+                    if (city.getCenterTile().matchesFilter(unique.params[1]))
+                        unique.stats.values.sum() // Modified by personality
                     else 0f
                 UniqueType.StatsFromObject.placeholderText,
                 "[] from every [] in cities where this religion has at least [] followers" ->
                     when {
                         ruleSet.buildings.containsKey(unique.params[1]) -> {
-                            unique.stats.values.sum() / 
+                            unique.stats.values.sum() /
                                 if (ruleSet.buildings[unique.params[1]]!!.isWonder) 2f
                                 else 1f
-                            
+
                         }
                         ruleSet.specialists.containsKey(unique.params[1]) -> {
                             unique.stats.values.sum() *
@@ -98,8 +98,8 @@ object ChooseBeliefsAutomation {
                     unique.stats.values.sum() *
                         if (city.isConnectedToCapital()) 2f
                         else 1f
-                "[]% [] from every follower, up to []%" -> 
-                    min(unique.params[0].toFloat() * city.population.population, unique.params[2].toFloat()) 
+                "[]% [] from every follower, up to []%" ->
+                    min(unique.params[0].toFloat() * city.population.population, unique.params[2].toFloat())
                 UniqueType.StatsPerCity.placeholderText ->
                     if (city.matchesFilter(unique.params[1]))
                         unique.stats.values.sum()
@@ -107,10 +107,10 @@ object ChooseBeliefsAutomation {
                 else -> 0f
             }
         }
-        
+
         return score
     }
-    
+
     private fun beliefBonusForPlayer(civInfo: CivilizationInfo, belief: Belief): Float {
         var score = 0f
         val amountOfEnhancedReligions = civInfo.religionManager.amountOfFoundableReligions()
@@ -123,8 +123,8 @@ object ChooseBeliefsAutomation {
             amountOfEnhancedReligions < 33 -> 2f
             amountOfEnhancedReligions < 66 -> 1f
             else -> 1/2f
-        } 
-        
+        }
+
         for (unique in belief.uniqueObjects) {
             val modifier =
                 if (unique.conditionals.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == civInfo.religionManager.getGreatProphetEquivalent() }) 1/2f
@@ -136,9 +136,9 @@ object ChooseBeliefsAutomation {
                         if (civInfo.victoryType() == VictoryType.Domination) 2f
                         else 1f
                 "May buy [] buildings for [] [] []", "May buy [] units for [] [] []" ->
-                    if (civInfo.religionManager.religion != null 
+                    if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.getFollowerUniques()
-                            .any { it.placeholderText == unique.placeholderText } 
+                            .any { it.placeholderText == unique.placeholderText }
                     ) 0f
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
@@ -176,13 +176,13 @@ object ChooseBeliefsAutomation {
                 UniqueType.SpreadReligionStrength.placeholderText ->
                     unique.params[0].toInt() / goodLateModifier
                 "[]% Faith cost of generating Great Prophet equivalents" ->
-                    unique.params[0].toInt() / goodLateModifier / 2f    
+                    unique.params[0].toInt() / goodLateModifier / 2f
                 "[] cost for [] units []%" ->
                     unique.params[2].toInt() / goodLateModifier
                 else -> 0f
             }
         }
-        
+
         return score
     }
 }

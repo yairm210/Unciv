@@ -14,7 +14,7 @@ import kotlin.math.sign
 
 /**
  * Helper class for Mod Manager - filtering and sorting.
- * 
+ *
  * This isn't a UI Widget, but offers one: [expander] can be used to offer filtering and sorting options.
  * It holds the variables [sortInstalled] and [sortOnline] for the [modManagementScreen] and knows
  * how to sort collections of [ModUIData] by providing comparators.
@@ -27,7 +27,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         val sortByDate = Comparator { mod1, mod2: ModUIData -> mod1.lastUpdated().compareTo(mod2.lastUpdated()) }
         val sortByDateDesc = Comparator { mod1, mod2: ModUIData -> mod2.lastUpdated().compareTo(mod1.lastUpdated()) }
         // comparators for stars or status
-        val sortByStars = Comparator { mod1, mod2: ModUIData -> 
+        val sortByStars = Comparator { mod1, mod2: ModUIData ->
             10 * (mod2.stargazers() - mod1.stargazers()) + mod1.name.compareTo(mod2.name, true).sign
         }
         val sortByStatus = Comparator { mod1, mod2: ModUIData ->

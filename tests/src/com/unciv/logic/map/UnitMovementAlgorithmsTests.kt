@@ -100,7 +100,7 @@ class UnitMovementAlgorithmsTests {
             if (terrain.impassable) continue
             tile.baseTerrain = terrain.name
             tile.setTransients()
-            
+
             for (type in ruleSet.unitTypes) {
                 unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
                 Assert.assertTrue("%s cannot be at %s".format(type.key, terrain.name),
@@ -198,7 +198,7 @@ class UnitMovementAlgorithmsTests {
             civInfo.tech.techsResearched.remove("Astronomy")
 
             Assert.assertTrue("$type cannot be in Ocean until Astronomy",
-                    (unit.baseUnit.isMelee() || unit.baseUnit.isRanged()) 
+                    (unit.baseUnit.isMelee() || unit.baseUnit.isRanged())
                                 != unit.movement.canPassThrough(tile))
 
             civInfo.tech.techsResearched.add("Astronomy")

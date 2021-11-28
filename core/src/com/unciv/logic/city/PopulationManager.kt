@@ -65,8 +65,8 @@ class PopulationManager {
                 .getMatchingUniques("[]% of food is carried over [] after population increases")
                 .filter { cityInfo.matchesFilter(it.params[1]) }
                 .sumOf { it.params[0].toInt() }
-            // Try to avoid runaway food gain in mods, just in case 
-            if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
+            // Try to avoid runaway food gain in mods, just in case
+            if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             addPopulation(1)
             autoAssignPopulation()
@@ -77,7 +77,7 @@ class PopulationManager {
     private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
     internal fun addPopulation(count: Int) {
-        val changedAmount = 
+        val changedAmount =
             if (population + count < 0) -population
             else count
         population += changedAmount

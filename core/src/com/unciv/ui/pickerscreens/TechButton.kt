@@ -66,7 +66,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
 
         for (improvement in ruleset.tileImprovements.values
             .filter {
-                it.techRequired == techName 
+                it.techRequired == techName
                 || it.uniqueObjects.any { u -> u.allParams.contains(techName) }
             }
             .filter { it.uniqueTo == null || it.uniqueTo == civName }

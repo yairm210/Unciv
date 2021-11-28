@@ -264,7 +264,7 @@ object Automation {
         }
         return rank
     }
-    
+
     // Ranks a tile for the expansion algorithm of cities
     internal fun rankTileForExpansion(tile: TileInfo, cityInfo: CityInfo): Int {
         // https://github.com/Gedemon/Civ5-DLL/blob/aa29e80751f541ae04858b6d2a2c7dcca454201e/CvGameCoreDLL_Expansion1/CvCity.cpp#L10301
@@ -282,7 +282,7 @@ object Automation {
         if (tile.hasViewableResource(cityInfo.civInfo)) {
             if (tile.tileResource.resourceType != ResourceType.Bonus) score -= 105
             else if (distance <= 3) score -= 104
-            
+
         } else {
             // Water tiles without resources aren't great
             if (tile.isWater) score += 25
@@ -297,7 +297,7 @@ object Automation {
 
         // The original checks if the tile has a road, but adds a score of 0 if it does.
         // Therefore, this check is removed here.
-        
+
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
@@ -323,7 +323,7 @@ object Automation {
         // Tiles not adjacent to owned land are very hard to acquire
         if (tile.neighbors.none { it.getCity() != null && it.getCity()!!.id == cityInfo.id })
             score += 1000
-        
+
         return score
     }
 

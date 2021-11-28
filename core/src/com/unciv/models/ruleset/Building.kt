@@ -151,7 +151,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun getStats(city: CityInfo?): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
-        val stats = cloneStats() 
+        val stats = cloneStats()
         if (city == null) return stats
         val civInfo = city.civInfo
 
@@ -340,7 +340,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
         if (stat == Stat.Gold && isAnyWonder()) return false
         if (cityInfo == null) return super.canBePurchasedWithStat(cityInfo, stat)
-        
+
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
         return (
             cityInfo.getMatchingUniques(UniqueType.BuyBuildingsIncreasingCost, conditionalState)
@@ -370,7 +370,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun getBaseBuyCost(cityInfo: CityInfo, stat: Stat): Int? {
         if (stat == Stat.Gold) return getBaseGoldCost(cityInfo.civInfo).toInt()
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
-        
+
         return sequence {
             val baseCost = super.getBaseBuyCost(cityInfo, stat)
             if (baseCost != null)
@@ -403,8 +403,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
             yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyBuildingsForAmountStat, conditionalState)
                 .filter {
-                    it.params[2] == stat.name 
-                    && matchesFilter(it.params[0]) 
+                    it.params[2] == stat.name
+                    && matchesFilter(it.params[0])
                     && cityInfo.matchesFilter(it.params[3])
                 }.map { it.params[1].toInt() }
             )
@@ -444,7 +444,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val civInfo = cityConstructions.cityInfo.civInfo
         val ruleSet = civInfo.gameInfo.ruleSet
 
-        if (cityConstructions.isBuilt(name)) 
+        if (cityConstructions.isBuilt(name))
             rejectionReasons.add(RejectionReason.AlreadyBuilt)
         // for buildings that are created as side effects of other things, and not directly built,
         // or for buildings that can only be bought
@@ -467,7 +467,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-                "Enables nuclear weapon" -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled) 
+                "Enables nuclear weapon" -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
                 UniqueType.MustBeOn.placeholderText ->
@@ -480,36 +480,36 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
                 UniqueType.MustBeNextTo.placeholderText ->
                     if (// Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
-                        !(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) 
+                        !(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver())
                         && cityCenter.getTilesInDistance(1).none { it.matchesFilter(unique.params[0], civInfo) }
-                    ) 
+                    )
                         rejectionReasons.add(RejectionReason.MustBeNextToTile.apply { errorMessage = unique.text })
 
                 UniqueType.MustNotBeNextTo.placeholderText ->
-                    if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) }) 
+                    if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) })
                         rejectionReasons.add(RejectionReason.MustNotBeNextToTile.apply { errorMessage = unique.text })
 
-                "Must have an owned [] within [] tiles" -> 
+                "Must have an owned [] within [] tiles" ->
                     if (cityCenter.getTilesInDistance(unique.params[1].toInt())
                         .none { it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == cityConstructions.cityInfo.civInfo }
-                    ) 
+                    )
                         rejectionReasons.add(RejectionReason.MustOwnTile.apply { errorMessage = unique.text })
 
                 // Deprecated since 3.16.11
-                    "Can only be built in annexed cities" -> 
+                    "Can only be built in annexed cities" ->
                         if (
                             cityConstructions.cityInfo.isPuppet
                             || cityConstructions.cityInfo.civInfo.civName == cityConstructions.cityInfo.foundingCiv
-                        ) 
+                        )
                             rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
                 //
 
-                "Can only be built []" -> 
-                    if (!cityConstructions.cityInfo.matchesFilter(unique.params[0])) 
+                "Can only be built []" ->
+                    if (!cityConstructions.cityInfo.matchesFilter(unique.params[0]))
                         rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
 
-                "Obsolete with []" -> 
-                    if (civInfo.tech.isResearched(unique.params[0])) 
+                "Obsolete with []" ->
+                    if (civInfo.tech.isResearched(unique.params[0]))
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
 
                 UniqueType.HiddenWithoutReligion.text ->
@@ -590,7 +590,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         if ("Spaceship part" in uniques) {
-            if (!civInfo.hasUnique("Enables construction of Spaceship parts")) 
+            if (!civInfo.hasUnique("Enables construction of Spaceship parts"))
                 rejectionReasons.add(
                     RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" }
                 )
@@ -611,14 +611,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
             "Requires a [] in all cities" -> {
                 val filter = unique.params[0]
-                if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter) 
-                    && civInfo.cities.any { 
-                        !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0]) 
+                if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
+                    && civInfo.cities.any {
+                        !it.isPuppet && !it.cityConstructions.containsBuildingOrEquivalent(unique.params[0])
                     }
                 ) {
                     rejectionReasons.add(
                         // replace with civ-specific building for user
-                        RejectionReason.RequiresBuildingInAllCities.apply { 
+                        RejectionReason.RequiresBuildingInAllCities.apply {
                             errorMessage = "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"
                         }
                     )
@@ -669,7 +669,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                        || (it.getTileImprovement()?.isGreatImprovement() == true && it.tileResource.resourceType == ResourceType.Strategic)
                     )
                 }
-            if (!containsResourceWithImprovement) 
+            if (!containsResourceWithImprovement)
                 rejectionReasons.add(RejectionReason.RequiresNearbyResource.apply { errorMessage = "Nearby $requiredNearbyImprovedResources required" })
         }
 

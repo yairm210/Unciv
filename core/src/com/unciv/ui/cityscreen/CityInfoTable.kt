@@ -225,7 +225,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
 
     companion object {
         private const val FONT_SIZE_STAT_INFO_HEADER = 22
-        
+
         private fun Float.toPercentLabel() =
             "${if (this>0f) "+" else ""}${DecimalFormat("0.#").format(this)}%".toLabel()
         private fun Float.toOneDecimalLabel() =

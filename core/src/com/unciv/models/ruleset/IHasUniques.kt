@@ -11,22 +11,22 @@ import com.unciv.models.ruleset.unique.UniqueType
 interface IHasUniques {
     var uniques: ArrayList<String> // Can not be a hashset as that would remove doubles
     // I bet there's a way of initializing these without having to override it everywhere...
-    val uniqueObjects: List<Unique> 
-    
+    val uniqueObjects: List<Unique>
+
     /** Technically not currently needed, since the unique target can be retrieved from every unique in the uniqueObjects,
      * But making this a function is relevant for future "unify Unciv object" plans ;)
      * */
     fun getUniqueTarget(): UniqueTarget
-    
-    fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null) = 
+
+    fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null) =
         uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate && it.conditionalsApply(stateForConditionals) }
-    
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = 
+
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         uniqueObjects.asSequence().filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
-    
-    fun hasUnique(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null) = 
+
+    fun hasUnique(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null) =
         uniqueObjects.any { it.placeholderText == uniqueTemplate && it.conditionalsApply(stateForConditionals) }
-    
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = 
+
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         uniqueObjects.any { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
 }

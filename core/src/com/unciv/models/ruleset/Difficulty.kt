@@ -88,7 +88,7 @@ class Difficulty: INamed, ICivilopediaText {
         if (aiMajorCivBonusStartingUnits.isNotEmpty()) {
             lines += FormattedLine()
             lines += FormattedLine("{Major AI civilization bonus starting units}:", indent = 1)
-            aiMajorCivBonusStartingUnits.groupBy { it }.map { 
+            aiMajorCivBonusStartingUnits.groupBy { it }.map {
                 it.key to it.value.size
             }.forEach {
                 lines += FormattedLine(Unique(if (it.second == 1) "[${it.first}]" else "${it.second} [${it.first}]"), indent = 2)

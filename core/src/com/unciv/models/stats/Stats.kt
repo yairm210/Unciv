@@ -6,9 +6,9 @@ import kotlin.reflect.KMutableProperty0
 /**
  * A container for the seven basic ["currencies"][Stat] in Unciv,
  * **Mutable**, allowing for easy merging of sources and applying bonuses.
- * 
+ *
  * Supports e.g. `for ((key,value) in <Stats>)` - the [iterator] will skip zero values automatically.
- * 
+ *
  * Also possible: `<Stats>`.[values].sum() and similar aggregates over a Sequence<Float>.
  */
 open class Stats(
@@ -122,11 +122,11 @@ open class Stats(
         happiness *= number
         faith *= number
     }
-    
+
     operator fun div(number: Float) = times(1/number)
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
-     * 
+     *
      * Example output: `+1 Production, -1 Food`.
      */
     override fun toString(): String {

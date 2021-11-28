@@ -183,13 +183,13 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     BuyBuildingsForAmountStat("May buy [buildingFilter] buildings for [amount] [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyUnitsWithStat("May buy [baseUnitFilter] units with [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyBuildingsWithStat("May buy [buildingFilter] buildings with [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    
+
     BuyUnitsByProductionCost("May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     BuyBuildingsByProductionCost("May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost", UniqueTarget.FollowerBelief, UniqueTarget.Global),
 
     @Deprecated("As of 3.17.9", ReplaceWith ("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"))
     BuyUnitsIncreasingCostEra("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])", UniqueTarget.Global),
-    
+
     MayanGainGreatPerson("Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.", UniqueTarget.Nation),
     MayanCalendarDisplay("Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.", UniqueTarget.Nation),
 
@@ -228,7 +228,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
     CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
-    
+
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit),
 
@@ -338,10 +338,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     TileProvidesYieldWithoutPopulation("Tile provides yield without assigned population", UniqueTarget.Terrain, UniqueTarget.Improvement),
     NullifyYields("Nullifies all other stats this tile provides", UniqueTarget.Terrain),
     RestrictedBuildableImprovements("Only [improvementFilter] improvements may be built on this tile", UniqueTarget.Terrain),
-    
+
     BlocksLineOfSightAtSameElevation("Blocks line-of-sight from tiles at same elevation", UniqueTarget.Terrain),
     VisibilityElevation("Has an elevation of [amount] for visibility calculations", UniqueTarget.Terrain),
-  
+
     OverrideFertility("Always Fertility [amount] for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     AddFertility("[amount] to Fertility for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
@@ -358,24 +358,24 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
     OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
-  
+
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-  
+
     RareFeature("Rare feature", UniqueTarget.Terrain),
-    
+
     ResistsNukes("Resistant to nukes", UniqueTarget.Terrain),
     DestroyableByNukes("Can be destroyed by nukes", UniqueTarget.Terrain),
-    
+
     FreshWater("Fresh water", UniqueTarget.Terrain),
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
-    
+
     /////// Resource uniques
     ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
     CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
-    
+
     ////// Improvement uniques
     ImprovementBuildableByFreshWater("Can also be built on tiles adjacent to fresh water", UniqueTarget.Improvement),
     ImprovementStatsOnTile("[stats] from [tileFilter] tiles", UniqueTarget.Improvement),
@@ -390,32 +390,32 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     RequiresTechToBuildOnTile("Cannot be built on [tileFilter] tiles until [tech] is discovered", UniqueTarget.Improvement),
     CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
     NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
-    
+
     DefensiveBonus("Gives a defensive bonus of [amount]%", UniqueTarget.Improvement),
     ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused
     DamagesAdjacentEnemyUnits("Deal [amount] damage to adjacent enemy units", UniqueTarget.Improvement),
     @Deprecated("As of 3.17.10", ReplaceWith("Adjacent enemy units ending their turn take [30] damage"), DeprecationLevel.WARNING)
     DamagesAdjacentEnemyUnitsForExactlyThirtyDamage("Deal 30 damage to adjacent enemy units", UniqueTarget.Improvement),
-    
+
     GreatImprovement("Great Improvement", UniqueTarget.Improvement),
     IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
-    
+
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
 
     Indestructible("Indestructible", UniqueTarget.Improvement),
     ///////////////////////////////////////// CONDITIONALS /////////////////////////////////////////
 
-    
+
     /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
-    
+
     ConditionalDuringEra("during the [era]", UniqueTarget.Conditional),
     ConditionalBeforeEra("before the [era]", UniqueTarget.Conditional),
     ConditionalStartingFromEra("starting from the [era]", UniqueTarget.Conditional),
-    
+
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
@@ -445,7 +445,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     ///////////////////////////////////////// TRIGGERED ONE-TIME /////////////////////////////////////////
 
-    
+
     OneTimeFreeUnit("Free [baseUnitFilter] appears", UniqueTarget.Global),  // used in Policies, Buildings
     OneTimeAmountFreeUnits("[amount] free [baseUnitFilter] units appear", UniqueTarget.Global), // used in Buildings
     OneTimeFreeUnitRuins("Free [baseUnitFilter] found in the ruins", UniqueTarget.Ruins), // Differs from "Free [] appears" in that it spawns near the ruins instead of in a city
@@ -481,15 +481,15 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns", UniqueTarget.Global),  // used in Policy
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
-    
+
     @Deprecated("As of 3.16.15 - removed 3.18.4", ReplaceWith("Provides the cheapest [stat] building in your first [amount] cities for free"), DeprecationLevel.ERROR)
     FreeStatBuildingsDeprecated("Immediately creates the cheapest available cultural building in each of your first [amount] cities for free", UniqueTarget.Global),
     @Deprecated("As of 3.16.15 - removed 3.18.4", ReplaceWith("Provides a [buildingName] in your first [amount] cities for free"), DeprecationLevel.ERROR)
     FreeSpecificBuildingsDeprecated("Immediately creates a [buildingName] in each of your first [amount] cities for free", UniqueTarget.Global),
-    
+
     ///////////////////////////////////////////// META /////////////////////////////////////////////
-    
-    
+
+
     HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins),
     HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),

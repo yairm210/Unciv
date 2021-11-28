@@ -61,7 +61,7 @@ object NextTurnAutomation {
             bullyCityStates(civInfo)
         }
         automateUnits(civInfo)  // this is the most expensive part
-        
+
         if (civInfo.isMajorCiv()) {
             // Can only be done now, as the prophet first has to decide to found/enhance a religion
             chooseReligiousBeliefs(civInfo)
@@ -463,7 +463,7 @@ object NextTurnAutomation {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
         val availableReligionIcons = civInfo.gameInfo.ruleSet.religions
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
-        val religionIcon = 
+        val religionIcon =
             if (civInfo.nation.favoredReligion in availableReligionIcons) civInfo.nation.favoredReligion
             else availableReligionIcons.randomOrNull()
                 ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
@@ -473,8 +473,8 @@ object NextTurnAutomation {
 
     private fun enhanceReligion(civInfo: CivilizationInfo) {
         civInfo.religionManager.chooseBeliefs(
-            null, 
-            null, 
+            null,
+            null,
             chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
         )
     }
@@ -497,11 +497,11 @@ object NextTurnAutomation {
 
     private fun chooseBeliefOfType(civInfo: CivilizationInfo, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
         return civInfo.gameInfo.ruleSet.beliefs
-            .filter { 
-                (it.value.type == beliefType || beliefType == BeliefType.Any) 
+            .filter {
+                (it.value.type == beliefType || beliefType == BeliefType.Any)
                 && !additionalBeliefsToExclude.contains(it.value)
                 && !civInfo.gameInfo.religions.values
-                    .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value) 
+                    .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value)
             }
             .map { it.value }
             .maxByOrNull { ChooseBeliefsAutomation.rateBelief(civInfo, it) }

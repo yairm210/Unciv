@@ -9,7 +9,7 @@ import com.unciv.models.stats.INamed
 enum class UnitLayer { // The layer in which the unit moves
     Civilian,
     Military,
-    Air 
+    Air
 }
 
 enum class UnitMovementType { // The types of tiles the unit can by default enter
@@ -22,23 +22,23 @@ class UnitType() : INamed, IHasUniques {
     override lateinit var name: String
     private var movementType: String? = null
     private val unitMovementType: UnitMovementType? by lazy { if (movementType == null) null else UnitMovementType.valueOf(movementType!!) }
-    
+
     override var uniques: ArrayList<String> = ArrayList()
     override fun getUniqueTarget() = UniqueTarget.UnitType
     override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
         getUniqueTarget(), name) } }
-    
+
     constructor(name: String, domain: String? = null) : this() {
         this.name = name
         this.movementType = domain
     }
-    
+
     fun getMovementType() = unitMovementType
-    
+
     fun isLandUnit() = unitMovementType == UnitMovementType.Land
     fun isWaterUnit() = unitMovementType == UnitMovementType.Water
     fun isAirUnit() = unitMovementType == UnitMovementType.Air
-    
+
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             "Land" -> isLandUnit()
@@ -49,7 +49,7 @@ class UnitType() : INamed, IHasUniques {
             }
         }
     }
-    
+
     companion object {
         val City = UnitType("City", "Land")
     }

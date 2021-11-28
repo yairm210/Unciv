@@ -85,7 +85,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     /** Forces layout calculation and returns the lower Table's (available constructions) width
      *  - or - the upper Table's width, whichever is greater (in case the former only contains "Loading...")
      */
-    fun getLowerWidth() = max(lowerTable.packIfNeeded().width, getUpperWidth())  // 
+    fun getLowerWidth() = max(lowerTable.packIfNeeded().width, getUpperWidth())  //
 
     fun addActorsToStage() {
         cityScreen.stage.addActor(upperTable)
@@ -99,7 +99,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         upperTable.pack()
         // This should work when set once only in addActorsToStage, but it doesn't (table invisible - why?)
         upperTable.setPosition(posFromEdge, stageHeight - posFromEdge, Align.topLeft)
-        
+
         updateAvailableConstructions()
         lowerTableScrollCell.maxHeight(stageHeight - upperTable.height - 2 * posFromEdge)
     }
@@ -175,7 +175,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
             constructionButtonDTOList.add(
                 ConstructionButtonDTO(
-                    entry, 
+                    entry,
                     buttonText,
                     entry.getRejectionReasons(cityConstructions).getMostImportantRejectionReason()
                 )
@@ -230,7 +230,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     maxButtonWidth = max(maxButtonWidth, constructionButton.packIfNeeded().width)
                 }
 
-                availableConstructionsTable.apply { 
+                availableConstructionsTable.apply {
                     clear()
                     defaults().left().bottom()
                     addCategory("Units", units, maxButtonWidth)
@@ -241,7 +241,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
                     pack()
                 }
 
-                availableConstructionsScrollPane.apply { 
+                availableConstructionsScrollPane.apply {
                     setSize(maxButtonWidth, min(availableConstructionsTable.prefHeight, lowerTableScrollCell.maxHeight))
                     layout()
                     scrollY = constructionsScrollY
@@ -459,7 +459,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
         return button
     }
-    
+
     /** Ask whether user wants to buy [construction] for [stat].
      *
      * Used from onClick and keyboard dispatch, thus only minimal parameters are passed,
@@ -519,7 +519,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         if (isSelectedQueueEntry() || cityScreen.selectedConstruction?.isBuildable(city.cityConstructions) != true) {
             selectedQueueEntry = -1
             cityScreen.selectedConstruction = null
-            
+
             // Allow buying next queued or auto-assigned construction right away
             city.cityConstructions.chooseNextConstruction()
             if (city.cityConstructions.currentConstructionFromQueue.isNotEmpty())
@@ -527,7 +527,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         }
         cityScreen.update()
     }
-    
+
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f))

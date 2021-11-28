@@ -170,7 +170,7 @@ class ModManagementScreen(
         topTable.add(scrollOnlineMods)
         topTable.add(modActionTable)
         topTable.add().row()
-        topTable.add().expandY()  // So short lists won't vertically center everything including headers 
+        topTable.add().expandY()  // So short lists won't vertically center everything including headers
 
         stage.addActor(optionsManager.expander)
         optionsManager.expanderChangeEvent = {
@@ -413,7 +413,7 @@ class ModManagementScreen(
                 Gdx.app.postRunnable {
                     ToastPopup("[${repo.name}] Downloaded!", this)
                     RulesetCache.loadRulesets()
-                    RulesetCache[repo.name]?.let { 
+                    RulesetCache[repo.name]?.let {
                         installedModInfo[repo.name] = ModUIData(it)
                     }
                     refreshInstalledModTable()

@@ -48,7 +48,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
         val unitType = unit.type
         val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter {
-            it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name) 
+            it.unitTypes.contains(unitType.name) || unit.promotions.promotions.contains(it.name)
         }
         val unitAvailablePromotions = unit.promotions.getAvailablePromotions()
 
@@ -62,7 +62,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
                     icon = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(80f),
                     defaultText = unit.name,
                     validate = { it != unit.name},
-                    actionOnOk = { userInput -> 
+                    actionOnOk = { userInput ->
                         unit.instanceName = userInput
                         this.game.setScreen(PromotionPickerScreen(unit))
                     }

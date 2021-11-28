@@ -545,7 +545,7 @@ object Battle {
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
     }
-    
+
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: TileInfo): Boolean {
         val blastRadius =
             if (!nuke.unit.hasUnique(UniqueType.BlastRadius)) 2
@@ -637,7 +637,7 @@ object Battle {
         for (civ in attackingCiv.getKnownCivs()) {
             civ.getDiplomacyManager(attackingCiv).setModifier(DiplomaticModifiers.UsedNuclearWeapons, -50f)
         }
-        
+
         if (!attacker.isDefeated()) {
             attacker.unit.attacksThisTurn += 1
         }

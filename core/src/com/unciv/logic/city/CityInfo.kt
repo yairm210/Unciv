@@ -44,14 +44,14 @@ class CityInfo {
 
     @Transient
     // This is so that military units can enter the city, even before we decide what to do with it
-    var hasJustBeenConquered = false  
+    var hasJustBeenConquered = false
 
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     var name: String = ""
     var foundingCiv = ""
     // This is so that cities in resistance that are recaptured aren't in resistance anymore
-    var previousOwner = "" 
+    var previousOwner = ""
     var turnAcquired = 0
     var health = 200
     var resistanceCounter = 0
@@ -279,7 +279,7 @@ class CityInfo {
             val amount = getTileResourceAmount(tileInfo) * civInfo.getResourceModifier(resource)
             if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
-        
+
         for (tileInfo in getTiles()) {
             if (tileInfo.improvement == null) continue
             val tileImprovement = tileInfo.getTileImprovement()
@@ -303,7 +303,7 @@ class CityInfo {
                 }
             }
         }
-        
+
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
             if (building.name in civInfo.civConstructions.getFreeBuildings(id))
@@ -313,14 +313,14 @@ class CityInfo {
                 cityResources.add(resource, -amount, "Buildings")
             }
         }
-        
+
         for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources)) { // E.G "Provides [1] [Iron]"
             if (!unique.conditionalsApply(civInfo, this)) continue
             val resource = getRuleset().tileResources[unique.params[1]]
             if (resource != null) {
                 cityResources.add(
-                    resource, 
-                    unique.params[0].toInt() * civInfo.getResourceModifier(resource), 
+                    resource,
+                    unique.params[0].toInt() * civInfo.getResourceModifier(resource),
                     "Tiles"
                 )
             }
@@ -484,7 +484,7 @@ class CityInfo {
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         cityConstructions.constructIfEnough()
         cityConstructions.addFreeBuildings()
-        
+
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
@@ -639,7 +639,7 @@ class CityInfo {
                 .filter { it.isMajorCiv() && it != civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
-        val civsWithCloseCities = 
+        val civsWithCloseCities =
             citiesWithin6Tiles
                 .map { it.civInfo }
                 .distinct()

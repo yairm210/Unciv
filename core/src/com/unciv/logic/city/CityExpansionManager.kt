@@ -44,8 +44,8 @@ class CityExpansionManager {
             if (cityInfo.matchesFilter(unique.params[1]))
                 cultureToNextTile /= unique.params[0].toPercent()
         }
-        
-        for (unique in cityInfo.getMatchingUniques("[]% cost of natural border growth")) 
+
+        for (unique in cityInfo.getMatchingUniques("[]% cost of natural border growth"))
             cultureToNextTile *= unique.params[0].toPercent()
 
         return cultureToNextTile.roundToInt()
@@ -76,7 +76,7 @@ class CityExpansionManager {
     fun chooseNewTileToOwn(): TileInfo? {
         val choosableTiles = cityInfo.getCenterTile().getTilesInDistance(5)
             .filter { it.getOwner() == null }
-        
+
         // Technically, in the original a random tile with the lowest score was selected
         // However, doing this requires either caching it, which is way more work,
         // or selecting all possible tiles and only choosing one when the border expands.

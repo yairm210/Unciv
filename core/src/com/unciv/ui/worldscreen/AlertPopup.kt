@@ -19,13 +19,13 @@ import java.util.*
 
 /**
  * [Popup] communicating events other than trade offers to the player.
- * (e.g. First Contact, Wonder built, Tech researched,...) 
+ * (e.g. First Contact, Wonder built, Tech researched,...)
  *
  * Called in [WorldScreen].update, which pulls them from viewingCiv.popupAlerts.
- * 
+ *
  * @param worldScreen The parent screen
  * @param popupAlert The [PopupAlert] entry to present
- * 
+ *
  * @see AlertType
  */
 class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen) {
@@ -143,7 +143,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         else {
                             onClick(function = razeAction)
                             keyPressDispatcher['r'] = razeAction
-                        } 
+                        }
                     }).row()
                     addGoodSizedLabel("Razing the city annexes it, and starts razing the city to the ground.").row()
                     addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()

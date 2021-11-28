@@ -204,7 +204,7 @@ open class TileInfo {
             else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
         }
     }
-    
+
     fun isEnemyTerritory(civInfo: CivilizationInfo): Boolean {
         val tileOwner = getOwner() ?: return false
         return civInfo.isAtWarWith(tileOwner)
@@ -272,7 +272,7 @@ open class TileInfo {
             for (unique in tileUniques) {
                 val tileType = unique.params[1]
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
-                if (matchesTerrainFilter(tileType, observingCiv)) 
+                if (matchesTerrainFilter(tileType, observingCiv))
                     stats.add(unique.stats)
                 if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
                     stats.add(unique.stats)
@@ -383,7 +383,7 @@ open class TileInfo {
                     stats.add(unique.stats)
             }
         //
-        
+
         for (unique in improvement.getMatchingUniques(UniqueType.Stats, StateForConditionals(civInfo = observingCiv, cityInfo = city))) {
             stats.add(unique.stats)
         }
@@ -391,13 +391,13 @@ open class TileInfo {
         if (city != null) {
             val tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals(civInfo = observingCiv, cityInfo = city))
                 .filter { city.matchesFilter(it.params[2]) }
-            val improvementUniques = 
+            val improvementUniques =
                 // Deprecated since 3.17.10
                     improvement.getMatchingUniques(UniqueType.StatsOnTileWithTech)
                         .filter { observingCiv.tech.isResearched(it.params[2]) } +
                 //
                 improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, StateForConditionals(civInfo = observingCiv, cityInfo = city))
-            
+
             for (unique in tileUniques + improvementUniques) {
                 if (improvement.matchesFilter(unique.params[1])
                     // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an endless feedback.
@@ -792,19 +792,19 @@ open class TileInfo {
     fun stripUnits() {
         for (unit in this.getUnits()) removeUnit(unit)
     }
-    
+
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
         resource = newResource.name
-        
+
         if (newResource.resourceType != ResourceType.Strategic) return
-        
+
         for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles)) {
             if (matchesTerrainFilter(unique.params[0])) {
                 resourceAmount = unique.params[1].toInt()
                 return
             }
         }
-        
+
         // Stick to default for now
         resourceAmount = if (majorDeposit)
             newResource.majorDepositAmount.default

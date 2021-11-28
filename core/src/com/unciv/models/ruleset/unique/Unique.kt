@@ -38,7 +38,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     fun conditionalsApply(state: StateForConditionals?): Boolean {
-        if (state == null) return conditionals.isEmpty() 
+        if (state == null) return conditionals.isEmpty()
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
         }
@@ -52,7 +52,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return when (condition.type) {
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
-            UniqueType.ConditionalHappy -> 
+            UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
@@ -70,8 +70,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.policies.isAdopted(condition.params[0])
             UniqueType.ConditionalNoPolicy ->
                 state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
-            
-            UniqueType.ConditionalSpecialistCount -> 
+
+            UniqueType.ConditionalSpecialistCount ->
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
 
             UniqueType.ConditionalVsCity ->
@@ -83,7 +83,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 || (state.unit != null && state.unit.matchesFilter(condition.params[0]))
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
-            UniqueType.ConditionalInTiles -> 
+            UniqueType.ConditionalInTiles ->
                 state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0])
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
@@ -100,7 +100,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                     it.matchesFilter(condition.params[2], state.civInfo)
                 } in (condition.params[0].toInt())..(condition.params[1].toInt())
             UniqueType.ConditionalNeighborTilesAnd ->
-                state.cityInfo != null 
+                state.cityInfo != null
                 && state.cityInfo.getCenterTile().neighbors.count {
                     it.matchesFilter(condition.params[2], state.civInfo) &&
                     it.matchesFilter(condition.params[3], state.civInfo)

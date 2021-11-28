@@ -101,7 +101,7 @@ class Promotion : RulesetObject() {
         }
 
         val grantors = ruleset.buildings.values.filter {
-            building -> building.uniqueObjects.any { 
+            building -> building.uniqueObjects.any {
                 it.placeholderText == "All newly-trained [] units [] receive the [] promotion"
                     && it.params[2] == name
             }

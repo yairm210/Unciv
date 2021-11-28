@@ -32,7 +32,7 @@ object GameStarter {
         // In the case where we used to have an extension mod, and now we don't, we cannot "unselect" it in the UI.
         // We need to remove the dead mods so there aren't problems later.
         gameSetupInfo.gameParameters.mods.removeAll { !RulesetCache.containsKey(it) }
-        
+
         // [TEMPORARY] If we have a base ruleset in the mod list, we make that our base ruleset
         val baseRulesetInMods = gameSetupInfo.gameParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
         if (baseRulesetInMods != null)
@@ -40,7 +40,7 @@ object GameStarter {
 
         if (!RulesetCache.containsKey(gameSetupInfo.gameParameters.baseRuleset))
             gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getBaseRuleset().name
-        
+
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)
         val mapGen = MapGenerator(ruleset)
@@ -293,7 +293,7 @@ object GameStarter {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
 
-            // Determine starting units based on starting era   
+            // Determine starting units based on starting era
             startingUnits = ruleSet.eras[startingEra]!!.getStartingUnits().toMutableList()
             eraUnitReplacement = ruleSet.eras[startingEra]!!.startingMilitaryUnit
 
@@ -309,7 +309,7 @@ object GameStarter {
                 var unit = unitParam // We want to change it and this is the easiest way to do so
                 if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
                 if (unit == "Settler" && "Settler" !in ruleSet.units) {
-                    val buildableSettlerLikeUnits = 
+                    val buildableSettlerLikeUnits =
                         settlerLikeUnits.filter {
                             it.value.isBuildable(civ)
                             && it.value.isCivilian()
@@ -328,7 +328,7 @@ object GameStarter {
                 return civ.getEquivalentUnit(unit).name
             }
 
-            // City states should only spawn with one settler regardless of difficulty, but this may be disabled in mods 
+            // City states should only spawn with one settler regardless of difficulty, but this may be disabled in mods
             if (civ.isCityState() && !ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowCityStatesSpawnUnits)) {
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 

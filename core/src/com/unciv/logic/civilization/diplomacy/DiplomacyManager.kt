@@ -14,7 +14,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 enum class RelationshipLevel(val color: Color) {
-    // War is tested separately for the Diplomacy Screen. Colored RED. 
+    // War is tested separately for the Diplomacy Screen. Colored RED.
     Unforgivable(Color.FIREBRICK),
     Afraid(Color(0x5300ffff)),     // HSV(260,100,100)
     Enemy(Color.YELLOW),
@@ -370,7 +370,7 @@ class DiplomacyManager() {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
                     && (offer.name in negativeCivResources || !civInfo.gameInfo.ruleSet.tileResources.containsKey(offer.name))
                 ) {
-                    
+
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll { it.equals(trade.reverse()) }
@@ -379,7 +379,7 @@ class DiplomacyManager() {
                     if (trade.theirOffers.any { it.name == Constants.peaceTreaty }) {
                         remakePeaceTreaty(trade.theirOffers.first { it.name == Constants.peaceTreaty }.duration)
                     }
-                    
+
                     civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", NotificationIcon.Trade, otherCivName)
                     otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", NotificationIcon.Trade, civInfo.civName)
                     civInfo.updateDetailedCivResources()
@@ -387,7 +387,7 @@ class DiplomacyManager() {
             }
         }
     }
-    
+
     private fun remakePeaceTreaty(durationLeft: Int) {
         val treaty = Trade()
         treaty.ourOffers.add(
@@ -483,7 +483,7 @@ class DiplomacyManager() {
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
-            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() && 
+            if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() &&
                     civInfo.gameInfo.civilizations.filter { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }.any()) {
                 for (unique in civInfo.getMatchingUniques("Militaristic City-States grant units [] times as fast when you are at war with a common nation")) {
                     flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
@@ -605,17 +605,17 @@ class DiplomacyManager() {
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
         if (!otherCiv().isCityState()) return
-        
+
         val eraInfo = civInfo.getEra()
 
         if (relationshipLevel() < RelationshipLevel.Friend) {
-            if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) 
+            if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit))
                 removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
             return
         }
-        
+
         val variance = listOf(-1, 0, 1).random()
-                
+
         if (eraInfo.undefinedCityStateBonuses() && otherCiv().cityStateType == CityStateType.Militaristic) {
             // Deprecated, assume Civ V values for compatibility
             if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit) && relationshipLevel() == RelationshipLevel.Friend)
@@ -625,7 +625,7 @@ class DiplomacyManager() {
                 && relationshipLevel() == RelationshipLevel.Ally)
                 setFlag(DiplomacyFlags.ProvideMilitaryUnit, 17 + variance)
         }
-        
+
         if (eraInfo.undefinedCityStateBonuses()) return
 
         for (bonus in eraInfo.getCityStateBonuses(otherCiv().cityStateType, relationshipLevel())) {
