@@ -430,6 +430,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         if (cityConstructions.isBeingConstructedOrEnqueued(name))
             return false
+        if (hasUnique(UniqueType.MaxNumberBuilding)) {
+            for (unique in getMatchingUniques(UniqueType.MaxNumberBuilding)){
+                if (cityConstructions.cityInfo.civInfo.cities.count{it.cityConstructions.containsBuildingOrEquivalent(name)}>=unique.params[0].toInt())
+                    return false
+            }
+        }
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.none { !it.shouldShow }
             || (
@@ -516,12 +522,20 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-                UniqueType.MaxNumberBuilding.text ->
-                    if (civInfo.cities.count{
+                UniqueType.MaxNumberBuilding.text -> {
+                    println("MaxNumberBuilding")
+                    println("contains:"+civInfo.cities.count {
+                        it.cityConstructions.containsBuildingOrEquivalent(name)})
+                    println("enqueued:"+civInfo.cities.count {
+                        it.cityConstructions.isBeingConstructedOrEnqueued(name)})
+                    println("limit:"+unique.params[0].toInt().toString())
+                    if (civInfo.cities.count {
                                 it.cityConstructions.containsBuildingOrEquivalent(name) ||
-                                        it.cityConstructions.isBeingConstructedOrEnqueued(name)}
+                                        it.cityConstructions.isBeingConstructedOrEnqueued(name)
+                            }
                             >= unique.params[0].toInt())
                         rejectionReasons.add(RejectionReason.MaxNumberBuilding)
+                }
             }
         }
 
