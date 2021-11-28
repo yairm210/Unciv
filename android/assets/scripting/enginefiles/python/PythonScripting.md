@@ -441,7 +441,7 @@ except ForeignError:
 
 The only major caveat to the robustness of this error handling is that it does not protect against valid Kotlin/JVM actions that lead to unexpected states which then cause exceptions in later use by unrelated game code. Assigning an inappropriate value to a Kotlin/JVM member, or deleting a key-value pair where it is required by internal game code, for example, will likely cause the core game to crash the next time the invalid value is used.
 
-```
+```python3
 >>> gameInfo.tileMap.values[0].naturalWonder = "Crash"
 # Executes and sets .naturalWonder to "Crash" successfully.
 # But the game crashes when you click on the changed tile because there aren't any textures or stats for the "Crash" natural wonder.

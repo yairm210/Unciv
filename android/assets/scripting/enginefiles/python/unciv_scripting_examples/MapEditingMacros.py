@@ -17,7 +17,7 @@ from unciv_pyhelpers import *
 
 from . import Utils
 
-# If you modify this file, please add any new functions to the build tests.
+# If you modify this file, please add any new functions to Tests.py.
 
 
 t = re.sub("//.*", "", re.sub('/\*.*\*/', "", unciv.apiHelpers.assetFileString("jsons/Civ V - Gods & Kings/Terrains.json"), flags=re.DOTALL))

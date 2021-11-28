@@ -146,6 +146,7 @@ android/assets/music/
 maps/
 mods/
 SaveFiles/
+SaveFiles
 GameSettings.json
 
 # Python

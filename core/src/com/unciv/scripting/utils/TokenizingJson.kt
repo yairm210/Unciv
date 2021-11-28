@@ -30,7 +30,6 @@ object TokenizingJson {
      */
     object TokenizingSerializer: KSerializer<Any?> {
 
-
         override val descriptor: SerialDescriptor = buildClassSerialDescriptor("Any?")
 
         /**

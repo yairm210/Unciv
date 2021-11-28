@@ -28,6 +28,7 @@ interface IConsoleScreenAccessible {
 
     //Defaults to setting the game's screen to this instance. Can also use a lambda, for E.G. WorldScreen and UncivGame.setWorldScreen().
     fun BaseScreen.setConsoleScreenCloseAction(closeAction: (() -> Unit)? = null) {
+        // TODO: This can probably be combined with setOpenConsoleScreenHotkey.
         this.consoleScreen.closeAction = closeAction ?: { this.game.setScreen(this) }
     }
 

@@ -117,9 +117,9 @@ class TestRunner:
 
 
 @TestRunner.Test(runwith=InGame)
-def NewGameTest():
+def LoadGameTest():
 	"""Example test. Explicitly tests that the InGame context manager is working."""
-	# Everything below is the same, just explicitly passing existing functions to the registration function instead of using it as a decorator.
+	# The other tests below are all set up the same, just by explicitly passing existing functions to the registration function instead of using it as a decorator.
 	assert unciv.apiHelpers.isInGame
 	for v in (unciv.gameInfo, unciv.civInfo, unciv.worldScreen):
 		assert unciv_pyhelpers.real(v) is not None

@@ -116,6 +116,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     }
 
     fun hasBackend(): Boolean {
+        // TODO: Any check like this can be replaced with .isEmpty().
         return scriptingBackends.size > 0
     }
 
