@@ -38,8 +38,8 @@ def staticMethods(obj):
 			setattr(obj, name, next(cls for cls in obj.__class__.__mro__ if name in cls.__dict__).__dict__[name])
 	return obj
 
-DEFAULT_NATIONS_JSON = "android/assets/jsons/Civ V - Gods & Kings/Nations.json"
-DEFAULT_NATIONS_JSON2 = "android/assets/jsons/Civ V - Vanilla/Nations.json"
+DEFAULT_NATIONS_JSON = os.path.join(os.path.dirname(__file__), "android/assets/jsons/Civ V - Gods & Kings/Nations.json")
+DEFAULT_NATIONS_JSON2 = os.path.join(os.path.dirname(__file__), "android/assets/jsons/Civ V - Vanilla/Nations.json")
 
 class Indexable:
 	"""Base class to let bind key access to attribute access."""
