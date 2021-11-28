@@ -86,7 +86,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             conqueringCiv.addGold(goldPlundered)
             conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", getCenterTile().position, NotificationIcon.Gold)
 
-            val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && resistanceCounter != 0
+            val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && isInResistance()
 
             destroyBuildingsOnCapture()
             
@@ -98,10 +98,12 @@ class CityInfoConquestFunctions(val city: CityInfo){
             if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignPopulation()
 
-            resistanceCounter = 
+            setFlag(CityFlags.Resistance,
                 if (reconqueredCityWhileStillInResistance || foundingCiv == receivingCiv.civName) 0
                 else population.population // I checked, and even if you puppet there's resistance for conquering
+            )
         }
+        conqueringCiv.updateViewableTiles() // Might see new tiles from this city
     }
 
 
@@ -229,10 +231,21 @@ class CityInfoConquestFunctions(val city: CityInfo){
     fun moveToCiv(newCivInfo: CivilizationInfo) {
         city.apply {
             val oldCiv = civInfo
+
+
+            // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
+            //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
+            val capitalCityIndicator = capitalCityIndicator()
+            if (cityConstructions.isBuilt(capitalCityIndicator)) {
+                cityConstructions.removeBuilding(capitalCityIndicator)
+                val firstOtherCity = oldCiv.cities.firstOrNull { it != this }
+                if (firstOtherCity != null)
+                    firstOtherCity.cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
+            }
+
             civInfo.cities = civInfo.cities.toMutableList().apply { remove(city) }
             newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(city) }
             civInfo = newCivInfo
-            if (isOriginalCapital) civInfo.hasEverOwnedOriginalCapital = true
             hasJustBeenConquered = false
             turnAcquired = civInfo.gameInfo.turns
             previousOwner = oldCiv.civName
@@ -243,14 +256,6 @@ class CityInfoConquestFunctions(val city: CityInfo){
                 population.autoAssignPopulation()
             }
 
-            // Remove/relocate palace for old Civ
-            val capitalCityIndicator = capitalCityIndicator()
-            if (cityConstructions.isBuilt(capitalCityIndicator)) {
-                cityConstructions.removeBuilding(capitalCityIndicator)
-                if (oldCiv.cities.isNotEmpty()) {
-                    oldCiv.cities.first().cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
-                }
-            }
     
             // Remove their free buildings from this city and remove free buildings provided by the city from their cities
             removeBuildingsOnMoveToCiv(oldCiv)

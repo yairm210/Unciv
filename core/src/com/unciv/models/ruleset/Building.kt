@@ -454,12 +454,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         for (unique in uniqueObjects) {
             when (unique.placeholderText) {
                 // Deprecated since 3.16.11, replace with "Not displayed [...] construction without []"
-                    "Not displayed as an available construction unless [] is built" -> 
+                    UniqueType.NotDisplayedUnlessOtherBuildingBuilt.placeholderText ->
                         if (!cityConstructions.containsBuildingOrEquivalent(unique.params[0]))
                             rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
                 //
 
-                "Not displayed as an available construction without []" ->
+                UniqueType.NotDisplayedWithout.placeholderText ->
                     if (unique.params[0] in ruleSet.tileResources && !civInfo.hasResource(unique.params[0])
                         || unique.params[0] in ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(unique.params[0])
                         || unique.params[0] in ruleSet.technologies && !civInfo.tech.isResearched(unique.params[0])
@@ -470,22 +470,22 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 "Enables nuclear weapon" -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled) 
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-                "Must be on []" -> 
+                UniqueType.MustBeOn.placeholderText ->
                     if (!cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
                         rejectionReasons.add(RejectionReason.MustBeOnTile.apply { errorMessage = unique.text })
 
-                "Must not be on []" -> 
+                UniqueType.MustNotBeOn.placeholderText ->
                     if (cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
                         rejectionReasons.add(RejectionReason.MustNotBeOnTile.apply { errorMessage = unique.text })
 
-                "Must be next to []" -> 
+                UniqueType.MustBeNextTo.placeholderText ->
                     if (// Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
                         !(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) 
                         && cityCenter.getTilesInDistance(1).none { it.matchesFilter(unique.params[0], civInfo) }
                     ) 
                         rejectionReasons.add(RejectionReason.MustBeNextToTile.apply { errorMessage = unique.text })
 
-                "Must not be next to []" -> 
+                UniqueType.MustNotBeNextTo.placeholderText ->
                     if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) }) 
                         rejectionReasons.add(RejectionReason.MustNotBeNextToTile.apply { errorMessage = unique.text })
 

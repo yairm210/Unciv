@@ -166,6 +166,7 @@ class CivilizationInfo {
     // To correctly determine "game over" condition as clarified in #4707
     // Nullable type meant to be deprecated and converted to non-nullable,
     // default false once we no longer want legacy save-game compatibility
+    // This parameter means they owned THEIR OWN capital btw, not other civs'.
     var hasEverOwnedOriginalCapital: Boolean? = null
 
     val passableImpassables = HashSet<String>() // For Carthage-like uniques
@@ -343,10 +344,10 @@ class CivilizationInfo {
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
     // This function should be removed and replaced by marking where uniques originate from, hopefully.
-    fun getCivWideBuildingUniques(cityItIsFor: CityInfo?): Sequence<Unique> = 
+    fun getCivWideBuildingUniques(cityItIsFor: CityInfo): Sequence<Unique> =
         cities.asSequence().flatMap {
             city ->
-                if (cityItIsFor != null && city == cityItIsFor)
+                if (city == cityItIsFor)
                     city.getAllUniquesWithNonLocalEffects().filter { !it.isAntiLocalEffect }
                 else city.getAllUniquesWithNonLocalEffects()
         }
@@ -676,7 +677,7 @@ class CivilizationInfo {
      *  */
     fun setNationTransient() {
         nation = gameInfo.ruleSet.nations[civName]
-                ?: throw java.lang.Exception("Nation $civName is not found!")
+                ?: throw UncivShowableException("Nation $civName is not found!")
     }
 
     fun setTransients() {

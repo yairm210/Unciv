@@ -83,6 +83,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 || (state.unit != null && state.unit.matchesFilter(condition.params[0]))
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
+            UniqueType.ConditionalAboveHP -> 
+                state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
+            UniqueType.ConditionalBelowHP ->
+                state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalInTiles -> 
                 state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0])
             UniqueType.ConditionalVsLargerCiv -> {

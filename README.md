@@ -79,6 +79,7 @@ Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch
 UnCiv can also be installed on macOS, a guide on how to do that can be found [here](https://github.com/yairm210/Unciv/wiki/Installing-on-macOS).
 
 If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`.
+For Mac users, you'll need to add extra parameters, `java -XstartOnFirstThread -Djava.awt.headless=true -jar Unciv.jar`. 
 
 If you use Flatpaks, there's a Flatpak by [MayeulC](https://github.com/MayeulC) and you can know more about it [here](https://github.com/flathub/io.github.yairm210.unciv). Flathub link is available in the [Downloads](#downloads) section.
 
