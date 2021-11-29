@@ -129,7 +129,7 @@ object UnitAutomation {
         // Might die next turn - move!
         if (unit.health <= unit.getDamageFromTerrain() && tryHealUnit(unit)) return
 
-        if (unit.isCivilian()) {
+        if (unit.isCivilian() || unit.hasUnique(UniqueType.CannotAttack)) {
             if (tryRunAwayIfNeccessary(unit)) return
             
             if (unit.hasUnique(UniqueType.FoundCity))
