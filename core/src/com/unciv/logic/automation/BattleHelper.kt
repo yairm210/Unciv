@@ -39,6 +39,12 @@ object BattleHelper {
     ): ArrayList<AttackableTile> {
         val tilesWithEnemies = (tilesToCheck ?: unit.civInfo.viewableTiles)
             .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
+            .filterNot { val mapCombatant = Battle.getMapCombatantOfTile(it)
+                // IF all of these are true, THEN the action we'll be taking is in fact CAPTURING the civilian.
+                unit.baseUnit.isMelee() && mapCombatant is MapUnitCombatant && mapCombatant.unit.isCivilian()
+                        // If we can't pass though that tile, we can't capture the civilian "remotely"
+                        && !unit.movement.canPassThrough(it)
+            }
 
         val rangeOfAttack = unit.getRange()
 
