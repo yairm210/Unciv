@@ -195,6 +195,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     RetainHappinessFromLuxury("Retain [amount]% of the happiness from a luxury after the last copy has been traded away", UniqueTarget.Nation),
 
+    CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Nation),
 
     ///////////////////////////////////////// CONSTRUCTION UNIQUES /////////////////////////////////////////
 
