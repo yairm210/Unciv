@@ -58,7 +58,6 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
 
             // Remove all buildings provided for free from here to other cities (e.g. CN Tower)
-            println("Removing buildings: ${cityConstructions.freeBuildingsProvidedFromThisCity}")
             for ((cityId, buildings) in cityConstructions.freeBuildingsProvidedFromThisCity) {
                 val city = oldCiv.cities.firstOrNull { it.id == cityId } ?: continue
                 println("Removing buildings $buildings from city ${city.name}")
