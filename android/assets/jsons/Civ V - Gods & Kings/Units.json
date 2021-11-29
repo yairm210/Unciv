@@ -158,7 +158,7 @@
 		"movement": 4,
 		"cost": 30,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles until Astronomy", "May create improvements on water resources", "Uncapturable"]
+		"uniques": ["Cannot enter ocean tiles <before researching [Astronomy]>", "May create improvements on water resources", "Uncapturable"]
 	},
 	{
 		"name": "Trireme",
