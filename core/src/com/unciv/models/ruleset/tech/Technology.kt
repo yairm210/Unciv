@@ -154,12 +154,21 @@ class Technology: RulesetObject() {
     private fun getSeeAlsoObjects(ruleset: Ruleset) =
         // This is a band-aid to clarify the relation Offshore platform - Refrigeration. A generic variant
         // covering all mentions in uniques in all ruleset objects would be possible here but - overkill for now.
-        ruleset.tileImprovements.values.asSequence()
-        .filter { improvement ->
-            improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
-                it.params[1] == name
+        ruleset.tileImprovements.values
+            .asSequence()
+            .filter { improvement ->
+                // Deprecated since 3.18.6
+                    improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
+                        it.params[1] == name
+                    } ||
+                //
+                improvement.uniqueObjects.any { 
+                    unique -> unique.conditionals.any { 
+                        (it.isOfType(UniqueType.ConditionalTech) || it.isOfType(UniqueType.ConditionalNoTech)) 
+                        && it.params[0] == name 
+                    } 
+                }
             }
-        }
 
 
     override fun makeLink() = "Technology/$name"
