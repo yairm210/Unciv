@@ -450,7 +450,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         
         if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits, StateForConditionals(civInfo=civInfo))
-                .any { matchesFilter(it.params[0]) }
+            .any { matchesFilter(it.params[0]) }
         ) {
             rejectionReasons.add(RejectionReason.CannotBeBuilt)
         }

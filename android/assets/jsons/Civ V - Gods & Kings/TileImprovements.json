@@ -52,7 +52,7 @@
 		"terrainsCanBeBuiltOn": ["Coast"],
 		"turnsToBuild": 9,
 		"techRequired": "Biology",
-		"uniques": ["Cannot be built on [Coast] tiles until [Refrigeration] is discovered"],
+		"uniques": ["Cannot be built on [Coast] tiles <before discovering [Refrigeration]>"],
 		"shortcutKey": "W"
 	},
 	{
