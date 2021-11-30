@@ -93,16 +93,40 @@ def _getInvalidTechs():
 	pass
 
 
+#t=gameInfo.ruleSet.technologies['Mining']; t.row -= 1; t.column.techs.remove(t); b=gameInfo.ruleSet.technologies['Masonry']; b.column.techs.add(t); t.column=b.column
+
 
 def extendTechTree(iterations=1):
 	raise NotImplementedError()
 	pass
 
 def clearTechTree(*, safe=True):
+	"""Clear all items on the tech tree that haven't yet been researched by any civilizations. Pass safe=False to also clear technologies that have already been researched."""
 	for name in techtree().keys():
 		if (not safe) or not any(name in civinfo.tech.techsResearched or name in civinfo.tech.techsInProgress or name == civinfo.tech.currentTechnologyName() for civinfo in gameInfo.civilizations):
 			del techtree()[name]
 
 def scrambleTechTree():
-	raise NotImplementedError()
-	pass
+	"""Randomly shuffle the order of all items on the tech tree."""
+	# from unciv_scripting_examples.ProceduralTechtree import *; scrambleTechTree()
+	technames = [*techtree().keys()]
+	random.shuffle(technames)
+	techpositions = {n:n for n in technames}
+	originalpreqs = {n:real(techtree()[n].prerequisites) for n in technames}
+	for tname in technames:
+		oname = random.sample(technames, 1)[0]
+		tech, other = (techtree()[n] for n in (tname, oname))
+		for t in (tech, other):
+			t.column.techs.remove(t)
+		tech.column, other.column = real(other.column), real(tech.column)
+		for t in (tech, other):
+			t.column.techs.add(t)
+		tech.row, other.row = real(other.row), real(tech.row)
+		techpositions[tname], techpositions[oname] = techpositions[oname], techpositions[tname]
+	techreplacements = {v:k for k, v in techpositions.items()}
+	assert len(techreplacements) == len(techpositions)
+	for tname in technames:
+		tech = techtree()[tname]
+		tech.prerequisites.clear()
+		tech.prerequisites.addAll([techreplacements[ot] for ot in originalpreqs[techpositions[tname]]])
+		# toprereqs, oprereqs = (real(t.prerequisites) for t in (tech, other))

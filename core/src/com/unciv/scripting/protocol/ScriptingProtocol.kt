@@ -359,7 +359,8 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                     try {
                         leaf as Map<Any, *>
-                        //Ensure same behaviour as "keys" action.
+                        // Ensure same behaviour as "keys" action.
+                        // TODO: Make this and other key operations work with operator overloading. Though Map is already an interface that anything can implement, so maybe not.
                         data = TokenizingJson.getJsonElement(true)
                     } catch (e: Exception) {
                         data = TokenizingJson.getJsonElement(false)

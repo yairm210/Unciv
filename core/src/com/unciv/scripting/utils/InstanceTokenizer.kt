@@ -47,7 +47,12 @@ object InstanceTokenizer {
      * @return Token string.
      */
     private fun tokenFromInstance(value: Any?): String {
-        var stringified = value.toString()
+        var stringified: String
+        try { // Because this can be overridden, it can fail. E.G. MapUnit.toString() depends on a lateinit.
+            stringified = value.toString()
+        } catch (e: Exception) {
+            stringified = "?" // TODO: Use exception text?
+        }
         if (stringified.length > tokenMaxLength) {
             stringified = stringified.slice(0..tokenMaxLength-4) + "..."
         }

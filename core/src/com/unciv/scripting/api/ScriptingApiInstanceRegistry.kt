@@ -1,4 +1,4 @@
-package com.unciv.scripting.utils
+package com.unciv.scripting.api
 
 
 /**
@@ -8,7 +8,7 @@ package com.unciv.scripting.utils
  * Currently all it does is throw an exception on an assignment colliding with an existing key, and reads and removals for non-existent keys..
  * Was going to have functions named to fit creating and freeing fields, but so far Python's item assignment and deletion syntaxes are plenty clean
  */
-class InstanceRegistry(): MutableMap<String, Any?> {
+class ScriptingApiInstanceRegistry(): MutableMap<String, Any?> {
     private val backingMap = mutableMapOf<String, Any?>()
     override val entries
         get() = backingMap.entries

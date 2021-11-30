@@ -8,9 +8,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.scripting.utils.ScriptingApiEnums
-import com.unciv.scripting.utils.InstanceFactories
-import com.unciv.scripting.utils.InstanceRegistry
+import com.unciv.scripting.api.ScriptingApiEnums
+import com.unciv.scripting.api.ScriptingApiFactories
+import com.unciv.scripting.api.ScriptingApiInstanceRegistry
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toPixmap
@@ -55,14 +55,16 @@ class ScriptingScope(
 
     val apiHelpers = ApiHelpers(this)
 
+    //var modApiHelpers: ModApiHelpers?
+
     class ApiHelpers(val scriptingScope: ScriptingScope) {
         // This could probably eventually include ways for scripts to create and inject their own UI elements too. Create, populate, show even popups for mods, inject buttons that execute script strings for macros.
         // TODO: The vast majority of these don't need scriptingScope access, and thus can be put on singletons.
         val isInGame: Boolean
             get() = (scriptingScope.civInfo != null && scriptingScope.gameInfo != null && scriptingScope.uncivGame != null)
-        val Factories = InstanceFactories
+        val Factories = ScriptingApiFactories
         val Enums = ScriptingApiEnums
-        val registeredInstances = InstanceRegistry()
+        val registeredInstances = ScriptingApiInstanceRegistry()
         //Debug/dev identity function for both Kotlin and scripts. Check if value survives serialization, force something to be added to ScriptingProtocol.instanceSaver, etc.
         fun unchanged(obj: Any?) = obj
         fun printLine(msg: Any?) = println(msg) // Different name from Kotlin's is deliberate, to abstract for scripts.
@@ -100,9 +102,37 @@ class ScriptingScope(
 //        fun applyProperties(instance: Any, properties: Map<String, Any?>) {
 //        }
         //setTimeout?
-        fun lambdifyScript(code: String ): () -> Unit = fun(){ scriptingScope.uncivGame!!.scriptingState.exec(code); return } // FIXME: Requires awareness of which scriptingState and which backend to use.
+        //fun lambdifyScript(code: String ): () -> Unit = fun(){ scriptingScope.uncivGame!!.scriptingState.exec(code); return } // FIXME: Requires awareness of which scriptingState and which backend to use.
         //Directly invoking the resulting lambda from a running script will almost certainly break the REPL loop/IPC protocol.
     }
 
 }
+
+// Does having one state manage multiple backends that all share the same scope really make sense? Mod handler dispatch, callbacks, etc might all be easier if the multi-backend functionality of ScriptingState were implemented only for ConsoleScreen.
+
+
+/*
+//class ModApiHelpers {
+    var handlerContext: NamedTuple?
+    // Why not just use a map? String keys will be clearer in scripts than integers anyway.
+    // Collection that gets replaced with any contextual parameters when running script handlers. E.G. Unit moved, city founded, tech researched, construction finished.
+}
+
+
+//class NamedTuple(val map: Map<String, Any?>) {
+    //Default order-preserving implementation of Map is important.
+    //SortedMap?
+    val keys = map.keys.toList()
+    //Default Set implementation also preserver order, so hopefully fine.
+    fun contains(vararg args: Any?) {
+        throw UnsupportedOperationException()
+        //Check against values? Keys?
+    }
+    fun get() {
+        if (is Int) {
+        }
+    }
+}
+*/
+
 //worldScreen.bottomUnitTable.selectedCity.cityConstructions.purchaseConstruction("Missionary", -1, False, apiHelpers.Enums.Stat.statsUsableToBuy[4])

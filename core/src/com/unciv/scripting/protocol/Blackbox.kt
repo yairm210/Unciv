@@ -1,4 +1,4 @@
-package com.unciv.scripting.utils
+package com.unciv.scripting.protocol
 
 
 /**

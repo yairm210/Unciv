@@ -33,7 +33,7 @@ def expose(name=None):
 def get_keys(obj):
 	"""Get keys of object. Fail silently if it has no keys. Used to let PyAutocompleter work with ForeignObject."""
 	try:
-		return obj.keys()
+		return obj.keys() # FIXME: This results in actual calls over IPC since hiding the .keys() IPC protcol-based method for non-mappings in ForeignObject.
 	except (AttributeError, ipc.ForeignError):
 		return ()
 

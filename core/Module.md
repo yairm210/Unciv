@@ -153,7 +153,7 @@ Example Kotlin-side instance requested by script interpreter:
 SomeKotlinInstance@M3mAdDr
 ```
 
-Example response packet to send script interpreter this instance:
+Example response packet to send this instance to the script interpreter:
 
 ```JSON
 {
@@ -316,7 +316,7 @@ Some action types, data formats, and expected response types and data formats fo
 		//Map of dispatchable signatures as strings to lists of pairs of names and types of arguments accepted by a function.
 		//Response must be String if sent with Exception flag.
 		//Currently just used by Python autocompleter to generate help text.
-		//Could also be used to control functions in scripting environment. If so, then names of types should be standardized.
+		//Could also be used to control function signatures in scripting environment. If so, then names of types should be standardized.
 	```
 
 	```
@@ -336,7 +336,7 @@ Flags are string values for communicating extra information that doesn't need a 
 
 	```
 	'PassMic'
-		//Indicates that the sending side will now begin listening instead, and the receiving side should send the next request.
+		//Indicates that the sending side has no more requests to make, and that the receiving side should either send the next request or expect a response to an open request.
 		//Sent by Kotlin side at start of script engine startup/MOTD, autocompletion, and execution to allow script to request values, and should be sent by script interpreter immediately before sending response with results of execution.
 	```
 

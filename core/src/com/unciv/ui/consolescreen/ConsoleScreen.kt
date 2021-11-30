@@ -238,7 +238,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
                 }
             }
             setText(minmatch + original.slice(cursorpos..original.length-1), SetTextCursorMode.Insert)
-            // Splice the longest starting substring with the text after the cursor, to let autocomplete implementations work on the middle of current input.
+            // TODO: Splice the longest starting substring with the text after the cursor, to let autocomplete implementations work on the middle of current input.
         }
     }
 

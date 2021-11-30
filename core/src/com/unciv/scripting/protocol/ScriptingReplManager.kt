@@ -1,11 +1,11 @@
 package com.unciv.scripting.protocol
 
+import com.unciv.UncivGame // For debug packet print only.
 import com.unciv.scripting.AutocompleteResults
 import com.unciv.scripting.ScriptingBackend
 import com.unciv.scripting.ScriptingScope
 import com.unciv.scripting.protocol.ScriptingPacket
 import com.unciv.scripting.protocol.ScriptingProtocol
-import com.unciv.scripting.utils.Blackbox
 
 
 abstract class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {
@@ -48,7 +48,7 @@ class ScriptingRawReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox
  */
 class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
 
-// TODO: scriptingScope can be an Any. Hm. "scriptingScope" is more readable within Unciv, but Any communicate a cleaner design and cleaner design constraints. Hm. That means "scriptingScope" communicates the wrong thing with its readability. It's called "scope" in ScriptingProtocol, which should be plently clear enough.
+// TODO: scriptingScope can be an Any. Hm. "scriptingScope" is more readable within Unciv, but Any communicates a cleaner design and cleaner design constraints. Hm. That means "scriptingScope" communicates the wrong thing with its readability. It's called "scope" in ScriptingProtocol, which should be plenty clear enough.
 
     /**
      * ScriptingProtocol puts references to pre-tokenized returned objects in here.
@@ -65,9 +65,11 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
     //TODO: Doc
     fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true, execLoop: () -> Unit = fun(){}): ScriptingPacket {
         // Please update the specifications in Module.md if you change the basic structure of this REPL loop.
+        if (UncivGame.Current.printScriptingPacketsForDebug) println("\nSending: ${packetToSend}") // TODO: Add debug flag.
         blackbox.write(packetToSend.toJson() + "\n")
         execLoop()
         val response = ScriptingPacket.fromJson(blackbox.read(block=true))
+        if (UncivGame.Current.printScriptingPacketsForDebug) println("\nReceived: ${response}")
         if (enforceValidity) {
             ScriptingProtocol.enforceIsResponse(packetToSend, response)
         }
@@ -82,8 +84,10 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
     fun foreignExecLoop() {
         while (true) {
             val request = ScriptingPacket.fromJson(blackbox.read(block=true))
+            if (UncivGame.Current.printScriptingPacketsForDebug) println("\nReceived: ${request}")
             if (request.action != null) {
                 val response = scriptingProtocol.makeActionResponse(request)
+                if (UncivGame.Current.printScriptingPacketsForDebug) println("\nSending: ${response}")
                 blackbox.write(response.toJson() + "\n")
             }
             if (request.hasFlag(ScriptingProtocol.KnownFlag.PassMic)) {

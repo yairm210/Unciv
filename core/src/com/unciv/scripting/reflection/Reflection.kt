@@ -49,6 +49,9 @@ object Reflection {
         val matchClassesQualnames: Boolean = false,
         val resolveAmbiguousSpecificity: Boolean = false
         ) {
+        // TODO: Allow manually matching to supplied KCallables, E.G., KClass.constructors.
+        // Probably: Move actual resolution into a singleton, and prepend the receiver instance to the arguments here instead of skipping it its params during resolution.
+
         // This isn't just a nice-to-have feature. Before I implemented it, identical calls from demo scripts to methods with multiple versions (E.G. ArrayList().add()) would rarely but randomly fail because the member/signature that was found would change between runs or compilations.
 
         // TODO: This is going to need unit tests.
@@ -207,6 +210,7 @@ object Reflection {
 
 
     fun readInstanceItem(instance: Any, keyOrIndex: Any): Any? {
+        // TODO: Make this work with operator overloading. Though Map is already an interface that anything can implement, so maybe not.
         if (keyOrIndex is Int) {
             return (instance as List<Any?>)[keyOrIndex]
         } else {

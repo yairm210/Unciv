@@ -412,6 +412,27 @@ for e in real(civInfo.cities[0].cityStats.currentCityStats.values):
 
 Because the elements yielded this way do not have equivalent paths in the Kotlin/JVM namespace, and are not foreign object wrappers, any complex objects will have to be assigned as token strings to a concrete path in order to do anything with them.
 
+When using every value from a Kotlin/JVM container, iterating over its wrapper object is also likely to be slower than iterating over its resolved value. This is because iteration over wrappers is implemented on the Python side by creating a new wrapper at the next index for every item, so every use of the yielded value requires another IPC call, while evaluating the container itself means that the object being iterated over is a real container deserialized from a JSON array.
+
+```
+def slow():
+	for name in civInfo.naturalWonders:
+		print("We have the natural wonder: " + name)
+		# Uses IPC call on every loop, as name is a foreign wrapper.
+		# Equivalent to accessing real(civInfo.naturalWonders[i]) on every loop.
+
+def fast():
+	for name in real(civInfo.naturalWonders):
+		print("We have the natural wonder: " + name)
+		# Uses only one IPC call at the start of the loop, and iterates over resulting JSON array.
+		# Name is a real Python string.
+
+def alsofastish():
+	for name in civInfo.naturalWonders:
+		print("We have a natural wonder!")
+		# Even though name is a foreign object wrapper here too, it's never used, so no extra IPC calls are generated.
+```
+
 ---
 
 ## Error Handling
@@ -448,10 +469,10 @@ The only major caveat to the robustness of this error handling is that it does n
 
 >>> del gameInfo.ruleSet.technologies["Sailing"]
 # Executes and removes "Sailing" technology from tech tree successfully.
-# But the game crashes if you try to select any techs that required "Sailing", because they still have "Sailing" in their dependencies.
+# But the game crashes if you try to select any techs that required "Sailing", because they still have "Sailing" in their prerequisites.
 
 >>> civInfo.cities[0].tiles.add("Crash")
-# Executes and adds "Crash" string to set containing capital's tiles' coordinates.
+# Executes and adds "Crash" string to the set containing your capital's tiles' coordinates.
 # But the game breaks when you press "Next Turn", because the JVM thread processing the turn tries to use the string "Crash" as a Vector2.
 ```
 

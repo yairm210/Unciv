@@ -4,12 +4,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 
 import com.unciv.scripting.reflection.Reflection
+import com.unciv.scripting.protocol.Blackbox
 import com.unciv.scripting.protocol.ScriptingReplManager
 import com.unciv.scripting.protocol.ScriptingProtocolReplManager
 import com.unciv.scripting.protocol.ScriptingRawReplManager
 import com.unciv.scripting.protocol.SubprocessBlackbox
 import com.unciv.scripting.utils.ApiSpecGenerator
-import com.unciv.scripting.utils.Blackbox
 import com.unciv.scripting.utils.SourceManager
 import com.unciv.scripting.utils.SyntaxHighlighter
 import kotlin.reflect.full.*
