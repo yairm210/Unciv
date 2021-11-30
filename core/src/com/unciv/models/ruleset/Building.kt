@@ -480,7 +480,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         // or for buildings that can only be bought
         if (hasUnique(UniqueType.Unbuildable))
             rejectionReasons.add(RejectionReason.Unbuildable)
-
+        println("name:"+name)
         for (unique in uniqueObjects) {
             when (unique.placeholderText) {
                 // Deprecated since 3.16.11, replace with "Not displayed [...] construction without []"
@@ -546,7 +546,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-                UniqueType.MaxNumberBuilding.text -> {
+                UniqueType.MaxNumberBuilding.placeholderText -> {
                     println("MaxNumberBuilding")
                     println("contains:"+civInfo.cities.count {
                         it.cityConstructions.containsBuildingOrEquivalent(name)})
