@@ -471,7 +471,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             unit.currentMovement = 0f
 
         // If this unit has special abilities that need to be kept track of, start doing so here
-        if (unit.hasUnique("Religious Unit") && civInfo.gameInfo.isReligionEnabled()) {
+        if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
             unit.religion =  
                 if (unit.hasUnique("Takes your religion over the one in their birth city"))
                     civInfo.religionManager.religion?.name
@@ -555,7 +555,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Nuclear Weapon" -> isNuclearWeapon()
             // "Great" should be deprecated, replaced by "Great Person".
             "Great Person", "Great" -> isGreatPerson()
-            "Religious" -> uniques.contains("Religious Unit")
+            "Religious" -> hasUnique(UniqueType.ReligiousUnit)
             else -> {
                 if (getType().matchesFilter(filter)) return true
                 if (

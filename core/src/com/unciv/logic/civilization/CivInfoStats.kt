@@ -45,7 +45,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         }
         // Apply global discounts
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscountGlobal, StateForConditionals(civInfo))) {
-            for (unit in unitsToPayFor.filter{it.matchesFilter(unique.params[1])}){
+            for (unit in unitsToPayFor.filter { it.matchesFilter(unique.params[1]) }) {
                 unit.maintenance *= unique.params[0].toPercent()
             }
         }

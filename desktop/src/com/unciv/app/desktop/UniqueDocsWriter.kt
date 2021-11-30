@@ -1,6 +1,7 @@
 package com.unciv.app.desktop
 
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import java.io.File
 
@@ -44,13 +45,16 @@ class UniqueDocsWriter {
 
                 val deprecationAnnotation = uniqueType.declaringClass.getField(uniqueType.name)
                     .getAnnotation(Deprecated::class.java)
-                if (deprecationAnnotation != null){
+                if (deprecationAnnotation != null) {
                     deprecatedUniques += uniqueType
                     continue
                 }
 
-                lines += "#### " + uniqueType.text
-                lines += "Example: \"${replaceExamples(uniqueType.text)}\"\n"
+                val uniqueText = if (targetType.key == UniqueTarget.Conditional) "<${uniqueType.text}>"
+                else uniqueType.text
+                lines += "#### $uniqueText"
+                if (uniqueType.text.contains('['))
+                    lines += "Example: \"${replaceExamples(uniqueText)}\"\n"
                 lines += "Applicable to: " + uniqueType.targetTypes.joinToString()
                 lines += ""
             }

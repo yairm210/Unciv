@@ -288,8 +288,8 @@ class MapUnit {
 
         hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
         canEnterForeignTerrain =
-            hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
-                    || hasUnique("May enter foreign tiles without open borders")
+            hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
+                    || hasUnique(UniqueType.CanEnterForeignTiles)
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {
@@ -340,11 +340,6 @@ class MapUnit {
         visibilityRange += getMatchingUniques(UniqueType.Sight, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
-        // Maybe add the uniques of the tile a unit is standing on to the tempUniques of the unit?
-        for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
-            if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
-                visibilityRange += unique.params[0].toInt()
-
         if (visibilityRange < 1) visibilityRange = 1
 
         return visibilityRange
@@ -355,7 +350,7 @@ class MapUnit {
      */
     fun updateVisibleTiles() {
         if (baseUnit.isAirUnit()) {
-            viewableTiles = if (hasUnique("6 tiles in every direction always visible"))
+            viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
                 getTile().getTilesInDistance(6).toList()  // it's that simple
             else listOf() // bomber units don't do recon
             civInfo.updateViewableTiles() // for the civ
@@ -722,13 +717,13 @@ class MapUnit {
         if (isPreparingParadrop())
             action = null
 
-        if (hasUnique("Religious Unit")
+        if (hasUnique(UniqueType.ReligiousUnit)
             && getTile().getOwner() != null
             && !getTile().getOwner()!!.isCityState()
             && !civInfo.canPassThroughTiles(getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
-                getMatchingUniques("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
+                getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
                     .map { it.params[0].toInt() }
                     .minOrNull()
             if (lostReligiousStrength != null)
