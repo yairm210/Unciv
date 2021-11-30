@@ -30,7 +30,7 @@ internal object DesktopLauncher {
         ImagePacker.packImages()
 
         val config = Lwjgl3ApplicationConfiguration()
-        config.setWindowIcon( "ExtraImages/Icon.png")
+        config.setWindowIcon("ExtraImages/Icon.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
         if (FileHandle(GameSaver.settingsFileName).exists()) {
@@ -43,15 +43,15 @@ internal object DesktopLauncher {
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
-        if(versionFromJar == "Desktop") {
+        if (versionFromJar == "Desktop") {
             UniqueDocsWriter().write()
         }
 
         val desktopParameters = UncivGameParameters(
-                versionFromJar,
-                cancelDiscordEvent = { discordTimer?.cancel() },
-                fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt()),
-                customSaveLocationHelper = CustomSaveLocationHelperDesktop()
+            versionFromJar,
+            cancelDiscordEvent = { discordTimer?.cancel() },
+            fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt()),
+            customSaveLocationHelper = CustomSaveLocationHelperDesktop()
         )
 
         val game = UncivGame(desktopParameters)
