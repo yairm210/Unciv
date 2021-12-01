@@ -2,12 +2,11 @@ package com.unciv.scripting.utils
 
 
 /**
- * @param exception Any Exception.
  * @return String of exception preceded by entire stack trace.
  */
-fun stringifyException(exception: Exception): String {
+fun Exception.stringifyException(): String {
     val causes = arrayListOf<Throwable>()
-    var cause: Throwable? = exception
+    var cause: Throwable? = this
     while (cause != null) {
         causes.add(cause)
         cause = cause.cause
@@ -15,7 +14,7 @@ fun stringifyException(exception: Exception): String {
     }
     return listOf(
         "\n",
-        *exception.getStackTrace(),
+        *this.stackTrace,
         "\n",
         *causes.asReversed().map{ it.toString() }.toTypedArray()
     ).joinToString("\n")

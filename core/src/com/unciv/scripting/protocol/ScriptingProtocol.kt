@@ -1,6 +1,7 @@
 package com.unciv.scripting.protocol
 
 import com.unciv.scripting.AutocompleteResults
+import com.unciv.scripting.reflection.FunctionDispatcher
 import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.utils.stringifyException
 import com.unciv.scripting.utils.TokenizingJson
@@ -8,7 +9,6 @@ import kotlin.random.Random
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -233,7 +233,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
      * @return Response packet.
      */
     fun makeActionResponse(packet: ScriptingPacket): ScriptingPacket {
-        val action = ScriptingProtocol.responseTypes[packet.action]!!
+        val action = responseTypes[packet.action]!!
         var data: JsonElement? = null
         val flags = mutableListOf<String>()
         when (packet.action) {
@@ -249,7 +249,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         )
                     ))
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -261,7 +261,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         TokenizingJson.getJsonReal((packet.data as JsonObject)["value"]!!)
                     )
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -272,7 +272,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -282,9 +282,9 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    data = TokenizingJson.getJsonElement(leaf!!::class.members.map{it.name})
+                    data = TokenizingJson.getJsonElement(leaf!!::class.members.map{it.name}) // TODO: Honestly, probably restrict to non-privates and other members that are actually accessible. Test from Python.
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -296,7 +296,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
 //                    )
 //                    data = TokenizingJson.getJsonElement(leaf.hashCode())
 //                } catch (e: Exception) {
-//                    data = JsonPrimitive(stringifyException(e))
+//                    data = JsonPrimitive(e.stringifyException())
 //                    flags.add(KnownFlag.Exception.value)
 //                }
 //            }
@@ -309,7 +309,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                     data = TokenizingJson.getJsonElement((leaf as Map<Any, *>).keys)
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -330,7 +330,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         }
                     }
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -347,7 +347,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         data = TokenizingJson.getJsonElement(_check in (leaf as Collection<Any?>))
                     }
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -359,14 +359,14 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                     try {
                         leaf as Map<Any, *>
-                        // Ensure same behaviour as "keys" action.
+                        // Ensure same behaviour as "keys" action. IK It's probably/hopefully the same as using the is operator, but I'm not sure.
                         // TODO: Make this and other key operations work with operator overloading. Though Map is already an interface that anything can implement, so maybe not.
                         data = TokenizingJson.getJsonElement(true)
                     } catch (e: Exception) {
                         data = TokenizingJson.getJsonElement(false)
                     }
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -376,9 +376,9 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    data = TokenizingJson.getJsonElement(leaf is Reflection.InstanceMethodDispatcher)
+                    data = TokenizingJson.getJsonElement(leaf is FunctionDispatcher)
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -390,14 +390,14 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                     data = TokenizingJson.getJsonElement(
                         mapOf<String, List<List<String?>>>(
-                            *((leaf as Reflection.InstanceMethodDispatcher).methods.map {
+                            *((leaf as FunctionDispatcher).functions.map {
                                 it.toString() to it.parameters.map{ listOf<String?>(it.name?.toString(), it.type.toString()) }
                             }).toTypedArray()
                             // The innermost listOf should semantically be a Pair as per the spec in Module.md, but a List seems safer to serialize.
                         )
                     )
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                         flags.add(KnownFlag.Exception.value)
                 }
             }
@@ -409,7 +409,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                     data = TokenizingJson.getJsonElement(leaf.toString())
                 } catch (e: Exception) {
-                    data = JsonPrimitive(stringifyException(e))
+                    data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
                 }
             }

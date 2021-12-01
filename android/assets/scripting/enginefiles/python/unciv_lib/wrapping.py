@@ -305,6 +305,17 @@ class ForeignObject:
 	# Implemented and works, but disabled for now. See ScriptingProtocol.kt and Module.md.
 	@ForeignRequestMethod
 	def __call__(self, *args):
+		# From an IPC and protocol perspective, there isn't anything wrong with supporting directly accessing a value after a call.
+		# The problems are 1. Not knowing when/if to reify, 2. Reified and unrefied things behaving differently, 3. Implicit calls and static-emulating behaviour becoming unpredictable.
+		#  E.G.: `a = civInfo.addGold(5); del a` and `civInfo.addGold(5)` would be different from `apiHelpers.printLine(civInfo.addGold(5))`.
+		# That was a deliberate concern and design decision at first, at think.
+		# But after writing some more example scripts, docs, and fleshing out the API, I'm wondering if it might be better to let scripts construct paths however they want while requiring them to explicitly reify foreign objects in most cases, instead of having to assign to apiHelpers.registeredInstances so often.
+		# That might work better in a typed language, I think. But it could also be a bit strange in Python, and implicit conversion could be more confusing with it. Right now foreign wrappers are basically interchangeable in most cases with real values, forbidding calls lets them be safely used with lazy resolution, and scripts don't really have to think about the path list.
+		#  E.G.: `v = civInfo.someFunction().x; v+5; print(v)` would call `civInfo.someFunction()` every time that `v` is used, because `.x` is still a wrapper that includes a call buried in its path.
+		#  Hm. And while avoiding assignments to registeredInstances might improve performance, having to make sure there aren't any 'type':'Call's buried deep in each wrapper's path before every implicit use would eat some of those gains right back up, in addition to being an opaque error-prone mess from the perspective of normal Python code.
+		#  It would also be much easier to write Python code that accidentally has abysmal performance (in addition to unexpected side effects) due to implicitly re-calling an expensive Kotlin function every time a variable assigned from an attribute is used, when by all normal Python semantics an attribute should not behave like that.
+		#  Point is: Function calls do not have static, access-safe values like properties or keys. So wrapping them up in a dynamic ForeignObject that pretends to be static, the way I have properties and keys, would make language semantics wildly deviate from language behaviour.
+		# Yeah, I forced calls to terminate wrappers for a reason.
 		return ({
 			'action': 'read',
 			'data': {

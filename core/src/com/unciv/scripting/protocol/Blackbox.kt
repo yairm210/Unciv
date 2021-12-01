@@ -4,7 +4,7 @@ package com.unciv.scripting.protocol
 /**
  * Unified interface for anything that receives and responds to input without any access to or relevance for its internal states.
  *
- * Should be able to wrap STDIN/STDOUT, pipes, JNI, NDK, network sockets, external processes, embeded code, etc, and make them all interchangeable.
+ * Should be able to wrap STDIN/STDOUT, pipes, JNI, NDK, network sockets, external processes, embedded code, etc, and make them all interchangeable.
  */
 interface Blackbox {
 

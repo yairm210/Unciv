@@ -3,7 +3,7 @@ package com.unciv.scripting.utils
 
 enum class ScriptingApiExposure {
     All, Player, Cheats, Mods
-} // Mods should have more restrictive access to system-facing memebrs than everything else, since they're the only untrusted code.
+} // Mods should have more restrictive access to system-facing members than everything else, since they're the only untrusted code.
 
 @Retention(AnnotationRetention.RUNTIME)
 annotation class ScriptingApiAccessible(

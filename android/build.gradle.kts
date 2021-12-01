@@ -30,6 +30,10 @@ android {
         versionName = BuildConfig.appVersion
 
         base.archivesBaseName = "Unciv"
+
+        multiDexEnabled = true
+        // As of the first attempts to build for Android with the scripting API, the project is too large to fit in one DEX file (71052 > 65536).
+        // Only needed with minSdk below 21: https://developer.android.com/studio/build/multidex
     }
 
     // necessary for Android Work lib
@@ -125,4 +129,5 @@ dependencies {
     //   run `./gradlew build --scan` to see details
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.6.0")
+    implementation("androidx.multidex:multidex:2.0.1")
 }

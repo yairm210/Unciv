@@ -1,7 +1,7 @@
 package com.unciv.scripting.utils
 
 import kotlinx.serialization.*
-import kotlinx.serialization.builtins.serializer
+//import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.json.Json
@@ -11,8 +11,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.modules.SerializersModule
+//import kotlinx.serialization.json.decodeFromJsonElement
+//import kotlinx.serialization.modules.SerializersModule
 
 // TODO: Move to serialization package with InstanceTokenizer.kt
 
@@ -115,21 +115,26 @@ object TokenizingJson {
             return value
         }
         if (!isTokenizationMandatory(value)) {
-            if (value is Map<*, *>) { //TODO: Decide what to do with non-string keys... I guess I could tokenize them?
-                return JsonObject( (value as Map<String, Any?>).mapValues{ getJsonElement(it.value) } )
+            if (value is Map<*, *>) {
+                return JsonObject( (value as Map<Any?, Any?>).entries.associate {
+                    json.encodeToString(getJsonElement(it.key)) to getJsonElement(it.value)
+                    // TODO: Currently, this means that string keys are encoded with quotes as part of the string.
+                    // Serialized keys are additionally different from Kotlin/JVM keys exposed reflectively.
+                    // Treating keys as their own JSON strings may be the only way to let all types of values be represented unambiguously in keys, though.
+                    // TODO: More testing/documentation is needed.
+                } )
             }
             if (value is Iterable<*>) {
                 // Apparently ::class.java.isArray can be used to check for primitive arrays, but it breaks
                 return JsonArray(value.map{ getJsonElement(it) })
             }
             if (value is Sequence<*>) {
-                var v = (value as Sequence<Any?>).toList()
-                return getJsonElement(v)
+                return getJsonElement((value as Sequence<Any?>).toList())
             }
             if (value is String) {
                 return JsonPrimitive(value as String)
             }
-            if (value is Int || value is Long || value is Float || value is Double) {
+            if (value is Number) {//(value is Int || value is Long || value is Float || value is Double) {
                 return JsonPrimitive(value as Number)
             }
             if (value is Boolean) { //TODO: Arrays and primitive arrays?
@@ -156,7 +161,9 @@ object TokenizingJson {
             return (value as List<JsonElement>).map{ getJsonReal(it) }// as List<Any?>
         }
         if (value is JsonObject) {
-            return (value as Map<String, JsonElement>).mapValues{ getJsonReal(it.value) }// as Map<String, Any?>
+            return (value as Map<String, JsonElement>).entries.associate{
+                InstanceTokenizer.getReal(it.key) to getJsonReal(it.value)
+            }// as Map<Any?, Any?>
         }
         if (value is JsonPrimitive) {
             val v = value as JsonPrimitive
@@ -164,6 +171,8 @@ object TokenizingJson {
                 return InstanceTokenizer.getReal(v.content)
             } else {
                 return v.content.toIntOrNull()
+                    ?: v.content.toLongOrNull()
+                    ?: v.content.toFloatOrNull() // NOTE: This may prevent .toDoubleOrNull() from ever being used. I think the implicit number type conflation in FunctionDispatcher means that Floats can still be used where Doubles are expected, though.
                     ?: v.content.toDoubleOrNull()
                     ?: v.content.toBooleanStrictOrNull()
                     ?: v.content

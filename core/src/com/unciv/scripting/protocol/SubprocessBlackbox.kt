@@ -13,7 +13,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
     /**
      * The wrapped process.
      */
-    var process: java.lang.Process? = null
+    var process: Process? = null
 
     /**
      * STDOUT of the wrapped process, or null.
@@ -30,7 +30,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
     var processLaunchFail: String? = null
 
     override val isAlive: Boolean
-        get() = process != null && process!!.isAlive()
+        get() = process != null && process!!.isAlive() // TODO: API Level 26. But also, it's not like using subprocesses is actually planned for Android.
 
     override val readyForWrite: Boolean
         get() = isAlive

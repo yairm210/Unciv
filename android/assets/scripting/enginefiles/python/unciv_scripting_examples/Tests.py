@@ -8,7 +8,6 @@ Call TestRunner.run_tests() to use.
 Pass debugprint=False if running from Kotlin as part of build tests, because running scripts' STDOUT is already captured by the Python REPL and sent to Kotlin code, which should then check for the presence of the 'Exception' IPC packet flag.
 """
 
-
 import os
 
 import unciv, unciv_pyhelpers#, unciv_lib
@@ -17,10 +16,11 @@ from . import EndTimes, ExternalPipe, MapEditingMacros, Merfolk, PlayerMacros, P
 
 
 # from unciv_scripting_examples.Tests import *; TestRunner.run_tests()
+# from unciv_scripting_examples.Tests import *; InMapEditor.__enter__()
 
 try:
 	assert False
-	# Can also check __debug__.
+	# Can also check __debug__. Meh. Explicit(ly using the behaviour) is better here than implicit(ly relying on related behaviour).
 except:
 	pass
 else:
@@ -37,7 +37,7 @@ def getTestGame():
 	return unciv.GameSaver.gameInfoFromString(Elizabeth300)
 
 def goToMainMenu():
-	unciv.uncivGame.setScreen(unciv.apiHelpers.Factories.Gui.MainMenuScreen())
+	unciv.uncivGame.setScreen(unciv.apiHelpers.Factories.constructorByQualname['com.unciv.MainMenuScreen']())#unciv.apiHelpers.Factories.Gui.MainMenuScreen())
 
 
 @Utils.singleton()
@@ -53,7 +53,10 @@ class InMapEditor:
 	"""Context manager object that loads a test map in the map editor on entrance and returns to the main menu on exit."""
 	def __enter__(self):
 		with Utils.TokensAsWrappers(getTestGame()) as (gameinfo,):
-			unciv.uncivGame.setScreen(unciv.apiHelpers.Factories.Gui.MapEditorScreen(gameinfo.tileMap))
+			unciv.uncivGame.setScreen(
+				unciv.apiHelpers.Factories.constructorByQualname['com.unciv.ui.mapeditor.MapEditorScreen'](gameinfo.tileMap)
+				# SetScreen doesn't seem to be needed here. But that seems like a glitch in the core Unciv code.
+			)#unciv.apiHelpers.Factories.Gui.MapEditorScreen(gameinfo.tileMap))
 	def __exit__(self, *exc):
 		goToMainMenu()
 
@@ -65,7 +68,7 @@ class TestRunner:
 	def __init__(self):
 		self._tests = []
 	class _TestCls:
-		"""Class to define and run a single test. Accepts the function to test, a human-readable name for the test, a context manager with which to run it, and args and kwargs with which to call the funciton."""
+		"""Class to define and run a single test. Accepts the function to test, a human-readable name for the test, a context manager with which to run it, and args and kwargs with which to call the function."""
 		def __init__(self, func, name=None, runwith=None, args=(), kwargs={}):
 			self.func = func
 			self.name = getattr(func, '__name__', None) if name is None else name
@@ -78,6 +81,10 @@ class TestRunner:
 			else:
 				with self.runwith:
 					self.func(*self.args, **self.kwargs)
+	def keys(self):
+		return [t.name for t in self._tests]
+	def __getitem__(self, key):
+		return next(t for t in self._tests if t.name == key)
 	def Test(self, *args, **kwargs):
 		"""Return a decorator that registers a function to be run as a test, and then returns it unchanged. Accepts the same configuration arguments as _TestCls."""
 		# Return values aren't checked. A call that completes is considered a pass. A call that raises an exception is considered a fail.
@@ -125,6 +132,31 @@ def LoadGameTest():
 		assert unciv_pyhelpers.real(v) is not None
 		assert unciv_pyhelpers.isForeignToken(v)
 
+
+@TestRunner.Test(runwith=InGame, name="NoPrivatesTest-InGame", args=(unciv, 2))
+@TestRunner.Test(runwith=InMapEditor, name="NoPrivatesTest-InMapEditor", args=(unciv, 2))
+def NoPrivatesTest(start, maxdepth, *, _depth=0, _failures=None, _namestack=None):
+	# Would have to differentiate between unitialized properties and the like, and privates.
+	if _failures is None:
+		_failures = []
+	if _namestack is None:
+		_namestack = ()
+	try:
+		names = dir(start)
+	except:
+		_failures.append('.'.join(_namestack))
+	else:
+		for name in dir(start):
+			namestack = (*_namestack, name)
+			try:
+				v = getattr(start, name)
+			except:
+				_failures.append('.'.join(namestack))
+			else:
+				if _depth < maxdepth:
+					NoPrivatesTest(v, maxdepth, _depth=_depth+1, _failures=_failures, _namestack=namestack)
+	if _depth == 0:
+		assert not _failures, _failures
 
 # Tests for PlayerMacros.py.
 

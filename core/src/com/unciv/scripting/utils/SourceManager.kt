@@ -1,8 +1,8 @@
 package com.unciv.scripting.utils
 
-import com.badlogic.gdx.Gdx
+//import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.JsonParser
+//import com.unciv.JsonParser
 import com.unciv.scripting.ScriptingConstants
 //import com.unciv.scripting.ScriptingConstants
 import kotlin.concurrent.thread
@@ -34,7 +34,7 @@ object SourceManager {
         val enginedir = getEngineLibraries(engine)
         val outdir = FileHandle.tempDirectory("unciv-${engine}_")
         fun addfile(sourcedir: FileHandle, path: String) {
-            var target = outdir.child(path)
+            val target = outdir.child(path)
             if (path.endsWith("/")) {
                 target.mkdirs()
             } else {

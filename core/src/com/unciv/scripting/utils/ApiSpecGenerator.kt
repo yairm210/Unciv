@@ -4,14 +4,17 @@ import com.unciv.scripting.ScriptingScope
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KProperty1
-import com.badlogic.gdx.utils.Json
+//import kotlin.reflect.KProperty1
+//import com.badlogic.gdx.utils.Json
 
 
 // Automatically running this should probably be a part of the build process.
 // Probably do whatever is done with TranslationFileWriter.
 
 // TODO: See UniqueDocsWriter.kt. https://github.com/yairm210/Unciv/commit/4617bc21a70f4f4bd29dc80ba7d648349c9fc3f8
+
+
+// Honestly, probably just deprecate this whole thing. Recent experiments with factories and enums shows how hard and messy parsing/reflecting Kotlin/JVM code structure can be, and the dynamically generated, lazily evaluated wrappers model used in the Python API works better and more flexibly than I ever expected anything using this system to.
 
 
 data class ApiSpecDef(

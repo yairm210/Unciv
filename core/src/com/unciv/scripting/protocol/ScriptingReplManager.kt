@@ -4,8 +4,8 @@ import com.unciv.UncivGame // For debug packet print only.
 import com.unciv.scripting.AutocompleteResults
 import com.unciv.scripting.ScriptingBackend
 import com.unciv.scripting.ScriptingScope
-import com.unciv.scripting.protocol.ScriptingPacket
-import com.unciv.scripting.protocol.ScriptingProtocol
+//import com.unciv.scripting.protocol.ScriptingPacket
+//import com.unciv.scripting.protocol.ScriptingProtocol
 
 
 abstract class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {

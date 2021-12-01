@@ -6,11 +6,13 @@ import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.utils.Base64Coder
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
+//import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.scripting.api.ScriptingApiEnums
 import com.unciv.scripting.api.ScriptingApiFactories
 import com.unciv.scripting.api.ScriptingApiInstanceRegistry
+import com.unciv.scripting.api.ScriptingApiMappers
+import com.unciv.scripting.reflection.Reflection
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toPixmap
@@ -58,22 +60,24 @@ class ScriptingScope(
     //var modApiHelpers: ModApiHelpers?
 
     class ApiHelpers(val scriptingScope: ScriptingScope) {
+        // TODO: Move this into its own file.
         // This could probably eventually include ways for scripts to create and inject their own UI elements too. Create, populate, show even popups for mods, inject buttons that execute script strings for macros.
         // TODO: The vast majority of these don't need scriptingScope access, and thus can be put on singletons.
         val isInGame: Boolean
             get() = (scriptingScope.civInfo != null && scriptingScope.gameInfo != null && scriptingScope.uncivGame != null)
         val Factories = ScriptingApiFactories
         val Enums = ScriptingApiEnums
+        val Mappers = ScriptingApiMappers
         val registeredInstances = ScriptingApiInstanceRegistry()
         //Debug/dev identity function for both Kotlin and scripts. Check if value survives serialization, force something to be added to ScriptingProtocol.instanceSaver, etc.
-        fun unchanged(obj: Any?) = obj
-        fun printLine(msg: Any?) = println(msg) // Different name from Kotlin's is deliberate, to abstract for scripts.
+        fun echo(obj: Any?) = obj // TODO: Rename back to echo.
+        fun printLine(msg: Any?) = println(msg.toString()) // Different name from Kotlin's is deliberate, to abstract for scripts.
         //fun readLine()
         //Return a line from the main game process's STDIN.
         fun toString(obj: Any?) = obj.toString()
         fun copyToClipboard(value: Any?) {
             //Better than scripts potentially doing it themselves. In Python, for example, a way to do this would involve setting up an invisible TKinter window.
-            Gdx.app.clipboard.contents = value.toString();
+            Gdx.app.clipboard.contents = value.toString()
         }
         //fun typeOf(obj: Any?) = obj::class.simpleName
         //fun typeOfQualified(obj: Any?) = obj::class.qualifiedName
@@ -99,8 +103,7 @@ class ScriptingScope(
             exporter.dispose() // This one should be called automatically by GC anyway.
             return String(Base64Coder.encode(fakepng.toByteArray()))
         }
-//        fun applyProperties(instance: Any, properties: Map<String, Any?>) {
-//        }
+
         //setTimeout?
         //fun lambdifyScript(code: String ): () -> Unit = fun(){ scriptingScope.uncivGame!!.scriptingState.exec(code); return } // FIXME: Requires awareness of which scriptingState and which backend to use.
         //Directly invoking the resulting lambda from a running script will almost certainly break the REPL loop/IPC protocol.

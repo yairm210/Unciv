@@ -1,6 +1,6 @@
 package com.unciv.scripting
 
-import com.badlogic.gdx.Gdx
+//import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 
 import com.unciv.scripting.reflection.Reflection
@@ -13,7 +13,7 @@ import com.unciv.scripting.utils.ApiSpecGenerator
 import com.unciv.scripting.utils.SourceManager
 import com.unciv.scripting.utils.SyntaxHighlighter
 import kotlin.reflect.full.*
-import java.util.*
+//import java.util.*
 
 
 /**
@@ -624,9 +624,10 @@ enum class ScriptingBackendType(val metadata: ScriptingBackend_metadata) {
     SystemLua(SluaScriptingBackend),
 //    DevTools(DevToolsScriptingBackend),
     //For running ApiSpecGenerator. Comment in releases. Uncomment if needed.
+    // TODO: Have .new function?
 }
 
-
+// TODO: Lowercase name. Actually, no. Just get rid of this.
 fun SpawnNamedScriptingBackend(backendtype: ScriptingBackendType, scriptingScope: ScriptingScope): ScriptingBackendBase {
     // Seems unnecessary?
     return backendtype.metadata.new(scriptingScope)

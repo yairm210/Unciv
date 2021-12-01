@@ -1,9 +1,9 @@
 package com.unciv.scripting
 
-import com.unciv.logic.GameInfo
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.UncivGame
-import com.unciv.ui.worldscreen.WorldScreen
+//import com.unciv.logic.GameInfo
+//import com.unciv.logic.civilization.CivilizationInfo
+//import com.unciv.UncivGame
+//import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min

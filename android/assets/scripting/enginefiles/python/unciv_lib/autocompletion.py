@@ -59,6 +59,9 @@ class AutocompleteManager:
 
 class PyAutocompleteManager(AutocompleteManager):
 	"""Advanced autocompleter. Returns keys when accessing mappings. Implements API that returns docstrings as help text for callables. Adds opening round and square brackets to autocomplete matches to show callables and mappings."""
+	# FIXME: Dot after a mapping fails.
+	# FIXME: Also fails: apiHelpers.Enums.enumMapsByQualname["com.unciv.logic.automation.ThreatLevel"]
+	# It's the whitespaceadjusted_workingcode.rpartition('.'), I think.
 	def Evaled(self, path):
 		assert ')' not in path, f"Closing brackets not currently allowed in autocomplete eval: {path}"
 		return eval(path, self.scope, self.scope)

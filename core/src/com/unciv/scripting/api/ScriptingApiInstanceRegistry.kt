@@ -5,10 +5,11 @@ package com.unciv.scripting.api
  * Namespace in ScriptingScope().apiHelpers, for scripts to do their own memory management by keeping references to objects alive.
  *
  * Wraps a MutableMap<>().
- * Currently all it does is throw an exception on an assignment colliding with an existing key, and reads and removals for non-existent keys..
- * Was going to have functions named to fit creating and freeing fields, but so far Python's item assignment and deletion syntaxes are plenty clean
+ *
+ * @throws IllegalArgumentException On an attempted assignment colliding with an existing key.
+ * @throws NoSuchElementException For reads and removals at non-existent keys.
  */
-class ScriptingApiInstanceRegistry(): MutableMap<String, Any?> {
+class ScriptingApiInstanceRegistry: MutableMap<String, Any?> {
     private val backingMap = mutableMapOf<String, Any?>()
     override val entries
         get() = backingMap.entries
@@ -20,7 +21,7 @@ class ScriptingApiInstanceRegistry(): MutableMap<String, Any?> {
         get() = backingMap.size
     override fun containsKey(key: String) = backingMap.containsKey(key)
     override fun containsValue(value: Any?) = backingMap.containsValue(value)
-    override fun get(key: String): Any? {
+    override fun get(key: String): Any? { //FIXME: Operator modifiers?
         if (key !in this) {
             throw NoSuchElementException("\"${key}\" not in ${this}.")
         }

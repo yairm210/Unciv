@@ -2,8 +2,6 @@ package com.unciv.ui.consolescreen
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
@@ -11,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
-import com.unciv.scripting.ScriptingBackendBase
 import com.unciv.scripting.ScriptingBackendType
 import com.unciv.scripting.ScriptingState
 import com.unciv.ui.utils.*
@@ -286,12 +283,12 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         }
     }
 
-    enum class SetTextCursorMode() {
-        End(),
-        Unchanged(),
-        Insert(),
-        SelectAll(),
-        SelectAfter()
+    enum class SetTextCursorMode {
+        End,
+        Unchanged,
+        Insert,
+        SelectAll,
+        SelectAfter
     }
 }
 

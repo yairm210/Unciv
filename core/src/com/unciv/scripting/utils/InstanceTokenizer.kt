@@ -1,7 +1,7 @@
 package com.unciv.scripting.utils
 
 import com.unciv.scripting.ScriptingConstants
-import kotlin.math.min
+//import kotlin.math.min
 import java.lang.ref.WeakReference
 import java.util.UUID
 
@@ -35,7 +35,7 @@ object InstanceTokenizer {
     /**
      * Length to clip generated token strings to. Here in case token string generation uses the instance's .toString(), which it currently does.
      */
-    private val tokenMaxLength = 100
+    private const val tokenMaxLength = 100
 
     /**
      * Generate a distinctive token string to represent a Kotlin/JVM object.
@@ -70,7 +70,7 @@ object InstanceTokenizer {
     /**
      * Remove all tokens and WeakReferences whose instances have already been garbage-collected.
      */
-    fun clean(): Unit {
+    fun clean() {
         //FIXME (if I become a problem): Because a new unique token is currently generated even if the instance is already tokenized as something else, this will eventually get slower over time if a script makes lots of requests that result in new instance tokens for objects that last a long time (E.G. uncivGame). And since any stored instances should ideally be WeakReferences to prevent garbage collection from being broken for *all* instances, fixing that may not be as simple as checking for existing tokens to reuse them.
         //TODO: Probably keep another map of instance hashes to weakrefs and their existing token? The hashes will have to have counts instead of just containment, since otherwise a hash collision would cause the earlier token to become inaccessible.
         val badtokens = mutableListOf<String>()

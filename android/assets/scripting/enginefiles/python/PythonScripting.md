@@ -366,6 +366,23 @@ def faster():
 		# Saves 5 Python object instantiations with every loop!
 ```
 
+There are additionally a number of Kotlin/JVM helper functions that can speed up scripts by applying simple operations to or reading simple values from lots of Kotlin/JVM instances at once. These functions accept and return lists and mappings that can be serialized as JSON arrays and objects, allowing hundreds or thousands of operations to be performed with only a single IPC request.
+
+```python3
+# TODO
+def slow():
+	for t in gameInfo.tileMap.values:
+		if t.militaryUnit is not None or t.civilianUnit is not None:
+			t.terrainFeatures.add("Fallout")
+
+def fast():
+	tileproperties = apiHelpers.mapPathCodes(gameInfo.tileMap.values, ('.militaryUnit', '.civilianUnit'))
+	apiHelpers.applyPathCodes({tile:{'.terrainFeatures.add("Fallout")'} for tile in tileproperties if tileproperties['.militaryunit'] is None or tileproperties['.civilianUnit'] is None})
+
+def also_slow():
+
+```
+
 Every element in the path sent by a wrapper object to Kotlin/the JVM also requires the Kotlin side to perform an additional reflective member resolution step.
 
 ```python3
