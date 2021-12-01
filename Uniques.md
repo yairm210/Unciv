@@ -1,4 +1,5 @@
 - [Overview](#overview)
+  - [Generated Documentation](#generated-documentation)
   - [Unique locations](#unique-locations)
   - [Parameter types](#parameter-types)
     * [stats](#stats)
@@ -42,6 +43,10 @@ Instead, every special trait that an object has is encoded into a single paramet
 In the json files, this looks something like `"uniques": ["Requires a [Market] in all cities", "Cost increases by [30] per owned city"]`.
 
 As seen in the above example, in order to provide flexibility and generalization, Uniques have certain *parameters*, marked by the fact that they are inside square braces. These parameters can be changed, and the game will recognize the text inside them and act accordingly.
+
+### Generated Documentation
+
+This part of the wiki is human-edited and partially out of date. However, we now have automatically generated documentation, complete for all Uniques that have been updated to the new UniqueType system. [It is part of the main source tree](/yairm210/Unciv/blob/master/docs/uniques.md).
 
 ### Unique locations
 
@@ -242,6 +247,8 @@ Can be found [here!](https://github.com/yairm210/Unciv/blob/master/docs/uniques.
 ## General uniques
 
 ### Stat uniques
+
+Remember, match is case sensitive, so please capitalize each Stat name.
 
 "[stats]" ©
 
