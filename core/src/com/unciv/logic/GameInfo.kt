@@ -366,7 +366,7 @@ class GameInfo {
         tileMap.gameInfo = this
 
         // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
-        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset==true }
         if (baseRulesetInMods != null) {
             gameParameters.baseRuleset = baseRulesetInMods
             gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })

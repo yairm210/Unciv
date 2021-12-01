@@ -72,7 +72,7 @@ object ChooseBeliefsAutomation {
                 "[]% attacking Strength for cities" -> unique.params[0].toFloat() / 10f // Modified by personality
                 "[] Units adjacent to this city heal [] HP per turn when healing" -> unique.params[1].toFloat() / 10f
                 "+[]% Production when constructing []" -> unique.params[0].toFloat() / 3f
-                "[] in cities on [] tiles" -> 
+                UniqueType.StatsFromCitiesOnSpecificTiles.placeholderText ->
                     if (city.getCenterTile().matchesFilter(unique.params[1])) 
                         unique.stats.values.sum() // Modified by personality 
                     else 0f
@@ -92,7 +92,7 @@ object ChooseBeliefsAutomation {
                         }
                         else -> 0f
                     }
-                "[] in cities with [] or more population" ->
+                UniqueType.StatsFromXPopulation.placeholderText ->
                     unique.stats.values.sum() // Modified by personality
                 "[] from each Trade Route" ->
                     unique.stats.values.sum() *

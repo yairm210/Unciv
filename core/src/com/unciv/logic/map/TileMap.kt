@@ -72,6 +72,9 @@ class TileMap {
     @delegate:Transient
     val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
 
+    @delegate:Transient
+    val resources: List<String> by lazy { tileList.asSequence().filter { it.resource != null }.map { it.resource!! }.distinct().toList() }
+
     // Excluded from Serialization by having no own backing field
     val values: Collection<TileInfo>
         get() = tileList

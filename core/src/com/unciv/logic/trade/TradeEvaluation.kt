@@ -9,6 +9,8 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.utils.toPercent
 import com.unciv.ui.victoryscreen.RankingType
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -54,6 +56,10 @@ class TradeEvaluation {
     }
 
     fun isTradeAcceptable(trade: Trade, evaluator: CivilizationInfo, tradePartner: CivilizationInfo): Boolean {
+        return getTradeAcceptability(trade, evaluator, tradePartner) >= 0
+    }
+
+    fun getTradeAcceptability(trade: Trade, evaluator: CivilizationInfo, tradePartner: CivilizationInfo): Int {
         val sumOfTheirOffers = trade.theirOffers.asSequence()
                 .filter { it.type != TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
                 .map { evaluateBuyCost(it, evaluator, tradePartner) }.sum()
@@ -68,10 +74,10 @@ class TradeEvaluation {
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfOurOffers *= 2
         }
 
-        return sumOfOurOffers <= sumOfTheirOffers
+        return sumOfTheirOffers - sumOfOurOffers
     }
 
-    private fun evaluateBuyCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
+    fun evaluateBuyCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
@@ -85,40 +91,20 @@ class TradeEvaluation {
             }
 
             TradeType.Luxury_Resource -> {
-                val weAreMissingThisLux = !civInfo.hasResource(offer.name)  // first off - do we want this for ourselves?
-
-                val civsWhoWillTradeUsForTheLux = civInfo.diplomacy.values.map { it.civInfo } // secondly - should we buy this in order to resell it?
-                        .filter { it != tradePartner }
-                        .filter { !it.hasResource(offer.name) } //they don't have
-                val ourResourceNames = civInfo.getCivResources().map { it.resource.name }
-                val civsWithLuxToTrade = civsWhoWillTradeUsForTheLux.filter {
-                    // these are other civs who we could trade this lux away to, in order to get a different lux
-                    it.getCivResources().any {
-                        it.amount > 1 && it.resource.resourceType == ResourceType.Luxury //they have a lux we don't and will be willing to trade it
-                                && !ourResourceNames.contains(it.resource.name)
-                    }
-                }
-                var numberOfCivsWhoWouldTradeUsForTheLux = civsWithLuxToTrade.count()
-
-                var numberOfLuxesWeAreWillingToBuy = 0
-                var cost = 0
-                if (weAreMissingThisLux) {  // for ourselves
-                    numberOfLuxesWeAreWillingToBuy += 1
-                    cost += 250
-                }
-
-                while (numberOfLuxesWeAreWillingToBuy < offer.amount && numberOfCivsWhoWouldTradeUsForTheLux > 0) {
-                    numberOfLuxesWeAreWillingToBuy += 1 // for reselling
-                    cost += 50
-                    numberOfCivsWhoWouldTradeUsForTheLux -= 1
-                }
-
-                return cost
+                val weLoveTheKingPotential = civInfo.cities.count { it.demandedResource == offer.name } * 50
+                return if(!civInfo.hasResource(offer.name)) { // we can't trade on resources, so we are only interested in 1 copy for ourselves
+                        weLoveTheKingPotential + when { // We're a lot more interested in luxury if low on happiness (AI is never low on happiness though)
+                            civInfo.getHappiness() < 0 -> 450
+                            civInfo.getHappiness() < 10 -> 350
+                            else -> 300 // Higher than corresponding sell cost since a trade is mutually beneficial!
+                        }
+                    } else
+                        0
             }
 
             TradeType.Strategic_Resource -> {
                 val resources = civInfo.getCivResourcesByName()
-                val amountWillingToBuy = resources[offer.name]!! - 2
+                val amountWillingToBuy = 2 - resources[offer.name]!!
                 if (amountWillingToBuy <= 0) return 0 // we already have enough.
                 val amountToBuyInOffer = min(amountWillingToBuy, offer.amount)
 
@@ -131,7 +117,7 @@ class TradeEvaluation {
                 return 50 * amountToBuyInOffer
             }
 
-            TradeType.Technology ->
+            TradeType.Technology -> // Currently unused
                 return (sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble())
                         * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt() * 20
             TradeType.Introduction -> return introductionValue(civInfo.gameInfo.ruleSet)
@@ -173,7 +159,7 @@ class TradeEvaluation {
         return 0
     }
 
-    private fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
+    fun evaluateSellCost(offer: TradeOffer, civInfo: CivilizationInfo, tradePartner: CivilizationInfo): Int {
         when (offer.type) {
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
@@ -186,9 +172,12 @@ class TradeEvaluation {
                 }
             }
             TradeType.Luxury_Resource -> {
-                return if (civInfo.getCivResourcesByName()[offer.name]!! > 1)
-                    250 // fair price
-                else 500 // you want to take away our last lux of this type?!
+                return when {
+                    civInfo.getCivResourcesByName()[offer.name]!! > 1 -> 250 // fair price
+                    civInfo.hasUnique(UniqueType.RetainHappinessFromLuxury) -> // If we retain 50% happiness, value at 375
+                        750 - (civInfo.getMatchingUniques(UniqueType.RetainHappinessFromLuxury).first().params[0].toPercent() * 250).toInt()
+                    else -> 500 // you want to take away our last lux of this type?!
+                }
             }
             TradeType.Strategic_Resource -> {
                 if (civInfo.gameInfo.spaceResources.contains(offer.name) &&
