@@ -120,7 +120,8 @@ class RejectionReasons: HashSet<RejectionReason>() {
             RejectionReason.RequiresBuildingInSomeCity,
             RejectionReason.PopulationRequirement,
             RejectionReason.ConsumesResources,
-            RejectionReason.CanOnlyBePurchased
+            RejectionReason.CanOnlyBePurchased,
+            RejectionReason.MaxNumberBuilding
         )
     }
 } 
