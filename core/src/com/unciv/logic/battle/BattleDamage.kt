@@ -60,23 +60,6 @@ object BattleDamage {
                 modifiers.add("${unique.sourceObjectName} (${unique.sourceObjectType})", effect)
             }
 
-            // Deprecated since 3.17.3
-            for (unique in
-            combatant.unit.getMatchingUniques("+[]% Strength vs []")
-            ) {
-                if (enemy.matchesCategory(unique.params[1]))
-                    modifiers.add("vs [${unique.params[1]}]", unique.params[0].toInt())
-            }
-            for (unique in combatant.unit.getMatchingUniques("-[]% Strength vs []")
-            ) {
-                if (enemy.matchesCategory(unique.params[1]))
-                    modifiers.add("vs [${unique.params[1]}]", -unique.params[0].toInt())
-            }
-
-            for (unique in combatant.unit.getMatchingUniques("+[]% Combat Strength"))
-                modifiers.add("Combat Strength", unique.params[0].toInt())
-            //
-
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val civHappiness = if (civInfo.isCityState() && civInfo.getAllyCiv() != null)
             // If we are a city state with an ally we are vulnerable to their unhappiness.
