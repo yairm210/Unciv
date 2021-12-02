@@ -332,6 +332,7 @@ class CityInfo {
                 cityResources.add(resource, -amount, "Buildings")
             }
         }
+
         for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources)) { // E.G "Provides [1] [Iron]"
             if (!unique.conditionalsApply(civInfo, this)) continue
             val resource = getRuleset().tileResources[unique.params[1]]
