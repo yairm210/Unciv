@@ -348,6 +348,11 @@ Example: "Can be purchased for [20] [Culture] [in all cities]"
 
 Applicable to: Building, Unit
 
+#### Limited to [amount] per Civilization
+Example: "Limited to [20] per Civilization"
+
+Applicable to: Building, Unit
+
 #### Cost increases by [amount] per owned city
 Example: "Cost increases by [20] per owned city"
 
