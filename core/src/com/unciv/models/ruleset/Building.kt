@@ -454,6 +454,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         if (cityConstructions.isBeingConstructedOrEnqueued(name))
             return false
+        for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)){
+            if (cityConstructions.cityInfo.civInfo.cities.count{it.cityConstructions.containsBuildingOrEquivalent(name)}>=unique.params[0].toInt())
+                return false
+        }
+
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.none { !it.shouldShow }
             || (
@@ -539,6 +544,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.HiddenWithoutReligion.text ->
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
+
+                UniqueType.MaxNumberBuildable.placeholderText ->
+                    if (civInfo.cities.count {
+                                it.cityConstructions.containsBuildingOrEquivalent(name) ||
+                                        it.cityConstructions.isBeingConstructedOrEnqueued(name)
+                            }
+                            >= unique.params[0].toInt()) {
+                        rejectionReasons.add(RejectionReason.MaxNumberBuildable)
+                }
             }
         }
 
