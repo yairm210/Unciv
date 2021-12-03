@@ -75,6 +75,9 @@ object NextTurnAutomation {
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
         for (tradeRequest in civInfo.tradeRequests.toList()) {
             val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
+            if (!TradeEvaluation().isTradeValid(tradeRequest.trade, civInfo, otherCiv))
+                continue
+
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             tradeLogic.currentTrade.set(tradeRequest.trade)
             /** We need to remove this here, so that if the trade is accepted, the updateDetailedCivResources()
@@ -87,6 +90,7 @@ object NextTurnAutomation {
                 tradeLogic.acceptTrade()
                 otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationIcon.Trade, civInfo.civName)
             } else {
+                tradeRequest.decline(civInfo)
                 /* Currently disabled until we solve the problems in https://github.com/yairm210/Unciv/issues/5728
 
                 val counteroffer = getCounteroffer(civInfo, tradeRequest)
