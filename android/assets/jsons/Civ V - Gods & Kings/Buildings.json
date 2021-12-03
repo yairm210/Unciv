@@ -1053,7 +1053,7 @@
 		"name": "Recycling Center",
 		"maintenance": 3,
 		"requiredTech": "Ecology",
-		"uniques": ["Provides [2] [Aluminum]","Can have [5] of this building in your empire at most"]
+		"uniques": ["Provides [2] [Aluminum]","Limited to [5] per Civilization"]
 	},
 	{
 		"name": "Sydney Opera House",

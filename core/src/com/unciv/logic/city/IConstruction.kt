@@ -121,7 +121,7 @@ class RejectionReasons: HashSet<RejectionReason>() {
             RejectionReason.PopulationRequirement,
             RejectionReason.ConsumesResources,
             RejectionReason.CanOnlyBePurchased,
-            RejectionReason.MaxNumberBuilding
+            RejectionReason.MaxNumberBuildable
         )
     }
 } 
@@ -143,7 +143,7 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
-    MaxNumberBuilding(true, "Maximum number being built"),
+    MaxNumberBuildable(true, "Maximum number being built"),
 
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
