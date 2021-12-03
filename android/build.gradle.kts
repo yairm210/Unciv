@@ -24,7 +24,7 @@ android {
     }
     defaultConfig {
         applicationId = "com.unciv.app"
-        minSdk = 17
+        minSdk = 21
         targetSdk = 30 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
@@ -60,6 +60,7 @@ android {
         disable("MissingTranslation")
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true // https://developer.android.com/studio/write/java8-support
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -124,4 +125,5 @@ dependencies {
     //   run `./gradlew build --scan` to see details
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.work:work-runtime-ktx:2.6.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 }
