@@ -49,8 +49,8 @@ object NextTurnAutomation {
             adoptPolicy(civInfo)  // todo can take a second - why?
             freeUpSpaceResources(civInfo)
         } else {
-            civInfo.getFreeTechForCityState()
-            civInfo.updateDiplomaticRelationshipForCityState()
+            civInfo.cityStateFunctions.getFreeTechForCityState()
+            civInfo.cityStateFunctions.updateDiplomaticRelationshipForCityState()
         }
 
         chooseTechToResearch(civInfo)
@@ -237,8 +237,8 @@ object NextTurnAutomation {
     private fun useGold(civInfo: CivilizationInfo) {
         if (civInfo.getHappiness() > 0 && civInfo.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
             for (cityState in civInfo.getKnownCivs().filter { it.isCityState() } ) {
-                if (cityState.canBeMarriedBy(civInfo))
-                    cityState.diplomaticMarriage(civInfo)
+                if (cityState.cityStateFunctions.canBeMarriedBy(civInfo))
+                    cityState.cityStateFunctions.diplomaticMarriage(civInfo)
                 if (civInfo.getHappiness() <= 0) break // Stop marrying if happiness is getting too low
             }
         }
@@ -344,9 +344,9 @@ object NextTurnAutomation {
                     && valueCityStateAlliance(civInfo, state) <= 0
                     && state.getTributeWillingness(civInfo) >= 0) {
                 if (state.getTributeWillingness(civInfo, demandingWorker = true) > 0)
-                    state.tributeWorker(civInfo)
+                    state.cityStateFunctions.tributeWorker(civInfo)
                 else
-                    state.tributeGold(civInfo)
+                    state.cityStateFunctions.tributeGold(civInfo)
             }
         }
     }
