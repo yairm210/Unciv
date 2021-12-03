@@ -210,6 +210,15 @@ Example: "May buy [buildingFilter] buildings with [Culture] for [20] times their
 
 Applicable to: Global, FollowerBelief
 
+#### Enables Research agreements
+Applicable to: Global
+
+#### Triggers victory
+Applicable to: Global
+
+#### Triggers a Cultural Victory upon completion
+Applicable to: Global
+
 #### [amount]% Strength
 Example: "[20]% Strength"
 
@@ -564,6 +573,9 @@ Applicable to: Terrain
 #### Neighboring tiles except [baseTerrain] will convert to [baseTerrain]
 Example: "Neighboring tiles except [baseTerrain] will convert to [baseTerrain]"
 
+Applicable to: Terrain
+
+#### Grants 500 Gold to the first civilization to discover it
 Applicable to: Terrain
 
 #### Units ending their turn on this terrain take [amount] damage

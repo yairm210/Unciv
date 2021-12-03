@@ -595,7 +595,7 @@ class CivilizationInfo {
 
     fun canSignResearchAgreement(): Boolean {
         if (!isMajorCiv()) return false
-        if (!hasUnique("Enables Research agreements")) return false
+        if (!hasUnique(UniqueType.EnablesResearchAgreements)) return false
         if (gameInfo.ruleSet.technologies.values
                         .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
         return true

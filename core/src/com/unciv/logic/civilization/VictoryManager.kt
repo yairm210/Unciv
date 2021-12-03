@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.unique.UniqueType
 
 class VictoryManager {
     @Transient
@@ -68,7 +69,7 @@ class VictoryManager {
     fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) && spaceshipPartsRemaining() == 0
 
     fun hasWonCulturalVictory() = hasVictoryType(VictoryType.Cultural)
-            && civInfo.hasUnique("Triggers a Cultural Victory upon completion")
+            && civInfo.hasUnique(UniqueType.TriggersCulturalVictory)
 
     fun hasWonDominationVictory(): Boolean {
         return hasVictoryType(VictoryType.Domination)
@@ -85,7 +86,7 @@ class VictoryManager {
         if (hasWonScientificVictory()) return VictoryType.Scientific
         if (hasWonCulturalVictory()) return VictoryType.Cultural
         if (hasWonDiplomaticVictory()) return VictoryType.Diplomatic
-        if (civInfo.hasUnique("Triggers victory")) return VictoryType.Neutral
+        if (civInfo.hasUnique(UniqueType.TriggersVictory)) return VictoryType.Neutral
         return null
     }
 
