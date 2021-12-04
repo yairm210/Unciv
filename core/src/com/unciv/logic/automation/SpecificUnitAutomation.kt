@@ -289,7 +289,6 @@ object SpecificUnitAutomation {
 
         println(unit.currentTile.position)
 
-
         val cities = unit.civInfo.cities.asSequence()
             .filterNot { it.religion.getMajorityReligion()?.name == null }
             .filter { it.religion.getMajorityReligion()!!.name != unit.getReligionDisplayName() }
@@ -297,22 +296,26 @@ object SpecificUnitAutomation {
             .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) } ?: return
 
         val destination = cities.getTiles().asSequence()
-            .filterNot { it.militaryUnit == null }
-            .filterNot { it.civilianUnit == null }
-            .filter { unit.movement.canReach(it) }
+            .filterNot { unit.movement.canMoveTo(it) }
             .minByOrNull { it.aerialDistanceTo(unit.currentTile) } ?: return
-        println("hello world")
+        println(destination)
+
+        if (unit.movement.canReach(destination)) println("true")
+
+        println(unit.movement.headTowards(destination))
 
         if (unit.currentTile.owningCity != null && unit.currentTile.getCity()!!.religion.getMajorityReligion()!!.name == unit.religion){
             val actionList: java.util.ArrayList<UnitAction> = ArrayList()
 
-            UnitActions.addSpreadReligionActions(unit, actionList, destination.owningCity!!)
+            UnitActions.addActionsWithLimitedUses(unit, actionList, destination)
+
             for (action in actionList){
-                action.action!!.invoke()
+                if (action.action == null) return
+                action.action.invoke()
             }
         }
 
-        unit.movement.headTowards(destination)
+
     }
 
 
