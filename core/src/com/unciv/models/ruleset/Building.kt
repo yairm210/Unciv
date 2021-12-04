@@ -167,7 +167,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
         if (!missingcities.isEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
-            lines += "\n" + "[${cityInfo?.civInfo?.getEquivalentBuilding(missingunique!!.params!![0])}] required:".tr() + " " + missingcities.map{ "{${it.name}}" }.joinToString(", ")
+            lines += "\n" + "[${cityInfo?.civInfo?.getEquivalentBuilding(missingunique!!.params[0])}] required:".tr() + " " + missingcities.map{ "{${it.name}}" }.joinToString(", ")
             // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
         }
         return lines.joinToString("\n") { it.tr() }.trim()
@@ -454,6 +454,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         if (cityConstructions.isBeingConstructedOrEnqueued(name))
             return false
+        for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)){
+            if (cityConstructions.cityInfo.civInfo.cities.count{it.cityConstructions.containsBuildingOrEquivalent(name)}>=unique.params[0].toInt())
+                return false
+        }
+
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.none { !it.shouldShow }
             || (
@@ -539,6 +544,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.HiddenWithoutReligion.text ->
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
+
+                UniqueType.MaxNumberBuildable.placeholderText ->
+                    if (civInfo.cities.count {
+                                it.cityConstructions.containsBuildingOrEquivalent(name) ||
+                                        it.cityConstructions.isBeingConstructedOrEnqueued(name)
+                            }
+                            >= unique.params[0].toInt()) {
+                        rejectionReasons.add(RejectionReason.MaxNumberBuildable)
+                }
             }
         }
 

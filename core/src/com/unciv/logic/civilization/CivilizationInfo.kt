@@ -595,7 +595,7 @@ class CivilizationInfo {
 
     fun canSignResearchAgreement(): Boolean {
         if (!isMajorCiv()) return false
-        if (!hasUnique("Enables Research agreements")) return false
+        if (!hasUnique(UniqueType.EnablesResearchAgreements)) return false
         if (gameInfo.ruleSet.technologies.values
                         .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
         return true
@@ -778,6 +778,8 @@ class CivilizationInfo {
         for (unit in getCivUnits()) unit.startTurn()
         hasMovedAutomatedUnits = false
 
+        updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
+
         for (tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
             val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
             if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade, this, offeringCiv)) {
@@ -786,7 +788,6 @@ class CivilizationInfo {
                 offeringCiv.addNotification("Our proposed trade is no longer relevant!", NotificationIcon.Trade)
             }
         }
-        updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
     }
 
     fun endTurn() {
@@ -856,7 +857,7 @@ class CivilizationInfo {
                     && cityStateAllies.any { it.cities.isNotEmpty() }
                 ) {
                     val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName && it.cities.isNotEmpty()}.random()
-                    givingCityState.giveGreatPersonToPatron(this)
+                    givingCityState.cityStateFunctions.giveGreatPersonToPatron(this)
                     flagsCountdown[flag] = turnsForGreatPersonFromCityState()
                 }
 
@@ -1116,17 +1117,15 @@ class CivilizationInfo {
         }
 
         // Check if different continents (unless already max distance, or water map)
-        if (connections > 0 && proximity != Proximity.Distant
-            && !gameInfo.tileMap.isWaterMap()) {
-
-            if (getCapital().getCenterTile().getContinent() != otherCiv.getCapital().getCenterTile().getContinent()) {
-                // Different continents - increase separation by one step
-                proximity = when (proximity) {
-                    Proximity.Far -> Proximity.Distant
-                    Proximity.Close -> Proximity.Far
-                    Proximity.Neighbors -> Proximity.Close
-                    else -> proximity
-                }
+        if (connections > 0 && proximity != Proximity.Distant && !gameInfo.tileMap.isWaterMap()
+            && getCapital().getCenterTile().getContinent() != otherCiv.getCapital().getCenterTile().getContinent()
+        ) {
+            // Different continents - increase separation by one step
+            proximity = when (proximity) {
+                Proximity.Far -> Proximity.Distant
+                Proximity.Close -> Proximity.Far
+                Proximity.Neighbors -> Proximity.Close
+                else -> proximity
             }
         }
 
@@ -1144,70 +1143,25 @@ class CivilizationInfo {
 
     //////////////////////// City State wrapper functions ////////////////////////
 
-    fun initCityState(ruleset: Ruleset, startingEra: String, unusedMajorCivs: Collection<String>)
-        = cityStateFunctions.initCityState(ruleset, startingEra, unusedMajorCivs)
     /** Gain a random great person from the city state */
-    private fun giveGreatPersonToPatron(receivingCiv: CivilizationInfo) {
-        cityStateFunctions.giveGreatPersonToPatron(receivingCiv)
-    }
-    fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
-        cityStateFunctions.giveMilitaryUnitToPatron(receivingCiv)
-    }
-    fun influenceGainedByGift(donorCiv: CivilizationInfo, giftAmount: Int)
-        = cityStateFunctions.influenceGainedByGift(donorCiv, giftAmount)
-    fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) {
+    fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) =
         cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
-    }
-    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()    
+    fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+
     fun getProtectorCivs() = cityStateFunctions.getProtectorCivs()
-    fun addProtectorCiv(otherCiv: CivilizationInfo) {
-        cityStateFunctions.addProtectorCiv(otherCiv)
-    }
-    fun removeProtectorCiv(otherCiv: CivilizationInfo, forced: Boolean = false) {
+    fun addProtectorCiv(otherCiv: CivilizationInfo) = cityStateFunctions.addProtectorCiv(otherCiv)
+    fun removeProtectorCiv(otherCiv: CivilizationInfo, forced: Boolean = false) =
         cityStateFunctions.removeProtectorCiv(otherCiv, forced)
-    }
     fun otherCivCanPledgeProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanPledgeProtection(otherCiv)
     fun otherCivCanWithdrawProtection(otherCiv: CivilizationInfo) = cityStateFunctions.otherCivCanWithdrawProtection(otherCiv)
-    fun updateAllyCivForCityState() {
-        cityStateFunctions.updateAllyCivForCityState()
-    }
-    fun getDiplomaticMarriageCost() = cityStateFunctions.getDiplomaticMarriageCost()
-    fun canBeMarriedBy(otherCiv: CivilizationInfo) = cityStateFunctions.canBeMarriedBy(otherCiv)
-    fun diplomaticMarriage(otherCiv: CivilizationInfo) {
-        cityStateFunctions.diplomaticMarriage(otherCiv)
-    }
+
+    fun updateAllyCivForCityState() = cityStateFunctions.updateAllyCivForCityState()
     fun getTributeWillingness(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false)
         = cityStateFunctions.getTributeWillingness(demandingCiv, demandingWorker)
-    fun getTributeModifiers(demandingCiv: CivilizationInfo, demandingWorker: Boolean = false, requireWholeList: Boolean = false)
-        = cityStateFunctions.getTributeModifiers(demandingCiv, demandingWorker, requireWholeList)
-    fun goldGainedByTribute() = cityStateFunctions.goldGainedByTribute()
-    fun tributeGold(demandingCiv: CivilizationInfo) {
-        cityStateFunctions.tributeGold(demandingCiv)
-    }
-    fun tributeWorker(demandingCiv: CivilizationInfo) {
-        cityStateFunctions.tributeWorker(demandingCiv)
-    }
     fun canGiveStat(statType: Stat) = cityStateFunctions.canGiveStat(statType)
-    fun updateDiplomaticRelationshipForCityState() {
-        cityStateFunctions.updateDiplomaticRelationshipForCityState()
-    }
-    fun getFreeTechForCityState() {
-        cityStateFunctions.getFreeTechForCityState()
-    }
-    fun getNumThreateningBarbarians() = cityStateFunctions.getNumThreateningBarbarians()
-    fun threateningBarbarianKilledBy(otherCiv: CivilizationInfo) {
-        cityStateFunctions.threateningBarbarianKilledBy(otherCiv)
-    }
 
     fun getAllyCiv() = allyCivName
     fun setAllyCiv(newAllyName: String?) { allyCivName = newAllyName }
-
-    fun cityStateAttacked(attacker: CivilizationInfo) {
-        cityStateFunctions.cityStateAttacked(attacker)
-    }
-    fun cityStateDestroyed(attacker: CivilizationInfo) {
-        cityStateFunctions.cityStateDestroyed(attacker)
-    }
 
     //endregion
 

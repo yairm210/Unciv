@@ -215,25 +215,22 @@ class CityStats(val cityInfo: CityInfo) {
             if (!cityInfo.civInfo.hasTechOrPolicy(unique.params[1]))
                 addUniqueStats(unique)
 
-
-        fun rename(source: String, displayedSource: String) {
-            if (!sourceToStats.containsKey(source)) return
-            sourceToStats.add(displayedSource, sourceToStats[source]!!)
-            sourceToStats.remove(source)
-        }
-        rename("Wonder", "Wonders")
-        rename("Building", "Buildings")
-        rename("Policy", "Policies")
+        renameStatmapKeys(sourceToStats)
 
         return sourceToStats
     }
 
-    private fun getStatsFromUniques(uniques: Sequence<Unique>): Stats {
-        val stats = Stats()
-
-
-        return stats
+    private fun renameStatmapKeys(statMap: StatMap){
+        fun rename(source: String, displayedSource: String) {
+            if (!statMap.containsKey(source)) return
+            statMap.add(displayedSource, statMap[source]!!)
+            statMap.remove(source)
+        }
+        rename("Wonder", "Wonders")
+        rename("Building", "Buildings")
+        rename("Policy", "Policies")
     }
+
 
     private fun getStatPercentBonusesFromGoldenAge(isGoldenAge: Boolean): Stats {
         val stats = Stats()
@@ -245,10 +242,10 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
     private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniqueSequence: Sequence<Unique>): Stats {
+
         val stats = Stats()
-        val uniques = uniqueSequence.toList().asSequence()
         val uniqueMap = UniqueMapTyped()
-        for (unique in uniques) uniqueMap.addUnique(unique)
+        for (unique in uniqueSequence) uniqueMap.addUnique(unique)
           // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
           // this helps mitigate concurrency problems.
 
@@ -259,7 +256,7 @@ class CityStats(val cityInfo: CityInfo) {
 
         // Deprecated since 3.17.0
             // For instance "+[50]% [Production]
-            for (unique in uniques.filter { it.type == UniqueType.StatPercentBonusCitiesDeprecated2})
+            for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecated2))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         //
 
@@ -296,12 +293,12 @@ class CityStats(val cityInfo: CityInfo) {
 
         // Deprecated since 3.17.1
             if (cityInfo.civInfo.getHappiness() >= 0) {
-                for (unique in uniques.filter { it.type == UniqueType.StatPercentBonusCitiesDeprecatedWhileEmpireHappy})
+                for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecatedWhileEmpireHappy))
                     stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
             }
         //
 
-        for (unique in uniques.filter { it.type == UniqueType.StatPercentFromReligionFollowers })
+        for (unique in uniqueMap.getUniques(UniqueType.StatPercentFromReligionFollowers))
             stats.add(
                 Stat.valueOf(unique.params[1]),
                 min(

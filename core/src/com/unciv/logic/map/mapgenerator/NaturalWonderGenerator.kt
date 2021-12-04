@@ -53,9 +53,9 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
     private fun Unique.getIntParam(index: Int) = params[index].toInt()
 
-    private fun spawnSpecificWonder(tileMap: TileMap, wonder: Terrain): Boolean {
-        val continentsRelevant = wonder.hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
-                wonder.hasUnique(UniqueType.NaturalWonderSmallerLandmass)
+    private fun spawnSpecificWonder(tileMap: TileMap, naturalWonder: Terrain): Boolean {
+        val continentsRelevant = naturalWonder.hasUnique(UniqueType.NaturalWonderLargerLandmass) ||
+                naturalWonder.hasUnique(UniqueType.NaturalWonderSmallerLandmass)
         val sortedContinents = if (continentsRelevant)
                 tileMap.continentSizes.asSequence()
                 .sortedByDescending { it.value }
@@ -65,8 +65,8 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
 
         val suitableLocations = tileMap.values.filter { tile->
             tile.resource == null &&
-            wonder.occursOn.contains(tile.getLastTerrain().name) &&
-            wonder.uniqueObjects.all { unique ->
+            naturalWonder.occursOn.contains(tile.getLastTerrain().name) &&
+            naturalWonder.uniqueObjects.all { unique ->
                 when (unique.type) {
                     UniqueType.NaturalWonderNeighborCount -> {
                         val count = tile.neighbors.count {
@@ -96,7 +96,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             }
         }
 
-        return trySpawnOnSuitableLocation(suitableLocations, wonder)
+        return trySpawnOnSuitableLocation(suitableLocations, naturalWonder)
     }
 
     private fun trySpawnOnSuitableLocation(suitableLocations: List<TileInfo>, wonder: Terrain): Boolean {
