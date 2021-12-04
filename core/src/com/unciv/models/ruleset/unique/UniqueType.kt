@@ -176,11 +176,12 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),
     TriggersVictory("Triggers victory", UniqueTarget.Global),
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
-
+    
     CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Nation),
     
     //endregion Global uniques
 
+    
     ///////////////////////////////////////// region CONSTRUCTION UNIQUES /////////////////////////////////////////
 
     Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit),
@@ -190,8 +191,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     MaxNumberBuildable("Limited to [amount] per Civilization", UniqueTarget.Building, UniqueTarget.Unit),
 
     //endregion
-
-
+    
+    
     ///////////////////////////////////////// region BUILDING UNIQUES /////////////////////////////////////////
 
 
@@ -211,7 +212,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     //endregion
 
-
+    
     ///////////////////////////////////////// region UNIT UNIQUES /////////////////////////////////////////
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
