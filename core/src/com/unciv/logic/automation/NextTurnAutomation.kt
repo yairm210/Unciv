@@ -49,8 +49,8 @@ object NextTurnAutomation {
             adoptPolicy(civInfo)  // todo can take a second - why?
             freeUpSpaceResources(civInfo)
         } else {
-            civInfo.getFreeTechForCityState()
-            civInfo.updateDiplomaticRelationshipForCityState()
+            civInfo.cityStateFunctions.getFreeTechForCityState()
+            civInfo.cityStateFunctions.updateDiplomaticRelationshipForCityState()
         }
 
         chooseTechToResearch(civInfo)
@@ -75,6 +75,9 @@ object NextTurnAutomation {
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
         for (tradeRequest in civInfo.tradeRequests.toList()) {
             val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
+            if (!TradeEvaluation().isTradeValid(tradeRequest.trade, civInfo, otherCiv))
+                continue
+
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             tradeLogic.currentTrade.set(tradeRequest.trade)
             /** We need to remove this here, so that if the trade is accepted, the updateDetailedCivResources()
@@ -92,7 +95,7 @@ object NextTurnAutomation {
                     otherCiv.addNotification("[${civInfo.civName}] has made a counteroffer to your trade request", NotificationIcon.Trade, civInfo.civName)
                     otherCiv.tradeRequests.add(counteroffer)
                 } else
-                    otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", NotificationIcon.Trade, civInfo.civName)
+                    tradeRequest.decline(civInfo)
             }
         }
         civInfo.tradeRequests.clear()
@@ -238,8 +241,8 @@ object NextTurnAutomation {
     private fun useGold(civInfo: CivilizationInfo) {
         if (civInfo.getHappiness() > 0 && civInfo.hasUnique(UniqueType.CityStateCanBeBoughtForGold)) {
             for (cityState in civInfo.getKnownCivs().filter { it.isCityState() } ) {
-                if (cityState.canBeMarriedBy(civInfo))
-                    cityState.diplomaticMarriage(civInfo)
+                if (cityState.cityStateFunctions.canBeMarriedBy(civInfo))
+                    cityState.cityStateFunctions.diplomaticMarriage(civInfo)
                 if (civInfo.getHappiness() <= 0) break // Stop marrying if happiness is getting too low
             }
         }
@@ -345,9 +348,9 @@ object NextTurnAutomation {
                     && valueCityStateAlliance(civInfo, state) <= 0
                     && state.getTributeWillingness(civInfo) >= 0) {
                 if (state.getTributeWillingness(civInfo, demandingWorker = true) > 0)
-                    state.tributeWorker(civInfo)
+                    state.cityStateFunctions.tributeWorker(civInfo)
                 else
-                    state.tributeGold(civInfo)
+                    state.cityStateFunctions.tributeGold(civInfo)
             }
         }
     }

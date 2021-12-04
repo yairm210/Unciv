@@ -41,12 +41,9 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
         val nation = requestingCiv.nation
         val trade = tradeRequest.trade
-        val isPeaceTreaty = trade.ourOffers.any { it.type == TradeType.Treaty && it.name == Constants.peaceTreaty }
-        val ourResources = viewingCiv.getCivResourcesByName()
-        val music = UncivGame.Current.musicController
 
-        if (isPeaceTreaty)
-            music.chooseTrack(nation.name, MusicMood.Peace, MusicTrackChooserFlags.setSpecific)
+
+        val ourResources = viewingCiv.getCivResourcesByName()
 
         val leaderIntroTable = LeaderIntroTable(requestingCiv)
         add(leaderIntroTable)
@@ -83,7 +80,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
 
         addGoodSizedLabel(nation.tradeRequest).pad(15f).row()
 
-        val soundsGoodButton = addButton("Sounds good!", 'y') {
+        addButton("Sounds good!", 'y') {
             val tradeLogic = TradeLogic(viewingCiv, requestingCiv)
             tradeLogic.currentTrade.set(trade)
             tradeLogic.acceptTrade()
@@ -92,20 +89,9 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", viewingCiv.civName, NotificationIcon.Trade)
         }
 
-        // In the meantime this became invalid, perhaps because we accepted previous trades
-        if(!TradeEvaluation().isTradeValid(trade,viewingCiv,requestingCiv))
-            soundsGoodButton.actor.disable()
-
         addButton("Not this time.", 'n') {
-            val diplomacyManager = requestingCiv.getDiplomacyManager(viewingCiv)
-            if (trade.ourOffers.all { it.type == TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
-                diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20) // offer again in 20 turns
-            if (trade.ourOffers.any { it.name == Constants.researchAgreement })
-                diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20) // offer again in 20 turns
-            if (isPeaceTreaty) {
-                diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
-                music.chooseTrack(nation.name, MusicMood.War, MusicTrackChooserFlags.setSpecific)
-            }
+
+            tradeRequest.decline(viewingCiv)
 
             close()
             requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", viewingCiv.civName, NotificationIcon.Trade)

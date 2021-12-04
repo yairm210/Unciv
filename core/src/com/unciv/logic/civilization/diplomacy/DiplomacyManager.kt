@@ -524,7 +524,7 @@ class DiplomacyManager() {
                         if (civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
                             continue@loop
                         else
-                            otherCiv().giveMilitaryUnitToPatron(civInfo)
+                            otherCiv().cityStateFunctions.giveMilitaryUnitToPatron(civInfo)
                     }
                     DiplomacyFlags.AgreedToNotSettleNearUs.name -> {
                         addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
@@ -674,7 +674,7 @@ class DiplomacyManager() {
         if (otherCiv.isCityState()) {
             otherCivDiplomacy.setInfluence(-60f)
             civInfo.changeMinorCivsAttacked(1)
-            otherCiv.cityStateAttacked(civInfo)
+            otherCiv.cityStateFunctions.cityStateAttacked(civInfo)
         }
 
         for (thirdCiv in civInfo.getKnownCivs()) {

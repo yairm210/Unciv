@@ -1,3 +1,15 @@
+## 3.18.6
+
+Fixed niche bug that let you try and capture civilians in territory you can't enter
+
+New Recycling center building - By itanasi
+
+By will-ca:
+- Center Agriculture in Tech tree.
+- Show which cities are missing required buildings for National Wonders.
+
+Fixed a bug where statue of Zeus would not work  - By xlenstra
+
 ## 3.18.5
 
 By SimonCeder:

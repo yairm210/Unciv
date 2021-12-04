@@ -135,7 +135,8 @@ class TradeEvaluation {
                 }
             }
             TradeType.City -> {
-                val city = tradePartner.cities.first { it.id == offer.name }
+                val city = tradePartner.cities.firstOrNull { it.id == offer.name }
+                    ?: throw Exception("Got an offer for city id "+offer.name+" which does't seem to exist for this civ!")
                 val stats = city.cityStats.currentCityStats
                 val surrounded: Int = surroundedByOurCities(city, civInfo)
                 if (civInfo.getHappiness() + city.cityStats.happinessList.values.sum() < 0)
@@ -175,23 +176,27 @@ class TradeEvaluation {
                 return when {
                     civInfo.getCivResourcesByName()[offer.name]!! > 1 -> 250 // fair price
                     civInfo.hasUnique(UniqueType.RetainHappinessFromLuxury) -> // If we retain 50% happiness, value at 375
-                        750 - (civInfo.getMatchingUniques(UniqueType.RetainHappinessFromLuxury).first().params[0].toPercent() * 250).toInt()
+                        750 - (civInfo.getMatchingUniques(UniqueType.RetainHappinessFromLuxury)
+                            .first().params[0].toPercent() * 250).toInt()
                     else -> 500 // you want to take away our last lux of this type?!
                 }
             }
             TradeType.Strategic_Resource -> {
                 if (civInfo.gameInfo.spaceResources.contains(offer.name) &&
                     (civInfo.hasUnique("Enables construction of Spaceship parts") ||
-                    tradePartner.hasUnique("Enables construction of Spaceship parts")))
-                        return 10000 // We'd rather win the game, thanks
+                            tradePartner.hasUnique("Enables construction of Spaceship parts"))
+                )
+                    return 10000 // We'd rather win the game, thanks
 
                 if (!civInfo.isAtWar()) return 50 * offer.amount
 
                 val canUseForUnits = civInfo.gameInfo.ruleSet.units.values
-                        .any { it.getResourceRequirements().containsKey(offer.name) && it.isBuildable(civInfo) }
+                    .any { it.getResourceRequirements().containsKey(offer.name)
+                            && it.isBuildable(civInfo) }
                 if (!canUseForUnits) return 50 * offer.amount
 
-                val amountLeft = civInfo.getCivResourcesByName()[offer.name]!!
+                val amountLeft = civInfo.getCivResourcesByName()[offer.name]
+                    ?: throw Exception("Got a strategic resource offer but the the resource doesn't exist in this ruleset!")
 
                 // Each strategic resource starts costing 100 more when we ass the 5 resources baseline
                 // That is to say, if I have 4 and you take one away, that's 200
@@ -224,11 +229,14 @@ class TradeEvaluation {
             }
 
             TradeType.City -> {
-                val city = civInfo.cities.first { it.id == offer.name }
+                val city = civInfo.cities.firstOrNull { it.id == offer.name }
+                    ?: throw Exception("Got an offer to sell city id " + offer.name + " which does't seem to exist for this civ!")
+
                 val capitalcity = civInfo.getCapital()
                 val distanceCost = distanceCityTradeModifier(civInfo, capitalcity, city)
                 val stats = city.cityStats.currentCityStats
-                val sumOfStats = stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food - distanceCost
+                val sumOfStats =
+                    stats.culture + stats.gold + stats.science + stats.production + stats.happiness + stats.food - distanceCost
                 return sumOfStats.toInt() * 100
             }
             TradeType.Agreement -> {
@@ -245,6 +253,7 @@ class TradeEvaluation {
             }
         }
     }
+
     fun distanceCityTradeModifier(civInfo: CivilizationInfo, capitalcity: CityInfo, city: CityInfo): Int{
         val distanceBetweenCities = capitalcity.getCenterTile().aerialDistanceTo(city.getCenterTile())
 

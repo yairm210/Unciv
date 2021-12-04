@@ -19,6 +19,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
@@ -419,7 +420,16 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     UncivGame.Current.setScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
-                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this).open()
+                viewingCiv.tradeRequests.isNotEmpty() -> {
+                    // In the meantime this became invalid, perhaps because we accepted previous trades
+                    for (tradeRequest in viewingCiv.tradeRequests.toList())
+                        if (!TradeEvaluation().isTradeValid(tradeRequest.trade, viewingCiv,
+                                gameInfo.getCivilization(tradeRequest.requestingCiv)))
+                            viewingCiv.tradeRequests.remove(tradeRequest)
+
+                    if (viewingCiv.tradeRequests.isNotEmpty()) // if a valid one still exists
+                        TradePopup(this).open()
+                }
             }
         }
         updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it

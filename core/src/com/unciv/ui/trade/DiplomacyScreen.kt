@@ -418,15 +418,15 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             return null
 
         val diplomaticMarriageButton =
-            "Diplomatic Marriage ([${otherCiv.getDiplomaticMarriageCost()}] Gold)".toTextButton()
+            "Diplomatic Marriage ([${otherCiv.cityStateFunctions.getDiplomaticMarriageCost()}] Gold)".toTextButton()
         diplomaticMarriageButton.onClick {
             val newCities = otherCiv.cities
-            otherCiv.diplomaticMarriage(viewingCiv)
+            otherCiv.cityStateFunctions.diplomaticMarriage(viewingCiv)
             UncivGame.Current.setWorldScreen() // The other civ will no longer exist
             for (city in newCities)
                 viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
         }
-        if (isNotPlayersTurn() || !otherCiv.canBeMarriedBy(viewingCiv)) diplomaticMarriageButton.disable()
+        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.canBeMarriedBy(viewingCiv)) diplomaticMarriageButton.disable()
         return diplomaticMarriageButton
     }
 
@@ -435,7 +435,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         diplomacyTable.addSeparator()
 
         for (giftAmount in listOf(250, 500, 1000)) {
-            val influenceAmount = otherCiv.influenceGainedByGift(viewingCiv, giftAmount)
+            val influenceAmount = otherCiv.cityStateFunctions.influenceGainedByGift(viewingCiv, giftAmount)
             val giftButton =
                 "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
             giftButton.onClick {
@@ -505,7 +505,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         diplomacyTable.addSeparator()
         diplomacyTable.add("Tribute Willingness".toLabel()).row()
         val modifierTable = Table()
-        val tributeModifiers = otherCiv.getTributeModifiers(viewingCiv, requireWholeList = true)
+        val tributeModifiers = otherCiv.cityStateFunctions.getTributeModifiers(viewingCiv, requireWholeList = true)
         for (item in tributeModifiers) {
             val color = if (item.value >= 0) Color.GREEN else Color.RED
             modifierTable.add(item.key.toLabel(color))
@@ -517,9 +517,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         diplomacyTable.add("At least 0 to take gold, at least 30 and size 4 city for worker".toLabel()).row()
         diplomacyTable.addSeparator()
 
-        val demandGoldButton = "Take [${otherCiv.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
+        val demandGoldButton = "Take [${otherCiv.cityStateFunctions.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
         demandGoldButton.onClick {
-            otherCiv.tributeGold(viewingCiv)
+            otherCiv.cityStateFunctions.tributeGold(viewingCiv)
             rightSideTable.clear()
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
@@ -528,7 +528,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
         val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
         demandWorkerButton.onClick {
-            otherCiv.tributeWorker(viewingCiv)
+            otherCiv.cityStateFunctions.tributeWorker(viewingCiv)
             rightSideTable.clear()
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
