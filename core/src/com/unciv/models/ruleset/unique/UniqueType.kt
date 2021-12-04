@@ -307,7 +307,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     StrategicBalanceResource("Guaranteed with Strategic Balance resource option", UniqueTarget.Resource),
   
-    NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
     TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
