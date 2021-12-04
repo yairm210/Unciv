@@ -334,12 +334,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         try {
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
-            // if we find it still isn't player's turn...nothing changed
-            if (viewingCiv.playerId != latestGame.getCurrentPlayerCivilization().playerId) {
+            // if we find the current player didn't change, don't update
+            if (gameInfo.currentPlayer != latestGame.currentPlayer) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
                 shouldUpdate = true
                 return
-            } else { //else we found it is the player's turn again, turn off polling and load turn
+            } else { // if the game updated, even if it's not our turn, reload the world -
+                // stuff has changed and the "waiting for X" will now show the correct civ
                 stopMultiPlayerRefresher()
                 latestGame.isUpToDate = true
                 Gdx.app.postRunnable { createNewWorldScreen(latestGame) }
