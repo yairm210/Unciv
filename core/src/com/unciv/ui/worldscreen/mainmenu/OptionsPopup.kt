@@ -21,7 +21,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.civilopedia.SimpleCivilopediaText
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -36,7 +35,7 @@ import com.badlogic.gdx.utils.Array as GdxArray
  * @param previousScreen The caller - note if this is a [WorldScreen] or [MainMenuScreen] they will be rebuilt when major options change.
  */
 //region Fields
-class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousScreen) {
+class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private val settings = previousScreen.game.settings
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
@@ -109,7 +108,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         } else if (previousScreen is MainMenuScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
-        (previousScreen.game.screen as CameraStageBaseScreen).openOptionsPopup()
+        (previousScreen.game.screen as BaseScreen).openOptionsPopup()
     }
 
     //region Page builders
@@ -128,7 +127,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         return MarkupRenderer.render(lines.toList()).pad(20f)
     }
 
-    private fun getLanguageTab() = Table(CameraStageBaseScreen.skin).apply {
+    private fun getLanguageTab() = Table(BaseScreen.skin).apply {
         val languageTables = this.addLanguageTables(tabs.prefWidth * 0.9f - 10f)
 
         var chosenLanguage = settings.language
@@ -153,7 +152,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         }
     }
 
-    private fun getDisplayTab() = Table(CameraStageBaseScreen.skin).apply {
+    private fun getDisplayTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(2.5f)
 
@@ -182,7 +181,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
     }
 
-    private fun getGamePlayTab() = Table(CameraStageBaseScreen.skin).apply {
+    private fun getGamePlayTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
         addYesNoRow("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
@@ -201,7 +200,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         addYesNoRow("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     }
 
-    private fun getSoundTab() = Table(CameraStageBaseScreen.skin).apply {
+    private fun getSoundTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -216,7 +215,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         }
     }
 
-    private fun getMultiplayerTab(): Table = Table(CameraStageBaseScreen.skin).apply {
+    private fun getMultiplayerTab(): Table = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -234,7 +233,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         }
     }
 
-    private fun getAdvancedTab() = Table(CameraStageBaseScreen.skin).apply {
+    private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -258,7 +257,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         addSetUserId()
     }
 
-    private fun getModCheckTab() = Table(CameraStageBaseScreen.skin).apply {
+    private fun getModCheckTab() = Table(BaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
         modCheckCheckBox = "Check extension mods based on vanilla".toCheckBox {
             runModChecker(it)
@@ -302,9 +301,9 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
                 // Instead, some manual work needs to be put in.
                 val resultTable = Table().apply { defaults().align(Align.left) }
                 for (line in lines) {
-                    val label = if (line.starred) Label(line.text+"\n", CameraStageBaseScreen.skin)
+                    val label = if (line.starred) Label(line.text+"\n", BaseScreen.skin)
                         .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
-                    else Label(line.text+"\n", CameraStageBaseScreen.skin)
+                    else Label(line.text+"\n", BaseScreen.skin)
                         .apply { if (line.color != "") color = Color.valueOf(line.color) }
                     label.wrap = true
                     resultTable.add(label).width(stage.width/2).row()
@@ -315,7 +314,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         }
     }
 
-    private fun getDebugTab() = Table(CameraStageBaseScreen.skin).apply {
+    private fun getDebugTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -334,8 +333,8 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         add("Save maps compressed".toCheckBox(MapSaver.saveZipped) {
             MapSaver.saveZipped = it
         }).row()
-        add("Gdx Scene2D debug".toCheckBox(CameraStageBaseScreen.enableSceneDebug) {
-            CameraStageBaseScreen.enableSceneDebug = it
+        add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
+            BaseScreen.enableSceneDebug = it
         }).row()
     }
 
@@ -400,7 +399,8 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
 
         tileSetSelectBox.onChange {
             settings.tileSet = tileSetSelectBox.selected
-            TileSetCache.assembleTileSetConfigs()
+            // ImageGetter ruleset should be correct no matter what screen we're on
+            TileSetCache.assembleTileSetConfigs(ImageGetter.ruleset.mods)
             reloadWorldAndOptions()
         }
     }
@@ -588,7 +588,7 @@ class OptionsPopup(val previousScreen: CameraStageBaseScreen) : Popup(previousSc
         add(WrappableLabel(text, wrapWidth).apply { wrap = true })
             .left().fillX()
             .maxWidth(wrapWidth)
-        val button = YesNoButton(initialValue, CameraStageBaseScreen.skin) {
+        val button = YesNoButton(initialValue, BaseScreen.skin) {
             action(it)
             settings.save()
             if (updateWorld && previousScreen is WorldScreen)

@@ -222,7 +222,7 @@ class WonderOverviewTable(
 
             val image = wonder.getImage()
             image?.onClick {
-                UncivGame.Current.setScreen(CivilopediaScreen(ruleSet, wonder.category, wonder.name))
+                UncivGame.Current.setScreen(CivilopediaScreen(ruleSet, overviewScreen, wonder.category, wonder.name))
             }
             // Terrain image padding is a bit unpredictable, they need ~5f more. Ensure equal line spacing on name, not image:
             add(image).pad(0f, 10f, 0f, 10f)

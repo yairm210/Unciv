@@ -9,7 +9,7 @@ import com.unciv.ui.utils.*
 class CityReligionInfoTable(
     private val religionManager: CityInfoReligionManager,
     showMajority: Boolean = false
-) : Table(CameraStageBaseScreen.skin) {
+) : Table(BaseScreen.skin) {
     private val gameInfo = religionManager.cityInfo.civInfo.gameInfo
 
     init {

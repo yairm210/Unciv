@@ -13,7 +13,7 @@ import com.unciv.ui.utils.*
 import java.text.DecimalFormat
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
+class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin) {
     private val pad = 10f
 
     private val showConstructionsTableButton = "Show construction queue".toTextButton()

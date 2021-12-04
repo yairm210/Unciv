@@ -20,7 +20,7 @@ import java.util.concurrent.CancellationException
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disableScroll = true) {
+class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = true) {
     lateinit var selectedSave: String
     private val copySavedGameToClipboardButton = "Copy saved game to clipboard".toTextButton()
     private val saveTable = Table()

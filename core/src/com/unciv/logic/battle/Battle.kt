@@ -27,15 +27,18 @@ object Battle {
     fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
         if (attacker is MapUnitCombatant) {
             attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
-            /** You might ask: When can this possibly happen?
-             * We always receive an AttackableTile, which means that it was returned from getAttackableTiles!
-             * The answer is: when crossing a HIDDEN TILE.
+            /**
              * When calculating movement distance, we assume that a hidden tile is 1 movement point,
              * which can lead to EXCEEDINGLY RARE edge cases where you think
-             * that you can attack a tile by passing through a hidden tile,
+             * that you can attack a tile by passing through a HIDDEN TILE,
              * but the hidden tile is actually IMPASSIBLE so you stop halfway!
              */
             if (attacker.getTile() != attackableTile.tileToAttackFrom) return
+            /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
+             * so we expended all of our movement points!
+             */
+            if (attacker.unit.currentMovement == 0f)
+                return
             if (attacker.unit.hasUnique(UniqueType.MustSetUp) && !attacker.unit.isSetUpForSiege()) {
                 attacker.unit.action = UnitActionType.SetUp.value
                 attacker.unit.useMovementPoints(1f)
@@ -169,7 +172,7 @@ object Battle {
         if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
             for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
                 if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
-                    cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
+                    cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
             }
         }
@@ -537,7 +540,7 @@ object Battle {
     fun destroyIfDefeated(attackedCiv: CivilizationInfo, attacker: CivilizationInfo) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState())
-                attackedCiv.cityStateDestroyed(attacker)
+                attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
             attackedCiv.destroy()
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }

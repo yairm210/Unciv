@@ -19,6 +19,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
@@ -46,14 +47,14 @@ import kotlin.concurrent.timer
  * Unciv's world screen
  * @param gameInfo The game state the screen should represent
  * @param viewingCiv The currently active [civilization][CivilizationInfo]
- * @property shouldUpdate When set, causes the screen to update in the next [render][CameraStageBaseScreen.render] event
+ * @property shouldUpdate When set, causes the screen to update in the next [render][BaseScreen.render] event
  * @property isPlayersTurn (readonly) Indicates it's the player's ([viewingCiv]) turn
  * @property selectedCiv Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
  * @property canChangeState (readonly) `true` when it's the player's turn unless he is a spectator
  * @property mapHolder A [MinimapHolder] instance
  * @property bottomUnitTable Bottom left widget holding information about a selected unit or city
  */
-class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
+class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : BaseScreen() {
 
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv
         private set     // only this class is allowed to make changes
@@ -236,7 +237,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         }
 
         // Space and N are assigned in createNextTurnButton
-        keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet)) }
+        keyPressDispatcher[Input.Keys.F1] = { game.setScreen(CivilopediaScreen(gameInfo.ruleSet, this)) }
         keyPressDispatcher['E'] = { game.setScreen(EmpireOverviewScreen(selectedCiv)) }     // Empire overview last used page
         /*
          * These try to be faithful to default Civ5 key bindings as found in several places online
@@ -333,18 +334,19 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         try {
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
-            // if we find it still isn't player's turn...nothing changed
-            if (viewingCiv.playerId != latestGame.getCurrentPlayerCivilization().playerId) {
+            // if we find the current player didn't change, don't update
+            if (gameInfo.currentPlayer != latestGame.currentPlayer) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
                 shouldUpdate = true
                 return
-            } else { //else we found it is the player's turn again, turn off polling and load turn
+            } else { // if the game updated, even if it's not our turn, reload the world -
+                // stuff has changed and the "waiting for X" will now show the correct civ
                 stopMultiPlayerRefresher()
                 latestGame.isUpToDate = true
                 Gdx.app.postRunnable { createNewWorldScreen(latestGame) }
             }
 
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
             Gdx.app.postRunnable {
                 val couldntDownloadLatestGame = Popup(this)
                 couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
@@ -396,8 +398,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
-        if (fogOfWar) mapHolder.updateTiles(selectedCiv)
-        else mapHolder.updateTiles(viewingCiv)
+
+        try { // Most memory errors occur here, so this is a sort of catch-all
+            if (fogOfWar) mapHolder.updateTiles(selectedCiv)
+            else mapHolder.updateTiles(viewingCiv)
+        } catch (outOfMemoryError: OutOfMemoryError) {
+            ToastPopup("Not enough memory on phone to load game!", this)
+        }
 
         topBar.update(selectedCiv)
 
@@ -414,7 +421,16 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
                     UncivGame.Current.setScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
-                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this).open()
+                viewingCiv.tradeRequests.isNotEmpty() -> {
+                    // In the meantime this became invalid, perhaps because we accepted previous trades
+                    for (tradeRequest in viewingCiv.tradeRequests.toList())
+                        if (!TradeEvaluation().isTradeValid(tradeRequest.trade, viewingCiv,
+                                gameInfo.getCivilization(tradeRequest.requestingCiv)))
+                            viewingCiv.tradeRequests.remove(tradeRequest)
+
+                    if (viewingCiv.tradeRequests.isNotEmpty()) // if a valid one still exists
+                        TradePopup(this).open()
+                }
             }
         }
         updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it
@@ -827,6 +843,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Cam
         displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
         displayTutorial(Tutorial.Embarking) { viewingCiv.hasUnique("Enables embarkation for land units") }
         displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
+        displayTutorial(Tutorial.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }
     }
 
     private fun backButtonAndESCHandler() {

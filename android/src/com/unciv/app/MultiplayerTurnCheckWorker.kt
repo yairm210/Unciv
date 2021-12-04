@@ -173,7 +173,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     gameIds[count] = GameSaver.getGameIdFromFile(gameFile)
                     gameNames[count] = gameFile.name()
                     count++
-                } catch (ex: Exception) {
+                } catch (ex: Throwable) {
                     //only getGameIdFromFile can throw an exception
                     //nothing will be added to the arrays if it fails
                     //just skip one file
@@ -287,6 +287,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 val inputDataFailIncrease = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, failCount + 1).build()
                 enqueue(applicationContext, 1, inputDataFailIncrease)
             }
+        } catch (outOfMemory: OutOfMemoryError){ // no point in trying multiple times if this was an oom error
+            return Result.failure()
         }
         return Result.success()
     }

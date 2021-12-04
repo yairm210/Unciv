@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() {
+class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
     private lateinit var selectedGameFile: FileHandle
 

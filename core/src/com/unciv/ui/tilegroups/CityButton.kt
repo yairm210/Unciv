@@ -23,7 +23,7 @@ import com.unciv.ui.utils.*
 import kotlin.math.max
 import kotlin.math.min
 
-class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Table(CameraStageBaseScreen.skin){
+class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Table(BaseScreen.skin){
     val worldScreen = tileGroup.worldScreen
     val uncivGame = worldScreen.game
 

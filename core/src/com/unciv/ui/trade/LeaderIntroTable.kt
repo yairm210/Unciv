@@ -3,7 +3,7 @@ package com.unciv.ui.trade
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toLabel
 
@@ -17,7 +17,7 @@ import com.unciv.ui.utils.toLabel
 class LeaderIntroTable (
     civInfo: CivilizationInfo,
     hello: String = ""
-): Table(CameraStageBaseScreen.skin) {
+): Table(BaseScreen.skin) {
     /**
      * Build either a Table(icon, leaderName <br> hello) or 
      * a Table(Portrait, Table(leaderName, icon <br> hello))

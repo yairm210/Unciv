@@ -16,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
  * Gets the text the user inputted as a parameter.
  */
 class AskTextPopup(
-    screen: CameraStageBaseScreen,
+    screen: BaseScreen,
     label: String = "Please enter some text",
     icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
     defaultText: String = "",

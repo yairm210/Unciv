@@ -22,14 +22,9 @@ object BackwardCompatibility {
      * This function removes them so the game doesn't crash when it tries to access them.
      */
     fun GameInfo.removeMissingModReferences() {
-        for (tile in tileMap.values) {
-            for (terrainFeature in tile.terrainFeatures.filter{ !ruleSet.terrains.containsKey(it) })
-                tile.terrainFeatures.remove(terrainFeature)
-            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
-                tile.resource = null
-            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
-                tile.improvement = null
+        tileMap.removeMissingTerrainModReferences(ruleSet)
 
+        for (tile in tileMap.values) {
             for (unit in tile.getUnits()) {
                 if (!ruleSet.units.containsKey(unit.name)) tile.removeUnit(unit)
 
@@ -70,11 +65,7 @@ object BackwardCompatibility {
                 if (!ruleSet.technologies.containsKey(tech))
                     civInfo.tech.techsResearched.remove(tech)
             for (policy in civInfo.policies.adoptedPolicies.toList())
-                if (!ruleSet.policies.containsKey(policy)
-                    // Conversion code for deprecated policies since 3.16.15
-                        && !(policy == "Patronage " || policy == "Patronage  Complete")
-                    //
-                )
+                if (!ruleSet.policies.containsKey(policy))
                     civInfo.policies.adoptedPolicies.remove(policy)
         }
     }

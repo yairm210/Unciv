@@ -135,7 +135,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
 
         val constructionCells: MutableList<Cell<Label>> = mutableListOf()
         for (city in cityList) {
-            val button = Button(city.name.toLabel(), CameraStageBaseScreen.skin)
+            val button = Button(city.name.toLabel(), BaseScreen.skin)
             button.onClick {
                 overviewScreen.game.setScreen(CityScreen(city))
             }

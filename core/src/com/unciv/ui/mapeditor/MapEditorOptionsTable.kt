@@ -19,7 +19,7 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 
-class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin) {
+class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScreen.skin) {
     private val tileSetLocation = "TileSets/" + UncivGame.Current.settings.tileSet + "/"
 
     var tileAction: (TileInfo) -> Unit = {}
@@ -299,12 +299,14 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                 tileInfo.ruleset = mapEditorScreen.ruleset
                 val terrain = resource.terrainsCanBeFoundOn.first { ruleset.terrains.containsKey(it) }
                 val terrainObject = ruleset.terrains[terrain]!!
-                if (terrainObject.type == TerrainType.TerrainFeature) {
+
+                if (terrainObject.type != TerrainType.TerrainFeature) tileInfo.baseTerrain = terrain
+                else {
                     tileInfo.baseTerrain =
-                            if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
-                            else "Grassland"
+                        if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
+                        else ruleset.terrains.values.first { it.type == TerrainType.Land }.name
                     tileInfo.terrainFeatures.add(terrain)
-                } else tileInfo.baseTerrain = terrain
+                }
 
                 tileInfo.resource = resource.name
                 tileInfo.setTerrainTransients()

@@ -95,7 +95,7 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table
 
 /** get background Image for a new separator */
 private fun getSeparatorImage(color: Color) = ImageGetter.getDot(
-    if (color.a != 0f) color else CameraStageBaseScreen.skin.get("color", Color::class.java) //0x334d80
+    if (color.a != 0f) color else BaseScreen.skin.get("color", Color::class.java) //0x334d80
 )
 
 /**
@@ -182,10 +182,10 @@ fun Int.toPercent() = toFloat().toPercent()
 fun Float.toPercent() = 1 + this/100
 
 /** Translate a [String] and make a [TextButton] widget from it */
-fun String.toTextButton() = TextButton(this.tr(), CameraStageBaseScreen.skin)
+fun String.toTextButton() = TextButton(this.tr(), BaseScreen.skin)
 
 /** Translate a [String] and make a [Label] widget from it */
-fun String.toLabel() = Label(this.tr(), CameraStageBaseScreen.skin)
+fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
 fun Int.toLabel() = this.toString().toLabel()
 
@@ -193,7 +193,7 @@ fun Int.toLabel() = this.toString().toLabel()
 fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
-    var labelStyle = CameraStageBaseScreen.skin.get(Label.LabelStyle::class.java)
+    var labelStyle = BaseScreen.skin.get(Label.LabelStyle::class.java)
     if(fontColor != Color.WHITE || fontSize != 18) { // if we want the default we don't need to create another style
         labelStyle = Label.LabelStyle(labelStyle) // clone this to another
         labelStyle.fontColor = fontColor
@@ -207,7 +207,7 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
  * @param changeAction A callback to call on change, with a boolean lambda parameter containing the current [isChecked][CheckBox.isChecked].
  */
 fun String.toCheckBox(startsOutChecked: Boolean = false, changeAction: ((Boolean)->Unit)? = null)
-    = CheckBox(this.tr(), CameraStageBaseScreen.skin).apply { 
+    = CheckBox(this.tr(), BaseScreen.skin).apply {
         isChecked = startsOutChecked
         if (changeAction != null) onChange { 
             changeAction(isChecked)

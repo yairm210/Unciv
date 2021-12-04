@@ -77,13 +77,6 @@ class CivConstructions {
             .mapValues { unique -> unique.value.sumOf { it.params[1].toInt() } }
             .toMutableMap()
 
-        // Deprecated since 3.16.15
-            statUniquesData[Stat.Culture] = (statUniquesData[Stat.Culture] ?: 0) +
-                civInfo.getMatchingUniques(UniqueType.FreeStatBuildingsDeprecated)
-                    .sumOf { it.params[0].toInt() }
-        //
-
-
         for ((stat, amount) in statUniquesData) {
             addFreeStatBuildings(stat, amount)
         }
@@ -102,11 +95,8 @@ class CivConstructions {
     }
 
     private fun addFreeSpecificBuildings() {
-        val buildingsUniquesData = (civInfo.getMatchingUniques(UniqueType.FreeSpecificBuildings)
-            // Deprecated since 3.16.15
-                + civInfo.getMatchingUniques(UniqueType.FreeSpecificBuildingsDeprecated)
-            //
-            ).groupBy { it.params[0] }
+        val buildingsUniquesData = civInfo.getMatchingUniques(UniqueType.FreeSpecificBuildings)
+            .groupBy { it.params[0] }
             .mapValues { unique -> unique.value.sumOf { it.params[1].toInt() } }
 
         for ((building, amount) in buildingsUniquesData) {

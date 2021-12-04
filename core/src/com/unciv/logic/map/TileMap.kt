@@ -72,6 +72,9 @@ class TileMap {
     @delegate:Transient
     val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
 
+    @delegate:Transient
+    val resources: List<String> by lazy { tileList.asSequence().filter { it.resource != null }.map { it.resource!! }.distinct().toList() }
+
     // Excluded from Serialization by having no own backing field
     val values: Collection<TileInfo>
         get() = tileList
@@ -427,6 +430,20 @@ class TileMap {
             tileInfo.setTerrainTransients()
             tileInfo.setUnitTransients(setUnitCivTransients)
         }
+    }
+
+    fun removeMissingTerrainModReferences(ruleSet: Ruleset) {
+        for (tile in this.values) {
+            for (terrainFeature in tile.terrainFeatures.filter { !ruleSet.terrains.containsKey(it) })
+                tile.terrainFeatures.remove(terrainFeature)
+            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
+                tile.resource = null
+            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
+                tile.improvement = null
+        }
+        for (startingLocation in startingLocations.toList())
+            if (startingLocation.nation !in ruleSet.nations.keys)
+                startingLocations.remove(startingLocation)
     }
 
     /** Tries to place the [unitName] into the [TileInfo] closest to the given [position]

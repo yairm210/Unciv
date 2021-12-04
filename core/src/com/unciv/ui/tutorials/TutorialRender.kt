@@ -8,7 +8,7 @@ import com.unciv.ui.utils.*
 
 data class TutorialForRender(val tutorial: Tutorial, val texts: Array<String>)
 
-class TutorialRender(private val screen: CameraStageBaseScreen) {
+class TutorialRender(private val screen: BaseScreen) {
 
     fun showTutorial(tutorial: TutorialForRender, closeAction: () -> Unit) {
         showDialog(tutorial.tutorial.name, tutorial.texts, closeAction)

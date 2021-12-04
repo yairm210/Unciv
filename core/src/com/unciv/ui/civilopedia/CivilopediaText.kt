@@ -233,7 +233,7 @@ class FormattedLine (
      */
     fun render(labelWidth: Float, iconDisplay: IconDisplay = IconDisplay.All): Actor {
         if (extraImage.isNotEmpty()) {
-            val table = Table(CameraStageBaseScreen.skin)
+            val table = Table(BaseScreen.skin)
             try {
                 val image = when {
                     ImageGetter.imageExists(extraImage) ->
@@ -260,7 +260,7 @@ class FormattedLine (
         }
         val labelColor = if(starred) defaultColor else displayColor
 
-        val table = Table(CameraStageBaseScreen.skin)
+        val table = Table(BaseScreen.skin)
         var iconCount = 0
         val iconSize = max(minIconSize, fontSize * 1.5f)
         if (linkType != LinkType.None && iconDisplay == IconDisplay.All) {
@@ -367,7 +367,7 @@ object MarkupRenderer {
         iconDisplay: FormattedLine.IconDisplay = FormattedLine.IconDisplay.All,
         linkAction: ((id: String) -> Unit)? = null
     ): Table {
-        val skin = CameraStageBaseScreen.skin
+        val skin = BaseScreen.skin
         val table = Table(skin).apply { defaults().pad(padding).align(Align.left) }
         for (line in lines) {
             if (line.isEmpty()) {

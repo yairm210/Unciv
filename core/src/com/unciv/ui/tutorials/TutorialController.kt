@@ -7,9 +7,9 @@ import com.unciv.models.Tutorial
 import com.unciv.models.stats.INamed
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.SimpleCivilopediaText
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 
-class TutorialController(screen: CameraStageBaseScreen) {
+class TutorialController(screen: BaseScreen) {
 
     private val tutorialQueue = mutableSetOf<Tutorial>()
     private var isTutorialShowing = false

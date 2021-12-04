@@ -16,8 +16,9 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
 import com.unciv.ui.utils.toLabel
 
-class ConstructionInfoTable(val city: CityInfo): Table() {
+class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     private val selectedConstructionTable = Table()
+    val city = cityScreen.city
 
     init {
         selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
@@ -72,7 +73,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
             if (link.isEmpty()) return
             touchable = Touchable.enabled
             onClick {
-                UncivGame.Current.setScreen(CivilopediaScreen(city.getRuleset(), link = link))
+                UncivGame.Current.setScreen(CivilopediaScreen(city.getRuleset(), cityScreen, link = link))
             }
         }
     }

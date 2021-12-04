@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.ModCheckboxTable
@@ -51,7 +50,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                 ImageGetter.setNewRuleset(ruleset)
             }
             
-            val combinedTable = Table(CameraStageBaseScreen.skin)
+            val combinedTable = Table(BaseScreen.skin)
             
             val baseRulesetSelectionBox = getBaseRulesetSelectBox()
             if (baseRulesetSelectionBox != null) {
@@ -108,7 +107,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             if (sortedBaseRulesets.size < 2) return null
 
             rulesetSelectionBox.add("{Base Ruleset}:".toLabel()).left()
-            val selectBox = TranslatedSelectBox(sortedBaseRulesets, mapParameters.baseRuleset, CameraStageBaseScreen.skin)
+            val selectBox = TranslatedSelectBox(sortedBaseRulesets, mapParameters.baseRuleset, BaseScreen.skin)
 
             val onChange = onChange@{ newBaseRuleset: String ->
                 val previousSelection = mapParameters.baseRuleset
@@ -170,7 +169,12 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             ruleset.mods += mapParameters.mods
             ruleset.modOptions = newRuleset.modOptions
 
+            mapEditorScreen.tileMap.removeMissingTerrainModReferences(ruleset)
+
             ImageGetter.setNewRuleset(ruleset)
+
+            // Recreate screen, since the improvementss, nations etc. could be outdated
+            mapEditorScreen.game.setScreen(MapEditorScreen(mapEditorScreen.tileMap))
         }
         
     }

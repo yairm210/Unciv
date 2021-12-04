@@ -379,7 +379,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         val civInfo = cityConstructions.cityInfo.civInfo
-        for (unique in uniqueObjects.filter { it.placeholderText == "Not displayed as an available construction without []" }) {
+        for (unique in uniqueObjects.filter { it.type == UniqueType.NotDisplayedWithout }) {
             val filter = unique.params[0]
             if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
                     || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
@@ -471,7 +471,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             unit.currentMovement = 0f
 
         // If this unit has special abilities that need to be kept track of, start doing so here
-        if (unit.hasUnique("Religious Unit") && civInfo.gameInfo.isReligionEnabled()) {
+        if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
             unit.religion =  
                 if (unit.hasUnique("Takes your religion over the one in their birth city"))
                     civInfo.religionManager.religion?.name
@@ -555,7 +555,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             "Nuclear Weapon" -> isNuclearWeapon()
             // "Great" should be deprecated, replaced by "Great Person".
             "Great Person", "Great" -> isGreatPerson()
-            "Religious" -> uniques.contains("Religious Unit")
+            "Religious" -> hasUnique(UniqueType.ReligiousUnit)
             else -> {
                 if (getType().matchesFilter(filter)) return true
                 if (
@@ -665,22 +665,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 unique.isOfType(UniqueType.StrengthNearCapital) && unique.params[0].toInt() > 0 ->
                     power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
-                // Deprecated since 3.17.4
-                    unique.isOfType(UniqueType.StrengthAttacking) // Attack - half the bonus
-                        -> power += (power * unique.params[0].toInt()) / 200
-                    unique.isOfType(UniqueType.StrengthDefending) // Defense - half the bonus
-                        -> power += (power * unique.params[0].toInt()) / 200
-                //
                 unique.placeholderText == "May Paradrop up to [] tiles from inside friendly territory" // Paradrop - 25% bonus
                     -> power += power / 4
                 unique.isOfType(UniqueType.MustSetUp) // Must set up - 20 % penalty
                     -> power -= power / 5
                 unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 20% bonus per extra attack
                     -> power += (power * unique.params[0].toInt()) / 5
-                // Deprecated since 3.17.5
-                unique.isOfType(UniqueType.StrengthIn) // Bonus in terrain or feature - half the bonus
-                -> power += (power * unique.params[0].toInt()) / 200
-                //
             }
         }
 

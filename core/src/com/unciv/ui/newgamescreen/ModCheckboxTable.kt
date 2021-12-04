@@ -1,9 +1,7 @@
 package com.unciv.ui.newgamescreen
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -12,7 +10,7 @@ import com.unciv.ui.utils.*
 class ModCheckboxTable(
     private val mods: LinkedHashSet<String>,
     private var baseRuleset: String,
-    private val screen: CameraStageBaseScreen,
+    private val screen: BaseScreen,
     isPortrait: Boolean = false,
     onUpdate: (String) -> Unit
 ): Table(){

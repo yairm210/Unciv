@@ -38,7 +38,7 @@ class UncivSlider (
     sound: UncivSound = UncivSound.Slider,
     private val getTipText: ((Float) -> String)? = null,
     onChange: ((Float) -> Unit)? = null
-): Table(CameraStageBaseScreen.skin) {
+): Table(BaseScreen.skin) {
     // constants for geometry tuning
     companion object {
         const val plusMinusFontSize = 18
@@ -49,7 +49,7 @@ class UncivSlider (
     }
 
     // component widgets
-    private val slider = Slider(min, max, step, vertical, CameraStageBaseScreen.skin)
+    private val slider = Slider(min, max, step, vertical, BaseScreen.skin)
     private val minusButton: IconCircleGroup?
     private val plusButton: IconCircleGroup?
     private val tipLabel = "".toLabel(Color.LIGHT_GRAY)

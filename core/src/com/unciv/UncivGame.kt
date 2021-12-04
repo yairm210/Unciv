@@ -81,8 +81,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * ALL objects that were related to the old context - need to be recreated.
          * So far we have:
          * - All textures (hence the texture atlas)
-         * - SpriteBatch (hence CameraStageBaseScreen uses a new SpriteBatch for each screen)
-         * - Skin (hence CameraStageBaseScreen.setSkin())
+         * - SpriteBatch (hence BaseScreen uses a new SpriteBatch for each screen)
+         * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = GameSaver.getGeneralSettings() // needed for the screen
@@ -95,7 +95,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             settings.tileSet = "FantasyHex"
         }
 
-        CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
+        BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
@@ -140,7 +140,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    fun setScreen(screen: CameraStageBaseScreen) {
+    fun setScreen(screen: BaseScreen) {
         Gdx.input.inputProcessor = screen.stage
         super.setScreen(screen)
     }
@@ -199,7 +199,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 }
 
-private class LoadingScreen : CameraStageBaseScreen() {
+private class LoadingScreen : BaseScreen() {
     init {
         val happinessImage = ImageGetter.getExternalImage("LoadScreen.png")
         happinessImage.center(stage)

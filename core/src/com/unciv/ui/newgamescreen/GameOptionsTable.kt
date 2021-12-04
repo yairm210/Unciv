@@ -3,7 +3,6 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
@@ -15,13 +14,14 @@ import com.unciv.ui.utils.*
 
 class GameOptionsTable(
     val previousScreen: IPreviousScreen,
-    val withoutMods: Boolean = false,
+    val isPortrait: Boolean = false,
     val updatePlayerPickerTable:(desiredCiv:String)->Unit
-) : Table(CameraStageBaseScreen.skin) {
+) : Table(BaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
     var locked = false
-    private var modCheckboxes: ModCheckboxTable? = null
+    var modCheckboxes: ModCheckboxTable? = null
+    private set;
 
     init {
         getGameOptionsTable()
@@ -36,6 +36,13 @@ class GameOptionsTable(
         val cityStateSlider: UncivSlider?
         top()
         defaults().pad(5f)
+
+        // We assign this first to make sure addBaseRulesetSelectBox doesn't reference a null object
+        if (isPortrait) {
+            modCheckboxes = getModCheckboxes(isPortrait = true)
+        } else {
+            modCheckboxes = getModCheckboxes()
+        }
 
         add(Table().apply {
             defaults().pad(5f)
@@ -59,8 +66,7 @@ class GameOptionsTable(
         checkboxTable.addReligionCheckbox(cityStateSlider)
         add(checkboxTable).center().row()
 
-        if (!withoutMods)
-            modCheckboxes = getModCheckboxes()
+        if (!isPortrait)
             add(modCheckboxes).row()
 
         pack()
@@ -125,7 +131,7 @@ class GameOptionsTable(
 
     private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?) {
         add(text.toLabel()).left()
-        val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
+        val selectBox = TranslatedSelectBox(values, initialState, BaseScreen.skin)
         selectBox.isDisabled = locked
         selectBox.onChange { 
             val changedValue = onChange(selectBox.selected.value) 
@@ -150,13 +156,13 @@ class GameOptionsTable(
             gameParameters.baseRuleset
         ) { newBaseRuleset ->
             val previousSelection = gameParameters.baseRuleset
-            if (newBaseRuleset == gameParameters.baseRuleset) return@addSelectBox null 
+            if (newBaseRuleset == gameParameters.baseRuleset) return@addSelectBox null
             
             // Check if this mod is well-defined
             val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
             if (baseRulesetErrors.isError()) {
                 val toastMessage = "The mod you selected is incorrectly defined!".tr() + "\n\n${baseRulesetErrors.getErrorText()}"
-                ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
+                ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
                 return@addSelectBox previousSelection
             }
             
@@ -171,17 +177,14 @@ class GameOptionsTable(
                 reloadRuleset()
                 val toastMessage =
                     "This base ruleset is not compatible with the previously selected\nextension mods. They have been disabled.".tr()
-                ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
-                
-                // _technically_, [modCheckBoxes] can be [null] at this point, 
-                // but only if you change the option while the table is still loading, 
-                // but the timeframe for that is so small I'm just going to ignore that
+                ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
+
                 modCheckboxes!!.disableAllCheckboxes()
             } else if (modLinkErrors.isWarnUser()) {
                 val toastMessage =
                     "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr() + 
                     "\n\n${modLinkErrors.getErrorText()}"
-                ToastPopup(toastMessage, previousScreen as CameraStageBaseScreen, 5000L)
+                ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
             }
             
             modCheckboxes!!.setBaseRuleset(newBaseRuleset)
@@ -240,7 +243,7 @@ class GameOptionsTable(
     }
 
     fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
-        return ModCheckboxTable(gameParameters.mods, gameParameters.baseRuleset, previousScreen as CameraStageBaseScreen, isPortrait) {
+        return ModCheckboxTable(gameParameters.mods, gameParameters.baseRuleset, previousScreen as BaseScreen, isPortrait) {
             onChooseMod(it)
         }
     }

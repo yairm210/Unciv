@@ -6,7 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-open class PickerScreen(disableScroll: Boolean = false) : CameraStageBaseScreen() {
+open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
     /** The close button on the lower left of [bottomTable], see [setDefaultCloseAction] */
     protected var closeButton: TextButton = Constants.close.toTextButton()
     /** A scrollable wrapped Label you can use to show descriptions in the [bottomTable], starts empty */
@@ -63,7 +63,7 @@ open class PickerScreen(disableScroll: Boolean = false) : CameraStageBaseScreen(
      * Initializes the [Close button][closeButton]'s action (and the Back/ESC handler)
      * to return to the [previousScreen] if specified, or else to the world screen.
      */
-    fun setDefaultCloseAction(previousScreen: CameraStageBaseScreen?=null) {
+    fun setDefaultCloseAction(previousScreen: BaseScreen?=null) {
         val closeAction = {
             if (previousScreen != null) game.setScreen(previousScreen)
             else game.setWorldScreen()

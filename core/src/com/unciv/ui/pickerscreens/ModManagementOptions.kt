@@ -60,7 +60,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         }
     }
 
-    private val textField = TextField("", CameraStageBaseScreen.skin)
+    private val textField = TextField("", BaseScreen.skin)
     fun getFilterText(): String = textField.text
     val filterAction: ()->Unit
 
@@ -82,7 +82,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         sortInstalledSelect = TranslatedSelectBox(
             SortType.values().filter { sort -> sort != SortType.Stars }.map { sort -> sort.label },
             sortInstalled.label,
-            CameraStageBaseScreen.skin
+            BaseScreen.skin
         )
         sortInstalledSelect.onChange {
             sortInstalled = SortType.fromSelectBox(sortInstalledSelect)
@@ -92,7 +92,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
         sortOnlineSelect = TranslatedSelectBox(
             SortType.values().map { sort -> sort.label },
             sortOnline.label,
-            CameraStageBaseScreen.skin
+            BaseScreen.skin
         )
         sortOnlineSelect.onChange {
             sortOnline = SortType.fromSelectBox(sortOnlineSelect)

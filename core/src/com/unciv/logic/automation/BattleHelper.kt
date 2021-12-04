@@ -39,6 +39,12 @@ object BattleHelper {
     ): ArrayList<AttackableTile> {
         val tilesWithEnemies = (tilesToCheck ?: unit.civInfo.viewableTiles)
             .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
+            .filterNot { val mapCombatant = Battle.getMapCombatantOfTile(it)
+                // IF all of these are true, THEN the action we'll be taking is in fact CAPTURING the civilian.
+                unit.baseUnit.isMelee() && mapCombatant is MapUnitCombatant && mapCombatant.unit.isCivilian()
+                        // If we can't pass though that tile, we can't capture the civilian "remotely"
+                        && !unit.movement.canPassThrough(it)
+            }
 
         val rangeOfAttack = unit.getRange()
 
@@ -54,15 +60,14 @@ object BattleHelper {
             sequenceOf(Pair(unit.currentTile, unit.currentMovement))
         else
             unitDistanceToTiles.asSequence()
-                .map {
-                    val tile = it.key
+                .map { (tile, distance) ->
                     val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
                     val movementPointsToExpendHere =
                         if (unitMustBeSetUp && !unit.isSetUpForSiege()) 1 else 0
                     val movementPointsToExpendBeforeAttack =
-                        if (it.key == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
+                        if (tile == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
                     val movementLeft =
-                        unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack
+                        unit.currentMovement - distance.totalDistance - movementPointsToExpendBeforeAttack
                     Pair(tile, movementLeft)
                 }
                 // still got leftover movement points after all that, to attack (0.1 is because of Float nonsense, see MapUnit.moveToTile(...)
@@ -116,8 +121,8 @@ object BattleHelper {
     }
 
     fun tryDisembarkUnitToAttackPosition(unit: MapUnit): Boolean {
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (!unit.baseUnit.isMelee() || !unit.baseUnit.isLandUnit() || !unit.isEmbarked()) return false
+        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
 
         val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying

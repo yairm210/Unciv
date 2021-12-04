@@ -1,14 +1,13 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import kotlin.concurrent.thread
 
 /**
  * This is an unobtrusive popup which will close itself after a given amount of time.
  * Default time is two seconds (in milliseconds)
  */
-class ToastPopup (message: String, screen: CameraStageBaseScreen, val time: Long = 2000) : Popup(screen){
+class ToastPopup (message: String, screen: BaseScreen, val time: Long = 2000) : Popup(screen){
     init {
         //Make this popup unobtrusive
         setFillParent(false)

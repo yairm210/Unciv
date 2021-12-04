@@ -27,7 +27,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val unitNameLabel = "".toLabel()
     private val unitIconNameGroup = Table()
     private val promotionsTable = Table()
-    private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
+    private val unitDescriptionTable = Table(BaseScreen.skin)
 
     val selectedUnit : MapUnit?
         get() = selectedUnits.firstOrNull()
@@ -130,7 +130,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 }
                 unitIconNameGroup.clearListeners()
                 unitIconNameGroup.onClick {
-                    worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, CivilopediaCategories.Unit, unit.name))
+                    worldScreen.game.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet, worldScreen, CivilopediaCategories.Unit, unit.name))
                 }
 
                 unitDescriptionTable.clear()

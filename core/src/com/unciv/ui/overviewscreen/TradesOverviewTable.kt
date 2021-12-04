@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.toLabel
@@ -35,7 +35,7 @@ class TradesOverviewTable (
     }
 
     private fun createTradeTable(trade: Trade, otherCiv: CivilizationInfo): Table {
-        val generalTable = Table(CameraStageBaseScreen.skin)
+        val generalTable = Table(BaseScreen.skin)
         generalTable.add(createOffersTable(viewingPlayer, trade.ourOffers, trade.theirOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
         generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
         return generalTable

@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -25,9 +24,9 @@ class StatsOverviewTable (
     }
 
     private fun getHappinessTable(): Table {
-        val happinessTable = Table(CameraStageBaseScreen.skin)
+        val happinessTable = Table(BaseScreen.skin)
         happinessTable.defaults().pad(5f)
-        val happinessHeader = Table(CameraStageBaseScreen.skin)
+        val happinessHeader = Table(BaseScreen.skin)
         happinessHeader.add(ImageGetter.getStatIcon("Happiness")).pad(5f,0f,5f,12f).size(20f)
         happinessHeader.add("Happiness".toLabel(fontSize = 24)).padTop(5f)
         happinessTable.add(happinessHeader).colspan(2).row()
@@ -46,9 +45,9 @@ class StatsOverviewTable (
     }
 
     private fun getGoldTable(): Table {
-        val goldTable = Table(CameraStageBaseScreen.skin)
+        val goldTable = Table(BaseScreen.skin)
         goldTable.defaults().pad(5f)
-        val goldHeader = Table(CameraStageBaseScreen.skin)
+        val goldHeader = Table(BaseScreen.skin)
         goldHeader.add(ImageGetter.getStatIcon("Gold")).pad(5f, 0f, 5f, 12f).size(20f)
         goldHeader.add("Gold".toLabel(fontSize = 24)).padTop(5f)
         goldTable.add(goldHeader).colspan(2).row()
@@ -67,7 +66,7 @@ class StatsOverviewTable (
             goldTable.addSeparator()
             val sliderTable = Table()
             sliderTable.add("Convert gold to science".toLabel()).row()
-            val slider = Slider(0f, 1f, 0.1f, false, CameraStageBaseScreen.skin)
+            val slider = Slider(0f, 1f, 0.1f, false, BaseScreen.skin)
             slider.value = viewingPlayer.tech.goldPercentConvertedToScience
 
             slider.onChange {
@@ -84,9 +83,9 @@ class StatsOverviewTable (
     }
 
     private fun getScienceTable(): Table {
-        val scienceTable = Table(CameraStageBaseScreen.skin)
+        val scienceTable = Table(BaseScreen.skin)
         scienceTable.defaults().pad(5f)
-        val scienceHeader = Table(CameraStageBaseScreen.skin)
+        val scienceHeader = Table(BaseScreen.skin)
         scienceHeader.add(ImageGetter.getStatIcon("Science")).pad(5f,0f,5f,12f).size(20f)
         scienceHeader.add("Science".toLabel(fontSize = 24)).padTop(5f)
         scienceTable.add(scienceHeader).colspan(2).row()
@@ -104,10 +103,10 @@ class StatsOverviewTable (
     }
 
     private fun getGreatPeopleTable(): Table {
-        val greatPeopleTable = Table(CameraStageBaseScreen.skin)
+        val greatPeopleTable = Table(BaseScreen.skin)
 
         greatPeopleTable.defaults().pad(5f)
-        val greatPeopleHeader = Table(CameraStageBaseScreen.skin)
+        val greatPeopleHeader = Table(BaseScreen.skin)
         val greatPeopleIcon = ImageGetter.getStatIcon("Specialist")
         greatPeopleIcon.color = Color.ROYAL
         greatPeopleHeader.add(greatPeopleIcon).padRight(12f).size(30f)

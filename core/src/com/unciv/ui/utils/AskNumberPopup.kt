@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
  */
 
 class AskNumberPopup(
-    screen: CameraStageBaseScreen,
+    screen: BaseScreen,
     label: String = "Please enter a number",
     icon: IconCircleGroup = ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(80f),
     defaultText: String = "",

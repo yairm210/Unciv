@@ -7,7 +7,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
-import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -85,7 +84,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
             if (message != null) {
                 Gdx.app.postRunnable {
-                    ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                    ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
                     with (mapParameters.mapSize) {
                         mapParametersTable.customMapSizeRadius.text = radius.toString()
                         mapParametersTable.customMapWidth.text = width.toString()
