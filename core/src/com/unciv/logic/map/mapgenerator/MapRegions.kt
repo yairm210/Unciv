@@ -1149,8 +1149,7 @@ class MapRegions (val ruleset: Ruleset){
                 targetLuxuries -= tryAddingResourceToTiles(luxuryToPlace, targetLuxuries, secondPass)
             }
             if (targetLuxuries > 0) {
-
-                // Also try adding in 1 luxury from the random rotation as compensation
+                // Try adding in 1 luxury from the random rotation as compensation
                 for (luxury in randomLuxuries) {
                     if (tryAddingResourceToTiles(ruleset.tileResources[luxury]!!, 1, firstPass) > 0) break
                 }
@@ -1473,9 +1472,11 @@ class MapRegions (val ruleset: Ruleset){
         }
 
         for (tile in tiles) {
+            val conditionalTerrain = StateForConditionals(attackedTile = tile)
             if (tile.resource == null &&
                     tile.getLastTerrain().name in resource.terrainsCanBeFoundOn &&
-                    !tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, StateForConditionals(attackedTile = tile))) {
+                    !tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain) &&
+                    !resource.hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain)) {
                 if (ratioProgress >= 1f &&
                         !(respectImpacts && tileData[tile.position]!!.impacts.containsKey(impactType))) {
                     tile.setTileResource(resource, majorDeposit)
@@ -1542,7 +1543,9 @@ class MapRegions (val ruleset: Ruleset){
         // First pass - avoid impacts entirely
         for (tile in tileList) {
             if (tile.resource != null ||
-                    (testTerrains && tile.getLastTerrain().name !in resourceOptions.first().terrainsCanBeFoundOn ) ||
+                    (testTerrains &&
+                            (tile.getLastTerrain().name !in resourceOptions.first().terrainsCanBeFoundOn ||
+                            resourceOptions.first().hasUnique(UniqueType.NoNaturalGeneration, conditionalTerrain)) ) ||
                     tile.getBaseTerrain().hasUnique(UniqueType.BlocksResources, conditionalTerrain))
                 continue // Can't place here, can't be a fallback tile
             if (tileData[tile.position]!!.impacts.containsKey(impactType)) {
