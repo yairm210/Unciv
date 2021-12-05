@@ -721,18 +721,18 @@ object UnitActions {
         val isFortified = unit.isFortified()
         val isDamaged = unit.health < 100
 
-        if (isDamaged && !showingAdditionalActions)
+        if (isDamaged && !showingAdditionalActions && unit.rankTileForHealing(unit.currentTile) != 0)
             actionList += UnitAction(UnitActionType.FortifyUntilHealed,
-            action = {
-                unit.fortifyUntilHealed()
-            }.takeIf { !unit.isFortifyingUntilHealed() }
-        )
+                action = {
+                    unit.fortifyUntilHealed()
+                }.takeIf { !unit.isFortifyingUntilHealed() }
+            )
         else if (isDamaged || !showingAdditionalActions)
             actionList += UnitAction(UnitActionType.Fortify,
-            action = {
-                unit.fortify()
-            }.takeIf { !isFortified }
-        )
+                action = {
+                    unit.fortify()
+                }.takeIf { !isFortified }
+            )
     }
 
     private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
