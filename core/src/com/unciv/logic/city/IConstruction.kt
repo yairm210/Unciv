@@ -127,6 +127,8 @@ class RejectionReasons: HashSet<RejectionReason>() {
 } 
 
 
+// TODO: Put a wrapper class around this containing the errorMessage, so that we don't
+// change the value of a enum constant sometimes.
 enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     AlreadyBuilt(false, "Building already built in this city"),
     Unbuildable(false, "Unbuildable"),
