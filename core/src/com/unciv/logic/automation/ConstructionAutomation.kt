@@ -102,12 +102,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         cityConstructions.currentConstructionFromQueue = chosenConstruction
 
         if (civInfo.isPlayerCivilization()) return // don't want the ai to control what a player uses faith for
-        println(civInfo.civName)
-        println(civInfo.religionManager.storedFaith)
-
-        for (i in faithConstruction)
-            println(i.name)
-
 
         val chosenItem = faithConstruction.asSequence()
             .filterNotNull()
@@ -115,7 +109,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .firstOrNull() ?: return
 
 
-        println(chosenItem.name)
         cityConstructions.purchaseConstruction(chosenItem.name, -1, false, stat=Stat.Faith)
 
     }

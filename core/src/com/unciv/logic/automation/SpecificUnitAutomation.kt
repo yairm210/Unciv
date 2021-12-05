@@ -1,5 +1,6 @@
 ﻿package com.unciv.logic.automation
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
@@ -10,6 +11,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.ResourceType
@@ -286,38 +288,31 @@ object SpecificUnitAutomation {
     }
 
     fun automateMissionary(unit: MapUnit){
-
-        println(unit.currentTile.position)
-
-        val cities = unit.civInfo.cities.asSequence()
+        val cities = unit.civInfo.gameInfo.getCities().asSequence()
             .filterNot { it.religion.getMajorityReligion()?.name == null }
             .filter { it.religion.getMajorityReligion()!!.name != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
             .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) } ?: return
 
+        println(cities.name)
+
+
+
         val destination = cities.getTiles().asSequence()
-            .filterNot { unit.movement.canMoveTo(it) }
+            .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
+            .filter { unit.movement.canMoveTo(it) }
             .minByOrNull { it.aerialDistanceTo(unit.currentTile) } ?: return
-        println(destination)
 
-        if (unit.movement.canReach(destination)) println("true")
+        println(destination.position)
 
-        println(unit.movement.headTowards(destination))
+        unit.movement.headTowards(destination)
 
-        if (unit.currentTile.owningCity != null && unit.currentTile.getCity()!!.religion.getMajorityReligion()!!.name == unit.religion){
-            val actionList: java.util.ArrayList<UnitAction> = ArrayList()
+        spreadReligion(unit, destination)
 
-            UnitActions.addActionsWithLimitedUses(unit, actionList, destination)
 
-            for (action in actionList){
-                if (action.action == null) return
-                action.action.invoke()
-            }
-        }
 
 
     }
-
 
 
 
@@ -461,5 +456,18 @@ object SpecificUnitAutomation {
             return
         
         UnitActions.getEnhanceReligionAction(unit)()
+    }
+
+    fun spreadReligion(unit: MapUnit, destination: TileInfo){
+        if (unit.currentTile.owningCity != null && unit.currentTile.owningCity!!.religion.getMajorityReligion()?.name == unit.religion){
+            val actionList: java.util.ArrayList<UnitAction> = ArrayList()
+            UnitActions.addActionsWithLimitedUses(unit, actionList, destination)
+
+            for (action in actionList){
+                if (action.action == null) return
+                println("succ")
+                action.action.invoke()
+            }
+        }
     }
 }
