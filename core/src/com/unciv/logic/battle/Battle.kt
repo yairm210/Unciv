@@ -172,7 +172,7 @@ object Battle {
         if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
             for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
                 if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
-                    cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
+                    cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
             }
         }
@@ -540,7 +540,7 @@ object Battle {
     fun destroyIfDefeated(attackedCiv: CivilizationInfo, attacker: CivilizationInfo) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState())
-                attackedCiv.cityStateDestroyed(attacker)
+                attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
             attackedCiv.destroy()
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }

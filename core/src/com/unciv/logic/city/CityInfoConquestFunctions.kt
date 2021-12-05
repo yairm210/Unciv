@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.withoutItem
 import java.util.*
 import kotlin.math.max
@@ -67,10 +68,23 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
             cityConstructions.freeBuildingsProvidedFromThisCity.clear()
 
-            // Remove national wonders
             for (building in cityConstructions.getBuiltBuildings()) {
+                // Remove national wonders
                 if (building.isNationalWonder && !building.hasUnique("Never destroyed when the city is captured"))
                     cityConstructions.removeBuilding(building.name)
+
+                // Check if we exceed MaxNumberBuildable for any buildings
+                for (unique in building.getMatchingUniques(UniqueType.MaxNumberBuildable)) {
+                    if (civInfo.cities
+                        .count {
+                            it.cityConstructions.containsBuildingOrEquivalent(building.name)
+                            || it.cityConstructions.isBeingConstructedOrEnqueued(building.name)
+                        } >= unique.params[0].toInt()
+                    ) {
+                        // For now, just destroy in new city. Even if constructing in own cities
+                        city.cityConstructions.removeBuilding(building.name)
+                    }
+                }
             }
         }
     }
@@ -255,11 +269,13 @@ class CityInfoConquestFunctions(val city: CityInfo){
                 population.autoAssignPopulation()
             }
 
+            // Stop WLTKD if it's still going
+            resetWLTKD()
     
             // Remove their free buildings from this city and remove free buildings provided by the city from their cities
             removeBuildingsOnMoveToCiv(oldCiv)
             // Add our free buildings to this city and add free buildings provided by the city to other cities
-            civInfo.civConstructions.tryAddFreeBuildings() 
+            civInfo.civConstructions.tryAddFreeBuildings()
 
             // Place palace for newCiv if this is the only city they have
             if (newCivInfo.cities.count() == 1) {

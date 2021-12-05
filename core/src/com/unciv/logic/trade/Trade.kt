@@ -1,5 +1,10 @@
 package com.unciv.logic.trade
 
+import com.unciv.Constants
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+
 class Trade{
 
     val theirOffers = TradeOffersList()
@@ -38,10 +43,26 @@ class Trade{
         theirOffers.clear()
         theirOffers.addAll(trade.theirOffers)
     }
+
+    fun isPeaceTreaty() = ourOffers.any { it.type == TradeType.Treaty && it.name == Constants.peaceTreaty }
 }
 
 
 class TradeRequest {
+    fun decline(decliningCiv:CivilizationInfo) {
+        val requestingCivInfo = decliningCiv.gameInfo.getCivilization(requestingCiv)
+        val diplomacyManager = requestingCivInfo.getDiplomacyManager(decliningCiv)
+        // the numbers of the flags (20,5) are the amount of turns to wait until offering again
+        if (trade.ourOffers.all { it.type == TradeType.Luxury_Resource }
+            && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
+            diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20)
+        if (trade.ourOffers.any { it.name == Constants.researchAgreement })
+            diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20)
+        if (trade.isPeaceTreaty()) diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace, 5)
+
+        requestingCivInfo.addNotification("[${decliningCiv.civName}] has denied your trade request", decliningCiv.civName, NotificationIcon.Trade)
+    }
+
 
     lateinit var requestingCiv: String
 

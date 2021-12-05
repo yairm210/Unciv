@@ -120,12 +120,15 @@ class RejectionReasons: HashSet<RejectionReason>() {
             RejectionReason.RequiresBuildingInSomeCity,
             RejectionReason.PopulationRequirement,
             RejectionReason.ConsumesResources,
-            RejectionReason.CanOnlyBePurchased
+            RejectionReason.CanOnlyBePurchased,
+            RejectionReason.MaxNumberBuildable
         )
     }
 } 
 
 
+// TODO: Put a wrapper class around this containing the errorMessage, so that we don't
+// change the value of a enum constant sometimes.
 enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     AlreadyBuilt(false, "Building already built in this city"),
     Unbuildable(false, "Unbuildable"),
@@ -142,6 +145,7 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
+    MaxNumberBuildable(true, "Maximum number being built"),
 
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),

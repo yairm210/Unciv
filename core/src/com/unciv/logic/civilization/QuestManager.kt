@@ -218,7 +218,7 @@ class QuestManager {
 
     private fun tryBarbarianInvasion() {
         if ((civInfo.getTurnsTillCallForBarbHelp() == null || civInfo.getTurnsTillCallForBarbHelp() == 0)
-            && civInfo.getNumThreateningBarbarians() >= 2) {
+            && civInfo.cityStateFunctions.getNumThreateningBarbarians() >= 2) {
 
             for (otherCiv in civInfo.getKnownCivs().filter {
                     it.isMajorCiv()

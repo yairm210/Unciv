@@ -122,13 +122,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             else (name in cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id))
         if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
             else "Unique to [$uniqueTo], replaces [$replaces]"
-        val missingunique = uniqueObjects.firstOrNull{ it.placeholderText == "Requires a [] in all cities" }
+        val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
         // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
-        val missingcities = if (cityInfo != null && missingunique != null)
+        val missingCities = if (cityInfo != null && missingUnique != null)
             // TODO: Unify with rejection reasons?
             cityInfo.civInfo.cities.filterNot {
                 it.isPuppet
-                || it.cityConstructions.containsBuildingOrEquivalent(missingunique.params[0])
+                || it.cityConstructions.containsBuildingOrEquivalent(missingUnique.params[0])
             }
             else listOf<CityInfo>()
         if (isWonder) lines += "Wonder"
@@ -142,8 +142,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (uniques.isNotEmpty()) {
             if (replacementTextForUniques != "") lines += replacementTextForUniques
             else lines += getUniquesStringsWithoutDisablers(
-                filterUniques = if (missingcities.isEmpty()) null
-                    else { unique -> unique.placeholderText != "Requires a [] in all cities" }
+                filterUniques=if (missingCities.isEmpty()) null
+                    else { unique -> !unique.isOfType(UniqueType.RequiresBuildingInAllCities) }
                     // Filter out the "Requires a [] in all cities" unique if any cities are still missing the required building, since in that case the list of cities will be appended at the end.
             )
         }
@@ -165,9 +165,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityStrength != 0) lines += "{City strength} +$cityStrength"
         if (cityHealth != 0) lines += "{City health} +$cityHealth"
         if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance ${Stat.Gold}"
-        if (!missingcities.isEmpty()) {
+        if (missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
-            lines += "\n" + "[${cityInfo?.civInfo?.getEquivalentBuilding(missingunique!!.params!![0])}] required:".tr() + " " + missingcities.map{ "{${it.name}}" }.joinToString(", ")
+            lines += "\n" + 
+                "[${cityInfo?.civInfo?.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() + 
+                " " + missingCities.joinToString(", ") { "{${it.name}}" }
             // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
         }
         return lines.joinToString("\n") { it.tr() }.trim()
@@ -454,6 +456,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
         if (cityConstructions.isBeingConstructedOrEnqueued(name))
             return false
+        for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)){
+            if (cityConstructions.cityInfo.civInfo.cities.count{it.cityConstructions.containsBuildingOrEquivalent(name)}>=unique.params[0].toInt())
+                return false
+        }
+
         val rejectionReasons = getRejectionReasons(cityConstructions)
         return rejectionReasons.none { !it.shouldShow }
             || (
@@ -539,6 +546,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.HiddenWithoutReligion.text ->
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
+
+                UniqueType.MaxNumberBuildable.placeholderText ->
+                    if (civInfo.cities.count {
+                                it.cityConstructions.containsBuildingOrEquivalent(name) ||
+                                        it.cityConstructions.isBeingConstructedOrEnqueued(name)
+                            }
+                            >= unique.params[0].toInt()) {
+                        rejectionReasons.add(RejectionReason.MaxNumberBuildable)
+                }
             }
         }
 
@@ -623,8 +639,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 rejectionReasons.add(RejectionReason.ReachedBuildCap)
         }
 
-        for (unique in uniqueObjects) when (unique.placeholderText) {
-            UniqueType.RequiresAnotherBuilding.text -> {
+        for (unique in uniqueObjects) when (unique.type) {
+            UniqueType.RequiresAnotherBuilding -> {
                 val filter = unique.params[0]
                 if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter) && !cityConstructions.containsBuildingOrEquivalent(filter))
                     rejectionReasons.add(
@@ -633,7 +649,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
             }
 
-            "Requires a [] in all cities" -> {
+            UniqueType.RequiresBuildingInAllCities -> {
                 val filter = unique.params[0]
                 if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
                     && civInfo.cities.any {
@@ -649,11 +665,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }
             }
 
-            "Hidden until [] social policy branches have been completed" -> {
+            UniqueType.HiddenBeforeAmountPolicies -> {
                 if (cityConstructions.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt())
                     rejectionReasons.add(RejectionReason.MorePolicyBranches.apply { errorMessage = unique.text })
             }
-            "Hidden when [] Victory is disabled" -> {
+            UniqueType.HiddenWithoutVictoryType -> {
                 if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0])))
                     rejectionReasons.add(RejectionReason.HiddenWithoutVictory.apply { errorMessage = unique.text })
             }
@@ -774,7 +790,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return ruleset.tileImprovements[improvementUnique.params[0]]
     }
 
-    fun isSellable() = !isAnyWonder() && !uniques.contains("Unsellable")
+    fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()

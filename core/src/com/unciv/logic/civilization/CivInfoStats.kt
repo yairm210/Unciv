@@ -51,7 +51,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         }
         // Sort by descending maintenance, then drop most expensive X units to make them free
         // If more free than units left, returns empty sequence
-        unitsToPayFor = unitsToPayFor.sortedByDescending { it.maintenance }.drop(freeUnits)
+        // There's something here that causes a bug and I'm not sure where, so let's try taking this apart piece by piece
+        unitsToPayFor = unitsToPayFor.sortedByDescending { it.maintenance }.toList().asSequence()
+        unitsToPayFor = unitsToPayFor.drop(freeUnits)
         val numberOfUnitsToPayFor = max(0.0, unitsToPayFor.sumOf { it.maintenance.toDouble() }).toFloat()
 
         val turnLimit =
