@@ -1,3 +1,15 @@
+## 3.18.7
+
+Multiplayer game info is updated as each intermediate player finishes their turn
+
+Solved crash - AIs ignore trade requests that have become invalid mid-turn
+
+By xlenstra:
+- Fixed a bug where 'requires a [buildingName] in this city' would not work
+- Fixed a bug where WLTKD would continue after conquering/trading a city
+
+Counteroffer fixes  - By SimonCeder
+
 ## 3.18.6
 
 Fixed niche bug that let you try and capture civilians in territory you can't enter

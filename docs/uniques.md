@@ -1,24 +1,91 @@
 ## Table of Contents
 
+ - [Improvement uniques](#improvement-uniques)
  - [Global uniques](#global-uniques)
+ - [Resource uniques](#resource-uniques)
  - [Building uniques](#building-uniques)
  - [CityState uniques](#citystate-uniques)
  - [Nation uniques](#nation-uniques)
  - [Unit uniques](#unit-uniques)
  - [Terrain uniques](#terrain-uniques)
- - [Resource uniques](#resource-uniques)
- - [Improvement uniques](#improvement-uniques)
  - [Conditional uniques](#conditional-uniques)
  - [Ruins uniques](#ruins-uniques)
  - [Promotion uniques](#promotion-uniques)
  - [Deprecated uniques](#deprecated-uniques)
 
-## Global uniques
+## Improvement uniques
 #### [stats]
 Example: "[+1 Gold, +2 Production]"
 
-Applicable to: Global, FollowerBelief, Improvement
+Applicable to: Improvement, Global, FollowerBelief
 
+#### Provides [amount] [resource]
+Example: "Provides [20] [Iron]"
+
+Applicable to: Improvement, Building
+
+#### Can also be built on tiles adjacent to fresh water
+Applicable to: Improvement
+
+#### [stats] from [tileFilter] tiles
+Example: "[+1 Gold, +2 Production] from [Farm] tiles"
+
+Applicable to: Improvement
+
+#### [stats] for each adjacent [tileFilter]
+Example: "[+1 Gold, +2 Production] for each adjacent [Farm]"
+
+Applicable to: Improvement
+
+#### Can be built outside your borders
+Applicable to: Improvement
+
+#### Can be built just outside your borders
+Applicable to: Improvement
+
+#### Cannot be built on [tileFilter] tiles until [tech] is discovered
+Example: "Cannot be built on [Farm] tiles until [tech] is discovered"
+
+Applicable to: Improvement
+
+#### Cannot be built on [tileFilter] tiles
+Example: "Cannot be built on [Farm] tiles"
+
+Applicable to: Improvement
+
+#### Does not need removal of [tileFilter]
+Example: "Does not need removal of [Farm]"
+
+Applicable to: Improvement
+
+#### Gives a defensive bonus of [amount]%
+Example: "Gives a defensive bonus of [20]%"
+
+Applicable to: Improvement
+
+#### Costs [amount] gold per turn when in your territory
+Example: "Costs [20] gold per turn when in your territory"
+
+Applicable to: Improvement
+
+#### Deal [amount] damage to adjacent enemy units
+Example: "Deal [20] damage to adjacent enemy units"
+
+Applicable to: Improvement
+
+#### Great Improvement
+Applicable to: Improvement
+
+#### Provides a random bonus when entered
+Applicable to: Improvement
+
+#### Unpillagable
+Applicable to: Improvement
+
+#### Indestructible
+Applicable to: Improvement
+
+## Global uniques
 #### [stats] [cityFilter]
 Example: "[+1 Gold, +2 Production] [in all cities]"
 
@@ -88,11 +155,6 @@ Applicable to: Global
 Example: "[20]% [Culture] from every follower, up to [20]%"
 
 Applicable to: Global, FollowerBelief
-
-#### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
-Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
-
-Applicable to: Global, Resource, FollowerBelief
 
 #### [amount]% Production when constructing [buildingFilter] buildings [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] buildings [in all cities]"
@@ -219,29 +281,6 @@ Applicable to: Global
 #### Triggers a Cultural Victory upon completion
 Applicable to: Global
 
-#### [amount]% Strength
-Example: "[20]% Strength"
-
-Applicable to: Global, Unit
-
-#### [amount] Movement
-Example: "[20] Movement"
-
-Applicable to: Global, Unit
-
-#### [amount] Sight
-Example: "[20] Sight"
-
-Applicable to: Global, Unit
-
-#### [amount]% Spread Religion Strength
-Example: "[20]% Spread Religion Strength"
-
-Applicable to: Global, Unit
-
-#### Normal vision when embarked
-Applicable to: Global, Unit
-
 #### Free [baseUnitFilter] appears
 Example: "Free [Melee] appears"
 
@@ -318,40 +357,41 @@ Example: "Provides a [Library] in your first [20] cities for free"
 
 Applicable to: Global
 
+## Resource uniques
+#### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
+Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
+
+Applicable to: Resource, Global, FollowerBelief
+
+#### Appears in [regionType] regions with weight [amount]
+Example: "Appears in [regionType] regions with weight [20]"
+
+Applicable to: Resource
+
+#### Appears near City States with weight [amount]
+Example: "Appears near City States with weight [20]"
+
+Applicable to: Resource
+
+#### Special placement during map generation
+Applicable to: Resource
+
+#### Deposits in [tileFilter] tiles always provide [amount] resources
+Example: "Deposits in [Farm] tiles always provide [20] resources"
+
+Applicable to: Resource
+
+#### Deposits in [tileFilter] tiles always provide [amount] resources
+Example: "Deposits in [Farm] tiles always provide [20] resources"
+
+Applicable to: Resource
+
+#### Can only be created by Mercantile City-States
+Applicable to: Resource
+
 ## Building uniques
 #### Remove extra unhappiness from annexed cities
 Applicable to: Building
-
-#### Consumes [amount] [resource]
-Example: "Consumes [20] [Iron]"
-
-Applicable to: Building, Unit, Improvement
-
-#### Provides [amount] [resource]
-Example: "Provides [20] [Iron]"
-
-Applicable to: Building, Improvement
-
-#### Unbuildable
-Applicable to: Building, Unit
-
-#### Cannot be purchased
-Applicable to: Building, Unit
-
-#### Can be purchased with [stat] [cityFilter]
-Example: "Can be purchased with [Culture] [in all cities]"
-
-Applicable to: Building, Unit
-
-#### Can be purchased for [amount] [stat] [cityFilter]
-Example: "Can be purchased for [20] [Culture] [in all cities]"
-
-Applicable to: Building, Unit
-
-#### Limited to [amount] per Civilization
-Example: "Limited to [20] per Civilization"
-
-Applicable to: Building, Unit
 
 #### Cost increases by [amount] per owned city
 Example: "Cost increases by [20] per owned city"
@@ -368,10 +408,10 @@ Example: "Requires a [Library] in this city"
 
 Applicable to: Building
 
-#### Not displayed as an available construction without [buildingName/tech/resource/policy]
-Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
+#### Requires a [buildingName] in all cities
+Example: "Requires a [Library] in all cities"
 
-Applicable to: Building, Unit
+Applicable to: Building
 
 #### Must be on [terrainFilter]
 Example: "Must be on [Grassland]"
@@ -435,6 +475,42 @@ Example: "Retain [20]% of the happiness from a luxury after the last copy has be
 Applicable to: Nation
 
 ## Unit uniques
+#### Consumes [amount] [resource]
+Example: "Consumes [20] [Iron]"
+
+Applicable to: Unit, Improvement, Building
+
+#### Unbuildable
+Applicable to: Unit, Building
+
+#### Cannot be purchased
+Applicable to: Unit, Building
+
+#### Can be purchased with [stat] [cityFilter]
+Example: "Can be purchased with [Culture] [in all cities]"
+
+Applicable to: Unit, Building
+
+#### Can be purchased for [amount] [stat] [cityFilter]
+Example: "Can be purchased for [20] [Culture] [in all cities]"
+
+Applicable to: Unit, Building
+
+#### Limited to [amount] per Civilization
+Example: "Limited to [20] per Civilization"
+
+Applicable to: Unit, Building
+
+#### Hidden until [amount] social policy branches have been completed
+Example: "Hidden until [20] social policy branches have been completed"
+
+Applicable to: Unit, Building
+
+#### Not displayed as an available construction without [buildingName/tech/resource/policy]
+Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
+
+Applicable to: Unit, Building
+
 #### Founds a new city
 Applicable to: Unit
 
@@ -451,16 +527,39 @@ Example: "Can see invisible [Wounded] units"
 
 Applicable to: Unit
 
+#### [amount]% Strength
+Example: "[20]% Strength"
+
+Applicable to: Unit, Global
+
 #### [amount]% Strength decreasing with distance from the capital
 Example: "[20]% Strength decreasing with distance from the capital"
 
 Applicable to: Unit
+
+#### [amount] Movement
+Example: "[20] Movement"
+
+Applicable to: Unit, Global
+
+#### [amount] Sight
+Example: "[20] Sight"
+
+Applicable to: Unit, Global
+
+#### [amount]% Spread Religion Strength
+Example: "[20]% Spread Religion Strength"
+
+Applicable to: Unit, Global
 
 #### May found a religion
 Applicable to: Unit
 
 #### May enhance a religion
 Applicable to: Unit
+
+#### Normal vision when embarked
+Applicable to: Unit, Global
 
 #### Cannot attack
 Applicable to: Unit
@@ -538,6 +637,14 @@ Applicable to: Unit
 
 #### Religious Unit
 Applicable to: Unit
+
+#### Hidden when religion is disabled
+Applicable to: Unit, Ruins, Building
+
+#### Hidden when [victoryType] Victory is disabled
+Example: "Hidden when [victoryType] Victory is disabled"
+
+Applicable to: Unit, Building
 
 ## Terrain uniques
 #### Must be adjacent to [amount] [simpleTerrain] tiles
@@ -681,95 +788,6 @@ Applicable to: Terrain
 
 #### Rough terrain
 Applicable to: Terrain
-
-## Resource uniques
-#### Appears in [regionType] regions with weight [amount]
-Example: "Appears in [regionType] regions with weight [20]"
-
-Applicable to: Resource
-
-#### Appears near City States with weight [amount]
-Example: "Appears near City States with weight [20]"
-
-Applicable to: Resource
-
-#### Special placement during map generation
-Applicable to: Resource
-
-#### Deposits in [tileFilter] tiles always provide [amount] resources
-Example: "Deposits in [Farm] tiles always provide [20] resources"
-
-Applicable to: Resource
-
-#### Deposits in [tileFilter] tiles always provide [amount] resources
-Example: "Deposits in [Farm] tiles always provide [20] resources"
-
-Applicable to: Resource
-
-#### Can only be created by Mercantile City-States
-Applicable to: Resource
-
-## Improvement uniques
-#### Can also be built on tiles adjacent to fresh water
-Applicable to: Improvement
-
-#### [stats] from [tileFilter] tiles
-Example: "[+1 Gold, +2 Production] from [Farm] tiles"
-
-Applicable to: Improvement
-
-#### [stats] for each adjacent [tileFilter]
-Example: "[+1 Gold, +2 Production] for each adjacent [Farm]"
-
-Applicable to: Improvement
-
-#### Can be built outside your borders
-Applicable to: Improvement
-
-#### Can be built just outside your borders
-Applicable to: Improvement
-
-#### Cannot be built on [tileFilter] tiles until [tech] is discovered
-Example: "Cannot be built on [Farm] tiles until [tech] is discovered"
-
-Applicable to: Improvement
-
-#### Cannot be built on [tileFilter] tiles
-Example: "Cannot be built on [Farm] tiles"
-
-Applicable to: Improvement
-
-#### Does not need removal of [tileFilter]
-Example: "Does not need removal of [Farm]"
-
-Applicable to: Improvement
-
-#### Gives a defensive bonus of [amount]%
-Example: "Gives a defensive bonus of [20]%"
-
-Applicable to: Improvement
-
-#### Costs [amount] gold per turn when in your territory
-Example: "Costs [20] gold per turn when in your territory"
-
-Applicable to: Improvement
-
-#### Deal [amount] damage to adjacent enemy units
-Example: "Deal [20] damage to adjacent enemy units"
-
-Applicable to: Improvement
-
-#### Great Improvement
-Applicable to: Improvement
-
-#### Provides a random bonus when entered
-Applicable to: Improvement
-
-#### Unpillagable
-Applicable to: Improvement
-
-#### Indestructible
-Applicable to: Improvement
 
 ## Conditional uniques
 #### <when at war>
@@ -939,9 +957,6 @@ Applicable to: Ruins
 #### This Unit upgrades for free including special upgrades
 Applicable to: Ruins
 
-#### Hidden when religion is disabled
-Applicable to: Ruins, Building, Unit
-
 #### Hidden before founding a Pantheon
 Applicable to: Ruins
 
@@ -963,6 +978,9 @@ Example: "Heal this unit by [20] HP"
 Applicable to: Promotion
 
 ## Deprecated uniques
+ - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
+ - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
+ - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"
  - "+[amount]% [stat] [cityFilter]" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [cityFilter]"
  - "+[amount]% [stat] in all cities" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [in all cities]"
  - "[amount]% [stat] while the empire is happy" - Deprecated As of 3.17.1, replace with "[amount]% [stat] [in all cities] <while the empire is happy>"
@@ -996,7 +1014,6 @@ Applicable to: Promotion
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
- - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
@@ -1012,5 +1029,3 @@ Applicable to: Promotion
  - "+[amount]% Strength in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
  - "[amount] Visibility Range" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
- - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
- - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"
