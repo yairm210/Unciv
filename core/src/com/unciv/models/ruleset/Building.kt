@@ -790,7 +790,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return ruleset.tileImprovements[improvementUnique.params[0]]
     }
 
-    fun isSellable() = !isAnyWonder() && !uniques.contains("Unsellable")
+    fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
     override fun getResourceRequirements(): HashMap<String, Int> {
         val resourceRequirements = HashMap<String, Int>()
