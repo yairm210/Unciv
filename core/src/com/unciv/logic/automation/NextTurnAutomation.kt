@@ -75,6 +75,9 @@ object NextTurnAutomation {
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
         for (tradeRequest in civInfo.tradeRequests.toList()) {
             val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
+            if (!TradeEvaluation().isTradeValid(tradeRequest.trade, civInfo, otherCiv))
+                continue
+
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             tradeLogic.currentTrade.set(tradeRequest.trade)
             /** We need to remove this here, so that if the trade is accepted, the updateDetailedCivResources()
@@ -87,16 +90,12 @@ object NextTurnAutomation {
                 tradeLogic.acceptTrade()
                 otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", NotificationIcon.Trade, civInfo.civName)
             } else {
-                /* Currently disabled until we solve the problems in https://github.com/yairm210/Unciv/issues/5728
-
                 val counteroffer = getCounteroffer(civInfo, tradeRequest)
                 if (counteroffer != null) {
                     otherCiv.addNotification("[${civInfo.civName}] has made a counteroffer to your trade request", NotificationIcon.Trade, civInfo.civName)
                     otherCiv.tradeRequests.add(counteroffer)
                 } else
-                    otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", NotificationIcon.Trade, civInfo.civName)
-
-                 */
+                    tradeRequest.decline(civInfo)
             }
         }
         civInfo.tradeRequests.clear()
@@ -107,6 +106,9 @@ object NextTurnAutomation {
      *  guaranteed to find the best or closest one. */
     private fun getCounteroffer(civInfo: CivilizationInfo, tradeRequest: TradeRequest): TradeRequest? {
         val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
+        // AIs counteroffering each other is problematic as they tend to ping-pong back and forth forever
+        if (otherCiv.playerType == PlayerType.AI)
+            return null
         val evaluation = TradeEvaluation()
         var delta = evaluation.getTradeAcceptability(tradeRequest.trade, civInfo, otherCiv)
         if (delta < 0) delta = (delta * 1.1f).toInt() // They seem very interested in this deal, let's push it a bit.
@@ -124,6 +126,8 @@ object NextTurnAutomation {
                     continue // Don't want to counteroffer straight gold for gold, that's silly
             if (offer.amount == 0)
                 continue // For example resources gained by trade or CS
+            if (offer.type == TradeType.City)
+                continue // Players generally don't want to give up their cities, and they might misclick
             val value = evaluation.evaluateBuyCost(offer, civInfo, otherCiv)
             if (value > 0)
                 potentialAsks[offer] = value
