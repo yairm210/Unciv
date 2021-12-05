@@ -801,7 +801,7 @@ open class TileInfo {
         if (newResource.resourceType != ResourceType.Strategic) return
 
         for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles)) {
-            if (matchesFilter(unique.params[0])) {
+            if (matchesTerrainFilter(unique.params[0])) {
                 resourceAmount = unique.params[1].toInt()
                 return
             }
