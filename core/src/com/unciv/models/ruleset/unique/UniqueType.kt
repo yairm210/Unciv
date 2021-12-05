@@ -222,7 +222,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
 
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
-    Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global),
+    Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
     SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
