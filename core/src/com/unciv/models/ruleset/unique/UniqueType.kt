@@ -186,7 +186,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CanBePurchasedWithStat("Can be purchased with [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedForAmountStat("Can be purchased for [amount] [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     MaxNumberBuildable("Limited to [amount] per Civilization", UniqueTarget.Building, UniqueTarget.Unit),
-
+    HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
+    
     //endregion
 
 
@@ -196,6 +197,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
+    RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
 
     NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
     //UniqueType added in 3.18.4
@@ -444,6 +446,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
+    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit),
 
 
     // region DEPRECATED AND REMOVED

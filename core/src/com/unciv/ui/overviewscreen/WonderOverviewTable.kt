@@ -88,9 +88,8 @@ class WonderOverviewTable(
         Constants.hideFromCivilopediaUnique in wonder.uniques -> false
         wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
         wonder.name in startingObsolete -> false
-        wonder.uniqueObjects.filter { unique ->
-                unique.placeholderText == "Hidden when [] Victory is disabled"
-            }.any { unique ->
+        wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
+            .any { unique ->
                 !gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0]))
             } -> false
         else -> wonderEra <= viewerEra
