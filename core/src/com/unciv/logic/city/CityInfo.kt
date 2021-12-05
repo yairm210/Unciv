@@ -559,6 +559,14 @@ class CityInfo {
     fun setFlag(flag: CityFlags, amount: Int) {
         flagsCountdown[flag.name] = amount
     }
+    
+    fun resetWLTKD() {
+        // Removes the flags for we love the king & resource demand
+        // The resource demand flag will automatically be readded with 15 turns remaining, see startTurn()
+        flagsCountdown.remove(CityFlags.WeLoveTheKing.name)
+        flagsCountdown.remove(CityFlags.ResourceDemand.name)
+        demandedResource = ""
+    }
 
     fun reassignPopulation() {
         var foodWeight = 1f
