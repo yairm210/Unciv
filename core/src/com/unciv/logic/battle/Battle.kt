@@ -47,7 +47,15 @@ object Battle {
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon())
             return NUKE(attacker, attackableTile.tileToAttack)
-        attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
+        // special capture civilian action for Ranged unit instead of doing battle
+        if (attacker is MapUnitCombatant && attacker.isRanged() &&
+                // only returns civilian if no military unit guarding
+                getMapCombatantOfTile(attackableTile.tileToAttack)!!.isCivilian() &&
+                attackableTile.tileToAttack.civilianUnit!!.civInfo != attacker.getCivInfo()) {
+            captureCivilianUnit(attacker, MapUnitCombatant(attackableTile.tileToAttack.civilianUnit!!))
+        }else{
+            attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
+        }
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {
@@ -356,7 +364,18 @@ object Battle {
     }
 
     private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
-        if (!attacker.isMelee()) return
+        if (!attacker.isMelee()){
+            // for ranged unit, if target tile has
+            // no defending military unit
+            // a civilian unit that is not own civ
+            // capture unit!
+            if (attackedTile.militaryUnit == null && attackedTile.civilianUnit != null
+                    && attackedTile.civilianUnit!!.civInfo != attacker.getCivInfo()){
+                captureCivilianUnit(attacker, MapUnitCombatant(attackedTile.civilianUnit!!))
+            }else {
+                return
+            }
+        }
         if (!defender.isDefeated() && defender.getCivInfo() != attacker.getCivInfo()) return
 
         // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
