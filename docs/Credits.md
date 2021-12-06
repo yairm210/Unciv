@@ -325,6 +325,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall for Medical Lab
 * [Pentagon](https://thenounproject.com/search/?q=the%20pentagon&i=1788323) By Maxim Kulikov
 * [Solar panel](https://thenounproject.com/term/solar-panel/1131/) By Modik for Solar Plant
+* [Recycle](https://thenounproject.com/search/?q=recycling&i=4397434) By Umer Younas, PK for Recycling Center 
 * [Opera House Sydney](https://thenounproject.com/term/opera-house-sydney/1626283/) By Pham Duy Phuong Hung for Sydney Opera House
 * [Water dam](https://thenounproject.com/term/water-dam/1002726/) By Symbolon for Hydro Plant
 * [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR

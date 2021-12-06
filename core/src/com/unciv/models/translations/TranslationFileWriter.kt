@@ -167,7 +167,9 @@ object TranslationFileWriter {
             countOfTranslatedLines[language] = translationsOfThisLanguage
 
             val fileWriter = getFileHandle(modFolder, languageFileLocation.format(language))
-            fileWriter.writeString(stringBuilder.toString(), false, TranslationFileReader.charset)
+            // Any time you have more than 3 line breaks, make it 3
+            val finalFileText = stringBuilder.toString().replace(Regex("\n{4,}"),"\n\n\n")
+            fileWriter.writeString(finalFileText, false, TranslationFileReader.charset)
         }
 
         // Calculate the percentages of translations

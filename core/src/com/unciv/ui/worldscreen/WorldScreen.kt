@@ -19,6 +19,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
@@ -333,12 +334,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         try {
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
-            // if we find it still isn't player's turn...nothing changed
-            if (viewingCiv.playerId != latestGame.getCurrentPlayerCivilization().playerId) {
+            // if we find the current player didn't change, don't update
+            if (gameInfo.currentPlayer == latestGame.currentPlayer) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
                 shouldUpdate = true
                 return
-            } else { //else we found it is the player's turn again, turn off polling and load turn
+            } else { // if the game updated, even if it's not our turn, reload the world -
+                // stuff has changed and the "waiting for X" will now show the correct civ
                 stopMultiPlayerRefresher()
                 latestGame.isUpToDate = true
                 Gdx.app.postRunnable { createNewWorldScreen(latestGame) }
@@ -419,7 +421,16 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     UncivGame.Current.setScreen(DiplomaticVoteResultScreen(gameInfo.diplomaticVictoryVotesCast, viewingCiv))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
-                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this).open()
+                viewingCiv.tradeRequests.isNotEmpty() -> {
+                    // In the meantime this became invalid, perhaps because we accepted previous trades
+                    for (tradeRequest in viewingCiv.tradeRequests.toList())
+                        if (!TradeEvaluation().isTradeValid(tradeRequest.trade, viewingCiv,
+                                gameInfo.getCivilization(tradeRequest.requestingCiv)))
+                            viewingCiv.tradeRequests.remove(tradeRequest)
+
+                    if (viewingCiv.tradeRequests.isNotEmpty()) // if a valid one still exists
+                        TradePopup(this).open()
+                }
             }
         }
         updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it
@@ -832,6 +843,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.baseUnit.isProbablySiegeUnit() } }
         displayTutorial(Tutorial.Embarking) { viewingCiv.hasUnique("Enables embarkation for land units") }
         displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
+        displayTutorial(Tutorial.WeLoveTheKingDay) { viewingCiv.cities.any { it.demandedResource != "" } }
     }
 
     private fun backButtonAndESCHandler() {

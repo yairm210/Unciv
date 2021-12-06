@@ -235,7 +235,7 @@ object GameStarter {
 
             val cityStateName = availableCityStatesNames.pop()
             val civ = CivilizationInfo(cityStateName)
-            if (civ.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {
+            if (civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {
                 gameInfo.civilizations.add(civ)
                 addedCityStates++
             }
