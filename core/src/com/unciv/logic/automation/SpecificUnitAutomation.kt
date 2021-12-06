@@ -301,13 +301,14 @@ object SpecificUnitAutomation {
         val destination = cities.getTiles().asSequence()
             .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
             .filter { unit.movement.canMoveTo(it) }
-            .minByOrNull { it.aerialDistanceTo(unit.currentTile) } ?: return
+            .minByOrNull { it.aerialDistanceTo(unit.currentTile) }
 
-        println(destination.position)
 
-        unit.movement.headTowards(destination)
+        if (destination != null) {
+            unit.movement.headTowards(destination)
+        }
 
-        spreadReligion(unit, destination)
+        spreadReligion(unit, unit.getTile())
 
 
 
@@ -458,16 +459,15 @@ object SpecificUnitAutomation {
         UnitActions.getEnhanceReligionAction(unit)()
     }
 
-    fun spreadReligion(unit: MapUnit, destination: TileInfo){
-        if (unit.currentTile.owningCity != null && unit.currentTile.owningCity!!.religion.getMajorityReligion()?.name == unit.religion){
+    private fun spreadReligion(unit: MapUnit, destination: TileInfo){
+        println(unit.currentTile.owningCity?.religion?.getMajorityReligion()?.name)
+        println(unit.religion)
+        if (unit.currentTile.owningCity?.religion?.getMajorityReligion()?.name != unit.religion){
+            println("hey")
             val actionList: java.util.ArrayList<UnitAction> = ArrayList()
             UnitActions.addActionsWithLimitedUses(unit, actionList, destination)
-
-            for (action in actionList){
-                if (action.action == null) return
-                println("succ")
-                action.action.invoke()
-            }
+            if (actionList.firstOrNull()?.action?.invoke() == null) return
+            actionList.first().action!!.invoke()
         }
     }
 }
