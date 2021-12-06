@@ -173,7 +173,7 @@ class DiplomacyOverviewTable (
                     val statusLine = ImageGetter.getLine(civGroup.x + civGroup.width / 2, civGroup.y + civGroup.height / 2,
                         otherCivGroup.x + otherCivGroup.width / 2, otherCivGroup.y + otherCivGroup.height / 2, 2f)
 
-                    statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.Peace) Color.GREEN else Color.RED
+                    statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED else Color.GREEN
 
                     civLines[civ.civName]!!.add(statusLine)
 
