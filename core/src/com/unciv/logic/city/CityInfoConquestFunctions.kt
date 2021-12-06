@@ -274,13 +274,16 @@ class CityInfoConquestFunctions(val city: CityInfo){
     
             // Remove their free buildings from this city and remove free buildings provided by the city from their cities
             removeBuildingsOnMoveToCiv(oldCiv)
-            // Add our free buildings to this city and add free buildings provided by the city to other cities
-            civInfo.civConstructions.tryAddFreeBuildings()
 
             // Place palace for newCiv if this is the only city they have
+            // This needs to happen _before_ free buildings are added, as somtimes these should 
+            // only be placed in the capital, and then there needs to be a capital.
             if (newCivInfo.cities.count() == 1) {
                 cityConstructions.addBuilding(capitalCityIndicator)
             }
+
+            // Add our free buildings to this city and add free buildings provided by the city to other cities
+            civInfo.civConstructions.tryAddFreeBuildings()
 
             isBeingRazed = false
 
