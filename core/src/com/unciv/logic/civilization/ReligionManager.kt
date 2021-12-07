@@ -80,8 +80,6 @@ class ReligionManager {
 
     fun endTurn(faithFromNewTurn: Int) {
         storedFaith += faithFromNewTurn
-        if (civInfo.isPlayerCivilization())
-            storedFaith += faithFromNewTurn*200
     }
 
     fun faithForPantheon(additionalCivs: Int = 0) =

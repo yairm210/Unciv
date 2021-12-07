@@ -289,6 +289,7 @@ class CityInfoReligionManager {
         for (tile in cityInfo.getCenterTile().neighbors)
             if (tile.civilianUnit?.name == "Inquisitor")
                 return true
+        if (cityInfo.getCenterTile().civilianUnit?.name == "Inquisitor") return true
         return false
     }
     

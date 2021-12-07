@@ -340,7 +340,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addReligousUnit(){
 
-        var modifier = 50000f
+        var modifier = 0f
 
         val missionary = cityInfo.getRuleset().units.values.asSequence()
             .filter { it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
@@ -360,16 +360,18 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         if (civInfo.religionManager.religion?.name == null) return
         if (preferredVictoryType == VictoryType.Cultural) modifier += 1
         if (isAtWar) modifier -= 0.5f
+        if (cityInfo.religion.getMajorityReligion()?.name != civInfo.religionManager.religion?.name)
+            return // you don't want to build units of opposing religions.
 
 
         val citiesNotFollowingOurReligion = civInfo.cities.asSequence()
             .filterNot { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion!!.name }
 
-        val buildInqusitor = citiesNotFollowingOurReligion.toList().size.toFloat() / 10 + modifier
+        val buildInqusitor = citiesNotFollowingOurReligion
+            .filter { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion?.name }.toList().size.toFloat() / 10 + modifier
 
         val possibleSpreadReligionTargets = civInfo.gameInfo.getCities()
-            .filter { it.getCenterTile().aerialDistanceTo(civInfo.getCapital().getCenterTile()) < 30 }
-            .filterNot { it.civInfo == civInfo }
+            .filter { it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) < 30 }
 
         val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
 

@@ -288,6 +288,9 @@ object SpecificUnitAutomation {
     }
 
     fun automateMissionary(unit: MapUnit){
+        if (unit.religion != unit.civInfo.religionManager.religion?.name)
+            return unit.destroy()
+
         val cities = unit.civInfo.gameInfo.getCities().asSequence()
             .filter { it.religion.getMajorityReligion()?.name != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
