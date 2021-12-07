@@ -197,7 +197,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
 
         fun autocomplete(packet: ScriptingPacket): AutocompleteResults =
             if (packet.data is JsonArray)
-                AutocompleteResults((packet.data as List<JsonElement>).map{ (it as JsonPrimitive).content })
+                AutocompleteResults((packet.data as List<JsonElement>).map { (it as JsonPrimitive).content })
             else
                 AutocompleteResults(listOf(), true, (packet.data as JsonPrimitive).content)
 
@@ -282,7 +282,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         scope,
                         TokenizingJson.json.decodeFromJsonElement<List<Reflection.PathElement>>((packet.data as JsonObject)["path"]!!)
                     )
-                    data = TokenizingJson.getJsonElement(leaf!!::class.members.map{it.name}) // TODO: Honestly, probably restrict to non-privates and other members that are actually accessible. Test from Python.
+                    data = TokenizingJson.getJsonElement(leaf!!::class.members.map {it.name}) // TODO: Honestly, probably restrict to non-privates and other members that are actually accessible. Test from Python.
                 } catch (e: Exception) {
                     data = JsonPrimitive(e.stringifyException())
                     flags.add(KnownFlag.Exception.value)
@@ -322,7 +322,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     try {
                         data = TokenizingJson.getJsonElement((leaf as Array<*>).size)
                         // AFAICT avoiding these casts/checks would require reflection.
-                    } catch (e: Exception) {
+                    } catch (e: Exception) { // TODO: Switch these catches to ClassCastException.
                         try {
                             data = TokenizingJson.getJsonElement((leaf as Map<*, *>).size)
                         } catch (e: Exception) {
@@ -391,7 +391,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     data = TokenizingJson.getJsonElement(
                         mapOf<String, List<List<String?>>>(
                             *((leaf as FunctionDispatcher).functions.map {
-                                it.toString() to it.parameters.map{ listOf<String?>(it.name?.toString(), it.type.toString()) }
+                                it.toString() to it.parameters.map { listOf<String?>(it.name?.toString(), it.type.toString()) }
                             }).toTypedArray()
                             // The innermost listOf should semantically be a Pair as per the spec in Module.md, but a List seems safer to serialize.
                         )

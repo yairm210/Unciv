@@ -1,5 +1,35 @@
 package com.unciv.scripting.api
 
+import java.util.Collections.newSetFromMap
+import java.util.WeakHashMap
+import kotlin.NoSuchElementException
+import kotlin.concurrent.thread
+
+object AllScriptingApiInstanceRegistries {
+    private val registries = newSetFromMap(WeakHashMap<ScriptingApiInstanceRegistry, Boolean>())
+    // Apparently this will be a WeakSet? Oh, all sets just wrap Maps?
+    fun init() {
+        Runtime.getRuntime().addShutdownHook(
+            // TODO: Move uses of this into UncivGame.dispose()?
+            // TODO: Allow arbitrary callbacks to be added for UncivGame.dispose().
+            thread(start = false, name = "Check ScriptingApiInstanceRegistry()s are empty.") {
+                val allkeys = getAllKeys()
+                if (allkeys.isNotEmpty()) {
+                    println("WARNING: ${allkeys.size} ScriptingApiInstanceRegistry()s still have keys in them:")
+                    println("\t" + allkeys.map { "${it.value.size} keys in ${it.key}\n\t\t"+it.value.joinToString("\n\t\t") }.joinToString("\n\t"))
+                }
+            }
+        )
+    }
+    fun add(registry: ScriptingApiInstanceRegistry) {
+        registries.add(registry)
+    }
+    fun getAllKeys(): Map<ScriptingApiInstanceRegistry, Set<String>> {
+        return registries.filter { it.isNotEmpty() }.associateWith { it.keys }
+    }
+}
+
+// TODO: Check on game close that all InstanceRegistries are empty.
 
 /**
  * Namespace in ScriptingScope().apiHelpers, for scripts to do their own memory management by keeping references to objects alive.
@@ -11,6 +41,9 @@ package com.unciv.scripting.api
  */
 class ScriptingApiInstanceRegistry: MutableMap<String, Any?> {
     private val backingMap = mutableMapOf<String, Any?>()
+//    fun init() {
+//        AllScriptingApiInstanceRegistries.add(this)
+//    }
     override val entries
         get() = backingMap.entries
     override val keys
@@ -35,7 +68,11 @@ class ScriptingApiInstanceRegistry: MutableMap<String, Any?> {
         }
         return backingMap.put(key, value)
     }
-    override fun putAll(from: Map<out String, Any?>) = backingMap.putAll(from)
+    override fun putAll(from: Map<out String, Any?>) {
+        for ((key, value) in from) {
+            put(key, value)
+        }
+    }
     override fun remove(key: String): Any? {
         if (key !in this) {
             throw NoSuchElementException("\"${key}\" not in ${this}.")

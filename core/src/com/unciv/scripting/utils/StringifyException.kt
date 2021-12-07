@@ -16,7 +16,7 @@ fun Exception.stringifyException(): String {
         "\n",
         *this.stackTrace,
         "\n",
-        *causes.asReversed().map{ it.toString() }.toTypedArray()
+        *causes.asReversed().map { it.toString() }.toTypedArray()
     ).joinToString("\n")
 }
 // TODO: Move this to ExtensionFunctions.kt.

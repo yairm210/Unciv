@@ -1,9 +1,15 @@
+`The recommended use case of this backend is for modding. For user automation, debug, prototyping, or experimentation, the Python backend may provide more features.`
+
+
 function motd() {
 	return "\nThis backend is HIGHLY EXPERIMENTAL. It does not implement any API bindings yet, and it may not be stable. Use it at your own risk!\n\n"
 }
 
 // So... cashapp/zipline is clearly the best JS library to use for this (which in turn means that embedded QuickJS, and not Webview V8 or anything will indeed be the engine).
 // Maybe LiquidCore? But I assume that's way heavier.
+
+
+// QuickJS, like CPython, has a C API for native modules. But that probably shouldn't be used here.
 
 
 `
@@ -20,12 +26,58 @@ Instead, CPython can be the favoured interpreter for developer tools and user sc
 So JS and Lua can be made highly portable/lightweight, and safely sandboxed to run mods. Meanwhile, CPython, if it's installed on the user's system, can be used as a richer scripting environment for developer/modder tools and user customization.
 `
 
+function ContextManager() {
+}
+Object.assign(ContextManager.prototype, {
+	enter: function() {
+		return this;
+	},
+	exit: function(exception) {
+		return false;
+	},
+	withRun: function(callfunc) {
+		let value = this.enter();
+		let error = null;
+		let result = undefined;
+		try {
+			result = callfunc(value);
+		} catch (e) {
+			error = e;
+		}
+		if (this.exit(error)) {
+			throw error;
+		}
+		return result;
+	}
+});
+
+function FakeStdOut() {
+}
+FakeStdOut.prototype = Object.assign(Object.create(ContextManager.prototype), {
+	enter: function() {
+		this.fakeout = []
+	},
+	exit: function() {
+	}
+});
+
+function makeScopeProxy() {
+
+}
+
+//let handlers={get: (target, prop, receiver) => prop == 'real' ? target : new Proxy([...target, prop], handlers)}; let p=new Proxy([], handlers)
+// Chrome, Node, and SpiderMonkey can print this fine. QuickJS and Deno use inspection in their REPL.
+// TODO: Implement JS bindings.
+
+// https://stackoverflow.com/questions/9781285/specify-scope-for-eval-in-javascript
+// https://www.figma.com/blog/how-we-built-the-figma-plugin-system/#attempt-3-realms
+// https://stackoverflow.com/questions/37010237/android-how-to-use-isolatedprocess
 
 try {
-	while (true) {
+	while (false) {
 		let line = std.in.getline();
 		if (line === null) {
-			// std.in.getline() returns null in case of IOError, broken pipes. So this check prevents it from eating 100% CPU in a loop, which could previously happen if you closed Unciv with the window button.
+			// std.in.getline() returns null in case of error. So this check prevents it from eating 100% CPU in a loop, which could previously happen if you closed Unciv with the window button.
 			throw Error("Null on STDIN.")
 		}
 		let out = `qjs > ${line}\n`;
@@ -40,5 +92,5 @@ try {
 	}
 } catch (e) {
 } finally {
-	std.exit()
+	//std.exit()
 }

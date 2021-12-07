@@ -17,7 +17,19 @@ There are basically two types of Python objects in this API:
 
 A **wrapper** is an object that stores a list of attribute names, keys, and function call parameters corresponding to a path in the Kotlin/JVM namespace. E.G.: `"civInfo.civilizations[0].population.setPopulation"` is a string representation of a wrapped path that begins with two attribute accesses, followed by one array index, and two more attribute names.
 
-A wrapper object does not store any more values than that. When it is evaluated, it uses a simple IPC protocol to request an up-to-date real value from the game's Kotlin code. The `unciv_lib.api.real()`/`unciv_pyhelpers.real()` function can be used to manually get a real Python value from a foreign instance wrapper.
+```python3
+[
+	{'type': 'Property', 'name': 'someAttribute', 'params': []},
+	{'type': 'Key', 'name': , 'params': [5]},
+	{'type': 'Call', 'name': , 'params': ["arg1", "arg2"]}
+]
+# A path such as those used internally by wrapper objects.
+
+Scope.someAttribute[5]("arg1", "arg2")
+# Equivalent expression of the path.
+```
+
+A wrapper object does not store any more values than that. It is basically an unsent packet that contains only the path where the value it represents can be found, and not the value itself. When it is evaluated, it uses a simple IPC protocol to request an up-to-date real value from the game's Kotlin code. The `unciv_lib.api.real()`/`unciv_pyhelpers.real()` function can be used to manually get a real Python value from a foreign instance wrapper.
 
 However, because the wrapper class implements many Magic Methods that automatically call its evaluation method, many programming idioms common in Python are possible with them even without manual evaluation. Comparisons, equality, arithmetic, concatenation, in-place operations and more are all supported.
 
@@ -163,6 +175,8 @@ Usually this would be impossible because you need a path in order to access fore
 To get around this, you can use the foreign token to assign the object it represents to a concrete path in Kotlin/the JVM.
 
 The `apiHelpers.registeredInstances` helper object can be used for this:
+
+TODO: In most cases, instancesAsInstances is better than registeredInstances. registeredInstances is needed only when persisting a Kotlin data structure between script executions (…Which— Why would you do?).
 
 ```python3
 token = civInfo.cities[0].getCenterTile()
@@ -492,6 +506,10 @@ The only major caveat to the robustness of this error handling is that it does n
 # Executes and adds "Crash" string to the set containing your capital's tiles' coordinates.
 # But the game breaks when you press "Next Turn", because the JVM thread processing the turn tries to use the string "Crash" as a Vector2.
 ```
+
+---
+
+Top-level functions are translated by the Kotlin compiler into static methods in JVM classes named by appending 'Kt' to the package plus name of the file in which they're defined. TODO.
 
 ---
 

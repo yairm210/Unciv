@@ -56,7 +56,7 @@ class InMapEditor:
 			unciv.uncivGame.setScreen(
 				unciv.apiHelpers.Factories.constructorByQualname['com.unciv.ui.mapeditor.MapEditorScreen'](gameinfo.tileMap)
 				# SetScreen doesn't seem to be needed here. But that seems like a glitch in the core Unciv code.
-			)#unciv.apiHelpers.Factories.Gui.MapEditorScreen(gameinfo.tileMap))
+			)
 	def __exit__(self, *exc):
 		goToMainMenu()
 
@@ -112,7 +112,14 @@ class TestRunner:
 				_print(f"Python test PASSED: {test.name}")
 		_print("\n")
 		if failures:
-			exc = AssertionError(f"{len(failures)} Python tests FAILED: {[test.name for test in failures]}\n\n")
+			failcounts = {}
+			for exc in failures.values():
+				exc_name = exc.__class__.__name__
+				if exc_name not in failcounts:
+					failcounts[exc_name] = 0
+				failcounts[exc_name] += 1
+			del exc_name
+			exc = AssertionError(f"{len(failures)} Python tests FAILED: {[test.name for test in failures]}\nFailure types: {failcounts}\n\n")
 			_print(exc)
 			raise exc
 		else:

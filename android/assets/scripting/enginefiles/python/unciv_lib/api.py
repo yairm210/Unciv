@@ -85,6 +85,11 @@ def isForeignToken(obj):
 	resolved = real(obj)
 	return isinstance(resolved, str) and resolved.startswith(apiconstants['kotlinInstanceTokenPrefix'])
 
+@expose()
+def pathcodeFromWrapper(wrapper):
+	return wrapping.stringPathList(wrapper._getpath_())
+	# TODO
+
 
 class UncivReplTransceiver(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
 	"""Class that implements the Unciv IPC and scripting protocol by receiving and responding to its packets. See Module.md."""

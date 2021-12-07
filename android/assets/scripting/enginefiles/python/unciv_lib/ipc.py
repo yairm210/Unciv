@@ -2,11 +2,6 @@ import sys, io, json, time, random
 
 stdout = sys.stdout
 
-#def ResolvePath(path, scope):
-##	return eval(path, scope, scope)
-#	raise NotImplementedError()
-	# Needed if access to Python internals from Kotlin is ever implemented. But that would go against the current execution model. (See Module.md/REPL Loop.)
-
 class IpcJsonEncoder(json.JSONEncoder):
 	"""JSONEncoder that lets classes define a special ._ipcjson_() method to control how they'll be serialized. Used by ForeignObject to send its resolved value."""
 	def default(self, obj):
@@ -121,49 +116,3 @@ class FakeStdout:
 		return self.fakeout
 	def __exit__(self, *exc):
 		sys.stdout = self.stdout
-
-#class ForeignActionBindingSender(ForeignActionSender):
-#	#Probably easier to just define these as needed in the classes that call them.
-#	def SendForeignCall(self, path, args, kwargs):
-#		return self.GetForeignActionResponse({'action': ('call', 'data': {'path':path, 'args':args, 'kwargs':kwargs}}, 'call_response')
-#	def SendForeignRead(self, path):
-#		identifier = self.MakeUniqueID()
-#		return self.GetForeignActionResponse({'action': 'read', 'data': {'path':path}}, 'read_response')
-#	def SendForeignAssign(self, path, value):
-#		return self.GetForeignActionResponse({'action': 'assign', 'data': {'path':path, 'value':value}})
-#	def MakeForeignFunction(self, callpath, callargs):
-#		pass
-
-#class ForeignActionBindingReceiver(ForeignActionReceiver):
-#	# This is nice to have, but basically useless, right? In the current model, there shouldn't be any circumstances where the Kotlin code explicitly changes or is even aware of the state of the script interpreter, since the Kotlin side has to deal with any number of languages, all the data lives on the Kotlin side and it's thus the script interpreter's job to request what it needs, and all communication is through standardized requests for either Kotlin-side reflection or a handful of REPL functions and raw code eval on the scripting side
-#	def foreignCallEvaluator(func):
-#		def _foreignCallEvaluator(self, *args, **kwargs):
-#			try:
-#				pass
-#			except:
-#				pass
-#	def ResolvePath(self, path):
-#		return eval(path, self.scope, self.scope)
-#		# NOTE: This should be replaced with recursive parsing into `getattr()` and `[]`/`.__getitem__`/`.__getindex__` if arbitrary code has the chance to be passed.
-#	def EvalForeignCall(self, packet):
-#		packet.enforce_type('call')
-#		return self.ResolvePath(packet.data['path'])(*packet.data['args'], **packet.data['kwargs'])
-#	def EvalForeignRead(self, packet):
-#		packet.enforce_type('read')
-#		return self.ResolvePath(packet.data['path'])
-#	def ExecForeignAssign(self, packet):
-#		packet.enforce_type('assign')
-#		path = packet.data['path']
-#		value = packet.data['value']
-#		if path[-1] == ']':
-#			spath = path.rpartition('[')
-#			self.ResolvePath(spath[0])[spath[-1][:-1]] = value
-#		else:
-#			spath = path.rpartition('.')
-#			if spath[0]:
-#				setattr(self.ResolvePath(spath[0]), spath[-1], value)
-#			else:
-#				self.scope[spath[-1]] = value
-
-
-

@@ -9,6 +9,9 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.mapeditor.MapEditorScreen
 
+// TODO: Disable in Multiplayer WorldScreen.
+// https://github.com/yairm210/Unciv/pull/5125/files
+
 //Interface that extends BaseScreen with methods for exposing the global ConsoleScreen.
 interface IConsoleScreenAccessible {
 
@@ -39,7 +42,7 @@ interface IConsoleScreenAccessible {
     //@param gameInfo Active GameInfo.
     //@param civInfo Active CivilizationInfo.
     //@param worldScreen Active WorldScreen.
-    fun BaseScreen.updateScriptingState(
+    fun BaseScreen.updateScriptingState( // TODO: Rename to setScriptingState
         gameInfo: GameInfo? = null,
         civInfo: CivilizationInfo? = null,
         worldScreen: WorldScreen? = null,
@@ -52,4 +55,6 @@ interface IConsoleScreenAccessible {
             it.mapEditorScreen = mapEditorScreen
         } // .apply errors on compile with "val cannot be reassigned".
     }
+
+//    fun BaseScreen.updateScriptingState(){} // TODO: Same, but don't clear.
 }

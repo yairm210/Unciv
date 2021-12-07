@@ -8,6 +8,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 //import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.scripting.api.FakeMap
 import com.unciv.scripting.api.ScriptingApiEnums
 import com.unciv.scripting.api.ScriptingApiFactories
 import com.unciv.scripting.api.ScriptingApiInstanceRegistry
@@ -49,7 +50,8 @@ class ScriptingScope(
         var gameInfo: GameInfo? = null,
         var uncivGame: UncivGame? = null,
         var worldScreen: WorldScreen? = null,
-        var mapEditorScreen: MapEditorScreen? = null
+        var mapEditorScreen: MapEditorScreen? = null,
+        //var scriptingBackend: ScriptingBackend? = null // TODO: Currently executing backend.
         //val _availableNames = listOf("civInfo", "gameInfo", "uncivGame", "worldScreen", "apiHelpers") // Nope. Annotate instead.
     ) {
 
@@ -60,15 +62,24 @@ class ScriptingScope(
     //var modApiHelpers: ModApiHelpers?
 
     class ApiHelpers(val scriptingScope: ScriptingScope) {
+        // This, and the classes of its members, should try to implement only the minimum number of helper functions that are needed for each type of functionality otherwise not possible in scripts. E.G. Don't add special "loadGame" functions or whatever here, but do expose the existing methods of UncivGame. E.G. Don't add factories to speed up making alert popups, because all the required constructors can already be called through constructorByQualname anyway. Let the rest of the codebase and the scripts themselves do the work— Maintenance of the API itself will be easier if all it does is expose existing Kotlin code to dynamic Python/JS/Lua code.
         // TODO: Move this into its own file.
         // This could probably eventually include ways for scripts to create and inject their own UI elements too. Create, populate, show even popups for mods, inject buttons that execute script strings for macros.
         // TODO: The vast majority of these don't need scriptingScope access, and thus can be put on singletons.
         val isInGame: Boolean
             get() = (scriptingScope.civInfo != null && scriptingScope.gameInfo != null && scriptingScope.uncivGame != null)
+        @Suppress("PropertyName")
         val Factories = ScriptingApiFactories
+        @Suppress("PropertyName")
         val Enums = ScriptingApiEnums
+        @Suppress("PropertyName")
         val Mappers = ScriptingApiMappers
         val registeredInstances = ScriptingApiInstanceRegistry()
+        val instancesAsInstances = FakeMap() // TODO: Rename this.
+        // Scripting language bindings work by keeping track of the paths to values, and making Kotlin/the JVM resolve them only when needed.
+        // This creates a dilemma: Resolving a path into a Kotlin value too early means that no further paths (E.G. attribute, keys, calls) can be built on top of it. But resolving it late means that expected side effects may not happen (E.G. function calls probably shouldn't be deferred). And values that *must* be resolved, like the results of function calls, cannot have their own members and method accessed until they themselves are assigned to a path, because they're just kinda floating around as far as the scripting-exposed semantics are concerned.
+        // So this fake Map works around that, by providing a way for any random object to appear to have a path.
+
         //Debug/dev identity function for both Kotlin and scripts. Check if value survives serialization, force something to be added to ScriptingProtocol.instanceSaver, etc.
         fun echo(obj: Any?) = obj // TODO: Rename back to echo.
         fun printLine(msg: Any?) = println(msg.toString()) // Different name from Kotlin's is deliberate, to abstract for scripts.
@@ -94,7 +105,7 @@ class ScriptingScope(
             // To test in Python:
             // import PIL.Image, io, base64; PIL.Image.open(io.BytesIO(base64.b64decode(apiHelpers.assetImage("StatIcons/Resistance")))).show()
             val fakepng = ByteArrayOutputStream()
-            //Close this steam? Well, the docs say doing so "has no effect", and it should clearly get GC'd anyway.
+            //Close this stream? Well, the docs say doing so "has no effect", and it should clearly get GC'd anyway.
             val pixmap = ImageGetter.getDrawable(path).getRegion().toPixmap()
             val exporter = PixmapIO.PNG() // Could be kept and "reused to encode multiple PNGs with minimal allocation", according to the docs. I don't see it as a sufficient bottleneck yet to necesarily justify the complexity and risk, though.
             exporter.setFlipY(false)
@@ -112,13 +123,15 @@ class ScriptingScope(
 }
 
 // Does having one state manage multiple backends that all share the same scope really make sense? Mod handler dispatch, callbacks, etc might all be easier if the multi-backend functionality of ScriptingState were implemented only for ConsoleScreen.
-
+// ScriptingState also helps separate , keep the shared ScriptingScope between all of them (such that it only needs to be updated once on game context changes), and update
 
 /*
 //class ModApiHelpers {
     var handlerContext: NamedTuple?
     // Why not just use a map? String keys will be clearer in scripts than integers anyway.
     // Collection that gets replaced with any contextual parameters when running script handlers. E.G. Unit moved, city founded, tech researched, construction finished.
+//fun showScriptedChoicePopup(title: String, body: String, options: List<String>, callback: String?) // Actually, no. Popup() seems to work on its own.
+    // TODO: Mods blacklist, for security threats.
 }
 
 
@@ -138,4 +151,5 @@ class ScriptingScope(
 }
 */
 
-//worldScreen.bottomUnitTable.selectedCity.cityConstructions.purchaseConstruction("Missionary", -1, False, apiHelpers.Enums.Stat.statsUsableToBuy[4])
+
+

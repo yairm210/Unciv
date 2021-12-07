@@ -53,6 +53,7 @@ object SourceManager {
             thread(start = false, name = "Delete ${outdir.toString()}.") {
                 outdir.deleteDirectory()
             }
+            // Will JVM outlive app on Android? Hopefully temporary directory will get cleaned long-term, but may need more robust behaviour short-term.
         )
         return outdir
     }

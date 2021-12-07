@@ -8,6 +8,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 
+// TODO: Move to ExtensionFunctions.kt.
 
 fun <T> ArrayList<T>.clipIndexToBounds(index: Int, extendsize: Int = 0): Int {
     return max(0, min(this.size-1+extendsize, index))
@@ -18,6 +19,10 @@ fun <T> ArrayList<T>.clipIndexToBounds(index: Int, extendsize: Int = 0): Int {
 // Premature optimization and such. Clearly long chains of loops can be rewritten as sequences.
 
 // TODO: Replace Exception types with Throwable? Wait, no. Apparently that just includes "serious problems that a reasonable application should not try to catch."
+
+// TODO: There's probably some public vars that can/should be private set.
+
+// TODO: Mods blacklist.
 
 // See https://github.com/yairm210/Unciv/pull/5592/commits/a1f51e08ab782ab46bda220e0c4aaae2e8ba21a4 for example of running locking operation in separate thread.
 
@@ -45,12 +50,13 @@ fun <T> ArrayList<T>.enforceValidIndex(index: Int) {
  * @property scriptingScope ScriptingScope instance at the root of all scripting API.
  */
 //TODO: Probably deprecate/remove initialBackendType.
-class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: ScriptingBackendType? = null){
+//TODO: Actually, probably should be only one instance in game, since various context changes set various ScriptingScope properties through it, and being able to view mod command history will also be useful.
+class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: ScriptingBackendType? = null) {
 
-    val scriptingBackends: ArrayList<ScriptingBackendBase> = ArrayList<ScriptingBackendBase>()
+    val scriptingBackends = ArrayList<ScriptingBackendBase>()
 
-    private val outputHistory: ArrayList<String> = ArrayList<String>()
-    private val commandHistory: ArrayList<String> = ArrayList<String>()
+    private val outputHistory = ArrayList<String>()
+    private val commandHistory = ArrayList<String>()
 
     var activeBackend: Int = 0
 
@@ -92,14 +98,17 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
             // TODO: Apparently there's a bunch of extensions like .withIndex(), .indices, and .lastIndex that I can use to replace a lot of stuff currently done with .size.
             // TODO: Why didn't I use indexOf?
             if (b == backend) {
-                switchToBackend(index = i)
+                return switchToBackend(index = i)
             }
         }
         throw IllegalArgumentException("Could not find scripting backend base: ${backend}")
     }
 
-    fun switchToBackend(displayname: String) {
+    fun switchToBackend(displayName: String) {
         //TODO
+    }
+
+    fun switchToBackend(backendType: ScriptingBackendType) {
     }
 
     fun termBackend(index: Int): Exception? {
@@ -150,7 +159,8 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         }
     }
 
-    fun exec(command: String): String {
+    fun exec(command: String): String { // TODO: Allow "passing" args that get assigned to something under ScriptingScope here.
+        //scriptingScope.scriptingBackend =
         if (command.length > 0) {
             commandHistory.add(command) // TODO: Also don't add duplicates.
             while (commandHistory.size > maxCommandHistory) {
@@ -162,11 +172,13 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         activeCommandHistory = 0
         var out: String
         if (hasBackend()) {
+            // TODO: Ternary.
             out = getActiveBackend().exec(command)
         } else {
             out = ""
         }
         echo(out)
+        //scriptingScope.scriptingBackend = null // TODO
         return out
     }
 
@@ -174,6 +186,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
 //        scriptingScope.worldScreen?.isPlayersTurn = false
         //TODO
         //Not perfect. I think scriptingScope also exposes mutating the GUI itself, and many things that aren't protected by this? Then again, a script that *wants* to cause a crash/ANR will always be able to do so by just assigning an invalid value or deleting a required node somewhere. Could make mod handlers outside of worldScreen blocking, with written stipulations on (dis)recommended size, and then
+        //https://github.com/yairm210/Unciv/pull/5592/commits/a1f51e08ab782ab46bda220e0c4aaae2e8ba21a4
 //    }
 
 //    fun releaseUiLock() {

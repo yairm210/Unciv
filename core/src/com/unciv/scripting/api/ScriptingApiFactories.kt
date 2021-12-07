@@ -1,75 +1,70 @@
 package com.unciv.scripting.api
 
 import com.unciv.scripting.reflection.FunctionDispatcher
+import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.reflection.makeFunctionDispatcher
+import kotlin.reflect.KCallable
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.kotlinFunction
 
 
-// TODO (Later): Use ClassGraph to automatically find all relevant classes on build.
+//// TODO (Later, maybe.): Use ClassGraph to automatically find all relevant classes on build.
 // https://github.com/classgraph/classgraph/wiki/Build-Time-Scanning
+// Honestly, it's fine. Having scripts provide the qualpaths themselves keeps everything dynamic, and the LazyMap caching keeps it (as) performant (as the rest of the API is, probably), so the only real "benefit" of indexing everything beforehand would be enabling autocompletion.
 
+
+// TODO: Rename this, to "Jvm", maybe.
 
 /**
  * For use in ScriptingScope. Allows interpreted scripts to make new instances of Kotlin/JVM classes.
  */
 object ScriptingApiFactories {
-    //This, and possible ApiHelpers itself, need better nested namespaces.
-    val Game = object {
-    }
-    val Math = object {
-    }
-    val Rulesets = object {
-    }
-    val Kotlin = object {
-    }
-    val Gui = object {
-    }
 
-//    fun kotlinClassFromQualname(qualName: String) = memoizedQualnameToKclass(qualName) // For debug. Probably comment out in builds. // TODO: Check is disabled in unit tests. Actually nah. May as well leave this around.
+    //val javaClassByQualname
 
-    val kotlinClassByQualname= LazyMap({ qualName: String -> Class.forName(qualName).kotlin }, exposeState = true) // Mostly for debug. Generally scripts shouldn't be using this.
+    val kotlinClassByQualname = LazyMap({ qualName: String -> Class.forName(qualName).kotlin }, exposeState = true)
+    //// Mostly for debug. Scripts may, but probably usually shouldn't, use this.
 
-    val constructorByQualname = LazyMap({ qualName: String -> makeFunctionDispatcher(Class.forName(qualName).kotlin.constructors)
-//        val cls = Class.forName(qualName).kotlin
-//        val cons = cls.primaryConstructor
-//        if (false && cons != null)
-//            makeFunctionDispatcher(listOf(cons::call))
-//            // Seems that empty constructors take vararg arrays? E.G. MapEditorScreen, MainMenuScreen
-//            // Actually, it seems like .primaryConstructor is a lie.
-//        else makeFunctionDispatcher(cls.constructors)
+    // Actually, this works for singletons too:
+    // apiHelpers.Factories.kotlinClassByQualname['com.unciv.scripting.reflection.Reflection'].objectInstance
+
+    // Works for files: apiHelpers.Factories.kotlinClassByQualname['com.unciv.scripting.ScriptingStateKt']. Kinda. (Top-level functions?)
+    // apiHelpers.instancesAsInstances[apiHelpers.Factories.kotlinClassByQualname['com.unciv.ui.utils.ExtensionFunctionsKt'].jClass.getMethods()][0].getName()
+
+    // [m.getName() for m in apiHelpers.instancesAsInstances[apiHelpers.Factories.kotlinClassByQualname['com.unciv.ui.utils.ExtensionFunctionsKt'].jClass.getMethods()] ]
+    // m=next(m for m in apiHelpers.instancesAsInstances[apiHelpers.Factories.kotlinClassByQualname['com.unciv.ui.utils.ExtensionFunctionsKt'].jClass.getMethods()] if m.getName() == 'enable')
+
+    //val companionByQualName TODO?
+    // Fails: apiHelpers.Factories.kotlinClassByQualname["com.unciv.scripting.SpyScriptingBackend.Metadata"]
+
+//    val toplevelFunctionByQualname = LazyMap ({ qualName: String ->
+//            val simpleName = qualName.substringAfterLast('.')
+//            makeFunctionDispatcher(Class.forName("${qualName.substringBeforeLast('.')}Kt").getDeclaredMethods().asSequence().filter { it.name == simpleName }.map { it.kotlinFunction }.toList() as List<KCallable<Any?>>)
+//            // I think I read somewhere at some point that the "${Filename}Kt" name for files is documented, but I couldn't find it again.
+//        }, exposeState = true)
+//    // TODO: exposeState should probably be unset in all these?
+//    // apiHelpers.Factories.toplevelFunctionByQualname["com.unciv.ui.utils.ExtensionFunctions.onClick"]
+//    // apiHelpers.Factories.toplevelFunctionByQualname["com.unciv.ui.utils.ExtensionFunctions.toLabel"]("Test")
+//    // This *is* rather convenient, but maybe it should be unboundMethodsByQualname or something like that instead? "Top-level function" and "Java method" seem quite far intuitively in Kotlin semantics, but the code is only two string characters apart (and they're apparently the same thing on the JVM).
+
+    val functionByQualClassAndMethodName = LazyMap ({ jclassQualname: String ->
+        val cls = Class.forName(jclassQualname)
+        LazyMap({ methodName: String -> makeFunctionDispatcher(cls.getDeclaredMethods().asSequence().filter { it.name == methodName }.map { it.kotlinFunction }.toList() as List<KCallable<Any?>>) }, exposeState = true)
+        // Could initialize the second LazyMap here by accessing for all names— Only benefit would be for autocomplete, at higher first-call time and memory use, though.
     }, exposeState = true)
+    // TODO: exposeState should probably be unset in all these?
+    // apiHelpers.Factories.functionByQualClassAndMethodName["com.unciv.ui.utils.ExtensionFunctionsKt"]["toLabel"]("Test")
 
-//    fun instanceFromQualname(qualName: String, args: List<Any?>): Any? {
-//        // TODO: Deprecate.
-//        val cls = Class.forName(qualName).kotlin
-//        val cons = cls.primaryConstructor
-//        return if (cons != null)
-//            cons.call(*args.toTypedArray())
-//        else FunctionDispatcher(
-//            functions = cls.constructors,
-//            matchNumbersLeniently = true,
-//            matchClassesQualnames = false,
-//            resolveAmbiguousSpecificity = true
-//        ).call(args.toTypedArray())
-//    }
-//    // TODO: Use generalized InstanceMethodDispatcher to find right callable in KClass.constructors if no primary constructor.
+    val staticPropertyByQualClassAndName = LazyMap ({ jclassQualname: String ->
+        val kcls = Class.forName(jclassQualname).kotlin
+        LazyMap({ name: String -> Reflection.readClassProperty(kcls, name) as Any? }, exposeState = true)
+    }, exposeState = true)
+    // apiHelpers.Factories.kotlinClassByQualname["com.badlogic.gdx.graphics.Color"].members[50].get()
+    // apiHelpers.Factories.staticPropertyByQualClassAndName["com.badlogic.gdx.graphics.Color"]['WHITE']
 
-    // apiHelpers.Factories.instanceFromQualname('java.lang.String', [])
-    // apiHelpers.Factories.instanceFromQualname('com.unciv.logic.map.MapUnit', [])
-    // apiHelpers.Factories.instanceFromQualname('com.unciv.logic.city.CityStats', [civInfo.cities[0]])
-    // apiHelpers.Factories.instanceFromQualname('com.badlogic.gdx.math.Vector2', [1, 2])
+    val constructorByQualname = LazyMap({ qualName: String -> makeFunctionDispatcher(Class.forName(qualName).kotlin.constructors) }, exposeState = true)
+    // TODO (Later, Maybe): This would actually be quite easy to whitelist by package paths.
 
-    // Refer: https://stackoverflow.com/questions/40672880/creating-a-new-instance-of-a-kclass
-
-    // See https://stackoverflow.com/questions/59936471/kotlin-reflect-package-and-get-all-classes. Build structured map of all classes?
-    // https://stackoverflow.com/questions/3845823/getting-list-of-fully-qualified-names-from-a-simple-name
-    // https://stackoverflow.com/questions/52573605/kotlin-can-i-get-all-objects-that-implements-specific-interface
-
-    // The JAR for Reflections is only a couple hundred KB. It also doesn't work on Android.
-
-    // apiHelpers.registeredInstances['x'] = apiHelpers.Factories.test2('com.badlogic.gdx.math.Vector2')
-    // apiHelpers.registeredInstances['x'].constructors[1].call(apiHelpers.Factories.arrayOf([1, 2]))
-    // apiHelpers.registeredInstances['y'] = apiHelpers.Factories.test('com.badlogic.gdx.math.Vector2')
     fun arrayOf(elements: Collection<Any?>): Array<*> = elements.toTypedArray()
     fun arrayOfAny(elements: Collection<Any>): Array<Any> = elements.toTypedArray()
     fun arrayOfString(elements: Collection<String>): Array<String> = elements.toTypedArray()

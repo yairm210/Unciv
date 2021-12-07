@@ -16,6 +16,11 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import kotlin.math.max
 import kotlin.math.min
 
+//TODO: "WARNING\n\nThe Unciv scripting API is a HIGHLY EXPERIMENTAL feature intended for advanced users!\nIt may be possible to damage your device and files by running malicious or poorly designed code!"
+//"Show this warning next time."
+
+//"I understand and wish to continue." // Probably grey this out for five seconds.
+//"Get me out of here!"
 
 class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Unit): BaseScreen() {
 
@@ -158,18 +163,18 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
             if (i == scriptingState.activeBackend) {
                 button.color = Color.GREEN
             }
-            button.onClick({
+            button.onClick {
                 scriptingState.switchToBackend(index)
                 updateRunning()
-            })
+            }
             var termbutton = ImageGetter.getImage("OtherIcons/Stop")
-            termbutton.onClick({
+            termbutton.onClick {
                 val exc: Exception? = scriptingState.termBackend(index)
                 updateRunning()
                 if (exc != null) {
                 	echo("Failed to stop ${backend.metadata.displayName} backend: ${exc.toString()}")
                 }
-            })
+            }
             runningList.add(termbutton.surroundWithCircle(40f)).row()
             i += 1
         }

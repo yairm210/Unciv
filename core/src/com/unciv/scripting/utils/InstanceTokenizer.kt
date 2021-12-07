@@ -37,6 +37,9 @@ object InstanceTokenizer {
      */
     private const val tokenMaxLength = 100
 
+//    private fun newTokenFromInstance(value: Any?): String {
+//    } // Move existing code here, publicize tokenFromInstance, check against existing WeakMap of tokens, and maybe forbid nullable input… Hm. Need to use identity instead of equality comparison. Oh wow. They have "WeakIdentityHashMap", the maniacs.
+
     /**
      * Generate a distinctive token string to represent a Kotlin/JVM object.
      *
@@ -73,6 +76,7 @@ object InstanceTokenizer {
     fun clean() {
         //FIXME (if I become a problem): Because a new unique token is currently generated even if the instance is already tokenized as something else, this will eventually get slower over time if a script makes lots of requests that result in new instance tokens for objects that last a long time (E.G. uncivGame). And since any stored instances should ideally be WeakReferences to prevent garbage collection from being broken for *all* instances, fixing that may not be as simple as checking for existing tokens to reuse them.
         //TODO: Probably keep another map of instance hashes to weakrefs and their existing token? The hashes will have to have counts instead of just containment, since otherwise a hash collision would cause the earlier token to become inaccessible.
+        // Can I use WeakReferences as keys? Do they implement hash and equality? Huh, WeakHashMap is a thing here too. Cool. Auto cleaning. And could check against for cleaning the other map. Hm. Need to use identity instead of equality comparison. Oh wow. They have "WeakIdentityHashMap", the maniacs.
         val badtokens = mutableListOf<String>()
         for ((t, o) in instances) {
             if (o.get() == null) {
@@ -88,7 +92,7 @@ object InstanceTokenizer {
      * @param obj Instance to tokenize.
      * @return Token string that can later be detokenized back into the original instance.
      */
-    fun getToken(obj: Any?): String {
+    fun getToken(obj: Any?): String { // TOOD: Switch to Any, since null will just be cleaned anyway?
         clean()
         val token = tokenFromInstance(obj)
         instances[token] = WeakReference(obj)
@@ -101,13 +105,13 @@ object InstanceTokenizer {
      * Accepts non-token values, and passes them through unchanged. So can be used to E.G. blindly transform a Collection/JSON Array that only maybe contains some token strings by being called on every element.
      *
      * @param token Previously generated token, or any instance or value.
-     * @throws NullPointerException (I think) if given a token string but not a valid one (E.G. if its object was garbage-collected, or if it's fake).
+     * @throws NullPointerException If given a token string but not a valid one (E.G. if its object was garbage-collected, or if it's fake).
      * @return Real instance from detokenizing input if given a token string, input value or instance unchanged if not given a token string.
      */
     fun getReal(token: Any?): Any? {
         clean()
         if (isToken(token)) {
-            return instances[token]!!.get()
+            return instances[token]!!.get()// TODO: Add another non-null assertion here? Unknown tokens and expired tokens are only a cleaning cycle apart, which seems race condition-y.
         } else {
             return token
         }

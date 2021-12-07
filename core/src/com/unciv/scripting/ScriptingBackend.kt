@@ -12,7 +12,7 @@ import com.unciv.scripting.protocol.SubprocessBlackbox
 import com.unciv.scripting.utils.ApiSpecGenerator
 import com.unciv.scripting.utils.SourceManager
 import com.unciv.scripting.utils.SyntaxHighlighter
-import kotlin.reflect.full.*
+import kotlin.reflect.full.companionObjectInstance
 //import java.util.*
 
 
@@ -43,14 +43,11 @@ abstract class ScriptingBackend_metadata {
     abstract fun new(scriptingScope: ScriptingScope): ScriptingBackendBase
     abstract val displayName: String
     val syntaxHighlighting: SyntaxHighlighter? = null
-    // Putting the syntax highlighters here makes the most sense semantically as they should be singletons.
-    // But it'd also be nice to let subclasses define ways of generating new their syntax highlighters based on their other parameters. (E.G.: Read a JSON of REGEXs, based on EnvironmentedScriptingBackend().engine.
-    // Hm. I think the solution in that case is to subclass ScriptingBackend_metadata, and put those properties in the companion, which I will now do.
 }
 
 abstract class EnvironmentedScriptBackend_metadata: ScriptingBackend_metadata() {
     abstract val engine: String
-    //Why did I put this here? There was probably a reason, because it was a lot of trouble.
+    // Why did I put this here? There was probably a reason, because it was a lot of trouble.
 }
 
 
@@ -97,6 +94,8 @@ interface ScriptingBackend {
 
 }
 
+// TODO: Rename ScriptingBackend to ScriptingImplementation.
+// TODO: Add .userTerminable flag and per-instance display string to ScriptingBackendBase. Let mod command histories be seen on ConsoleScreen?
 
 open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBackend {
 //A little bit confusing.
@@ -119,7 +118,7 @@ open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBa
      * Let the companion object of the correct subclass be accessed in subclass instances.
      */
     open val metadata
-        get(): ScriptingBackend_metadata = this::class.companionObjectInstance as ScriptingBackend_metadata
+        get() = this::class.companionObjectInstance as ScriptingBackend_metadata
 
 }
 
@@ -264,7 +263,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                         val isnull = obj == null
                         appendOut(
                             if (detailed)
-                                "Type: ${if (isnull) null else obj!!::class.qualifiedName}\n\nValue: ${obj}\n\nMembers: ${if (isnull) null else obj!!::class.members.map{it.name}}\n"
+                                "Type: ${if (isnull) null else obj!!::class.qualifiedName}\n\nValue: ${obj}\n\nMembers: ${if (isnull) null else obj!!::class.members.map {it.name}}\n"
                             else
                                 "${obj}"
                         )
@@ -347,7 +346,11 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
         "set 2000 worldScreen.bottomUnitTable.selectedUnit.promotions.XP",
         "get worldScreen.bottomUnitTable.selectedCity.population.setPopulation(25)",
         "set \"Cattle\" worldScreen.mapHolder.selectedTile.resource",
-        "set \"Krakatoa\" worldScreen.mapHolder.selectedTile.naturalWonder"
+        "set \"Krakatoa\" worldScreen.mapHolder.selectedTile.naturalWonder",
+        "get civInfo.addGold(civInfo.tech.techsResearched.size)",
+        "get uncivGame.setScreen(apiHelpers.Factories.constructorByQualname[\"com.unciv.ui.mapeditor.MapEditorScreen\"](gameInfo.tileMap))",
+        "get apiHelpers.Factories.constructorByQualname[\"com.unciv.ui.utils.ToastPopup\"](\"This is a popup!\", uncivGame.consoleScreen, 2000)"
+        //apiHelpers.Factories.constructorByQualname["com.unciv.ui.worldscreen.AlertPopup"](worldScreen, apiHelpers.Factories.constructorByQualname["com.unciv.logic.civilization.PopupAlert"](apiHelpers.Enums.enumMapsByQualname["com.unciv.logic.civilization.AlertType"]["FirstContact"], "Carthage"))
     )
 
     override fun motd(): String {
@@ -356,7 +359,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
 
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
         try {
-            var comm = commandparams.keys.find{ command.startsWith(it+" ") }
+            var comm = commandparams.keys.find { command.startsWith(it+" ") }
             if (comm != null) {
                 val params = command.drop(comm.length+1).split(' ', limit=commandparams[comm]!!)
                 //val prefix
@@ -364,7 +367,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
                 //val suffix
                 val workingcode = params[params.size-1]
                 val workingpath = Reflection.parseKotlinPath(workingcode)
-                if (workingpath.any{ it.type == Reflection.PathElementType.Call }) {
+                if (workingpath.any { it.type == Reflection.PathElementType.Call }) {
                     return AutocompleteResults(listOf(), true, "No autocomplete available for function calls.")
                 }
                 val leafname = if (workingpath.size > 0) workingpath[workingpath.size - 1].name else ""
@@ -372,12 +375,12 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
                 val branchobj = Reflection.resolveInstancePath(scriptingScope, workingpath.slice(0..workingpath.size-2))
                 return AutocompleteResults(
                     branchobj!!::class.members
-                        .map{ it.name }
-                        .filter{ it.startsWith(leafname) }
-                        .map{ prefix + it }
+                        .map { it.name }
+                        .filter { it.startsWith(leafname) }
+                        .map { prefix + it }
                 )
             } else {
-                return AutocompleteResults(commandparams.keys.filter{ it.startsWith(command) }.map{ it+" " })
+                return AutocompleteResults(commandparams.keys.filter { it.startsWith(command) }.map { it+" " })
             }
         } catch (e: Exception) {
             return AutocompleteResults(listOf(), true, "Could not get autocompletion: ${e}")
@@ -440,7 +443,9 @@ abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): Sc
 
     val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(metadata.engine) }
     // This requires the overridden values for engine, so setting it in the constructor causes a null error... May be fixed since moving engine to the companions.
-    // Also, BlackboxScriptingBackend inherits from this, but not all subclasses of BlackboxScriptingBackend might need it. So as long as it's not accessed, it won't be intialized.
+    // Also, BlackboxScriptingBackend inherits from this, but not all subclasses of BlackboxScriptingBackend might need it. So as long as it's not accessed, it won't be initialized.
+
+    // TODO: Probably implement a the Disposable interface method here to clean up the folder.
 
 }
 
@@ -586,9 +591,9 @@ class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend
         This tool is meant to help update code files.
 
         Available commands:
-    """.trimIndent()+"\n"+commands.map{ "> ${it}" }.joinToString("\n")+"\n\n"
+    """.trimIndent()+"\n"+commands.map { "> ${it}" }.joinToString("\n")+"\n\n"
 
-    override fun autocomplete(command: String, cursorPos: Int?) = AutocompleteResults(commands.filter{ it.startsWith(command) })
+    override fun autocomplete(command: String, cursorPos: Int?) = AutocompleteResults(commands.filter { it.startsWith(command) })
 
     override fun exec(command: String): String {
         val commv = command.split(' ', limit=2)

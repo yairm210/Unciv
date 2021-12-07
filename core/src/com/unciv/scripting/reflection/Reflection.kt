@@ -2,23 +2,22 @@ package com.unciv.scripting.reflection
 
 import com.unciv.scripting.utils.TokenizingJson
 import kotlin.collections.ArrayList
-import kotlin.reflect.KCallable
-import kotlin.reflect.KMutableProperty1
-import kotlin.reflect.KProperty1
 import kotlinx.serialization.Serializable
+import kotlin.reflect.*
 
 
 object Reflection {
 
     @Suppress("UNCHECKED_CAST")
-    fun <R> readInstanceProperty(instance: Any, propertyName: String): R? {
+    fun <R> readClassProperty(cls: KClass<*>, propertyName: String)
+        = (cls.members.first { it.name == propertyName } as KProperty0<*>).get() as R?
+
+    @Suppress("UNCHECKED_CAST")
+    fun <R> readInstanceProperty(instance: Any, propertyName: String)
         // From https://stackoverflow.com/a/35539628/12260302
-        val property = instance::class.members
-            .first { it.name == propertyName } as KProperty1<Any, *>
+        = (instance::class.members.first { it.name == propertyName } as KProperty1<Any, *>).get(instance) as R?
             // If scripting member access performance becomes an issue, memoizing this could be a potential first step.
             // TODO: Throw more helpful error on failure.
-        return property.get(instance) as R?
-    }
 
     // Return an [InstanceMethodDispatcher]() with consistent settings for the scripting API.
     fun makeInstanceMethodDispatcher(instance: Any, methodName: String) = InstanceMethodDispatcher(
@@ -46,7 +45,8 @@ object Reflection {
         matchClassesQualnames: Boolean = false,
         resolveAmbiguousSpecificity: Boolean = false
         ) : FunctionDispatcher(
-            functions = instance::class.members.filter{ it.name == methodName }.map{ it as KCallable<Any?> },
+            functions = instance::class.members.filter { it.name == methodName },
+            // TODO: .functions? Choose one that includes superclasses but excludes extensions.
             matchNumbersLeniently = matchNumbersLeniently,
             matchClassesQualnames = matchClassesQualnames,
             resolveAmbiguousSpecificity = resolveAmbiguousSpecificity
@@ -74,7 +74,8 @@ object Reflection {
     fun readInstanceItem(instance: Any, keyOrIndex: Any): Any? {
         // TODO: Make this work with operator overloading. Though Map is already an interface that anything can implement, so maybe not.
         if (keyOrIndex is Int) {
-            return (instance as List<Any?>)[keyOrIndex]
+            return try { (instance as List<Any?>)[keyOrIndex] }
+                catch (e: ClassCastException) { (instance as Array<Any?>)[keyOrIndex] }
         } else {
             return (instance as Map<Any, Any?>)[keyOrIndex]
         }
@@ -225,10 +226,10 @@ object Reflection {
     //}
 
     fun splitToplevelExprs(code: String, delimiters: String = ","): List<String> {
-        return code.split(',').map{ it.trim(' ') }
+        return code.split(',').map { it.trim(' ') }
         var segs = ArrayList<String>()
         val bracketdepths = mutableMapOf<Char, Int>(
-            *brackettypes.keys.map{ it to 0 }.toTypedArray()
+            *brackettypes.keys.map { it to 0 }.toTypedArray()
         )
         //TODO: Actually try to parse for parenthesization, strings, etc.
     }
@@ -242,6 +243,7 @@ object Reflection {
                 PathElementType.Property -> {
                     try {
                         obj = readInstanceProperty(obj!!, element.name)
+                        // TODO: Consider a LBYL instead of AFP here.
                     } catch (e: ClassCastException) {
                         obj = makeInstanceMethodDispatcher(
                             obj!!,
@@ -260,12 +262,13 @@ object Reflection {
                 }
                 PathElementType.Call -> {
                     // TODO: Handle invoke operator. Easy enough, just recurse to access the .invoke.
-                    // Maybe TODO: Handle lambdas. E.G. WorldScreen.nextTurnAction. Honestly, it may be better to just expose wrapping non-lambdas.
+                    // Test in Python: apiHelpers.Factories.constructorByQualname.invoke('com.unciv.UncivGame'). Also do an object for multi-arg testing, I guess?
+                    // Maybe TODO: Handle lambdas. E.G. WorldScreen.nextTurnAction. But honestly, it may be better to just expose wrapping non-lambdas.
                     obj = (obj as FunctionDispatcher).call(
                         // Undocumented implicit behaviour: Using the last object means that this should work with explicitly created FunctionDispatcher()s.
                         (
                             if (element.doEval)
-                                splitToplevelExprs(element.name).map{ evalKotlinString(instance!!, it) }
+                                splitToplevelExprs(element.name).map { evalKotlinString(instance!!, it) }
                             else
                                 element.params
                         ).toTypedArray()
@@ -280,7 +283,7 @@ object Reflection {
     }
 
 
-    fun evalKotlinString(scope: Any, string: String): Any? {
+    fun evalKotlinString(scope: Any?, string: String): Any? {
         val trimmed = string.trim(' ')
         if (trimmed == "null") {
             return null
@@ -302,7 +305,7 @@ object Reflection {
         if (asfloat != null) {
             return asfloat
         }
-        return resolveInstancePath(scope, parseKotlinPath(trimmed))
+        return resolveInstancePath(scope!!, parseKotlinPath(trimmed))
     }
 
 

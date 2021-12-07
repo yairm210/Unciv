@@ -42,6 +42,8 @@ open class FunctionDispatcher(
 
     // Not supporting varargs for now. Doing so would require rebuilding the arguments array to move all vararg arguments into a new array for KCallable.call().
 
+    // Right. It's called "Overload Resolution" when done statically, and Kotlin has specs under that title.
+
     /**
      * @return Whether a given argument value can be cast to the type of a given KParameter.
      */
@@ -99,6 +101,8 @@ open class FunctionDispatcher(
     //  Every relevant parameter type in it must be either the same as the corresponding parameter type in every other KCallable or a subtype of the corresponding parameter type in every other KCallable.
     //  At least one parameter type in it must be a strict subtype of the corresponding parameter type for every other KCallable.
 
+    // This is essentially equivalent to the behaviour specified in Chapter 11.7 "Choosing the most specific candidate from the overload candidate set" of the Kotlin language specification.
+
     //
     private fun getMostSpecificCallable(matches: List<KCallable<Any?>>, paramKtypes: Map<KCallable<Any?>, ArrayList<KType>>): KCallable<Any?>? {
         // Private because subclasses may choose to modify the arguments passed to call().
@@ -149,6 +153,7 @@ open class FunctionDispatcher(
         // gameInfo.civilizations.add(1, civInfo)
         // gameInfo.civilizations.add(civInfo)
         // Both need to work.
+        // Supporting named parameters would greatly complicate both signature matching and specificity resolution, and is not currently planned.
         val callableparamktypes = hashMapOf<KCallable<Any?>, ArrayList<KType>>()
         // Map of all traversed KCallables to lists of their parameters' KTypes.
         // Only parameters, and not arguments, are saved, though both are traversed.
@@ -156,17 +161,18 @@ open class FunctionDispatcher(
         val matches = getMatchingCallables(arguments, paramKtypeAppends=callableparamktypes)
         var match: KCallable<Any?>? = null
         if (matches.size < 1) {
-            throw IllegalArgumentException("No matching signatures found for calling ${nounifyFunctions()} with given arguments: (${arguments.map{if (it == null) "null" else it::class?.simpleName ?: "null"}.joinToString(", ")})")
+            throw IllegalArgumentException("No matching signatures found for calling ${nounifyFunctions()} with given arguments: (${arguments.map {if (it == null) "null" else it::class?.simpleName ?: "null"}.joinToString(", ")})")
             //FIXME: A lot of non-null assertions and null checks (not here, but generally in the codebase) can probably be replaced with safe calls.
         }
         if (matches.size > 1) {
             if (resolveAmbiguousSpecificity) {
                 //Kotlin seems to choose the most specific signatures based on inheritance hierarchy.
                 //E.G. UncivGame.setScreen(), which uses a more specific parameter type than its GDX base class and thus creates a different, semi-ambiguous (sub-)signature, but still gets resolved.
+                //Yeah, Kotlin semantics "choose the most specific function": https://kotlinlang.org/spec/overload-resolution.html#the-forms-of-call-expression
                 match = getMostSpecificCallable(matches, paramKtypes = callableparamktypes)
             }
             if (match == null) {
-                throw IllegalArgumentException("Multiple matching signatures found for calling ${nounifyFunctions()} with given arguments:\n\t(${arguments.map{if (it == null) "null" else it::class?.simpleName ?: "null"}.joinToString(", ")})\n\t${matches.map{it.toString()}.joinToString("\n\t")}")
+                throw IllegalArgumentException("Multiple matching signatures found for calling ${nounifyFunctions()} with given arguments:\n\t(${arguments.map {if (it == null) "null" else it::class?.simpleName ?: "null"}.joinToString(", ")})\n\t${matches.map {it.toString()}.joinToString("\n\t")}")
             }
         } else {
             match = matches[0]!!

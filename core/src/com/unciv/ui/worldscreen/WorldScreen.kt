@@ -196,7 +196,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         setConsoleScreenCloseAction({ game.setWorldScreen() })
         updateScriptingState(
             gameInfo = gameInfo,
-            civInfo = selectedCiv,
+            civInfo = selectedCiv, // TODO: Spectator.
             worldScreen = this
         )
     }

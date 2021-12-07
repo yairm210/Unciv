@@ -1,9 +1,9 @@
 package com.unciv.scripting.api
 
 // Convert an Enum type parameter into a Map of its constants by their names.
-inline fun <reified T: Enum<T>> enumToMap() = enumValues<T>().associateBy{ it.name }
+inline fun <reified T: Enum<T>> enumToMap() = enumValues<T>().associateBy { it.name }
 
-fun enumQualnameToMap(qualName: String) = Class.forName(qualName).enumConstants.associateBy{ (it as Enum<*>).name }
+fun enumQualnameToMap(qualName: String) = Class.forName(qualName).enumConstants.associateBy { (it as Enum<*>).name }
 // Always return a built-in Map class instance here, so its gets serialized as JSON object instead of tokenized, and scripts can refer directly to its items.
 // I cast to Enum<*> fully expecting it would crash because it felt metaclass-y. But apparently it's just a base class, so it works?
 
@@ -20,8 +20,4 @@ object ScriptingApiEnums {
     val enumMapsByQualname = LazyMap(::enumQualnameToMap)
 
     // apiHelpers.Enums.enumMapsByQualname["com.unciv.logic.automation.ThreatLevel"]['VeryLow']
-
-    //fun getEnumValue(qualName: String, value: String) = getEnumMap(qualName)[value]
-    // The return from getEnumMap should be a real serialized thing anyway, right?
-    //val testThreatLevel = enumQualnameToMap("com.unciv.logic.automation.ThreatLevel")
 }

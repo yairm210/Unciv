@@ -2,6 +2,10 @@
 # Example: https://lwn.net/Articles/574215/
 # Even if Python's sandboxed, the full reflective access on the Kotlin/JVM side isn't.
 
+# Huh: https://stackoverflow.com/questions/15093663/packaging-linux-binary-in-android-apk
+
+#"""Due to the massive standard library and tbird-party libraries available to Python, due to the similarly heavy footprint of the CPython interpreter, the recommended use cases of this scripting backend are user automation, prototyping, and experimentation or research. For mods, use the JS backend instead."""
+
 try:
 	import os
 	with open(os.path.join(os.path.dirname(__file__), "PythonScripting.md"), 'r') as f:

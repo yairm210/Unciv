@@ -48,7 +48,7 @@ fun makeMemberSpecDef(member: KCallable<*>): ApiSpecDef {
             println("Error accessing name of property ${m}.")
         }
     }*/
-    //val tmp: Collection<String> = kclass.members.filter{ it.name != null }.map{ it.name!! }
+    //val tmp: Collection<String> = kclass.members.filter { it.name != null }.map { it.name!! }
     //submembers.addAll(tmp)
     //Using a straight .map
     return ApiSpecDef(
@@ -56,7 +56,7 @@ fun makeMemberSpecDef(member: KCallable<*>): ApiSpecDef {
         isIterable = "iterator" in submembers,
         isMapping = "get" in submembers,
         isCallable = member is KFunction,
-        callableArgs = member.parameters.map{ it.name }
+        callableArgs = member.parameters.map { it.name }
     )
 }
 
@@ -97,7 +97,7 @@ class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
     }
 
     fun generateFlatApi(): List<String> {
-        return scriptingScope::class.members.map{ it.name }
+        return scriptingScope::class.members.map { it.name }
     }
 
     fun generateClassApi(): Map<String, List<ApiSpecDef>> {
@@ -105,8 +105,8 @@ class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
         val classes = getAllUncivClasses()
         var c = 0 // Test count. Something like 5,400, IIRC. For now, it's easier to just dynamically generate the API using Python's magic methods and the reflective tools in ScriptingProtocol. JS has proxies too, but other languages may not be so dynamic. // TBF I think some of those might have been GDX/Kotlin/JVM classes, which I should filter oout by .qualifiedName.
         val output = mutableMapOf<String, List<ApiSpecDef>>(
-            *classes.map{
-                it.qualifiedName!! to it.members.map{ c += 1; makeMemberSpecDef(it) } //Reflective function reference instead of wrapping lambda?
+            *classes.map {
+                it.qualifiedName!! to it.members.map { c += 1; makeMemberSpecDef(it) } //Reflective function reference instead of wrapping lambda?
             }.toTypedArray()
         )
         println("\nGathered ${c} property specifications across ${classes.size} classes.\n")

@@ -50,7 +50,7 @@ def ReversedMethod(func):
 	_reversedop.__doc__ = f"{func.__doc__ or name + ' operator.'}\n\nReversed version."
 	return _reversedop
 
-def InplaceMethod(func):
+def InplaceMethod(func): # TODO: Lower-case these names?
 	"""Return a wrapped a function that calls ._setvalue_() on its first self argument with its original result."""
 	def _inplacemethod(self, *args, **kwargs):
 		self._setvalue_(func(self, *args, **kwargs))
@@ -79,7 +79,7 @@ def stringPathList(pathlist):
 		if p['type'] == 'Property':
 			items.append(f".{p['name']}")
 		if p['type'] == 'Key':
-			items.append(f"[{p['params'][0]}]")
+			items.append(f"[{json.dumps(p['params'][0], cls=ipc.IpcJsonEncoder)}]")
 		if p['type'] == 'Call':
 			items.append(f"({', '.join(p['params'])}])")
 	return "".join(items)

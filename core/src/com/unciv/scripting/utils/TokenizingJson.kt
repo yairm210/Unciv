@@ -121,12 +121,14 @@ object TokenizingJson {
                     // TODO: Currently, this means that string keys are encoded with quotes as part of the string.
                     // Serialized keys are additionally different from Kotlin/JVM keys exposed reflectively.
                     // Treating keys as their own JSON strings may be the only way to let all types of values be represented unambiguously in keys, though.
+                    // Maybe just treat strings normally but stringify everything else? That would be consistent with Python behaviour and a superset of normal string-encoding behaviour.
+                    // Collisions would be tricky— Probably just either throw an exception or make real strings always take precedence. It's probably not worth it to specify that JSON keys have to be encoded.
                     // TODO: More testing/documentation is needed.
                 } )
             }
             if (value is Iterable<*>) {
                 // Apparently ::class.java.isArray can be used to check for primitive arrays, but it breaks
-                return JsonArray(value.map{ getJsonElement(it) })
+                return JsonArray(value.map { getJsonElement(it) })
             }
             if (value is Sequence<*>) {
                 return getJsonElement((value as Sequence<Any?>).toList())
@@ -158,10 +160,10 @@ object TokenizingJson {
             return null
         }
         if (value is JsonArray) {
-            return (value as List<JsonElement>).map{ getJsonReal(it) }// as List<Any?>
+            return (value as List<JsonElement>).map { getJsonReal(it) }// as List<Any?>
         }
         if (value is JsonObject) {
-            return (value as Map<String, JsonElement>).entries.associate{
+            return (value as Map<String, JsonElement>).entries.associate {
                 InstanceTokenizer.getReal(it.key) to getJsonReal(it.value)
             }// as Map<Any?, Any?>
         }

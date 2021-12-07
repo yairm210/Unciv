@@ -57,6 +57,11 @@ class AutocompleteManager:
 		"""Return either a sequence of full autocomplete matches or a help string for a given command."""
 
 
+# class AstAutocompleteManager(AutocompleteManager):
+	# pass
+	# TODO. Or not. Somehow sounds messier than string parsing.
+
+
 class PyAutocompleteManager(AutocompleteManager):
 	"""Advanced autocompleter. Returns keys when accessing mappings. Implements API that returns docstrings as help text for callables. Adds opening round and square brackets to autocomplete matches to show callables and mappings."""
 	# FIXME: Dot after a mapping fails.

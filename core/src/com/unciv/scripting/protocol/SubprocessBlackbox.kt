@@ -19,6 +19,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
      * STDOUT of the wrapped process, or null.
      */
     var inStream: BufferedReader? = null
+
     /**
      * STDIN of the wrapped process, or null.
      */
@@ -30,7 +31,16 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
     var processLaunchFail: String? = null
 
     override val isAlive: Boolean
-        get() = process != null && process!!.isAlive() // TODO: API Level 26. But also, it's not like using subprocesses is actually planned for Android.
+        get() = process != null && process!!.isAlive()
+//        get() {
+//            return try {
+//                    @Suppress("NewApi")
+//                    process != null && process!!.isAlive()
+//                    // Usually process will be null on Android anyway.
+//                } catch(e: NoSuchMethodError) { true } // Compiled access.
+//                catch(e: NoSuchMethodException) { true } // Reflective access.
+//                // TODO: API Level 26. But also, it's not like using subprocesses is actually planned for scripting on Android.
+//        }
 
     override val readyForWrite: Boolean
         get() = isAlive
@@ -43,7 +53,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
     }
 
     override fun toString(): String {
-        return "${this::class.simpleName}(process=${process}).apply{ inStream=${inStream}; outStream=${outStream}; processLaunchFail=${processLaunchFail} }"
+        return "${this::class.simpleName}(processCmd=${processCmd}).apply{ process=${process}; inStream=${inStream}; outStream=${outStream}; processLaunchFail=${processLaunchFail} }"
     }
 
     /**
@@ -61,7 +71,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
         try {
             process = Runtime.getRuntime().exec(processCmd)
         } catch (e: Exception) {
-            process = null
+            process = null // Comment this out to test the API level thing.
             processLaunchFail = e.toString()
             return
         }
