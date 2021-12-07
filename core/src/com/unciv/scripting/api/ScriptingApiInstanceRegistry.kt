@@ -63,6 +63,7 @@ class ScriptingApiInstanceRegistry: MutableMap<String, Any?> {
     override fun isEmpty() = backingMap.isEmpty()
     override fun clear() = backingMap.clear()
     override fun put(key: String, value: Any?): Any? {
+        println("\nAssigning ${key} directly in ScriptingApiInstanceRegistry(). It is recommended that every script/mod do this only once per application lifespan, creating its own mapping for further assignments named according to the following format:\n\t<Language>-<'mod'|'module'|'package'>:<Author>/<Filename>\n\tE.G.: \"python-module:myName/myCoolScript\"\n")
         if (key in this) {
             throw IllegalArgumentException("\"${key}\" already in ${this}.")
         }

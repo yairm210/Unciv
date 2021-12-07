@@ -27,7 +27,7 @@ Call onUnitMove(worldScreen.bottomUnitTable.selectedUnit) every time a unit move
 #civInfo.cities[0].cityStats.cityInfo.resistanceCounter
 #CityFlags.Resistance
 
-#civInfo.addNotification("Test", civInfo.cities[0].location, apiHelpers.Factories.arrayOfString(["StatIcons/Gold"]))
+#civInfo.addNotification("Test", civInfo.cities[0].location, apiHelpers.Jvm.arrayOfString(["StatIcons/Gold"]))
 
 def moveCity():
 	tileInfo.owningCity = city #Seems to be used for rendering only.

@@ -3,7 +3,7 @@ package com.unciv.scripting.protocol
 import com.unciv.UncivGame // For debug packet print only.
 import com.unciv.scripting.AutocompleteResults
 import com.unciv.scripting.ScriptingBackend
-import com.unciv.scripting.ScriptingScope
+import com.unciv.scripting.api.ScriptingScope
 //import com.unciv.scripting.protocol.ScriptingPacket
 //import com.unciv.scripting.protocol.ScriptingProtocol
 
@@ -56,7 +56,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
      *
      * This makes sure a single script execution doesn't get its tokenized Kotlin/JVM objects garbage collected, and has a chance to save them elsewhere (E.G. ScriptingScope.apiHelpers.registeredInstances) if it needs them later.
      * Should preserve each instance, not just each value, so should be List and not Set.
-     * To test in Python console backend: x = apiHelpers.Factories.Vector2(1,2); civInfo.endTurn(); print(apiHelpers.toString(x))
+     * To test in Python console backend: x = apiHelpers.Jvm.Vector2(1,2); civInfo.endTurn(); print(apiHelpers.toString(x))
      */
     val instanceSaver = mutableListOf<Any?>()
 

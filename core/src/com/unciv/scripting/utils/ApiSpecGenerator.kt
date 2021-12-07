@@ -1,6 +1,6 @@
 package com.unciv.scripting.utils
 
-import com.unciv.scripting.ScriptingScope
+import com.unciv.scripting.api.ScriptingScope
 import kotlin.reflect.KCallable
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

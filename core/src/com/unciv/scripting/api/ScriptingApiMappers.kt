@@ -1,6 +1,7 @@
 package com.unciv.scripting.api
 
 import com.unciv.scripting.reflection.Reflection
+import com.unciv.scripting.utils.LazyMap
 
 // TODO: Rename this.
 
@@ -23,7 +24,7 @@ object ScriptingApiMappers {
             val pathElementLists = LazyMap<String, List<Reflection.PathElement>>(Reflection::parseKotlinPath)
             return instancesAndPathcodes.mapValues { (instance, pathcodes) ->
                 pathcodes.associateWith {
-                    Reflection.resolveInstancePath(instance, pathElementLists[it])
+                    Reflection.resolveInstancePath(instance, pathElementLists[it]!!)
                 }
             }
         }
@@ -39,12 +40,12 @@ object ScriptingApiMappers {
             val pathElementLists = LazyMap<String, List<Reflection.PathElement>>(Reflection::parseKotlinPath)
             for ((instance, assignments) in instancesPathcodesAndValues) {
                 for ((pathcode, value) in assignments) {
-                    Reflection.setInstancePath(instance, pathElementLists[pathcode], value)
+                    Reflection.setInstancePath(instance, pathElementLists[pathcode]!!, value)
                 }
             }
         }
 }
 // st=time.time(); [real(t.baseTerrain) for t in gameInfo.tileMap.values]; print(time.time()-st)
 // st=time.time(); apiHelpers.Mappers.mapPathCodes(gameInfo.tileMap.values, ['baseTerrain']); print(time.time()-st)
-// FIXME: Gets slower each time run.
+// FIXME: Gets slower each time run (presumably due to InstanceTokenizer.clean()'s leak).
 // Actually around the same speed. Or wait: Is that the InstanceTokenizer slowdown?

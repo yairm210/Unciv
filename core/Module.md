@@ -228,17 +228,11 @@ Some action types, data formats, and expected response types and data formats fo
 *Implemented by `class ScriptingProtocol(){}` and `class ForeignObject()`.*
 
 	```
-	'read': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	'read': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'read_reponse': Any? or String
 		//Attribute/property access, by list of `PathElement` properties.
 		//Response must be String if sent with Exception flag.
-	```
-
-	```
-	//'call': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>, 'args': Collection<Any>, 'kwargs': Map<String, Any?>} ->
-		//'call_response': {'value': Any?, 'exception': String?}
-		//Method/function call.
-		//Deprecated and removed. Instead, use `"action":"read"` with a "path" that has `"type":"Call"` element(s) as per `PathElement`.
+		//TODO: Implement and use use_root and root.
 	```
 
 	```

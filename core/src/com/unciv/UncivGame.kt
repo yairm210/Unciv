@@ -13,8 +13,8 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.scripting.ScriptingScope
 import com.unciv.scripting.ScriptingState
+import com.unciv.scripting.api.ScriptingScope
 import com.unciv.ui.consolescreen.ConsoleScreen
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.MusicController

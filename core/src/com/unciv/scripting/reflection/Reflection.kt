@@ -262,7 +262,8 @@ object Reflection {
                 }
                 PathElementType.Call -> {
                     // TODO: Handle invoke operator. Easy enough, just recurse to access the .invoke.
-                    // Test in Python: apiHelpers.Factories.constructorByQualname.invoke('com.unciv.UncivGame'). Also do an object for multi-arg testing, I guess?
+                    // object test{operator fun invoke(a:Any?,b:Any?){println("$a $b")}}; test(1,2)
+                    // Test in Python: apiHelpers.Jvm.constructorByQualname('com.unciv.UncivGame'). Also do an object for multi-arg testing, I guess?
                     // Maybe TODO: Handle lambdas. E.G. WorldScreen.nextTurnAction. But honestly, it may be better to just expose wrapping non-lambdas.
                     obj = (obj as FunctionDispatcher).call(
                         // Undocumented implicit behaviour: Using the last object means that this should work with explicitly created FunctionDispatcher()s.

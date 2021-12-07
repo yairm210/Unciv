@@ -50,7 +50,7 @@ def spreadFalloutType(improvementtype, tilepermitter=lambda t: True):
 	pass
 
 #worldScreen.mapHolder.selectedTile.position in civInfo.exploredTiles
-#civInfo.addNotification("A volcano has risen from the Earth!", worldScreen.mapHolder.selectedTile.position, apiHelpers.Factories.arrayOfString(["TileSets/FantasyHex/Tiles/Krakatoa"]))
+#civInfo.addNotification("A volcano has risen from the Earth!", worldScreen.mapHolder.selectedTile.position, apiHelpers.Jvm.arrayOfString(["TileSets/FantasyHex/Tiles/Krakatoa"]))
 #civInfo.exploredTiles.add(worldScreen.mapHolder.selectedTile.position)
 
 def eruptVolcanoes():

@@ -186,10 +186,18 @@ def ResolveForOperators(cls):
 	# Would have to instantiate in the JSON decoder, though.
 	# I'm not sure it's necessary, since tokens will still have to be encoded as strings in JSON, which means you'd still need apiconstants['kotlinInstanceTokenPrefix'] and isForeignToken in api.py.
 
+
+BIND_BY_REFERENCE = False
+"""Early versions of this API bound Python objects to Kotlin/JVM instances by keeping track of paths and lazily evaluating them as needed. E.G. ".a.b[5].c" would create an internal tuple like `("a", "b", [5], "c")`, without actually accessing any Kotlin/JVM values at first. Benefits: Fewer IPC actions, lazy resolution of values only as they're used. Drawbacks: Deeper (slow) reflective loops per IPC action, scripting semantics not perfectly synced with JVM state, ugly tricks needed to deal with values that can't be safely accessed as paths from the same scope root, like the properties and methods of instances returned by function calls.
+
+The current API instead keeps track of every """
+
 @ResolveForOperators
 class ForeignObject:
 	"""Wrapper for a foreign object. Implements the specifications on IPC packet action types and data structures in Module.md."""
 	def __init__(self, path, foreignrequester=dummyForeignRequester):
+		# object.__setattr__(self, '_isbaked', False)
+		# object.__setattr__(self, '_realvalue', ...) # TODO!
 		object.__setattr__(self, '_path', (makePathElement(name=path),) if isinstance(path, str) else tuple(path))
 		object.__setattr__(self, '_foreignrequester', foreignrequester)
 	def __repr__(self):
@@ -198,10 +206,17 @@ class ForeignObject:
 		return self._getvalue_()
 	def _getpath_(self):
 		return tuple(self._path)
+	# def _bakereal_(self): # TODO! Switch to API-by-reference instead of API-by-path?
+		# object.__setattr__(self, '_unbaked', self.__class__()) # For in-place operations.
+		# object.__setattr__(self, '_realvalue', self._getvalue_())
+		# object.__setattr__(self, '_isbaked', True)
+		# object.__setattr__(self, '_path', ())
+		# This will break in-place operations.
 	def __getattr__(self, name):
 		# Due to lazy IPC calling, hasattr will never work with this. Instead, check for in dir().
 		# TODO: Shouldn't I special-casing get_help or _docstring_ here? Wait, no, I think I thought it would be accessed on the class.
 		return self.__class__((*self._path, makePathElement(name=name)), self._foreignrequester)
+		# attr._bakereal_()
 	def __getattribute__(self, name):
 		if name in ('values', 'keys', 'items'):
 			# Don't expose real .keys, .values, or .items unless wrapping a foreign mapping. This prevents foreign attributes like TileMap.values from being blocked.
@@ -223,9 +238,13 @@ class ForeignObject:
 		return self[key]._setvalue_(value)
 	@ForeignRequestMethod
 	def _getvalue_(self):
+		# if self._isbaked and not self._path:
+			# pass
 		return ({
 			'action': 'read',
 			'data': {
+				# 'use_root': self._isbaked, # TODO!
+				# 'root': self._realvalue,
 				'path': self._getpath_()
 			}
 		},
@@ -323,7 +342,7 @@ class ForeignObject:
 			}
 		},
 		'read_response',
-		foreignValueParser)
+		foreignValueParser) # TODO: Behaviour, semantics, and structure can be unified with __getattr__ with API-by-reference.
 	@ForeignRequestMethod
 	def __delitem__(self, key):
 		return ({

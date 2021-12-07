@@ -31,16 +31,15 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
     var processLaunchFail: String? = null
 
     override val isAlive: Boolean
-        get() = process != null && process!!.isAlive()
-//        get() {
-//            return try {
-//                    @Suppress("NewApi")
-//                    process != null && process!!.isAlive()
-//                    // Usually process will be null on Android anyway.
-//                } catch(e: NoSuchMethodError) { true } // Compiled access.
-//                catch(e: NoSuchMethodException) { true } // Reflective access.
-//                // TODO: API Level 26. But also, it's not like using subprocesses is actually planned for scripting on Android.
-//        }
+        get() {
+            return try {
+                    @Suppress("NewApi")
+                    process != null && process!!.isAlive()
+                    // Usually process will be null on Android anyway.
+                } catch(e: NoSuchMethodError) { true } // NoSuchMethodError is for compiled access. NoSuchMethodException is for reflective access. There's no reflection happening in the try{} block.
+            // I'm not planning to use subprocesses on Android, so it's okay if the catch{} block returns an incorrect answer.
+            // But if subprocesses are to be used on Android, then more work should be done to return an accurate answer in all cases.
+        }
 
     override val readyForWrite: Boolean
         get() = isAlive

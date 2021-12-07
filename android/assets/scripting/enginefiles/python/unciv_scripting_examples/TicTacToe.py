@@ -15,9 +15,7 @@ But it can be done.
 """
 
 
-# Actually, a Tic-Tac-Toe game with open trade deals for stake would be a better and easier demo.
-
-#get apiHelpers.instancesAsInstances[apiHelpers.Factories.constructorByQualname["com.unciv.ui.utils.Popup"](uncivGame.consoleScreen)].open(False)
+#get apiHelpers.instancesAsInstances[apiHelpers.Jvm.constructorByQualname["com.unciv.ui.utils.Popup"](uncivGame.consoleScreen)].open(False)
 
 def showPopup():
 	pass

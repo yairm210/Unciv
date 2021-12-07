@@ -205,25 +205,25 @@ Note that because of this, it is also perfectly safe to use token strings as arg
 ```python3
 # Each ">>>" represents a new script execution initiated from Kotlin— E.G., A new command entered into the console screen, or a new handler execution from the modding API— And not just a new line of code. Code on multiple lines can still be run in the same REPL loop, as long as the script's control isn't handed back to Kotlin/the JVM in between.
 
->>> worldScreen.mapHolder.setCenterPosition(apiHelpers.Factories.Vector2(1,2), True, True)
+>>> worldScreen.mapHolder.setCenterPosition(apiHelpers.Jvm.Vector2(1,2), True, True)
 # Works, because the instance creation and the call with a tokenized argument happen in the same REPL execution.
 
->>> apiHelpers.registeredInstances["x"] = apiHelpers.Factories.Vector2(1,2)
+>>> apiHelpers.registeredInstances["x"] = apiHelpers.Jvm.Vector2(1,2)
 >>> worldScreen.mapHolder.setCenterPosition(apiHelpers.registeredInstances["x"], True, True) #TODO: This doesn't actually use any subpath.
 # Works, because the instance creation and token-based assignment in Kotlin are done in the same REPL execution.
 
->>> x = apiHelpers.Factories.Vector2(1,2); civInfo.endTurn(); apiHelpers.registeredInstances["x"] = x
+>>> x = apiHelpers.Jvm.Vector2(1,2); civInfo.endTurn(); apiHelpers.registeredInstances["x"] = x
 >>> worldScreen.mapHolder.setCenterPosition(apiHelpers.registeredInstances["x"], True, True)
 # Also works.
 ```
 
 ```python3
->>> x = apiHelpers.Factories.Vector2(1,2)
+>>> x = apiHelpers.Jvm.Vector2(1,2)
 >>> apiHelpers.registeredInstances["x"] = x
 >>> worldScreen.mapHolder.setCenterPosition(apiHelpers.registeredInstances["x"], True, True)
 # May not work, because the created instance has no reference in Kotlin between the first two script executions and can be garbage-collected.
 
->>> x = apiHelpers.Factories.Vector2(1,2)
+>>> x = apiHelpers.Jvm.Vector2(1,2)
 >>> worldScreen.mapHolder.setCenterPosition(x, True, True)
 # Also may not work.
 ```
@@ -271,7 +271,7 @@ class MyForeignContextManager:
 			del memalloc[key]
 		self.memallocKeys.clear()
 
-with MyForeignContextManager(apiHelpers.Factories.MapUnit(), ) as mapUnit, :
+with MyForeignContextManager(apiHelpers.Jvm.MapUnit(), ) as mapUnit, :
 	mapUnit
 
 del apiHelpers.registeredInstances["python-module:myName/myCoolScript"]

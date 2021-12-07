@@ -2,7 +2,7 @@ package com.unciv.scripting
 
 //import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-
+import com.unciv.scripting.api.ScriptingScope
 import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.protocol.Blackbox
 import com.unciv.scripting.protocol.ScriptingReplManager
@@ -348,9 +348,9 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
         "set \"Cattle\" worldScreen.mapHolder.selectedTile.resource",
         "set \"Krakatoa\" worldScreen.mapHolder.selectedTile.naturalWonder",
         "get civInfo.addGold(civInfo.tech.techsResearched.size)",
-        "get uncivGame.setScreen(apiHelpers.Factories.constructorByQualname[\"com.unciv.ui.mapeditor.MapEditorScreen\"](gameInfo.tileMap))",
-        "get apiHelpers.Factories.constructorByQualname[\"com.unciv.ui.utils.ToastPopup\"](\"This is a popup!\", uncivGame.consoleScreen, 2000)"
-        //apiHelpers.Factories.constructorByQualname["com.unciv.ui.worldscreen.AlertPopup"](worldScreen, apiHelpers.Factories.constructorByQualname["com.unciv.logic.civilization.PopupAlert"](apiHelpers.Enums.enumMapsByQualname["com.unciv.logic.civilization.AlertType"]["FirstContact"], "Carthage"))
+        "get uncivGame.setScreen(apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.mapeditor.MapEditorScreen\"](gameInfo.tileMap))",
+        "get apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.utils.ToastPopup\"](\"This is a popup!\", uncivGame.consoleScreen, 2000)"
+        //apiHelpers.Jvm.constructorByQualname["com.unciv.ui.worldscreen.AlertPopup"](worldScreen, apiHelpers.Jvm.constructorByQualname["com.unciv.logic.civilization.PopupAlert"](apiHelpers.Enums.enumMapsByQualname["com.unciv.logic.civilization.AlertType"]["FirstContact"], "Carthage"))
     )
 
     override fun motd(): String {

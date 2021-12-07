@@ -15,6 +15,10 @@ import java.util.UUID
  */
 object InstanceTokenizer {
 
+    // TODO: This could potentially be used as the basis for a fully reference-based script execution model, as opposed to the path-based one right now. Basically, make ForeignObject always keep a root token/value, and make ScriptingProtocol's actions resolve paths from the supplied base object instead of from scriptingScope. It may greatly increase the number of IPC calls (one per attribute access), but it would also unify all semantics better (and allow, E.G., reading directly from function returns).
+
+    // Could even potentially get rid of `.registeredInstances` completely by automatically registering/reference counting in the JVM and freeing in scripting language destructors. But JS apparently doesn't give any way to control garbage collection, so the risk of memory leaks wouldn't be worth it.
+
     /**
      * Weakmap of currently known token strings to WeakReferences of the Kotlin/JVM instances they represent.
      */

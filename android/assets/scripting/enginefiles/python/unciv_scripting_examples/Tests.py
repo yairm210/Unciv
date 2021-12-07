@@ -34,10 +34,10 @@ with open(Utils.exampleAssetPath("Elizabeth300"), 'r') as save:
 
 
 def getTestGame():
-	return unciv.GameSaver.gameInfoFromString(Elizabeth300)
+	return unciv.Unciv.GameSaver.gameInfoFromString(Elizabeth300)
 
 def goToMainMenu():
-	unciv.uncivGame.setScreen(unciv.apiHelpers.Factories.constructorByQualname['com.unciv.MainMenuScreen']())#unciv.apiHelpers.Factories.Gui.MainMenuScreen())
+	unciv.uncivGame.setScreen(unciv.apiHelpers.Jvm.constructorByQualname['com.unciv.MainMenuScreen']())#unciv.apiHelpers.Jvm.Gui.MainMenuScreen())
 
 
 @Utils.singleton()
@@ -54,7 +54,7 @@ class InMapEditor:
 	def __enter__(self):
 		with Utils.TokensAsWrappers(getTestGame()) as (gameinfo,):
 			unciv.uncivGame.setScreen(
-				unciv.apiHelpers.Factories.constructorByQualname['com.unciv.ui.mapeditor.MapEditorScreen'](gameinfo.tileMap)
+				unciv.apiHelpers.Jvm.constructorByQualname['com.unciv.ui.mapeditor.MapEditorScreen'](gameinfo.tileMap)
 				# SetScreen doesn't seem to be needed here. But that seems like a glitch in the core Unciv code.
 			)
 	def __exit__(self, *exc):
@@ -100,7 +100,7 @@ class TestRunner:
 			print(*args, **kwargs)
 			if debugprint:
 				# When run as part of build, the Kotlin test-running code should be capturing the Python STDOUT anyway.
-				unciv.apiHelpers.printLine(str(args[0]) if len(args) == 1 and not kwargs else " ".join(str(a) for a in args))
+				unciv.apiHelpers.Sys.printLine(str(args[0]) if len(args) == 1 and not kwargs else " ".join(str(a) for a in args))
 		for test in self._tests:
 			try:
 				test()
