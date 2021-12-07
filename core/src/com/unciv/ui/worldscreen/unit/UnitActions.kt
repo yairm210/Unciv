@@ -565,7 +565,6 @@ object UnitActions {
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
                 useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
-                println("awe")
             }.takeIf { unit.currentMovement > 0 && !blockedByInquisitor } 
         )
     }
