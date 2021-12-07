@@ -120,7 +120,7 @@ class GameInfo {
     }
 
     /** Get a civ by name
-     *  @throws NoSuchElementException if no civ of than name is in the game (alive or dead)! */
+     *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
