@@ -657,7 +657,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                             it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
                             || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
                             || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus 
-                            || it.isOfType(UniqueType.ConditionalInTiles) } // Bonus in terrain or feature - half the bonus
+                            || it.isOfType(UniqueType.ConditionalFightingInTiles) } // Bonus in terrain or feature - half the bonus
                     ) {
                         power *= (unique.params[0].toInt() / 2f).toPercent()
                     }

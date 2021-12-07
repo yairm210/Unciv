@@ -299,19 +299,24 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
             UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    RegionExtraResource("Starts in regions of this type receive an extra [resource]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    BlocksResources("Never receives any resources", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
     HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
-    LuxuryWeighting("Appears in [regionType] regions with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    LuxuryWeightingForCityStates("Appears near City States with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    MinorDepositWeighting("Minor deposits generated with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    LuxuryWeightingForCityStates("Generated near City States with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
     LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    ResourceFrequency("Generated on every [amount] tiles", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
 
-    OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
+    StrategicBalanceResource("Guaranteed with Strategic Balance resource option", UniqueTarget.Resource),
   
-    NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
     TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
     OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    MajorStrategicFrequency("Every [amount] tiles with this terrain will receive a major deposit of a strategic resource.", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
   
     RareFeature("Rare feature", UniqueTarget.Terrain),
     
@@ -384,7 +389,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),
-    ConditionalInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalFightingInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalForeignContinent("on foreign continents", UniqueTarget.Conditional),
     ConditionalAboveHP("when above [amount] HP", UniqueTarget.Conditional),
     ConditionalBelowHP("when below [amount] HP", UniqueTarget.Conditional),
@@ -392,6 +397,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     /////// tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalInTilesAnd("in [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalInTilesNot("in tiles without [tileFilter]", UniqueTarget.Conditional),
 
     /////// area conditionals
     ConditionalOnWaterMaps("on water maps", UniqueTarget.Conditional),
