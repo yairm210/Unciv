@@ -520,12 +520,11 @@ object UnitActions {
     }
 
      fun addActionsWithLimitedUses(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
-         println("eeeee")
+
         val actionsToAdd = unit.religiousActionsUnitCanDo()
         if (actionsToAdd.none()) return
         if (unit.religion == null || unit.civInfo.gameInfo.religions[unit.religion]!!.isPantheon()) return
         val city = tile.getCity() ?: return
-         println("somehow")
         for (action in actionsToAdd) {
             if (!unit.abilityUsesLeft.containsKey(action)) continue
             if (unit.abilityUsesLeft[action]!! <= 0) continue

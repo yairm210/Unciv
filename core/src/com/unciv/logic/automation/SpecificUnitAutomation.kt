@@ -304,7 +304,8 @@ object SpecificUnitAutomation {
             unit.movement.headTowards(destination)
         }
 
-        spreadReligion(unit, unit.getTile())
+        if (unit.currentTile.owningCity?.religion?.getMajorityReligion()?.name != unit.religion)
+            doReligiousAction(unit, unit.getTile())
     }
 
     fun automateInquisitor(unit: MapUnit){
@@ -338,7 +339,7 @@ object SpecificUnitAutomation {
         }
 
         if (cityToConvert != null){
-            spreadReligion(unit, unit.currentTile)
+            doReligiousAction(unit, unit.currentTile)
         }
 
     }
@@ -497,12 +498,10 @@ object SpecificUnitAutomation {
         UnitActions.getEnhanceReligionAction(unit)()
     }
 
-    private fun spreadReligion(unit: MapUnit, destination: TileInfo){
-        if (unit.currentTile.owningCity?.religion?.getMajorityReligion()?.name != unit.religion){
-            val actionList: java.util.ArrayList<UnitAction> = ArrayList()
-            UnitActions.addActionsWithLimitedUses(unit, actionList, destination)
-            if (actionList.firstOrNull()?.action?.invoke() == null) return
-            actionList.first().action!!.invoke()
-        }
+    private fun doReligiousAction(unit: MapUnit, destination: TileInfo){
+        val actionList: java.util.ArrayList<UnitAction> = ArrayList()
+        UnitActions.addActionsWithLimitedUses(unit, actionList, destination)
+        if (actionList.firstOrNull()?.action?.invoke() == null) return
+        actionList.first().action!!.invoke()
     }
 }
