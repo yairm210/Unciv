@@ -159,10 +159,12 @@ object UnitAutomation {
             if (unit.hasUnique("Can construct []"))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
-            if (unit.name == "Missionary"){
-                println("success")
+            if (unit.name == "Missionary")
                 return SpecificUnitAutomation.automateMissionary(unit)
-            }
+
+            if (unit.name == "Inquisitor")
+                return SpecificUnitAutomation.automateInquisitor(unit)
+
 
 
             // ToDo: automation of great people skills (may speed up construction, provides a science boost, etc.)

@@ -342,13 +342,20 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         var modifier = 50000f
 
-        val missionary = cityInfo.getRuleset().units.values
-            .asSequence()
+        val missionary = cityInfo.getRuleset().units.values.asSequence()
             .filter { it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
-            .filter { it.name == "Missionary" }
+            .filter { it.name == "Missionary"}
+            .firstOrNull()
+
+        val inquisitor = cityInfo.getRuleset().units.values.asSequence()
+            .filter { it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
+            .filter { it.name == "Inquisitor" }
             .firstOrNull()
 
 
+        // these 4 if conditions are used to determine if an AI should buy units to spread religion, or spend faith to buy things like new military units or new buildings.
+        // currently this AI can only buy inquisitors and missionaries with faith
+        // this system will have to be reengineered to support buying other stuff with faith
         if (preferredVictoryType == VictoryType.Domination) return
         if (civInfo.religionManager.religion?.name == null) return
         if (preferredVictoryType == VictoryType.Cultural) modifier += 1
@@ -366,8 +373,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
 
-        if (buildMissionary > buildInqusitor && missionary != null) faithConstruction.add(missionary)
-        else if(missionary != null) faithConstruction.add(missionary) // will change later when I add inquisitor AI
+        if (buildMissionary > buildInqusitor && missionary != null && inquisitor != null) faithConstruction.add(missionary)
+        else if(inquisitor != null) faithConstruction.add(inquisitor) // will change later when I add inquisitor AI
 
 
     }

@@ -289,13 +289,9 @@ object SpecificUnitAutomation {
 
     fun automateMissionary(unit: MapUnit){
         val cities = unit.civInfo.gameInfo.getCities().asSequence()
-            .filterNot { it.religion.getMajorityReligion()?.name == null }
-            .filter { it.religion.getMajorityReligion()!!.name != unit.getReligionDisplayName() }
+            .filter { it.religion.getMajorityReligion()?.name != unit.getReligionDisplayName() }
             .filterNot { it.civInfo.isAtWarWith(unit.civInfo) }
             .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) } ?: return
-
-        println(cities.name)
-
 
 
         val destination = cities.getTiles().asSequence()
@@ -309,10 +305,52 @@ object SpecificUnitAutomation {
         }
 
         spreadReligion(unit, unit.getTile())
+    }
 
+    fun automateInquisitor(unit: MapUnit){
+        val cityToConvert = unit.civInfo.cities.asSequence()
+            .filterNot { it.religion.getMajorityReligion()?.name == null }
+            .filterNot { it.religion.getMajorityReligion()?.name == unit.religion }
+            .minByOrNull { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
 
+        val cityToProtect = unit.civInfo.cities.asSequence()
+            .filter { it.religion.getMajorityReligion()?.name == unit.religion }
+            .filter { isInquisitorInTheCity(it, unit)}
+            .maxByOrNull { it.population.population }  // cities with most populations will be prioritized by the AI
 
+        var destination: TileInfo? = null
 
+        if (cityToProtect != null){
+            destination = cityToProtect.getCenterTile().neighbors.asSequence()
+                    .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
+                    .filter { unit.movement.canMoveTo(it) }
+                    .minByOrNull { it.aerialDistanceTo(unit.currentTile) }
+        }
+        else if (cityToConvert != null){
+            destination = cityToConvert.getCenterTile().neighbors.asSequence()
+                .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
+                .filter { unit.movement.canMoveTo(it) }
+                .minByOrNull { it.aerialDistanceTo(unit.currentTile) }
+        }
+
+        if (destination != null) {
+            unit.movement.headTowards(destination)
+        }
+
+        if (cityToConvert != null){
+            spreadReligion(unit, unit.currentTile)
+        }
+
+    }
+
+    private fun isInquisitorInTheCity(city: CityInfo, unit: MapUnit): Boolean {
+        if (!city.religion.isProtectedByInquisitor())
+            return false
+
+        for (tile in city.getCenterTile().neighbors)
+            if (unit.currentTile == tile)
+                return true
+        return false
     }
 
 
@@ -460,10 +498,7 @@ object SpecificUnitAutomation {
     }
 
     private fun spreadReligion(unit: MapUnit, destination: TileInfo){
-        println(unit.currentTile.owningCity?.religion?.getMajorityReligion()?.name)
-        println(unit.religion)
         if (unit.currentTile.owningCity?.religion?.getMajorityReligion()?.name != unit.religion){
-            println("hey")
             val actionList: java.util.ArrayList<UnitAction> = ArrayList()
             UnitActions.addActionsWithLimitedUses(unit, actionList, destination)
             if (actionList.firstOrNull()?.action?.invoke() == null) return
