@@ -3,6 +3,7 @@ package com.unciv.scripting.api
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.scripting.utils.ScriptingModApiHelpers
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -39,7 +40,7 @@ class ScriptingScope(
 
     val apiHelpers = ScriptingApiHelpers(this)
 
-    //var modApiHelpers: ModApiHelpers?
+    val modApiHelpers = ScriptingModApiHelpers(this)
 
 }
 
@@ -47,15 +48,6 @@ class ScriptingScope(
 // ScriptingState also helps separate , keep the shared ScriptingScope between all of them (such that it only needs to be updated once on game context changes), and update
 
 /*
-//class ModApiHelpers {
-    var handlerContext: NamedTuple?
-    // Why not just use a map? String keys will be clearer in scripts than integers anyway.
-    // Collection that gets replaced with any contextual parameters when running script handlers. E.G. Unit moved, city founded, tech researched, construction finished.
-//fun showScriptedChoicePopup(title: String, body: String, options: List<String>, callback: String?) // Actually, no. Popup() seems to work on its own.
-    // TODO: Mods blacklist, for security threats.
-}
-
-
 //class NamedTuple(val map: Map<String, Any?>) {
     //Default order-preserving implementation of Map is important.
     //SortedMap?

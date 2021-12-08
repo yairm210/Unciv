@@ -115,6 +115,8 @@ open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingIm
 
     /**
      * Let the companion object of the correct subclass be accessed in subclass instances.
+     *
+     * Any access to the companion from instance methods should be done using this property, or else the companion object accessed will be the one from where instances was declared.
      */
     open val metadata
         get() = this::class.companionObjectInstance as ScriptingBackend_metadata
@@ -440,7 +442,7 @@ abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): Sc
         // Since the companion object type is different, we have to define a new getter for the subclass instance companion getter to get its new members.
         get() = this::class.companionObjectInstance as EnvironmentedScriptBackend_metadata
 
-    val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(engine) }
+    val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(metadata.engine) }
     // This requires the overridden values for engine, so setting it in the constructor causes a null error... May be fixed since moving engine to the companions.
     // Also, BlackboxScriptingBackend inherits from this, but not all subclasses of BlackboxScriptingBackend might need it. So as long as it's not accessed, it won't be initialized.
 
@@ -469,7 +471,7 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
         try {
             return replManager.motd()
         } catch (e: Exception) {
-            return "No MOTD for ${engine} backend: ${e}\n"
+            return "No MOTD for ${metadata.engine} backend: ${e}\n"
         }
     }
 
@@ -510,7 +512,7 @@ abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): Black
     override fun motd(): String {
         return """
 
-            Welcome to the Unciv '${displayName}' API. This backend relies on running the system ${processCmd.firstOrNull()} command as a subprocess.
+            Welcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system ${processCmd.firstOrNull()} command as a subprocess.
 
             If you do not have an interactive REPL below, then please make sure the following command is valid on your system:
 
@@ -629,9 +631,3 @@ enum class ScriptingBackendType(val metadata: ScriptingBackend_metadata) {
     //For running ApiSpecGenerator. Comment in releases. Uncomment if needed.
     // TODO: Have .new function?
 }
-
-//// TODO: Lowercase name. Actually, no. Just get rid of this.
-//fun SpawnNamedScriptingBackend(backendtype: ScriptingBackendType, scriptingScope: ScriptingScope): ScriptingBackendBase {
-//    // Seems unnecessary?
-//    return backendtype.metadata.new(scriptingScope)
-//}

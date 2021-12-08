@@ -1,15 +1,10 @@
 package com.unciv.scripting
 
 import com.unciv.scripting.api.ScriptingScope
+import com.unciv.ui.utils.clipIndexToBounds
 import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
-
-// TODO: Move to ExtensionFunctions.kt.
-
-fun <T> ArrayList<T>.clipIndexToBounds(index: Int, extendsize: Int = 0): Int {
-    return max(0, min(this.size-1+extendsize, index))
-}
 
 // TODO: Check for places to use Sequences.
 // Hm. It seems that Sequence performance isn't even a simple question of number of loops, and is also affected by boxed types and who know what else.
@@ -46,9 +41,8 @@ fun <T> ArrayList<T>.enforceValidIndex(index: Int) {
  *
  * @property scriptingScope ScriptingScope instance at the root of all scripting API.
  */
-//TODO: Probably deprecate/remove initialBackendType.
 //TODO: Actually, probably should be only one instance in game, since various context changes set various ScriptingScope properties through it, and being able to view mod command history will also be useful.
-class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: ScriptingBackendType? = null) {
+class ScriptingState(val scriptingScope: ScriptingScope) {
 
     val scriptingBackends = ArrayList<ScriptingBackendBase>()
 
@@ -63,26 +57,17 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     var activeCommandHistory: Int = 0
     // Actually inverted, because history items are added to end of list and not start. 0 means nothing, 1 means most recent command at end of list.
 
-    init {
-        if (initialBackendType != null) {
-            echo(spawnBackend(initialBackendType))
-        }
-    }
-
     fun getOutputHistory() = outputHistory.toList()
 
-    fun spawnBackend(backendtype: ScriptingBackendType): String {
-        val backend: ScriptingBackendBase = SpawnNamedScriptingBackend(backendtype, scriptingScope)
+    data class BackendSpawnResult(val backend: ScriptingBackendBase, val motd: String)
+
+    fun spawnBackend(backendtype: ScriptingBackendType): BackendSpawnResult {
+        val backend: ScriptingBackendBase = backendtype.metadata.new(scriptingScope)
         scriptingBackends.add(backend)
         activeBackend = scriptingBackends.size - 1
         val motd = backend.motd()
         echo(motd)
-        return motd
-    }
-
-    fun spawnBackendAndReturnMotd(backendtype: ScriptingBackendType, switchTo: Boolean = true) {
-        // TODO
-        //  The script manager/handler dispatcher for mods is going to want to keep track of which backends belong to which mods.
+        return BackendSpawnResult(backend, motd)
     }
 
     fun switchToBackend(index: Int) {
@@ -91,22 +76,24 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     }
 
     fun switchToBackend(backend: ScriptingBackendBase) {
-        for ((i, b) in scriptingBackends.withIndex()) {
-            // TODO: Apparently there's a bunch of extensions like .withIndex(), .indices, and .lastIndex that I can use to replace a lot of stuff currently done with .size.
-            // TODO: Why didn't I use indexOf?
-            if (b == backend) {
-                return switchToBackend(index = i)
-            }
-        }
+        // TODO: Apparently there's a bunch of extensions like .withIndex(), .indices, and .lastIndex that I can use to replace a lot of stuff currently done with .size.
+        val index = scriptingBackends.indexOf(backend)
+        if (index >= 0)
+            return switchToBackend(index = index)
+//        for ((i, b) in scriptingBackends.withIndex()) {
+//            if (b == backend) {
+//                return switchToBackend(index = i)
+//            }
+//        }
         throw IllegalArgumentException("Could not find scripting backend base: ${backend}")
     }
 
-    fun switchToBackend(displayName: String) {
-        //TODO
-    }
-
-    fun switchToBackend(backendType: ScriptingBackendType) {
-    }
+//    fun switchToBackend(displayName: String) {
+//        // Are these really necessary?
+//    }
+//
+//    fun switchToBackend(backendType: ScriptingBackendType) {
+//    }
 
     fun termBackend(index: Int): Exception? {
         scriptingBackends.enforceValidIndex(index)
@@ -122,8 +109,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     }
 
     fun hasBackend(): Boolean {
-        // TODO: Any check like this can be replaced with .isEmpty().
-        return scriptingBackends.size > 0
+        return scriptingBackends.isNotEmpty()
     }
 
     fun getActiveBackend(): ScriptingBackendBase {
@@ -148,7 +134,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     }
 
     fun navigateHistory(increment: Int): String {
-        activeCommandHistory = commandHistory.clipIndexToBounds(activeCommandHistory + increment, extendsize = 1)
+        activeCommandHistory = commandHistory.clipIndexToBounds(activeCommandHistory + increment, extendEnd = 1)
         if (activeCommandHistory <= 0) {
             return ""
         } else {
@@ -159,7 +145,8 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
     fun exec(command: String): String { // TODO: Allow "passing" args that get assigned to something under ScriptingScope here.
         //scriptingScope.scriptingBackend =
         if (command.length > 0) {
-            commandHistory.add(command) // TODO: Also don't add duplicates.
+            if (command != commandHistory.lastOrNull())
+                commandHistory.add(command)
             while (commandHistory.size > maxCommandHistory) {
                 commandHistory.removeAt(0)
                 // No need to restrict activeCommandHistory to valid indices here because it gets set to zero anyway.
@@ -167,13 +154,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
             }
         }
         activeCommandHistory = 0
-        var out: String
-        if (hasBackend()) {
-            // TODO: Ternary.
-            out = getActiveBackend().exec(command)
-        } else {
-            out = ""
-        }
+        var out = if (hasBackend()) getActiveBackend().exec(command) else ""
         echo(out)
         //scriptingScope.scriptingBackend = null // TODO
         return out

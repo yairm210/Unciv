@@ -4,8 +4,8 @@ import com.unciv.scripting.AutocompleteResults
 import com.unciv.scripting.reflection.FunctionDispatcher
 import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.utils.ScriptingDebugParameters
-import com.unciv.scripting.utils.stringifyException
-import com.unciv.scripting.utils.TokenizingJson
+import com.unciv.scripting.serialization.TokenizingJson
+import com.unciv.ui.utils.stringifyException
 import kotlin.random.Random
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -71,7 +71,7 @@ data class ScriptingPacket(
      * @param flag Flag type to check for.
      * @return Whether the given flag is present in this packet's flags field.
      */
-    fun hasFlag(flag: ScriptingProtocol.KnownFlag) = flag.value in flags
+    fun hasFlag(flag: ScriptingProtocol.KnownFlag) = flag.name in flags
 
 }
 
@@ -93,13 +93,11 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
      *
      * The flag field requires strings, so currently the .value property is usually used when constructing and working with scripting packets.
      *
-     * @property value Serialized string value of this flag.
+     * @property name Serialized string value of this flag.
      */
-    enum class KnownFlag(val value: String) {
-        PassMic("PassMic"),
-        //TODO: Would getting rid of the string value work? I think I may have decided that having KotlinX Serialization implicitly coerce enums to/from strings would be worse than explicitly accessing the string even if raw enums do work.
-        // Okay, yeah, these should already have `.name`, right?
-        Exception("Exception")
+    enum class KnownFlag {
+        PassMic,
+        Exception
     }
 
     companion object {
@@ -169,19 +167,19 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
             "motd",
             makeUniqueId(),
             JsonNull,
-            listOf(KnownFlag.PassMic.value)
+            listOf(KnownFlag.PassMic.name)
         )
         fun autocomplete(command: String, cursorPos: Int?) = ScriptingPacket(
             "autocomplete",
             makeUniqueId(),
             JsonObject(mapOf("command" to JsonPrimitive(command), "cursorpos" to JsonPrimitive(cursorPos))),
-            listOf(KnownFlag.PassMic.value)
+            listOf(KnownFlag.PassMic.name)
         )
         fun exec(command: String) = ScriptingPacket(
             "exec",
             makeUniqueId(),
             JsonPrimitive(command),
-            listOf(KnownFlag.PassMic.value)
+            listOf(KnownFlag.PassMic.name)
         )
         fun terminate() = ScriptingPacket(
             "terminate",
@@ -283,7 +281,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "assign" -> {
@@ -296,7 +294,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "delete" -> {
@@ -308,7 +306,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "dir" -> {
@@ -321,7 +319,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     responseData = TokenizingJson.getJsonElement(leaf!!::class.members.map {it.name})
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "keys" -> {
@@ -334,7 +332,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     responseData = TokenizingJson.getJsonElement((leaf as Map<Any, *>).keys)
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "length" -> {
@@ -347,16 +345,16 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     try {
                         responseData = TokenizingJson.getJsonElement((leaf as Array<*>).size)
                         // AFAICT avoiding these casts/checks would require reflection.
-                    } catch (e: Exception) { // TODO: Switch these catches to ClassCastException.
+                    } catch (e: ClassCastException) {
                         try {
                             responseData = TokenizingJson.getJsonElement((leaf as Map<*, *>).size)
-                        } catch (e: Exception) {
+                        } catch (e: ClassCastException) {
                             responseData = TokenizingJson.getJsonElement((leaf as Collection<*>).size)
                         }
                     }
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "contains" -> {
@@ -368,12 +366,12 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                     try {
                         responseData = TokenizingJson.getJsonElement(packetData.value in (leaf as Map<Any?, Any?>))
-                    } catch (e: Exception) {
+                    } catch (e: ClassCastException) {
                         responseData = TokenizingJson.getJsonElement(packetData.value in (leaf as Collection<Any?>))
                     }
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "ismapping" -> {
@@ -388,12 +386,12 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                         // Ensure same behaviour as "keys" action. IK It's probably/hopefully the same as using the is operator, but I'm not sure.
                         // TODO: Make this and other key operations work with operator overloading. Though Map is already an interface that anything can implement, so maybe not.
                         responseData = TokenizingJson.getJsonElement(true)
-                    } catch (e: Exception) {
+                    } catch (e: ClassCastException) {
                         responseData = TokenizingJson.getJsonElement(false)
                     }
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "callable" -> {
@@ -406,7 +404,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     responseData = TokenizingJson.getJsonElement(leaf is FunctionDispatcher)
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "args" -> {
@@ -426,7 +424,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     )
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                        responseFlags.add(KnownFlag.Exception.value)
+                        responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             "docstring" -> {
@@ -439,7 +437,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
                     responseData = TokenizingJson.getJsonElement(leaf.toString())
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())
-                    responseFlags.add(KnownFlag.Exception.value)
+                    responseFlags.add(KnownFlag.Exception.name)
                 }
             }
             else -> {

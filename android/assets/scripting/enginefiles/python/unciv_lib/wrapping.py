@@ -26,7 +26,7 @@ class ForeignRequestMethod:
 		return meth
 
 
-def ResolvingFunction(op, *, allowforeigntokens=False):
+def resolvingFunction(op, *, allowforeigntokens=False):
 	"""Return a function that passes its arguments through `api.real()`."""
 	def _resolvingfunction(*arguments, **keywords):
 		args = [api.real(a) for a in arguments]
@@ -42,7 +42,7 @@ def ResolvingFunction(op, *, allowforeigntokens=False):
 	_resolvingfunction.__doc__ = f"{op.__doc__ or name + ' operator.'}\n\nCalls `api.real()` on all arguments."
 	return _resolvingfunction
 
-def ReversedMethod(func):
+def reversedMethod(func):
 	"""Return a `.__rop__` version of an `.__op__` magic method function."""
 	def _reversedop(a, b, *args, **kwargs):
 		return func(b, a, *args, **kwargs)
@@ -50,7 +50,7 @@ def ReversedMethod(func):
 	_reversedop.__doc__ = f"{func.__doc__ or name + ' operator.'}\n\nReversed version."
 	return _reversedop
 
-def InplaceMethod(func): # TODO: Lower-case these names?
+def inplaceMethod(func):
 	"""Return a wrapped a function that calls ._setvalue_() on its first self argument with its original result."""
 	def _inplacemethod(self, *args, **kwargs):
 		self._setvalue_(func(self, *args, **kwargs))
@@ -156,7 +156,7 @@ _imagicmethods = (
 	'__ior__'
 )
 
-def ResolveForOperators(cls):
+def resolveForOperators(cls):
 	"""Decorator. Adds missing magic methods to a class, which resolve their arguments with `api.real(a)`."""
 	def alreadyhas(name):
 		return (hasattr(cls, name) and getattr(cls, name) is not getattr(object, name, None))
@@ -167,16 +167,16 @@ def ResolveForOperators(cls):
 			name, opname = meth
 		if not alreadyhas(name):
 			# Set the magic method only if neither it nor any of its base classes have already defined a custom implementation.
-			setattr(cls, name, ResolvingFunction(getattr(operator, opname), allowforeigntokens=False))
+			setattr(cls, name, resolvingFunction(getattr(operator, opname), allowforeigntokens=False))
 	for rmeth in _rmagicmeths:
 		normalname = rmeth.replace('__r', '__', 1)
 		if not alreadyhas(rmeth) and hasattr(cls, normalname):
-			setattr(cls, rmeth, ReversedMethod(getattr(cls, normalname)))
+			setattr(cls, rmeth, reversedMethod(getattr(cls, normalname)))
 	for imeth in _imagicmethods:
 		normalname = imeth.replace('__i', '__', 1)
 		if not alreadyhas(imeth) and hasattr(cls, normalname):
 			normalfunc = getattr(cls, normalname)
-			setattr(cls, imeth, InplaceMethod(normalfunc))
+			setattr(cls, imeth, inplaceMethod(normalfunc))
 	return cls
 
 
@@ -206,7 +206,7 @@ The current API instead keeps track of every """
 
 # TODO: Maybe test to see if a path-based approach for keys and attributes might still be faster?
 
-@ResolveForOperators
+@resolveForOperators
 class ForeignObject:
 	"""Wrapper for a foreign object. Implements the specifications on IPC packet action types and data structures in Module.md."""
 	def __init__(self, *, path, use_root=False, root=None, foreignrequester=dummyForeignRequester):
@@ -228,7 +228,7 @@ class ForeignObject:
 	def _bakereal_(self):
 		assert not self._isbaked
 		self._attrs._unbaked = self._clone_() # For in-place operations.
-		self._attrs._root = self._getvalue_() # TODO: Would the fallback for in-places go through __setattr__, and result in one fewer IPC call?
+		self._attrs._root = self._getvalue_() # TODO: Would the fallback for inplaces go through __setattr__, and result in one fewer IPC call?
 		self._attrs._use_root = True
 		self._attrs._path = ()
 		self._attrs._isbaked = True
@@ -250,8 +250,8 @@ class ForeignObject:
 		if BIND_BY_REFERENCE and do_bake:
 			item._bakereal_()
 		return item
-		#TODO: Should negative indexing from end be supported?
-		#IIRC I decided "No". Not entirely sure why. Probably a mix of needing a __len__ IPC call for that, plus incongruency with Kotlin (and other languages') behaviour, and complexity here.
+		# Indexing from end with negative numbers is not supported.
+		# Mostly a complexity choice. Matching Kotlin semantics is better than doing an extra IPC call.
 	def __iter__(self):
 		try:
 			return iter(self.keys())

@@ -10,7 +10,7 @@ class IpcJsonEncoder(json.JSONEncoder):
 		return json.JSONEncoder.default(self, obj)
 
 
-def MakeUniqueId():
+def makeUniqueId():
 	"""Return a string that should never repeat or collide. Used for IPC packet identity fields."""
 	return f"{time.time_ns()}-{random.getrandbits(30)}"
 
@@ -19,6 +19,7 @@ class ForeignError(RuntimeError):
 
 class ForeignPacket:
 	"""Class for IPC packet conforming to specification in Module.md and ScriptingProtocol.kt."""
+	# TODO: Speed? Well, I'll cProfile the whole thing eventaully I guess.
 	def __init__(self, action, identifier, data, flags=()):
 		self.action = action
 		self.identifier = identifier
@@ -67,7 +68,7 @@ class ForeignActionSender(ForeignActionManager):
 	def SendForeignAction(self, actionparams):
 		self.sender(ForeignPacket(**actionparams).serialized())
 	def GetForeignActionResponse(self, actionparams, responsetype):
-		identifier = MakeUniqueId()
+		identifier = makeUniqueId()
 		self.SendForeignAction({**actionparams, 'identifier': identifier})
 		return ForeignPacket.deserialized(self.receiver()).enforce_type(responsetype, identifier)
 

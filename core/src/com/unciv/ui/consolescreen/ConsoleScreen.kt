@@ -64,10 +64,10 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         backendsAdders.add("Launch new backend:".toLabel()).padRight(30f).padLeft(20f)
         for (backendtype in ScriptingBackendType.values()) {
             var backendadder = backendtype.metadata.displayName.toTextButton()
-            backendadder.onClick({
-                echo(scriptingState.spawnBackend(backendtype))
+            backendadder.onClick {
+                echo(scriptingState.spawnBackend(backendtype).motd)
                 updateRunning()
-            })
+            }
             backendsAdders.add(backendadder)
         }
         backendsScroll = ScrollPane(backendsAdders)
@@ -75,7 +75,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         backendsAdders.left()
 
         val cell_backendsScroll = topBar.add(backendsScroll)
-        layoutUpdators.add( { cell_backendsScroll.minWidth(stage.width - closeButton.getPrefWidth()) } )
+        layoutUpdators.add { cell_backendsScroll.minWidth(stage.width - closeButton.getPrefWidth()) }
         topBar.add(closeButton)
 
         printHistory.left()

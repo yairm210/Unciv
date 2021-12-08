@@ -15,6 +15,8 @@ import com.unciv.models.translations.tr
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.random.Random
 
 /**
@@ -157,6 +159,7 @@ fun <T> ArrayList<T>.withItem(item:T): ArrayList<T> {
     return newArrayList
 }
 
+
 /** Gets a clone of a [HashSet] with an additional item
  *
  * Solves concurrent modification problems - everyone who had a reference to the previous hashSet can keep using it because it hasn't changed
@@ -185,6 +188,13 @@ fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
     val newHashSet = HashSet(this)
     newHashSet.remove(item)
     return newHashSet
+}
+
+// @param index Integer index to clip to the List's bounds.
+// @param extendSize Allow indices that exceed the maximum index in this array by this amount.
+// @return Input index clipped to the optionally extended range of the List's indices.
+fun <T> List<T>.clipIndexToBounds(index: Int, extendEnd: Int = 0): Int {
+    return max(0, min(this.size-1+extendEnd, index))
 }
 
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
@@ -288,6 +298,25 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
             return this[i]
     }
     return this.last()
+}
+
+/**
+ * @return String of exception preceded by entire stack trace.
+ */
+fun Exception.stringifyException(): String {
+    val causes = arrayListOf<Throwable>()
+    var cause: Throwable? = this
+    while (cause != null) {
+        causes.add(cause)
+        cause = cause.cause
+        //I swear this is okay to do.
+    }
+    return listOf(
+        "\n",
+        *this.stackTrace,
+        "\n",
+        *causes.asReversed().map { it.toString() }.toTypedArray()
+    ).joinToString("\n")
 }
 
 /**

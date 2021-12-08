@@ -1,6 +1,6 @@
 package com.unciv.scripting.reflection
 
-import com.unciv.scripting.utils.TokenizingJson
+import com.unciv.scripting.serialization.TokenizingJson
 import kotlin.collections.ArrayList
 import kotlinx.serialization.Serializable
 import kotlin.reflect.*
@@ -71,7 +71,7 @@ object Reflection {
     }
 
 
-    fun readInstanceItem(instance: Any, keyOrIndex: Any): Any? {
+    fun readInstanceItem(instance: Any, keyOrIndex: Any): Any? { // TODO: Unify type param/casting behaviour across this, readInstanceProperty, and FunctionDispatcher.call.
         // TODO: Make this work with operator overloading. Though Map is already an interface that anything can implement, so maybe not.
         if (keyOrIndex is Int) {
             return try { (instance as List<Any?>)[keyOrIndex] }
@@ -249,20 +249,20 @@ object Reflection {
         var obj: Any? = instance
         for (element in path) {
             try {
-                when (element.type) { // TODO: Use as expression?
+                obj = when (element.type) {
                     PathElementType.Property -> {
                         try {
-                            obj = readInstanceProperty(obj!!, element.name)
+                            readInstanceProperty<Any?>(obj!!, element.name) // Not explicitly typing the function call makes it always fail an implicit cast or something.
                             // TODO: Consider a LBYL instead of AFP here.
                         } catch (e: ClassCastException) {
-                            obj = makeInstanceMethodDispatcher(
+                            makeInstanceMethodDispatcher(
                                 obj!!,
                                 element.name
                             )
                         }
                     }
                     PathElementType.Key -> {
-                        obj = readInstanceItem(
+                        readInstanceItem(
                             obj!!,
                             if (element.doEval)
                                 evalKotlinString(instance!!, element.name)!!
@@ -275,19 +275,30 @@ object Reflection {
                         // object test{operator fun invoke(a:Any?,b:Any?){println("$a $b")}}; test(1,2)
                         // Test in Python: apiHelpers.Jvm.constructorByQualname('com.unciv.UncivGame'). Also do an object for multi-arg testing, I guess?
                         // Maybe TODO: Handle lambdas. E.G. WorldScreen.nextTurnAction. But honestly, it may be better to just expose wrapping non-lambdas.
-                        obj = (obj as FunctionDispatcher).call(
+                        if (obj is FunctionDispatcher) {
                             // Undocumented implicit behaviour: Using the last object means that this should work with explicitly created FunctionDispatcher()s.
-                            (
-                                if (element.doEval)
-                                    splitToplevelExprs(element.name).map { evalKotlinString(instance!!, it) }
-                                else
-                                    element.params
-                            ).toTypedArray()
-                        )
+                            (obj).call(
+                                (
+                                    if (element.doEval)
+                                        splitToplevelExprs(element.name).map { evalKotlinString(instance!!, it) }
+                                    else
+                                        element.params
+                                ).toTypedArray()
+                            )
+                        } else {
+                            throw UnsupportedOperationException()
+                            resolveInstancePath( // TODO: Test this.
+                                obj,
+                                listOf(
+                                    PathElement(
+                                        type = PathElementType.Property,
+                                        name = "invoke"
+                                    ),
+                                    element
+                                )
+                            )
+                        }
                     }
-    //                else -> {
-    //                    throw UnsupportedOperationException("Unknown path element type: ${element.type}")
-    //                }
                 }
             } catch (e: Exception) {
                 throw IllegalAccessException("Cannot access $element on $obj: $e")
@@ -343,9 +354,6 @@ object Reflection {
             PathElementType.Call -> {
                 throw UnsupportedOperationException("Cannot assign to function call.")
             }
-//            else -> {
-//                throw UnsupportedOperationException("Unknown path element type: ${leafelement.type}")
-//            }
         }
     }
 
@@ -368,9 +376,6 @@ object Reflection {
             PathElementType.Call -> {
                 throw UnsupportedOperationException("Cannot remove function call.")
             }
-//            else -> {
-//                throw UnsupportedOperationException("Unknown path element type: ${leafelement.type}")
-//            }
         }
     }
 }

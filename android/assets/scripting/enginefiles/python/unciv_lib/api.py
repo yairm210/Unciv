@@ -2,7 +2,6 @@ import json, os, builtins, sys
 
 from . import ipc, utils
 
-#TODO: Expose ForeignError class.
 
 enginedir = os.path.dirname(__file__)
 
@@ -90,6 +89,8 @@ def pathcodeFromWrapper(wrapper):
 	return wrapping.stringPathList(wrapper._getpath_())
 	# TODO
 
+expose()(ipc.ForeignError)
+
 
 class UncivReplTransceiver(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
 	"""Class that implements the Unciv IPC and scripting protocol by receiving and responding to its packets. See Module.md."""
@@ -108,7 +109,6 @@ class UncivReplTransceiver(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
 		# TODO: Replace this update with Kotlin-side init?
 	def passMic(self):
 		"""Send a 'PassMic' packet."""
-		#TODO: This should use ForeignPacket(), no?
 		self.SendForeignAction({'action':None, 'identifier': None, 'data':None, 'flags':('PassMic',)})
 	@ipc.receiverMethod('motd', 'motd_response')
 	def EvalForeignMotd(self, packet):
@@ -144,8 +144,6 @@ Press [TAB] at any time to trigger autocompletion at the current cursor position
 		with ipc.FakeStdout() as fakeout:
 			print(f">>> {str(line)}")
 			try:
-				# TODO: See if you can use signals to catch infinite loops/excess run duration.
-				#  Actually, no. Interactivity should be retained from the Kotlin side by running/calling ScriptingState in a different thread.
 				try:
 					code = compile(line, 'STDIN', 'eval')
 				except SyntaxError:
@@ -158,7 +156,6 @@ Press [TAB] at any time to trigger autocompletion at the current cursor position
 			finally:
 				self.passMic()
 				return fakeout.getvalue()
-
 	@ipc.receiverMethod('terminate', 'terminate_response')
 	def EvalForeignTerminate(self, packet):
 		return None

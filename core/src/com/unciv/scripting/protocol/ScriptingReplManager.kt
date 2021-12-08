@@ -1,15 +1,14 @@
 package com.unciv.scripting.protocol
 
 import com.unciv.scripting.AutocompleteResults
-import com.unciv.scripting.ScriptingBackend
-import com.unciv.scripting.api.ScriptingScope
+import com.unciv.scripting.ScriptingImplementation
 import com.unciv.scripting.utils.ScriptingDebugParameters
 
 //import com.unciv.scripting.protocol.ScriptingPacket
 //import com.unciv.scripting.protocol.ScriptingProtocol
 
 
-abstract class ScriptingReplManager(val scriptingScope: ScriptingScope, val blackbox: Blackbox): ScriptingBackend {
+abstract class ScriptingReplManager(val scope: Any, val blackbox: Blackbox): ScriptingImplementation {
     //
 
     //Thus, separate partly as a semantic distinction. ScriptingBackend is designed mostly to interact with ScriptingState and (indirectly, through ScriptingState) ConsoleScreen by presenting a clean interface to shallower classes in the call stack. This class is designed to do the opposite, and keep all the code for wrapping the interfaces of the deeper and more complicated ScriptingProtocol and Blackbox classes in one place.
@@ -19,7 +18,7 @@ abstract class ScriptingReplManager(val scriptingScope: ScriptingScope, val blac
 /**
  * REPL manager that sends and receives only raw code and prints raw strings with a black box. Allows interacting with an external script interpreter, but not suitable for exposing Kotlin-side API in external scripts.
  */
-class ScriptingRawReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
+class ScriptingRawReplManager(scope: Any, blackbox: Blackbox): ScriptingReplManager(scope, blackbox) {
 
     override fun motd(): String {
         return "${exec("motd()\n")}\n"
@@ -47,9 +46,7 @@ class ScriptingRawReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox
 /**
  * REPL manager that uses the IPC protocol defined in ScriptingProtocol.kt to communicate with a black box. Suitable for presenting arbitrary access to Kotlin/JVM state to scripting APIs. See Module.md for a detailed description of the REPL loop.
  */
-class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Blackbox): ScriptingReplManager(scriptingScope, blackbox) {
-
-// TODO: scriptingScope can be an Any. Hm. "scriptingScope" is more readable within Unciv, but Any communicates a cleaner design and cleaner design constraints. Hm. That means "scriptingScope" communicates the wrong thing with its readability. It's called "scope" in ScriptingProtocol, which should be plenty clear enough.
+class ScriptingProtocolReplManager(scope: Any, blackbox: Blackbox): ScriptingReplManager(scope, blackbox) {
 
     /**
      * ScriptingProtocol puts references to pre-tokenized returned objects in here.
@@ -61,12 +58,13 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
      */
     val instanceSaver = mutableListOf<Any?>()
 
-    val scriptingProtocol = ScriptingProtocol(scriptingScope, instanceSaver = instanceSaver)
+    val scriptingProtocol = ScriptingProtocol(scope, instanceSaver = instanceSaver)
 
     //TODO: Doc
     fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true, execLoop: () -> Unit = fun(){}): ScriptingPacket {
         // Please update the specifications in Module.md if you change the basic structure of this REPL loop.
-        if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nSending: ${packetToSend}") // TODO: Move this to ScriptingProtocol?
+        if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nSending: ${packetToSend}")
+        // TODO: Move this to ScriptingProtocol?
         blackbox.write(packetToSend.toJson() + "\n")
         execLoop()
         val response = ScriptingPacket.fromJson(blackbox.read(block=true))
@@ -101,7 +99,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
         return ScriptingProtocol.parseActionResponses.motd(
             getRequestResponse(
                 ScriptingProtocol.makeActionRequests.motd(),
-                execLoop = { foreignExecLoop() } //TODO: Replace with reflective method reference?
+                execLoop = ::foreignExecLoop
             )
         )
     }
@@ -110,7 +108,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
         return ScriptingProtocol.parseActionResponses.autocomplete(
             getRequestResponse(
                 ScriptingProtocol.makeActionRequests.autocomplete(command, cursorPos),
-                execLoop = { foreignExecLoop() }
+                execLoop = ::foreignExecLoop
             )
         )
     }
@@ -122,7 +120,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
             return ScriptingProtocol.parseActionResponses.exec(
                 getRequestResponse(
                     ScriptingProtocol.makeActionRequests.exec(command),
-                    execLoop = { foreignExecLoop() }
+                    execLoop = ::foreignExecLoop
                 )
             )
         }

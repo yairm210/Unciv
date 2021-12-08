@@ -29,9 +29,4 @@ class ScriptingApiHelpers(val scriptingScope: ScriptingScope) {
     // This creates a dilemma: Resolving a path into a Kotlin value too early means that no further paths (E.G. attribute, keys, calls) can be built on top of it. But resolving it late means that expected side effects may not happen (E.G. function calls probably shouldn't be deferred). And values that *must* be resolved, like the results of function calls, cannot have their own members and method accessed until they themselves are assigned to a path, because they're just kinda floating around as far as the scripting-exposed semantics are concerned.
     // So this fake Map works around that, by providing a way for any random object to appear to have a path.
 
-
-    //setTimeout?
-    //fun lambdifyScript(code: String ): () -> Unit = fun(){ scriptingScope.uncivGame!!.scriptingState.exec(code); return } // FIXME: Requires awareness of which scriptingState and which backend to use.
-    // TODO: Move to modApiHelpers.
-    //Directly invoking the resulting lambda from a running script will almost certainly break the REPL loop/IPC protocol.
 }

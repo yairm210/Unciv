@@ -147,7 +147,7 @@ open class FunctionDispatcher(
      * @return The result from dispatching the given arguments to the function definition with a compatible signature.
      * @throws IllegalArgumentException If no compatible signature was found, or if more than one compatible signature was found.
      */
-    open fun call(arguments: Array<Any?>): Any? {
+    open fun call(arguments: Array<Any?>): Any? { // TODO: Let return be typed.
         // KCallable's .call() takes varargs instead of an array object. But spreads are expensive, so I'm not doing that.
         // To test from Python:
         // gameInfo.civilizations.add(1, civInfo)
@@ -160,7 +160,7 @@ open class FunctionDispatcher(
         // KCallables that don't match the call arguments should only have as many parameter KTypes saved as it took to find out they don't match.
         val matches = getMatchingCallables(arguments, paramKtypeAppends=callableparamktypes)
         var match: KCallable<Any?>? = null
-        if (matches.size < 1) {
+        if (matches.isEmpty()) {
             throw IllegalArgumentException("No matching signatures found for calling ${nounifyFunctions()} with given arguments: (${arguments.map {if (it == null) "null" else it::class?.simpleName ?: "null"}.joinToString(", ")})")
             //FIXME: A lot of non-null assertions and null checks (not here, but generally in the codebase) can probably be replaced with safe calls.
         }

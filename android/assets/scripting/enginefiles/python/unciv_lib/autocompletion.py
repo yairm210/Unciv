@@ -14,7 +14,7 @@ class AutocompleteManager:
 	):
 		self.scope = globals() if scope is None else scope
 		self.get_keys, self.get_help, self.check_callable = get_keys, get_help, check_callable
-	def GetCommandComponents(self, command):
+	def getCommandComponents(self, command):
 		"""Try to return the the last atomic evaluable expression in a statement, everything before it, and the token at the end of everything before it."""
 		#Call recursively if you need to resolve multiple values. Test string:
 		# abc.cde().fgh[0].ijk(lmn[1].opq["dea
@@ -42,7 +42,7 @@ class AutocompleteManager:
 				continue
 			if char in '([:,;+-*/|&<>=%{~^@':
 				# Should probably split at multi-character tokens like 'in', 'for', 'if', etc. too.
-				# TODO: Maybe just put read spaces as a token type for now?
+				# TODO: Maybe just put read spaces as a token type for now?.. No, do it properly by checking against word tokens.
 				prefixsplit += 1
 				lasttoken = char
 				break
@@ -55,6 +55,7 @@ class AutocompleteManager:
 		return prefix, workingcode, lasttoken
 	def GetAutocomplete(self, command):
 		"""Return either a sequence of full autocomplete matches or a help string for a given command."""
+		return ()
 
 
 # class AstAutocompleteManager(AutocompleteManager):
@@ -75,12 +76,12 @@ class PyAutocompleteManager(AutocompleteManager):
 		try:
 			if cursorpos is None:
 				cursorpos = len(command)
-			(prefix, workingcode, lasttoken), suffix = self.GetCommandComponents(command[:cursorpos]), command[cursorpos:]
+			(prefix, workingcode, lasttoken), suffix = self.getCommandComponents(command[:cursorpos]), command[cursorpos:]
 			if ')' in workingcode:
 				# Avoid function calls.
 				return ()
 			if lasttoken in {*'[('}:# Compare to set because None can't be used in string containment check.
-				prefix_prefix, prefix_workingcode, prefix_lasttoken = self.GetCommandComponents(prefix[:-1])
+				prefix_prefix, prefix_workingcode, prefix_lasttoken = self.getCommandComponents(prefix[:-1])
 				assert prefix[-1] == lasttoken
 				if ')' not in prefix_workingcode:
 					# Avoid function calls.
@@ -136,7 +137,7 @@ class RlAutocompleteManager(AutocompleteManager):
 	def GetAutocomplete(self, command, cursorpos=None):
 		#Adds brackets to everything, due to presence of dynamic `.__call__` on `ForeignObject`.. Technically, I might be able to control `callable()` by implementing a metaclass with a custom `.__getattribute__` with custom descriptors on `ForeignObject`. Perhaps such a sin is still beyond even my bumbling arrogance, though.
 		completer = rlcompleter.Completer(self.scope)
-		(prefix, workingcode, lasttoken), suffix = self.GetCommandComponents(command[:cursorpos]), command[cursorpos:]
+		(prefix, workingcode, lasttoken), suffix = self.getCommandComponents(command[:cursorpos]), command[cursorpos:]
 		if workingcode:
 			matches = []
 			for i in itertools.count():

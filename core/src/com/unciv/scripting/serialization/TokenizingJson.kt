@@ -1,4 +1,4 @@
-package com.unciv.scripting.utils
+package com.unciv.scripting.serialization
 
 import kotlinx.serialization.*
 //import kotlinx.serialization.builtins.serializer
@@ -13,8 +13,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 //import kotlinx.serialization.json.decodeFromJsonElement
 //import kotlinx.serialization.modules.SerializersModule
-
-// TODO: Move to serialization package with InstanceTokenizer.kt
 
 /**
  * Json serialization that accepts Any?, and converts non-primitive values to string keys using InstanceTokenizer.
