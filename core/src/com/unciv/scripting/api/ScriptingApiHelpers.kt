@@ -12,7 +12,6 @@ import java.io.ByteArrayOutputStream
 
 class ScriptingApiHelpers(val scriptingScope: ScriptingScope) {
     // This, and the classes of its members, should try to implement only the minimum number of helper functions that are needed for each type of functionality otherwise not possible in scripts. E.G. Don't add special "loadGame" functions or whatever here, but do expose the existing methods of UncivGame. E.G. Don't add factories to speed up making alert popups, because all the required constructors can already be called through constructorByQualname anyway. Let the rest of the codebase and the scripts themselves do the work— Maintenance of the API itself will be easier if all it does is expose existing Kotlin code to dynamic Python/JS/Lua code.
-    // TODO: The vast majority of these don't need scriptingScope access, and thus can be put on singletons.
     val isInGame: Boolean
         get() = (scriptingScope.civInfo != null && scriptingScope.gameInfo != null && scriptingScope.uncivGame != null)
 
@@ -25,8 +24,8 @@ class ScriptingApiHelpers(val scriptingScope: ScriptingScope) {
     val Mappers = ScriptingApiMappers
 
     val registeredInstances = ScriptingApiInstanceRegistry()
-    val instancesAsInstances = FakeMap{obj: Any? -> obj} // TODO: Rename this.
-    // Scripting language bindings work by keeping track of the paths to values, and making Kotlin/the JVM resolve them only when needed.
+    val instancesAsInstances = FakeMap{obj: Any? -> obj} // TODO: Rename this, and singleton it.
+    /// Scripting language bindings work by keeping track of the paths to values, and making Kotlin/the JVM resolve them only when needed.
     // This creates a dilemma: Resolving a path into a Kotlin value too early means that no further paths (E.G. attribute, keys, calls) can be built on top of it. But resolving it late means that expected side effects may not happen (E.G. function calls probably shouldn't be deferred). And values that *must* be resolved, like the results of function calls, cannot have their own members and method accessed until they themselves are assigned to a path, because they're just kinda floating around as far as the scripting-exposed semantics are concerned.
     // So this fake Map works around that, by providing a way for any random object to appear to have a path.
 

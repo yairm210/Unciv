@@ -183,48 +183,73 @@ def ResolveForOperators(cls):
 # class ForeignToken(str):
 	# __slots__ = ()
 	# TODO: Could do this for more informative error messages, hidden magic methods that don't make sense.
-	# Would have to instantiate in the JSON decoder, though.
-	# I'm not sure it's necessary, since tokens will still have to be encoded as strings in JSON, which means you'd still need apiconstants['kotlinInstanceTokenPrefix'] and isForeignToken in api.py.
+	#  Would have to instantiate in the JSON decoder, though.
+	#  I'm not sure it's necessary, since tokens will still have to be encoded as strings in JSON, which means you'd still need apiconstants['kotlinInstanceTokenPrefix'] and isForeignToken in api.py.
 
 
-BIND_BY_REFERENCE = False
+class AttributeProxy:
+	def __init__(self, obj):
+		object.__setattr__(self, 'obj', obj)
+	def __getattribute__(self, name):
+		return object.__getattribute__(object.__getattribute__(self, 'obj'), name)
+	def __setattr__(self, name, value):
+		return object.__setattr__(object.__getattribute__(self, 'obj'), name, value)
+	# FIXME: Does this seem like a performance issue?
+
+
+BIND_BY_REFERENCE = True
 """Early versions of this API bound Python objects to Kotlin/JVM instances by keeping track of paths and lazily evaluating them as needed. E.G. ".a.b[5].c" would create an internal tuple like `("a", "b", [5], "c")`, without actually accessing any Kotlin/JVM values at first. Benefits: Fewer IPC actions, lazy resolution of values only as they're used. Drawbacks: Deeper (slow) reflective loops per IPC action, scripting semantics not perfectly synced with JVM state, ugly tricks needed to deal with values that can't be safely accessed as paths from the same scope root, like the properties and methods of instances returned by function calls.
 
 The current API instead keeps track of every """
 
+# TODO: The more complicated tests are all significantly slower with bind-by-reference than with bind-by-path. Hopefully it will be fixed by plugging the leak in InstanceTokenizer.
+
+# TODO: Maybe test to see if a path-based approach for keys and attributes might still be faster?
+
 @ResolveForOperators
 class ForeignObject:
 	"""Wrapper for a foreign object. Implements the specifications on IPC packet action types and data structures in Module.md."""
-	def __init__(self, path, foreignrequester=dummyForeignRequester):
-		# object.__setattr__(self, '_isbaked', False)
-		# object.__setattr__(self, '_realvalue', ...) # TODO!
-		object.__setattr__(self, '_path', (makePathElement(name=path),) if isinstance(path, str) else tuple(path))
-		object.__setattr__(self, '_foreignrequester', foreignrequester)
+	def __init__(self, *, path, use_root=False, root=None, foreignrequester=dummyForeignRequester):
+		object.__setattr__(self, '_attrs', AttributeProxy(self))
+		self._attrs._isbaked = False
+		self._attrs._unbaked = None # For in-place operations, a version should be kept that
+		self._attrs._use_root = use_root
+		self._attrs._root = root
+		self._attrs._path = (makePathElement(name=path),) if isinstance(path, str) else tuple(path)
+		self._attrs._foreignrequester = foreignrequester
 	def __repr__(self):
-		return f"{self.__class__.__name__}({stringPathList(self._getpath_())}):{self._getvalue_()}"
+		return f"{self.__class__.__name__}({self._root}, {stringPathList(self._getpath_())}):{self._getvalue_()}"
+	def _clone_(self, **kwargs):
+		return self.__class__(**{'path': self._path, 'use_root': self._use_root, 'root': self._root, 'foreignrequester': self._foreignrequester, **kwargs})
 	def _ipcjson_(self):
 		return self._getvalue_()
 	def _getpath_(self):
 		return tuple(self._path)
-	# def _bakereal_(self): # TODO! Switch to API-by-reference instead of API-by-path?
-		# object.__setattr__(self, '_unbaked', self.__class__()) # For in-place operations.
-		# object.__setattr__(self, '_realvalue', self._getvalue_())
-		# object.__setattr__(self, '_isbaked', True)
-		# object.__setattr__(self, '_path', ())
-		# This will break in-place operations.
-	def __getattr__(self, name):
+	def _bakereal_(self):
+		assert not self._isbaked
+		self._attrs._unbaked = self._clone_() # For in-place operations.
+		self._attrs._root = self._getvalue_() # TODO: Would the fallback for in-places go through __setattr__, and result in one fewer IPC call?
+		self._attrs._use_root = True
+		self._attrs._path = ()
+		self._attrs._isbaked = True
+	def __getattr__(self, name, *, do_bake=True):
 		# Due to lazy IPC calling, hasattr will never work with this. Instead, check for in dir().
 		# TODO: Shouldn't I special-casing get_help or _docstring_ here? Wait, no, I think I thought it would be accessed on the class.
-		return self.__class__((*self._path, makePathElement(name=name)), self._foreignrequester)
-		# attr._bakereal_()
-	def __getattribute__(self, name):
+		attr = self._clone_(path=(*self._path, makePathElement(name=name)))
+		if BIND_BY_REFERENCE and do_bake:
+			attr._bakereal_()
+		return attr
+	def __getattribute__(self, name, **kwargs):
 		if name in ('values', 'keys', 'items'):
 			# Don't expose real .keys, .values, or .items unless wrapping a foreign mapping. This prevents foreign attributes like TileMap.values from being blocked.
 			if not self._ismapping_():
-				return self.__getattr__(name)
+				raise AttributeError(name)
 		return object.__getattribute__(self, name)
-	def __getitem__(self, key):
-		return self.__class__((*self._path, makePathElement(ttype='Key', params=(key,))), self._foreignrequester)
+	def __getitem__(self, key, *, do_bake=True):
+		item = self._clone_(path=(*self._path, makePathElement(ttype='Key', params=(key,))))
+		if BIND_BY_REFERENCE and do_bake:
+			item._bakereal_()
+		return item
 		#TODO: Should negative indexing from end be supported?
 		#IIRC I decided "No". Not entirely sure why. Probably a mix of needing a __len__ IPC call for that, plus incongruency with Kotlin (and other languages') behaviour, and complexity here.
 	def __iter__(self):
@@ -233,28 +258,47 @@ class ForeignObject:
 		except:
 			return (self[i] for i in range(0, len(self))) #TODO: Obviously this won't work for sets. Practical example why that's a problem: CityInfo stores HashSet()s of tiles. Workaround: Call real() on the whole set, and use the resulting values or foreign tokens. Unindexability/potential unorderedness of sets means that iteration would have to be handled from the Kotlin side, which means, at minimum implementing the BeginIteration and EndIteration flags, plus an entire new type of PassMic loop. Even then, without indexes, you'd only get the raw value or foreign token anyway
 	def __setattr__(self, name, value):
-		return getattr(self, name)._setvalue_(value)
+		return self.__getattr__(name, do_bake=False)._setvalue_(value)
 	def __setitem__(self, key, value):
-		return self[key]._setvalue_(value)
-	@ForeignRequestMethod
+		return self.__getitem__(key, do_bake=False)._setvalue_(value)
 	def _getvalue_(self):
-		# if self._isbaked and not self._path:
-			# pass
+		if self._isbaked:
+			return self._root
+		else:
+			return self._getvalueraw_()
+	def _setvalue_(self, value):
+		if self._isbaked:
+			return self._unbaked._setvalue_(value)
+		else:
+			return self._setvalueraw_(value)
+	def __call__(self, *args):
+		result = self._clone_(path=(*self._getpath_(), makePathElement(ttype='Call', params=args)))
+		if BIND_BY_REFERENCE:
+			result._bakereal_()
+			return result
+		else:
+			return result._getvalue_()
+	@ForeignRequestMethod
+	def _getvalueraw_(self):
+		# Should never be called except for by _getvalue_.
 		return ({
 			'action': 'read',
 			'data': {
-				# 'use_root': self._isbaked, # TODO!
-				# 'root': self._realvalue,
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_()
 			}
 		},
 		'read_response',
 		foreignValueParser)
 	@ForeignRequestMethod
-	def _setvalue_(self, value):
+	def _setvalueraw_(self, value):
+		# Should never be called except for by _setvalue_.
 		return ({
 			'action': 'assign',
 			'data': {
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_(),
 				'value': value
 			}
@@ -266,6 +310,8 @@ class ForeignObject:
 		return ({
 			'action': 'ismapping',
 			'data': {
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_()
 			}
 		},
@@ -276,6 +322,8 @@ class ForeignObject:
 		return ({
 			'action': 'callable',
 			'data': {
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_()
 			}
 		},
@@ -286,6 +334,8 @@ class ForeignObject:
 		return ({
 			'action': 'args',
 			'data': {
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_()
 			}
 		},
@@ -296,6 +346,8 @@ class ForeignObject:
 		return ({
 			'action': 'docstring',
 			'data': {
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_()
 			}
 		},
@@ -306,49 +358,21 @@ class ForeignObject:
 		return ({
 			'action': 'dir',
 			'data': {
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_()
 			}
 		},
 		'dir_response',
 		foreignValueParser)
-	# @ForeignRequestMethod
-	# def __hash__(self):
-		# return ({
-			# 'action': 'hash',
-			# 'data': {
-				# 'path': self._getpath_()
-			# }
-		# },
-		# 'hash_response',
-		# foreignValueParser)
-	# Implemented and works, but disabled for now. See ScriptingProtocol.kt and Module.md.
-	@ForeignRequestMethod
-	def __call__(self, *args):
-		# From an IPC and protocol perspective, there isn't anything wrong with supporting directly accessing a value after a call.
-		# The problems are 1. Not knowing when/if to reify, 2. Reified and unrefied things behaving differently, 3. Implicit calls and static-emulating behaviour becoming unpredictable.
-		#  E.G.: `a = civInfo.addGold(5); del a` and `civInfo.addGold(5)` would be different from `apiHelpers.printLine(civInfo.addGold(5))`.
-		# That was a deliberate concern and design decision at first, at think.
-		# But after writing some more example scripts, docs, and fleshing out the API, I'm wondering if it might be better to let scripts construct paths however they want while requiring them to explicitly reify foreign objects in most cases, instead of having to assign to apiHelpers.registeredInstances so often.
-		# That might work better in a typed language, I think. But it could also be a bit strange in Python, and implicit conversion could be more confusing with it. Right now foreign wrappers are basically interchangeable in most cases with real values, forbidding calls lets them be safely used with lazy resolution, and scripts don't really have to think about the path list.
-		#  E.G.: `v = civInfo.someFunction().x; v+5; print(v)` would call `civInfo.someFunction()` every time that `v` is used, because `.x` is still a wrapper that includes a call buried in its path.
-		#  Hm. And while avoiding assignments to registeredInstances might improve performance, having to make sure there aren't any 'type':'Call's buried deep in each wrapper's path before every implicit use would eat some of those gains right back up, in addition to being an opaque error-prone mess from the perspective of normal Python code.
-		#  It would also be much easier to write Python code that accidentally has abysmal performance (in addition to unexpected side effects) due to implicitly re-calling an expensive Kotlin function every time a variable assigned from an attribute is used, when by all normal Python semantics an attribute should not behave like that.
-		#  Point is: Function calls do not have static, access-safe values like properties or keys. So wrapping them up in a dynamic ForeignObject that pretends to be static, the way I have properties and keys, would make language semantics wildly deviate from language behaviour.
-		# Yeah, I forced calls to terminate wrappers for a reason.
-		return ({
-			'action': 'read',
-			'data': {
-				'path': (*self._getpath_(), makePathElement(ttype='Call', params=args)),
-			}
-		},
-		'read_response',
-		foreignValueParser) # TODO: Behaviour, semantics, and structure can be unified with __getattr__ with API-by-reference.
 	@ForeignRequestMethod
 	def __delitem__(self, key):
 		return ({
 			'action': 'delete',
 			'data': {
-				'path': self[key]._getpath_()
+				'use_root': self._use_root,
+				'root': self._root,
+				'path': self.__getitem__(key, do_bake=False)._getpath_()
 			}
 		},
 		'delete_response',
@@ -358,6 +382,8 @@ class ForeignObject:
 		return ({
 			'action': 'length',
 			'data': {
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_(),
 			}
 		},
@@ -368,6 +394,8 @@ class ForeignObject:
 		return ({
 			'action': 'contains',
 			'data': {
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_(),
 				'value': item
 			}
@@ -379,6 +407,8 @@ class ForeignObject:
 		return ({
 			'action': 'keys',
 			'data': {
+				'use_root': self._use_root,
+				'root': self._root,
 				'path': self._getpath_(),
 			}
 		},

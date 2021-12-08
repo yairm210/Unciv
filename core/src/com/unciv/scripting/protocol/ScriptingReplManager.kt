@@ -1,9 +1,10 @@
 package com.unciv.scripting.protocol
 
-import com.unciv.UncivGame // For debug packet print only.
 import com.unciv.scripting.AutocompleteResults
 import com.unciv.scripting.ScriptingBackend
 import com.unciv.scripting.api.ScriptingScope
+import com.unciv.scripting.utils.ScriptingDebugParameters
+
 //import com.unciv.scripting.protocol.ScriptingPacket
 //import com.unciv.scripting.protocol.ScriptingProtocol
 
@@ -65,11 +66,11 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
     //TODO: Doc
     fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true, execLoop: () -> Unit = fun(){}): ScriptingPacket {
         // Please update the specifications in Module.md if you change the basic structure of this REPL loop.
-        if (UncivGame.Current.printScriptingPacketsForDebug) println("\nSending: ${packetToSend}") // TODO: Add debug flag.
+        if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nSending: ${packetToSend}") // TODO: Move this to ScriptingProtocol?
         blackbox.write(packetToSend.toJson() + "\n")
         execLoop()
         val response = ScriptingPacket.fromJson(blackbox.read(block=true))
-        if (UncivGame.Current.printScriptingPacketsForDebug) println("\nReceived: ${response}")
+        if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nReceived: ${response}")
         if (enforceValidity) {
             ScriptingProtocol.enforceIsResponse(packetToSend, response)
         }
@@ -84,10 +85,10 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
     fun foreignExecLoop() {
         while (true) {
             val request = ScriptingPacket.fromJson(blackbox.read(block=true))
-            if (UncivGame.Current.printScriptingPacketsForDebug) println("\nReceived: ${request}")
+            if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nReceived: ${request}")
             if (request.action != null) {
                 val response = scriptingProtocol.makeActionResponse(request)
-                if (UncivGame.Current.printScriptingPacketsForDebug) println("\nSending: ${response}")
+                if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nSending: ${response}")
                 blackbox.write(response.toJson() + "\n")
             }
             if (request.hasFlag(ScriptingProtocol.KnownFlag.PassMic)) {
@@ -100,7 +101,7 @@ class ScriptingProtocolReplManager(scriptingScope: ScriptingScope, blackbox: Bla
         return ScriptingProtocol.parseActionResponses.motd(
             getRequestResponse(
                 ScriptingProtocol.makeActionRequests.motd(),
-                execLoop = { foreignExecLoop() } //TODO: Replace with reflective method access?
+                execLoop = { foreignExecLoop() } //TODO: Replace with reflective method reference?
             )
         )
     }

@@ -208,8 +208,17 @@ object Reflection {
     }
 
 
-//    fun stringifyKotlinPath() {
-//    }
+    fun stringifyKotlinPath(path: List<PathElement>): String {
+        val components = ArrayList<String>()
+        for (element in path) { // TODO: Encoded strings.
+            components.add( when (element.type) {
+                PathElementType.Property -> ".${element.name}"
+                PathElementType.Key -> "[${if (element.doEval) element.name else element.params[0]!!}]"
+                PathElementType.Call -> "(${if (element.doEval) element.name else element.params.joinToString(", ")}])"
+            })
+        }
+        return components.joinToString()
+    }
 
 //    private val closingbrackets = null
 
@@ -235,49 +244,53 @@ object Reflection {
     }
 
 
-    fun resolveInstancePath(instance: Any, path: List<PathElement>): Any? {
+    fun resolveInstancePath(instance: Any?, path: List<PathElement>): Any? {
         //TODO: Allow passing an ((Any?)->Unit)? (or maybe Boolean) function as a parameter that gets called at every stage of resolution, to let exceptions be thrown if accessing something not whitelisted.
         var obj: Any? = instance
         for (element in path) {
-            when (element.type) {
-                PathElementType.Property -> {
-                    try {
-                        obj = readInstanceProperty(obj!!, element.name)
-                        // TODO: Consider a LBYL instead of AFP here.
-                    } catch (e: ClassCastException) {
-                        obj = makeInstanceMethodDispatcher(
+            try {
+                when (element.type) { // TODO: Use as expression?
+                    PathElementType.Property -> {
+                        try {
+                            obj = readInstanceProperty(obj!!, element.name)
+                            // TODO: Consider a LBYL instead of AFP here.
+                        } catch (e: ClassCastException) {
+                            obj = makeInstanceMethodDispatcher(
+                                obj!!,
+                                element.name
+                            )
+                        }
+                    }
+                    PathElementType.Key -> {
+                        obj = readInstanceItem(
                             obj!!,
-                            element.name
+                            if (element.doEval)
+                                evalKotlinString(instance!!, element.name)!!
+                            else
+                                element.params[0]!!
                         )
                     }
+                    PathElementType.Call -> {
+                        // TODO: Handle invoke operator. Easy enough, just recurse to access the .invoke.
+                        // object test{operator fun invoke(a:Any?,b:Any?){println("$a $b")}}; test(1,2)
+                        // Test in Python: apiHelpers.Jvm.constructorByQualname('com.unciv.UncivGame'). Also do an object for multi-arg testing, I guess?
+                        // Maybe TODO: Handle lambdas. E.G. WorldScreen.nextTurnAction. But honestly, it may be better to just expose wrapping non-lambdas.
+                        obj = (obj as FunctionDispatcher).call(
+                            // Undocumented implicit behaviour: Using the last object means that this should work with explicitly created FunctionDispatcher()s.
+                            (
+                                if (element.doEval)
+                                    splitToplevelExprs(element.name).map { evalKotlinString(instance!!, it) }
+                                else
+                                    element.params
+                            ).toTypedArray()
+                        )
+                    }
+    //                else -> {
+    //                    throw UnsupportedOperationException("Unknown path element type: ${element.type}")
+    //                }
                 }
-                PathElementType.Key -> {
-                    obj = readInstanceItem(
-                        obj!!,
-                        if (element.doEval)
-                            evalKotlinString(instance!!, element.name)!!
-                        else
-                            element.params[0]!!
-                    )
-                }
-                PathElementType.Call -> {
-                    // TODO: Handle invoke operator. Easy enough, just recurse to access the .invoke.
-                    // object test{operator fun invoke(a:Any?,b:Any?){println("$a $b")}}; test(1,2)
-                    // Test in Python: apiHelpers.Jvm.constructorByQualname('com.unciv.UncivGame'). Also do an object for multi-arg testing, I guess?
-                    // Maybe TODO: Handle lambdas. E.G. WorldScreen.nextTurnAction. But honestly, it may be better to just expose wrapping non-lambdas.
-                    obj = (obj as FunctionDispatcher).call(
-                        // Undocumented implicit behaviour: Using the last object means that this should work with explicitly created FunctionDispatcher()s.
-                        (
-                            if (element.doEval)
-                                splitToplevelExprs(element.name).map { evalKotlinString(instance!!, it) }
-                            else
-                                element.params
-                        ).toTypedArray()
-                    )
-                }
-//                else -> {
-//                    throw UnsupportedOperationException("Unknown path element type: ${element.type}")
-//                }
+            } catch (e: Exception) {
+                throw IllegalAccessException("Cannot access $element on $obj: $e")
             }
         }
         return obj
@@ -310,7 +323,7 @@ object Reflection {
     }
 
 
-    fun setInstancePath(instance: Any, path: List<PathElement>, value: Any?) {
+    fun setInstancePath(instance: Any?, path: List<PathElement>, value: Any?) {
         val leafobj = resolveInstancePath(instance, path.slice(0..path.size-2))
         val leafelement = path[path.size - 1]
         when (leafelement.type) {
@@ -336,7 +349,7 @@ object Reflection {
         }
     }
 
-    fun removeInstancePath(instance: Any, path: List<PathElement>) {
+    fun removeInstancePath(instance: Any?, path: List<PathElement>) {
         val leafobj = resolveInstancePath(instance, path.slice(0..path.size-2))
         val leafelement = path[path.size - 1]
         when (leafelement.type) {

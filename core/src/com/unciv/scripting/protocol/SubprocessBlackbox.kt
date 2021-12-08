@@ -98,7 +98,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
         return null
     }
 
-    override fun read(block: Boolean): String {
+    override fun read(block: Boolean): String { // TODO: Max wait time (and periodic checking that process hasn't crashed) possible?
         if (block || readyForRead > 0) {
             return inStream!!.readLine()
         } else {

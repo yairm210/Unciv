@@ -20,7 +20,7 @@ from . import Utils
 # If you modify this file, please add any new functions to Tests.py.
 
 
-t = re.sub("//.*", "", re.sub('/\*.*\*/', "", unciv.apiHelpers.App.assetFileString("jsons/Civ V - Gods & Kings/Terrains.json"), flags=re.DOTALL))
+t = re.sub("//.*", "", re.sub('/\*.*\*/', "", real(unciv.apiHelpers.App.assetFileString("jsons/Civ V - Gods & Kings/Terrains.json")), flags=re.DOTALL))
 terrainsjson = json.loads(t)
 # In an actual implementation, you would want to read from the ruleset instead of the JSON. But this is eaiser for me.
 del t
@@ -275,9 +275,9 @@ def terrainImagePath(feature):
 def compositedTerrainImage(terrain):
 	import PIL.Image
 	base, features = terrainFromString(terrain)
-	image = PIL.Image.open(io.BytesIO(base64.b64decode(unciv.apiHelpers.App.assetImageB64(terrainImagePath(base)))))
+	image = PIL.Image.open(io.BytesIO(base64.b64decode(real(unciv.apiHelpers.App.assetImageB64(terrainImagePath(base))))))
 	for feature in features:
-		with PIL.Image.open(io.BytesIO(base64.b64decode(unciv.apiHelpers.App.assetImageB64(terrainImagePath(feature))))) as layer:
+		with PIL.Image.open(io.BytesIO(base64.b64decode(real(unciv.apiHelpers.App.assetImageB64(terrainImagePath(feature)))))) as layer:
 			image.alpha_composite(layer, (0, image.size[1]-layer.size[1]))
 	return image
 

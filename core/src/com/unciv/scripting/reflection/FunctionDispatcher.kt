@@ -48,7 +48,7 @@ open class FunctionDispatcher(
      * @return Whether a given argument value can be cast to the type of a given KParameter.
      */
     private fun checkParameterMatches(kparam: KParameter, arg: Any?, paramKtypeAppend: ArrayList<KType>): Boolean {
-        // TODO: If performance becomes an issue, try inlining these. Then again, the JVM presumably optimizes it at runtime already (and there's far more calls than this containing function).
+        // If performance becomes an issue, try inlining these. Then again, the JVM presumably optimizes it at runtime already (and there's far more calls than this containing function).
         paramKtypeAppend.add(kparam.type)
         if (arg == null) {
             // Multiple dispatch of null between Any and Any? seems ambiguous in Kotlin even without reflection.

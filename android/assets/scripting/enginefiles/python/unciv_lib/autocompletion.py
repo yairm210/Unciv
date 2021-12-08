@@ -106,7 +106,9 @@ class PyAutocompleteManager(AutocompleteManager):
 			if working_base:
 				base_obj = self.Evaled(working_base)
 				attrs = dir(base_obj)
-				get_a = lambda a: getattr(base_obj, a, None)
+				def get_a(a):
+					try: return getattr(base_obj, a, None)
+					except: return None
 			else:
 				attrs = self.scope
 				get_a = lambda a: self.scope[a]
@@ -116,7 +118,7 @@ class PyAutocompleteManager(AutocompleteManager):
 					+ working_dot
 					+ (
 						f"{a}["
-							if self.get_keys(get_a(a)) else
+							if self.get_keys(get_a(a)) else # TODO: Use the new is_mapping check.
 						f"{a}("
 							if self.check_callable(get_a(a)) else
 						a

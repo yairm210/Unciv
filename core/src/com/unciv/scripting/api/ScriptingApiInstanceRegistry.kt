@@ -12,6 +12,7 @@ object AllScriptingApiInstanceRegistries {
         Runtime.getRuntime().addShutdownHook(
             // TODO: Move uses of this into UncivGame.dispose()?
             // TODO: Allow arbitrary callbacks to be added for UncivGame.dispose().
+            // TODO: Also, doesn't actually work.
             thread(start = false, name = "Check ScriptingApiInstanceRegistry()s are empty.") {
                 val allkeys = getAllKeys()
                 if (allkeys.isNotEmpty()) {
@@ -28,8 +29,6 @@ object AllScriptingApiInstanceRegistries {
         return registries.filter { it.isNotEmpty() }.associateWith { it.keys }
     }
 }
-
-// TODO: Check on game close that all InstanceRegistries are empty.
 
 /**
  * Namespace in ScriptingScope().apiHelpers, for scripts to do their own memory management by keeping references to objects alive.
@@ -63,7 +62,7 @@ class ScriptingApiInstanceRegistry: MutableMap<String, Any?> {
     override fun isEmpty() = backingMap.isEmpty()
     override fun clear() = backingMap.clear()
     override fun put(key: String, value: Any?): Any? {
-        println("\nAssigning ${key} directly in ScriptingApiInstanceRegistry(). It is recommended that every script/mod do this only once per application lifespan, creating its own mapping for further assignments named according to the following format:\n\t<Language>-<'mod'|'module'|'package'>:<Author>/<Filename>\n\tE.G.: \"python-module:myName/myCoolScript\"\n")
+        println("\nAssigning ${key} directly in ScriptingApiInstanceRegistry(). It is recommended that every script/mod do this only once per application lifespan, creating its own mapping under the registry for further assignments named according to the following format:\n\t<Language>-<'mod'|'module'|'package'>:<Author>/<Filename>\n\tE.G.: \"python-module:myName/myCoolScript\"\n")
         if (key in this) {
             throw IllegalArgumentException("\"${key}\" already in ${this}.")
         }

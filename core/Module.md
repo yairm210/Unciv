@@ -230,82 +230,82 @@ Some action types, data formats, and expected response types and data formats fo
 	```
 	'read': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'read_reponse': Any? or String
-		//Attribute/property access, by list of `PathElement` properties.
+		//Attribute/property access, by list of `PathElement` properties, relative to the root object if given or a default scope otherwise.
+		//The use_root and root fields are optional.
 		//Response must be String if sent with Exception flag.
-		//TODO: Implement and use use_root and root.
 	```
 
 	```
-	'assign': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>, 'value': Any} ->
+	'assign': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>, 'value': Any} ->
 		'assign_response': String?
 		//Error message or null.
 	```
 
 	```
-	'delete': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	'delete': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'delete_response': String?
 		//Error message or null.
 		//Only meaningful and implemented for MutableMap() keys and MutableList() indices.
 	```
 
 	```
-	'dir': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	'dir': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'dir_response': Collection<String> or String
 		//Names of all members/properties/attributes/methods.
 		//Response must be String if sent with Exception flag.
 	```
 
 	```
-	//'hash': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	//'hash': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		//'hash_response': Any? or String
 		//Response must be String if sent with Exception flag.
-		//Implemented, but disabled. I'm not actually sure what the use of this would be. Hashes are usually just a shortcut for (in)equality, so I think a Kotlin-side equality or identity operator might be needed for this to be useful.
+		//Implemented, but removed. I'm not actually sure what the use of this would be. Hashes are usually just a shortcut for (in)equality, so I think a Kotlin-side equality or identity operator might be needed for this to be useful.
 	```
 
 	```
-	'keys': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	'keys': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'keys_response': Collection<Any?> or String
 		//Response must be String if sent with Exception flag.
 		//Keys of Map-interfaced instances. Used by Python bindings for iteration and autocomplete.
 	```
 
 	```
-	'length': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	'length': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'length_response': Int or String
 		//Response must be String if sent with Exception flag.
 		//Used by Python bindings for length and also for iteration.
 	```
 
 	```
-	'contains': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>, 'value': Any?} ->
+	'contains': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>, 'value': Any?} ->
 		'contains_response': Boolean or String
 		//Doing this through an IPC call instead of in the script interpreter should let tokenized instances be checked for properly.
 		//Response must be String if sent with Exception flag.
 	```
 
 	```
-	//'isiterable': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	//'isiterable': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		//'isiterable_response': Boolean or String
 		//Response must be String if sent with Exception flag.
 		//Not implemented. Implement if needed.
 	```
 
 	```
-	'ismapping': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	'ismapping': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'isiterable_response': Boolean or String
 		//Response must be String if sent with Exception flag.
 		//Used by Python bindings to hide Python-emulating .values, .keys, and .entries to allow access to Kotlin objects when not a mapping.
 	```
 
 	```
-	'callable': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	'callable': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'callable_response': Boolean or String
 		//Response must be String if sent with Exception flag.
 		//Used by Python autocompleter to add opening bracket to methods and function suggestions. Quite useful for exploring API at a glance.
 	```
 
 	```
-	'args': 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	'args': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'args_response': Map<String, List<Pair<String?, String>>> or String
 		//Map of dispatchable signatures as strings to lists of pairs of names and types of arguments accepted by a function.
 		//Response must be String if sent with Exception flag.
@@ -314,7 +314,7 @@ Some action types, data formats, and expected response types and data formats fo
 	```
 
 	```
-	'docstring': {'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
+	'docstring': {'use_root' Boolean, 'root': Any?, 'path': List<{'type':String, 'name':String, 'params':List<Any?>}>} ->
 		'docstring_response': String or String
 		//Response must be String if sent with Exception flag.
 		//Used by Python wrappers and autocompleter to get help text showing arguments and types for callables. Useful for exploring API without having to browse code.

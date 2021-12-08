@@ -15,6 +15,7 @@ import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
 import com.unciv.scripting.ScriptingState
 import com.unciv.scripting.api.ScriptingScope
+import com.unciv.scripting.utils.ScriptingDebugParameters
 import com.unciv.ui.consolescreen.ConsoleScreen
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.audio.MusicController
@@ -50,7 +51,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     var viewEntireMapForDebug = false
     /** For when you need to test something in an advanced game and don't have time to faff around */
     var superchargedForDebug = false
-    var printScriptingPacketsForDebug = false
+
+    val scriptingParametersForDebug = ScriptingDebugParameters
 
     /** Simulate until this turn on the first "Next turn" button press.
      *  Does not update World View changes until finished.
@@ -155,19 +157,16 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    fun createScripting() {
-
+    private fun createScripting() {
         scriptingState = ScriptingState(
             ScriptingScope(
                 uncivGame = this
             )
         )
-
         consoleScreen = ConsoleScreen(
             scriptingState,
             {  }
         )
-
     }
 
     fun setScreen(screen: BaseScreen) {

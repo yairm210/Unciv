@@ -1,4 +1,4 @@
-package com.unciv.scripting.utils
+package com.unciv.scripting.serialization
 
 import com.unciv.scripting.ScriptingConstants
 //import kotlin.math.min
@@ -14,8 +14,6 @@ import java.util.UUID
  * Combined with TokenizingJson in ScriptingProtocol, allows scripts to handle unserializable objects, and use them in property/key/index assignments and function calls.
  */
 object InstanceTokenizer {
-
-    // TODO: This could potentially be used as the basis for a fully reference-based script execution model, as opposed to the path-based one right now. Basically, make ForeignObject always keep a root token/value, and make ScriptingProtocol's actions resolve paths from the supplied base object instead of from scriptingScope. It may greatly increase the number of IPC calls (one per attribute access), but it would also unify all semantics better (and allow, E.G., reading directly from function returns).
 
     // Could even potentially get rid of `.registeredInstances` completely by automatically registering/reference counting in the JVM and freeing in scripting language destructors. But JS apparently doesn't give any way to control garbage collection, so the risk of memory leaks wouldn't be worth it.
 
@@ -55,15 +53,15 @@ object InstanceTokenizer {
      */
     private fun tokenFromInstance(value: Any?): String {
         var stringified: String
-        try { // Because this can be overridden, it can fail. E.G. MapUnit.toString() depends on a lateinit.
-            stringified = value.toString()
+        stringified = try { // Because this can be overridden, it can fail. E.G. MapUnit.toString() depends on a lateinit.
+            value.toString()
         } catch (e: Exception) {
-            stringified = "?" // TODO: Use exception text?
+            "?" // TODO: Use exception text?
         }
         if (stringified.length > tokenMaxLength) {
-            stringified = stringified.slice(0..tokenMaxLength-4) + "..."
+            stringified = stringified.slice(0..tokenMaxLength -4) + "..."
         }
-        return "${tokenPrefix}${System.identityHashCode(value)}:${if (value == null) "null" else value::class.qualifiedName}/${stringified}:${UUID.randomUUID().toString()}"
+        return "$tokenPrefix${System.identityHashCode(value)}:${if (value == null) "null" else value::class.qualifiedName}/${stringified}:${UUID.randomUUID().toString()}"
     }
 
     /**
@@ -116,6 +114,7 @@ object InstanceTokenizer {
         clean()
         if (isToken(token)) {
             return instances[token]!!.get()// TODO: Add another non-null assertion here? Unknown tokens and expired tokens are only a cleaning cycle apart, which seems race condition-y.
+            // TODO: Helpful exception message for invalid tokens.
         } else {
             return token
         }

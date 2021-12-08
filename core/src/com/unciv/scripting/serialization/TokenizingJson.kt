@@ -57,7 +57,7 @@ object TokenizingJson {
                 encoder.encodeNull()
             } else {
                 val classname = value!!::class.simpleName!!
-                if (classname in dataTypeSerializers && !isTokenizationMandatory(value)) {
+                if (classname in dataTypeSerializers) {// && !isTokenizationMandatory(value)) {
                     encoder.encodeSerializableValue(dataTypeSerializers[value!!::class.simpleName!!]!!, value!!)
                 } else {
                     encoder.encodeString(InstanceTokenizer.getToken(value!!))
@@ -85,36 +85,50 @@ object TokenizingJson {
 //        serializersModule = serializersModule
     }
 
-    /**
-     * Forbid some objects from being serialized as normal JSON values.
-     *
-     * com.unciv.models.ruleset.Building, for example, and resumably all other types that inherit from Stats, implements Iterable<*> and thus gets serialized as JSON Arrays by default even though it's probably better to tokenize them.
-     * Python example: civInfo.cities[0].cityConstructions.getBuildableBuildings()
-     * (Should return list of Building tokens, not list of lists of tokens for seemingly unrelated stats.)
-     *
-     * @param value Value or instance to check.
-     * @return Whether the given value is required to be tokenized.
-     */
-    private fun isTokenizationMandatory(value: Any?): Boolean {
-        if (value == null) {
-            return false
-        }
-        val qualname = value::class.qualifiedName
-        return qualname != null && qualname.startsWith("com.unciv")
-    }
+//    /**
+//     * Forbid some objects from being serialized as normal JSON values.
+//     *
+//     * com.unciv.models.ruleset.Building, for example, and resumably all other types that inherit from Stats, implements Iterable<*> and thus gets serialized as JSON Arrays by default even though it's probably better to tokenize them.
+//     * Python example: civInfo.cities[0].cityConstructions.getBuildableBuildings()
+//     * (Should return list of Building tokens, not list of lists of tokens for seemingly unrelated stats.)
+//     *
+//     * @param value Value or instance to check.
+//     * @return Whether the given value is required to be tokenized.
+//     */
+//    private fun isTokenizationMandatory(value: Any?): Boolean {
+//        // TODO: Remove this?
+//        if (value == null) {
+//            return false
+//        }
+//        val qualname = value::class.qualifiedName
+//        return qualname != null && qualname.startsWith("com.unciv")
+//        // Originally, containers would be serialized when requested so they could be efficiently traversed in scripting languages with their own semantics.
+//        // With the switch away from bind-by-path to bind-by-reference, that behaviour is now a greater deviation from the convention of everything on the scripting side being a wrapper for Kotlin/JVM instances by default.
+//    }
 
+    // @return Whether the value corresponds to a primitive JSON value type.
+    fun isNotPrimitive(value: Any?): Boolean {
+        return when (value) {
+            null -> false
+            is String -> false
+            is Boolean -> false
+            is Number -> false
+            else -> true
+        }
+    }
 
     /**
      * Get a KotlinX JsonElement for any Kotlin/JVM value or instance.
      *
      * @param value Any Kotlin/JVM value or instance to turn into a JsonElement.
+     * @param requireTokenization If given, a function that returns whether the value must be tokenized even if it can be serialized.
      * @return Input value unchanged if value is already a JsonElement, otherwise JsonElement best representing value— Generally best effort to create JsonObject, JsonArray, JsonPrimitive, or JsonNull directly from value, and token string JsonPrimitive if best effort fails or tokenization is mandatory for the given value.
      */
-    fun getJsonElement(value: Any?): JsonElement {
+    fun getJsonElement(value: Any?, requireTokenization: ((Any?) -> Boolean)? = null): JsonElement {
         if (value is JsonElement) {
             return value
         }
-        if (!isTokenizationMandatory(value)) {
+        if (requireTokenization == null || !requireTokenization(value)) {
             if (value is Map<*, *>) {
                 return JsonObject( (value as Map<Any?, Any?>).entries.associate {
                     json.encodeToString(getJsonElement(it.key)) to getJsonElement(it.value)
@@ -128,7 +142,7 @@ object TokenizingJson {
             }
             if (value is Iterable<*>) {
                 // Apparently ::class.java.isArray can be used to check for primitive arrays, but it breaks
-                return JsonArray(value.map { getJsonElement(it) })
+                return JsonArray(value.map(::getJsonElement))
             }
             if (value is Sequence<*>) {
                 return getJsonElement((value as Sequence<Any?>).toList())
@@ -160,7 +174,7 @@ object TokenizingJson {
             return null
         }
         if (value is JsonArray) {
-            return (value as List<JsonElement>).map { getJsonReal(it) }// as List<Any?>
+            return (value as List<JsonElement>).map(::getJsonReal)// as List<Any?>
         }
         if (value is JsonObject) {
             return (value as Map<String, JsonElement>).entries.associate {
@@ -169,16 +183,16 @@ object TokenizingJson {
         }
         if (value is JsonPrimitive) {
             val v = value as JsonPrimitive
-            if (v.isString) {
-                return InstanceTokenizer.getReal(v.content)
+            return if (v.isString) {
+                InstanceTokenizer.getReal(v.content)
             } else {
-                return v.content.toIntOrNull()
+                v.content.toIntOrNull()
                     ?: v.content.toLongOrNull()
                     ?: v.content.toFloatOrNull() // NOTE: This may prevent .toDoubleOrNull() from ever being used. I think the implicit number type conflation in FunctionDispatcher means that Floats can still be used where Doubles are expected, though.
                     ?: v.content.toDoubleOrNull()
                     ?: v.content.toBooleanStrictOrNull()
                     ?: v.content
-            }//TODO: This may be better ternary.
+            }
         }
         throw IllegalArgumentException("Unrecognized type of JsonElement: ${value::class}/${value}")
     }

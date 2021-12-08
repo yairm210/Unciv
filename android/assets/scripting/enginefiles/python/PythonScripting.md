@@ -2,6 +2,10 @@
 
 The Python API described by this document is built on the [IPC protocols and execution model described in `/core/Module.md`](../../../../../core/Module.md#package-comuncivscriptingprotocol).
 
+TODO: Most of this is completely obsolete now, with the switch from bind-by-path to bind-by-reference.
+
+All values used in Python should pass through real().
+
 ---
 
 ## Overview

@@ -28,8 +28,7 @@ else:
 
 
 with open(Utils.exampleAssetPath("Elizabeth300"), 'r') as save:
-	# TODO: Compress this.
-	# Unciv uses Base64 and GZIP.
+	# TODO: Compress this. Unciv uses Base64 and GZIP.
 	Elizabeth300 = save.read()
 
 
@@ -76,11 +75,14 @@ class TestRunner:
 			self.args = args
 			self.kwargs = kwargs
 		def __call__(self):
+			def run():
+				args = self.args() if callable(self.args) else self.args
+				self.func(*args, **self.kwargs)
 			if self.runwith is None:
-				self.func(*self.args, **self.kwargs)
+				run()
 			else:
 				with self.runwith:
-					self.func(*self.args, **self.kwargs)
+					run()
 	def keys(self):
 		return [t.name for t in self._tests]
 	def __getitem__(self, key):
@@ -140,8 +142,9 @@ def LoadGameTest():
 		assert unciv_pyhelpers.isForeignToken(v)
 
 
-@TestRunner.Test(runwith=InGame, name="NoPrivatesTest-InGame", args=(unciv, 2))
-@TestRunner.Test(runwith=InMapEditor, name="NoPrivatesTest-InMapEditor", args=(unciv, 2))
+# @TestRunner.Test(runwith=InGame, name="NoPrivatesTest-InGame", args=(unciv, 2))
+# @TestRunner.Test(runwith=InMapEditor, name="NoPrivatesTest-InMapEditor", args=(unciv, 2))
+# Enable this if it's ever decided to guarantee that the 'dir' IPC action type won't return inaccessible names.
 def NoPrivatesTest(start, maxdepth, *, _depth=0, _failures=None, _namestack=None):
 	# Would have to differentiate between unitialized properties and the like, and privates.
 	if _failures is None:
@@ -167,22 +170,22 @@ def NoPrivatesTest(start, maxdepth, *, _depth=0, _failures=None, _namestack=None
 
 # Tests for PlayerMacros.py.
 
-TestRunner.Test(runwith=InGame, args=(unciv.civInfo.cities, 0.5))(
+TestRunner.Test(runwith=InGame, args=lambda: (unciv.civInfo.cities, 0.5))(
 	PlayerMacros.gatherBiggestCities
 )
-TestRunner.Test(runwith=InGame, args=(unciv.civInfo.cities,))(
+TestRunner.Test(runwith=InGame, args=lambda: (unciv.civInfo.cities,))(
 	PlayerMacros.clearCitiesProduction
 )
-TestRunner.Test(runwith=InGame, args=(unciv.civInfo.cities, ("Scout", "Warrior", "Worker")))(
+TestRunner.Test(runwith=InGame, args=lambda: (unciv.civInfo.cities, ("Scout", "Warrior", "Worker")))(
 	PlayerMacros.addCitiesProduction
 )
-TestRunner.Test(runwith=InGame, args=(unciv.civInfo.cities,))(
+TestRunner.Test(runwith=InGame, args=lambda: (unciv.civInfo.cities,))(
 	PlayerMacros.clearCitiesSpecialists
 )
-TestRunner.Test(runwith=InGame, args=(unciv.civInfo.cities,))(
+TestRunner.Test(runwith=InGame, args=lambda: (unciv.civInfo.cities,))(
 	PlayerMacros.focusCitiesFood
 )
-TestRunner.Test(runwith=InGame, args=(unciv.civInfo.cities, ("Monument", "Shrine", "Worker")))(
+TestRunner.Test(runwith=InGame, args=lambda: (unciv.civInfo.cities, ("Monument", "Shrine", "Worker")))(
 	PlayerMacros.buildCitiesQueue
 )
 TestRunner.Test(runwith=InGame)(

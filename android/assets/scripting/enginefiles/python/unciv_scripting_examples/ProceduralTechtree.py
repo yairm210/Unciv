@@ -11,6 +11,9 @@ Call clearTechTree() and then extendTechTree(iterations=20) at any time to repla
 Call scrambleTechTree() to keep all current technologies but randomize the order in which they are unlocked.
 """
 
+# from unciv_scripting_examples.ProceduralTechtree import *
+# from unciv_scripting_examples.ProceduralTechtree import *; scrambleTechTree()
+# tuple(real(t) for t in apiHelpers.instancesAsInstances[gameInfo.ruleSet.technologies['Civil Service'].prerequisites.toArray()])
 
 # This means that some kind of handler for the modding API, once it's implemented, would have to be called before the JVM has a chance to crash, so the script can read its own serialized data out of GameInfo and inject items into the ruleset… You can already provably have a GameInfo with invalid values that doesn't crash until WorldScreen tries to render it, so running onGameLoad immediately after deserializing the save might be good enough.
 # Or I guess there could be a Kotlin-side mechanism for serializing injected rules. But on the Kotlin side, I think it would be cleaner to just let the script handle everything. Such a mechanism still may not cover the entire range of wild behaviours that can be done by scripts, and the entire point of having a dynamic scripting API is to avoid having to statically hard-code niche or esoteric uses.
@@ -108,11 +111,10 @@ def clearTechTree(*, safe=True):
 
 def scrambleTechTree():
 	"""Randomly shuffle the order of all items on the tech tree."""
-	# from unciv_scripting_examples.ProceduralTechtree import *; scrambleTechTree()
 	technames = [*techtree().keys()]
 	random.shuffle(technames)
 	techpositions = {n:n for n in technames}
-	originalpreqs = {n:real(techtree()[n].prerequisites) for n in technames}
+	originalpreqs = {n:tuple(real(tname) for tname in apiHelpers.instancesAsInstances[techtree()[n].prerequisites.toArray()]) for n in technames} # .prerequisites is a HashSet that becomes inaccessible with always-tokenizing serialization.
 	for tname in technames:
 		oname = random.sample(technames, 1)[0]
 		tech, other = (techtree()[n] for n in (tname, oname))
@@ -128,5 +130,8 @@ def scrambleTechTree():
 	for tname in technames:
 		tech = techtree()[tname]
 		tech.prerequisites.clear()
+		for ot in originalpreqs[techpositions[tname]]:
+			try: techreplacements[ot]
+			except: print(tname, ot)
 		tech.prerequisites.addAll([techreplacements[ot] for ot in originalpreqs[techpositions[tname]]])
 		# toprereqs, oprereqs = (real(t.prerequisites) for t in (tech, other))

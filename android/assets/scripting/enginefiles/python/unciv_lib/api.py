@@ -99,10 +99,11 @@ class UncivReplTransceiver(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
 		self.apiscope = {} if apiscope is None else apiscope
 	def populateApiScope(self):
 		"""Use dir() on a foreign object wrapper with an empty path to populate the execution scope with all available names."""
-		names = dir(wrapping.ForeignObject((), foreignrequester=self.GetForeignActionResponse))
-		for n in names:
+		uncivscope = wrapping.ForeignObject(path=(), foreignrequester=self.GetForeignActionResponse)
+		#self.apiscope['unciv'] = uncivscope
+		for n in dir(uncivscope):
 			if n not in self.apiscope:
-				self.apiscope[n] = wrapping.ForeignObject(n, foreignrequester=self.GetForeignActionResponse)
+				self.apiscope[n] = wrapping.ForeignObject(path=n, foreignrequester=self.GetForeignActionResponse)
 		self.scope.update({**self.apiscope, **self.scope})
 		# TODO: Replace this update with Kotlin-side init?
 	def passMic(self):
@@ -144,7 +145,7 @@ Press [TAB] at any time to trigger autocompletion at the current cursor position
 			print(f">>> {str(line)}")
 			try:
 				# TODO: See if you can use signals to catch infinite loops/excess run duration.
-				# Actually, no. Interactivity should be retained from the Kotlin side by running/calling ScriptingState in a different thread.
+				#  Actually, no. Interactivity should be retained from the Kotlin side by running/calling ScriptingState in a different thread.
 				try:
 					code = compile(line, 'STDIN', 'eval')
 				except SyntaxError:

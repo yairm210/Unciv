@@ -54,7 +54,7 @@ abstract class EnvironmentedScriptBackend_metadata: ScriptingBackend_metadata() 
 /**
  * Interface for a single object that parses, interprets, and executes scripts.
  */
-interface ScriptingBackend {
+interface ScriptingImplementation {
 
     /**
      * @return Message to print on launch. Should be called exactly once per instance, and prior to calling any of the other methods defined here.
@@ -94,10 +94,9 @@ interface ScriptingBackend {
 
 }
 
-// TODO: Rename ScriptingBackend to ScriptingImplementation.
 // TODO: Add .userTerminable flag and per-instance display string to ScriptingBackendBase. Let mod command histories be seen on ConsoleScreen?
 
-open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingBackend {
+open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingImplementation {
 //A little bit confusing.
 //Hm. Couldn't the metadata getter go on the interface?
 //That would mean this exists only as a code example for defining the companion object.
@@ -441,7 +440,7 @@ abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): Sc
         // Since the companion object type is different, we have to define a new getter for the subclass instance companion getter to get its new members.
         get() = this::class.companionObjectInstance as EnvironmentedScriptBackend_metadata
 
-    val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(metadata.engine) }
+    val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(engine) }
     // This requires the overridden values for engine, so setting it in the constructor causes a null error... May be fixed since moving engine to the companions.
     // Also, BlackboxScriptingBackend inherits from this, but not all subclasses of BlackboxScriptingBackend might need it. So as long as it's not accessed, it won't be initialized.
 
@@ -470,8 +469,7 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
         try {
             return replManager.motd()
         } catch (e: Exception) {
-            return "No MOTD for ${metadata.engine} backend: ${e}\n"
-            //TODO: Can't you access companion properties directly from instances?
+            return "No MOTD for ${engine} backend: ${e}\n"
         }
     }
 
@@ -512,7 +510,7 @@ abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): Black
     override fun motd(): String {
         return """
 
-            Welcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system ${processCmd.firstOrNull()} command as a subprocess.
+            Welcome to the Unciv '${displayName}' API. This backend relies on running the system ${processCmd.firstOrNull()} command as a subprocess.
 
             If you do not have an interactive REPL below, then please make sure the following command is valid on your system:
 
@@ -632,8 +630,8 @@ enum class ScriptingBackendType(val metadata: ScriptingBackend_metadata) {
     // TODO: Have .new function?
 }
 
-// TODO: Lowercase name. Actually, no. Just get rid of this.
-fun SpawnNamedScriptingBackend(backendtype: ScriptingBackendType, scriptingScope: ScriptingScope): ScriptingBackendBase {
-    // Seems unnecessary?
-    return backendtype.metadata.new(scriptingScope)
-}
+//// TODO: Lowercase name. Actually, no. Just get rid of this.
+//fun SpawnNamedScriptingBackend(backendtype: ScriptingBackendType, scriptingScope: ScriptingScope): ScriptingBackendBase {
+//    // Seems unnecessary?
+//    return backendtype.metadata.new(scriptingScope)
+//}

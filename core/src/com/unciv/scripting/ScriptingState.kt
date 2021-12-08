@@ -82,7 +82,7 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
 
     fun spawnBackendAndReturnMotd(backendtype: ScriptingBackendType, switchTo: Boolean = true) {
         // TODO
-        // The script manager/handler dispatcher for mods is going to want to keep track of which backends belong to which mods.
+        //  The script manager/handler dispatcher for mods is going to want to keep track of which backends belong to which mods.
     }
 
     fun switchToBackend(index: Int) {
@@ -179,14 +179,14 @@ class ScriptingState(val scriptingScope: ScriptingScope, initialBackendType: Scr
         return out
     }
 
-//    fun acquireUiLock() {
+//    fun acquireScriptLock() {
 //        scriptingScope.worldScreen?.isPlayersTurn = false
-        //TODO
+        //TODO: Move to ScriptingLock.
         //Not perfect. I think scriptingScope also exposes mutating the GUI itself, and many things that aren't protected by this? Then again, a script that *wants* to cause a crash/ANR will always be able to do so by just assigning an invalid value or deleting a required node somewhere. Could make mod handlers outside of worldScreen blocking, with written stipulations on (dis)recommended size, and then
         //https://github.com/yairm210/Unciv/pull/5592/commits/a1f51e08ab782ab46bda220e0c4aaae2e8ba21a4
 //    }
 
-//    fun releaseUiLock() {
+//    fun releaseScriptLock() {
 //        scriptingScope.worldScreen?.isPlayersTurn = true
         //Hm. Should return to original value, not necessarily true. That means keeping a property, which means I'd rather put this in its own class.
 //    }
