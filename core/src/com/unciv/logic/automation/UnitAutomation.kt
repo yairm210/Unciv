@@ -162,7 +162,7 @@ object UnitAutomation {
             if (unit.hasUnique("can spread religion"))
                 return SpecificUnitAutomation.automateMissionary(unit)
 
-            if (unit.hasUnique("can spread religion"))
+            if (unit.hasUnique("can remove hearsay"))
                 return SpecificUnitAutomation.automateInquisitor(unit)
 
 
