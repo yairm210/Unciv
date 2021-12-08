@@ -159,10 +159,10 @@ object UnitAutomation {
             if (unit.hasUnique("Can construct []"))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
-            if (unit.name == "Missionary")
+            if (unit.hasUnique("can spread religion"))
                 return SpecificUnitAutomation.automateMissionary(unit)
 
-            if (unit.name == "Inquisitor")
+            if (unit.hasUnique("can spread religion"))
                 return SpecificUnitAutomation.automateInquisitor(unit)
 
 

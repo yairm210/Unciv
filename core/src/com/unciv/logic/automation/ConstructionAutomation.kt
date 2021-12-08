@@ -344,12 +344,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val missionary = cityInfo.getRuleset().units.values.asSequence()
             .filter { it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
-            .filter { it.name == "Missionary"}
+            .filter { it.hasUnique("can spread religion")}
             .firstOrNull()
 
         val inquisitor = cityInfo.getRuleset().units.values.asSequence()
             .filter { it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
-            .filter { it.name == "Inquisitor" }
+            .filter { it.hasUnique("can remove hearsay") }
             .firstOrNull()
 
 
