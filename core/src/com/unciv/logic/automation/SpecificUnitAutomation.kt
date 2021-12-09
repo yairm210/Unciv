@@ -337,13 +337,14 @@ object SpecificUnitAutomation {
                 .minByOrNull { it.aerialDistanceTo(unit.currentTile) }
         }
 
-        if (destination != null) {
+        if (destination != null)
             unit.movement.headTowards(destination)
+
+
+        if (cityToConvert != null && unit.currentTile.getCity() == destination!!.getCity()){
+            doReligiousAction(unit, destination)
         }
 
-        if (cityToConvert != null){
-            doReligiousAction(unit, unit.currentTile)
-        }
 
     }
 
