@@ -10,16 +10,14 @@ import java.lang.ref.WeakReference
 
 // Has value equality with itself.
 // Has value equality with any other WeakIdentityMapKey()s that points to the same living referent.
-// If referent has been garbage collected, points to null, and does not have value equality to any other WeakIdentityMapKey()s.
+// If referent has been garbage collected, then points to null, and does not have value equality to any other WeakIdentityMapKey()s.
 // Does not have value equality with anything else.
 
 // Should have valid hashCode behaviour given this.
-
-//// Has value equality with its own keyPlaceholder property.
 class WeakIdentityMapKey<T>(referent: T): WeakReference<T>(referent) {
     // Two states:
     //  1. Behaviour with living referent, such as when added to Map or used for containment check or index access. Should equal any other WeakIdentityMapKey with the same referent.
-    //  3. Behaviour with with dead referent, such as when removed from map. Referent has become null, so can't use that. Should equal itself to still be removable, and should not equal anything else.
+    //  2. Behaviour with with dead referent, such as when removed from map. Referent has become null, so can't use that. Should still have the same hashCode to not break hash bucket, should equal itself to still be removable, and should not equal anything else.
     val hashCode = System.identityHashCode(referent) // Keep hash immutable, and keep this in the same Map bucket.
     override fun hashCode() = hashCode
     override fun equals(other: Any?): Boolean {
@@ -39,9 +37,9 @@ class WeakIdentityMapKey<T>(referent: T): WeakReference<T>(referent) {
     }
 }
 
-// Map-like class that uses special WeakReferences as keys.
+// Map-like class that uses special WeakReferences to wrap keys and correlates keys based on referential identity instead of value equality.
 
-// For now, clean() must be called manually.
+// For now, clean() must be called manually to free all keys that have been garbage collected.
 class WeakIdentityMap<K, V>(): MutableMap<K, V> {
     private val backingMap = mutableMapOf<WeakIdentityMapKey<K>, V>()
     override val entries get() = throw NotImplementedError() // backingMap.entries
@@ -59,16 +57,18 @@ class WeakIdentityMap<K, V>(): MutableMap<K, V> {
     // Free up all invalid keys that have been garbage collected.
 
     // Runs in O(n) time relative to size.
-    fun clean() {
-        val badkeys = mutableListOf<WeakIdentityMapKey<K>>()
-        for (k in backingMap.keys) {
-            val referent = k.get()
-            if (referent == null)
-                badkeys.add(k)
-        }
+
+    // @param returnValues Whether or not to return a list of values from all the removed keys.
+    fun clean(returnValues: Boolean = false): List<V?>? {
+        val badkeys = backingMap.keys.filter { it.get() == null }
+        val out = if (returnValues)
+                badkeys.map { backingMap[it] }
+            else
+                null
         for (k in badkeys) {
             backingMap.remove(k)
         }
+        return out
     }
     override fun toString() = "{${backingMap.entries.joinToString(", ") { "${it.key.get()}=${it.value}" }}}"
 }

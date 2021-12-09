@@ -41,6 +41,8 @@ class ScriptingScope(
 
     val modApiHelpers = ScriptingModApiHelpers(this)
 
+    // TODO: Some way to clear the instancesaver?
+
 }
 
 // Does having one state manage multiple backends that all share the same scope really make sense? Mod handler dispatch, callbacks, etc might all be easier if the multi-backend functionality of ScriptingState were implemented only for ConsoleScreen.

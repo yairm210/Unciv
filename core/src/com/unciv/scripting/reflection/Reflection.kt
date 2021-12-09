@@ -5,6 +5,8 @@ import kotlin.collections.ArrayList
 import kotlinx.serialization.Serializable
 import kotlin.reflect.*
 
+// I've noticed that the first time running a script is significantly slower than any subsequent times. Takes 50% longer to run the Python test suite the first time than the second time, and simple functions go from incurring a noticeable delay to being visually instant.
+// I don't think anything either can or needs to be done about that, but I assume it's the JVM JIT'ing.
 
 object Reflection {
 
@@ -13,11 +15,20 @@ object Reflection {
         = (cls.members.first { it.name == propertyName } as KProperty0<*>).get() as R?
 
     @Suppress("UNCHECKED_CAST")
-    fun <R> readInstanceProperty(instance: Any, propertyName: String)
+    fun <R> readInstanceProperty(instance: Any, propertyName: String): R? {
         // From https://stackoverflow.com/a/35539628/12260302
-        = (instance::class.members.first { it.name == propertyName } as KProperty1<Any, *>).get(instance) as R?
-            // If scripting member access performance becomes an issue, memoizing this could be a potential first step.
+        val kprop = (instance::class.members.first { it.name == propertyName } as KProperty1<Any, *>)
             // TODO: Throw more helpful error on failure.
+        return (if (kprop.isConst)
+                kprop.getter.call()
+            else
+                kprop.get(instance)) as R?
+    // KProperty1().get(instance) Fails for consts: apiHelpers.Jvm.kotlinSingletonByQualname["com.unciv.Constants"].close
+    // m=next(m for m in apiHelpers.Jvm.kotlinClassByQualname["com.unciv.Constants"].members if m.name == 'close')
+    // object o {val a=1; const val b=2}
+    // (o::class.members.first{it.name == "a"} as KProperty1<Any, *>).get(o)
+    // (o::class.members.first{it.name == "b"} as KProperty1<Any, *>).getter.call()
+    }
 
     // Return an [InstanceMethodDispatcher]() with consistent settings for the scripting API.
     fun makeInstanceMethodDispatcher(instance: Any, methodName: String) = InstanceMethodDispatcher(
@@ -45,8 +56,16 @@ object Reflection {
         matchClassesQualnames: Boolean = false,
         resolveAmbiguousSpecificity: Boolean = false
         ) : FunctionDispatcher(
-            functions = instance::class.members.filter { it.name == methodName },
+            functions = instance::class.members.filter { it is KFunction<*> && it.name == methodName },
             // TODO: .functions? Choose one that includes superclasses but excludes extensions.
+            // FIXME: Right. Cell.row is an example of a name used as both a property and a function.
+            //  p=apiHelpers.Jvm.constructorByQualname["com.unciv.ui.utils.Popup"](uncivGame.consoleScreen); disp=p.add(apiHelpers.Jvm.functionByQualClassAndName["com.unciv.ui.utils.ExtensionFunctionsKt"]["toLabel"]("Test Text.")).row
+            //  [apiHelpers.Jvm.kotlinClassByInstance[f] for f in disp.functions]
+            //  KFunctionImpl vs KMutableProperty1Impl, apparently.
+            //  Adding `is Function` to the filter should do it, I think?
+            // apiHelpers.Jvm.kotlinClassByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"].members
+            // apiHelpers.Jvm.kotlinClassByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"]
+            // apiHelpers.Jvm.functionByQualClassAndName["kotlin.reflect.full.KClasses"]["getFunctions"](apiHelpers.Jvm.kotlinClassByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"])
             matchNumbersLeniently = matchNumbersLeniently,
             matchClassesQualnames = matchClassesQualnames,
             resolveAmbiguousSpecificity = resolveAmbiguousSpecificity
@@ -235,7 +254,7 @@ object Reflection {
     //}
 
     fun splitToplevelExprs(code: String, delimiters: String = ","): List<String> {
-        return code.split(',').map { it.trim(' ') }
+        return if (code.isBlank()) listOf() else code.split(',').map { it.trim(' ') }
         var segs = ArrayList<String>()
         val bracketdepths = mutableMapOf<Char, Int>(
             *brackettypes.keys.map { it to 0 }.toTypedArray()
@@ -301,7 +320,7 @@ object Reflection {
                     }
                 }
             } catch (e: Exception) {
-                throw IllegalAccessException("Cannot access $element on $obj: $e")
+                throw IllegalAccessException("Cannot access $element on $obj:\n${e.toString().prependIndent("\t")}")
             }
         }
         return obj

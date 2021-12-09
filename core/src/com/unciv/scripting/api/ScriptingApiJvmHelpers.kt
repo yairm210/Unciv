@@ -19,13 +19,12 @@ fun enumQualnameToMap(qualName: String) = Class.forName(qualName).enumConstants.
 // Always return a built-in Map class instance here, so its gets serialized as JSON object instead of tokenized, and scripts can refer directly to its items.
 // I cast to Enum<*> fully expecting it would crash because it felt metaclass-y. But apparently it's just a base class, so it works?
 
+private const val exposeStates = true // TODO: Probably keep this false?
 
 /**
  * For use in ScriptingScope. Allows interpreted scripts access Kotlin/JVM class functionality that isn't attached to any application instances.
  */
 object ScriptingApiJvmHelpers {
-
-    private const val exposeStates = true // Probably keep this false?
 
     val enumMapsByQualname = LazyMap(::enumQualnameToMap)
 
@@ -35,12 +34,18 @@ object ScriptingApiJvmHelpers {
 
     val kotlinCompanionByQualClass = LazyMap({ qualName: String -> kotlinClassByQualname[qualName]?.companionObjectInstance }, exposeState = exposeStates)
 
-    val functionByQualClassAndMethodName = LazyMap({ jclassQualname: String -> // TODO: Rename, remove "Method".
+    val functionByQualClassAndName = LazyMap({ jclassQualname: String ->
         val cls = Class.forName(jclassQualname)
-        LazyMap({ methodName: String -> makeFunctionDispatcher(cls.getDeclaredMethods().asSequence().filter { it.name == methodName }.map { it.kotlinFunction }.toList() as List<KCallable<Any?>>) }, exposeState = exposeStates)
+        LazyMap({ methodName: String -> makeFunctionDispatcher(cls.getDeclaredMethods().asSequence().filter { it.name == methodName }.map { it.kotlinFunction }.filterNotNull().toList() as List<KCallable<Any?>>) }, exposeState = exposeStates)
         // Could initialize the second LazyMap here by accessing for all names— Only benefit would be for autocomplete, at higher first-call time and memory use, though.
     }, exposeState = exposeStates)
-    // apiHelpers.Jvm.functionByQualClassAndMethodName["com.unciv.ui.utils.ExtensionFunctionsKt"]["toLabel"]("Test")
+    // apiHelpers.Jvm.functionByQualClassAndName["com.unciv.ui.utils.ExtensionFunctionsKt"]["toLabel"]("Test")
+
+    // TODO: Right... Extension properties?
+    // Class.forName("kotlin.reflect.full.KClasses").getMethods().map{it.name}
+    // apiHelpers.Jvm.functionByQualClassAndName["kotlin.reflect.full.KClasses"]["getFunctions"](apiHelpers.Jvm.kotlinClassByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"])
+    // Right. .kotlinFunction is null for extension property getters:
+    //  Class.forName("kotlin.reflect.full.KClasses").getDeclaredMethods().first{it.name == "getFunctions"}.kotlinFunction
 
     val staticPropertyByQualClassAndName = LazyMap({ jclassQualname: String ->
         val kcls = Class.forName(jclassQualname).kotlin

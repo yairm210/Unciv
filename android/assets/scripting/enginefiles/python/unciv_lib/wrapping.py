@@ -199,14 +199,21 @@ class AttributeProxy:
 	# FIXME: Does this seem like a performance issue?
 
 
-BIND_BY_REFERENCE = True
-"""Early versions of this API bound Python objects to Kotlin/JVM instances by keeping track of paths and lazily evaluating them as needed. E.G. ".a.b[5].c" would create an internal tuple like `("a", "b", [5], "c")`, without actually accessing any Kotlin/JVM values at first. Benefits: Fewer IPC actions, lazy resolution of values only as they're used. Drawbacks: Deeper (slow) reflective loops per IPC action, scripting semantics not perfectly synced with JVM state, ugly tricks needed to deal with values that can't be safely accessed as paths from the same scope root, like the properties and methods of instances returned by function calls.
+BIND_BY_REFERENCE = True # Should be True.
+"""Early versions of this API bound Python objects to Kotlin/JVM instances by keeping track of paths and lazily evaluating them as needed. E.G. ".a.b[5].c" would create an internal tuple like `("a", "b", [5], "c")`, without actually accessing any Kotlin/JVM values at first. The Kotlin/JVM value at that path would only be resolved when it was needed. Benefits: Fewer IPC actions, lazy resolution of values only as they're used. Drawbacks: Deeper (slow) reflective loops per IPC action, scripting semantics not perfectly synced with JVM state, ugly tricks needed to deal with values that can't be safely accessed as paths from the same scope root, like the properties and methods of instances returned by function calls.
 
-The current API instead keeps track of every """
+The current API instead evaluates the real Kotlin/JVM values of most attributes/items/returns as soon as they're accessed in Python, and keeps track of those internally, using paths only relative to those root values. Of the scripting semantics made more convenient by the tighter binding, the most significant is probably that properties and methods can be directly used on the results returned from function calls.
 
-# TODO: The more complicated tests are all significantly slower with bind-by-reference than with bind-by-path. Hopefully it will be fixed by plugging the leak in InstanceTokenizer.
+Set this flag to False to go back to the old, bind-by-path behaviour. Every Python backend can actually choose for themselves. But in general, bind-by-reference is increasingly the canonical model."""
 
-# TODO: Maybe test to see if a path-based approach for keys and attributes might still be faster?
+# timeit.repeat results for running Python tests 3 times as of this comment:
+#  Bind-by-path: [30.61577351100277, 29.83002521295566, 32.639805707964115]
+#  Bind-by-reference: [33.53914805594832, 35.568275933968835, 36.279464731924236]
+# This is with code that was written to try to squeeze out performance from the bind-by-path model, though.
+# Subjectively, some of the tests feel like they may be faster with bind-by-reference too.
+# Also of note: Kotlin/JVM-side token count reached well above 100k with bind-by-reference (though a realistic script would provide opportunities for cleanup to keep the count at any one time far below that), but didn't seem to reach 2k wtih bind-by-path.
+
+# TODO: Try to reduce IPC calls where it's not needed.
 
 @resolveForOperators
 class ForeignObject:
@@ -223,7 +230,6 @@ class ForeignObject:
 		return f"{self.__class__.__name__}({repr(self._root)}{', '+stringPathList(self._getpath_()) if self._getpath_() else ''}){':'+repr(self._getvalue_()) if self._getpath_() else ''}"
 		# TODO: This has become less informative under bind-by-reference. Look at tokenization format too.
 	def __str__(self):
-		# TODO: Maybe also just show _getvalue_() for __str__?
 		return f"<{repr(self._getvalue_())}>"
 	def _clone_(self, **kwargs):
 		return self.__class__(**{'path': self._path, 'use_root': self._use_root, 'root': self._root, 'foreignrequester': self._foreignrequester, **kwargs})
@@ -262,7 +268,7 @@ class ForeignObject:
 		try:
 			return iter(self.keys())
 		except:
-			return (self[i] for i in range(0, len(self))) #TODO: Obviously this won't work for sets. Practical example why that's a problem: CityInfo stores HashSet()s of tiles. Workaround: Call real() on the whole set, and use the resulting values or foreign tokens. Unindexability/potential unorderedness of sets means that iteration would have to be handled from the Kotlin side, which means, at minimum implementing the BeginIteration and EndIteration flags, plus an entire new type of PassMic loop. Even then, without indexes, you'd only get the raw value or foreign token anyway
+			return (self[i] for i in range(0, len(self)))
 	def __setattr__(self, name, value):
 		return self.__getattr__(name, do_bake=False)._setvalue_(value)
 	def __setitem__(self, key, value):
@@ -279,7 +285,7 @@ class ForeignObject:
 			return self._setvalueraw_(value)
 	def __call__(self, *args):
 		result = self._clone_(path=(*self._getpath_(), makePathElement(ttype='Call', params=args)))
-		# Care must be taken that the resulting ForeignObject never has ._getvalueraw_ called more than once, including by __repr__ or __str__, as resolving it means actually running the call in Kotlin/the JVM. This means it must not be able to produce children with the same 'Call' element in their paths either.
+		# Care must be taken that the resulting ForeignObject never has ._getvalueraw_ called more than once, including by __repr__ or __str__, as resolving it means actually running the call in Kotlin/the JVM. This also means it must not be able to produce children with the same 'Call' element in their paths either.
 		if BIND_BY_REFERENCE:
 			result._bakereal_() # Resolve the foreign value right away and clear path with bind-by-reference, so future accesses don't cause IPC actions.
 			return result

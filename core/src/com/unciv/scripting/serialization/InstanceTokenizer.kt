@@ -3,12 +3,11 @@ package com.unciv.scripting.serialization
 import com.unciv.scripting.ScriptingConstants
 import com.unciv.scripting.utils.ScriptingDebugParameters
 import com.unciv.scripting.utils.WeakIdentityMap
-//import kotlin.math.min
 import java.lang.ref.WeakReference // Could use SoftReferences— Would seem convenient, but probably lead to mysterious bugs in scripts.
 import java.util.UUID
 import kotlin.math.floor
 import kotlin.math.log
-import kotlin.math.pow
+import kotlin.random.Random
 
 
 /**
@@ -24,21 +23,33 @@ object InstanceTokenizer {
 
     /**
      * Map of currently known token strings to WeakReferences of the Kotlin/JVM instances they represent.
+     * Used for basic functionality of tracking tokens and transforming them back into arbitrary instances.
      */
     private val instancesByTokens = mutableMapOf<String, WeakReference<Any>>()
 
     // Map of WeakReferences of Kotlin/JVM instances to token strings that represent them.
+    // Used to reuse existing tokens for previously tokenized objects, improving performance and avoiding a memory leak.
     private val tokensByInstances = WeakIdentityMap<Any?, String>()
-    // Without this, running the Python tests twice in a row led to a token count exceeding 32768 (and over 16348 after the first run) as of this comment, and very significant slowdown.
-    // With it… It's actually only slightly less, and the performance still hurts a lot.
+    // Without this, repeatedly running the Python tests led to a token count over 16835 after the first run, exceeding 25252 after the second run, and over 37887 after the third run, as of this comment.
+    // With it: Over 11223 after the first run, back down to 4399 in the middle of the second run and then up again to over 11223, down to 4396 in the middle of the third and back up to over 11223 afterwards, over 85000 following ten runs in a non-stop Python loop, but back down to 7809 after running as separate commands again and hitting the next cleanup at 127834.
+    // (Oh. Yeah. Duh. Because I made ScriptingProtocol save everything in the same script execution from being garbage collected, cleanup doesn't happen much in an ongoing Python loop. Oh well; That took a long time to run, and no script should be doing anywhere near that much in one go anyway (and even if it is processing that much data in one go, it should use its own data structures and only write out to Unciv at the very end).)
 
-
-    // Logarithm and base for the number of known tokens after the last cleaning. Used for printing debug info.
+    // Logarithm of number of known tokens after the last cleaning, with tokenCountLogBase as base. Cleaning is triggered when changing this.
     private var lastTokenCountLog: Int = 0
-    private const val tokenCountLogBase = 2f
+    // Logarithm base for lastTokenCountLog. Acts as factor threshold for cleaning invalid WeakReferences.
+    private const val tokenCountLogBase = 1.3f
 
-//    private val instanceHashes = mutableMapOf<Pair<Int, arrayListOf<Pair<String, WeakReference<Any>>>()>>()
-    // TODO: See note under clean().
+    // Above this value, have a forceCleanChance to perform cleaning even if a no token count thresholds have been crossed.
+    // Needed because in theory, token count, as measured from a Collection size, can apparently max out with a large enough collection.
+    private const val forceCleanThreshold = Int.MAX_VALUE / 2
+    // Chance of performing a cleaning when token count is above forceCleanThreshold.
+    private const val forceCleanChance = 0.001
+
+    // Compile-time flag on whether to keep track of previously tokenized objects and always reuse the same tokens for them.
+    // Disabling this could cause long-lived objects to create a lot of tokens that have no way of ever being cleaned.
+    // Keep it set to true to avoid scripts causing a memory leak and degrading token cleaning performance, basically.
+    private const val tokenReuse = true
+    // So why leave the flag in? It marks where the reuse behaviour happens, and helps keep its relationship to core functionality clear.
 
     /**
      * Prefix that all generated token strings should start with.
@@ -55,9 +66,6 @@ object InstanceTokenizer {
      */
     private const val tokenMaxLength = 100
 
-//    private fun newTokenFromInstance(value: Any?): String {
-//    } // Move existing code here, publicize tokenFromInstance, check against existing WeakMap of tokens, and maybe forbid nullable input… Hm. Need to use identity instead of equality comparison. Oh wow. They have "WeakIdentityHashMap", the maniacs.
-
     /**
      * Generate a distinctive token string to represent a Kotlin/JVM object.
      *
@@ -69,7 +77,7 @@ object InstanceTokenizer {
      */
     private fun tokenFromInstance(value: Any?): String {
         var token: String? = tokensByInstances[value] // Atomicity. Separating containment check would give the GC a chance to clear the key.
-        if (token != null) {
+        if (tokenReuse && token != null) {
             return token
         }
         var stringified: String
@@ -82,7 +90,9 @@ object InstanceTokenizer {
             stringified = stringified.slice(0..tokenMaxLength -4) + "..."
         }
         token = "$tokenPrefix${System.identityHashCode(value)}:${if (value == null) "null" else value::class.qualifiedName}/${stringified}:${UUID.randomUUID().toString()}"
-        tokensByInstances[value] = token
+        if (tokenReuse) {
+            tokensByInstances[value] = token
+        }
         return token
     }
 
@@ -96,30 +106,37 @@ object InstanceTokenizer {
 
     /**
      * Remove all tokens and WeakReferences whose instances have already been garbage-collected.
+     *
+     * Runs in O(n) time relative to token count.
+     *
+     * Should not have to be called manually.
      */
     fun clean() {
-        //FIXME (if I become a problem): Because a new unique token is currently generated even if the instance is already tokenized as something else, this will eventually get slower over time if a script makes lots of requests that result in new instance tokens for objects that last a long time (E.G. uncivGame). And since any stored instances should ideally be WeakReferences to prevent garbage collection from being broken for *all* instances, fixing that may not be as simple as checking for existing tokens to reuse them.
-        //TODO: Probably keep another map of instance hashes to weakrefs and their existing token? The hashes will have to have counts instead of just containment, since otherwise a hash collision would cause the earlier token to become inaccessible.
-        // Can I use WeakReferences as keys? Do they implement hash and equality? Huh, WeakHashMap is a thing here too. Cool. Auto cleaning. And could check against for cleaning the other map. Hm. Need to use identity instead of equality comparison. Oh wow. They have "WeakIdentityHashMap", the maniacs.
-        tokensByInstances.clean()
-        val badtokens = mutableListOf<String>()
-        // TODO: Print messages on major size milestone changes.
-        for ((t, o) in instancesByTokens) {
-            if (o.get() == null) {
-                badtokens.add(t)
-            }
-        }
-        // TODO: Maybe O(n) cleaning strategy is just not great.
+        val badtokens = if (tokenReuse)
+            tokensByInstances.clean(true)!!
+        else
+            instancesByTokens.entries.asSequence().filter { it.value.get() == null }.map { it.key }.toList() // Technically the .toLists()'s not needed, but this is a legacy thing anyway— TODO: Wait, can't you type as Iterable?
         for (t in badtokens) {
             instancesByTokens.remove(t)
         }
-        if (ScriptingDebugParameters.printTokenizerMilestones) {
-            val count = instancesByTokens.size
-            val current = floor(log(count.toFloat(), tokenCountLogBase)).toInt()
-            if (current != lastTokenCountLog) {
-                println("${this::class.simpleName} now contains ${count} tokens.")
+    }
+
+    // Try to clean all invalid tokens.
+
+    // Only does anything if detects a sufficient change in token count from the last cleanup, as defined by lastTokenCountLog and tokenCountLogBase.
+
+    // Should not have to be called manually.
+    fun tryClean() {
+        val count = instancesByTokens.size
+        val countLog = floor(log(count.toFloat(), tokenCountLogBase)).toInt()
+        if (countLog != lastTokenCountLog || (count >= forceCleanThreshold && Random.nextDouble() <= forceCleanChance)) {
+            // In theory, could cause repeated and inefficient bouncing near a trigger threshold— Unlikeliness aside, that also won't happen because ScriptingProtocol prevents new tokens from being freed per script execution.
+            // forceCleanThreshold should make sure cleaning still happens even with count clipped to MAX_INT.
+            if (ScriptingDebugParameters.printTokenizerMilestones) {
+                println("${this::class.simpleName} now tracks ${count} tokens and ${tokensByInstances.size} instances. Cleaning.")
             }
-            lastTokenCountLog = current
+            clean()
+            lastTokenCountLog = countLog
         }
     }
 
@@ -128,7 +145,7 @@ object InstanceTokenizer {
      * @return Token string that can later be detokenized back into the original instance.
      */
     fun getToken(obj: Any?): String { // TOOD: Switch to Any, since null will just be cleaned anyway?
-        clean()
+        tryClean()
         val token = tokenFromInstance(obj)
         instancesByTokens[token] = WeakReference(obj)
         return token
@@ -144,13 +161,12 @@ object InstanceTokenizer {
      * @return Real instance from detokenizing input if given a token string, input value or instance unchanged if not given a token string.
      */
     fun getReal(token: Any?): Any? {
-        clean()
-        if (isToken(token)) {
-            return instancesByTokens[token]!!.get()// TODO: Add another non-null assertion here? Unknown tokens and expired tokens are only a cleaning cycle apart, which seems race condition-y.
-            // TODO: Helpful exception message for invalid tokens.
-        } else {
-            return token
-        }
+        tryClean()
+        return if (isToken(token))
+            instancesByTokens[token]!!.get()// TODO: Add another non-null assertion here? Unknown tokens and expired tokens are only a cleaning cycle apart, which seems race condition-y.
+            // TODO: Helpful exception message for invalid tokens?
+        else
+            token
     }
 
 }

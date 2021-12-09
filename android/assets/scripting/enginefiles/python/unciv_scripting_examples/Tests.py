@@ -17,6 +17,15 @@ from . import EndTimes, ExternalPipe, MapEditingMacros, Merfolk, PlayerMacros, P
 
 # from unciv_scripting_examples.Tests import *; TestRunner.run_tests()
 # from unciv_scripting_examples.Tests import *; InMapEditor.__enter__()
+# from unciv_scripting_examples.Tests import *; import time; Start=time.time(); tryRun(TestRunner.run_tests); print(time.time()-Start)
+# from unciv_scripting_examples.Tests import *; import timeit; x=timeit.repeat(stmt='tryRun(TestRunner.run_tests)', setup='tryRun(TestRunner.run_tests)', repeat=3, number=3, globals=globals()); print(x); unciv.apiHelpers.Sys.copyToClipboard(repr(x)); unciv.apiHelpers.Sys.printLine(repr(x))
+
+
+def tryRun(func):
+	# For debug and manual runs. Not used otherwise.
+	try: return func()
+	except Exception as e: return e
+
 
 try:
 	assert False

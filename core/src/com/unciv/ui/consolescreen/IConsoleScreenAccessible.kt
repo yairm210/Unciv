@@ -15,7 +15,7 @@ import com.unciv.ui.mapeditor.MapEditorScreen
 //Interface that extends BaseScreen with methods for exposing the global ConsoleScreen.
 interface IConsoleScreenAccessible {
 
-    val BaseScreen.consoleScreen: ConsoleScreen
+    val BaseScreen.consoleScreen: ConsoleScreen // TODO: Oh, apparently don't need to explicitly refer to this? Change in other extension functions too, I guess.
         get() = this.game.consoleScreen
 
     val BaseScreen.scriptingState: ScriptingState
