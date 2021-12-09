@@ -429,6 +429,10 @@ class GameInfo {
                 if (cityInfo.isPuppet && cityInfo.cityConstructions.constructionQueue.isEmpty())
                     cityInfo.cityConstructions.chooseNextConstruction()
 
+                // We also remove resources that the city may be demanding but are no longer in the ruleset
+                if (!ruleSet.tileResources.containsKey(cityInfo.demandedResource))
+                    cityInfo.demandedResource = ""
+
                 cityInfo.cityStats.update()
             }
 
