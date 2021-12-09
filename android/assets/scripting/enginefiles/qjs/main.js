@@ -1,9 +1,12 @@
-`The recommended use case of this backend is for modding. For user automation, debug, prototyping, or experimentation, the Python backend may provide more features.`
+`The recommended use case of the JS backend is for modding. For user automation, debug, custom tools, prototyping, or experimentation, the Python backend may provide more features.
+
+However, JS is the only scripting backend planned to be supported on mobile platforms.`
 
 
 function motd() {
 	return "\nThis backend is HIGHLY EXPERIMENTAL. It does not implement any API bindings yet, and it may not be stable. Use it at your own risk!\n\n"
 }
+
 
 // So... cashapp/zipline is clearly the best JS library to use for this (which in turn means that embedded QuickJS, and not Webview V8 or anything will indeed be the engine).
 // Maybe LiquidCore? But I assume that's way heavier.

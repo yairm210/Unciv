@@ -4,7 +4,11 @@
 
 # Huh: https://stackoverflow.com/questions/15093663/packaging-linux-binary-in-android-apk
 
-#"""Due to the massive standard library and tbird-party libraries available to Python, due to the similarly heavy footprint of the CPython interpreter, the recommended use cases of this scripting backend are user automation, prototyping, and experimentation or research. For mods, use the JS backend instead."""
+
+#"""Due to the massive standard library and third-party libraries available to Python, due to the similarly heavy footprint of the CPython interpreter, the recommended use cases of this scripting backend are user automation, custom tools, prototyping, and experimentation or research. For mods, use the JS backend instead.
+
+#It is not considered feasible to support scripting by Python on mobile platforms."""
+
 
 try:
 	import os

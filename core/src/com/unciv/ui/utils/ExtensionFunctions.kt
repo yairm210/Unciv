@@ -197,6 +197,20 @@ fun <T> List<T>.clipIndexToBounds(index: Int, extendEnd: Int = 0): Int {
     return max(0, min(this.size-1+extendEnd, index))
 }
 
+/**
+ * Make sure an index is valid for this List.
+ *
+ * Doing all checks with the same function and error message is probably easier to debug than letting an array access fail at the point of access.
+ *
+ * @param index Index to check.
+ * @throws IndexOutOfBoundsException If given invalid index.
+ */
+fun <T> List<T>.enforceValidIndex(index: Int) {
+    if (index < 0 || this.size <= index) {
+        throw IndexOutOfBoundsException("Index {index} is out of range of ${this::class.simpleName}().")
+    }
+}
+
 /** Translate a percentage number - e.g. 25 - to the multiplication value - e.g. 1.25f */
 fun String.toPercent() = toFloat().toPercent()
 

@@ -9,7 +9,6 @@ import java.io.ByteArrayOutputStream
 
 object ScriptingApiAppHelpers {
     //Debug/dev identity function for both Kotlin and scripts. Check if value survives serialization, force something to be added to ScriptingProtocol.instanceSaver, etc.
-//    fun echo(obj: Any?) = obj // Redundant with instancesAsInstances.
     // @param path Path of an internal file as exposed in Gdx.files.internal.
     // @return The contents of the internal file read as a text string.
     fun assetFileString(path: String) = Gdx.files.internal(path).readString()

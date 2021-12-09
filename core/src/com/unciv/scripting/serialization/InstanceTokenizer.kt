@@ -2,7 +2,7 @@ package com.unciv.scripting.serialization
 
 import com.unciv.scripting.ScriptingConstants
 //import kotlin.math.min
-import java.lang.ref.WeakReference
+import java.lang.ref.WeakReference // Could use SoftReferences— Would seem convenient, but probably lead to mysterious bugs in scripts.
 import java.util.UUID
 
 
@@ -20,7 +20,9 @@ object InstanceTokenizer {
     /**
      * Weakmap of currently known token strings to WeakReferences of the Kotlin/JVM instances they represent.
      */
-    private val instances = mutableMapOf<String, WeakReference<Any>>()
+    private val instancesByTokens = mutableMapOf<String, WeakReference<Any>>()
+
+//    private val tokensByInstances = WeakHashMap
 
 //    private val instanceHashes = mutableMapOf<Pair<Int, arrayListOf<Pair<String, WeakReference<Any>>>()>>()
     // TODO: See note under clean().
@@ -34,6 +36,7 @@ object InstanceTokenizer {
     private val tokenPrefix
         //I considered other structures like integer IDs, and objects with a particular structure and key. But semantically and syntactically, immutable and often-singleton/interned strings are really the best JSON representations of completely opaque Kotlin/JVM objects.
         get() = ScriptingConstants.apiConstants.kotlinInstanceTokenPrefix
+
     /**
      * Length to clip generated token strings to. Here in case token string generation uses the instance's .toString(), which it currently does.
      */
@@ -56,7 +59,7 @@ object InstanceTokenizer {
         stringified = try { // Because this can be overridden, it can fail. E.G. MapUnit.toString() depends on a lateinit.
             value.toString()
         } catch (e: Exception) {
-            "?" // TODO: Use exception text?
+            "?" // Use exception text?
         }
         if (stringified.length > tokenMaxLength) {
             stringified = stringified.slice(0..tokenMaxLength -4) + "..."
@@ -80,13 +83,14 @@ object InstanceTokenizer {
         //TODO: Probably keep another map of instance hashes to weakrefs and their existing token? The hashes will have to have counts instead of just containment, since otherwise a hash collision would cause the earlier token to become inaccessible.
         // Can I use WeakReferences as keys? Do they implement hash and equality? Huh, WeakHashMap is a thing here too. Cool. Auto cleaning. And could check against for cleaning the other map. Hm. Need to use identity instead of equality comparison. Oh wow. They have "WeakIdentityHashMap", the maniacs.
         val badtokens = mutableListOf<String>()
-        for ((t, o) in instances) {
+        // TOOD: Print messages on major size milestone changes.
+        for ((t, o) in instancesByTokens) {
             if (o.get() == null) {
                 badtokens.add(t)
             }
         }
         for (t in badtokens) {
-            instances.remove(t)
+            instancesByTokens.remove(t)
         }
     }
 
@@ -97,7 +101,7 @@ object InstanceTokenizer {
     fun getToken(obj: Any?): String { // TOOD: Switch to Any, since null will just be cleaned anyway?
         clean()
         val token = tokenFromInstance(obj)
-        instances[token] = WeakReference(obj)
+        instancesByTokens[token] = WeakReference(obj)
         return token
     }
 
@@ -113,7 +117,7 @@ object InstanceTokenizer {
     fun getReal(token: Any?): Any? {
         clean()
         if (isToken(token)) {
-            return instances[token]!!.get()// TODO: Add another non-null assertion here? Unknown tokens and expired tokens are only a cleaning cycle apart, which seems race condition-y.
+            return instancesByTokens[token]!!.get()// TODO: Add another non-null assertion here? Unknown tokens and expired tokens are only a cleaning cycle apart, which seems race condition-y.
             // TODO: Helpful exception message for invalid tokens.
         } else {
             return token

@@ -1,6 +1,4 @@
-package com.unciv.scripting.utils
-
-import com.unciv.scripting.api.ScriptingScope
+package com.unciv.scripting.api
 
 class ScriptingModApiHelpers(val scriptingScope: ScriptingScope) {
     // var handlerContext: NamedTuple?

@@ -35,7 +35,7 @@ object ScriptingApiJvmHelpers {
 
     val kotlinCompanionByQualClass = LazyMap({ qualName: String -> kotlinClassByQualname[qualName]?.companionObjectInstance }, exposeState = exposeStates)
 
-    val functionByQualClassAndMethodName = LazyMap({ jclassQualname: String ->
+    val functionByQualClassAndMethodName = LazyMap({ jclassQualname: String -> // TODO: Rename, remove "Method".
         val cls = Class.forName(jclassQualname)
         LazyMap({ methodName: String -> makeFunctionDispatcher(cls.getDeclaredMethods().asSequence().filter { it.name == methodName }.map { it.kotlinFunction }.toList() as List<KCallable<Any?>>) }, exposeState = exposeStates)
         // Could initialize the second LazyMap here by accessing for all names— Only benefit would be for autocomplete, at higher first-call time and memory use, though.
@@ -59,5 +59,7 @@ object ScriptingApiJvmHelpers {
 //    fun arrayOf(elements: Collection<Any?>): Array<*> = elements.toTypedArray()
 //    fun arrayOfAny(elements: Collection<Any>): Array<Any> = elements.toTypedArray()
 //    fun arrayOfString(elements: Collection<String>): Array<String> = elements.toTypedArray()
+
+    //TODO: Heavily overloaded toList or some such converters for Arrays, Sets, Sequences, Iterators, etc.
 }
 

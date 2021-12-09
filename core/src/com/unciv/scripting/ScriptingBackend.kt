@@ -40,7 +40,7 @@ abstract class ScriptingBackend_metadata {
     /**
      * @return A new instance of the parent class of which this object is a companion.
      */
-    abstract fun new(scriptingScope: ScriptingScope): ScriptingBackendBase
+    abstract fun new(scriptingScope: ScriptingScope): ScriptingBackendBase // TODO: Um, class references are totally a thing, and probably distinct from KClass, right?
     abstract val displayName: String
     val syntaxHighlighting: SyntaxHighlighter? = null
 }
@@ -371,7 +371,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
                 if (workingpath.any { it.type == Reflection.PathElementType.Call }) {
                     return AutocompleteResults(listOf(), true, "No autocomplete available for function calls.")
                 }
-                val leafname = if (workingpath.size > 0) workingpath[workingpath.size - 1].name else ""
+                val leafname = if (workingpath.isNotEmpty()) workingpath[workingpath.size - 1].name else ""
                 val prefix = command.dropLast(leafname.length)
                 val branchobj = Reflection.resolveInstancePath(scriptingScope, workingpath.slice(0..workingpath.size-2))
                 return AutocompleteResults(

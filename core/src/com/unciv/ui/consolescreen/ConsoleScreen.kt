@@ -22,7 +22,7 @@ import kotlin.math.min
 //"I understand and wish to continue." // Probably grey this out for five seconds.
 //"Get me out of here!"
 
-class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Unit): BaseScreen() {
+class ConsoleScreen(val scriptingState: ScriptingState, var closeAction: () -> Unit): BaseScreen() {
 
     private val layoutTable: Table = Table()
 
@@ -244,7 +244,7 @@ class ConsoleScreen(val scriptingState:ScriptingState, var closeAction: () -> Un
         }
     }
 
-    private fun navigateHistory(increment:Int) {
+    private fun navigateHistory(increment: Int) {
         setText(scriptingState.navigateHistory(increment), SetTextCursorMode.End)
     }
 

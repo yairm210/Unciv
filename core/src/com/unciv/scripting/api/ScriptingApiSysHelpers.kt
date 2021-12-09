@@ -10,4 +10,5 @@ object ScriptingApiSysHelpers {
         //Better than scripts potentially doing it themselves. In Python, for example, a way to do this would involve setting up an invisible TKinter window.
         Gdx.app.clipboard.contents = value.toString()
     }
+    // Native file chooser could be cool too (E.G. modded map editing tools), but doesn't look to be simple across all platforms.
 }

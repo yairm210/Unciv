@@ -3,7 +3,6 @@ package com.unciv.scripting.api
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.scripting.utils.ScriptingModApiHelpers
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.worldscreen.WorldScreen
 

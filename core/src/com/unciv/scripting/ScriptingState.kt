@@ -2,9 +2,8 @@ package com.unciv.scripting
 
 import com.unciv.scripting.api.ScriptingScope
 import com.unciv.ui.utils.clipIndexToBounds
+import com.unciv.ui.utils.enforceValidIndex
 import kotlin.collections.ArrayList
-import kotlin.math.max
-import kotlin.math.min
 
 // TODO: Check for places to use Sequences.
 // Hm. It seems that Sequence performance isn't even a simple question of number of loops, and is also affected by boxed types and who know what else.
@@ -17,21 +16,6 @@ import kotlin.math.min
 // TODO: Mods blacklist.
 
 // See https://github.com/yairm210/Unciv/pull/5592/commits/a1f51e08ab782ab46bda220e0c4aaae2e8ba21a4 for example of running locking operation in separate thread.
-
-/**
- * Make sure an index is valid for this array.
- *
- * Doing all checks with the same function and error message is probably easier to debug than letting an array access fail at the point of access.
- *
- * @param index Index to check.
- * @throws IndexOutOfBoundsException if given invalid index.
- */
-fun <T> ArrayList<T>.enforceValidIndex(index: Int) {
-    if (index < 0 || this.size <= index) {
-        throw IndexOutOfBoundsException("Index {index} is out of range of ArrayList().")
-    }
-}
-
 
 /**
  * Self-contained instance of scripting API use.

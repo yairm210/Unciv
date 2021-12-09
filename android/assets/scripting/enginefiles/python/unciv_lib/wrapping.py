@@ -3,6 +3,7 @@ stdout = sys.stdout
 
 from . import ipc, api
 
+# TODO: Definitely CProfile this.
 
 class ForeignRequestMethod:
 	"""Decorator and descriptor protocol implementation for methods of ForeignObject subclasses that return values from foreign requests."""
@@ -89,6 +90,7 @@ _magicmeths = (
 	'__lt__',
 	'__le__',
 	'__eq__', # Kinda undefined behaviour for comparison with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in InstanceTokenizer.kt, on every `._getvalue_()`, so I think even the same `ForeignObject()` will never equal itself. # Actually, now raises exception when used with tokens, I think.
+	# Once guaranteed token reuse is implemented in Kotlin, this should work in all cases.
 	'__ne__',
 	'__ge__',
 	'__gt__',
@@ -218,12 +220,16 @@ class ForeignObject:
 		self._attrs._path = (makePathElement(name=path),) if isinstance(path, str) else tuple(path)
 		self._attrs._foreignrequester = foreignrequester
 	def __repr__(self):
-		return f"{self.__class__.__name__}({self._root}, {stringPathList(self._getpath_())}):{self._getvalue_()}"
+		return f"{self.__class__.__name__}({repr(self._root)}{', '+stringPathList(self._getpath_()) if self._getpath_() else ''}){':'+repr(self._getvalue_()) if self._getpath_() else ''}"
+		# TODO: This has become less informative under bind-by-reference. Look at tokenization format too.
+	def __str__(self):
+		# TODO: Maybe also just show _getvalue_() for __str__?
+		return f"<{repr(self._getvalue_())}>"
 	def _clone_(self, **kwargs):
 		return self.__class__(**{'path': self._path, 'use_root': self._use_root, 'root': self._root, 'foreignrequester': self._foreignrequester, **kwargs})
 	def _ipcjson_(self):
 		return self._getvalue_()
-	def _getpath_(self):
+	def _getpath_(self): # FIXME: Slow and unncessary?
 		return tuple(self._path)
 	def _bakereal_(self):
 		assert not self._isbaked
@@ -251,7 +257,7 @@ class ForeignObject:
 			item._bakereal_()
 		return item
 		# Indexing from end with negative numbers is not supported.
-		# Mostly a complexity choice. Matching Kotlin semantics is better than doing an extra IPC call.
+		# Mostly a complexity choice. Matching Kotlin semantics is better than translating with an extra IPC call for length.
 	def __iter__(self):
 		try:
 			return iter(self.keys())
@@ -273,11 +279,12 @@ class ForeignObject:
 			return self._setvalueraw_(value)
 	def __call__(self, *args):
 		result = self._clone_(path=(*self._getpath_(), makePathElement(ttype='Call', params=args)))
+		# Care must be taken that the resulting ForeignObject never has ._getvalueraw_ called more than once, including by __repr__ or __str__, as resolving it means actually running the call in Kotlin/the JVM. This means it must not be able to produce children with the same 'Call' element in their paths either.
 		if BIND_BY_REFERENCE:
-			result._bakereal_()
+			result._bakereal_() # Resolve the foreign value right away and clear path with bind-by-reference, so future accesses don't cause IPC actions.
 			return result
 		else:
-			return result._getvalue_()
+			return result._getvalue_() # Also resolve the foreign value right away with bind-by-path, and discard the ForeignObject.
 	@ForeignRequestMethod
 	def _getvalueraw_(self):
 		# Should never be called except for by _getvalue_.

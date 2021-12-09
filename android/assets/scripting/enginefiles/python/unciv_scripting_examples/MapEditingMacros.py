@@ -360,3 +360,13 @@ def makeImageFromTerrainColours(allowedterrains, allow_compute_colours, visualsp
 	requireComputedColours
 	pass# Make a PIL image, but don't mess with the user's filesystem.
 	#I guess inversing the output from this using loadImageColours could be a unit test.
+
+
+def showToolPopup():
+	pass
+
+def showToolboxPopup():
+	pass
+
+def injectButton(actor):
+	pass
