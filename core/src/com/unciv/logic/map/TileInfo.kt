@@ -776,7 +776,7 @@ open class TileInfo {
         isOcean = baseTerrain == Constants.ocean
 
         // Resource amounts missing - Old save or bad mapgen?
-        if (resource != null && tileResource.resourceType == ResourceType.Strategic && resourceAmount == 0) {
+        if (::tileMap.isInitialized && resource != null && tileResource.resourceType == ResourceType.Strategic && resourceAmount == 0) {
             // Let's assume it's a small deposit
             setTileResource(tileResource, majorDeposit = false)
         }
