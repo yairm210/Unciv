@@ -63,12 +63,12 @@ class ScriptingProtocolReplManager(scope: Any, blackbox: Blackbox): ScriptingRep
     //TODO: Doc
     fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true, execLoop: () -> Unit = fun(){}): ScriptingPacket {
         // Please update the specifications in Module.md if you change the basic structure of this REPL loop.
-        if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nSending: ${packetToSend}")
+        if (ScriptingDebugParameters.printPacketsForDebug) println("\nSending: ${packetToSend}")
         // TODO: Move this to ScriptingProtocol?
         blackbox.write(packetToSend.toJson() + "\n")
         execLoop()
         val response = ScriptingPacket.fromJson(blackbox.read(block=true))
-        if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nReceived: ${response}")
+        if (ScriptingDebugParameters.printPacketsForDebug) println("\nReceived: ${response}")
         if (enforceValidity) {
             ScriptingProtocol.enforceIsResponse(packetToSend, response)
         }
@@ -83,10 +83,10 @@ class ScriptingProtocolReplManager(scope: Any, blackbox: Blackbox): ScriptingRep
     fun foreignExecLoop() {
         while (true) {
             val request = ScriptingPacket.fromJson(blackbox.read(block=true))
-            if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nReceived: ${request}")
+            if (ScriptingDebugParameters.printPacketsForDebug) println("\nReceived: ${request}")
             if (request.action != null) {
                 val response = scriptingProtocol.makeActionResponse(request)
-                if (ScriptingDebugParameters.printScriptingPacketsForDebug) println("\nSending: ${response}")
+                if (ScriptingDebugParameters.printPacketsForDebug) println("\nSending: ${response}")
                 blackbox.write(response.toJson() + "\n")
             }
             if (request.hasFlag(ScriptingProtocol.KnownFlag.PassMic)) {

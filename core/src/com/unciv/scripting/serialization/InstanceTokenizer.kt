@@ -1,9 +1,14 @@
 package com.unciv.scripting.serialization
 
 import com.unciv.scripting.ScriptingConstants
+import com.unciv.scripting.utils.ScriptingDebugParameters
+import com.unciv.scripting.utils.WeakIdentityMap
 //import kotlin.math.min
 import java.lang.ref.WeakReference // Could use SoftReferences— Would seem convenient, but probably lead to mysterious bugs in scripts.
 import java.util.UUID
+import kotlin.math.floor
+import kotlin.math.log
+import kotlin.math.pow
 
 
 /**
@@ -18,11 +23,19 @@ object InstanceTokenizer {
     // Could even potentially get rid of `.registeredInstances` completely by automatically registering/reference counting in the JVM and freeing in scripting language destructors. But JS apparently doesn't give any way to control garbage collection, so the risk of memory leaks wouldn't be worth it.
 
     /**
-     * Weakmap of currently known token strings to WeakReferences of the Kotlin/JVM instances they represent.
+     * Map of currently known token strings to WeakReferences of the Kotlin/JVM instances they represent.
      */
     private val instancesByTokens = mutableMapOf<String, WeakReference<Any>>()
 
-//    private val tokensByInstances = WeakHashMap
+    // Map of WeakReferences of Kotlin/JVM instances to token strings that represent them.
+    private val tokensByInstances = WeakIdentityMap<Any?, String>()
+    // Without this, running the Python tests twice in a row led to a token count exceeding 32768 (and over 16348 after the first run) as of this comment, and very significant slowdown.
+    // With it… It's actually only slightly less, and the performance still hurts a lot.
+
+
+    // Logarithm and base for the number of known tokens after the last cleaning. Used for printing debug info.
+    private var lastTokenCountLog: Int = 0
+    private const val tokenCountLogBase = 2f
 
 //    private val instanceHashes = mutableMapOf<Pair<Int, arrayListOf<Pair<String, WeakReference<Any>>>()>>()
     // TODO: See note under clean().
@@ -55,6 +68,10 @@ object InstanceTokenizer {
      * @return Token string.
      */
     private fun tokenFromInstance(value: Any?): String {
+        var token: String? = tokensByInstances[value] // Atomicity. Separating containment check would give the GC a chance to clear the key.
+        if (token != null) {
+            return token
+        }
         var stringified: String
         stringified = try { // Because this can be overridden, it can fail. E.G. MapUnit.toString() depends on a lateinit.
             value.toString()
@@ -64,7 +81,9 @@ object InstanceTokenizer {
         if (stringified.length > tokenMaxLength) {
             stringified = stringified.slice(0..tokenMaxLength -4) + "..."
         }
-        return "$tokenPrefix${System.identityHashCode(value)}:${if (value == null) "null" else value::class.qualifiedName}/${stringified}:${UUID.randomUUID().toString()}"
+        token = "$tokenPrefix${System.identityHashCode(value)}:${if (value == null) "null" else value::class.qualifiedName}/${stringified}:${UUID.randomUUID().toString()}"
+        tokensByInstances[value] = token
+        return token
     }
 
     /**
@@ -82,15 +101,25 @@ object InstanceTokenizer {
         //FIXME (if I become a problem): Because a new unique token is currently generated even if the instance is already tokenized as something else, this will eventually get slower over time if a script makes lots of requests that result in new instance tokens for objects that last a long time (E.G. uncivGame). And since any stored instances should ideally be WeakReferences to prevent garbage collection from being broken for *all* instances, fixing that may not be as simple as checking for existing tokens to reuse them.
         //TODO: Probably keep another map of instance hashes to weakrefs and their existing token? The hashes will have to have counts instead of just containment, since otherwise a hash collision would cause the earlier token to become inaccessible.
         // Can I use WeakReferences as keys? Do they implement hash and equality? Huh, WeakHashMap is a thing here too. Cool. Auto cleaning. And could check against for cleaning the other map. Hm. Need to use identity instead of equality comparison. Oh wow. They have "WeakIdentityHashMap", the maniacs.
+        tokensByInstances.clean()
         val badtokens = mutableListOf<String>()
-        // TOOD: Print messages on major size milestone changes.
+        // TODO: Print messages on major size milestone changes.
         for ((t, o) in instancesByTokens) {
             if (o.get() == null) {
                 badtokens.add(t)
             }
         }
+        // TODO: Maybe O(n) cleaning strategy is just not great.
         for (t in badtokens) {
             instancesByTokens.remove(t)
+        }
+        if (ScriptingDebugParameters.printTokenizerMilestones) {
+            val count = instancesByTokens.size
+            val current = floor(log(count.toFloat(), tokenCountLogBase)).toInt()
+            if (current != lastTokenCountLog) {
+                println("${this::class.simpleName} now contains ${count} tokens.")
+            }
+            lastTokenCountLog = current
         }
     }
 

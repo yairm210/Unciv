@@ -1,6 +1,7 @@
 package com.unciv.scripting.utils
 
 object ScriptingDebugParameters {
-    var printScriptingPacketsForDebug = false
-    var printScriptingAccessForDebug = false
+    var printPacketsForDebug = false
+    var printAccessForDebug = false
+    var printTokenizerMilestones = true
 }

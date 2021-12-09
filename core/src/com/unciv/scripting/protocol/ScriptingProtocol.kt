@@ -242,7 +242,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
         val value = getRealOrNull(packetData["value"])
 
         init {
-            if (ScriptingDebugParameters.printScriptingAccessForDebug) printDebug()
+            if (ScriptingDebugParameters.printAccessForDebug) printDebug()
         }
 
         private fun getRealOrNull(jsonElement: JsonElement?): Any? {
