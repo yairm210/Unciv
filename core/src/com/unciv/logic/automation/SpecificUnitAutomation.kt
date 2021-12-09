@@ -330,7 +330,8 @@ object SpecificUnitAutomation {
                     .filter { unit.movement.canMoveTo(it) }
                     .minByOrNull { it.aerialDistanceTo(unit.currentTile) }
         }
-        else if (cityToConvert != null){
+        else if (destination != null){
+            if (cityToConvert == null) return
             destination = cityToConvert.getCenterTile().neighbors.asSequence()
                 .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
                 .filter { unit.movement.canMoveTo(it) }
@@ -505,7 +506,7 @@ object SpecificUnitAutomation {
     private fun doReligiousAction(unit: MapUnit, destination: TileInfo){
         val actionList: java.util.ArrayList<UnitAction> = ArrayList()
         UnitActions.addActionsWithLimitedUses(unit, actionList, destination)
-        if (actionList.firstOrNull()?.action?.invoke() == null) return
+        if (actionList.firstOrNull()?.action == null) return
         actionList.first().action!!.invoke()
     }
 }

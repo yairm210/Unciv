@@ -343,14 +343,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         var modifier = 0f
 
         val missionary = cityInfo.getRuleset().units.values.asSequence()
-            .filter { it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
-            .filter { it.hasUnique("can spread religion")}
-            .firstOrNull()
+            .firstOrNull { it -> it.canBePurchasedWithStat(cityInfo, Stat.Faith)
+                    && it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion"} }
+
 
         val inquisitor = cityInfo.getRuleset().units.values.asSequence()
-            .filter { it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
-            .filter { it.hasUnique("can remove hearsay") }
-            .firstOrNull()
+            .firstOrNull { it.canBePurchasedWithStat(cityInfo, Stat.Faith)
+                    && it.hasUnique("Prevents spreading of religion to the city it is next to") }
+
 
 
         // these 4 if conditions are used to determine if an AI should buy units to spread religion, or spend faith to buy things like new military units or new buildings.
@@ -368,7 +368,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filterNot { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion!!.name }
 
         val buildInqusitor = citiesNotFollowingOurReligion
-            .filter { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion?.name }.toList().size.toFloat() / 10 + modifier
+            .filter { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion?.name }
+            .toList().size.toFloat() / 10 + modifier
 
         val possibleSpreadReligionTargets = civInfo.gameInfo.getCities()
             .filter { it.getCenterTile().aerialDistanceTo(cityInfo.getCenterTile()) < 30 }
