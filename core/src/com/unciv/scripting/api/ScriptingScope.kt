@@ -23,24 +23,24 @@ import com.unciv.ui.worldscreen.WorldScreen
  *
  * To reduce the chance of E.G. name collisions in .apiHelpers.registeredInstances, or one misbehaving mod breaking everything by unassigning .gameInfo, different ScriptingState()s should each have their own ScriptingScope().
  */
-class ScriptingScope(
+object ScriptingScope
         // This entire API should still be considered unstable. It may be drastically changed at any time.
 
         //If this is going to be exposed to downloaded mods, then every declaration here, as well as *every* declaration that is safe for scripts to have access to, should probably be whitelisted with annotations and checked or errored at the point of reflection.
-        var civInfo: CivilizationInfo? = null,
-        var gameInfo: GameInfo? = null,
-        var uncivGame: UncivGame? = null,
-        var worldScreen: WorldScreen? = null,
-        var mapEditorScreen: MapEditorScreen? = null,
-    ) {
+    {
+    var civInfo: CivilizationInfo? = null
+    var gameInfo: GameInfo? = null
+    var uncivGame: UncivGame? = null
+    var worldScreen: WorldScreen? = null
+    var mapEditorScreen: MapEditorScreen? = null
 
     val Unciv = ScriptingApiUnciv
 
-    val apiHelpers = ScriptingApiHelpers(this)
+    val apiHelpers = ScriptingApiHelpers
 
-    val modApiHelpers = ScriptingModApiHelpers(this)
+    val modApiHelpers = ScriptingModApiHelpers
 
-    val apiExecutionContext = ScriptingApiExecutionContext()
+    val apiExecutionContext = ScriptingApiExecutionContext
 
     // TODO: Some way to clear the instancesaver?
 

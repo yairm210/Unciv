@@ -38,7 +38,7 @@ object AllScriptingApiInstanceRegistries {
  * @throws IllegalArgumentException On an attempted assignment colliding with an existing key.
  * @throws NoSuchElementException For reads and removals at non-existent keys.
  */
-class ScriptingApiInstanceRegistry: MutableMap<String, Any?> {
+object ScriptingApiInstanceRegistry: MutableMap<String, Any?> {
     private val backingMap = mutableMapOf<String, Any?>()
 //    fun init() {
 //        AllScriptingApiInstanceRegistries.add(this)

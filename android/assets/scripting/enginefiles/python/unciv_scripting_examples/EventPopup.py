@@ -23,9 +23,7 @@ def showPopup():
 	closebutton = ExtensionFunctions['toTextButton'](Constants.close)
 	ExtensionFunctions['onClick'](
 		closebutton,
-		modApiHelpers.lambdifyIgnoreExceptions(
-			modApiHelpers.lambdifyReadPathcode(p, '.close()')
-		)
+		modApiHelpers.lambdifyReadPathcode(p, '.close()')
 	)
 	p.add(closebutton)
 	p.open(False)
@@ -38,9 +36,7 @@ def showPopup2():
 	closebutton = ExtensionFunctions['toTextButton'](Constants.close)
 	ExtensionFunctions['onClick'](
 		closebutton,
-		modApiHelpers.lambdifyIgnoreExceptions(
-			modApiHelpers.lambdifyReadPathcode(p, '.close()')
-		)
+		modApiHelpers.lambdifyReadPathcode(p, '.close()')
 	)
 	p.add(closebutton)
 	p.open(False)
@@ -90,14 +86,8 @@ def showEventPopup(title=None, image=None, text="No text event text provided!", 
 		ExtensionFunctions['onClick'](
 			button,
 			modApiHelpers.lambdifyCombine([
-				modApiHelpers.lambdifyIgnoreExceptions(
-					action
-				)
-				for action in
-					(
-						*((clickaction,) if real(clickaction) else ()),
-						closeaction
-					)
+				*((clickaction,) if real(clickaction) else ()),
+				closeaction
 			])
 		)
 		popup.add(button).row()

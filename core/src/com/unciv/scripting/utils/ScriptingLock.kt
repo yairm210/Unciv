@@ -3,7 +3,6 @@ package com.unciv.scripting.utils
 import com.unciv.UncivGame
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.ToastPopup
 import com.unciv.ui.utils.stringifyException
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
@@ -22,10 +21,10 @@ object ScriptingLock {
         if (!success) throw IllegalStateException("Cannot acquire ScriptingLock for $name because already in use by $runningName.")
         runningKey = UUID.randomUUID().toString()
         return runningKey
-//        scriptingScope.worldScreen?.isPlayersTurn = false
+//        ScriptingScope.worldScreen?.isPlayersTurn = false
         //Hm. Should return to original value, not necessarily true. That means keeping a property, which means I'd rather put this in its own class.
         //TODO: Move to ScriptingLock.
-        //Not perfect. I think scriptingScope also exposes mutating the GUI itself, and many things that aren't protected by this? Then again, a script that *wants* to cause a crash/ANR will always be able to do so by just assigning an invalid value or deleting a required node somewhere. Could make mod handlers outside of worldScreen blocking, with written stipulations on (dis)recommended size, and then
+        //Not perfect. I think ScriptingScope also exposes mutating the GUI itself, and many things that aren't protected by this? Then again, a script that *wants* to cause a crash/ANR will always be able to do so by just assigning an invalid value or deleting a required node somewhere. Could make mod handlers outside of worldScreen blocking, with written stipulations on (dis)recommended size, and then
         //https://github.com/yairm210/Unciv/pull/5592/commits/a1f51e08ab782ab46bda220e0c4aaae2e8ba21a4
     }
     fun release(releaseKey: String) {
@@ -42,17 +41,17 @@ object ScriptingLock {
     }
     // TODO: Prevent UI collision, and also prevent recursive script executions.
     // Allow registering name text of running script, for error messages.
-    fun notifyPlayerScriptFailure(exception: Throwable) {
+    fun notifyPlayerScriptFailure(exception: Throwable, asName: String? = null) {
         // Should this be in ScriptingState after that's been singleton'd?
         val popup = Popup(UncivGame.Current.screen as BaseScreen)
-        val msg = "An error has occurred with the mod/script \"$runningName\":\n\n${exception.toString().prependIndent("\t")}\n\nSee system terminal output for details.\nConsider disabling mods if this keeps happening.\n"
+        val msg = "An error has occurred with the mod/script \"${asName ?: runningName}\":\n\n${exception.toString().prependIndent("\t")}\n\nSee system terminal output for details.\nConsider disabling mods if this keeps happening.\n"
         popup.addGoodSizedLabel(msg).row()
         popup.addOKButton{}
         popup.open(true)
-        printConsolePlayerScriptFailure(exception)
+        printConsolePlayerScriptFailure(exception, asName)
     }
-    fun printConsolePlayerScriptFailure(exception: Throwable) {
-        println("\nException with \"$runningName\" script:\n${exception.stringifyException().prependIndent("\t")}\n")
+    fun printConsolePlayerScriptFailure(exception: Throwable, asName: String? = null) {
+        println("\nException with \"${asName ?: runningName}\" script:\n${exception.stringifyException().prependIndent("\t")}\n")
         // Really these should all go to STDERR.
     }
 }

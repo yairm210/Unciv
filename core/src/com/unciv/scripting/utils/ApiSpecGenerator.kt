@@ -61,14 +61,14 @@ fun makeMemberSpecDef(member: KCallable<*>): ApiSpecDef {
 }
 
 
-class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
+class ApiSpecGenerator {
 
     fun isUncivClass(cls: KClass<*>): Boolean {
         return cls.qualifiedName!!.startsWith("com.unciv")
     }
 
     fun getAllUncivClasses(): Set<KClass<*>> {
-        val searchclasses = mutableListOf<KClass<*>>(scriptingScope::class)
+        val searchclasses = mutableListOf<KClass<*>>(ScriptingScope::class)
         val encounteredclasses = mutableSetOf<KClass<*>>()
         var i: Int = 0
         while (i < searchclasses.size) {
@@ -97,7 +97,7 @@ class ApiSpecGenerator(val scriptingScope: ScriptingScope) {
     }
 
     fun generateFlatApi(): List<String> {
-        return scriptingScope::class.members.map { it.name }
+        return ScriptingScope::class.members.map { it.name }
     }
 
     fun generateClassApi(): Map<String, List<ApiSpecDef>> {

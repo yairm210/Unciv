@@ -37,18 +37,18 @@ UncivGame():
 			uncivGame
 			worldScreen?
 		*ScriptingBackend():
-			scriptingScope
+			ScriptingScope
 			?ScriptingReplManager():
 				Blackbox() // Common interface to wrap foreign interpreter with pipes, STDIN/STDOUT, queues, sockets, embedding, JNI, etc.
-				scriptingScope
+				ScriptingScope
 				ScriptingProtocol():
-					scriptingScope
+					ScriptingScope
 			?folderHandler: setupInterpreterEnvironment() // If used, a temporary directory with file structure copied from engine and shared folders in `assets/scripting`.
 	ConsoleScreen(): // Persistent as long as window isn't resized. Recreates itself and restores most of its state from scriptingState if resized.
 		scriptingState
 WorldScreen():
 	consoleScreen
-	scriptingState // ScriptingState has getters and setters that wrap scriptingScope, which WorldScreen uses to update game info.
+	scriptingState // ScriptingState has getters and setters that wrap ScriptingScope, which WorldScreen uses to update game info.
 MainMenuScreen():
 	consoleScreen
 	scriptingState // Same as for worldScreen.
@@ -80,7 +80,7 @@ fun ExecuteCommand(command:String):
 		packet:Packet = ReceiveFromInterpreter().parsed()
 		if isPropertyRequest(packet):
 			UnlockGameInfo()
-			response:Packet = ResolvePacket(scriptingScope, packet)
+			response:Packet = ResolvePacket(ScriptingScope, packet)
 			LockGameInfo()
 			SendToInterpreter(response)
 		else if isCommandEndPacket(packet):

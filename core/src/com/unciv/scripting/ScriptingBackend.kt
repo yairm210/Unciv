@@ -40,7 +40,7 @@ abstract class ScriptingBackend_metadata {
     /**
      * @return A new instance of the parent class of which this object is a companion.
      */
-    abstract fun new(scriptingScope: ScriptingScope): ScriptingBackend // TODO: Um, class references are totally a thing, and probably distinct from KClass, right?
+    abstract fun new(): ScriptingBackend // TODO: Um, class references are totally a thing, and probably distinct from KClass, right?
     abstract val displayName: String
     val syntaxHighlighting: SyntaxHighlighter? = null
 }
@@ -98,7 +98,7 @@ interface ScriptingImplementation {
 
 // TODO: Add note that methods should be called through ScriptingState, rather than directly.
 
-open class ScriptingBackend(val scriptingScope: ScriptingScope): ScriptingImplementation {
+open class ScriptingBackend: ScriptingImplementation {
 //A little bit confusing.
 //Hm. Couldn't the metadata getter go on the interface?
 //That would mean this exists only as a code example for defining the companion object.
@@ -110,7 +110,7 @@ open class ScriptingBackend(val scriptingScope: ScriptingScope): ScriptingImplem
      * So every ScriptngBackend has a Metadata:ScriptingBackend_metadata companion object, which is stored in the ScriptingBackendType enums.
      */
     companion object Metadata: ScriptingBackend_metadata() {
-        override fun new(scriptingScope: ScriptingScope) = ScriptingBackend(scriptingScope)
+        override fun new() = ScriptingBackend()
         // Trying to instantiate from a KClass seems messy when the constructors are expected to be called normally. This is easier.
         override val displayName: String = "Dummy"
     }
@@ -129,9 +129,9 @@ open class ScriptingBackend(val scriptingScope: ScriptingScope): ScriptingImplem
 
 //Has
 // Non-essential. Nothing should depend on this. Should always be removable from the game's code.
-class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+class HardcodedScriptingBackend(): ScriptingBackend() {
     companion object Metadata: ScriptingBackend_metadata() {
-        override fun new(scriptingScope: ScriptingScope) = HardcodedScriptingBackend(scriptingScope)
+        override fun new() = HardcodedScriptingBackend()
         override val displayName: String = "Hardcoded"
     }
 
@@ -190,19 +190,19 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                 }
             }
             "countcities" -> {
-                if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
-                appendOut(scriptingScope.civInfo!!.cities.size.toString())
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                appendOut(ScriptingScope.civInfo!!.cities.size.toString())
             }
             "locatebuildings" -> {
                 var buildingcities: List<String> = listOf()
-                if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (args.size > 1) {
                     var searchfor = args.slice(1..args.size-1).joinToString(" ").trim(' ')
-                    buildingcities = scriptingScope.civInfo!!.cities
+                    buildingcities = ScriptingScope.civInfo!!.cities
                         .filter {
                             searchfor in it.cityConstructions.builtBuildings ||
                             it.cityConstructions.builtBuildings.any({ building ->
-                                scriptingScope.gameInfo!!.ruleSet.buildings[building]!!.requiresResource(searchfor)
+                                ScriptingScope.gameInfo!!.ruleSet.buildings[building]!!.requiresResource(searchfor)
                             })
                         }
                         .map { it.name }
@@ -211,18 +211,18 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
             }
             "missingbuildings" -> {
                 var buildingcities: List<String> = listOf()
-                if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (args.size > 1) {
                     var searchfor = args.slice(1..args.size-1).joinToString(" ").trim(' ')
-                    buildingcities = scriptingScope.civInfo!!.cities
+                    buildingcities = ScriptingScope.civInfo!!.cities
                         .filter { !(searchfor in it.cityConstructions.builtBuildings) }
                         .map { it.name }
                 }
                 appendOut(buildingcities.joinToString(", "))
             }
             "listcities" -> {
-                if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
-                appendOut(scriptingScope.civInfo!!.cities
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                appendOut(ScriptingScope.civInfo!!.cities
                     .map { city -> city.name }
                     .joinToString(", ")
                 )
@@ -236,33 +236,33 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                 appendOut("Cheats disabled.")
             }
             "godmode" -> {
-                if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
-                    var godmode = if (args.size > 1) args[1].toBoolean() else !(scriptingScope.gameInfo!!.gameParameters.godMode)
-                    scriptingScope.gameInfo!!.gameParameters.godMode = godmode
+                    var godmode = if (args.size > 1) args[1].toBoolean() else !(ScriptingScope.gameInfo!!.gameParameters.godMode)
+                    ScriptingScope.gameInfo!!.gameParameters.godMode = godmode
                     appendOut("${if (godmode) "Enabled" else "Disabled"} godmode.")
                 } else {
                     appendOut("Cheats must be enabled to use this command!")
                 }
             }
             "godview" -> {
-                if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
-                    var godview = if (args.size > 1) args[1].toBoolean() else !(scriptingScope.uncivGame!!.viewEntireMapForDebug)
-                    scriptingScope.uncivGame!!.viewEntireMapForDebug = godview
+                    var godview = if (args.size > 1) args[1].toBoolean() else !(ScriptingScope.uncivGame!!.viewEntireMapForDebug)
+                    ScriptingScope.uncivGame!!.viewEntireMapForDebug = godview
                     appendOut("${if (godview) "Enabled" else "Disabled"} whole map visibility.")
                 } else {
                     appendOut("Cheats must be enabled to use this command!")
                 }
             }
             "inspectpath" -> {
-                if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
                     val detailed = args.size > 1 && args[1] == "detailed"
                     val startindex = if (detailed) 2 else 1
                     val path = (if (args.size > startindex) args.slice(startindex..args.size-1) else listOf()).joinToString(" ")
                     try {
-                        var obj = Reflection.evalKotlinString(scriptingScope, path)
+                        var obj = Reflection.evalKotlinString(ScriptingScope, path)
                         val isnull = obj == null
                         appendOut(
                             if (detailed)
@@ -281,9 +281,9 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                 if (cheats) {
                     try {
                         val path = (if (args.size > 2) args.slice(2..args.size-1) else listOf()).joinToString(" ")
-                        val value = Reflection.evalKotlinString(scriptingScope, args[1])
+                        val value = Reflection.evalKotlinString(ScriptingScope, args[1])
                         Reflection.setInstancePath(
-                            scriptingScope,
+                            ScriptingScope,
                             Reflection.parseKotlinPath(path),
                             value
                         )
@@ -296,7 +296,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                 }
             }
             "simulatetoturn" -> {
-                if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
                     var numturn = 0
                     if (args.size > 1) {
@@ -306,17 +306,17 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
                             appendOut("Invalid number: ${args[1]}\n")
                         }
                     }
-                    scriptingScope.uncivGame!!.simulateUntilTurnForDebug = numturn
+                    ScriptingScope.uncivGame!!.simulateUntilTurnForDebug = numturn
                     appendOut("Will automatically simulate game until turn ${numturn} after this turn.\nThe map will not update until completed.")
                 } else {
                     appendOut("Cheats must be enabled to use this command!")
                 }
             }
             "supercharge" -> {
-                if (!(scriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
                 if (cheats) {
-                    var supercharge = if (args.size > 1) args[1].toBoolean() else !(scriptingScope.uncivGame!!.superchargedForDebug)
-                    scriptingScope.uncivGame!!.superchargedForDebug = supercharge
+                    var supercharge = if (args.size > 1) args[1].toBoolean() else !(ScriptingScope.uncivGame!!.superchargedForDebug)
+                    ScriptingScope.uncivGame!!.superchargedForDebug = supercharge
                     appendOut("${if (supercharge) "Enabled" else "Disabled"} stats supercharge.")
                 } else {
                     appendOut("Cheats must be enabled to use this command!")
@@ -332,10 +332,10 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
 
 
 //Nothing should depend on this.
-class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+class ReflectiveScriptingBackend(): ScriptingBackend() {
 
     companion object Metadata: ScriptingBackend_metadata() {
-        override fun new(scriptingScope: ScriptingScope) = ReflectiveScriptingBackend(scriptingScope)
+        override fun new() = ReflectiveScriptingBackend()
         override val displayName: String = "Reflective"
     }
 
@@ -375,7 +375,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
                 }
                 val leafname = if (workingpath.isNotEmpty()) workingpath[workingpath.size - 1].name else ""
                 val prefix = command.dropLast(leafname.length)
-                val branchobj = Reflection.resolveInstancePath(scriptingScope, workingpath.slice(0..workingpath.size-2))
+                val branchobj = Reflection.resolveInstancePath(ScriptingScope, workingpath.slice(0..workingpath.size-2))
                 return AutocompleteResults(
                     branchobj!!::class.members
                         .map { it.name }
@@ -399,20 +399,20 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
         try {
             when (parts[0]) {
                 "get" -> {
-                    appendOut("${Reflection.evalKotlinString(scriptingScope, parts[1])}")
+                    appendOut("${Reflection.evalKotlinString(ScriptingScope, parts[1])}")
                 }
                 "set" -> {
                     var setparts = parts[1].split(' ', limit=2)
-                    var value = Reflection.evalKotlinString(scriptingScope, setparts[0])
+                    var value = Reflection.evalKotlinString(ScriptingScope, setparts[0])
                     Reflection.setInstancePath(
-                        scriptingScope,
+                        ScriptingScope,
                         Reflection.parseKotlinPath(setparts[1]),
                         value
                     )
                     appendOut("Set ${setparts[1]} to ${value}")
                 }
                 "typeof" -> {
-                    var obj = Reflection.evalKotlinString(scriptingScope, parts[1])
+                    var obj = Reflection.evalKotlinString(ScriptingScope, parts[1])
                     appendOut("${if (obj == null) null else obj!!::class.qualifiedName}")
                 }
                 "examples" -> {
@@ -430,13 +430,13 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
 }
 
 
-abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+abstract class EnvironmentedScriptingBackend(): ScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         // Need full metadata companion here, or else won't compile.
         // Ideally would be able to just declare that subclasses must define a companion of the correct type, but ah well.
         override val displayName = ""
-        override fun new(scriptingScope: ScriptingScope) = throw UnsupportedOperationException("Base scripting backend class not meant to be instantiated.")
+        override fun new() = throw UnsupportedOperationException("Base scripting backend class not meant to be instantiated.")
         override val engine = ""
     }
 
@@ -453,13 +453,13 @@ abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): Sc
 }
 
 
-abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): EnvironmentedScriptingBackend(scriptingScope) {
+abstract class BlackboxScriptingBackend(): EnvironmentedScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         // Need full metadata companion here, or else won't compile.
         // Ideally would be able to just declare that subclasses must define a companion of the correct type, but ah well.
         override val displayName = ""
-        override fun new(scriptingScope: ScriptingScope) = throw UnsupportedOperationException("Base scripting backend class not meant to be instantiated.")
+        override fun new() = throw UnsupportedOperationException("Base scripting backend class not meant to be instantiated.")
         override val engine = ""
     }
 
@@ -503,13 +503,13 @@ abstract class BlackboxScriptingBackend(scriptingScope: ScriptingScope): Environ
 }
 
 
-abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): BlackboxScriptingBackend(scriptingScope) {
+abstract class SubprocessScriptingBackend(): BlackboxScriptingBackend() {
 
     abstract val processCmd: Array<String>
 
     override val blackbox by lazy { SubprocessBlackbox(processCmd) }
 
-    override val replManager: ScriptingReplManager by lazy { ScriptingRawReplManager(scriptingScope, blackbox) }
+    override val replManager: ScriptingReplManager by lazy { ScriptingRawReplManager(ScriptingScope, blackbox) }
 
     override fun motd(): String {
         return """
@@ -525,17 +525,17 @@ abstract class SubprocessScriptingBackend(scriptingScope: ScriptingScope): Black
 }
 
 
-abstract class ProtocolSubprocessScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
+abstract class ProtocolSubprocessScriptingBackend(): SubprocessScriptingBackend() {
 
-    override val replManager by lazy { ScriptingProtocolReplManager(scriptingScope, blackbox) }
+    override val replManager by lazy { ScriptingProtocolReplManager(ScriptingScope, blackbox) }
 
 }
 
 
-class SpyScriptingBackend(scriptingScope: ScriptingScope): ProtocolSubprocessScriptingBackend(scriptingScope) {
+class SpyScriptingBackend(): ProtocolSubprocessScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
-        override fun new(scriptingScope: ScriptingScope) = SpyScriptingBackend(scriptingScope)
+        override fun new() = SpyScriptingBackend()
         override val displayName: String = "System Python"
         override val engine = "python"
     }
@@ -545,10 +545,10 @@ class SpyScriptingBackend(scriptingScope: ScriptingScope): ProtocolSubprocessScr
 }
 
 
-class SqjsScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
+class SqjsScriptingBackend(): SubprocessScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
-        override fun new(scriptingScope: ScriptingScope) = SqjsScriptingBackend(scriptingScope)
+        override fun new() = SqjsScriptingBackend()
         override val displayName: String = "System QuickJS"
         override val engine = "qjs"
     }
@@ -558,10 +558,10 @@ class SqjsScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
 }
 
 
-class SluaScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingBackend(scriptingScope) {
+class SluaScriptingBackend(): SubprocessScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
-        override fun new(scriptingScope: ScriptingScope) = SluaScriptingBackend(scriptingScope)
+        override fun new() = SluaScriptingBackend()
         override val displayName: String = "System Lua"
         override val engine = "lua"
     }
@@ -571,12 +571,12 @@ class SluaScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
 }
 
 
-class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
+class DevToolsScriptingBackend(): ScriptingBackend() {
 
     //Probably redundant, and can probably be removed in favour of whatever mechanism is currently used to run the translation file generator.
 
     companion object Metadata: ScriptingBackend_metadata() {
-        override fun new(scriptingScope: ScriptingScope) = DevToolsScriptingBackend(scriptingScope)
+        override fun new() = DevToolsScriptingBackend()
         override val displayName: String = "DevTools"
     }
 
@@ -603,10 +603,10 @@ class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend
         try {
             when (commv[0]) {
                 "PrintFlatApiDefs" -> {
-                    out += ApiSpecGenerator(scriptingScope).generateFlatApi().toString() + "\n"
+                    out += ApiSpecGenerator().generateFlatApi().toString() + "\n"
                 }
                 "PrintClassApiDefs" -> {
-                    out += ApiSpecGenerator(scriptingScope).generateClassApi().toString() + "\n"
+                    out += ApiSpecGenerator().generateClassApi().toString() + "\n"
                 }
                 else -> {
                     out += "Unknown command: ${commv[0]}\n"

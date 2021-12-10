@@ -22,7 +22,7 @@ import kotlin.math.min
 //"I understand and wish to continue." // Probably grey this out for five seconds.
 //"Get me out of here!"
 
-class ConsoleScreen(val scriptingState: ScriptingState, var closeAction: () -> Unit): BaseScreen() {
+class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
 
     private val layoutTable: Table = Table()
 
@@ -65,7 +65,7 @@ class ConsoleScreen(val scriptingState: ScriptingState, var closeAction: () -> U
         for (backendtype in ScriptingBackendType.values()) {
             var backendadder = backendtype.metadata.displayName.toTextButton()
             backendadder.onClick {
-                echo(scriptingState.spawnBackend(backendtype).motd)
+                echo(ScriptingState.spawnBackend(backendtype).motd)
                 updateRunning()
             }
             backendsAdders.add(backendadder)
@@ -156,20 +156,20 @@ class ConsoleScreen(val scriptingState: ScriptingState, var closeAction: () -> U
     private fun updateRunning() {
         runningList.clearChildren()
         var i = 0
-        for (backend in scriptingState.scriptingBackends) {
+        for (backend in ScriptingState.scriptingBackends) {
             var button = backend.metadata.displayName.toTextButton()
             val index = i
             runningList.add(button)
-            if (i == scriptingState.activeBackend) {
+            if (i == ScriptingState.activeBackend) {
                 button.color = Color.GREEN
             }
             button.onClick {
-                scriptingState.switchToBackend(index)
+                ScriptingState.switchToBackend(index)
                 updateRunning()
             }
             var termbutton = ImageGetter.getImage("OtherIcons/Stop")
             termbutton.onClick {
-                val exc: Exception? = scriptingState.termBackend(index)
+                val exc: Exception? = ScriptingState.termBackend(index)
                 updateRunning()
                 if (exc != null) {
                 	echo("Failed to stop ${backend.metadata.displayName} backend: ${exc.toString()}")
@@ -206,7 +206,7 @@ class ConsoleScreen(val scriptingState: ScriptingState, var closeAction: () -> U
 
     private fun echoHistory() {
         // Doesn't restore autocompletion. I guess that's by design. Autocompletion is a protocol/UI-level feature IMO, and not part of the emulated STDIN/STDOUT. Call `echo()` in `ScriptingState`'s `autocomplete` method if that's a problem.
-        for (hist in scriptingState.getOutputHistory()) {
+        for (hist in ScriptingState.getOutputHistory()) {
             echo(hist)
         }
     }
@@ -214,7 +214,7 @@ class ConsoleScreen(val scriptingState: ScriptingState, var closeAction: () -> U
     private fun autocomplete() {
         val original = inputText
         val cursorpos = cursorPos
-        var results = scriptingState.autocomplete(inputText, cursorpos)
+        var results = ScriptingState.autocomplete(inputText, cursorpos)
         if (results.isHelpText) {
             echo(results.helpText)
             return
@@ -245,7 +245,7 @@ class ConsoleScreen(val scriptingState: ScriptingState, var closeAction: () -> U
     }
 
     private fun navigateHistory(increment: Int) {
-        setText(scriptingState.navigateHistory(increment), SetTextCursorMode.End)
+        setText(ScriptingState.navigateHistory(increment), SetTextCursorMode.End)
     }
 
     private fun echo(text: String) {
@@ -255,7 +255,7 @@ class ConsoleScreen(val scriptingState: ScriptingState, var closeAction: () -> U
         label.setWrap(true)
         printHistory.add(label).left().bottom().width(width).padLeft(15f).row()
         val cells = printHistory.getCells()
-        while (cells.size > scriptingState.maxOutputHistory && cells.size > 0) {
+        while (cells.size > ScriptingState.maxOutputHistory && cells.size > 0) {
             val cell = cells.first()
             cell.getActor().remove()
             cells.removeValue(cell, true)
@@ -266,12 +266,12 @@ class ConsoleScreen(val scriptingState: ScriptingState, var closeAction: () -> U
     }
 
     private fun run() {
-        echo(scriptingState.exec(inputText))
+        echo(ScriptingState.exec(inputText))
         setText("")
     }
 
     fun clone(): ConsoleScreen {
-        return ConsoleScreen(scriptingState, closeAction).also {
+        return ConsoleScreen(closeAction).also {
             it.inputText = inputText
             it.cursorPos = cursorPos
             it.setScroll(printScroll.getScrollX(), printScroll.getScrollY(), animate = false)

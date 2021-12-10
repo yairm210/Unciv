@@ -253,7 +253,6 @@ class ForeignObject:
 	def __getattr__(self, name, *, do_bake=True):
 		# Due to lazy IPC calling, hasattr will never work with this. Instead, check for in dir().
 		# TODO: Shouldn't I special-casing get_help or _docstring_ here? Wait, no, I think I thought it would be accessed on the class.
-		# TODO: I suppose I could catch ForeignError to raise AttributeError here.
 		attr = self._clone_(path=(*self._path, makePathElement(name=name)))
 		if BIND_BY_REFERENCE and do_bake:
 			try:

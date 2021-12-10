@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.scripting.ScriptingState
+import com.unciv.scripting.api.ScriptingScope
 import com.unciv.ui.consolescreen.ConsoleScreen
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.worldscreen.WorldScreen
@@ -17,9 +18,6 @@ interface IConsoleScreenAccessible {
 
     val BaseScreen.consoleScreen: ConsoleScreen // TODO: Oh, apparently don't need to explicitly refer to this? Change in other extension functions too, I guess.
         get() = this.game.consoleScreen
-
-    val BaseScreen.scriptingState: ScriptingState
-        get() = this.game.scriptingState
 
 
     //Set the console screen tilde hotkey.
@@ -48,7 +46,7 @@ interface IConsoleScreenAccessible {
         worldScreen: WorldScreen? = null,
         mapEditorScreen: MapEditorScreen? = null
     ) {
-        this.scriptingState.scriptingScope.also {
+        ScriptingScope.also {
             it.gameInfo = gameInfo
             it.civInfo = civInfo
             it.worldScreen = worldScreen

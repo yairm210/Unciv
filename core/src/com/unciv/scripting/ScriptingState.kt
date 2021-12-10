@@ -25,12 +25,12 @@ import kotlin.collections.ArrayList
  * Abstracts available scope, running backends, command history
  * Should be unique per isolated use of scripting. E.G. One for the [~]-key console screen, one for each mod/all mods per save file (or whatever works best), etc.
  *
- * @property scriptingScope ScriptingScope instance at the root of all scripting API.
+ * @property ScriptingScope ScriptingScope instance at the root of all scripting API.
  */
 //TODO: Actually, probably should be only one instance in game, since various context changes set various ScriptingScope properties through it, and being able to view mod command history will also be useful.
 // Yeah, singleton both this and ScriptingScope, I think?… There would be some benefits from having one ScriptingScoper per ScriptingBackend (namely: concurrent script executions), but it would come with a significant cost to how ScriptingScope is connected to ScriptingState and how the properties in it are currently updated (and that one benefit sounds like a can of Heisenbugs).
-//This will be responsible for: Using the lock, threading, passing the entrypoint name to the lock, exposing context/running backend in scriptingScope, and setting handler context arguments.
-class ScriptingState(val scriptingScope: ScriptingScope) {
+//This will be responsible for: Using the lock, threading, passing the entrypoint name to the lock, exposing context/running backend in ScriptingScope, and setting handler context arguments.
+object ScriptingState {
 
     val scriptingBackends = ArrayList<ScriptingBackend>()
 
@@ -50,7 +50,7 @@ class ScriptingState(val scriptingScope: ScriptingScope) {
     data class BackendSpawnResult(val backend: ScriptingBackend, val motd: String)
 
     fun spawnBackend(backendtype: ScriptingBackendType): BackendSpawnResult {
-        val backend: ScriptingBackend = backendtype.metadata.new(scriptingScope)
+        val backend: ScriptingBackend = backendtype.metadata.new()
         scriptingBackends.add(backend)
         activeBackend = scriptingBackends.size - 1
         val motd = backend.motd()
@@ -132,7 +132,7 @@ class ScriptingState(val scriptingScope: ScriptingScope) {
 
     fun exec(command: String): String { // TODO: Allow "passing" args that get assigned to something under ScriptingScope here.
         // TODO: Allow passing a name to use with ScriptingLock.
-        //scriptingScope.scriptingBackend =
+        //ScriptingScope.scriptingBackend =
         if (command.length > 0) {
             if (command != commandHistory.lastOrNull())
                 commandHistory.add(command)
@@ -145,7 +145,7 @@ class ScriptingState(val scriptingScope: ScriptingScope) {
         activeCommandHistory = 0
         var out = if (hasBackend()) getActiveBackend().exec(command) else ""
         echo(out)
-        //scriptingScope.scriptingBackend = null // TODO
+        //ScriptingScope.scriptingBackend = null // TODO
         return out
     }
 
