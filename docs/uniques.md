@@ -3,12 +3,12 @@
  - [Improvement uniques](#improvement-uniques)
  - [Global uniques](#global-uniques)
  - [FollowerBelief uniques](#followerbelief-uniques)
+ - [Resource uniques](#resource-uniques)
  - [Building uniques](#building-uniques)
  - [CityState uniques](#citystate-uniques)
  - [Nation uniques](#nation-uniques)
  - [Unit uniques](#unit-uniques)
  - [Terrain uniques](#terrain-uniques)
- - [Resource uniques](#resource-uniques)
  - [Conditional uniques](#conditional-uniques)
  - [Ruins uniques](#ruins-uniques)
  - [Promotion uniques](#promotion-uniques)
@@ -18,7 +18,15 @@
 #### [stats]
 Example: "[+1 Gold, +2 Production]"
 
-Applicable to: Improvement, FollowerBelief, Global
+Applicable to: Improvement, Global, FollowerBelief
+
+#### Provides [amount] [resource]
+Example: "Provides [20] [Iron]"
+
+Applicable to: Improvement, Building
+
+#### Tile provides yield without assigned population
+Applicable to: Improvement, Terrain
 
 #### Can also be built on tiles adjacent to fresh water
 Applicable to: Improvement
@@ -97,6 +105,16 @@ Example: "[+1 Gold, +2 Production] per [20] population [in all cities]"
 
 Applicable to: Global
 
+#### [stats] in cities with [amount] or more population
+Example: "[+1 Gold, +2 Production] in cities with [20] or more population"
+
+Applicable to: Global, FollowerBelief
+
+#### [stats] in cities on [terrainFilter] tiles
+Example: "[+1 Gold, +2 Production] in cities on [Grassland] tiles"
+
+Applicable to: Global, FollowerBelief
+
 #### [stats] per turn from cities before [tech/policy]
 Example: "[+1 Gold, +2 Production] per turn from cities before [tech/policy]"
 
@@ -111,6 +129,16 @@ Applicable to: Global
 Example: "[+1 Gold, +2 Production] from [Farm] tiles [in all cities]"
 
 Applicable to: Global
+
+#### [stats] from [tileFilter] tiles without [tileFilter] [cityFilter]
+Example: "[+1 Gold, +2 Production] from [Farm] tiles without [Farm] [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
+#### [stats] from every [tileFilter/specialist/buildingName]
+Example: "[+1 Gold, +2 Production] from every [tileFilter/specialist/buildingName]"
+
+Applicable to: Global, FollowerBelief
 
 #### [amount]% [stat]
 Example: "[20]% [Culture]"
@@ -173,6 +201,11 @@ Example: "[20]% maintenance costs for [Wounded] units"
 
 Applicable to: Global
 
+#### [amount]% growth [cityFilter]
+Example: "[20]% growth [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
 #### Gain a free [buildingName] [cityFilter]
 Example: "Gain a free [Library] [in all cities]"
 
@@ -207,6 +240,36 @@ Applicable to: Global
 Example: "May buy [buildingFilter] buildings for [20] [Culture] [in all cities] at an increasing price ([20])"
 
 Applicable to: Global
+
+#### May buy [baseUnitFilter] units for [amount] [stat] [cityFilter]
+Example: "May buy [Melee] units for [20] [Culture] [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
+#### May buy [buildingFilter] buildings for [amount] [stat] [cityFilter]
+Example: "May buy [buildingFilter] buildings for [20] [Culture] [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
+#### May buy [baseUnitFilter] units with [stat] [cityFilter]
+Example: "May buy [Melee] units with [Culture] [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
+#### May buy [buildingFilter] buildings with [stat] [cityFilter]
+Example: "May buy [buildingFilter] buildings with [Culture] [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
+#### May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost
+Example: "May buy [Melee] units with [Culture] for [20] times their normal Production cost"
+
+Applicable to: Global, FollowerBelief
+
+#### May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost
+Example: "May buy [buildingFilter] buildings with [Culture] for [20] times their normal Production cost"
+
+Applicable to: Global, FollowerBelief
 
 #### Enables Research agreements
 Applicable to: Global
@@ -294,110 +357,57 @@ Example: "Provides a [Library] in your first [20] cities for free"
 Applicable to: Global
 
 ## FollowerBelief uniques
-#### [stats] in cities with [amount] or more population
-Example: "[+1 Gold, +2 Production] in cities with [20] or more population"
-
-Applicable to: FollowerBelief, Global
-
-#### [stats] in cities on [terrainFilter] tiles
-Example: "[+1 Gold, +2 Production] in cities on [Grassland] tiles"
-
-Applicable to: FollowerBelief, Global
-
-#### [stats] from [tileFilter] tiles without [tileFilter] [cityFilter]
-Example: "[+1 Gold, +2 Production] from [Farm] tiles without [Farm] [in all cities]"
-
-Applicable to: FollowerBelief, Global
-
-#### [stats] from every [tileFilter/specialist/buildingName]
-Example: "[+1 Gold, +2 Production] from every [tileFilter/specialist/buildingName]"
-
-Applicable to: FollowerBelief, Global
-
 #### [amount]% [stat] from every follower, up to [amount]%
 Example: "[20]% [Culture] from every follower, up to [20]%"
 
 Applicable to: FollowerBelief
 
+## Resource uniques
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
 
-Applicable to: FollowerBelief, Resource, Global
+Applicable to: Resource, Global, FollowerBelief
 
-#### [amount]% growth [cityFilter]
-Example: "[20]% growth [in all cities]"
+#### Generated with weight [amount]
+Example: "Generated with weight [20]"
 
-Applicable to: FollowerBelief, Global
+Applicable to: Resource
 
-#### May buy [baseUnitFilter] units for [amount] [stat] [cityFilter]
-Example: "May buy [Melee] units for [20] [Culture] [in all cities]"
+#### Minor deposits generated with weight [amount]
+Example: "Minor deposits generated with weight [20]"
 
-Applicable to: FollowerBelief, Global
+Applicable to: Resource
 
-#### May buy [buildingFilter] buildings for [amount] [stat] [cityFilter]
-Example: "May buy [buildingFilter] buildings for [20] [Culture] [in all cities]"
+#### Generated near City States with weight [amount]
+Example: "Generated near City States with weight [20]"
 
-Applicable to: FollowerBelief, Global
+Applicable to: Resource
 
-#### May buy [baseUnitFilter] units with [stat] [cityFilter]
-Example: "May buy [Melee] units with [Culture] [in all cities]"
+#### Special placement during map generation
+Applicable to: Resource
 
-Applicable to: FollowerBelief, Global
+#### Generated on every [amount] tiles
+Example: "Generated on every [20] tiles"
 
-#### May buy [buildingFilter] buildings with [stat] [cityFilter]
-Example: "May buy [buildingFilter] buildings with [Culture] [in all cities]"
+Applicable to: Resource
 
-Applicable to: FollowerBelief, Global
+#### Guaranteed with Strategic Balance resource option
+Applicable to: Resource
 
-#### May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost
-Example: "May buy [Melee] units with [Culture] for [20] times their normal Production cost"
+#### Doesn't generate naturally
+Applicable to: Resource, Terrain
 
-Applicable to: FollowerBelief, Global
+#### Deposits in [tileFilter] tiles always provide [amount] resources
+Example: "Deposits in [Farm] tiles always provide [20] resources"
 
-#### May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost
-Example: "May buy [buildingFilter] buildings with [Culture] for [20] times their normal Production cost"
+Applicable to: Resource
 
-Applicable to: FollowerBelief, Global
+#### Can only be created by Mercantile City-States
+Applicable to: Resource
 
 ## Building uniques
 #### Remove extra unhappiness from annexed cities
 Applicable to: Building
-
-#### Consumes [amount] [resource]
-Example: "Consumes [20] [Iron]"
-
-Applicable to: Building, Improvement, Unit
-
-#### Provides [amount] [resource]
-Example: "Provides [20] [Iron]"
-
-Applicable to: Building, Improvement
-
-#### Unbuildable
-Applicable to: Building, Unit
-
-#### Cannot be purchased
-Applicable to: Building, Unit
-
-#### Can be purchased with [stat] [cityFilter]
-Example: "Can be purchased with [Culture] [in all cities]"
-
-Applicable to: Building, Unit
-
-#### Can be purchased for [amount] [stat] [cityFilter]
-Example: "Can be purchased for [20] [Culture] [in all cities]"
-
-Applicable to: Building, Unit
-
-#### Limited to [amount] per Civilization
-Example: "Limited to [20] per Civilization"
-
-Applicable to: Building, Unit
-
-#### Hidden until [amount] social policy branches have been completed
-Example: "Hidden until [20] social policy branches have been completed"
-
-Applicable to: Building, Unit
 
 #### Cost increases by [amount] per owned city
 Example: "Cost increases by [20] per owned city"
@@ -418,11 +428,6 @@ Applicable to: Building
 Example: "Requires a [Library] in all cities"
 
 Applicable to: Building
-
-#### Not displayed as an available construction without [buildingName/tech/resource/policy]
-Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
-
-Applicable to: Building, Unit
 
 #### Must be on [terrainFilter]
 Example: "Must be on [Grassland]"
@@ -446,14 +451,6 @@ Applicable to: Building
 
 #### Unsellable
 Applicable to: Building
-
-#### Hidden when religion is disabled
-Applicable to: Building, Ruins, Unit
-
-#### Hidden when [victoryType] Victory is disabled
-Example: "Hidden when [victoryType] Victory is disabled"
-
-Applicable to: Building, Unit
 
 ## CityState uniques
 #### Provides [stats] per turn
@@ -497,6 +494,42 @@ Example: "Retain [20]% of the happiness from a luxury after the last copy has be
 Applicable to: Nation
 
 ## Unit uniques
+#### Consumes [amount] [resource]
+Example: "Consumes [20] [Iron]"
+
+Applicable to: Unit, Improvement, Building
+
+#### Unbuildable
+Applicable to: Unit, Building
+
+#### Cannot be purchased
+Applicable to: Unit, Building
+
+#### Can be purchased with [stat] [cityFilter]
+Example: "Can be purchased with [Culture] [in all cities]"
+
+Applicable to: Unit, Building
+
+#### Can be purchased for [amount] [stat] [cityFilter]
+Example: "Can be purchased for [20] [Culture] [in all cities]"
+
+Applicable to: Unit, Building
+
+#### Limited to [amount] per Civilization
+Example: "Limited to [20] per Civilization"
+
+Applicable to: Unit, Building
+
+#### Hidden until [amount] social policy branches have been completed
+Example: "Hidden until [20] social policy branches have been completed"
+
+Applicable to: Unit, Building
+
+#### Not displayed as an available construction without [buildingName/tech/resource/policy]
+Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
+
+Applicable to: Unit, Building
+
 #### Founds a new city
 Applicable to: Unit
 
@@ -527,6 +560,11 @@ Applicable to: Unit
 Example: "[20] Movement"
 
 Applicable to: Unit, Global
+
+#### [amount] Sight
+Example: "[20] Sight"
+
+Applicable to: Unit, Global, Terrain
 
 #### [amount]% Spread Religion Strength
 Example: "[20]% Spread Religion Strength"
@@ -619,12 +657,15 @@ Applicable to: Unit
 #### Religious Unit
 Applicable to: Unit
 
+#### Hidden when religion is disabled
+Applicable to: Unit, Ruins, Building
+
+#### Hidden when [victoryType] Victory is disabled
+Example: "Hidden when [victoryType] Victory is disabled"
+
+Applicable to: Unit, Building
+
 ## Terrain uniques
-#### [amount] Sight
-Example: "[20] Sight"
-
-Applicable to: Terrain, Unit, Global
-
 #### Must be adjacent to [amount] [simpleTerrain] tiles
 Example: "Must be adjacent to [20] [simpleTerrain] tiles"
 
@@ -686,9 +727,6 @@ Applicable to: Terrain
 #### Provides a one-time Production bonus to the closest city when cut down
 Applicable to: Terrain
 
-#### Tile provides yield without assigned population
-Applicable to: Terrain, Improvement
-
 #### Nullifies all other stats this tile provides
 Applicable to: Terrain
 
@@ -746,9 +784,6 @@ Example: "Considered [terrainQuality] when determining start locations"
 
 Applicable to: Terrain
 
-#### Doesn't generate naturally
-Applicable to: Terrain, Resource
-
 #### Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]
 Example: "Occurs at temperature between [20] and [20] and humidity between [20] and [20]"
 
@@ -779,41 +814,6 @@ Applicable to: Terrain
 
 #### Rough terrain
 Applicable to: Terrain
-
-## Resource uniques
-#### Generated with weight [amount]
-Example: "Generated with weight [20]"
-
-Applicable to: Resource
-
-#### Minor deposits generated with weight [amount]
-Example: "Minor deposits generated with weight [20]"
-
-Applicable to: Resource
-
-#### Generated near City States with weight [amount]
-Example: "Generated near City States with weight [20]"
-
-Applicable to: Resource
-
-#### Special placement during map generation
-Applicable to: Resource
-
-#### Generated on every [amount] tiles
-Example: "Generated on every [20] tiles"
-
-Applicable to: Resource
-
-#### Guaranteed with Strategic Balance resource option
-Applicable to: Resource
-
-#### Deposits in [tileFilter] tiles always provide [amount] resources
-Example: "Deposits in [Farm] tiles always provide [20] resources"
-
-Applicable to: Resource
-
-#### Can only be created by Mercantile City-States
-Applicable to: Resource
 
 ## Conditional uniques
 #### <when at war>
@@ -1020,6 +1020,7 @@ Applicable to: Promotion
 
 ## Deprecated uniques
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
+ - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"
  - "+[amount]% [stat] [cityFilter]" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [cityFilter]"
  - "+[amount]% [stat] in all cities" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [in all cities]"
@@ -1054,7 +1055,6 @@ Applicable to: Promotion
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
- - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"

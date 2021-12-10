@@ -283,7 +283,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 textList += FormattedLine(replacementTextForUniques)
             else
                 uniqueObjects.forEach {
-                    if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+                    if (!it.hasFlag(UniqueFlag.HiddenToUsers))
                         textList += FormattedLine(it)
                 }
         }

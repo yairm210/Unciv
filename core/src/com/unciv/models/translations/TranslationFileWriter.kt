@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
@@ -89,6 +90,16 @@ object TranslationFileWriter {
         for (key in fileNameToGeneratedStrings.keys) {
             linesToTranslate.add("\n#################### Lines from $key ####################\n")
             linesToTranslate.addAll(fileNameToGeneratedStrings.getValue(key))
+        }
+
+
+        linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
+        for (unique in UniqueType.values()) {
+            val deprecationAnnotation = unique.declaringClass.getField(unique.name)
+                .getAnnotation(Deprecated::class.java)
+            if (deprecationAnnotation != null) continue
+            if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
+            linesToTranslate.add(unique.text + " = ")
         }
 
         var countOfTranslatableLines = 0
@@ -258,7 +269,7 @@ object TranslationFileWriter {
 
             fun submitString(string: String) {
                 val unique = Unique(string)
-                if(unique.type?.flags?.contains(UniqueFlag.HideInCivilopedia)==true)
+                if(unique.type?.flags?.contains(UniqueFlag.HiddenToUsers)==true)
                     return // We don't need to translate this at all, not user-visible
                 var stringToTranslate = string.removeConditionals()
 
