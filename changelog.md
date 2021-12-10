@@ -1,3 +1,13 @@
+# 3.18.9
+
+Uniques and conditionals for translating are taken directly from the uniquetypes
+
+Can gift improvements to city states also on water tiles / when other improvements have been built on the resource
+
+Enabled code minify, hopefully shrinks apk size
+
+Resolved crash when selecting resources in map editor
+
 # 3.18.8
 
 Solved bug that made civilian units uncapturable
