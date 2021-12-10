@@ -1,4 +1,4 @@
-# 3.18.9
+## 3.18.9
 
 Uniques and conditionals for translating are taken directly from the uniquetypes
 
@@ -8,7 +8,7 @@ Enabled code minify, hopefully shrinks apk size
 
 Resolved crash when selecting resources in map editor
 
-# 3.18.8
+## 3.18.8
 
 Solved bug that made civilian units uncapturable
 
