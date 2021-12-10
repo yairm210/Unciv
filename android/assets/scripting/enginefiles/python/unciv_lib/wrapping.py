@@ -86,6 +86,8 @@ def stringPathList(pathlist):
 	return "".join(items)
 
 
+operator.hash = hash
+
 _magicmeths = (
 	'__lt__',
 	'__le__',
@@ -114,15 +116,16 @@ _magicmeths = (
 	'__pos__',
 	'__pow__',
 	'__rshift__', # I think one of these might be used for int(), which seems to mysteriously work?
-	'__sub__', # Further indication that a bitshift is used for int(): A wrapped foreign float can't be converted.
+	'__sub__', # Further indication that a bitshift or something is used for int(): A wrapped foreign float can't be converted.
 	'__truediv__',
 	'__xor__',
 	'__concat__',
 	'__contains__', # Implemented through foreign request.
-	'__delitem__', # Should be implemented through foreign request if it is to be supported.
+	'__delitem__', # Implemented through foreign request.
 	'__getitem__', # Implemented through foreign request.
 #	@indexOf # Not actually totally sure what this is. I thought it was implemented in lists and tuples as `.index()`?
 #	'__setitem__', # Implemented through foreign request.
+	('__hash__', 'hash') # Monkey-patched into operator module above.
 )
 
 _rmagicmeths = (
@@ -158,10 +161,11 @@ _imagicmethods = (
 	'__ior__'
 )
 
-_tokensafemethods = { # TODO
+_tokensafemethods = {
 	'__eq__',
-	'__ne__'
-} # TODO: Hash.
+	'__ne__',
+	'__hash__'
+}
 
 def resolveForOperators(cls):
 	"""Decorator. Adds missing magic methods to a class, which resolve their arguments with `api.real(a)`."""
@@ -174,7 +178,7 @@ def resolveForOperators(cls):
 			name, opname = meth
 		if not alreadyhas(name):
 			# Set the magic method only if neither it nor any of its base classes have already defined a custom implementation.
-			setattr(cls, name, resolvingFunction(getattr(operator, opname), allowforeigntokens=False))
+			setattr(cls, name, resolvingFunction(getattr(operator, opname), allowforeigntokens=name in _tokensafemethods))
 	for rmeth in _rmagicmeths:
 		normalname = rmeth.replace('__r', '__', 1)
 		if not alreadyhas(rmeth) and hasattr(cls, normalname):

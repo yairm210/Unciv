@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
 import com.unciv.scripting.ScriptingBackendType
 import com.unciv.scripting.ScriptingState
+import com.unciv.scripting.utils.ScriptingErrorHandling
+import com.unciv.scripting.utils.makeScriptingRunName
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import kotlin.math.max
@@ -215,8 +217,8 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         val original = inputText
         val cursorpos = cursorPos
         var results = ScriptingState.autocomplete(inputText, cursorpos)
-        if (results.isHelpText) {
-            echo(results.helpText)
+        if (results.helpText != null) {
+            echo(results.helpText!!)
             return
         }
         if (results.matches.size < 1) {
@@ -231,7 +233,7 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
             //var minmatch = original //Checking against the current input would prevent autoinsertion from working for autocomplete backends that support getting results from the middle of the current input.
             var minmatch = original.slice(0..cursorpos-1)
             var chosenresult = results.matches.first({true})
-            for (l in original.length-1..chosenresult.length-1) {
+            for (l in original.lastIndex..chosenresult.lastIndex) {
                 var longer = chosenresult.slice(0..l)
                 if (results.matches.all { it.startsWith(longer) }) {
                     minmatch = longer
@@ -239,7 +241,7 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
                     break
                 }
             }
-            setText(minmatch + original.slice(cursorpos..original.length-1), SetTextCursorMode.Insert)
+            setText(minmatch + original.slice(cursorpos..original.lastIndex), SetTextCursorMode.Insert)
             // TODO: Splice the longest starting substring with the text after the cursor, to let autocomplete implementations work on the middle of current input.
         }
     }
@@ -266,8 +268,14 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
     }
 
     private fun run() {
-        echo(ScriptingState.exec(inputText))
+        val name = makeScriptingRunName(this::class.simpleName, ScriptingState.getActiveBackend())
+        val execResult = ScriptingState.exec(inputText, asName = name)
+        echo(execResult.resultPrint)
         setText("")
+        if (execResult.isException) {
+            ScriptingErrorHandling.printConsolePlayerScriptFailure(execResult.resultPrint, asName = name)
+            ToastPopup("Exception in ${name}.", this)
+        }
     }
 
     fun clone(): ConsoleScreen {

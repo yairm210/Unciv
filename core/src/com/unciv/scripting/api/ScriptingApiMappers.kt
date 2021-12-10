@@ -3,7 +3,7 @@ package com.unciv.scripting.api
 import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.utils.LazyMap
 
-// TODO: Rename this.
+// Not sure about the name, but not sure what would be better.
 
 object ScriptingApiMappers {
 

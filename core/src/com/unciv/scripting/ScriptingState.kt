@@ -1,6 +1,8 @@
 package com.unciv.scripting
 
 import com.unciv.scripting.api.ScriptingScope
+import com.unciv.scripting.utils.ScriptingRunLock
+import com.unciv.scripting.utils.makeScriptingRunName
 import com.unciv.ui.utils.clipIndexToBounds
 import com.unciv.ui.utils.enforceValidIndex
 import kotlin.collections.ArrayList
@@ -10,8 +12,6 @@ import kotlin.collections.ArrayList
 // TODO: Check for places to use Sequences.
 // Hm. It seems that Sequence performance isn't even a simple question of number of loops, and is also affected by boxed types and who know what else.
 // Premature optimization and such. Clearly long chains of loops can be rewritten as sequences.
-
-// TODO: Replace Exception types with Throwable? Wait, no. Apparently that just includes "serious problems that a reasonable application should not try to catch."
 
 // TODO: There's probably some public vars that can/should be private set.
 
@@ -27,10 +27,9 @@ import kotlin.collections.ArrayList
  *
  * @property ScriptingScope ScriptingScope instance at the root of all scripting API.
  */
-//TODO: Actually, probably should be only one instance in game, since various context changes set various ScriptingScope properties through it, and being able to view mod command history will also be useful.
-// Yeah, singleton both this and ScriptingScope, I think?… There would be some benefits from having one ScriptingScoper per ScriptingBackend (namely: concurrent script executions), but it would come with a significant cost to how ScriptingScope is connected to ScriptingState and how the properties in it are currently updated (and that one benefit sounds like a can of Heisenbugs).
 //This will be responsible for: Using the lock, threading, passing the entrypoint name to the lock, exposing context/running backend in ScriptingScope, and setting handler context arguments.
 object ScriptingState {
+    // Singletons. Biggest benefit to having multiple ScriptingStates/ScriptingScopes would be concurrent execution of different engines with different states, which sounds more like a nightmare than a benefit.
 
     val scriptingBackends = ArrayList<ScriptingBackend>()
 
@@ -38,6 +37,7 @@ object ScriptingState {
     private val commandHistory = ArrayList<String>()
 
     var activeBackend: Int = 0
+        private set
 
     val maxOutputHistory: Int = 511
     val maxCommandHistory: Int = 511
@@ -52,10 +52,18 @@ object ScriptingState {
     fun spawnBackend(backendtype: ScriptingBackendType): BackendSpawnResult {
         val backend: ScriptingBackend = backendtype.metadata.new()
         scriptingBackends.add(backend)
-        activeBackend = scriptingBackends.size - 1
+        activeBackend = scriptingBackends.lastIndex
         val motd = backend.motd()
         echo(motd)
         return BackendSpawnResult(backend, motd)
+    }
+
+    fun getIndexOfBackend(backend: ScriptingBackend): Int? {
+        val index = scriptingBackends.indexOf(backend)
+        return if (index >= 0)
+            index
+        else
+            null
     }
 
     fun switchToBackend(index: Int) {
@@ -63,25 +71,7 @@ object ScriptingState {
         activeBackend = index
     }
 
-    fun switchToBackend(backend: ScriptingBackend) {
-        // TODO: Apparently there's a bunch of extensions like .withIndex(), .indices, and .lastIndex that I can use to replace a lot of stuff currently done with .size.
-        val index = scriptingBackends.indexOf(backend)
-        if (index >= 0)
-            return switchToBackend(index = index)
-//        for ((i, b) in scriptingBackends.withIndex()) {
-//            if (b == backend) {
-//                return switchToBackend(index = i)
-//            }
-//        }
-        throw IllegalArgumentException("Could not find scripting backend base: ${backend}")
-    }
-
-//    fun switchToBackend(displayName: String) {
-//        // Are these really necessary?
-//    }
-//
-//    fun switchToBackend(backendType: ScriptingBackendType) {
-//    }
+    fun switchToBackend(backend: ScriptingBackend) = switchToBackend(getIndexOfBackend(backend)!!)
 
     fun termBackend(index: Int): Exception? {
         scriptingBackends.enforceValidIndex(index)
@@ -95,6 +85,8 @@ object ScriptingState {
         }
         return result
     }
+
+    fun termBackend(backend: ScriptingBackend) = termBackend(getIndexOfBackend(backend)!!)
 
     fun hasBackend(): Boolean {
         return scriptingBackends.isNotEmpty()
@@ -116,7 +108,7 @@ object ScriptingState {
     fun autocomplete(command: String, cursorPos: Int? = null): AutocompleteResults {
         // Deliberately not calling echo() to add into history because I consider autocompletion a protocol/API/UI level feature
         if (!(hasBackend())) {
-            return AutocompleteResults(listOf(), false, "")
+            return AutocompleteResults()
         }
         return getActiveBackend().autocomplete(command, cursorPos)
     }
@@ -130,28 +122,53 @@ object ScriptingState {
         }
     }
 
-    fun exec(command: String): String { // TODO: Allow "passing" args that get assigned to something under ScriptingScope here.
-        // TODO: Allow passing a name to use with ScriptingLock.
-        //ScriptingScope.scriptingBackend =
-        if (command.length > 0) {
-            if (command != commandHistory.lastOrNull())
-                commandHistory.add(command)
-            while (commandHistory.size > maxCommandHistory) {
-                commandHistory.removeAt(0)
-                // No need to restrict activeCommandHistory to valid indices here because it gets set to zero anyway.
-                // Also probably O(n) to remove from start..
+    // @throws IllegalStateException On failure to acquire scripting lock.
+    @Synchronized fun exec(command: String, asName: String? = null, withParams: Map<String, Any?>? = null): ExecResult {
+        val backend = getActiveBackend()
+        val name = asName ?: makeScriptingRunName(this::class.simpleName, backend)
+        val releaseKey: String
+        releaseKey = ScriptingRunLock.acquire(name)
+        // Lock acquisition failure gets propagated as Exception, rather than as return. E.G.: Lets lambdas (from modApiHelpers) fail and trigger their own error handling (exposing misbehaving mods to the user).
+        // isException in ExecResult return value means exception in completely opaque scripting backend. Kotlin exception should still be thrown and propagated like normal.
+        try {
+            ScriptingScope.apiExecutionContext.apply {
+                handlerParameters = withParams
+                scriptingBackend = backend
             }
+            if (command.isNotEmpty()) {
+                if (command != commandHistory.lastOrNull())
+                    commandHistory.add(command)
+                while (commandHistory.size > maxCommandHistory) {
+                    commandHistory.removeAt(0)
+                    // No need to restrict activeCommandHistory to valid indices here because it gets set to zero anyway.
+                    // Also probably O(n) to remove from start..
+                }
+            }
+            activeCommandHistory = 0
+            var out = if (hasBackend()) backend.exec(command) else ExecResult("")
+            echo(out.resultPrint)
+            return out
+        } finally {
+            ScriptingScope.apiExecutionContext.apply {
+                handlerParameters = null
+                scriptingBackend = null
+            }
+            ScriptingRunLock.release(releaseKey)
         }
-        activeCommandHistory = 0
-        var out = if (hasBackend()) getActiveBackend().exec(command) else ""
-        echo(out)
-        //ScriptingScope.scriptingBackend = null // TODO
-        return out
     }
 
-//    fun acquireScriptLock() {
-//    }
-
-//    fun releaseScriptLock() {
-//    }
+    fun exec(command: String, asName: String? = null, withParams: Map<String, Any?>? = null, withBackend: ScriptingBackend): ExecResult {
+        switchToBackend(withBackend)
+        return exec(
+            command = command,
+            asName = asName,
+            withParams = withParams
+        )
+    }
 }
+
+// UI locking can honestly probably go into the mod script dispatcher thingy.
+//        ScriptingScope.worldScreen?.isPlayersTurn = false
+//Hm. Should return to original value, not necessarily true. That means keeping a property, which means I'd rather put this in its own class.
+//Not perfect. I think ScriptingScope also exposes mutating the GUI itself, and many things that aren't protected by this? Then again, a script that *wants* to cause a crash/ANR will always be able to do so by just assigning an invalid value or deleting a required node somewhere. Could make mod handlers outside of worldScreen blocking, with written stipulations on (dis)recommended size, and then
+//https://github.com/yairm210/Unciv/pull/5592/commits/a1f51e08ab782ab46bda220e0c4aaae2e8ba21a4

@@ -261,4 +261,5 @@ TestRunner.Test(runwith=InGame, kwargs=EventPopup.EVENT_POPUP_DEMOARGS)(
 
 #Probably don't bother with DOCTEST, or anything. Just use assert statements where needed, print out any errors, and check in the build tests that there's no exceptions (by flag, or by printout value).
 
+#ForeignObject equality and hash comparisons.
 

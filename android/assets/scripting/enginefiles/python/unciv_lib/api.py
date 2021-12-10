@@ -130,19 +130,20 @@ These can also also accessed from the game files either externally or through th
 
 Press [TAB] at any time to trigger autocompletion at the current cursor position, or display help text for an empty function call.
 
-"""#TODO: Replace current imports with startup command managed by ConsoleScreen and GameSettings.
+""", ()#TODO: Replace current imports with startup command managed by ConsoleScreen and GameSettings.
 	@ipc.receiverMethod('autocomplete', 'autocomplete_response')
 	def EvalForeignAutocomplete(self, packet):
 		assert 'PassMic' in packet.flags, f"Expected 'PassMic' in packet flags: {packet}"
 		res = self.autocompleter.GetAutocomplete(packet.data["command"], packet.data["cursorpos"]) if self.autocompleter else "No autocompleter set."
 		self.passMic()
-		return res
+		return res, ()
 	@ipc.receiverMethod('exec', 'exec_response')
 	def EvalForeignExec(self, packet):
 		line = packet.data
 		assert 'PassMic' in packet.flags, f"Expected 'PassMic' in packet flags: {packet}"
 		with ipc.FakeStdout() as fakeout:
 			print(f">>> {str(line)}")
+			isException = False
 			try:
 				try:
 					code = compile(line, 'STDIN', 'eval')
@@ -151,14 +152,14 @@ Press [TAB] at any time to trigger autocompletion at the current cursor position
 				else:
 					print(repr(eval(code, self.scope, self.scope)))
 			except Exception as e:
-				#TODO: Return 'Exception' flag in packet here.
 				print(utils.formatException(e))
+				isException = True
 			finally:
 				self.passMic()
-				return fakeout.getvalue()
+				return fakeout.getvalue(), (('Exception',) if isException else ())
 	@ipc.receiverMethod('terminate', 'terminate_response')
 	def EvalForeignTerminate(self, packet):
-		return None
+		return None, ()
 
 
 from . import wrapping

@@ -1,6 +1,7 @@
 package com.unciv.scripting.protocol
 
 import com.unciv.scripting.AutocompleteResults
+import com.unciv.scripting.ExecResult
 import com.unciv.scripting.ScriptingImplementation
 import com.unciv.scripting.utils.ScriptingDebugParameters
 
@@ -28,12 +29,12 @@ class ScriptingRawReplManager(scope: Any, blackbox: Blackbox): ScriptingReplMana
         return AutocompleteResults()
     }
 
-    override fun exec(command: String): String {
+    override fun exec(command: String): ExecResult {
         if (!blackbox.readyForWrite) {
             throw IllegalStateException("REPL not ready: ${blackbox}")
         } else {
             blackbox.write(command)
-            return blackbox.readAll(block=true).joinToString("\n")
+            return ExecResult(blackbox.readAll(block=true).joinToString("\n"))
         }
     }
 
@@ -64,7 +65,6 @@ class ScriptingProtocolReplManager(scope: Any, blackbox: Blackbox): ScriptingRep
     fun getRequestResponse(packetToSend: ScriptingPacket, enforceValidity: Boolean = true, execLoop: () -> Unit = fun(){}): ScriptingPacket {
         // Please update the specifications in Module.md if you change the basic structure of this REPL loop.
         if (ScriptingDebugParameters.printPacketsForDebug) println("\nSending: ${packetToSend}")
-        // TODO: Move this to ScriptingProtocol?
         blackbox.write(packetToSend.toJson() + "\n")
         execLoop()
         val response = ScriptingPacket.fromJson(blackbox.read(block=true))
@@ -113,7 +113,7 @@ class ScriptingProtocolReplManager(scope: Any, blackbox: Blackbox): ScriptingRep
         )
     }
 
-    override fun exec(command: String): String {
+    override fun exec(command: String): ExecResult {
         if (!blackbox.readyForWrite) {
             throw IllegalStateException("REPL not ready: ${blackbox}")
         } else {

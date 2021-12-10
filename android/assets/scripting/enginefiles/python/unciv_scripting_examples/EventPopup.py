@@ -5,6 +5,8 @@ Examples for scripting simple, Paradox-style/Beyond Earth-style event popups.
 
 #from unciv_scripting_examples.EventPopup import *; r=showEventPopup(**EVENT_POPUP_DEMOARGS())
 
+# modApiHelpers.lambdifyReadPathcode(None, 'apiHelpers.Jvm.constructorByQualname["com.unciv.ui.utils.ToastPopup"]("Test", uncivGame.getScreen(), 8000)')
+
 #apiHelpers.Jvm.constructorByQualname["com.unciv.ui.utils.ToastPopup"]("Test", uncivGame.getScreen(), 8000)
 
 #from . import Utils
@@ -13,7 +15,7 @@ from unciv import *
 
 Constructors = apiHelpers.Jvm.constructorByQualname
 ExtensionFunctions = apiHelpers.Jvm.functionByQualClassAndName['com.unciv.ui.utils.ExtensionFunctionsKt']
-Singletons = apiHelpers.Jvm.kotlinSingletonByQualname
+Singletons = apiHelpers.Jvm.singletonByQualname
 Constants = Singletons['com.unciv.Constants'] # With bind-by-reference, doing fewer key and attribute accesses by doing them earlier should actually be faster.
 
 def showPopup():
@@ -43,16 +45,7 @@ def showPopup2():
 	pass # Make button show toast and do something else.
 
 
-def execCodeInModule(code):
-	exec(code, globals(), None)
-
-def makeLocalLambda(code):
-	assert isinstance(code, str)
-	f'import unciv_scripting_examples.EventPopup; unciv_scripting_examples.EventPopup.execCodeInModule({repr(code)})'
-	# Could cache a compile(code) if Python performance is a huge issue.
-
-
-Companions = apiHelpers.Jvm.kotlinCompanionByQualClass
+Companions = apiHelpers.Jvm.companionByQualClass
 Enums = apiHelpers.Jvm.enumMapsByQualname
 GdxColours = apiHelpers.Jvm.staticPropertyByQualClassAndName['com.badlogic.gdx.graphics.Color']
 #StatColours = TODO

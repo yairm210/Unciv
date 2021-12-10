@@ -24,8 +24,8 @@ object Reflection {
                 kprop.getter.call()
             else
                 kprop.get(instance)) as R?
-    // KProperty1().get(instance) Fails for consts: apiHelpers.Jvm.kotlinSingletonByQualname["com.unciv.Constants"].close
-    // m=next(m for m in apiHelpers.Jvm.kotlinClassByQualname["com.unciv.Constants"].members if m.name == 'close')
+    // KProperty1().get(instance) Fails for consts: apiHelpers.Jvm.singletonByQualname["com.unciv.Constants"].close
+    // m=next(m for m in apiHelpers.Jvm.classByQualname["com.unciv.Constants"].members if m.name == 'close')
     // object o {val a=1; const val b=2}
     // (o::class.members.first{it.name == "a"} as KProperty1<Any, *>).get(o)
     // (o::class.members.first{it.name == "b"} as KProperty1<Any, *>).getter.call()
@@ -61,12 +61,12 @@ object Reflection {
             // TODO: .functions? Choose one that includes superclasses but excludes extensions.
             // FIXME: Right. Cell.row is an example of a name used as both a property and a function.
             //  p=apiHelpers.Jvm.constructorByQualname["com.unciv.ui.utils.Popup"](uncivGame.consoleScreen); disp=p.add(apiHelpers.Jvm.functionByQualClassAndName["com.unciv.ui.utils.ExtensionFunctionsKt"]["toLabel"]("Test Text.")).row
-            //  [apiHelpers.Jvm.kotlinClassByInstance[f] for f in disp.functions]
+            //  [apiHelpers.Jvm.classByInstance[f] for f in disp.functions]
             //  KFunctionImpl vs KMutableProperty1Impl, apparently.
             //  Adding `is Function` to the filter should do it, I think?
-            // apiHelpers.Jvm.kotlinClassByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"].members
-            // apiHelpers.Jvm.kotlinClassByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"]
-            // apiHelpers.Jvm.functionByQualClassAndName["kotlin.reflect.full.KClasses"]["getFunctions"](apiHelpers.Jvm.kotlinClassByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"])
+            // apiHelpers.Jvm.classByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"].members
+            // apiHelpers.Jvm.classByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"]
+            // apiHelpers.Jvm.functionByQualClassAndName["kotlin.reflect.full.KClasses"]["getFunctions"](apiHelpers.Jvm.classByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"])
             matchNumbersLeniently = matchNumbersLeniently,
             matchClassesQualnames = matchClassesQualnames,
             resolveAmbiguousSpecificity = resolveAmbiguousSpecificity
@@ -80,9 +80,9 @@ object Reflection {
          * @return Helpful representative text.
          */
         override fun toString() = """${this::class.simpleName}(instance=${this.instance::class.simpleName}(), methodName="${this.methodName}") with ${this.functions.size} dispatch candidates"""
-        // Used by "docstring" packet action in ScriptingProtocol, which is in turn exposed in interpeters as help text. TODO: Could move to an extension method in ScriptingProtocol, I suppose.
+        // Used by "docstring" packet action in ScriptingProtocol, which is in turn exposed in interpreters as help text.
 
-        override fun call(arguments: Array<Any?>): Any? {
+        override fun <R: Any?> call(arguments: Array<Any?>): R {
             return super.call(arrayOf<Any?>(instance, *arguments))
             // Add receiver to arguments.
         }
@@ -91,13 +91,13 @@ object Reflection {
     }
 
 
-    fun readInstanceItem(instance: Any, keyOrIndex: Any): Any? { // TODO: Unify type param/casting behaviour across this, readInstanceProperty, and FunctionDispatcher.call.
+    fun <R: Any?> readInstanceItem(instance: Any, keyOrIndex: Any): R {
         // TODO: Make this work with operator overloading. Though Map is already an interface that anything can implement, so maybe not.
         if (keyOrIndex is Int) {
             return try { (instance as List<Any?>)[keyOrIndex] }
-                catch (e: ClassCastException) { (instance as Array<Any?>)[keyOrIndex] }
+                catch (e: ClassCastException) { (instance as Array<Any?>)[keyOrIndex] } as R
         } else {
-            return (instance as Map<Any, Any?>)[keyOrIndex]
+            return (instance as Map<Any, Any?>)[keyOrIndex] as R
         }
     }
 
@@ -291,10 +291,6 @@ object Reflection {
                         )
                     }
                     PathElementType.Call -> {
-                        // TODO: Handle invoke operator. Easy enough, just recurse to access the .invoke.
-                        // object test{operator fun invoke(a:Any?,b:Any?){println("$a $b")}}; test(1,2)
-                        // Test in Python: apiHelpers.Jvm.constructorByQualname('com.unciv.UncivGame'). Also do an object for multi-arg testing, I guess?
-                        // Maybe TODO: Handle lambdas. E.G. WorldScreen.nextTurnAction. But honestly, it may be better to just expose wrapping non-lambdas.
                         if (obj is FunctionDispatcher) {
                             // Undocumented implicit behaviour: Using the last object means that this should work with explicitly created FunctionDispatcher()s.
                             (obj).call(
@@ -306,8 +302,7 @@ object Reflection {
                                 ).toTypedArray()
                             )
                         } else {
-                            throw UnsupportedOperationException()
-                            resolveInstancePath( // TODO: Test this.
+                            resolveInstancePath( // Might be a weird if this recurses… I think circular invoke properties would crash?
                                 obj,
                                 listOf(
                                     PathElement(
@@ -356,7 +351,7 @@ object Reflection {
 
     fun setInstancePath(instance: Any?, path: List<PathElement>, value: Any?) {
         val leafobj = resolveInstancePath(instance, path.slice(0..path.size-2))
-        val leafelement = path[path.size - 1]
+        val leafelement = path[path.lastIndex]
         when (leafelement.type) {
             PathElementType.Property -> {
                 setInstanceProperty(leafobj!!, leafelement.name, value)
@@ -379,7 +374,7 @@ object Reflection {
 
     fun removeInstancePath(instance: Any?, path: List<PathElement>) {
         val leafobj = resolveInstancePath(instance, path.slice(0..path.size-2))
-        val leafelement = path[path.size - 1]
+        val leafelement = path[path.lastIndex]
         when (leafelement.type) {
             PathElementType.Property -> {
                 throw UnsupportedOperationException("Cannot remove instance property.")

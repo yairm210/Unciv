@@ -22,12 +22,9 @@ import kotlin.reflect.full.companionObjectInstance
  * @property matches List of valid matches. Each match should be a full input string after applying autocompletion (I.E. Don't truncate to the cursor position).
  * @property helpText String to print out instead of showing autocomplete matches.
  */
-//TODO: Probably replace isHelpText with a nullable helpText.
-data class AutocompleteResults(val matches: List<String> = listOf(), val isHelpText: Boolean = false, val helpText: String = "")
-
+data class AutocompleteResults(val matches: List<String> = listOf(), val helpText: String? = null)
 
 data class ExecResult(val resultPrint: String, val isException: Boolean = false)
-//TODO: Use this.
 
 
 /**
@@ -76,9 +73,8 @@ interface ScriptingImplementation {
      * @param command Code to execute
      * @return REPL printout.
      */
-    fun exec(command: String): String {
-        //TODO: To support modding (and more specifically, error catching in mod development and use), this (and everything that parallels/implements it) should eventually support returning a Boolean to flag the REPL printout as an error message, in addition to the fake STDOUT printout.
-        return command
+    fun exec(command: String): ExecResult {
+        return ExecResult(command)
     }
 
     /**
@@ -99,11 +95,6 @@ interface ScriptingImplementation {
 // TODO: Add note that methods should be called through ScriptingState, rather than directly.
 
 open class ScriptingBackend: ScriptingImplementation {
-//A little bit confusing.
-//Hm. Couldn't the metadata getter go on the interface?
-//That would mean this exists only as a code example for defining the companion object.
-//TODO: Move getter, delete class or rename to DummyScriptingBackend?
-
     /**
      * For the UI, a way is needed to list all available scripting backend types with 1. A readable display name and 2. A way to create new instances.
      *
@@ -168,14 +159,14 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
     }
 
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults{
-        if (' ' in command) {
-            return AutocompleteResults(listOf(), true, getCommandHelpText(command.split(' ')[0]))
+        return if (' ' in command) {
+            AutocompleteResults(helpText = getCommandHelpText(command.split(' ')[0]))
         } else {
-            return AutocompleteResults(commandshelp.keys.filter({ c -> c.startsWith(command) }).map({ c -> c + " " }))
+            AutocompleteResults(commandshelp.keys.filter({ c -> c.startsWith(command) }).map({ c -> c + " " }))
         }
     }
 
-    override fun exec(command: String): String {
+    override fun exec(command: String): ExecResult {
         var args = command.split(' ')
         var out = "\n> ${command}\n"
         fun appendOut(text: String) {
@@ -190,12 +181,12 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
                 }
             }
             "countcities" -> {
-                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return ExecResult(out) }
                 appendOut(ScriptingScope.civInfo!!.cities.size.toString())
             }
             "locatebuildings" -> {
                 var buildingcities: List<String> = listOf()
-                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return ExecResult(out) }
                 if (args.size > 1) {
                     var searchfor = args.slice(1..args.size-1).joinToString(" ").trim(' ')
                     buildingcities = ScriptingScope.civInfo!!.cities
@@ -211,7 +202,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
             }
             "missingbuildings" -> {
                 var buildingcities: List<String> = listOf()
-                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return ExecResult(out) }
                 if (args.size > 1) {
                     var searchfor = args.slice(1..args.size-1).joinToString(" ").trim(' ')
                     buildingcities = ScriptingScope.civInfo!!.cities
@@ -221,7 +212,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
                 appendOut(buildingcities.joinToString(", "))
             }
             "listcities" -> {
-                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return ExecResult(out) }
                 appendOut(ScriptingScope.civInfo!!.cities
                     .map { city -> city.name }
                     .joinToString(", ")
@@ -236,7 +227,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
                 appendOut("Cheats disabled.")
             }
             "godmode" -> {
-                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return ExecResult(out) }
                 if (cheats) {
                     var godmode = if (args.size > 1) args[1].toBoolean() else !(ScriptingScope.gameInfo!!.gameParameters.godMode)
                     ScriptingScope.gameInfo!!.gameParameters.godMode = godmode
@@ -246,7 +237,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
                 }
             }
             "godview" -> {
-                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return ExecResult(out) }
                 if (cheats) {
                     var godview = if (args.size > 1) args[1].toBoolean() else !(ScriptingScope.uncivGame!!.viewEntireMapForDebug)
                     ScriptingScope.uncivGame!!.viewEntireMapForDebug = godview
@@ -256,7 +247,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
                 }
             }
             "inspectpath" -> {
-                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return ExecResult(out) }
                 if (cheats) {
                     val detailed = args.size > 1 && args[1] == "detailed"
                     val startindex = if (detailed) 2 else 1
@@ -296,7 +287,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
                 }
             }
             "simulatetoturn" -> {
-                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return ExecResult(out) }
                 if (cheats) {
                     var numturn = 0
                     if (args.size > 1) {
@@ -313,7 +304,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
                 }
             }
             "supercharge" -> {
-                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return out }
+                if (!(ScriptingScope.apiHelpers.isInGame)) { appendOut("Must be in-game for this command!"); return ExecResult(out) }
                 if (cheats) {
                     var supercharge = if (args.size > 1) args[1].toBoolean() else !(ScriptingScope.uncivGame!!.superchargedForDebug)
                     ScriptingScope.uncivGame!!.superchargedForDebug = supercharge
@@ -325,7 +316,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
                 appendOut("The command ${args[0]} is either not known or not implemented.")
             }
         }
-        return out
+        return ExecResult(out)
         //return "\n> ${command}\n${out}"
     }
 }
@@ -371,7 +362,7 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
                 val workingcode = params[params.size-1]
                 val workingpath = Reflection.parseKotlinPath(workingcode)
                 if (workingpath.any { it.type == Reflection.PathElementType.Call }) {
-                    return AutocompleteResults(listOf(), true, "No autocomplete available for function calls.")
+                    return AutocompleteResults(helpText = "No autocomplete available for function calls.")
                 }
                 val leafname = if (workingpath.isNotEmpty()) workingpath[workingpath.size - 1].name else ""
                 val prefix = command.dropLast(leafname.length)
@@ -386,11 +377,11 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
                 return AutocompleteResults(commandparams.keys.filter { it.startsWith(command) }.map { it+" " })
             }
         } catch (e: Exception) {
-            return AutocompleteResults(listOf(), true, "Could not get autocompletion: ${e}")
+            return AutocompleteResults(helpText = "Could not get autocompletion: ${e}")
         }
     }
 
-    override fun exec(command: String): String{
+    override fun exec(command: String): ExecResult {
         var parts = command.split(' ', limit=2)
         var out = "\n> ${command}\n"
         fun appendOut(text: String) {
@@ -425,7 +416,7 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
         } catch (e: Exception) {
             appendOut("Error evaluating command: ${e}")
         }
-        return out
+        return ExecResult(out)
     }
 }
 
@@ -478,18 +469,18 @@ abstract class BlackboxScriptingBackend(): EnvironmentedScriptingBackend() {
     }
 
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
-        try {
-            return replManager.autocomplete(command, cursorPos)
+        return try {
+            replManager.autocomplete(command, cursorPos)
         } catch (e: Exception) {
-            return AutocompleteResults(isHelpText = true, helpText = "Autocomplete error: ${e}")
+            AutocompleteResults(helpText = "Autocomplete error: ${e}")
         }
     }
 
-    override fun exec(command: String): String {
+    override fun exec(command: String): ExecResult {
         try {
             return replManager.exec("${command}\n")
         } catch (e: RuntimeException) {
-            return "${e}"
+            return ExecResult("${e}")
         }
     }
 
@@ -597,7 +588,7 @@ class DevToolsScriptingBackend(): ScriptingBackend() {
 
     override fun autocomplete(command: String, cursorPos: Int?) = AutocompleteResults(commands.filter { it.startsWith(command) })
 
-    override fun exec(command: String): String {
+    override fun exec(command: String): ExecResult {
         val commv = command.split(' ', limit=2)
         var out = "> ${command}\n"
         try {
@@ -616,7 +607,7 @@ class DevToolsScriptingBackend(): ScriptingBackend() {
         } catch (e: Exception) {
             out += e.toString()
         }
-        return out
+        return ExecResult(out)
     }
 }
 

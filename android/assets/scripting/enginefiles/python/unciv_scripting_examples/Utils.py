@@ -1,4 +1,4 @@
-import os, atexit, random, time
+import os, atexit, random, time, sys
 
 import unciv, unciv_pyhelpers
 
@@ -49,6 +49,15 @@ class TokensAsWrappers:
 			del memalloc[key]
 			self.freeUniqueKey(key)
 		self.memallocKeys.clear()
+
+
+def execCodeInModule(moduleQualname, code):
+	exec(code, sys.modules[moduleQualname].__dict__, None)
+
+def makeLocalLambdaCode(moduleQualname, code):
+	"""Return a Python code string that, when executed, will execute the given code string inside the module at the given qualified name."""
+	return f'import {__name__}; {__name__}.execCodeInModule({repr(moduleQualname)}, {repr(code)})'
+	# Could cache a compile(code) if Python performance is a huge issue.
 
 
 @atexit.register

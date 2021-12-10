@@ -97,10 +97,10 @@ class ForeignActionReceiver(ForeignActionManager):
 		rdata = None
 		if action in self._responders:
 			method, raction = self._responders[action]
-			rdata = method(decoded)
+			rdata, rflags = method(decoded)
 		else:
 			raise ForeignError("Unknown action type for foreign action request: " + repr(decoded))
-		self.sender(ForeignPacket(raction, decoded.identifier, rdata).serialized())
+		self.sender(ForeignPacket(raction, decoded.identifier, rdata, rflags).serialized())
 	def AwaitForeignAction(self):#, *, ignoreempty=True):
 		self.RespondForeignAction(self.receiver())
 	def ForeignREPL(self):

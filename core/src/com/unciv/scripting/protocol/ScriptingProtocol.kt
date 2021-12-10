@@ -1,6 +1,7 @@
 package com.unciv.scripting.protocol
 
 import com.unciv.scripting.AutocompleteResults
+import com.unciv.scripting.ExecResult
 import com.unciv.scripting.reflection.FunctionDispatcher
 import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.utils.ScriptingDebugParameters
@@ -203,9 +204,12 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
             if (packet.data is JsonArray)
                 AutocompleteResults((packet.data as List<JsonElement>).map { (it as JsonPrimitive).content })
             else
-                AutocompleteResults(listOf(), true, (packet.data as JsonPrimitive).content)
+                AutocompleteResults(helpText = (packet.data as JsonPrimitive).content)
 
-        fun exec(packet: ScriptingPacket): String = (packet.data as JsonPrimitive).content
+        fun exec(packet: ScriptingPacket) = ExecResult(
+            resultPrint = (packet.data as JsonPrimitive).content,
+            isException = packet.hasFlag(KnownFlag.Exception)
+        )
 
         fun terminate(packet: ScriptingPacket): Exception? =
             if (packet.data == JsonNull || packet.data == null)
@@ -220,10 +224,8 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
      * @param obj Instance to save.
      * @return Same instance as given, unchanged. Allows this function to be chained, or used to pass through an anonymous instance.
      */
-    fun trySaveInstance(obj: Any?): Any? {
-        if (instanceSaver != null) {
-            instanceSaver.add(obj)
-        }//TODO: I should use this in more of the request types.
+    private fun <T> trySaveInstance(obj: T): T {
+        instanceSaver?.add(obj)//TODO: I should use this in more of the request types.
         return obj
     }
 
@@ -328,10 +330,10 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
             "keys" -> {
                 try {
                     val packetData = ScriptingPacketPathedData(packet)
-                    val leaf = Reflection.resolveInstancePath(
+                    val leaf = trySaveInstance(Reflection.resolveInstancePath(
                         if (packetData.use_root) packetData.root else scope,
                         packetData.path
-                    )
+                    ))
                     responseData = TokenizingJson.getJsonElement((leaf as Map<Any, *>).keys)
                 } catch (e: Exception) {
                     responseData = JsonPrimitive(e.stringifyException())

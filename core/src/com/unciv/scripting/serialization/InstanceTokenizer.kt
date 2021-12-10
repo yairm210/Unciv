@@ -115,7 +115,7 @@ object InstanceTokenizer {
         val badtokens = if (tokenReuse)
             tokensByInstances.clean(true)!!
         else
-            instancesByTokens.entries.asSequence().filter { it.value.get() == null }.map { it.key }.toList() // Technically the .toLists()'s not needed, but this is a legacy thing anyway— TODO: Wait, can't you type as Iterable?
+            instancesByTokens.entries.asSequence().filter { it.value.get() == null }.map { it.key }.toList() // Legacy mode. toList() is only for type.
         for (t in badtokens) {
             instancesByTokens.remove(t)
         }
@@ -144,7 +144,7 @@ object InstanceTokenizer {
      * @param obj Instance to tokenize.
      * @return Token string that can later be detokenized back into the original instance.
      */
-    fun getToken(obj: Any?): String { // TOOD: Switch to Any, since null will just be cleaned anyway?
+    fun getToken(obj: Any?): String { // TODO: Switch to Any, since null will just be cleaned anyway?
         tryClean()
         val token = tokenFromInstance(obj)
         instancesByTokens[token] = WeakReference(obj)

@@ -136,6 +136,7 @@ object TokenizingJson {
                     // Maybe just treat strings normally but stringify everything else? That would be consistent with Python behaviour and a superset of normal string-encoding behaviour.
                     // Collisions would be tricky— Probably just either throw an exception or make real strings always take precedence. It's probably not worth it to specify that JSON keys have to be encoded.
                     // TODO: More testing/documentation is needed.
+                    // Well, now Maps just aren't ever serialized in normal use anymore, so it's fine I guess?
                 } )
             }
             if (value is Iterable<*>) {

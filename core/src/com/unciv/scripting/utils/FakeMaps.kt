@@ -16,6 +16,7 @@ abstract class StatelessMap<K, V>: Map<K, V> {
     override fun isEmpty(): Boolean = noStateError()
 }
 
+//
 interface InvokableMap<K, V>: Map<K, V> {
     operator fun invoke(key: K): V? = get(key)
 }

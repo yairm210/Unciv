@@ -19,7 +19,7 @@ fun enumQualnameToMap(qualName: String) = Class.forName(qualName).enumConstants.
 // Always return a built-in Map class instance here, so its gets serialized as JSON object instead of tokenized, and scripts can refer directly to its items.
 // I cast to Enum<*> fully expecting it would crash because it felt metaclass-y. But apparently it's just a base class, so it works?
 
-private const val exposeStates = true // TODO: Probably keep this false?
+private const val exposeStates = false
 
 /**
  * For use in ScriptingScope. Allows interpreted scripts access Kotlin/JVM class functionality that isn't attached to any application instances.
@@ -28,22 +28,21 @@ object ScriptingApiJvmHelpers {
 
     val enumMapsByQualname = LazyMap(::enumQualnameToMap)
 
-    val kotlinClassByQualname = LazyMap({ qualName: String -> Class.forName(qualName).kotlin }, exposeState = exposeStates) // TODO: Maybe skip the "kotlin" prefix on these? It's already in the "Jvm" object, not everything has the prefix for some reason, and the first word after it is usually what you're actually looking for.
+    val classByQualname = LazyMap({ qualName: String -> Class.forName(qualName).kotlin }, exposeState = exposeStates)
 
-    val kotlinSingletonByQualname = LazyMap({ qualName: String -> kotlinClassByQualname[qualName]?.objectInstance }, exposeState = exposeStates)
+    val singletonByQualname = LazyMap({ qualName: String -> classByQualname[qualName]?.objectInstance }, exposeState = exposeStates)
 
-    val kotlinCompanionByQualClass = LazyMap({ qualName: String -> kotlinClassByQualname[qualName]?.companionObjectInstance }, exposeState = exposeStates)
+    val companionByQualClass = LazyMap({ qualName: String -> classByQualname[qualName]?.companionObjectInstance }, exposeState = exposeStates)
 
     val functionByQualClassAndName = LazyMap({ jclassQualname: String ->
         val cls = Class.forName(jclassQualname)
         LazyMap({ methodName: String -> makeFunctionDispatcher(cls.getDeclaredMethods().asSequence().filter { it.name == methodName }.map { it.kotlinFunction }.filterNotNull().toList() as List<KCallable<Any?>>) }, exposeState = exposeStates)
-        // Could initialize the second LazyMap here by accessing for all names— Only benefit would be for autocomplete, at higher first-call time and memory use, though.
     }, exposeState = exposeStates)
     // apiHelpers.Jvm.functionByQualClassAndName["com.unciv.ui.utils.ExtensionFunctionsKt"]["toLabel"]("Test")
 
     // TODO: Right... Extension properties?
     // Class.forName("kotlin.reflect.full.KClasses").getMethods().map{it.name}
-    // apiHelpers.Jvm.functionByQualClassAndName["kotlin.reflect.full.KClasses"]["getFunctions"](apiHelpers.Jvm.kotlinClassByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"])
+    // apiHelpers.Jvm.functionByQualClassAndName["kotlin.reflect.full.KClasses"]["getFunctions"](apiHelpers.Jvm.classByQualname["com.badlogic.gdx.scenes.scene2d.ui.Cell"])
     // Right. .kotlinFunction is null for extension property getters:
     //  Class.forName("kotlin.reflect.full.KClasses").getDeclaredMethods().first{it.name == "getFunctions"}.kotlinFunction
 
@@ -51,13 +50,13 @@ object ScriptingApiJvmHelpers {
         val kcls = Class.forName(jclassQualname).kotlin
         LazyMap({ name: String -> Reflection.readClassProperty(kcls, name) as Any? }, exposeState = exposeStates)
     }, exposeState = exposeStates)
-    // apiHelpers.Jvm.kotlinClassByQualname["com.badlogic.gdx.graphics.Color"].members[50].get()
+    // apiHelpers.Jvm.classByQualname["com.badlogic.gdx.graphics.Color"].members[50].get()
     // apiHelpers.Jvm.staticPropertyByQualClassAndName["com.badlogic.gdx.graphics.Color"]['WHITE']
 
     val constructorByQualname = LazyMap({ qualName: String -> makeFunctionDispatcher(Class.forName(qualName).kotlin.constructors) }, exposeState = exposeStates)
     // TODO (Later, Maybe): This would actually be quite easy to whitelist by package paths.
 
-    val kotlinClassByInstance = FakeMap{ obj: Any? -> obj!!::class }
+    val classByInstance = FakeMap{ obj: Any? -> obj!!::class }
 
     fun toString(obj: Any?) = obj.toString()
 
@@ -75,7 +74,7 @@ object ScriptingApiJvmHelpers {
     fun arrayOfTyped4(item1: Any?, item2: Any?, item3: Any?, item4: Any?) = arrayOfTyped(listOf(item1, item2, item3, item4))
     fun arrayOfTyped5(item1: Any?, item2: Any?, item3: Any?, item4: Any?, item5: Any?) = arrayOfTyped(listOf(item1, item2, item3, item4, item5))
 
-    fun toList(array: Array<*>) = array.toList() // sorted([real(m.getName()) for m in apiHelpers.Jvm.kotlinClassByQualname["kotlin.collections.ArraysKt"].jClass.getMethods()])
+    fun toList(array: Array<*>) = array.toList() // sorted([real(m.getName()) for m in apiHelpers.Jvm.classByQualname["kotlin.collections.ArraysKt"].jClass.getMethods()])
     fun toList(iterable: Iterable<*>) = iterable.toList()
     fun toList(sequence: Sequence<*>) = sequence.toList()
 }

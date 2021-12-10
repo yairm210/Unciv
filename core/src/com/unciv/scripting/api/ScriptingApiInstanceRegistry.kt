@@ -53,7 +53,7 @@ object ScriptingApiInstanceRegistry: MutableMap<String, Any?> {
         get() = backingMap.size
     override fun containsKey(key: String) = backingMap.containsKey(key)
     override fun containsValue(value: Any?) = backingMap.containsValue(value)
-    override fun get(key: String): Any? { //FIXME: Operator modifiers?
+    override fun get(key: String): Any? {
         if (key !in this) {
             throw NoSuchElementException("\"${key}\" not in ${this}.")
         }

@@ -337,15 +337,6 @@ Flags are string values for communicating extra information that doesn't need a 
 	```
 	'Exception'
 		//Indicates that this packet is associated with an error.
-		//Currently sent only by Kotlin side and handled only by Python backend. Modding API and build tests will need this to be implemented in the other direction too.
-	```
-
-	```
-	//'BeginIteration'
-	//'EndIteration'
-		//Not implemented. Probably needed if iteration over non-sized objects is needed. Probably not worth the trouble.
-		//Deprecated without ever being implemented. Lack of indices for such objects means you wouldn't be able to directly do anything with their iterated results anyway in the same way that you can for "lists" "iterated" by appending indices to their paths, as you wouldn't have a path by which to refer back to them.
-		//Alternate solutions: Sets are already serialized as JSON arrays, which can be resolved in running scripts. Script-accessible Kotlin-side helper functions can be defined to convert other containers to lists, or if needed, to yield their values per call. Instance tokens arising from these operations can be assigned by running scripts to a name on the Kotlin side, creating a concrete path by which to reflectively access their own members.
 	```
 
 ---
