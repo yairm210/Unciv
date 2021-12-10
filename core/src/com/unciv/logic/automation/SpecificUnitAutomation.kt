@@ -330,7 +330,7 @@ object SpecificUnitAutomation {
                     .filter { unit.movement.canMoveTo(it) }
                     .minByOrNull { it.aerialDistanceTo(unit.currentTile) }
         }
-        if (destination != null){
+        if (destination == null){
             if (cityToConvert == null) return
             destination = cityToConvert.getCenterTile().neighbors.asSequence()
                 .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
