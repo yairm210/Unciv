@@ -1,6 +1,6 @@
 package com.unciv.scripting.api
 
-import com.unciv.ui.utils.UncivDateFormat
+import com.unciv.scripting.utils.ScriptingDebugParameters
 
 object ScriptingApiUnciv {
     // These are also all accessible by qualified name through ScriptingApiJvmHelpers.
@@ -9,5 +9,6 @@ object ScriptingApiUnciv {
     val GameStarter = com.unciv.logic.GameStarter
     val HexMath = com.unciv.logic.HexMath
     val MapSaver = com.unciv.logic.MapSaver
+    val ScriptingDebugParameters = com.unciv.scripting.utils.ScriptingDebugParameters
     val UncivDateFormat = com.unciv.ui.utils.UncivDateFormat
 }

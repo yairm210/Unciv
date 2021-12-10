@@ -40,7 +40,7 @@ abstract class ScriptingBackend_metadata {
     /**
      * @return A new instance of the parent class of which this object is a companion.
      */
-    abstract fun new(scriptingScope: ScriptingScope): ScriptingBackendBase // TODO: Um, class references are totally a thing, and probably distinct from KClass, right?
+    abstract fun new(scriptingScope: ScriptingScope): ScriptingBackend // TODO: Um, class references are totally a thing, and probably distinct from KClass, right?
     abstract val displayName: String
     val syntaxHighlighting: SyntaxHighlighter? = null
 }
@@ -96,7 +96,9 @@ interface ScriptingImplementation {
 
 // TODO: Add .userTerminable flag and per-instance display string to ScriptingBackendBase. Let mod command histories be seen on ConsoleScreen?
 
-open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingImplementation {
+// TODO: Add note that methods should be called through ScriptingState, rather than directly.
+
+open class ScriptingBackend(val scriptingScope: ScriptingScope): ScriptingImplementation {
 //A little bit confusing.
 //Hm. Couldn't the metadata getter go on the interface?
 //That would mean this exists only as a code example for defining the companion object.
@@ -108,7 +110,7 @@ open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingIm
      * So every ScriptngBackend has a Metadata:ScriptingBackend_metadata companion object, which is stored in the ScriptingBackendType enums.
      */
     companion object Metadata: ScriptingBackend_metadata() {
-        override fun new(scriptingScope: ScriptingScope) = ScriptingBackendBase(scriptingScope)
+        override fun new(scriptingScope: ScriptingScope) = ScriptingBackend(scriptingScope)
         // Trying to instantiate from a KClass seems messy when the constructors are expected to be called normally. This is easier.
         override val displayName: String = "Dummy"
     }
@@ -127,7 +129,7 @@ open class ScriptingBackendBase(val scriptingScope: ScriptingScope): ScriptingIm
 
 //Has
 // Non-essential. Nothing should depend on this. Should always be removable from the game's code.
-class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
+class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = HardcodedScriptingBackend(scriptingScope)
         override val displayName: String = "Hardcoded"
@@ -330,7 +332,7 @@ class HardcodedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacken
 
 
 //Nothing should depend on this.
-class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
+class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
 
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new(scriptingScope: ScriptingScope) = ReflectiveScriptingBackend(scriptingScope)
@@ -428,7 +430,7 @@ class ReflectiveScriptingBackend(scriptingScope: ScriptingScope): ScriptingBacke
 }
 
 
-abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
+abstract class EnvironmentedScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         // Need full metadata companion here, or else won't compile.
@@ -569,7 +571,7 @@ class SluaScriptingBackend(scriptingScope: ScriptingScope): SubprocessScriptingB
 }
 
 
-class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackendBase(scriptingScope) {
+class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend(scriptingScope) {
 
     //Probably redundant, and can probably be removed in favour of whatever mechanism is currently used to run the translation file generator.
 
@@ -620,7 +622,7 @@ class DevToolsScriptingBackend(scriptingScope: ScriptingScope): ScriptingBackend
 
 
 enum class ScriptingBackendType(val metadata: ScriptingBackend_metadata) {
-    Dummy(ScriptingBackendBase),
+    Dummy(ScriptingBackend),
     Hardcoded(HardcodedScriptingBackend),
     Reflective(ReflectiveScriptingBackend),
     //MicroPython(UpyScriptingBackend),

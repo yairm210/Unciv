@@ -89,8 +89,8 @@ def stringPathList(pathlist):
 _magicmeths = (
 	'__lt__',
 	'__le__',
-	'__eq__', # Kinda undefined behaviour for comparison with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in InstanceTokenizer.kt, on every `._getvalue_()`, so I think even the same `ForeignObject()` will never equal itself. # Actually, now raises exception when used with tokens, I think.
-	# Once guaranteed token reuse is implemented in Kotlin, this should work in all cases.
+	'__eq__', # Kinda undefined behaviour for comparison with Kotlin object tokens. Well, tokens are just strings that will always equal themselves, but multiple tokens can refer to the same Kotlin object. `ForeignObject()`s resolve to new tokens, that are currently uniquely generated in InstanceTokenizer.kt, on every `._getvalue_()`, so I think even the same `ForeignObject()` will never equal itself. # Actually, now raises exception when used with tokens, I think. Do you support hash too?
+	# TODO: Once guaranteed token reuse is implemented in Kotlin, this should work in all cases. And probably just use Python hashes.
 	'__ne__',
 	'__ge__',
 	'__gt__',
@@ -113,8 +113,8 @@ _magicmeths = (
 	'__or__',
 	'__pos__',
 	'__pow__',
-	'__rshift__',
-	'__sub__',
+	'__rshift__', # I think one of these might be used for int(), which seems to mysteriously work?
+	'__sub__', # Further indication that a bitshift is used for int(): A wrapped foreign float can't be converted.
 	'__truediv__',
 	'__xor__',
 	'__concat__',
@@ -158,6 +158,11 @@ _imagicmethods = (
 	'__ior__'
 )
 
+_tokensafemethods = { # TODO
+	'__eq__',
+	'__ne__'
+} # TODO: Hash.
+
 def resolveForOperators(cls):
 	"""Decorator. Adds missing magic methods to a class, which resolve their arguments with `api.real(a)`."""
 	def alreadyhas(name):
@@ -187,6 +192,7 @@ def resolveForOperators(cls):
 	# TODO: Could do this for more informative error messages, hidden magic methods that don't make sense.
 	#  Would have to instantiate in the JSON decoder, though.
 	#  I'm not sure it's necessary, since tokens will still have to be encoded as strings in JSON, which means you'd still need apiconstants['kotlinInstanceTokenPrefix'] and isForeignToken in api.py.
+	#  Hm. Enable Python semantics with isinstance(), though.
 
 
 class AttributeProxy:
@@ -247,9 +253,13 @@ class ForeignObject:
 	def __getattr__(self, name, *, do_bake=True):
 		# Due to lazy IPC calling, hasattr will never work with this. Instead, check for in dir().
 		# TODO: Shouldn't I special-casing get_help or _docstring_ here? Wait, no, I think I thought it would be accessed on the class.
+		# TODO: I suppose I could catch ForeignError to raise AttributeError here.
 		attr = self._clone_(path=(*self._path, makePathElement(name=name)))
 		if BIND_BY_REFERENCE and do_bake:
-			attr._bakereal_()
+			try:
+				attr._bakereal_()
+			except ipc.ForeignError as e:
+				raise AttributeError(e)
 		return attr
 	def __getattribute__(self, name, **kwargs):
 		if name in ('values', 'keys', 'items'):
@@ -260,7 +270,7 @@ class ForeignObject:
 	def __getitem__(self, key, *, do_bake=True):
 		item = self._clone_(path=(*self._path, makePathElement(ttype='Key', params=(key,))))
 		if BIND_BY_REFERENCE and do_bake:
-			item._bakereal_()
+			item._bakereal_() # Since __contains__ exists, there's no need to hide ForeignError()s from this behind a KeyError like how an AttributeError is needed for hasattr().
 		return item
 		# Indexing from end with negative numbers is not supported.
 		# Mostly a complexity choice. Matching Kotlin semantics is better than translating with an extra IPC call for length.
@@ -294,6 +304,7 @@ class ForeignObject:
 	@ForeignRequestMethod
 	def _getvalueraw_(self):
 		# Should never be called except for by _getvalue_.
+		assert not self._isbaked
 		return ({
 			'action': 'read',
 			'data': {
@@ -307,6 +318,7 @@ class ForeignObject:
 	@ForeignRequestMethod
 	def _setvalueraw_(self, value):
 		# Should never be called except for by _setvalue_.
+		assert not self._isbaked
 		return ({
 			'action': 'assign',
 			'data': {

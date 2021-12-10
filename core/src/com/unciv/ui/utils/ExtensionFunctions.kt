@@ -317,7 +317,7 @@ fun <T> List<T>.randomWeighted(weights: List<Float>, random: Random = Random): T
 /**
  * @return String of exception preceded by entire stack trace.
  */
-fun Exception.stringifyException(): String {
+fun Throwable.stringifyException(): String {
     val causes = arrayListOf<Throwable>()
     var cause: Throwable? = this
     while (cause != null) {
@@ -326,9 +326,9 @@ fun Exception.stringifyException(): String {
         //I swear this is okay to do.
     }
     return listOf(
-        "\n",
+        "",
         *this.stackTrace,
-        "\n",
+        "",
         *causes.asReversed().map { it.toString() }.toTypedArray()
     ).joinToString("\n")
 }

@@ -12,7 +12,7 @@ import os
 
 import unciv, unciv_pyhelpers#, unciv_lib
 
-from . import EndTimes, ExternalPipe, MapEditingMacros, Merfolk, PlayerMacros, ProceduralTechtree, Utils
+from . import EndTimes, EventPopup, ExternalPipe, MapEditingMacros, Merfolk, PlayerMacros, ProceduralTechtree, Utils
 
 
 # from unciv_scripting_examples.Tests import *; TestRunner.run_tests()
@@ -85,8 +85,7 @@ class TestRunner:
 			self.kwargs = kwargs
 		def __call__(self):
 			def run():
-				args = self.args() if callable(self.args) else self.args
-				self.func(*args, **self.kwargs)
+				self.func(*(self.args() if callable(self.args) else self.args), **(self.kwargs() if callable(self.kwargs) else self.kwargs))
 			if self.runwith is None:
 				run()
 			else:
@@ -235,6 +234,19 @@ for _func in (
 	TestRunner.Test(runwith=InGame)(_func)
 
 del _m, _func
+
+
+# Tests for EventPopup.py
+
+TestRunner.Test()(
+	EventPopup.showPopup
+)
+TestRunner.Test()(
+	EventPopup.showPopup2
+)
+TestRunner.Test(runwith=InGame, kwargs=EventPopup.EVENT_POPUP_DEMOARGS)(
+	EventPopup.showEventPopup
+)
 
 
 #TODO: Add tests. Will probably require exception field in IPC protocol to use.

@@ -108,7 +108,7 @@ object TokenizingJson {
     fun isNotPrimitive(value: Any?): Boolean {
         return when (value) {
             null -> false
-            is String -> false
+            is String -> false // TODO: Chars?
             is Boolean -> false
             is Number -> false
             else -> true

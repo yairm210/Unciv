@@ -99,7 +99,7 @@ class ScriptingProtocol(val scope: Any, val instanceSaver: MutableList<Any?>? = 
      * @property name Serialized string value of this flag.
      */
     enum class KnownFlag {
-        PassMic,
+        PassMic, // Names of these must match Module.md spec.
         Exception
     }
 

@@ -1,6 +1,8 @@
 package com.unciv.scripting.api
 
 import com.unciv.scripting.reflection.Reflection
+import com.unciv.scripting.utils.ScriptingLock
+import com.unciv.ui.utils.stringifyException
 
 // Wrapper for a function that takes no arguments.
 // @param func The function to wrap.
@@ -15,25 +17,21 @@ fun <R> (() -> R).unwrapped() = if (this is LambdaWrapper0) this.lambda else thi
 
 
 class ScriptingModApiHelpers(val scriptingScope: ScriptingScope) {
-    // var handlerContext: NamedTuple?
-    // Why not just use a map? String keys will be clearer in scripts than integers anyway.
-    // Collection that gets replaced with any contextual parameters when running script handlers. E.G. Unit moved, city founded, tech researched, construction finished.
-    // TODO: Mods blacklist, for security threats.
     //fun lambdifyExecScript(code: String ): () -> Unit = fun(){ scriptingScope.uncivGame!!.scriptingState.exec(code) } // FIXME: Requires awareness of which scriptingState and which backend to use.
     //Directly invoking the resulting lambda from a running script will almost certainly break the REPL loop/IPC protocol.
-    //setTimeout?
+    //setTimeout? // Probably don't implement this. But see ToastPopup.startTimer() if you do.
     fun lambdifyReadPathcode(instance: Any?, pathcode: String): () -> Any? {
         val path = Reflection.parseKotlinPath(pathcode)
-        return LambdaWrapper0 { Reflection.resolveInstancePath(instance, path) }
+        return LambdaWrapper0 { Reflection.resolveInstancePath(instance ?: scriptingScope, path) }
     }
     fun lambdifyAssignPathcode(instance: Any?, pathcode: String, value: Any?): () -> Unit {
         val path = Reflection.parseKotlinPath(pathcode)
-        return LambdaWrapper0 { Reflection.setInstancePath(instance, path, value) }
+        return LambdaWrapper0 { Reflection.setInstancePath(instance ?: scriptingScope, path, value) }
     }
     fun lambdifyAssignPathcode(instance: Any?, pathcode: String, value: () -> Any?): () -> Unit {
         val path = Reflection.parseKotlinPath(pathcode)
         val getter = value.unwrapped()
-        return LambdaWrapper0 { Reflection.setInstancePath(instance, path, getter()) }
+        return LambdaWrapper0 { Reflection.setInstancePath(instance ?: scriptingScope, path, getter()) }
     }
 //    fun lambdifyCallWithArgs() // Wouldn't it be easier to just use lambdifyExecScript? This is rapidly growing into its own, very verbose, functional programming language otherwise.
 //    fun lambdifyCallWithDynamicArgs() // Okay, these aren't possible unless you type as Function, due to static arg counts, I think.
@@ -41,13 +39,15 @@ class ScriptingModApiHelpers(val scriptingScope: ScriptingScope) {
         val lambda = func.unwrapped()
         return LambdaWrapper0 { lambda() }
     }
-    fun <R> lambdifyIgnoreExceptions(func: () -> R): () -> R? {
+    fun <R> lambdifyIgnoreExceptions(func: () -> R): () -> R? { // TODO: Probably implicitly do this for all lambdas from here. The host program doesn't have to make it easy for scripts to crash it.
         val lambda = func.unwrapped()
         return LambdaWrapper0<R?> {
             try {
                 lambda()
             } catch (e: Exception) {
-                println("Error in function from ${this::class.simpleName}.lambdifySilentFailure():\n${e.toString().prependIndent("\t")}")
+                ScriptingLock.notifyPlayerScriptFailure(e)
+//                println("Error in function from ${this::class.simpleName}.lambdifySilentFailure():\n${e.stringifyException().prependIndent("\t")}") //// TODO: Toast.
+                // Really these should all go to STDERR.
                 null
             }
         }

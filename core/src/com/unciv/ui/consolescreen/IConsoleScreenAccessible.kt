@@ -56,5 +56,5 @@ interface IConsoleScreenAccessible {
         } // .apply errors on compile with "val cannot be reassigned".
     }
 
-//    fun BaseScreen.updateScriptingState(){} // TODO: Same, but don't clear.
+//    fun BaseScreen.updateScriptingState(){} // TODO: Same, but don't clear. Or not?
 }

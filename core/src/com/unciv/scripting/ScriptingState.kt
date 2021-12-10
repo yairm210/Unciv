@@ -5,6 +5,8 @@ import com.unciv.ui.utils.clipIndexToBounds
 import com.unciv.ui.utils.enforceValidIndex
 import kotlin.collections.ArrayList
 
+// TODO: Add .github/CODEOWNERS file for automatic PR notifications.
+
 // TODO: Check for places to use Sequences.
 // Hm. It seems that Sequence performance isn't even a simple question of number of loops, and is also affected by boxed types and who know what else.
 // Premature optimization and such. Clearly long chains of loops can be rewritten as sequences.
@@ -13,7 +15,7 @@ import kotlin.collections.ArrayList
 
 // TODO: There's probably some public vars that can/should be private set.
 
-// TODO: Mods blacklist.
+// TODO: Mods blacklist, for security threats.
 
 // See https://github.com/yairm210/Unciv/pull/5592/commits/a1f51e08ab782ab46bda220e0c4aaae2e8ba21a4 for example of running locking operation in separate thread.
 
@@ -26,9 +28,11 @@ import kotlin.collections.ArrayList
  * @property scriptingScope ScriptingScope instance at the root of all scripting API.
  */
 //TODO: Actually, probably should be only one instance in game, since various context changes set various ScriptingScope properties through it, and being able to view mod command history will also be useful.
+// Yeah, singleton both this and ScriptingScope, I think?… There would be some benefits from having one ScriptingScoper per ScriptingBackend (namely: concurrent script executions), but it would come with a significant cost to how ScriptingScope is connected to ScriptingState and how the properties in it are currently updated (and that one benefit sounds like a can of Heisenbugs).
+//This will be responsible for: Using the lock, threading, passing the entrypoint name to the lock, exposing context/running backend in scriptingScope, and setting handler context arguments.
 class ScriptingState(val scriptingScope: ScriptingScope) {
 
-    val scriptingBackends = ArrayList<ScriptingBackendBase>()
+    val scriptingBackends = ArrayList<ScriptingBackend>()
 
     private val outputHistory = ArrayList<String>()
     private val commandHistory = ArrayList<String>()
@@ -43,10 +47,10 @@ class ScriptingState(val scriptingScope: ScriptingScope) {
 
     fun getOutputHistory() = outputHistory.toList()
 
-    data class BackendSpawnResult(val backend: ScriptingBackendBase, val motd: String)
+    data class BackendSpawnResult(val backend: ScriptingBackend, val motd: String)
 
     fun spawnBackend(backendtype: ScriptingBackendType): BackendSpawnResult {
-        val backend: ScriptingBackendBase = backendtype.metadata.new(scriptingScope)
+        val backend: ScriptingBackend = backendtype.metadata.new(scriptingScope)
         scriptingBackends.add(backend)
         activeBackend = scriptingBackends.size - 1
         val motd = backend.motd()
@@ -59,7 +63,7 @@ class ScriptingState(val scriptingScope: ScriptingScope) {
         activeBackend = index
     }
 
-    fun switchToBackend(backend: ScriptingBackendBase) {
+    fun switchToBackend(backend: ScriptingBackend) {
         // TODO: Apparently there's a bunch of extensions like .withIndex(), .indices, and .lastIndex that I can use to replace a lot of stuff currently done with .size.
         val index = scriptingBackends.indexOf(backend)
         if (index >= 0)
@@ -96,7 +100,7 @@ class ScriptingState(val scriptingScope: ScriptingScope) {
         return scriptingBackends.isNotEmpty()
     }
 
-    fun getActiveBackend(): ScriptingBackendBase {
+    fun getActiveBackend(): ScriptingBackend {
         return scriptingBackends[activeBackend]
     }
 
@@ -127,6 +131,7 @@ class ScriptingState(val scriptingScope: ScriptingScope) {
     }
 
     fun exec(command: String): String { // TODO: Allow "passing" args that get assigned to something under ScriptingScope here.
+        // TODO: Allow passing a name to use with ScriptingLock.
         //scriptingScope.scriptingBackend =
         if (command.length > 0) {
             if (command != commandHistory.lastOrNull())
@@ -145,14 +150,8 @@ class ScriptingState(val scriptingScope: ScriptingScope) {
     }
 
 //    fun acquireScriptLock() {
-//        scriptingScope.worldScreen?.isPlayersTurn = false
-        //TODO: Move to ScriptingLock.
-        //Not perfect. I think scriptingScope also exposes mutating the GUI itself, and many things that aren't protected by this? Then again, a script that *wants* to cause a crash/ANR will always be able to do so by just assigning an invalid value or deleting a required node somewhere. Could make mod handlers outside of worldScreen blocking, with written stipulations on (dis)recommended size, and then
-        //https://github.com/yairm210/Unciv/pull/5592/commits/a1f51e08ab782ab46bda220e0c4aaae2e8ba21a4
 //    }
 
 //    fun releaseScriptLock() {
-//        scriptingScope.worldScreen?.isPlayersTurn = true
-        //Hm. Should return to original value, not necessarily true. That means keeping a property, which means I'd rather put this in its own class.
 //    }
 }

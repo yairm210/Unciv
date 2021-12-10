@@ -8,6 +8,8 @@ import kotlin.reflect.*
 // I've noticed that the first time running a script is significantly slower than any subsequent times. Takes 50% longer to run the Python test suite the first time than the second time, and simple functions go from incurring a noticeable delay to being visually instant.
 // I don't think anything either can or needs to be done about that, but I assume it's the JVM JIT'ing.
 
+// TODO: Show warning on accessing deprecated property?
+
 object Reflection {
 
     @Suppress("UNCHECKED_CAST")
@@ -17,8 +19,7 @@ object Reflection {
     @Suppress("UNCHECKED_CAST")
     fun <R> readInstanceProperty(instance: Any, propertyName: String): R? {
         // From https://stackoverflow.com/a/35539628/12260302
-        val kprop = (instance::class.members.first { it.name == propertyName } as KProperty1<Any, *>)
-            // TODO: Throw more helpful error on failure.
+        val kprop = (instance::class.members.first { it.name == propertyName } as KProperty1<Any, *>) // Memoization candidates? I already have LazyMap, which should work for this.
         return (if (kprop.isConst)
                 kprop.getter.call()
             else
@@ -233,7 +234,7 @@ object Reflection {
             components.add( when (element.type) {
                 PathElementType.Property -> ".${element.name}"
                 PathElementType.Key -> "[${if (element.doEval) element.name else element.params[0]!!}]"
-                PathElementType.Call -> "(${if (element.doEval) element.name else element.params.joinToString(", ")}])"
+                PathElementType.Call -> "(${if (element.doEval) element.name else element.params.joinToString(", ")})"
             })
         }
         return components.joinToString()
@@ -340,7 +341,7 @@ object Reflection {
         }
         if (trimmed.length > 1 && trimmed.startsWith('"') && trimmed.endsWith('"')) {
             return trimmed.slice(1..trimmed.length-2)
-        }
+        } // TODO: Allow single-quoted strings?
         val asint = trimmed.toIntOrNull()
         if (asint != null) {
             return asint

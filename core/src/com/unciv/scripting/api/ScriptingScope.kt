@@ -32,7 +32,6 @@ class ScriptingScope(
         var uncivGame: UncivGame? = null,
         var worldScreen: WorldScreen? = null,
         var mapEditorScreen: MapEditorScreen? = null,
-        //var scriptingBackend: ScriptingBackend? = null // TODO: Currently executing backend.
     ) {
 
     val Unciv = ScriptingApiUnciv
@@ -41,29 +40,11 @@ class ScriptingScope(
 
     val modApiHelpers = ScriptingModApiHelpers(this)
 
+    val apiExecutionContext = ScriptingApiExecutionContext()
+
     // TODO: Some way to clear the instancesaver?
 
 }
 
 // Does having one state manage multiple backends that all share the same scope really make sense? Mod handler dispatch, callbacks, etc might all be easier if the multi-backend functionality of ScriptingState were implemented only for ConsoleScreen.
 // ScriptingState also helps separate , keep the shared ScriptingScope between all of them (such that it only needs to be updated once on game context changes), and update
-
-/*
-//class NamedTuple(val map: Map<String, Any?>) {
-    //Default order-preserving implementation of Map is important.
-    //SortedMap?
-    val keys = map.keys.toList()
-    //Default Set implementation also preserver order, so hopefully fine.
-    fun contains(vararg args: Any?) {
-        throw UnsupportedOperationException()
-        //Check against values? Keys?
-    }
-    fun get() {
-        if (is Int) {
-        }
-    }
-}
-*/
-
-
-

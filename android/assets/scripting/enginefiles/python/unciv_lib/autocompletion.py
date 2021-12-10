@@ -119,7 +119,7 @@ class PyAutocompleteManager(AutocompleteManager):
 					+ working_dot
 					+ (
 						f"{a}["
-							if self.get_keys(get_a(a)) else # TODO: Use the new is_mapping check.
+							if self.get_keys(get_a(a)) else # TODO: Use the new ismapping check.
 						f"{a}("
 							if self.check_callable(get_a(a)) else
 						a

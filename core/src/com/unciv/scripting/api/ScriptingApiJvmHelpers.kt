@@ -28,7 +28,7 @@ object ScriptingApiJvmHelpers {
 
     val enumMapsByQualname = LazyMap(::enumQualnameToMap)
 
-    val kotlinClassByQualname = LazyMap({ qualName: String -> Class.forName(qualName).kotlin }, exposeState = exposeStates)
+    val kotlinClassByQualname = LazyMap({ qualName: String -> Class.forName(qualName).kotlin }, exposeState = exposeStates) // TODO: Maybe skip the "kotlin" prefix on these? It's already in the "Jvm" object, not everything has the prefix for some reason, and the first word after it is usually what you're actually looking for.
 
     val kotlinSingletonByQualname = LazyMap({ qualName: String -> kotlinClassByQualname[qualName]?.objectInstance }, exposeState = exposeStates)
 
@@ -61,10 +61,21 @@ object ScriptingApiJvmHelpers {
 
     fun toString(obj: Any?) = obj.toString()
 
-//    fun arrayOf(elements: Collection<Any?>): Array<*> = elements.toTypedArray()
-//    fun arrayOfAny(elements: Collection<Any>): Array<Any> = elements.toTypedArray()
-//    fun arrayOfString(elements: Collection<String>): Array<String> = elements.toTypedArray()
+    fun arrayOfAny(elements: Collection<Any?>): Array<*> = elements.toTypedArray() // Rename to toArray? Hm. Named for role, not for semantics— This seems more useful for making new arrays, whereas the toString, toList, etc, are for converting existing instances.
+    fun arrayOfTyped(elements: Collection<Any?>): Array<*> = when (val item = elements.firstOrNull()) {
+        // For scripting API/reflection. Return type won't be known in IDE, but that's fine as it's erased at runtime anyway. Important thing is that the compiler uses the right functions, creating the right typed arrays at run time.
+        is String -> (elements as Collection<String>).toTypedArray()
+        is Number -> (elements as Collection<Number>).toTypedArray()
+        else -> throw IllegalArgumentException("${item!!::class.qualifiedName}")
+    }
 
-    //TODO: Heavily overloaded toList or some such converters for Arrays, Sets, Sequences, Iterators, etc.
+    fun arrayOfTyped1(item: Any?) = arrayOfTyped(listOf(item)) // The "Pathcode" DSL doesn't have any syntax for array or collection literals, and adding such would be beyond its scope. So these helper functions let small arrays be used (1) in the reflective scripting backend and (2), more importantly, in the programm-y and more speed-focused helper functions in ScriptingApiMappers and ModApiHelpers.
+    fun arrayOfTyped2(item1: Any?, item2: Any?) = arrayOfTyped(listOf(item1, item2))
+    fun arrayOfTyped3(item1: Any?, item2: Any?, item3: Any?) = arrayOfTyped(listOf(item1, item2, item3))
+    fun arrayOfTyped4(item1: Any?, item2: Any?, item3: Any?, item4: Any?) = arrayOfTyped(listOf(item1, item2, item3, item4))
+    fun arrayOfTyped5(item1: Any?, item2: Any?, item3: Any?, item4: Any?, item5: Any?) = arrayOfTyped(listOf(item1, item2, item3, item4, item5))
+
+    fun toList(array: Array<*>) = array.toList() // sorted([real(m.getName()) for m in apiHelpers.Jvm.kotlinClassByQualname["kotlin.collections.ArraysKt"].jClass.getMethods()])
+    fun toList(iterable: Iterable<*>) = iterable.toList()
+    fun toList(sequence: Sequence<*>) = sequence.toList()
 }
-
