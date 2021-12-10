@@ -376,7 +376,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
 
-        if (buildMissionary > buildInqusitor && missionary != null && inquisitor != null) faithConstruction.add(missionary)
+        if (buildMissionary > buildInqusitor && missionary != null) faithConstruction.add(missionary)
         else if(inquisitor != null) faithConstruction.add(inquisitor)
 
 
