@@ -71,7 +71,7 @@ class ApiSpecGenerator {
         val searchclasses = mutableListOf<KClass<*>>(ScriptingScope::class)
         val encounteredclasses = mutableSetOf<KClass<*>>()
         var i: Int = 0
-        while (i < searchclasses.size) {
+        while (i < searchclasses.size) { // withIndex
             var cls = searchclasses[i]
             for (m in cls.members) {
                 var kclass: KClass<*>?

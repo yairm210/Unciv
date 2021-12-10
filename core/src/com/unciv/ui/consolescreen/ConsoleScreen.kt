@@ -257,7 +257,7 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         label.setWrap(true)
         printHistory.add(label).left().bottom().width(width).padLeft(15f).row()
         val cells = printHistory.getCells()
-        while (cells.size > ScriptingState.maxOutputHistory && cells.size > 0) {
+        while (cells.size > ScriptingState.maxOutputHistory && cells.size > 0) { // TODO: Move to separate method.
             val cell = cells.first()
             cell.getActor().remove()
             cells.removeValue(cell, true)

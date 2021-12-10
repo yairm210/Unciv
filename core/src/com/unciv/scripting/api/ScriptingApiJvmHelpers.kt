@@ -77,4 +77,6 @@ object ScriptingApiJvmHelpers {
     fun toList(array: Array<*>) = array.toList() // sorted([real(m.getName()) for m in apiHelpers.Jvm.classByQualname["kotlin.collections.ArraysKt"].jClass.getMethods()])
     fun toList(iterable: Iterable<*>) = iterable.toList()
     fun toList(sequence: Sequence<*>) = sequence.toList()
+
+    //fun toChar(string: CharSequence)
 }

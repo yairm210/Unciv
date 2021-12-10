@@ -330,22 +330,61 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
         override val displayName: String = "Reflective"
     }
 
-    private val commandparams = mapOf("get" to 1, "set" to 2, "typeof" to 1) //showprivates?
-    private val examples = listOf(
+    private val commandparams = mapOf("get" to 1, "set" to 2, "typeof" to 1, "examples" to 0, "runtests" to 0) //showprivates?
+    private val examples = listOf( // The new splitToplevelExprs means set can safely use equals sign for assignment.
+        "get uncivGame.loadGame(Unciv.GameStarter.startNewGame(apiHelpers.Jvm.companionByQualClass[\"com.unciv.models.metadata.GameSetupInfo\"].fromSettings(\"Chieftain\")))",
         "get gameInfo.civilizations[1].policies.adoptedPolicies",
         "set 5 civInfo.tech.freeTechs",
-        "set 1 civInfo.cities[0].health",
+//        "set 1 civInfo.cities[0].health", // Doesn't work as test due to new game, no city.
         "set 5 gameInfo.turns",
         "get civInfo.addGold(1337)",
+        "get civInfo.addNotification(\"Here's a notification!\", apiHelpers.Jvm.arrayOfTyped1(\"StatIcons/Resistance\"))",
         "set 2000 worldScreen.bottomUnitTable.selectedUnit.promotions.XP",
-        "get worldScreen.bottomUnitTable.selectedCity.population.setPopulation(25)",
+//        "get worldScreen.bottomUnitTable.selectedCity.population.setPopulation(25)", // Doesn't work as test due to new game, no city.
         "set \"Cattle\" worldScreen.mapHolder.selectedTile.resource",
         "set \"Krakatoa\" worldScreen.mapHolder.selectedTile.naturalWonder",
+        "get apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.worldscreen.AlertPopup\"](worldScreen, apiHelpers.Jvm.constructorByQualname[\"com.unciv.logic.civilization.PopupAlert\"](apiHelpers.Jvm.enumMapsByQualname[\"com.unciv.logic.civilization.AlertType\"][\"StartIntro\"], \"Text text.\")).open(false)",
         "get civInfo.addGold(civInfo.tech.techsResearched.size)",
         "get uncivGame.setScreen(apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.mapeditor.MapEditorScreen\"](gameInfo.tileMap))",
-        "get apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.utils.ToastPopup\"](\"This is a popup!\", uncivGame.consoleScreen, 2000)"
-        //apiHelpers.Jvm.constructorByQualname["com.unciv.ui.worldscreen.AlertPopup"](worldScreen, apiHelpers.Jvm.constructorByQualname["com.unciv.logic.civilization.PopupAlert"](apiHelpers.Enums.enumMapsByQualname["com.unciv.logic.civilization.AlertType"]["FirstContact"], "Carthage"))
+        "get apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.utils.ToastPopup\"](\"This is a popup!\", apiHelpers.Jvm.companionByQualClass[\"com.unciv.UncivGame\"].Current.getScreen(), 2000)",
+        "get apiHelpers.Jvm.singletonByQualname[\"com.unciv.ui.utils.Fonts\"].turn",
+        "get apiHelpers.App.assetImageB64(\"StatIcons/Resistance\")",
+        "get apiHelpers.App.assetFileString(\"jsons/Civ V - Gods & Kings/Terrains.json\")",
+        "get apiHelpers.App.assetFileB64(\"jsons/Tutorials.json\")",
+        "get apiHelpers.Jvm.staticPropertyByQualClassAndName[\"com.badlogic.gdx.graphics.Color\"][\"WHITE\"]",
+        "get apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.utils.ToastPopup\"](\"This is a popup!\", apiHelpers.Jvm.companionByQualClass[\"com.unciv.UncivGame\"].Current.getScreen(), 2000).add(apiHelpers.Jvm.functionByQualClassAndName[\"com.unciv.ui.utils.ExtensionFunctionsKt\"][\"toLabel\"](\"With Scarlet text! \", apiHelpers.Jvm.staticPropertyByQualClassAndName[\"com.badlogic.gdx.graphics.Color\"][\"SCARLET\"], 24))",
+        "set true Unciv.ScriptingDebugParameters.printCommandsForDebug",
+        "set false Unciv.ScriptingDebugParameters.printCommandsForDebug"
     )
+    private val tests = listOf(
+        "get modApiHelpers.lambdifyExecScript(\"get uncivGame\")",
+        "get apiHelpers.Jvm.functionByQualClassAndName[\"com.unciv.ui.utils.ExtensionFunctionsKt\"][\"onClick\"](apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.utils.ToastPopup\"](\"Click to add gold!\", apiHelpers.Jvm.companionByQualClass[\"com.unciv.UncivGame\"].Current.getScreen(), 5000), modApiHelpers.lambdifyReadPathcode(null, \"civInfo.addGold(1000)\"))", // The click action doesn't work, but this still tests extension/static function access.
+//        "get fFeiltali.stastIRFI" // Force a failure.
+    )
+
+    private fun runTests(): ExecResult { // TODO: Run through examples as tests, add to unit tests.
+        val failResult = exec("get This.Command[Should](Fail)!")
+        if (!failResult.isException) {
+            throw AssertionError("ERROR in reflective scripting tests: Unable to detect failures.")
+        }
+        val failures = ArrayList<String>()
+        val tests = sequenceOf(examples.filterNot { it.startsWith("runtests") }, tests).flatten().toList()
+        for (command in tests) {
+            val execResult = exec(command)
+            if (execResult.isException) {
+                failures.add(command)
+            }
+        }
+        return if (failures.isEmpty()) {ExecResult(
+            "${tests.size} reflective scripting tests PASSED!"
+            )} else {ExecResult(
+                listOf(
+                    "${failures.size}/${tests.size} reflective scripting tests FAILED:",
+                    *failures.map { it.prependIndent("\t") }.toTypedArray()
+                ).joinToString("\n"),
+                true
+            )}
+    }
 
     override fun motd(): String {
         return "\n\nWelcome to the reflective Unciv CLI backend.\n\nCommands you enter will be parsed as a path consisting of property reads, key and index accesses, function calls, and string, numeric, boolean, and null literals.\nKeys, indices, and function arguments are parsed recursively.\nProperties can be both read from and written to.\n\nExamples:\n${examples.map({"> ${it}"}).joinToString("\n")}\n\nPress [TAB] at any time to trigger autocompletion for all known leaf names at the currently entered path.\n"
@@ -384,8 +423,9 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
     override fun exec(command: String): ExecResult {
         var parts = command.split(' ', limit=2)
         var out = "\n> ${command}\n"
+        var isException = false
         fun appendOut(text: String) {
-            out += text + "\n"
+            out += text + "\n" // Slow? Meh. The user will always be the bottleneck in this code.
         }
         try {
             when (parts[0]) {
@@ -409,14 +449,20 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
                 "examples" -> {
                     throw RuntimeException("Not implemented.")
                 }
+                "runtests" -> {
+                    val testResults = runTests()
+                    appendOut(testResults.resultPrint)
+                    isException = testResults.isException
+                }
                 else -> {
-                    appendOut("Unknown command: ${parts[0]}")
+                    throw Exception("Unknown command:\n${parts[0].prependIndent("\t")}")
                 }
             }
-        } catch (e: Exception) {
-            appendOut("Error evaluating command: ${e}")
+        } catch (e: Throwable) { // The runtest command is meant to catch breakage from isMinifyEnabled=true removing scripting API functions, which would be NoSuchElementError, I think, so not an Exception subclass.
+            appendOut("Error evaluating command:\n${e.toString().prependIndent("\t")}")
+            isException = true
         }
-        return ExecResult(out)
+        return ExecResult(out, isException)
     }
 }
 

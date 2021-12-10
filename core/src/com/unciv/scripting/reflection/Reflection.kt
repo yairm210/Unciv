@@ -158,7 +158,7 @@ object Reflection {
         "()" to PathElementType.Call
     )
 
-    fun parseKotlinPath(code: String): List<PathElement> {
+    fun parseKotlinPath(code: String): List<PathElement> { // Probably don't need unit tests specifically for this. Any scripting backend unit tests will be implicitly using it anyway, and in this case, the test cases for ReflectiveScriptingBackend are basically reference inputs.
         var path: MutableList<PathElement> = ArrayList<PathElement>()
         //var curr_type = PathElementType.Property
         var curr_name = ArrayList<Char>()
@@ -240,28 +240,49 @@ object Reflection {
         return components.joinToString()
     }
 
-//    private val closingbrackets = null
 
-//    data class OpenBracket(
-//        val char: Char,
-//        var offset: Int
-//    )
-
-    //class OpenBracketIterator() {
-    //}
-
-
-    //fun getOpenBracketStack() {
-    //}
-
-    fun splitToplevelExprs(code: String, delimiters: String = ","): List<String> {
-        return if (code.isBlank()) listOf() else code.split(',').map { it.trim(' ') }
-        var segs = ArrayList<String>()
-        val bracketdepths = mutableMapOf<Char, Int>(
-            *brackettypes.keys.map { it to 0 }.toTypedArray()
-        )
-        //TODO: Actually try to parse for parenthesization, strings, etc.
+    fun splitToplevelExprs( // Probably don't need unit tests specifically for this. Any scripting backend unit tests will be implicitly using it anyway, and in this case, the test cases for ReflectiveScriptingBackend are basically reference inputs.
+        code: String,
+        delimiters: CharSequence = ",",
+        bracketPairs: Map<Char, Char> = mapOf('(' to ')', '[' to ']'), // Move defaults outside, so callers can E.G. flip them for a flipped string/maxParts.
+        // Don't give quote marks as brackets, because they act differently: First opening quote gets mistaken for unexpected closing bracket, and stuff inside them still won't be escaped.
+        maxParts: Int = 0,
+        backSlashEscape: Boolean = false // IDK about this. Simplicity, clarity, and reliability are more important here than being correct by an arbitrary and complicated standard— Point is to be able to parse an optimally useful and easy common subset of a lot of programming languages, in which context escapes are always a headache.
+    ): List<String> {
+        if (code.isBlank())
+            return listOf()
+        val subExprs = ArrayList<String>()
+        var currentIndex = 0
+        val bracketClosersStack = ArrayList<Char>()
+        val currExpr = ArrayList<Char>()
+        var lastChar: Char? = null
+        for ((i, char) in code.withIndex()) {
+            if ((backSlashEscape && lastChar == '\\') || (maxParts > 0 && subExprs.size >= maxParts - 1)) {
+                currExpr.add(char)
+                continue
+            }
+            if (bracketClosersStack.isEmpty() && char in delimiters) {
+                subExprs.add(currExpr.joinToString(""))
+                currExpr.clear()
+                continue
+            }
+            currExpr.add(char)
+            if (char in bracketPairs.values) {
+                if (char == bracketClosersStack.lastOrNull()) {
+                    bracketClosersStack.removeLast()
+                    continue
+                } else {
+                    throw IllegalArgumentException("Unexpected bracket $char at index $i in code: $code")
+                }
+            }
+            val closingBracket = bracketPairs[char]
+            if (closingBracket != null) bracketClosersStack.add(closingBracket)
+        }
+        subExprs.add(currExpr.joinToString(""))
+        return subExprs
     }
+
+    fun splitToplevelExprs(code: String): List<String> = splitToplevelExprs(code, ",") // For reflective use and debug— FunctionDispatcher doesn't use default args.
 
 
     fun resolveInstancePath(instance: Any?, path: List<PathElement>): Any? {

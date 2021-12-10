@@ -6,6 +6,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
+// Could use annotations to expose documentation. Probably not worth it unless integrable with KDoc.
+
+// TODO: Making ((…) -> Unit) functions in the core codebase return the instance itself would significantly increase the power of the Pathcode DSL.
 
 /**
  * Holds references to all internal game data that scripting backends have access to.
@@ -44,6 +47,7 @@ object ScriptingScope
 
     // TODO: Some way to clear the instancesaver?
 
+    // fun containersToJson(root: Any?)
     // TODO: Serialize containers to JSON?
 
 }

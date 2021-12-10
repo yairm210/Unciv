@@ -129,7 +129,7 @@ class TestRunner:
 					failcounts[exc_name] = 0
 				failcounts[exc_name] += 1
 			del exc_name
-			exc = AssertionError(f"{len(failures)} Python tests FAILED: {[test.name for test in failures]}\nFailure types: {failcounts}\n\n")
+			exc = AssertionError(f"{len(failures)}/{len(self._tests)} Python tests FAILED: {[test.name for test in failures]}\nFailure types: {failcounts}\n\n")
 			_print(exc)
 			raise exc
 		else:
