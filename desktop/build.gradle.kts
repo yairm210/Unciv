@@ -23,9 +23,9 @@ val deployFolder = file("../deploy")
 
 // See https://github.com/libgdx/libgdx/wiki/Starter-classes-and-configuration#common-issues
 // and https://github.com/yairm210/Unciv/issues/5679
-val customJvmArgs = mutableListOf("-Djava.awt.headless=true")
+val customJvmArgs = mutableListOf<String>()
 if ("mac" in System.getProperty("os.name").toLowerCase())
-    customJvmArgs.add("-XstartOnFirstThread") // Non-standard, only available (and necessary) on Mac.
+    customJvmArgs.addAll(listOf("-XstartOnFirstThread", "-Djava.awt.headless=true")) // Non-standard, only available (and necessary) on Mac.
 tasks.register<JavaExec>("run") {
     jvmArgs = customJvmArgs
 
