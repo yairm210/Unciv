@@ -99,7 +99,21 @@ object TranslationFileWriter {
                 .getAnnotation(Deprecated::class.java)
             if (deprecationAnnotation != null) continue
             if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
-            linesToTranslate.add(unique.text + " = ")
+
+            // to get rid of multiple equal parameters, like "[amount] [amount]", don't use the unique.text directly
+            //  instead fill the placeholders with incremented values if the previous one exists
+            val newPlaceholders = ArrayList<String>()
+            for (placeholderText in unique.text.getPlaceholderParameters()) {
+                if (!newPlaceholders.contains(placeholderText))
+                    newPlaceholders += placeholderText
+                else {
+                    var i = 2
+                    while (newPlaceholders.contains(placeholderText + i)) i++
+                    newPlaceholders += placeholderText + i
+                }
+            }
+            val finalText = unique.text.fillPlaceholders(*newPlaceholders.toTypedArray())
+            linesToTranslate.add("$finalText = ")
         }
 
         var countOfTranslatableLines = 0
