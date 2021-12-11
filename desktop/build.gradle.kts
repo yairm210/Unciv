@@ -23,9 +23,11 @@ val deployFolder = file("../deploy")
 
 // See https://github.com/libgdx/libgdx/wiki/Starter-classes-and-configuration#common-issues
 // and https://github.com/yairm210/Unciv/issues/5679
-val jvmArgsForMac = listOf("-XstartOnFirstThread", "-Djava.awt.headless=true")
+val customJvmArgs = mutableListOf("-Djava.awt.headless=true")
+if ("mac" in System.getProperty("os.name").toLowerCase())
+    customJvmArgs.add("-XstartOnFirstThread") // Non-standard, only available (and necessary) on Mac.
 tasks.register<JavaExec>("run") {
-    jvmArgs = jvmArgsForMac
+    jvmArgs = customJvmArgs
 
     dependsOn(tasks.getByName("classes"))
 
@@ -37,7 +39,7 @@ tasks.register<JavaExec>("run") {
 }
 
 tasks.register<JavaExec>("debug") {
-    jvmArgs = jvmArgsForMac
+    jvmArgs = customJvmArgs
     dependsOn(tasks.getByName("classes"))
     main = mainClassName
     classpath = sourceSets.main.get().runtimeClasspath
@@ -136,7 +138,7 @@ for (platform in PackrConfig.Platform.values()) {
                         " --classpath $jarFile" +
                         " --mainclass $mainClassName" +
                         " --vmargs Xmx1G " +
-                        (if (platform == PackrConfig.Platform.MacOS) jvmArgsForMac.joinToString(" ") {
+                        (if (platform == PackrConfig.Platform.MacOS) customJvmArgs.joinToString(" ") {
                             it.removePrefix("-")
                         }
                         else "") +
