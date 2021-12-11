@@ -51,7 +51,8 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = true
+            // If you make this true you get a version of the game that just flat-out does't run
+            isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
 
