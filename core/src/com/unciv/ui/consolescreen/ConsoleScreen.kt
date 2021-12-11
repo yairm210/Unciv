@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.ui.TextField // Ooh. TextArea could be nice. (Probably overkill and horrible if done messily, though.)
 import com.unciv.Constants
 import com.unciv.scripting.ScriptingBackendType
 import com.unciv.scripting.ScriptingState
@@ -18,7 +18,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import kotlin.math.max
 import kotlin.math.min
 
-//TODO: "WARNING\n\nThe Unciv scripting API is a HIGHLY EXPERIMENTAL feature intended for advanced users!\nIt may be possible to damage your device and files by running malicious or poorly designed code!"
+//TODO:
 //"Show this warning next time."
 
 //"I understand and wish to continue." // Probably grey this out for five seconds.
@@ -51,6 +51,8 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
     private val layoutUpdators = ArrayList<() -> Unit>()
     private var isOpen = false
 
+    private var warningAccepted = false
+
     var inputText: String
         get() = inputField.text
         set(value: String) { inputField.setText(value) }
@@ -65,9 +67,15 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
 
         backendsAdders.add("Launch new backend:".toLabel()).padRight(30f).padLeft(20f)
         for (backendtype in ScriptingBackendType.values()) {
-            var backendadder = backendtype.metadata.displayName.toTextButton()
+            var backendadder = backendtype.metadata.displayName.toTextButton() // Hm. Should this be translated/translatable? I suppose it already is translatable in OptionsPopup too. And in the running list— So basically everywhere it's shown.
             backendadder.onClick {
-                echo(ScriptingState.spawnBackend(backendtype).motd)
+                val spawned = ScriptingState.spawnBackend(backendtype)
+                echo(spawned.motd)
+                val startup = game.settings.scriptingConsoleStartups[backendtype.metadata.displayName]!!
+                if (startup.isNotBlank()) {
+                    ScriptingState.switchToBackend(spawned.backend)
+                    exec(startup)
+                }
                 updateRunning()
             }
             backendsAdders.add(backendadder)
@@ -111,20 +119,20 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
 
         layoutTable.add(inputBar)
 
-        runButton.onClick({ run() })
-        keyPressDispatcher[Input.Keys.ENTER] = { run() }
-        keyPressDispatcher[Input.Keys.NUMPAD_ENTER] = { run() }
+        runButton.onClick(::run)
+        keyPressDispatcher[Input.Keys.ENTER] = ::run
+        keyPressDispatcher[Input.Keys.NUMPAD_ENTER] = ::run
 
-        tabButton.onClick({ autocomplete() })
-        keyPressDispatcher[Input.Keys.TAB] = { autocomplete() }
+        tabButton.onClick(::autocomplete)
+        keyPressDispatcher[Input.Keys.TAB] = ::autocomplete
 
-        upButton.onClick({ navigateHistory(1) })
+        upButton.onClick { navigateHistory(1) }
         keyPressDispatcher[Input.Keys.UP] = { navigateHistory(1) }
-        downButton.onClick({ navigateHistory(-1) })
+        downButton.onClick { navigateHistory(-1) }
         keyPressDispatcher[Input.Keys.DOWN] = { navigateHistory(-1) }
 
-        onBackButtonClicked({ closeConsole() })
-        closeButton.onClick({ closeConsole() })
+        onBackButtonClicked(::closeConsole)
+        closeButton.onClick(::closeConsole)
 
         updateLayout()
 
@@ -141,12 +149,30 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         }
     }
 
+    fun showWarningPopup() {
+        YesNoPopup(
+            "{WARNING}\n\n{The Unciv scripting API is a HIGHLY EXPERIMENTAL feature intended for advanced users!}\n{It may be possible to damage your device and files by running malicious or poorly designed code!}\n\n{Do you wish to continue?}",
+            {
+                warningAccepted = true
+            },
+            this,
+            {
+                closeConsole()
+                game.settings.enableScriptingConsole = false
+                game.settings.save()
+            }
+        ).open(true)
+    }
+
     fun openConsole() {
         game.setScreen(this)
         keyPressDispatcher.install(stage) //TODO: Can this be moved to UncivGame.setScreen?
         stage.setKeyboardFocus(inputField)
         inputField.getOnscreenKeyboard().show(true)
         this.isOpen = true
+        if (game.settings.showScriptingConsoleWarning && !warningAccepted) {
+            showWarningPopup()
+        }
     }
 
     fun closeConsole() {
@@ -157,28 +183,25 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
 
     private fun updateRunning() {
         runningList.clearChildren()
-        var i = 0
-        for (backend in ScriptingState.scriptingBackends) {
+        for ((i, backend) in ScriptingState.scriptingBackends.withIndex()) {
             var button = backend.metadata.displayName.toTextButton()
-            val index = i
             runningList.add(button)
             if (i == ScriptingState.activeBackend) {
                 button.color = Color.GREEN
             }
             button.onClick {
-                ScriptingState.switchToBackend(index)
+                ScriptingState.switchToBackend(i)
                 updateRunning()
             }
             var termbutton = ImageGetter.getImage("OtherIcons/Stop")
             termbutton.onClick {
-                val exc: Exception? = ScriptingState.termBackend(index)
+                val exc: Exception? = ScriptingState.termBackend(i)
                 updateRunning()
                 if (exc != null) {
                 	echo("Failed to stop ${backend.metadata.displayName} backend: ${exc.toString()}")
                 }
             }
             runningList.add(termbutton.surroundWithCircle(40f)).row()
-            i += 1
         }
     }
 
@@ -267,15 +290,19 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         setScroll(0f,0f)
     }
 
-    private fun run() {
+    private fun exec(command: String) {
         val name = makeScriptingRunName(this::class.simpleName, ScriptingState.getActiveBackend())
-        val execResult = ScriptingState.exec(inputText, asName = name)
+        val execResult = ScriptingState.exec(command, asName = name)
         echo(execResult.resultPrint)
         setText("")
         if (execResult.isException) {
             ScriptingErrorHandling.printConsolePlayerScriptFailure(execResult.resultPrint, asName = name)
             ToastPopup("Exception in ${name}.", this)
         }
+    }
+
+    private fun run() {
+        exec(inputText)
     }
 
     fun clone(): ConsoleScreen {

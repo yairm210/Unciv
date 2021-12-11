@@ -98,7 +98,7 @@ def EVENT_POPUP_DEMOARGS():
 	omniproductionboosts = tuple(int(real(min(production*10, max(production, cityconstructions.getRemainingWork(cityconstructions.getCurrentConstruction().name, True)+1)))) for city in cities for production, cityconstructions in [(city.cityStats.currentCityStats.production, city.cityConstructions)])
 	return {
 		'title': "Something has happened in your empire!",
-		'image': "Generic And Dramatic Artwork!", # TODO # Note: Recommended method for mods is to ship file as internal image.
+		'image': "Generic And Dramatic Artwork!", # TODO # Note: Recommended method for mods is to ship file as internal image— Asynchronous/callback load from placeholder website?
 		'text': """A societally and politically significant event has occurred in your empire!
 
 A political factor has been invisibly building up over the last ten turns or so of gameplay, and it has finally reached a tipping point where we think it will be narratively compelling! Because of the old way things were, things happened. Because things happened, things have changed, and now things have to change some more. From now on, the new way your empire is will be different from the old way it was before!

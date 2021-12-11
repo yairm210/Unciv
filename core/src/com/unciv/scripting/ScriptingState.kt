@@ -128,7 +128,7 @@ object ScriptingState {
         val name = asName ?: makeScriptingRunName(this::class.simpleName, backend)
         val releaseKey: String
         releaseKey = ScriptingRunLock.acquire(name)
-        // Lock acquisition failure gets propagated as Exception, rather than as return. E.G.: Lets lambdas (from modApiHelpers) fail and trigger their own error handling (exposing misbehaving mods to the user).
+        // Lock acquisition failure gets propagated as thrown Exception, rather than as return. E.G.: Lets lambdas (from modApiHelpers) fail and trigger their own error handling (exposing misbehaving mods to the user).
         // isException in ExecResult return value means exception in completely opaque scripting backend. Kotlin exception should still be thrown and propagated like normal.
         try {
             ScriptingScope.apiExecutionContext.apply {

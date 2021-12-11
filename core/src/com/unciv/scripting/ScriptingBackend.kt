@@ -362,7 +362,7 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
 //        "get fFeiltali.stastIRFI" // Force a failure.
     )
 
-    private fun runTests(): ExecResult { // TODO: Run through examples as tests, add to unit tests.
+    private fun runTests(): ExecResult { // TODO: Add to unit tests.
         val failResult = exec("get This.Command[Should](Fail)!")
         if (!failResult.isException) {
             throw AssertionError("ERROR in reflective scripting tests: Unable to detect failures.")
@@ -510,7 +510,7 @@ abstract class BlackboxScriptingBackend(): EnvironmentedScriptingBackend() {
         try {
             return replManager.motd()
         } catch (e: Exception) {
-            return "No MOTD for ${metadata.engine} backend: ${e}\n"
+            return "No MOTD for ${metadata.engine} backend: ${e}\n" // TODO: Hm..
         }
     }
 
@@ -523,10 +523,10 @@ abstract class BlackboxScriptingBackend(): EnvironmentedScriptingBackend() {
     }
 
     override fun exec(command: String): ExecResult {
-        try {
-            return replManager.exec("${command}\n")
+        return try {
+            replManager.exec("${command}\n")
         } catch (e: RuntimeException) {
-            return ExecResult("${e}")
+            ExecResult("${e}", true)
         }
     }
 
@@ -658,12 +658,13 @@ class DevToolsScriptingBackend(): ScriptingBackend() {
 }
 
 
-enum class ScriptingBackendType(val metadata: ScriptingBackend_metadata) {
+// @property suggestedStartup Default startup code to run when started by ConsoleScreen *only*.
+enum class ScriptingBackendType(val metadata: ScriptingBackend_metadata, val suggestedStartup: String = "") { // Not sure how I feel about having suggestedStartup here— Kinda breaks separation of functionality and UI— But keeping a separate Map in the UI files would be too messy, and it's not as bad as putting it in the companion objects— Really, this entire Enum is a mash of stuff needed to launch and use all the backend types by anything else, so that fits.
     Dummy(ScriptingBackend),
     Hardcoded(HardcodedScriptingBackend),
     Reflective(ReflectiveScriptingBackend),
     //MicroPython(UpyScriptingBackend),
-    SystemPython(SpyScriptingBackend),
+    SystemPython(SpyScriptingBackend, "from unciv import *; from unciv_pyhelpers import *"),
     SystemQuickJS(SqjsScriptingBackend),
     SystemLua(SluaScriptingBackend),
 //    DevTools(DevToolsScriptingBackend),

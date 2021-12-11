@@ -71,6 +71,7 @@ function makeScopeProxy() {
 //let handlers={get: (target, prop, receiver) => prop == 'real' ? target : new Proxy([...target, prop], handlers)}; let p=new Proxy([], handlers)
 // Chrome, Node, and SpiderMonkey can print this fine. QuickJS and Deno use inspection in their REPL.
 // TODO: Implement JS bindings.
+//  Basically port over the subset of the Python behaviour that implements bindings. I don't want to bother with adding many richer features like autocompletion, though— And there's a benefit to that because the language bindings/library get copied over for every
 
 // https://stackoverflow.com/questions/9781285/specify-scope-for-eval-in-javascript
 // https://www.figma.com/blog/how-we-built-the-figma-plugin-system/#attempt-3-realms

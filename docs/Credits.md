@@ -684,6 +684,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Multiplayer](https://thenounproject.com/search/?q=multiplayer&i=1215652) by Roy Charles
 * [Options](https://thenounproject.com/search/?q=options&i=866090) By Thengakola
 * [Package](https://thenounproject.com/search/?q=package&i=1886048) by shashank singh
+* [Code](https://thenounproject.com/icon/code-787514/) by Júlia Korčoková (CC-BY-3.0, Modified)
+* [Script](https://thenounproject.com/icon/script-2690195/) by Iconbox (CC-BY-3.0)
 
 # Sound credits
 

@@ -47,5 +47,5 @@ object ScriptingApiMappers {
 }
 // st=time.time(); [real(t.baseTerrain) for t in gameInfo.tileMap.values]; print(time.time()-st)
 // st=time.time(); apiHelpers.Mappers.mapPathCodes(gameInfo.tileMap.values, ['baseTerrain']); print(time.time()-st)
-// FIXME: Gets slower each time run (presumably due to InstanceTokenizer.clean()'s leak).
-// Actually around the same speed. Or wait: Is that the InstanceTokenizer slowdown?
+// Holy shizzle that's faster.
+// (It shows a lot of time went to serialization before though, I think.)

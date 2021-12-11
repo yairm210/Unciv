@@ -115,7 +115,7 @@ class ScriptingProtocolReplManager(scope: Any, blackbox: Blackbox): ScriptingRep
 
     override fun exec(command: String): ExecResult {
         if (!blackbox.readyForWrite) {
-            throw IllegalStateException("REPL not ready: ${blackbox}")
+            throw IllegalStateException("REPL not ready: ${blackbox}") // Switch to ExecResult() return?
         } else {
             return ScriptingProtocol.parseActionResponses.exec(
                 getRequestResponse(
