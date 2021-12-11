@@ -27,15 +27,6 @@ def tryRun(func):
 	except Exception as e: return e
 
 
-try:
-	assert False
-	# Can also check __debug__. Meh. Explicit(ly using the behaviour) is better here than implicit(ly relying on related behaviour).
-except:
-	pass
-else:
-	raise RuntimeError("Assertions must be enabled to run Python tests.")
-
-
 with open(Utils.exampleAssetPath("Elizabeth300"), 'r') as save:
 	# TODO: Compress this. Unciv uses Base64 and GZIP.
 	Elizabeth300 = save.read()
@@ -140,6 +131,17 @@ class TestRunner:
 #### Tests begin here. ####
 
 
+@TestRunner.Test()
+def AssertionsEnabledTest():
+	try:
+		assert False
+		# Can also check __debug__. Meh. Explicit(ly using the behaviour) is better here than implicit(ly relying on related behaviour).
+	except:
+		pass
+	else:
+		raise RuntimeError("Assertions must be enabled to run Python tests. Results may contain false passes.")
+
+
 @TestRunner.Test(runwith=InGame)
 def LoadGameTest():
 	"""Example test. Explicitly tests that the InGame context manager is working."""
@@ -152,7 +154,7 @@ def LoadGameTest():
 
 # @TestRunner.Test(runwith=InGame, name="NoPrivatesTest-InGame", args=(unciv, 2))
 # @TestRunner.Test(runwith=InMapEditor, name="NoPrivatesTest-InMapEditor", args=(unciv, 2))
-# Enable this if it's ever decided to guarantee that the 'dir' IPC action type won't return inaccessible names.
+# Enable this if it's ever decided to guarantee that the 'dir' IPC action type won't return inaccessible names. (I don't think that's necssary, though. I mean, I don't think successful property access is guaranteed by Python semantics either? And if it's *really* an issue, the AttributeError raised by ForeignObject.__getattr__ can be checked for in ForeignObject.__dir__.)
 def NoPrivatesTest(start, maxdepth, *, _depth=0, _failures=None, _namestack=None):
 	# Would have to differentiate between unitialized properties and the like, and privates.
 	if _failures is None:
@@ -175,6 +177,31 @@ def NoPrivatesTest(start, maxdepth, *, _depth=0, _failures=None, _namestack=None
 					NoPrivatesTest(v, maxdepth, _depth=_depth+1, _failures=_failures, _namestack=namestack)
 	if _depth == 0:
 		assert not _failures, _failures
+
+
+@TestRunner.Test()
+def NoRecursiveScriptingTest():
+	try:
+		unciv.modApiHelpers.callLambdaAllowException(
+			unciv.modApiHelpers.lambdifySuppressReturn(
+				unciv.modApiHelpers.lambdifyReadPathcode(None, "")
+			)
+		)
+		# Should work, because those lambdas are run in JVM.
+	except Exception as e:
+		raise AssertionException(f"Normal lambda failed: {e}")
+	try:
+		unciv.modApiHelpers.callLambdaAllowException(
+			unciv.modApiHelpers.lambdifyExecScript("print()")
+		)
+		# Should fail, because recursive scripting is forbidden.
+	except Exception as e:
+		re = repr(e)
+		assert ('already in use' in re and 'Cannot acquire' in re), f"Recursive scripting failed like expected, but did not produce the expected exception: {repr(e)}"
+	else:
+		raise AssertionError(f"Recursive scripting succeeded, but it isn't supposed to.")
+		# If it ever gets here, the entire IPC loop will almost definitely be broken, so this will never actually make it to the JVM. But oh well. Let's still keep an explicit test nonetheless for semantic clarity.
+
 
 # Tests for PlayerMacros.py.
 

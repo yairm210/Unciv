@@ -12,7 +12,7 @@ import com.unciv.Constants
 import com.unciv.scripting.ScriptingBackendType
 import com.unciv.scripting.ScriptingState
 import com.unciv.scripting.utils.ScriptingErrorHandling
-import com.unciv.scripting.utils.makeScriptingRunName
+import com.unciv.scripting.sync.makeScriptingRunName
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import kotlin.math.max

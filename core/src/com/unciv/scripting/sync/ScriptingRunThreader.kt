@@ -1,4 +1,4 @@
-package com.unciv.scripting.utils
+package com.unciv.scripting.sync
 
 import com.badlogic.gdx.Gdx
 import java.util.concurrent.ConcurrentLinkedDeque
@@ -21,8 +21,7 @@ object ScriptingRunThreader {
     }
     @Synchronized fun doRuns(begin: Boolean = true) {
         if (begin) {
-            val success = isDoingRuns.compareAndSet(false, true)
-            if (!success) {
+            if (!isDoingRuns.compareAndSet(false, true)) {
                 throw IllegalStateException("${this::class.simpleName} is already consuming its queued runs!")
             }
         }

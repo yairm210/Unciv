@@ -1,6 +1,7 @@
 package com.unciv.scripting.reflection
 
 import com.unciv.scripting.serialization.TokenizingJson
+import com.unciv.ui.utils.stringifyException
 import kotlin.collections.ArrayList
 import kotlinx.serialization.Serializable
 import kotlin.reflect.*
@@ -322,7 +323,7 @@ object Reflection {
                                         element.params
                                 ).toTypedArray()
                             )
-                        } else {
+                        } else { // Actual lambdas still don't work. Detecting functions with any number of args is apparently impossible in static Kotlin.
                             resolveInstancePath( // Might be a weird if this recurses… I think circular invoke properties would crash?
                                 obj,
                                 listOf(
@@ -337,7 +338,7 @@ object Reflection {
                     }
                 }
             } catch (e: Exception) {
-                throw IllegalAccessException("Cannot access $element on $obj:\n${e.toString().prependIndent("\t")}")
+                throw IllegalAccessException("Cannot access $element on $obj:\n${e.stringifyException().prependIndent("\t")}")
             }
         }
         return obj

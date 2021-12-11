@@ -1,8 +1,8 @@
 package com.unciv.scripting
 
 import com.unciv.scripting.api.ScriptingScope
-import com.unciv.scripting.utils.ScriptingRunLock
-import com.unciv.scripting.utils.makeScriptingRunName
+import com.unciv.scripting.sync.ScriptingRunLock
+import com.unciv.scripting.sync.makeScriptingRunName
 import com.unciv.ui.utils.clipIndexToBounds
 import com.unciv.ui.utils.enforceValidIndex
 import kotlin.collections.ArrayList

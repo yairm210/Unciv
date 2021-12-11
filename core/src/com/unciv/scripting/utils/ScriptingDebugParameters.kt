@@ -1,6 +1,7 @@
 package com.unciv.scripting.utils
 
 import com.unciv.UncivGame
+import com.unciv.scripting.sync.ScriptingRunLock
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.stringifyException
