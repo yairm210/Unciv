@@ -2,6 +2,7 @@ package com.unciv.scripting
 
 //import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.UncivGame
 import com.unciv.scripting.api.ScriptingScope
 import com.unciv.scripting.reflection.Reflection
 import com.unciv.scripting.protocol.Blackbox
@@ -10,6 +11,7 @@ import com.unciv.scripting.protocol.ScriptingProtocolReplManager
 import com.unciv.scripting.protocol.ScriptingRawReplManager
 import com.unciv.scripting.protocol.SubprocessBlackbox
 import com.unciv.scripting.utils.ApiSpecGenerator
+import com.unciv.scripting.utils.ScriptingDebugParameters
 import com.unciv.scripting.utils.SourceManager
 import com.unciv.scripting.utils.SyntaxHighlighter
 import kotlin.reflect.full.companionObjectInstance
@@ -24,6 +26,11 @@ import kotlin.reflect.full.companionObjectInstance
  */
 data class AutocompleteResults(val matches: List<String> = listOf(), val helpText: String? = null)
 
+
+// Data class representing the result of executing a command or script in an opaque ScriptingImplementation/ScriptingBackend.
+
+// @property resultPrint Unstructured output text of command. Analogous to STDOUT, or STDERR if isException is set.
+// @property isException Whether the resultPrint represents an uncaught exception. Should only be used for errors that occur inside of a ScriptingImplementation/ScriptingBackend; For errors that occur in Kotlin code outside of a running ScriptingImplementation/ScriptingBackend, an Exception() should be thrown as usual.
 data class ExecResult(val resultPrint: String, val isException: Boolean = false)
 
 
@@ -38,7 +45,7 @@ abstract class ScriptingBackend_metadata {
      * @return A new instance of the parent class of which this object is a companion.
      */
     abstract fun new(): ScriptingBackend // TODO: Um, class references are totally a thing, and probably distinct from KClass, right?
-    abstract val displayName: String
+    abstract val displayName: String // TODO: Translations on all these?
     val syntaxHighlighting: SyntaxHighlighter? = null
 }
 
@@ -103,7 +110,7 @@ open class ScriptingBackend: ScriptingImplementation {
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new() = ScriptingBackend()
         // Trying to instantiate from a KClass seems messy when the constructors are expected to be called normally. This is easier.
-        override val displayName: String = "Dummy"
+        override val displayName = "Dummy"
     }
 
     /**
@@ -123,7 +130,7 @@ open class ScriptingBackend: ScriptingImplementation {
 class HardcodedScriptingBackend(): ScriptingBackend() {
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new() = HardcodedScriptingBackend()
-        override val displayName: String = "Hardcoded"
+        override val displayName = "Hardcoded"
     }
 
     val commandshelp = mapOf<String, String>(
@@ -170,7 +177,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
         var args = command.split(' ')
         var out = "\n> ${command}\n"
         fun appendOut(text: String) {
-            out += text + "\n"
+            out += (text + "\n").prependIndent("  ")
         }
         when (args[0]) {
             "help" -> {
@@ -298,7 +305,7 @@ class HardcodedScriptingBackend(): ScriptingBackend() {
                         }
                     }
                     ScriptingScope.uncivGame!!.simulateUntilTurnForDebug = numturn
-                    appendOut("Will automatically simulate game until turn ${numturn} after this turn.\nThe map will not update until completed.")
+                    appendOut("Will automatically simulate game until turn ${numturn} the next time you press Next Turn.\nThe map will not update until completed.")
                 } else {
                     appendOut("Cheats must be enabled to use this command!")
                 }
@@ -327,7 +334,7 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
 
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new() = ReflectiveScriptingBackend()
-        override val displayName: String = "Reflective"
+        override val displayName = "Reflective"
     }
 
     private val commandparams = mapOf("get" to 1, "set" to 2, "typeof" to 1, "examples" to 0, "runtests" to 0) //showprivates?
@@ -466,7 +473,8 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
     }
 }
 
-
+// Uses SourceManager to copy library files for engine type into a temporary directory per instance.
+// Deletes
 abstract class EnvironmentedScriptingBackend(): ScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
@@ -477,15 +485,37 @@ abstract class EnvironmentedScriptingBackend(): ScriptingBackend() {
         override val engine = ""
     }
 
+    val folderHandle = SourceManager.setupInterpreterEnvironment(metadata.engine) // Temporary directories are often RAM-backed, so, meh. Alternative to copying entire interpreter library/bindings would be to either implement a virtual filesystem (complicated and sounds brittle) or make scripts share files and thus let them interfere with each other if they have filesystem access (as is deliberately the case in the Python backend)… A couple hundred lines of text and a small, compressed example JPEG or three won't kill anything.
+    fun deleteFolder(): Unit {
+        if (ScriptingDebugParameters.printEnvironmentFolderCreation) {
+            println("Deleting interpreter environment for ${metadata.engine} scripting engine: ${folderHandle.path()}")
+        }
+        folderHandle.deleteDirectory()
+    }
+
+    init {
+        UncivGame.Current.disposeCallbacks.add(::deleteFolder)
+    }
+
     override val metadata
         // Since the companion object type is different, we have to define a new getter for the subclass instance companion getter to get its new members.
         get() = this::class.companionObjectInstance as EnvironmentedScriptBackend_metadata
 
-    val folderHandle: FileHandle by lazy { SourceManager.setupInterpreterEnvironment(metadata.engine) }
     // This requires the overridden values for engine, so setting it in the constructor causes a null error... May be fixed since moving engine to the companions.
     // Also, BlackboxScriptingBackend inherits from this, but not all subclasses of BlackboxScriptingBackend might need it. So as long as it's not accessed, it won't be initialized.
 
     // TODO: Probably implement a the Disposable interface method here to clean up the folder.
+
+    override fun terminate(): Exception? {
+        return try {
+            deleteFolder()
+            null
+        } catch (e: Exception) {
+            e
+        } finally {
+            UncivGame.Current.disposeCallbacks.remove(::deleteFolder) // Looks like value equality, but not referential equality, is preserved between different references to the same function… Good enough.
+        }
+    }
 
 }
 
@@ -531,11 +561,12 @@ abstract class BlackboxScriptingBackend(): EnvironmentedScriptingBackend() {
     }
 
     override fun terminate(): Exception? {
-        try {
-            return replManager.terminate()
+        val deleteResult = super.terminate()
+        return (try {
+            replManager.terminate()
         } catch (e: Exception) {
-            return e
-        }
+            e
+        }) ?: deleteResult
     }
 }
 
@@ -550,14 +581,16 @@ abstract class SubprocessScriptingBackend(): BlackboxScriptingBackend() {
 
     override fun motd(): String {
         return """
-
+            
+            
             Welcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system ${processCmd.firstOrNull()} command as a subprocess.
-
+            
             If you do not have an interactive REPL below, then please make sure the following command is valid on your system:
-
+            
             ${processCmd.joinToString(" ")}
-
-        """.trimIndent() + super.motd()
+            
+            
+            """.trimIndent() + super.motd() // I don't think trying to translate this (or its subcomponents— Although I guess translations are going to be available for displayName anyway) would be the best idea.
     }
 }
 
@@ -573,7 +606,7 @@ class SpyScriptingBackend(): ProtocolSubprocessScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new() = SpyScriptingBackend()
-        override val displayName: String = "System Python"
+        override val displayName = "System Python"
         override val engine = "python"
     }
 
@@ -586,7 +619,7 @@ class SqjsScriptingBackend(): SubprocessScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new() = SqjsScriptingBackend()
-        override val displayName: String = "System QuickJS"
+        override val displayName = "System QuickJS"
         override val engine = "qjs"
     }
 
@@ -599,7 +632,7 @@ class SluaScriptingBackend(): SubprocessScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {
         override fun new() = SluaScriptingBackend()
-        override val displayName: String = "System Lua"
+        override val displayName = "System Lua"
         override val engine = "lua"
     }
 
@@ -614,7 +647,7 @@ class DevToolsScriptingBackend(): ScriptingBackend() {
 
     companion object Metadata: ScriptingBackend_metadata() {
         override fun new() = DevToolsScriptingBackend()
-        override val displayName: String = "DevTools"
+        override val displayName = "DevTools"
     }
 
     val commands = listOf(
