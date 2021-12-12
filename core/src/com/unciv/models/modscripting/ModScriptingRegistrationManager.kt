@@ -3,10 +3,10 @@ package com.unciv.models.modscripting
 import com.unciv.scripting.ScriptingBackend
 import com.unciv.scripting.ScriptingBackendType
 
-// For organizing and associating script handlers with specific mods.
-// Uses ModScriptingHandlerTypes and ModScriptingRunManager.
+// For organizing and associating script handlerTypes with specific mods.
+// Uses ModScriptingRunManager and ModScriptingHandlerTypes.
 object ModScriptingRegistrationManager {
-    private fun register(mod: ScriptedMod, backend: ScriptingBackend, handler: Handler, code: String) {
+    private fun register(mod: ScriptedMod, backend: ScriptingBackend, handlerType: HandlerType, code: String) {
 
     }
 
