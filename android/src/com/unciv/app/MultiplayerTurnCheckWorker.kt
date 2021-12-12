@@ -16,6 +16,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
@@ -175,6 +176,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                         gameIds[count] = gamePreview.gameId
                         gameNames[count] = gameFile.name()
                         count++
+                    }
                 } catch (ex: Throwable) {
                     //only loadGamePreviewFromFile can throw an exception
                     //nothing will be added to the arrays if it fails
