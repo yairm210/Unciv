@@ -57,7 +57,13 @@ object ScriptingApiInstanceRegistry: MutableMap<String, Any?> { // This is a sin
     override fun isEmpty() = backingMap.isEmpty()
     override fun clear() = backingMap.clear()
     override fun put(key: String, value: Any?): Any? {
-        println("\nAssigning ${key} directly in ScriptingApiInstanceRegistry(). It is recommended that every script/mod do this only once per application lifespan, creating its own mapping under the registry for further assignments named according to the following format:\n\t<Language>-<'mod'|'module'|'package'>:<Author>/<Filename>\n\tE.G.: \"python-module:myName/myCoolScript\"\n")
+        println("""
+            
+            Assigning ${key} directly in ScriptingApiInstanceRegistry(). It is recommended that every script/mod do this only once per application lifespan, creating its own mapping under the registry for further assignments named according to the following format:
+                <Language>-<'mod'|'module'|'package'>:<Author>/<Filename>
+                E.G.: registeredInstances["python-module:myName/myCoolScript"] = {"some_name": 5}
+            
+            """.trimIndent())
         if (key in this) {
             throw IllegalArgumentException("\"${key}\" already in ${this}.")
         }
