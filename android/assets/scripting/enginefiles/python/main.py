@@ -36,11 +36,11 @@ try:
 	# Let the entire API be imported from external scripts.
 	# None of this will work on Upy.
 
-	uncivModule.help = lambda thing=None: print(__doc__) if thing is None else print(unciv_lib.api.get_doc(thing)) if isinstance(thing, unciv_lib.wrapping.ForeignObject) else help(thing)
+	# uncivModule.help = lambda thing=None: print(__doc__) if thing is None else print(unciv_lib.api.get_doc(thing)) if isinstance(thing, unciv_lib.wrapping.ForeignObject) else help(thing)
 
-	replScope = {}
+	replScope = {'help': lambda thing=None: print(__doc__) if thing is None else print(unciv_lib.api.get_doc(thing)) if isinstance(thing, unciv_lib.wrapping.ForeignObject) else help(thing)}
 
-	exec('from unciv_pyhelpers import *', replScope, replScope)
+	# exec('from unciv_pyhelpers import *', replScope, replScope)
 	# TODO: This, and the scope update in UncivReplTransceiver, should probably be a default exec in Kotlin-side game options instead.
 
 

@@ -105,8 +105,8 @@ class UncivReplTransceiver(ipc.ForeignActionReceiver, ipc.ForeignActionSender):
 		for n in dir(uncivscope):
 			if n not in self.apiscope:
 				self.apiscope[n] = wrapping.ForeignObject(path=n, foreignrequester=self.GetForeignActionResponse)
-		self.scope.update({**self.apiscope, **self.scope})
-		# TODO: Replace this update with Kotlin-side init?
+		# self.scope.update({**self.apiscope, **self.scope})
+		# TODO: Populate module, let scripts import it themselves.
 	def passMic(self):
 		"""Send a 'PassMic' packet."""
 		self.SendForeignAction({'action':None, 'identifier': None, 'data':None, 'flags':('PassMic',)})
