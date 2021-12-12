@@ -8,6 +8,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import java.io.FileNotFoundException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
@@ -144,13 +145,33 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             try {
                 // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
                 // we need to run it in a different thread.
-                val gamePreview = OnlineMultiplayer().tryDownloadGame(gameId.trim()).asPreview()
+                val gamePreview = OnlineMultiplayer().tryDownloadGamePreview(gameId.trim())
                 if (gameName == "")
                     GameSaver.saveGame(gamePreview, gamePreview.gameId)
                 else
                     GameSaver.saveGame(gamePreview, gameName)
 
                 Gdx.app.postRunnable { reloadGameListUI() }
+            } catch (ex: FileNotFoundException) {
+                println("TEST FILENOTFOUND")
+                // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
+                try {
+                    val gamePreview = OnlineMultiplayer().tryDownloadGame(gameId.trim()).asPreview()
+                    if (gameName == "")
+                        GameSaver.saveGame(gamePreview, gamePreview.gameId)
+                    else
+                        GameSaver.saveGame(gamePreview, gameName)
+
+                    Gdx.app.postRunnable { reloadGameListUI() }
+                } catch (ex: Exception) {
+                    Gdx.app.postRunnable {
+                        val errorPopup = Popup(this)
+                        errorPopup.addGoodSizedLabel("Could not download game!")
+                        errorPopup.row()
+                        errorPopup.addCloseButton()
+                        errorPopup.open()
+                    }
+                }
             } catch (ex: Exception) {
                 Gdx.app.postRunnable {
                     val errorPopup = Popup(this)
@@ -313,16 +334,30 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         thread(name = "multiplayerGameDownload") {
             for ((fileHandle, gameInfo) in multiplayerGames) {
                 try {
-                    val game = gameInfo.updateCurrentTurn(OnlineMultiplayer().tryDownloadGame(gameInfo.gameId))
+                    // Update game without overriding multiplayer settings
+                    val game = gameInfo.updateCurrentTurn(OnlineMultiplayer().tryDownloadGamePreview(gameInfo.gameId))
                     GameSaver.saveGame(game, fileHandle.name())
                     multiplayerGames[fileHandle] = game
+
+                } catch (ex: FileNotFoundException) {
+                    // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
+                    try {
+                        // Update game without overriding multiplayer settings
+                        val game = gameInfo.updateCurrentTurn(OnlineMultiplayer().tryDownloadGame(gameInfo.gameId))
+                        GameSaver.saveGame(game, fileHandle.name())
+                        multiplayerGames[fileHandle] = game
+
+                    } catch (ex: Exception) {
+                        Gdx.app.postRunnable {
+                            ToastPopup("Could not download game!" + " ${fileHandle.name()}", this)
+                        }
+                    }
                 } catch (ex: Exception) {
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
                     Gdx.app.postRunnable {
                         ToastPopup("Could not download game!" + " ${fileHandle.name()}", this)
                     }
-                    continue
                 }
             }
 
