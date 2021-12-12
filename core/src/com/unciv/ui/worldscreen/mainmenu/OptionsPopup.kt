@@ -268,7 +268,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         add(
             WrappableLabel(
-                "{WARNING: The features on this page are all experimental, and very powerful. It may be possible to damage your device using them if you do not know what you are doing.}\n\n{You have been warned!}",
+                "{WARNING: The features on this page are all experimental, and very powerful. It may be possible to damage your device using them if you do not know what you are doing.}\n\n{You have been warned!}", // TODO: Translation.
                 tabs.prefWidth * 0.5f
             ).apply {
                 wrap = true
@@ -278,16 +278,16 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         addSeparator().padTop(20f)
 
-        add("Scripting Console".toLabel(fontSize = 24)).padTop(20f).row()
+        add("Scripting Console".toLabel(fontSize = 24)).padTop(20f).row() // TODO: Translation.
 
         val consoleBasicTable = Table(skin).apply {
             pad(5f)
             defaults().pad(2.5f)
-            addYesNoRow("{Enable scripting console}\n{Press ~ to activate}",
+            addYesNoRow("{Enable scripting console}\n{Press ~ to activate}", // TODO: Translation.
                 settings.enableScriptingConsole) {
                 settings.enableScriptingConsole = it
             }
-            addYesNoRow("Show warning when opening scripting console",
+            addYesNoRow("Show warning when opening scripting console", // TODO: Translation.
                 settings.showScriptingConsoleWarning) {
                 settings.showScriptingConsoleWarning = it
             } // Two affirmative actions to start using scripting console: Enable in click options button, accept ConsoleScreen warning.
@@ -295,7 +295,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         add(consoleBasicTable).row()
 
-        add("Console Startup Commands".toLabel(fontSize = 24)).padTop(20f).row()
+        add("Console Startup Commands".toLabel(fontSize = 24)).padTop(20f).row() // TODO: Translation.
 
         val consoleStartupsTable = Table(skin).apply {
             pad(5f)
@@ -313,20 +313,20 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         addSeparator().padTop(20f)
 
-        add("Mod Scripting API".toLabel(fontSize = 24)).padTop(20f).row()
+        add("Mod Scripting API".toLabel(fontSize = 24)).padTop(20f).row() // TODO: Translation.
 
         val modScriptingTable = Table(skin).apply {
             pad(5f)
             defaults().pad(2.5f)
             val buttonSetter = object { var set = { _: Boolean -> println("Uninitialized button setting wrapper for enableModScripting.") } } // Need access to the button setter from inside the lambda passed to addYesNoRow, but only get it from the return value of addYesNoRow. It's… Not *that* messy, and doing this here is probably cleaner than what I would end up with if I tried to change addYesNoRow any further (which is also used a lot elsewhere).
             buttonSetter.set = addYesNoRow(
-                "{Allow mods to run scripts}\n{CAUTION!}",
+                "{Allow mods to run scripts}\n{CAUTION!}", // TODO: Translation.
                 settings.enableModScripting
             ) { // Probably not worth adding the confirmation behaviour to addYesNoRow… Standardizing it sounds like a quick path to warning fatigue.
                 settings.enableModScripting = false
                 if (it) { // Aside from not wanting to get anyone hacked, should probably also check if Google Play has liability (or third-party distribution) issues— Not any more dangerous than a web browser, in fact arguably safer/more controlled, and trapped in Android sandbox regardless, but still.
                     YesNoPopup( // Four affirmative actions to enable a mod: Click options button, accept options warning, tick mod checkbox, accept mod warning.
-                        "{Enabling this feature will allow mods you choose to run code on your device.}\n\n{Malicious code may be able to harm your device or steal your data!}\n{Never enable scripting for any mods you don't trust.}\n\n{Do you wish to continue?}",
+                        "{Enabling this feature will allow mods you choose to run code on your device.}\n\n{Malicious code may be able to harm your device or steal your data!}\n{Never enable scripting for any mods you don't trust.}\n\n{Do you wish to continue?}", // TODO: Translation.
                         { settings.enableModScripting = it },
                         UncivGame.Current.screen as BaseScreen,
                         { buttonSetter.set(false) }
@@ -715,7 +715,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
     // @param labelText Label to show next to the text field.
     // @param initialValue Text in the text field.
-    // @param defaultValue If non-null, add a button to reset the text field to this value.
+    // @param defaultValue If non-null, a button is added to reset the text field to this value.
     // @param action Function given the updated value of the text field when it changes. Called before saving game settings.
     private fun Table.addTextFieldRow(labelText: String, initialValue: String, defaultValue: String? = null, action: (String) -> Unit) {
         val wrapWidth = tabs.prefWidth * 0.2f
@@ -751,6 +751,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
             lastcell = add(resetButton)
         }
+        // This is a table, so different rows should be aligned even if they have different sizes. (Don't need to add empty cell if not adding reset button.)
 
         lastcell.row()
     }

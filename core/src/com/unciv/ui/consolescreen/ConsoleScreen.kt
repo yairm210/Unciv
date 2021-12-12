@@ -18,11 +18,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import kotlin.math.max
 import kotlin.math.min
 
-//TODO:
-//"Show this warning next time."
-
-//"I understand and wish to continue." // Probably grey this out for five seconds.
-//"Get me out of here!"
+// Could also abstract this entire class as an extension on Table, letting it be used as screen, popup, or random widget, but don't really need to.
 
 class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
 
@@ -43,10 +39,10 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
     private val inputField: TextField = TextField("", skin)
 
     private val inputControls: Table = Table()
-    private val tabButton: TextButton = "TAB".toTextButton()
+    private val tabButton: TextButton = "TAB".toTextButton() // TODO: Translation.
     private val upButton: Image = ImageGetter.getImage("OtherIcons/Up")
     private val downButton: Image = ImageGetter.getImage("OtherIcons/Down")
-    private val runButton: TextButton = "ENTER".toTextButton()
+    private val runButton: TextButton = "ENTER".toTextButton() // TODO: Translation.
 
     private val layoutUpdators = ArrayList<() -> Unit>()
     private var isOpen = false
@@ -65,7 +61,7 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
 
     init {
 
-        backendsAdders.add("Launch new backend:".toLabel()).padRight(30f).padLeft(20f)
+        backendsAdders.add("Launch new backend:".toLabel()).padRight(30f).padLeft(20f) // TODO: Translation.
         for (backendtype in ScriptingBackendType.values()) {
             var backendadder = backendtype.metadata.displayName.toTextButton() // Hm. Should this be translated/translatable? I suppose it already is translatable in OptionsPopup too. And in the running list— So basically everywhere it's shown.
             backendadder.onClick {
@@ -92,7 +88,7 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         printHistory.bottom()
         printScroll = ScrollPane(printHistory)
 
-        runningContainer.add("Active Backends:".toLabel()).row()
+        runningContainer.add("Active Backends:".toLabel()).row() // TODO: Translation.
         runningContainer.add(runningList)
 
         middleSplit = SplitPane(printScroll, runningContainer, false, skin)
@@ -143,16 +139,16 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         updateRunning()
     }
 
-    fun updateLayout() {
+    private fun updateLayout() {
         for (func in layoutUpdators) {
             func()
         }
     }
 
-    fun showWarningPopup() {
+    private fun showWarningPopup() {
         YesNoPopup(
             "{WARNING}\n\n{The Unciv scripting API is a HIGHLY EXPERIMENTAL feature intended for advanced users!}\n{It may be possible to damage your device and files by running malicious or poorly designed code!}\n\n{Do you wish to continue?}",
-            {
+            { // TODO: Translation.
                 warningAccepted = true
             },
             this,
@@ -198,7 +194,7 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
                 val exc: Exception? = ScriptingState.termBackend(i)
                 updateRunning()
                 if (exc != null) {
-                	echo("Failed to stop ${backend.metadata.displayName} backend: ${exc.toString()}")
+                	echo("Failed to stop ${backend.metadata.displayName} backend: ${exc.toString()}") // TODO: Translation? I mean, probably not, really.
                 }
             }
             runningList.add(termbutton.surroundWithCircle(40f)).row()
@@ -297,7 +293,7 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         setText("")
         if (execResult.isException) {
             ScriptingErrorHandling.printConsolePlayerScriptFailure(execResult.resultPrint, asName = name)
-            ToastPopup("Exception in ${name}.", this)
+            ToastPopup("{Exception in} ${name}.", this) // TODO: Translation.
         }
     }
 
@@ -331,5 +327,3 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         SelectAfter
     }
 }
-
-// Screen, widget, or popup?

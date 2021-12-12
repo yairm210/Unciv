@@ -22,13 +22,13 @@ object ScriptingRunLock {
     @Synchronized fun acquire(name: String? = null): String {
         // Different *threads* that try to run scripts concurrently should already queue up nicely without this due to the use of the Synchronized annotation on ScriptingState.exec(), I think.
         // But because of the risk of recursive script runs (which will deadlock if trying to acquire a lock that must be released by the same thread, and which break the already-in-use IPC loop for a backend if allowed to continue without a lock), the behaviour here if or when that fails is to throw an exception.
-        if (!isRunning.compareAndSet(false, true)) throw IllegalStateException("Cannot acquire ${this::class.simpleName} for $name because it is already in use by $runningName.")
+        if (!isRunning.compareAndSet(false, true)) throw IllegalStateException("Cannot acquire ${this::class.simpleName} for $name because it is already in use by $runningName.") // Prooobably don't translate?
         val key = UUID.randomUUID().toString()
         runningKey = key
         runningName = name
         return key
     }
-    // @param releaseKey The string previously returned by the immediately preceding succesful acquire().
+    // @param releaseKey The string previously returned by the immediately preceding successful acquire().
     // @throws IllegalArgumentException If given the incorrect releaseKey.
     // @throws IllegalStateException If not currently acquired.
     @Synchronized fun release(releaseKey: String) {

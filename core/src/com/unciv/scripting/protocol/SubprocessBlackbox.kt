@@ -65,7 +65,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
      */
     override fun start() {
         if (isAlive) {
-            throw RuntimeException("Process is already running: ${process}")
+            throw RuntimeException("Process is already running: ${process}") // Could translate. Probably shouldn't.
         }
         try {
             process = Runtime.getRuntime().exec(processCmd)
@@ -102,7 +102,7 @@ class SubprocessBlackbox(val processCmd: Array<String>): Blackbox {
         if (block || readyForRead > 0) {
             return inStream!!.readLine()
         } else {
-            throw IllegalStateException("Empty STDOUT for ${process}.")
+            throw IllegalStateException("Empty STDOUT for ${process}.") // Could translate. Probably shouldn't.
         }
     }
 

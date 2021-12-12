@@ -24,7 +24,7 @@ object ScriptingApiHelpers {
     val Mappers = ScriptingApiMappers
 
     val registeredInstances = ScriptingApiInstanceRegistry
-    val instancesAsInstances = FakeMap{obj: Any? -> obj} // TODO: Rename this, and singleton it.
+    val instancesAsInstances = FakeMap{obj: Any? -> obj}
     /// Scripting language bindings work by keeping track of the paths to values, and making Kotlin/the JVM resolve them only when needed.
     // This creates a dilemma: Resolving a path into a Kotlin value too early means that no further paths (E.G. attribute, keys, calls) can be built on top of it. But resolving it late means that expected side effects may not happen (E.G. function calls probably shouldn't be deferred). And values that *must* be resolved, like the results of function calls, cannot have their own members and method accessed until they themselves are assigned to a path, because they're just kinda floating around as far as the scripting-exposed semantics are concerned.
     // So this fake Map works around that, by providing a way for any random object to appear to have a path.
