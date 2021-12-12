@@ -13,7 +13,6 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
-import com.unciv.scripting.ScriptingState
 import com.unciv.scripting.api.ScriptingScope
 import com.unciv.scripting.utils.ScriptingDebugParameters
 import com.unciv.ui.consolescreen.ConsoleScreen
@@ -77,6 +76,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     lateinit var consoleScreen: ConsoleScreen
     // Keep same ConsoleScreen() when possible, to avoid having to manually persist/restore history, input field, etc.
+
+    // Set of functions to call when disposing/closing the game.
+    val disposeCallbacks = HashSet<() -> Unit>()
 
     override fun create() {
 
@@ -221,6 +223,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 GameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
         }
         settings.save()
+
+        for (callback in disposeCallbacks) callback()
 
         threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM"}.forEach {
             println ("    Thread ${it.name} still running in UncivGame.dispose().")

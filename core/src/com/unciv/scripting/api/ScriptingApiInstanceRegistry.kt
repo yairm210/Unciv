@@ -1,26 +1,21 @@
 package com.unciv.scripting.api
 
+import com.unciv.UncivGame
 import java.util.Collections.newSetFromMap
 import java.util.WeakHashMap
 import kotlin.NoSuchElementException
-import kotlin.concurrent.thread
 
 object AllScriptingApiInstanceRegistries {
     private val registries = newSetFromMap(WeakHashMap<ScriptingApiInstanceRegistry, Boolean>())
     // Apparently this will be a WeakSet? Oh, all sets just wrap Maps?
-    fun init() {
-        Runtime.getRuntime().addShutdownHook(
-            // TODO: Move uses of this into UncivGame.dispose()?
-            // TODO: Allow arbitrary callbacks to be added for UncivGame.dispose().
-            // TODO: Also, doesn't actually work.
-            thread(start = false, name = "Check ScriptingApiInstanceRegistry()s are empty.") {
-                val allkeys = getAllKeys()
-                if (allkeys.isNotEmpty()) {
-                    println("WARNING: ${allkeys.size} ScriptingApiInstanceRegistry()s still have keys in them:")
-                    println("\t" + allkeys.map { "${it.value.size} keys in ${it.key}\n\t\t"+it.value.joinToString("\n\t\t") }.joinToString("\n\t"))
-                }
+    init {
+        UncivGame.Current.disposeCallbacks.add { // Runtime.getRuntime().addShutdownHook() also works, but I probably prefer to unify with existing shutdown behaviour.
+            val allKeys = getAllKeys()
+            if (allKeys.isNotEmpty()) {
+                println("WARNING: ${allKeys.size} ScriptingApiInstanceRegistry()s still have keys in them:")
+                println("\t" + allKeys.map { "${it.value.size} keys in ${it.key}\n\t\t"+it.value.joinToString("\n\t\t") }.joinToString("\n\t"))
             }
-        )
+        }
     }
     fun add(registry: ScriptingApiInstanceRegistry) {
         registries.add(registry)
@@ -38,11 +33,11 @@ object AllScriptingApiInstanceRegistries {
  * @throws IllegalArgumentException On an attempted assignment colliding with an existing key.
  * @throws NoSuchElementException For reads and removals at non-existent keys.
  */
-object ScriptingApiInstanceRegistry: MutableMap<String, Any?> {
+object ScriptingApiInstanceRegistry: MutableMap<String, Any?> { // This is a singleton as ScriptingScope is a singleton now, but it's probably best to keep it with the same semantics as a class.
+    init {
+        AllScriptingApiInstanceRegistries.add(this)
+    }
     private val backingMap = mutableMapOf<String, Any?>()
-//    fun init() {
-//        AllScriptingApiInstanceRegistries.add(this)
-//    }
     override val entries
         get() = backingMap.entries
     override val keys
