@@ -352,7 +352,9 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
         "set \"Krakatoa\" worldScreen.mapHolder.selectedTile.naturalWonder",
         "get apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.worldscreen.AlertPopup\"](worldScreen, apiHelpers.Jvm.constructorByQualname[\"com.unciv.logic.civilization.PopupAlert\"](apiHelpers.Jvm.enumMapsByQualname[\"com.unciv.logic.civilization.AlertType\"][\"StartIntro\"], \"Text text.\")).open(false)",
         "get civInfo.addGold(civInfo.tech.techsResearched.size)",
-        "get uncivGame.setScreen(apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.mapeditor.MapEditorScreen\"](gameInfo.tileMap))",
+        //"get uncivGame.setScreen(apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.mapeditor.MapEditorScreen\"](gameInfo.tileMap))",
+        // FIXME: This was working, but now hits an uinitialized .ruleset in the screen constructor.
+        // Still works in the .JAR.
         "get apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.utils.ToastPopup\"](\"This is a popup!\", apiHelpers.Jvm.companionByQualClass[\"com.unciv.UncivGame\"].Current.getScreen(), 2000)",
         "get apiHelpers.Jvm.singletonByQualname[\"com.unciv.ui.utils.Fonts\"].turn",
         "get apiHelpers.App.assetImageB64(\"StatIcons/Resistance\")",
@@ -369,26 +371,26 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
 //        "get fFeiltali.stastIRFI" // Force a failure.
     )
 
-    private fun runTests(): ExecResult { // TODO: Add to unit tests.
+    private fun runTests(): ExecResult { // TODO: Could add suppress flag to disable printing in unit tests.
         val failResult = exec("get This.Command[Should](Fail)!")
         if (!failResult.isException) {
-            throw AssertionError("ERROR in reflective scripting tests: Unable to detect failures.")
+            throw AssertionError("ERROR in reflective scripting tests: Unable to detect failures.".also { println(it) })
         }
-        val failures = ArrayList<String>()
+        val failures = mutableMapOf<String, String>()
         val tests = sequenceOf(examples.filterNot { it.startsWith("runtests") }, tests).flatten().toList()
         for (command in tests) {
             val execResult = exec(command)
             if (execResult.isException) {
-                failures.add(command)
+                failures[command] = execResult.resultPrint
             }
         }
         return if (failures.isEmpty()) {ExecResult(
-            "${tests.size} reflective scripting tests PASSED!"
+                "${tests.size} reflective scripting tests PASSED!".also { println(it) }
             )} else {ExecResult(
                 listOf(
                     "${failures.size}/${tests.size} reflective scripting tests FAILED:",
-                    *failures.map { it.prependIndent("\t") }.toTypedArray()
-                ).joinToString("\n"),
+                    *failures.map { "\t${it.key}\n\t\t${it.value    }" }.toTypedArray()
+                ).joinToString("\n").also { println(it) },
                 true
             )}
     }

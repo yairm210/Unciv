@@ -13,6 +13,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.Translations
+import com.unciv.scripting.ScriptingState
 import com.unciv.scripting.api.ScriptingScope
 import com.unciv.scripting.utils.ScriptingDebugParameters
 import com.unciv.ui.consolescreen.ConsoleScreen
@@ -36,6 +37,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
     val limitOrientationsHelper = parameters.limitOrientationsHelper
+    val runScriptAndExit = parameters.runScriptAndExit
+
 
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
@@ -141,6 +144,16 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         crashController = CrashController.Impl(crashReportSender)
 
         createScripting()
+
+        if (runScriptAndExit != null) {
+            val backend = ScriptingState.spawnBackend(runScriptAndExit.first).backend
+            val execResult = ScriptingState.exec(
+                command = runScriptAndExit.second,
+                withBackend = backend
+            )
+            runScriptAndExit.third?.invoke(execResult)
+            Gdx.app.exit()
+        }
     }
 
     fun loadGame(gameInfo: GameInfo) {

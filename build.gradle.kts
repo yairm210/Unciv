@@ -143,6 +143,8 @@ project(":core") {
             "testImplementation"("com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion")
             "testImplementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
             "testImplementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop")
+
+            "implementation"(project(":desktop"))
         }
     }
 }
