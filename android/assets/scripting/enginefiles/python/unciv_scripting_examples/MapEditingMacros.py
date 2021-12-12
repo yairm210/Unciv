@@ -19,14 +19,16 @@ from . import Utils
 
 # If you modify this file, please add any new functions to Tests.py.
 
-
-t = re.sub("//.*", "", re.sub('/\*.*\*/', "", real(unciv.apiHelpers.App.assetFileString("jsons/Civ V - Gods & Kings/Terrains.json")), flags=re.DOTALL))
-terrainsjson = json.loads(t)
-# In an actual implementation, you would want to read from the ruleset instead of the JSON. But this is eaiser for me.
-del t
-
-terrainbases = {t['name']: t for t in terrainsjson if t['type'] in ('Water', 'Land')}
-terrainfeatures = {t['name']: t for t in terrainsjson if t['type'] == 'TerrainFeature'}
+try:
+	t = re.sub("//.*", "", re.sub('/\*.*\*/', "", real(unciv.apiHelpers.App.assetFileString("jsons/Civ V - Gods & Kings/Terrains.json")), flags=re.DOTALL))
+	terrainsjson = json.loads(t)
+	# In an actual implementation, you would want to read from the ruleset instead of the JSON. But this is easier for me.
+	del t
+except Exception as e:
+	print("Couldn't load terrains Terrains.json")
+else:
+	terrainbases = {t['name']: t for t in terrainsjson if t['type'] in ('Water', 'Land')}
+	terrainfeatures = {t['name']: t for t in terrainsjson if t['type'] == 'TerrainFeature'}
 
 
 def genValidTerrains(*, forbid=('Fallout',)):
@@ -45,9 +47,9 @@ def genValidTerrains(*, forbid=('Fallout',)):
 						otherparams = terrainfeatures[otherfeature]
 						if terrain in otherparams['occursOn']:
 							terrains.add(f"{terrain}/{otherfeature},{feature}")
-	return terrains
+	return tuple(sorted(terrains))
 
-naturalterrains = tuple(sorted(genValidTerrains()))
+# naturalterrains = tuple(sorted(genValidTerrains()))
 
 
 _altitudeterrainsequence = (
@@ -150,7 +152,7 @@ mandlebrotpresets = {
 }
 
 def _mandelbrot(x, y, iterations=100, *, expo=2, escaperadius=12, innervalue=None):
-	c=complex(x,y)
+	c = complex(x,y)
 	z = 0+0j
 	dist = 0
 	if innervalue is None:
@@ -302,7 +304,9 @@ def getImageAverageRgb(image):
 	return tuple(c/total_alpha for c in (r_sum, g_sum, b_sum))
 
 
-def computeTerrainAverageColours(terrains=naturalterrains):
+def computeTerrainAverageColours(terrains=None):
+	if terrains is None:
+		terrains = genValidTerrains()
 	def terraincol(terrain):
 		with compositedTerrainImage(terrain) as i:
 			return getImageAverageRgb(i)
@@ -349,7 +353,7 @@ def loadImageColours(tileMap=None, imagepath="EarthTerrainFantasyHex.jpg", terra
 	imagepath = _imageFallbackPath(imagepath)
 	if terraincolours is None:
 		print(f"\nNo terrain colours given. Computing average tile colours based on FantasyHex tileset. This may take several seconds.")
-		terraincolours = computeTerrainAverageColours(naturalterrains)
+		terraincolours = computeTerrainAverageColours(genValidTerrains())
 		print(f"\nTerrain colours computed:\n{repr(terraincolours)}")
 	pixinterp = _TerrainColourInterpreter(terraincolours, maxdither=maxdither)
 	with PIL.Image.open(imagepath) as image:

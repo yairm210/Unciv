@@ -85,7 +85,7 @@ def showEventPopup(title=None, image=None, text="No text event text provided!", 
 		)
 		popup.add(button).row()
 	popup.open(False)
-	return {**locals()}
+	return popup
 
 
 def EVENT_POPUP_DEMOARGS():

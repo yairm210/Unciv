@@ -197,10 +197,10 @@ def NoRecursiveScriptingTest():
 		# Should fail, because recursive scripting is forbidden.
 	except Exception as e:
 		re = repr(e)
-		assert ('already in use' in re and 'Cannot acquire' in re), f"Recursive scripting failed like expected, but did not produce the expected exception: {repr(e)}"
+		assert (isinstance(e, unciv_pyhelpers.ForeignError) and 'already in use' in re and 'Cannot acquire' in re), f"Recursive scripting failed like expected, but did not produce the expected exception: {repr(e)}"
 	else:
 		raise AssertionError(f"Recursive scripting succeeded, but it isn't supposed to.")
-		# If it ever gets here, the entire IPC loop will almost definitely be broken, so this will never actually make it to the JVM. But oh well. Let's still keep an explicit test nonetheless for semantic clarity.
+		# If it ever gets here, the entire IPC loop will almost definitely be broken, so this will never actually make it to the JVM. But oh well. Let's still keep an explicit test nonetheless for semantic/spec clarity.
 
 
 # Tests for PlayerMacros.py.

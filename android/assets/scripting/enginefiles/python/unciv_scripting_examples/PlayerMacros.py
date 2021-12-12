@@ -29,6 +29,7 @@ def gatherBiggestCities(cities, ratio, stat='production'):
 
 def clearCitiesProduction(cities):
 	"""Clear given cities of all queued and current production, and return the iterable of cities."""
+	i = 0 # Loop never run when no cities?
 	for i, city in enumerate(cities):
 		city.cityConstructions.constructionQueue.clear()
 	print(f"Cleared production from {i+1} cities.")
@@ -36,6 +37,7 @@ def clearCitiesProduction(cities):
 
 def addCitiesProduction(cities, queue=()):
 	"""Add given construction items to the construction queues of given cities, and return the iterable of cities."""
+	i = 0
 	for i, city in enumerate(cities):
 		for build in queue:
 			city.cityConstructions.addToQueue(build)
