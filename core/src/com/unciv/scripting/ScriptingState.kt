@@ -1,8 +1,11 @@
 package com.unciv.scripting
 
+import com.unciv.UncivGame
 import com.unciv.scripting.api.ScriptingScope
 import com.unciv.scripting.sync.ScriptingRunLock
 import com.unciv.scripting.sync.makeScriptingRunName
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.ToastPopup
 import com.unciv.ui.utils.clipIndexToBounds
 import com.unciv.ui.utils.enforceValidIndex
 import kotlin.collections.ArrayList
@@ -124,15 +127,20 @@ object ScriptingState {
 
     // @throws IllegalStateException On failure to acquire scripting lock.
     @Synchronized fun exec(command: String, asName: String? = null, withParams: Map<String, Any?>? = null): ExecResult {
+        if (UncivGame.Current.isGameInfoInitialized() && UncivGame.Current.gameInfo.gameParameters.isOnlineMultiplayer) {
+            ToastPopup("Scripting not allowed in multiplayer.", UncivGame.Current.screen as BaseScreen) // TODO: Translation.
+            return ExecResult("", true)
+        }
         val backend = getActiveBackend()
         val name = asName ?: makeScriptingRunName(this::class.simpleName, backend)
-        val releaseKey: String
-        releaseKey = ScriptingRunLock.acquire(name)
-        // Lock acquisition failure gets propagated as thrown Exception, rather than as return. E.G.: Lets lambdas (from modApiHelpers) fail and trigger their own error handling (exposing misbehaving mods to the user).
+        val releaseKey = ScriptingRunLock.acquire(name)
+        // Lock acquisition failure gets propagated as thrown Exception, rather than as return. E.G.: Lets lambdas (from modApiHelpers) fail and trigger their own error handling (exposing misbehaving mods to the user via popup).
         // isException in ExecResult return value means exception in completely opaque scripting backend. Kotlin exception should still be thrown and propagated like normal.
         try {
             ScriptingScope.apiExecutionContext.apply {
-                handlerParameters = withParams
+                handlerParameters = withParams?.toMap()
+                // Looking at the source code, some .to<Collection>() extensions actually return mutable instances, and just type the return.
+                // That means that scripts, and the heavy casting in Reflection.kt, might actually be able to modify them. So make a copy before every script run.
                 scriptingBackend = backend
             }
             if (command.isNotEmpty()) {
