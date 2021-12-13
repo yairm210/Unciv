@@ -495,4 +495,18 @@ class GameInfoPreview() {
 
         return this
     }
+
+    /**
+     * Updates the current player and turn information in the GameInfoPreview object with the
+     * help of another GameInfoPreview object.
+     */
+    fun updateCurrentTurn(gameInfo: GameInfoPreview) : GameInfoPreview {
+        currentPlayer = gameInfo.currentPlayer
+        turns = gameInfo.turns
+        currentTurnStartTime = gameInfo.currentTurnStartTime
+        //We update the civilizations in case someone is removed from the game (resign/kick)
+        civilizations = gameInfo.civilizations
+
+        return this
+    }
 }
