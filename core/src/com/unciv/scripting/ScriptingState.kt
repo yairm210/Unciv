@@ -48,6 +48,8 @@ object ScriptingState {
     var activeCommandHistory: Int = 0
     // Actually inverted, because history items are added to end of list and not start. 0 means nothing, 1 means most recent command at end of list.
 
+    //var consoleScreenListener: ((String) -> Unit)? = null // TODO: Switch to push instead of pull for ConsoleScreen.
+
     fun getOutputHistory() = outputHistory.toList()
 
     data class BackendSpawnResult(val backend: ScriptingBackend, val motd: String)
@@ -128,7 +130,7 @@ object ScriptingState {
     // @throws IllegalStateException On failure to acquire scripting lock.
     @Synchronized fun exec(command: String, asName: String? = null, withParams: Map<String, Any?>? = null): ExecResult {
         if (UncivGame.Current.isGameInfoInitialized() && UncivGame.Current.gameInfo.gameParameters.isOnlineMultiplayer) {
-            ToastPopup("Scripting not allowed in multiplayer.", UncivGame.Current.screen as BaseScreen) // TODO: Translation.
+            ToastPopup("Scripting not allowed in online multiplayer.", UncivGame.Current.screen as BaseScreen) // TODO: Translation.
             return ExecResult("", true)
         }
         val backend = getActiveBackend()

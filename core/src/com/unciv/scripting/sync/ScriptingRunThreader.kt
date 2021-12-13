@@ -10,13 +10,13 @@ object ScriptingRunThreader {
     private val isDoingRuns = AtomicBoolean(false)
     @Suppress("NewApi") // FIXME: Bump API level up.
     private val runQueue = ConcurrentLinkedDeque<() -> Unit>()
-    fun queueRun(toRun: () -> Unit) {
+    @Synchronized fun queueRun(toRun: () -> Unit) {
         runQueue.add(toRun)
     }
-    fun queueRuns(runs: Iterable<() -> Unit>) {
+    @Synchronized fun queueRuns(runs: Iterable<() -> Unit>) {
         for (run in runs) runQueue.add(run)
     }
-    fun queueRuns(runs: Sequence<() -> Unit>) {
+    @Synchronized fun queueRuns(runs: Sequence<() -> Unit>) {
         for (run in runs) runQueue.add(run)
     }
     @Synchronized private fun doNextRunRecursive() {

@@ -429,7 +429,7 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
         }
     }
 
-    override fun exec(command: String): ExecResult {
+    override fun exec(command: String): ExecResult { // TODO: Treat multiple lines as consecutive commands, for modding.
         var parts = command.split(' ', limit=2)
         var out = "\n> ${command}\n"
         var isException = false
@@ -441,7 +441,7 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
                 "get" -> {
                     appendOut("${Reflection.evalKotlinString(ScriptingScope, parts[1])}")
                 }
-                "set" -> {
+                "set" -> { // TODO: Use the new pathcode splitter to accept equals sign format.
                     var setparts = parts[1].split(' ', limit=2)
                     var value = Reflection.evalKotlinString(ScriptingScope, setparts[0])
                     Reflection.setInstancePath(
@@ -456,7 +456,7 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
                     appendOut("${if (obj == null) null else obj!!::class.qualifiedName}")
                 }
                 "examples" -> {
-                    throw RuntimeException("Not implemented.")
+                    throw RuntimeException("Not implemented.") // TODO: Remove from MOTD, move to default startup.
                 }
                 "runtests" -> {
                     val testResults = runTests()
@@ -583,15 +583,15 @@ abstract class SubprocessScriptingBackend(): BlackboxScriptingBackend() {
 
     override fun motd(): String {
         return """
-            
-            
+
+
             Welcome to the Unciv '${metadata.displayName}' API. This backend relies on running the system ${processCmd.firstOrNull()} command as a subprocess.
-            
+
             If you do not have an interactive REPL below, then please make sure the following command is valid on your system:
-            
+
             ${processCmd.joinToString(" ")}
-            
-            
+
+
             """.trimIndent() + super.motd() // I don't think trying to translate this (or its subcomponents— Although I guess translations are going to be available for displayName anyway) would be the best idea.
     }
 }

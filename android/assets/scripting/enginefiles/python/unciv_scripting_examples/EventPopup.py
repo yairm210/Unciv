@@ -3,7 +3,7 @@ Examples for scripting simple, Paradox-style/Beyond Earth-style event popups.
 
 """
 
-#from unciv_scripting_examples.EventPopup import *; r=showEventPopup(**EVENT_POPUP_DEMOARGS())
+#from unciv_scripting_examples.EventPopup import *; uncivGame.setWorldScreen(); r=showEventPopup(**EVENT_POPUP_DEMOARGS())
 
 # modApiHelpers.lambdifyReadPathcode(None, 'apiHelpers.Jvm.constructorByQualname["com.unciv.ui.utils.ToastPopup"]("Test", uncivGame.getScreen(), 8000)')
 
@@ -85,7 +85,7 @@ def showEventPopup(title=None, image=None, text="No text event text provided!", 
 		)
 		popup.add(button).row()
 	popup.open(False)
-	return popup
+	return popup # TODO: Need to update worldScreen.
 
 
 def EVENT_POPUP_DEMOARGS():
@@ -108,11 +108,11 @@ Things can change in different ways. If we do one thing, things can change. If w
 This is your chance to roleplay a political decision:
 """,
 		'options': { # TODO: Serialize Chars as string?
-			(f"I'll take a Gold stat bonus. (+{goldboost} {real(Fonts.gold.toString())})", GdxColours['GOLD']):
+			(f"I'll take a Gold stat boost. (+{goldboost} {real(Fonts.gold.toString())})", GdxColours['GOLD']):
 				modApiHelpers.lambdifyReadPathcode(civInfo, f'.addGold({goldboost})'), # Can actually just read addGold for this.
-			(f"I'll take a Culture stat bonus. (+{cultureboost} {real(Fonts.culture.toString())})", GdxColours['VIOLET']):
+			(f"I'll take a Culture stat boost. (+{cultureboost} {real(Fonts.culture.toString())})", GdxColours['VIOLET']):
 				modApiHelpers.lambdifyReadPathcode(civInfo, f'.policies.addCulture({cultureboost})'),
-			(f"I'll take a Science stat bonus. (+{scienceboost} {real(Fonts.science.toString())})", GdxColours['CYAN']):
+			(f"I'll take a Science stat boost. (+{scienceboost} {real(Fonts.science.toString())})", GdxColours['CYAN']):
 				modApiHelpers.lambdifyReadPathcode(civInfo, f'.tech.addScience({scienceboost})'),
 			(
 				(f"Let Chaos reign! (+{omniboost} {real(Fonts.gold.toString())}, {real(Fonts.culture.toString())}, {real(Fonts.science.toString())})", None),

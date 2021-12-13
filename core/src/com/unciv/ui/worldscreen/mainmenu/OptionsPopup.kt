@@ -268,7 +268,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         add(
             WrappableLabel(
-                "{WARNING: The features on this page are all experimental, and very powerful. It may be possible to damage your device using them if you do not know what you are doing.}\n\n{You have been warned!}", // TODO: Translation.
+                "{WARNING: The features on this page are all experimental, and very powerful. It may be possible to damage your device with them if you do not know what you are doing.}\n\n{You have been warned!}", // TODO: Translation.
                 tabs.prefWidth * 0.5f
             ).apply {
                 wrap = true
@@ -290,7 +290,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             addYesNoRow("Show warning when opening scripting console", // TODO: Translation.
                 settings.showScriptingConsoleWarning) {
                 settings.showScriptingConsoleWarning = it
-            } // Two affirmative actions to start using scripting console: Enable in click options button, accept ConsoleScreen warning.
+            } // Two affirmative actions to start using scripting console: Enable in OptionsPopup button, accept ConsoleScreen warning.
         }
 
         add(consoleBasicTable).row()
@@ -325,7 +325,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             ) { // Probably not worth adding the confirmation behaviour to addYesNoRow… Standardizing it sounds like a quick path to warning fatigue.
                 settings.enableModScripting = false
                 if (it) { // Aside from not wanting to get anyone hacked, should probably also check if Google Play has liability (or third-party distribution) issues— Not any more dangerous than a web browser, in fact arguably safer/more controlled, and trapped in Android sandbox regardless, but still.
-                    YesNoPopup( // Four affirmative actions to enable a mod: Click options button, accept options warning, tick mod checkbox, accept mod warning.
+                    YesNoPopup( // Four affirmative actions to enable a mod: Click OptionsPopup button, accept options warning, tick mod checkbox, accept mod warning.
                         "{Enabling this feature will allow mods you choose to run code on your device.}\n\n{Malicious code may be able to harm your device or steal your data!}\n{Never enable scripting for any mods you don't trust.}\n\n{Do you wish to continue?}", // TODO: Translation.
                         { settings.enableModScripting = it },
                         UncivGame.Current.screen as BaseScreen,

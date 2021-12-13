@@ -5,9 +5,39 @@ import com.unciv.ui.utils.stringifyException
 import kotlin.collections.ArrayList
 import kotlinx.serialization.Serializable
 import kotlin.reflect.*
+import kotlin.reflect.full.*
 
 // I've noticed that the first time running a script is significantly slower than any subsequent times. Takes 50% longer to run the Python test suite the first time than the second time, and simple functions go from incurring a noticeable delay to being visually instant.
 // I don't think anything either can or needs to be done about that, but I assume it's the JVM JIT'ing.
+
+
+fun allCommonSuperclasses(classes: Iterable<KClass<*>>): Set<KClass<*>> {
+    val allSupers = classes.asSequence().map { it.allSuperclasses.asSequence() }.flatMap { it }.toSet()
+    return allSupers.asSequence().filter { checkSuper -> classes.all { checkSuper.isSuperclassOf(it) } }.toSet() // Sequence, even though only one loop, because .filter returns a List() and I want a Set().
+}
+
+fun mostSpecificClassOrNull(classes: Set<KClass<*>>) = classes.firstOrNull { checkCls -> classes.all { checkCls.isSubclassOf(it) } }
+
+fun Iterable<Any>.mostSpecificCommonSuperclassOrNull() = mostSpecificClassOrNull(allCommonSuperclasses(this.map { it::class } ))
+
+fun Iterable<Any?>.mostSpecificCommonSupertypeOrNull(): KType? {
+    var isNullable = false
+    val nonNull = mutableSetOf<Any>()
+    for (v in this) { // I've been coding under the Pythonic assumption that iterable comprehensions will be much faster than loops, but I guess that probably doesn't actually apply on the JVM.
+        if (v == null) {
+            isNullable = true
+        } else {
+            nonNull.add(v)
+        }
+    }
+    val mostSpecific = nonNull.mostSpecificCommonSuperclassOrNull()
+    return if (mostSpecific == null) {
+        mostSpecific
+    } else {
+        mostSpecific.starProjectedType.withNullability(isNullable)
+    }
+}
+
 
 // TODO: Show warning on accessing deprecated property?
 

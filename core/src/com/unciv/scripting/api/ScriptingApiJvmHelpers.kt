@@ -26,7 +26,7 @@ private const val exposeStates = false
  */
 object ScriptingApiJvmHelpers {
 
-    val enumMapsByQualname = LazyMap(::enumQualnameToMap)
+    val enumMapsByQualname = LazyMap(::enumQualnameToMap) // TODO: Rename to enumsByQualClassAndName?
 
     val classByQualname = LazyMap({ qualName: String -> Class.forName(qualName).kotlin }, exposeState = exposeStates)
 
@@ -63,7 +63,7 @@ object ScriptingApiJvmHelpers {
     fun arrayOfAny(elements: Collection<Any?>): Array<*> = elements.toTypedArray() // Rename to toArray? Hm. Named for role, not for semantics— This seems more useful for making new arrays, whereas the toString, toList, etc, are for converting existing instances.
     fun arrayOfTyped(elements: Collection<Any?>): Array<*> = when (val item = elements.firstOrNull()) {
         // For scripting API/reflection. Return type won't be known in IDE, but that's fine as it's erased at runtime anyway. Important thing is that the compiler uses the right functions, creating the right typed arrays at run time.
-        is String -> (elements as Collection<String>).toTypedArray()
+        is String -> (elements as Collection<String>).toTypedArray() // TODO: Use mostSpecificCommonSupertypeOrNull?
         is Number -> (elements as Collection<Number>).toTypedArray()
         else -> throw IllegalArgumentException("${item!!::class.qualifiedName}")
     }

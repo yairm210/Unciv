@@ -1,12 +1,14 @@
 package com.unciv.models.modscripting
 
 import com.badlogic.gdx.Gdx
+import com.unciv.UncivGame
 import com.unciv.scripting.ExecResult
 import com.unciv.scripting.ScriptingBackend
 import com.unciv.scripting.ScriptingState
 import com.unciv.scripting.utils.ScriptingErrorHandling
 import com.unciv.scripting.sync.ScriptingRunThreader
 import com.unciv.scripting.sync.makeScriptingRunName
+import com.unciv.ui.utils.BaseScreen
 import java.lang.IllegalStateException
 
 
@@ -70,8 +72,12 @@ object ModScriptingRunManager {
         }
     }
 
-    private fun lockGame() {}
-    private fun unlockGame() {}
+    private fun lockGame() {
+        Gdx.input.inputProcessor = null
+    }
+    private fun unlockGame() {
+        Gdx.input.inputProcessor = (UncivGame.Current.screen as BaseScreen).stage
+    }
 }
 
 

@@ -57,6 +57,7 @@ object ModScriptingHandlerTypes {
     private val defaultParamGetter: ParamGetter = { it }
 
 //    @Suppress("EnumEntryName") // Handler names are not Kotlin code, but more like JSON keys in mod configuration files.
+    @Suppress("EnumEntryName")
     @OptIn(ExperimentalStdlibApi::class) // For typeOf(). Technically isn't needed for functional release builds (see HandlerType.checkParamsValid).
     object All { // Not a great name for imports.
         enum class UncivGame(override val paramGetter: ParamGetter = defaultParamGetter): HandlerType {

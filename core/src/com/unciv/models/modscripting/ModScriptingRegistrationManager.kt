@@ -19,13 +19,17 @@ object ModScriptingRegistrationManager {
     fun unregisterMod(mod: ScriptedMod) {
     }
 
-    val languagesToBackends = mapOf(
-        "py3" to ScriptingBackendType.SystemPython,
-        "js" to ScriptingBackendType.SystemQuickJS
-    ) // …Yeah. Keep language awareness only in the mod loader. The actual backend interfaces and classes don't have to understand anything other than "text in, result out". (But then again, I'm already keeping .engine in the companions of the EnvironmentedScriptingBackends, and use those to instantiate their libraries…)
+    @Suppress("EnumEntryName")
+    enum class ModScriptingLanguages(val backendType: ScriptingBackendType) {
+        pathcode(ScriptingBackendType.Reflective),
+        python(ScriptingBackendType.SystemPython),
+        javascript(ScriptingBackendType.SystemQuickJS)
+    }
+    // …Yeah. Keep language awareness only in the mod loader. The actual backend interfaces and classes don't have to understand anything other than "text in, result out". (But then again, I'm already keeping .engine in the companions of the EnvironmentedScriptingBackends, and use those to instantiate their libraries…)
 
     class ModScriptingBackends(
-        var py3: ScriptingBackend? = null,
-        var js: ScriptingBackend? = null
+        var pathcode: ScriptingBackend? = null,
+        var python: ScriptingBackend? = null,
+        var javascript: ScriptingBackend? = null
     )
 }
