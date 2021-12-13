@@ -24,7 +24,7 @@ android {
     }
     defaultConfig {
         applicationId = "com.unciv.app"
-        minSdk = 17
+        minSdk = 21
         targetSdk = 30 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
