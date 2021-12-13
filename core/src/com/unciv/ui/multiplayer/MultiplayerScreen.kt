@@ -153,7 +153,6 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
                 Gdx.app.postRunnable { reloadGameListUI() }
             } catch (ex: FileNotFoundException) {
-                println("TEST FILENOTFOUND")
                 // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
                 try {
                     val gamePreview = OnlineMultiplayer().tryDownloadGame(gameId.trim()).asPreview()
