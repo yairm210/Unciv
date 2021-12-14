@@ -1,6 +1,6 @@
 package com.unciv.scripting
 
-import com.unciv.UncivGame
+import com.unciv.UncivGame // Only for  blocking execution in multiplayer.
 import com.unciv.scripting.api.ScriptingScope
 import com.unciv.scripting.sync.ScriptingRunLock
 import com.unciv.scripting.sync.makeScriptingRunName
@@ -8,6 +8,7 @@ import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ToastPopup
 import com.unciv.ui.utils.clipIndexToBounds
 import com.unciv.ui.utils.enforceValidIndex
+import com.unciv.ui.worldscreen.WorldScreen // Only for  blocking execution in multiplayer.
 import kotlin.collections.ArrayList
 
 // TODO: Add .github/CODEOWNERS file for automatic PR notifications.
@@ -39,8 +40,9 @@ object ScriptingState {
     private val outputHistory = ArrayList<String>()
     private val commandHistory = ArrayList<String>()
 
-    var activeBackend: Int = 0
+    var activeBackendIndex: Int = 0
         private set
+    val activeBackend get() = scriptingBackends[activeBackendIndex]
 
     val maxOutputHistory: Int = 511
     val maxCommandHistory: Int = 511
@@ -48,7 +50,7 @@ object ScriptingState {
     var activeCommandHistory: Int = 0
     // Actually inverted, because history items are added to end of list and not start. 0 means nothing, 1 means most recent command at end of list.
 
-    //var consoleScreenListener: ((String) -> Unit)? = null // TODO: Switch to push instead of pull for ConsoleScreen.
+    var consoleScreenListener: ((String) -> Unit)? = null // TODO: Switch to push instead of pull for ConsoleScreen.
 
     fun getOutputHistory() = outputHistory.toList()
 
@@ -57,7 +59,7 @@ object ScriptingState {
     fun spawnBackend(backendtype: ScriptingBackendType): BackendSpawnResult {
         val backend: ScriptingBackend = backendtype.metadata.new()
         scriptingBackends.add(backend)
-        activeBackend = scriptingBackends.lastIndex
+        activeBackendIndex = scriptingBackends.lastIndex
         val motd = backend.motd()
         echo(motd)
         return BackendSpawnResult(backend, motd)
@@ -73,7 +75,7 @@ object ScriptingState {
 
     fun switchToBackend(index: Int) {
         scriptingBackends.enforceValidIndex(index)
-        activeBackend = index
+        activeBackendIndex = index
     }
 
     fun switchToBackend(backend: ScriptingBackend) = switchToBackend(getIndexOfBackend(backend)!!)
@@ -83,10 +85,10 @@ object ScriptingState {
         val result = scriptingBackends[index].terminate()
         if (result == null) {
             scriptingBackends.removeAt(index)
-            if (index < activeBackend) {
-                activeBackend -= 1
+            if (index < activeBackendIndex) {
+                activeBackendIndex -= 1
             }
-            activeBackend = scriptingBackends.clipIndexToBounds(activeBackend)
+            activeBackendIndex = scriptingBackends.clipIndexToBounds(activeBackendIndex)
         }
         return result
     }
@@ -97,12 +99,9 @@ object ScriptingState {
         return scriptingBackends.isNotEmpty()
     }
 
-    fun getActiveBackend(): ScriptingBackend {
-        return scriptingBackends[activeBackend]
-    }
-
     fun echo(text: String) {
         outputHistory.add(text)
+        consoleScreenListener?.invoke(text)
         while (outputHistory.size > maxOutputHistory) {
             outputHistory.removeAt(0)
             // If these are ArrayLists, performance will probably be O(n) relative to maxOutputHistory.
@@ -115,7 +114,7 @@ object ScriptingState {
         if (!(hasBackend())) {
             return AutocompleteResults()
         }
-        return getActiveBackend().autocomplete(command, cursorPos)
+        return activeBackend.autocomplete(command, cursorPos)
     }
 
     fun navigateHistory(increment: Int): String {
@@ -129,11 +128,11 @@ object ScriptingState {
 
     // @throws IllegalStateException On failure to acquire scripting lock.
     @Synchronized fun exec(command: String, asName: String? = null, withParams: Map<String, Any?>? = null): ExecResult {
-        if (UncivGame.Current.isGameInfoInitialized() && UncivGame.Current.gameInfo.gameParameters.isOnlineMultiplayer) {
+        if (UncivGame.Current.screen is WorldScreen && UncivGame.Current.isGameInfoInitialized() && UncivGame.Current.gameInfo.gameParameters.isOnlineMultiplayer) { // TODO: After leaving game?
             ToastPopup("Scripting not allowed in online multiplayer.", UncivGame.Current.screen as BaseScreen) // TODO: Translation.
             return ExecResult("", true)
         }
-        val backend = getActiveBackend()
+        val backend = activeBackend
         val name = asName ?: makeScriptingRunName(this::class.simpleName, backend)
         val releaseKey = ScriptingRunLock.acquire(name)
         // Lock acquisition failure gets propagated as thrown Exception, rather than as return. E.G.: Lets lambdas (from modApiHelpers) fail and trigger their own error handling (exposing misbehaving mods to the user via popup).

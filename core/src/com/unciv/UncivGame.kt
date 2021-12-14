@@ -247,6 +247,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     companion object {
         lateinit var Current: UncivGame
         fun isCurrentInitialized() = this::Current.isInitialized
+        // The main loop thread of the game, from which the OpenGL context is available and in which blocking actions can interrupt rendering.
+        val MainThread = Thread.currentThread() // Originaly thought I'd be clever and set this from a postRunnable for an explicit guarantee of getting the loop thread, but that does a NPE.
     }
 }
 

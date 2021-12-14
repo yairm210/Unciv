@@ -14,4 +14,8 @@ class JsonParser {
         val jsonText = file.readString(Charsets.UTF_8.name())
         return json.fromJson(tClass, jsonText)
     }
+
+//    fun <T> getFromJsonString(tClass: Class<T>, jsonText: String): T { // Mostly for debug.
+//        return json.fromJson(tClass, jsonText)
+//    }
 }

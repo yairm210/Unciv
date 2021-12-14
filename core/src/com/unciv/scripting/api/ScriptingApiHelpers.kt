@@ -23,6 +23,8 @@ object ScriptingApiHelpers {
 
     val Mappers = ScriptingApiMappers
 
+    val Math = ScriptingApiMathHelpers
+
     val registeredInstances = ScriptingApiInstanceRegistry
     val instancesAsInstances = FakeMap{obj: Any? -> obj}
     /// Scripting language bindings work by keeping track of the paths to values, and making Kotlin/the JVM resolve them only when needed.

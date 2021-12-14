@@ -13,6 +13,10 @@ object ScriptingDebugParameters {
     var printReflectiveDeprecationWarnings = false // TODO
     // Whether to print out when creating and deleting temporary
     var printEnvironmentFolderCreation = false
+    // Whether to print out when the lock for stopping simultaneous script run attempts is acquired and released.
+    var printLockAcquisition = false
+    // Whether to print out when the queue for running mod-controlled scripts in sequence is expanded or consumed.
+    var printThreadingStatus =false
     // TODO: Add to gameIsNotRunWithDebugModes unit tests.
 }
 

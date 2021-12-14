@@ -59,7 +59,7 @@ object ScriptingApiInstanceRegistry: MutableMap<String, Any?> { // This is a sin
     override fun put(key: String, value: Any?): Any? {
         println("""
 
-            Assigning ${key} directly in ScriptingApiInstanceRegistry(). It is recommended that every script/mod do this only once per application lifespan, creating its own mapping under the registry for further assignments named according to the following format:
+            INFO: Assigning ${key} directly in ScriptingApiInstanceRegistry(). It is recommended that every script/mod do this only once per application lifespan, creating its own mapping under the registry for further assignments named according to the following format:
                 <Language>-<'mod'|'module'|'package'>:<Author>/<Filename>
                 E.G.: registeredInstances["python-module:myName/myCoolScript"] = {"some_name": someToken}
 

@@ -121,6 +121,13 @@ open class ScriptingBackend: ScriptingImplementation {
     open val metadata
         get() = this::class.companionObjectInstance as ScriptingBackend_metadata
 
+    // Flag marking whether or not the user should be allowed to manually terminate this backend.
+    // Meant to be set externally.
+    var userTerminable = true
+    // Optional short text conveying further information to show the user alongside the displayName.
+    // Meant to be set externally.
+    var displayNote: String? = null
+
 }
 
 //Test, reference, example, and backup
@@ -341,15 +348,15 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
     private val examples = listOf( // The new splitToplevelExprs means set can safely use equals sign for assignment.
         "get uncivGame.loadGame(Unciv.GameStarter.startNewGame(apiHelpers.Jvm.companionByQualClass[\"com.unciv.models.metadata.GameSetupInfo\"].fromSettings(\"Chieftain\")))",
         "get gameInfo.civilizations[1].policies.adoptedPolicies",
-        "set 5 civInfo.tech.freeTechs",
-//        "set 1 civInfo.cities[0].health", // Doesn't work as test due to new game, no city.
-        "set 5 gameInfo.turns",
+        "set civInfo.tech.freeTechs = 5",
+//        "set civInfo.cities[0].health = 1", // Doesn't work as test due to new game, no city.
+        "set gameInfo.turns = 5",
         "get civInfo.addGold(1337)",
         "get civInfo.addNotification(\"Here's a notification!\", apiHelpers.Jvm.arrayOfTyped1(\"StatIcons/Resistance\"))",
-        "set 2000 worldScreen.bottomUnitTable.selectedUnit.promotions.XP",
+        "set worldScreen.bottomUnitTable.selectedUnit.promotions.XP = 2000",
 //        "get worldScreen.bottomUnitTable.selectedCity.population.setPopulation(25)", // Doesn't work as test due to new game, no city.
-        "set \"Cattle\" worldScreen.mapHolder.selectedTile.resource",
-        "set \"Krakatoa\" worldScreen.mapHolder.selectedTile.naturalWonder",
+        "set worldScreen.mapHolder.selectedTile.resource = \"Cattle\"",
+        "set worldScreen.mapHolder.selectedTile.naturalWonder = \"Krakatoa\"",
         "get apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.worldscreen.AlertPopup\"](worldScreen, apiHelpers.Jvm.constructorByQualname[\"com.unciv.logic.civilization.PopupAlert\"](apiHelpers.Jvm.enumMapsByQualname[\"com.unciv.logic.civilization.AlertType\"][\"StartIntro\"], \"Text text.\")).open(false)",
         "get civInfo.addGold(civInfo.tech.techsResearched.size)",
         //"get uncivGame.setScreen(apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.mapeditor.MapEditorScreen\"](gameInfo.tileMap))",
@@ -362,8 +369,8 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
         "get apiHelpers.App.assetFileB64(\"jsons/Tutorials.json\")",
         "get apiHelpers.Jvm.staticPropertyByQualClassAndName[\"com.badlogic.gdx.graphics.Color\"][\"WHITE\"]",
         "get apiHelpers.Jvm.constructorByQualname[\"com.unciv.ui.utils.ToastPopup\"](\"This is a popup!\", apiHelpers.Jvm.companionByQualClass[\"com.unciv.UncivGame\"].Current.getScreen(), 2000).add(apiHelpers.Jvm.functionByQualClassAndName[\"com.unciv.ui.utils.ExtensionFunctionsKt\"][\"toLabel\"](\"With Scarlet text! \", apiHelpers.Jvm.staticPropertyByQualClassAndName[\"com.badlogic.gdx.graphics.Color\"][\"SCARLET\"], 24))",
-        "set true Unciv.ScriptingDebugParameters.printCommandsForDebug",
-        "set false Unciv.ScriptingDebugParameters.printCommandsForDebug"
+        "set Unciv.ScriptingDebugParameters.printCommandsForDebug = true",
+        "set Unciv.ScriptingDebugParameters.printCommandsForDebug = false"
     )
     private val tests = listOf(
         "get modApiHelpers.lambdifyExecScript(\"get uncivGame\")",
@@ -395,8 +402,21 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
             )}
     }
 
+    private fun examplesPrintable() = "\nExamples:\n${examples.map({"> ${it}"}).joinToString("\n")}\n"
+
     override fun motd(): String {
-        return "\n\nWelcome to the reflective Unciv CLI backend.\n\nCommands you enter will be parsed as a path consisting of property reads, key and index accesses, function calls, and string, numeric, boolean, and null literals.\nKeys, indices, and function arguments are parsed recursively.\nProperties can be both read from and written to.\n\nExamples:\n${examples.map({"> ${it}"}).joinToString("\n")}\n\nPress [TAB] at any time to trigger autocompletion for all known leaf names at the currently entered path.\n"
+        return """
+            
+            
+            Welcome to the reflective Unciv CLI backend.
+            
+            Commands you enter will be parsed as a path consisting of property reads, key and index accesses, function calls, and string, numeric, boolean, and null literals.
+            Keys, indices, and function arguments are parsed recursively.
+            Properties can be both read from and written to.
+            
+            Press [TAB] at any time to trigger autocompletion for all known leaf names at the currently entered path.
+            
+            """.trimIndent()
     }
 
     override fun autocomplete(command: String, cursorPos: Int?): AutocompleteResults {
@@ -442,21 +462,28 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
                     appendOut("${Reflection.evalKotlinString(ScriptingScope, parts[1])}")
                 }
                 "set" -> { // TODO: Use the new pathcode splitter to accept equals sign format.
-                    var setparts = parts[1].split(' ', limit=2)
-                    var value = Reflection.evalKotlinString(ScriptingScope, setparts[0])
+//                    var setparts = parts[1].split(' ', limit=2)
+                    val setparts = Reflection.splitToplevelExprs(
+                        parts[1],
+                        delimiters = " "
+                    ).filter { it.isNotBlank() }
+                    if (setparts.size != 3 || setparts.elementAtOrNull(1) != "=") {
+                        throw IllegalArgumentException("Expected two expressions separated by an equals sign with spaces. Got:\n" + setparts.joinToString("\n"))
+                    }
+                    var value = Reflection.evalKotlinString(ScriptingScope, setparts[2])
                     Reflection.setInstancePath(
                         ScriptingScope,
-                        Reflection.parseKotlinPath(setparts[1]),
-                        value
+                        path = Reflection.parseKotlinPath(setparts[0]),
+                        value = value
                     )
-                    appendOut("Set ${setparts[1]} to ${value}")
+                    appendOut("Set ${setparts[0]} to ${value}")
                 }
                 "typeof" -> {
                     var obj = Reflection.evalKotlinString(ScriptingScope, parts[1])
                     appendOut("${if (obj == null) null else obj!!::class.qualifiedName}")
                 }
                 "examples" -> {
-                    throw RuntimeException("Not implemented.") // TODO: Remove from MOTD, move to default startup.
+                    appendOut(examplesPrintable())
                 }
                 "runtests" -> {
                     val testResults = runTests()
@@ -696,8 +723,8 @@ class DevToolsScriptingBackend(): ScriptingBackend() {
 // @property suggestedStartup Default startup code to run when started by ConsoleScreen *only*.
 enum class ScriptingBackendType(val metadata: ScriptingBackend_metadata, val suggestedStartup: String = "") { // Not sure how I feel about having suggestedStartup here— Kinda breaks separation of functionality and UI— But keeping a separate Map in the UI files would be too messy, and it's not as bad as putting it in the companion objects— Really, this entire Enum is a mash of stuff needed to launch and use all the backend types by anything else, so that fits.
     Dummy(ScriptingBackend),
-    Hardcoded(HardcodedScriptingBackend),
-    Reflective(ReflectiveScriptingBackend),
+    Hardcoded(HardcodedScriptingBackend, "help"),
+    Reflective(ReflectiveScriptingBackend, "examples"),
     //MicroPython(UpyScriptingBackend),
     SystemPython(SpyScriptingBackend, "from unciv import *; from unciv_pyhelpers import *"),
     SystemQuickJS(SqjsScriptingBackend),

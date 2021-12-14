@@ -1,14 +1,16 @@
 package com.unciv.ui.consolescreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.Event
+import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField // Ooh. TextArea could be nice. (Probably overkill and horrible if done messily, though.)
 import com.unciv.Constants
+import com.unciv.models.modscripting.*
 import com.unciv.scripting.ScriptingBackendType
 import com.unciv.scripting.ScriptingState
 import com.unciv.scripting.utils.ScriptingErrorHandling
@@ -22,27 +24,28 @@ import kotlin.math.min
 
 class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
 
-    private val layoutTable: Table = Table()
+    private val layoutTable = Table()
 
-    private val topBar: Table = Table()
-    private var backendsScroll: ScrollPane
-    private val backendsAdders: Table = Table()
-    private val closeButton: TextButton = Constants.close.toTextButton()
+    private val topBar = Table()
+    private val backendsScroll: ScrollPane
+    private val backendsAdders = Table()
+    private val closeButton = Constants.close.toTextButton()
 
-    private var middleSplit: SplitPane
-    private var printScroll: ScrollPane
-    private val printHistory: Table = Table()
-    private val runningContainer: Table = Table()
-    private val runningList: Table = Table()
+    private val middleSplit: SplitPane
+    private val printScroll: ScrollPane
+    private val printHistory = Table()
+    private val runningScroll: ScrollPane
+    private val runningContainer = Table()
+    private val runningList = Table() // TODO: Scroll.
 
-    private val inputBar: Table = Table()
-    private val inputField: TextField = TextField("", skin)
+    private val inputBar = Table()
+    private val inputField = TextField("", skin)
 
-    private val inputControls: Table = Table()
-    private val tabButton: TextButton = "TAB".toTextButton() // TODO: Translation.
-    private val upButton: Image = ImageGetter.getImage("OtherIcons/Up")
-    private val downButton: Image = ImageGetter.getImage("OtherIcons/Down")
-    private val runButton: TextButton = "ENTER".toTextButton() // TODO: Translation.
+    private val inputControls = Table()
+    private val tabButton = "TAB".toTextButton() // TODO: Translation.
+    private val upButton = ImageGetter.getImage("OtherIcons/Up")
+    private val downButton = ImageGetter.getImage("OtherIcons/Down")
+    private val runButton = "ENTER".toTextButton() // TODO: Translation.
 
     private val layoutUpdators = ArrayList<() -> Unit>()
     private var isOpen = false
@@ -59,6 +62,8 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
             inputField.setCursorPosition(max(0, min(inputText.length, value)))
         }
 
+    private var lastSeenScriptingBackendCount = 0
+
     init {
 
         backendsAdders.add("Launch new backend:".toLabel()).padRight(30f).padLeft(20f) // TODO: Translation.
@@ -66,7 +71,7 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
             var backendadder = backendtype.metadata.displayName.toTextButton() // Hm. Should this be translated/translatable? I suppose it already is translatable in OptionsPopup too. And in the running list— So basically everywhere it's shown.
             backendadder.onClick {
                 val spawned = ScriptingState.spawnBackend(backendtype)
-                echo(spawned.motd)
+//                echo(spawned.motd)
                 val startup = game.settings.scriptingConsoleStartups[backendtype.metadata.displayName]!!
                 if (startup.isNotBlank()) {
                     ScriptingState.switchToBackend(spawned.backend)
@@ -88,10 +93,11 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         printHistory.bottom()
         printScroll = ScrollPane(printHistory)
 
-        runningContainer.add("Active Backends:".toLabel()).row() // TODO: Translation.
+        runningContainer.add("Active Backends:".toLabel()).padBottom(5f).row() // TODO: Translation.
         runningContainer.add(runningList)
+        runningScroll = ScrollPane(runningContainer)
 
-        middleSplit = SplitPane(printScroll, runningContainer, false, skin)
+        middleSplit = SplitPane(printScroll, runningScroll, false, skin)
         middleSplit.setSplitAmount(0.8f)
 
         inputControls.add(tabButton)
@@ -137,6 +143,19 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
         echoHistory()
 
         updateRunning()
+
+        layoutTable.addListener( // Check whenever receiving input event if there's any super obvious need to update the running backends list. Really I don't see the list changing on its own except in the mod manager screen, so this shouldn't ever be used in that case, but as I'm developing the mod script loader I'm noticing some missed backends, and a single equality check every couple hundred seconds on average doesn't feel expensive to make sure it's always up to date.
+            object: InputListener() {
+                override fun handle(e: Event): Boolean {
+                    val size = ScriptingState.scriptingBackends.size
+                    if (lastSeenScriptingBackendCount != size) {
+                        lastSeenScriptingBackendCount = size
+                        updateRunning()
+                    }
+                    return false
+                }
+            }
+        )
     }
 
     private fun updateLayout() {
@@ -163,15 +182,22 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
     fun openConsole() {
         game.setScreen(this)
         keyPressDispatcher.install(stage) //TODO: Can this be moved to UncivGame.setScreen?
+        ScriptingState.consoleScreenListener = {
+            Gdx.app.postRunnable { echo(it) } // Calling ::echo directly triggers OpenGL stuff, which means crashes when ScriptingState isn't running in the main thread.
+        }
         stage.setKeyboardFocus(inputField)
         inputField.getOnscreenKeyboard().show(true)
+        updateRunning()
         this.isOpen = true
         if (game.settings.showScriptingConsoleWarning && !warningAccepted) {
             showWarningPopup()
         }
+        ModScriptingRegistrationManager.activeMods
+        ModScriptingRunManager.runHandler(HANDLER_DEFINITIONS[ContextId.ConsoleScreen, HandlerId.after_open], this)
     }
 
     fun closeConsole() {
+        ModScriptingRunManager.runHandler(HANDLER_DEFINITIONS[ContextId.ConsoleScreen, HandlerId.before_close], this)
         closeAction()
         keyPressDispatcher.uninstall()
         this.isOpen = false
@@ -179,25 +205,35 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
 
     private fun updateRunning() {
         runningList.clearChildren()
-        for ((i, backend) in ScriptingState.scriptingBackends.withIndex()) {
+        for (backend in ScriptingState.scriptingBackends) {
             var button = backend.metadata.displayName.toTextButton()
+            if (backend.displayNote != null) {
+                button.cells.last().row()
+                button.add(backend.displayNote.toString().toLabel(fontColor = Color.LIGHT_GRAY, fontSize = 16))
+            }
             runningList.add(button)
-            if (i == ScriptingState.activeBackend) {
+            if (backend === ScriptingState.activeBackend) {
                 button.color = Color.GREEN
             }
             button.onClick {
-                ScriptingState.switchToBackend(i)
+                ScriptingState.switchToBackend(backend)
                 updateRunning()
             }
             var termbutton = ImageGetter.getImage("OtherIcons/Stop")
-            termbutton.onClick {
-                val exc: Exception? = ScriptingState.termBackend(i)
-                updateRunning()
-                if (exc != null) {
-                	echo("Failed to stop ${backend.metadata.displayName} backend: ${exc.toString()}") // TODO: Translation? I mean, probably not, really.
-                }
+            val terminable = backend.userTerminable
+            if (!terminable) {
+                termbutton.setColor(0.7f, 0.7f, 0.7f, 0.3f)
             }
-            runningList.add(termbutton.surroundWithCircle(40f)).row()
+            termbutton.onClick {
+                if (backend.userTerminable) {
+                    val exc: Exception? = ScriptingState.termBackend(backend)
+                    if (exc != null) {
+                        echo("Failed to stop ${backend.metadata.displayName} backend: ${exc.toString()}") // TODO: Translation? I mean, probably not, really.
+                    }
+                }
+                updateRunning()
+            }
+            runningList.add(termbutton.surroundWithCircle(40f, color = if (terminable) Color.WHITE else Color(1f, 1f, 1f, 0.5f))).row()
         }
     }
 
@@ -287,9 +323,9 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
     }
 
     private fun exec(command: String) {
-        val name = makeScriptingRunName(this::class.simpleName, ScriptingState.getActiveBackend())
+        val name = makeScriptingRunName(this::class.simpleName, ScriptingState.activeBackend)
         val execResult = ScriptingState.exec(command, asName = name)
-        echo(execResult.resultPrint)
+//        echo(execResult.resultPrint)
         setText("")
         if (execResult.isException) {
             ScriptingErrorHandling.printConsolePlayerScriptFailure(execResult.resultPrint, asName = name)
