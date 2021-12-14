@@ -13,6 +13,7 @@ class UniqueDocsWriter {
     fun write() {
         val lines = ArrayList<String>()
         val targetTypesToUniques = UniqueType.values().groupBy { it.targetTypes.first() }
+            .toSortedMap()
 
         fun replaceExamples(text:String):String {
             return text.replace("[amount]", "[20]")

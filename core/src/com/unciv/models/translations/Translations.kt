@@ -400,7 +400,6 @@ fun String.getConditionals() = pointyBraceRegex.findAll(this).map { Unique(it.gr
 fun String.removeConditionals() = this
     .replace(pointyBraceRegex, "")
     // So, this is a quick hack, but it works as long as nobody uses word separators different from " " (space) and "" (none),
-    // So, this is a quick hack, but it works as long as nobody uses word separators different from " " (space) and "" (none),
     // And no translations start or end with a space.
     // According to https://linguistics.stackexchange.com/questions/6131/is-there-a-long-list-of-languages-whose-writing-systems-dont-use-spaces
     // This is a reasonable but not fully correct assumption to make.
