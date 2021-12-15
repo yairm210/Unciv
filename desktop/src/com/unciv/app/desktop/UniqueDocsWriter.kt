@@ -12,7 +12,7 @@ class UniqueDocsWriter {
 
     fun write() {
         val lines = ArrayList<String>()
-        val targetTypesToUniques = UniqueType.values().groupBy { it.targetTypes.first() }
+        val targetTypesToUniques = UniqueType.values().groupBy { it.targetTypes.minOrNull()!! }
             .toSortedMap()
 
         fun replaceExamples(text:String):String {
