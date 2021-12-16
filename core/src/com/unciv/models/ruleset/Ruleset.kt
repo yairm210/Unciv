@@ -373,7 +373,7 @@ class Ruleset {
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
 
         for (unit in units.values) {
-            if (unit.upgradesTo == unit.name)
+            if (unit.upgradesTo == unit.name || unit.upgradesTo == unit.replaces)
                 lines += "${unit.name} upgrades to itself!"
             if (!unit.isCivilian() && unit.strength == 0)
                 lines += "${unit.name} is a military unit but has no assigned strength!"
