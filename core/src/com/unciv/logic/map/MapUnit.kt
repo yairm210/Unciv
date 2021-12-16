@@ -337,9 +337,13 @@ class MapUnit {
             return 1
         }
         
-        visibilityRange += getMatchingUniques(UniqueType.Sight, checkCivInfoUniques = true)
+        visibilityRange += getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
+        visibilityRange += getTile().getAllTerrains()
+            .flatMap { it.getMatchingUniques(UniqueType.Sight, conditionalState) }
+            .sumOf { it.params[0].toInt() }
+        
         if (visibilityRange < 1) visibilityRange = 1
 
         return visibilityRange

@@ -120,7 +120,7 @@ class GameInfo {
     }
 
     /** Get a civ by name
-     *  @throws NoSuchElementException if no civ of than name is in the game (alive or dead)! */
+     *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
@@ -429,6 +429,10 @@ class GameInfo {
                 if (cityInfo.isPuppet && cityInfo.cityConstructions.constructionQueue.isEmpty())
                     cityInfo.cityConstructions.chooseNextConstruction()
 
+                // We also remove resources that the city may be demanding but are no longer in the ruleset
+                if (!ruleSet.tileResources.containsKey(cityInfo.demandedResource))
+                    cityInfo.demandedResource = ""
+
                 cityInfo.cityStats.update()
             }
 
@@ -488,6 +492,20 @@ class GameInfoPreview() {
         currentTurnStartTime = gameInfo.currentTurnStartTime
         //We update the civilizations in case someone is removed from the game (resign/kick)
         civilizations = gameInfo.getCivilizationsAsPreviews()
+
+        return this
+    }
+
+    /**
+     * Updates the current player and turn information in the GameInfoPreview object with the
+     * help of another GameInfoPreview object.
+     */
+    fun updateCurrentTurn(gameInfo: GameInfoPreview) : GameInfoPreview {
+        currentPlayer = gameInfo.currentPlayer
+        turns = gameInfo.turns
+        currentTurnStartTime = gameInfo.currentTurnStartTime
+        //We update the civilizations in case someone is removed from the game (resign/kick)
+        civilizations = gameInfo.civilizations
 
         return this
     }

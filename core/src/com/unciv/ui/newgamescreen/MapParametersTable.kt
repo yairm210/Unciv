@@ -31,6 +31,7 @@ class MapParametersTable(
     private var customWorldSizeTable = Table ()
     private var hexagonalSizeTable = Table()
     private var rectangularSizeTable = Table()
+    lateinit var resourceSelectBox: TranslatedSelectBox
     private lateinit var noRuinsCheckbox: CheckBox
     private lateinit var noNaturalWondersCheckbox: CheckBox
     private lateinit var worldWrapCheckbox: CheckBox
@@ -48,6 +49,7 @@ class MapParametersTable(
         addMapShapeSelectBox()
         addMapTypeSelectBox()
         addWorldSizeTable()
+        addResourceSelectBox()
         addWrappedCheckBoxes()
         addAdvancedSettings()
     }
@@ -165,6 +167,25 @@ class MapParametersTable(
             customWorldSizeTable.add(rectangularSizeTable).grow().row()
         else
             mapParameters.mapSize = MapSizeNew(worldSizeSelectBox.selected.value)
+    }
+
+    private fun addResourceSelectBox() {
+        val mapTypes = listOfNotNull(
+                MapResources.sparse,
+                MapResources.default,
+                MapResources.abundant,
+                MapResources.strategicBalance,
+                MapResources.legendaryStart
+        )
+
+        resourceSelectBox = TranslatedSelectBox(mapTypes, mapParameters.mapResources, skin)
+
+        resourceSelectBox.onChange {
+            mapParameters.mapResources = resourceSelectBox.selected.value
+        }
+
+        add("{Resource Setting}:".toLabel()).left()
+        add(resourceSelectBox).fillX().row()
     }
 
     private fun Table.addNoRuinsCheckbox() {

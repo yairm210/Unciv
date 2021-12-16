@@ -335,7 +335,12 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
             // if we find the current player didn't change, don't update
-            if (gameInfo.currentPlayer == latestGame.currentPlayer) {
+            // Additionally, check if we are the current player, and in that case always stop
+            // This fixes a bug where for some reason players were waiting for themselves.
+            if (gameInfo.currentPlayer == latestGame.currentPlayer 
+                && gameInfo.turns == latestGame.turns 
+                && latestGame.currentPlayer != gameInfo.getPlayerToViewAs().civName
+            ) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
                 shouldUpdate = true
                 return

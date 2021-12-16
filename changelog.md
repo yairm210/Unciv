@@ -1,3 +1,39 @@
+## 3.18.10
+
+Sort Maintenance Using Fixed Point - By itanasi
+
+Moved Coal discovery back to industrialization - By xlenstra
+
+Improvements to TurnChecker data usage - By GGGuenni
+
+AI for Inquisitor and Missionary - By Interdice
+
+Add a couple missing template strings - By SimonCeder
+
+## 3.18.9
+
+Uniques and conditionals for translating are taken directly from the uniquetypes
+
+Can gift improvements to city states also on water tiles / when other improvements have been built on the resource
+
+Enabled code minify, hopefully shrinks apk size
+
+Resolved crash when selecting resources in map editor
+
+## 3.18.8
+
+Solved bug that made civilian units uncapturable
+
+Don't show 'fortify until healed' if the unit won't actually heal in this tile
+
+By xlenstra:
+- Band-aided a bug where players in multiplayer games were waiting for themselves.
+- Fixed a crash that occasionally happened when liberating a city to a dead civ
+- Added icon for telegraph
+- Fixed the unique for giving sight to units no longer working
+
+Regions part 3 - resource placement, resource settings  - By SimonCeder
+
 ## 3.18.7
 
 Multiplayer game info is updated as each intermediate player finishes their turn

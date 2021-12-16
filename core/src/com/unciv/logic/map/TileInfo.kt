@@ -530,6 +530,8 @@ open class TileInfo {
             resource -> observingCiv != null && hasViewableResource(observingCiv)
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
+            "Featureless" -> terrainFeatures.isEmpty()
+            "Fresh Water" -> isAdjacentToFreshwater
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (hasUnique(filter)) return true
@@ -775,7 +777,7 @@ open class TileInfo {
         isOcean = baseTerrain == Constants.ocean
 
         // Resource amounts missing - Old save or bad mapgen?
-        if (resource != null && tileResource.resourceType == ResourceType.Strategic && resourceAmount == 0) {
+        if (::tileMap.isInitialized && resource != null && tileResource.resourceType == ResourceType.Strategic && resourceAmount == 0) {
             // Let's assume it's a small deposit
             setTileResource(tileResource, majorDeposit = false)
         }
@@ -796,21 +798,30 @@ open class TileInfo {
     
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
         resource = newResource.name
-        
+
         if (newResource.resourceType != ResourceType.Strategic) return
-        
+
         for (unique in newResource.getMatchingUniques(UniqueType.ResourceAmountOnTiles)) {
             if (matchesTerrainFilter(unique.params[0])) {
                 resourceAmount = unique.params[1].toInt()
                 return
             }
         }
-        
-        // Stick to default for now
-        resourceAmount = if (majorDeposit)
-            newResource.majorDepositAmount.default
-        else
-            newResource.minorDepositAmount.default
+
+        resourceAmount = when (tileMap.mapParameters.mapResources) {
+            MapResources.sparse -> {
+                if (majorDeposit) newResource.majorDepositAmount.sparse
+                else newResource.minorDepositAmount.sparse
+            }
+            MapResources.abundant -> {
+                if (majorDeposit) newResource.majorDepositAmount.abundant
+                else newResource.minorDepositAmount.abundant
+            }
+            else -> {
+                if (majorDeposit) newResource.majorDepositAmount.default
+                else newResource.minorDepositAmount.default
+            }
+        }
     }
 
 

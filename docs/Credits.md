@@ -503,6 +503,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Flight](https://thenounproject.com/term/flight/1014306/) By Genius Icons
 * [Train](https://thenounproject.com/term/train/651644/) By Federico Panzano for Railroad
 * [Fridge](https://thenounproject.com/search/?q=refridgerator&i=1188873) By b farias for Refrigeration
+* [telegraph](https://thenounproject.com/icon/telegraph-22058/) by Luke Anthony Firth for Telegraph*
 
 ### Atomic
 * [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals

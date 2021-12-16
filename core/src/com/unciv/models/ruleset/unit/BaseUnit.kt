@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset.unit
 
-import com.unciv.Constants
 import com.unciv.logic.city.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
@@ -135,7 +134,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         } else if (uniques.isNotEmpty()) {
             textList += FormattedLine()
             uniqueObjects.sortedBy { it.text }.forEach {
-                if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
                     textList += FormattedLine(it)
             }
         }
@@ -657,7 +656,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                             it.isOfType(UniqueType.ConditionalVsCity) // City Attack - half the bonus
                             || it.isOfType(UniqueType.ConditionalAttacking) // Attack - half the bonus
                             || it.isOfType(UniqueType.ConditionalDefending) // Defense - half the bonus 
-                            || it.isOfType(UniqueType.ConditionalInTiles) } // Bonus in terrain or feature - half the bonus
+                            || it.isOfType(UniqueType.ConditionalFightingInTiles) } // Bonus in terrain or feature - half the bonus
                     ) {
                         power *= (unique.params[0].toInt() / 2f).toPercent()
                     }

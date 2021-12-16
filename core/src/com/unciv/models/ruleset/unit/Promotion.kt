@@ -41,7 +41,7 @@ class Promotion : RulesetObject() {
         val textList = ArrayList<FormattedLine>()
 
         uniqueObjects.forEach {
-            if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+            if (!it.hasFlag(UniqueFlag.HiddenToUsers))
                 textList += FormattedLine(it)
         }
 
