@@ -42,7 +42,7 @@ class CrashHandlingStage: Stage {
 
 // Stage()'s event handlers seem to be the most universal place to intercept exceptions from events.
 
-// Events and the render loop are the main ways that code gets run with GDX, right? So if we wrap both of those in exception handling, it should hopefully gracefully catch most unhandled exceptions… Threads may be the exception, hence why I put the wrapping as extension functions that can be invoked on the lambdas passed to threads.
+// Events and the render loop are the main ways that code gets run with GDX, right? So if we wrap both of those in exception handling, it should hopefully gracefully catch most unhandled exceptions… Threads may be the exception, hence why I put the wrapping as extension functions that can be invoked on the lambdas passed to threads, as in crashHandlingThread and postCrashHandlingRunnable.
 
 
 // Button click (event):

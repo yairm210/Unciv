@@ -17,7 +17,6 @@ import com.unciv.models.Tutorial
 import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
-import kotlin.concurrent.thread
 
 open class BaseScreen : Screen {
 

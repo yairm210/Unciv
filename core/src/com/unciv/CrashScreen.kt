@@ -92,7 +92,7 @@ ${tryGetSaveMods()}
 ${tryGetSaveGame()}
 ```
 </details>
-""".trim() // Can't really use .prependIndent(), because the substitutions might have new lines.
+""".trim() // Can't really use .trimIndent(), because the substitutions might have new lines.
     }
 
     init {
