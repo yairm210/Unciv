@@ -41,7 +41,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             val loadingPopup = Popup( this)
             loadingPopup.addGoodSizedLabel("Loading...")
             loadingPopup.open()
-            thread {
+            crashHandlingThread {
                 try {
                     // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                     val loadedGame = GameSaver.loadGameByName(selectedSave)
@@ -153,7 +153,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         loadImage.addAction(Actions.rotateBy(360f, 2f))
         saveTable.add(loadImage).size(50f)
 
-        thread { // Apparently, even jut getting the list of saves can cause ANRs -
+        crashHandlingThread { // Apparently, even jut getting the list of saves can cause ANRs -
             // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
             // .toList() because otherwise the lastModified will only be checked inside the postRunnable
             val saves = GameSaver.getSaves().sortedByDescending { it.lastModified() }.toList()
@@ -183,7 +183,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
 
         val savedAt = Date(save.lastModified())
         var textToSet = save.name() + "\n${"Saved at".tr()}: " + savedAt.formatDate()
-        thread { // Even loading the game to get its metadata can take a long time on older phones
+        crashHandlingThread { // Even loading the game to get its metadata can take a long time on older phones
             try {
                 val game = GameSaver.loadGamePreviewFromFile(save)
                 val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }

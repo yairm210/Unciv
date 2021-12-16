@@ -32,7 +32,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             rightSideButtonAction = {
                 mapToSave!!.mapParameters.name = mapNameTextField.text
                 mapToSave.mapParameters.type = MapType.custom
-                thread(name = "SaveMap") {
+                crashHandlingThread(name = "SaveMap") {
                     try {
                         MapSaver.saveMap(mapNameTextField.text, getMapCloneForSave(mapToSave))
                         Gdx.app.postRunnable {
@@ -54,7 +54,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         } else {
             rightSideButton.setText("Load map".tr())
             rightSideButtonAction = {
-                thread(name = "MapLoader") {
+                crashHandlingThread(name = "MapLoader") {
                     var popup: Popup? = null
                     var needPopup = true    // loadMap can fail faster than postRunnable runs
                     Gdx.app.postRunnable {

@@ -96,7 +96,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             rightButtonSetEnabled(false)
 
-            thread(name = "MapGenerator") {
+            crashHandlingThread(name = "MapGenerator") {
                 try {
                     // Map generation can take a while and we don't want ANRs
                     generatedMap = MapGenerator(ruleset).generateMap(mapParameters)

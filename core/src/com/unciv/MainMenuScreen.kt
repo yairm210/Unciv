@@ -68,7 +68,7 @@ class MainMenuScreen: BaseScreen() {
         // will not exist unless we reset the ruleset and images
         ImageGetter.ruleset = RulesetCache.getBaseRuleset()
 
-        thread(name = "ShowMapBackground") {
+        crashHandlingThread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
                     .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
             Gdx.app.postRunnable { // for GL context
@@ -197,7 +197,7 @@ class MainMenuScreen: BaseScreen() {
         val loadingPopup = Popup(this)
         loadingPopup.addGoodSizedLabel("Loading...")
         loadingPopup.open()
-        thread {
+        crashHandlingThread {
             // Load game from file to class on separate thread to avoid ANR...
             fun outOfMemory() {
                 Gdx.app.postRunnable {
@@ -211,7 +211,7 @@ class MainMenuScreen: BaseScreen() {
                 savedGame = GameSaver.loadGameByName(autosave)
             } catch (oom: OutOfMemoryError) {
                 outOfMemory()
-                return@thread
+                return@crashHandlingThread
             } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason - try to load the last autosave by turn number first
                 // This can help for situations when the autosave is corrupted
                 try {
@@ -221,13 +221,13 @@ class MainMenuScreen: BaseScreen() {
                         GameSaver.loadGameFromFile(autosaves.maxByOrNull { it.lastModified() }!!)
                 } catch (oom: OutOfMemoryError) { // The autosave could have oom problems as well... smh
                     outOfMemory()
-                    return@thread
+                    return@crashHandlingThread
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {
                         loadingPopup.close()
                         ToastPopup("Cannot resume game!", this)
                     }
-                    return@thread
+                    return@crashHandlingThread
                 }
             }
 
@@ -245,14 +245,14 @@ class MainMenuScreen: BaseScreen() {
     private fun quickstartNewGame() {
         ToastPopup("Working...", this)
         val errorText = "Cannot start game with the default new game parameters!"
-        thread {
+        crashHandlingThread {
             val newGame: GameInfo
             // Can fail when starting the game...
             try {
                 newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
             } catch (ex: Exception) {
                 Gdx.app.postRunnable { ToastPopup(errorText, this) }
-                return@thread
+                return@crashHandlingThread
             }
 
             // ...or when loading the game

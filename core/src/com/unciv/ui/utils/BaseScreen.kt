@@ -127,7 +127,7 @@ open class BaseScreen : Screen {
             throw IllegalArgumentException("openOptionsPopup called on wrong derivative class")
         }
         limitOrientationsHelper.allowPortrait(false)
-        thread(name="WaitForRotation") {
+        crashHandlingThread(name="WaitForRotation") {
             var waited = 0
             while (true) {
                 val newScreen = (UncivGame.Current.screen as? BaseScreen)

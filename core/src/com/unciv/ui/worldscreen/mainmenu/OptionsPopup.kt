@@ -273,7 +273,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         if (modCheckCheckBox == null) return
         modCheckCheckBox!!.disable()
         if (modCheckResultCell == null) return
-        thread(name="ModChecker") {
+        crashHandlingThread(name="ModChecker") {
             val lines = ArrayList<FormattedLine>()
             var noProblem = true
             for (mod in RulesetCache.values.sortedBy { it.name }) {
@@ -523,7 +523,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             errorTable.add("Downloading...".toLabel())
 
             // So the whole game doesn't get stuck while downloading the file
-            thread(name = "Music") {
+            crashHandlingThread(name = "Music") {
                 try {
                     previousScreen.game.musicController.downloadDefaultFile()
                     Gdx.app.postRunnable {

@@ -203,7 +203,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
             availableConstructionsTable.add("Loading...".toLabel()).pad(10f)
         }
 
-        thread(name = "Construction info gathering - ${cityScreen.city.name}") {
+        crashHandlingThread(name = "Construction info gathering - ${cityScreen.city.name}") {
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
             Gdx.app.postRunnable {

@@ -80,7 +80,7 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
         popup.addGoodSizedLabel("Working...").row()
         popup.open()
 
-        thread {
+        crashHandlingThread {
             try {
                 //download to work with newest game state
                 val gameInfo = OnlineMultiplayer().tryDownloadGame(gameId)

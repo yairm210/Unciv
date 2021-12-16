@@ -125,7 +125,7 @@ class NewGameScreen(
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
-            thread(name = "NewGame") {
+            crashHandlingThread(name = "NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
                 newGameThread()
             }

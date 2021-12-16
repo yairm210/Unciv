@@ -53,7 +53,7 @@ fun Actor.center(parent: Stage){ centerX(parent); centerY(parent)}
 fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            thread(name = "Sound") { Sounds.play(sound) }
+            crashHandlingThread(name = "Sound") { Sounds.play(sound) }
             function(event, x, y)
         }
     })

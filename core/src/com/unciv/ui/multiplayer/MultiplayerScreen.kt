@@ -141,7 +141,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
         addGameButton.setText("Working...".tr())
         addGameButton.disable()
-        thread(name = "MultiplayerDownload") {
+        crashHandlingThread(name = "MultiplayerDownload") {
             try {
                 // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
                 // we need to run it in a different thread.
@@ -279,7 +279,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 continue
             }
 
-            thread(name = "loadGameFile") {
+            crashHandlingThread(name = "loadGameFile") {
                 try {
                     val game = gameSaver.loadGamePreviewFromFile(gameSaveFile)
 
@@ -330,7 +330,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         refreshButton.disable()
 
         //One thread for all downloads
-        thread(name = "multiplayerGameDownload") {
+        crashHandlingThread(name = "multiplayerGameDownload") {
             for ((fileHandle, gameInfo) in multiplayerGames) {
                 try {
                     // Update game without overriding multiplayer settings

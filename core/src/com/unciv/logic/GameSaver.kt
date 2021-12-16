@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
+import com.unciv.ui.utils.crashHandlingThread
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -144,7 +145,7 @@ object GameSaver {
         // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
         // So what we do is we clone all the game data and serialize the clone.
         val gameInfoClone = gameInfo.clone()
-        thread(name = "Autosave") {
+        crashHandlingThread(name = "Autosave") {
             autoSaveSingleThreaded(gameInfoClone)
             // do this on main thread
             Gdx.app.postRunnable ( postRunnable )

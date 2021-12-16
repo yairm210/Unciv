@@ -205,7 +205,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         // GameSaver.autoSave, SaveGameScreen.saveGame, LoadGameScreen.rightSideButton.onClick,...
         val quickSave = {
             val toast = ToastPopup("Quicksaving...", this)
-            thread(name = "SaveGame") {
+            crashHandlingThread(name = "SaveGame") {
                 GameSaver.saveGame(gameInfo, "QuickSave") {
                     Gdx.app.postRunnable {
                         toast.close()
@@ -221,7 +221,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
         val quickLoad = {
             val toast = ToastPopup("Quickloading...", this)
-            thread(name = "SaveGame") {
+            crashHandlingThread(name = "SaveGame") {
                 try {
                     val loadedGame = GameSaver.loadGameByName("QuickSave")
                     Gdx.app.postRunnable {
@@ -632,34 +632,29 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         shouldUpdate = true
 
 
-        thread(name = "NextTurn") { // on a separate thread so the user can explore their world while we're passing the turn
+        crashHandlingThread(name = "NextTurn") { // on a separate thread so the user can explore their world while we're passing the turn
             if (consoleLog)
                 println("\nNext turn starting " + Date().formatDate())
             val startTime = System.currentTimeMillis()
             val gameInfoClone = gameInfo.clone()
             gameInfoClone.setTransients()  // this can get expensive on large games, not the clone itself
 
-            try {
-                gameInfoClone.nextTurn()
+            gameInfoClone.nextTurn()
 
-                if (gameInfo.gameParameters.isOnlineMultiplayer) {
-                    try {
-                        OnlineMultiplayer().tryUploadGame(gameInfoClone, withPreview = true)
-                    } catch (ex: Exception) {
-                        Gdx.app.postRunnable { // Since we're changing the UI, that should be done on the main thread
-                            val cantUploadNewGamePopup = Popup(this)
-                            cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
-                            cantUploadNewGamePopup.addCloseButton()
-                            cantUploadNewGamePopup.open()
-                        }
-                        isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
-                        shouldUpdate = true
-                        return@thread
+            if (gameInfo.gameParameters.isOnlineMultiplayer) {
+                try {
+                    OnlineMultiplayer().tryUploadGame(gameInfoClone, withPreview = true)
+                } catch (ex: Exception) {
+                    Gdx.app.postRunnable { // Since we're changing the UI, that should be done on the main thread
+                        val cantUploadNewGamePopup = Popup(this)
+                        cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
+                        cantUploadNewGamePopup.addCloseButton()
+                        cantUploadNewGamePopup.open()
                     }
+                    isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
+                    shouldUpdate = true
+                    return@crashHandlingThread
                 }
-            } catch (ex: Exception) {
-                Gdx.app.postRunnable { game.crashController.crashOccurred() }
-                throw ex
             }
 
             game.gameInfo = gameInfoClone
@@ -798,7 +793,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     viewingCiv.hasMovedAutomatedUnits = true
                     isPlayersTurn = false // Disable state changes
                     nextTurnButton.disable()
-                    thread(name="Move automated units") {
+                    crashHandlingThread(name="Move automated units") {
                         for (unit in viewingCiv.getCivUnits())
                             unit.doAction()
                         Gdx.app.postRunnable {

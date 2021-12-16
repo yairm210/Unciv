@@ -194,7 +194,7 @@ class ModManagementScreen(
      *  calls itself for the next page of search results
      */
     private fun tryDownloadPage(pageNum: Int) {
-        runningSearchThread = thread(name="GitHubSearch") {
+        runningSearchThread = crashHandlingThread(name="GitHubSearch") {
             val repoSearch: Github.RepoSearch
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
@@ -203,7 +203,7 @@ class ModManagementScreen(
                     ToastPopup("Could not download mod list", this)
                 }
                 runningSearchThread = null
-                return@thread
+                return@crashHandlingThread
             }
 
             Gdx.app.postRunnable {
@@ -404,7 +404,7 @@ class ModManagementScreen(
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
     private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
-        thread(name="DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
+        crashHandlingThread(name="DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
                     Gdx.files.local("mods"))
