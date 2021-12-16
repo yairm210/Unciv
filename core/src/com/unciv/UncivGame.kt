@@ -22,6 +22,8 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 
+
+
 class UncivGame(parameters: UncivGameParameters) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
     constructor(version: String) : this(UncivGameParameters(version, null))
@@ -61,6 +63,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     lateinit var worldScreen: WorldScreen
 
     var isInitialized = false
+
+    /** A wrapped render() method that crashes to [CrashScreen] on a unhandled exception or error. */
+    val wrappedCrashHandlingingRender = { super.render() }.wrapCrashHandlingUnit()
+    // Stored here because I imagine that might be slightly faster than allocating for a new lambda every time, and the render loop is possibly one of the only places where that could have a significant impact.
 
 
     val translations = Translations()
@@ -166,6 +172,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun resize(width: Int, height: Int) {
         screen.resize(width, height)
     }
+
+    override fun render() = wrappedCrashHandlingingRender()
 
     override fun dispose() {
         cancelDiscordEvent?.invoke()
