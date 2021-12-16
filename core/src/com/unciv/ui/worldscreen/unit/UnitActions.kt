@@ -48,6 +48,7 @@ object UnitActions {
 
         addSleepActions(actionList, unit, false)
         addFortifyActions(actionList, unit, false)
+        addChainAction(actionList, unit, false)
 
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
@@ -731,13 +732,15 @@ object UnitActions {
     }
 
     private fun addChainAction(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean){
-        if (unit.isCivilian() && unit.getTile().militaryUnit != null){
-            // TODO: 15/12/2021
+        val otherUnit = unit.getTile().getUnitNotOfType(unit) ?: return
+        if (unit.isLinked) {
+            actionList += UnitAction(UnitActionType.UnChainUnits,
+                action = { unit.action = UnitActionType.UnChainUnits.value })
         }
-        else if (!unit.isCivilian() && unit.getTile().civilianUnit != null){
-            // TODO: 15/12/2021
+        else {
+            actionList += UnitAction(UnitActionType.ChainUnits,
+                action = { unit.action = UnitActionType.ChainUnits.value })
         }
-        else return
     }
 
     private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
