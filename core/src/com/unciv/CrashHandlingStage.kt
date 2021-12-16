@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.unciv.ui.utils.*
 
 /** Stage that safely brings the game to a [CrashScreen] if any event handlers throw an exception or an error that doesn't get otherwise handled. */
-class SafeCrashStage: Stage {
+class CrashHandlingStage: Stage {
     constructor(): super()
     constructor(viewport: Viewport): super(viewport)
     constructor(viewport: Viewport, batch: Batch) : super(viewport, batch)
