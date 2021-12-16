@@ -767,7 +767,7 @@ object NextTurnAutomation {
                 unit.baseUnit.isRanged() -> rangedUnits.add(unit)
                 unit.baseUnit.isMelee() -> meleeUnits.add(unit)
                 unit.hasUnique("Bonus for units in 2 tile radius 15%")
-                -> generals.add(unit) //generals move after military units
+                    -> generals.add(unit) // Generals move after military units
                 else -> civilianUnits.add(unit)
             }
         }
