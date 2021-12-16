@@ -69,10 +69,10 @@ fun Actor.onClick(function: () -> Unit): Actor {
     return this
 }
 
-fun Actor.onChange(function: () -> Unit): Actor {
+fun Actor.onChange(function: (event: ChangeListener.ChangeEvent?) -> Unit): Actor {
     this.addListener(object : ChangeListener() {
         override fun changed(event: ChangeEvent?, actor: Actor?) {
-            function()
+            function(event)
         }
     })
     return this
