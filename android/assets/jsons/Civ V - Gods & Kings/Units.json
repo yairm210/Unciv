@@ -1178,7 +1178,7 @@
 		"strength": 50,
 		"cost": 320,
 		"requiredTech": "Replaceable Parts",
-		"upgradesTo": "Rifleman",
+		"upgradesTo": "Infantry",
 		"obsoleteTech": "Plastics",
 		"uniques": ["[+20]% Strength <when fighting in [Foreign Land] tiles>"],
 		"attackSound": "shot"
