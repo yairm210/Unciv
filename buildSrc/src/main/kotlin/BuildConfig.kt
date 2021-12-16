@@ -8,4 +8,7 @@ object BuildConfig {
 
     const val gdxVersion = "1.10.0"
     const val roboVMVersion = "2.3.1"
+
+    const val dokkaVersion = "1.5.30"
+    const val dokkaOutpath = "docs/dokka/"
 }

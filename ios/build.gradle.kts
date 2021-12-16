@@ -1,3 +1,5 @@
+// Entire build script got red squigglies on enabling Dokka multimodule, but IOS is explicitly unsupported anyway.
+/*
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.unciv.build.BuildConfig
 
@@ -37,3 +39,4 @@ eclipse.project {
     name = "${BuildConfig.appName}-ios"
     natures("org.robovm.eclipse.RoboVMNature")
 }
+*/
