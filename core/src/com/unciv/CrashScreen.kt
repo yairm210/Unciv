@@ -6,7 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Json
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -23,18 +25,74 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
         }
     }
 
-    val text = generateReportHeader() + exception.stringify()
+    /** Qualified class name of the game screen that was active at the construction of this instance, or an error note. */
+    val lastScreenType = try {
+        UncivGame.Current.screen::class.qualifiedName.toString()
+    } catch (e: Throwable) {
+        "Could not get screen type: $e"
+    }
+
+    val text = formatReport(exception.stringify())
     var copied = false
         private set
 
-    fun generateReportHeader(): String {
+    /** @return The last active save game serialized as a compressed string if any, or an informational note otherwise. */
+    private fun tryGetSaveGame()
+        = try {
+            UncivGame.Current.gameInfo.let { gameInfo ->
+                Json().toJson(gameInfo).let {
+                    jsonString -> Gzip.zip(jsonString)
+                }
+            } // Taken from old CrashController().buildReport().
+        } catch (e: Throwable) {
+            "No save data: $e" // In theory .toString() could still error here.
+        }
+
+    /** @return Mods from the last active save game if any, or an informational note otherwise. */
+    private fun tryGetSaveMods()
+        = try { // Also from old CrashController().buildReport(), also could still error at .toString().
+            LinkedHashSet(UncivGame.Current.gameInfo.gameParameters.getModsAndBaseRuleset()).toString()
+        } catch (e: Throwable) {
+            "No mod data: $e"
+        }
+
+
+    /**
+     * @param message Error text. Probably exception traceback.
+     * @return Message with application, platform, and game state metadata.
+     * */
+    private fun formatReport(message: String): String {
         return """
-            Platform: ${Gdx.app.type}
-            Version: ${UncivGame.Current.version}
-            Rulesets: ${RulesetCache.keys}
-            
-            
-            """.trimIndent()
+**Platform:** ${Gdx.app.type}
+**Version:** ${UncivGame.Current.version}
+**Rulesets:** ${RulesetCache.keys}
+**Last Screen:** `$lastScreenType`
+
+--------------------------------
+
+${UncivGame.Current.crashReportSysInfo?.getInfo()}
+
+--------------------------------
+
+
+**Message:**
+```
+$message
+```
+
+**Save Mods:**
+```
+${tryGetSaveMods()}
+```
+
+**Show Save Data:**
+<details><summary>Saved Game</summary>
+
+```
+${tryGetSaveGame()}
+```
+</details>
+""".trim() // Can't really use .prependIndent(), because the substitutions might have new lines.
     }
 
     init {

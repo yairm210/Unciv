@@ -20,8 +20,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
-import kotlin.concurrent.thread
-
 
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -29,7 +27,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     constructor(version: String) : this(UncivGameParameters(version, null))
 
     val version = parameters.version
-    private val crashReportSender = parameters.crashReportSender
+    val crashReportSysInfo = parameters.crashReportSysInfo
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     val fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
@@ -39,7 +37,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings: GameSettings
-    lateinit var crashController: CrashController
     lateinit var musicController: MusicController
 
     /**
@@ -128,7 +125,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 isInitialized = true
             }
         }
-        crashController = CrashController.Impl(crashReportSender)
     }
 
     fun loadGame(gameInfo: GameInfo) {

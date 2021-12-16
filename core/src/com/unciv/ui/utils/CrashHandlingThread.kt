@@ -20,7 +20,7 @@ fun crashHandlingThread(
         block = block.wrapCrashHandlingUnit(true)
     )
 
-/** Wrapped version of [Gdx.app.postRunnable], that brings the game loop to a [com.unciv.CrashScreen] if an exception occurs. */
+/** Wrapped version of Gdx.app.postRunnable ([com.badlogic.gdx.Application.postRunnable]), that brings the game loop to a [com.unciv.CrashScreen] if an exception occurs. */
 fun postCrashHandlingRunnable(runnable: () -> Unit) {
     Gdx.app.postRunnable(runnable.wrapCrashHandlingUnit())
 }
