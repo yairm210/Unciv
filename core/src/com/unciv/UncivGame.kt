@@ -65,7 +65,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     var isInitialized = false
 
     /** A wrapped render() method that crashes to [CrashScreen] on a unhandled exception or error. */
-    val wrappedCrashHandlingingRender = { super.render() }.wrapCrashHandlingUnit()
+    private val wrappedCrashHandlingRender = { super.render() }.wrapCrashHandlingUnit()
     // Stored here because I imagine that might be slightly faster than allocating for a new lambda every time, and the render loop is possibly one of the only places where that could have a significant impact.
 
 
@@ -173,7 +173,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         screen.resize(width, height)
     }
 
-    override fun render() = wrappedCrashHandlingingRender()
+    override fun render() = wrappedCrashHandlingRender()
 
     override fun dispose() {
         cancelDiscordEvent?.invoke()

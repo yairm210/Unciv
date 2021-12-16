@@ -26,6 +26,7 @@ class CrashScreen(message: String): BaseScreen() {
     val text = generateReportHeader() + message
 
     var copied = false
+        private set
 
     fun generateReportHeader(): String {
         return """
@@ -69,8 +70,8 @@ class CrashScreen(message: String): BaseScreen() {
             ).padTop(15f)
                 .width(stage.width)
                 .row()
-            layoutTable.add(Table().also { table ->
-                table.add(
+            layoutTable.add(Table().also { buttonsTable ->
+                buttonsTable.add(
                     "Copy".toButton()
                         .onClick {
                             Gdx.app.clipboard.contents = text
@@ -81,7 +82,7 @@ class CrashScreen(message: String): BaseScreen() {
                             )
                         }
                 ).pad(10f)
-                table.add(
+                buttonsTable.add(
                     "Open Issue Tracker".toButton(icon = "OtherIcons/Link")
                         .onClick {
                             if (copied) {
@@ -96,10 +97,10 @@ class CrashScreen(message: String): BaseScreen() {
                 ).pad(10f).also {
                     if (isCrampedPortrait()) {
                         it.row()
-                        table.add()
+                        buttonsTable.add()
                     }
                 }
-                table.add(
+                buttonsTable.add(
                     "Close Unciv".toButton()
                         .onClick {
                             Gdx.app.exit()

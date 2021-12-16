@@ -317,6 +317,7 @@ object UncivDateFormat {
  * In case an exception or error is thrown, the return will be null. Therefore the return type is always nullable.
  *
  * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
+ * @return Result from the function, or null if an exception is thrown.
  * */
 fun <R> (() -> R).wrapCrashHandling(postToMainThread: Boolean = false): () -> R? = {
         try {
@@ -339,4 +340,5 @@ fun <R> (() -> R).wrapCrashHandling(postToMainThread: Boolean = false): () -> R?
  * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
  * */
 fun (() -> Unit).wrapCrashHandlingUnit(postToMainThread: Boolean = false): () -> Unit
-    = { this.wrapCrashHandling(postToMainThread)() ?: Unit }
+    = with(this.wrapCrashHandling(postToMainThread)) // Don't instantiate a new lambda every time.
+        { { this() ?: Unit } }
