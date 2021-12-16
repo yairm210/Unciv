@@ -89,7 +89,7 @@ class CrashScreen(message: String): BaseScreen() {
                                 Gdx.net.openURI("https://github.com/yairm210/Unciv/issues")
                             } else {
                                 ToastPopup(
-                                    "Please copy the error message first.",
+                                    "Please copy the error report first.",
                                     this@CrashScreen
                                 )
                             }
