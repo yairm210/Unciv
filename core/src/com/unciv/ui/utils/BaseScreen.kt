@@ -132,7 +132,7 @@ open class BaseScreen : Screen {
             while (true) {
                 val newScreen = (UncivGame.Current.screen as? BaseScreen)
                 if (waited >= 10000 || newScreen!=null && !newScreen.isPortrait() ) {
-                    Gdx.app.postRunnable { OptionsPopup(newScreen ?: this).open(true) }
+                    postCrashHandlingRunnable { OptionsPopup(newScreen ?: this).open(true) }
                     break
                 }
                 Thread.sleep(200)

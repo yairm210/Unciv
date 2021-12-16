@@ -45,9 +45,9 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                 try {
                     // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                     val loadedGame = GameSaver.loadGameByName(selectedSave)
-                    Gdx.app.postRunnable { UncivGame.Current.loadGame(loadedGame) }
+                    postCrashHandlingRunnable { UncivGame.Current.loadGame(loadedGame) }
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         loadingPopup.close()
                         val cantLoadGamePopup = Popup(this)
                         cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
@@ -99,7 +99,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             loadFromCustomLocation.onClick {
                 GameSaver.loadGameFromCustomLocation { gameInfo, exception ->
                     if (gameInfo != null) {
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             game.loadGame(gameInfo)
                         }
                     } else if (exception !is CancellationException) {
@@ -158,7 +158,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             // .toList() because otherwise the lastModified will only be checked inside the postRunnable
             val saves = GameSaver.getSaves().sortedByDescending { it.lastModified() }.toList()
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 saveTable.clear()
                 for (save in saves) {
                     if (save.name().startsWith("Autosave") && !showAutosaves) continue
@@ -196,7 +196,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                 textToSet += "\n${"Could not load game".tr()}!"
             }
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 descriptionLabel.setText(textToSet)
             }
         }

@@ -206,7 +206,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         crashHandlingThread(name = "Construction info gathering - ${cityScreen.city.name}") {
             // Since this can be a heavy operation and leads to many ANRs on older phones we put the metadata-gathering in another thread.
             val constructionButtonDTOList = getConstructionButtonDTOs()
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 val units = ArrayList<Table>()
                 val buildableWonders = ArrayList<Table>()
                 val buildableNationalWonders = ArrayList<Table>()

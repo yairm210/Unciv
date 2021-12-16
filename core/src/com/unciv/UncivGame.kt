@@ -117,7 +117,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             }
 
             // This stuff needs to run on the main thread because it needs the GL context
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 musicController.chooseTrack(suffix = MusicMood.Menu)
 
                 ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first

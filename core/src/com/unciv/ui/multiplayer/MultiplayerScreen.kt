@@ -151,7 +151,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 else
                     GameSaver.saveGame(gamePreview, gameName)
 
-                Gdx.app.postRunnable { reloadGameListUI() }
+                postCrashHandlingRunnable { reloadGameListUI() }
             } catch (ex: FileNotFoundException) {
                 // Game is so old that a preview could not be found on dropbox lets try the real gameInfo instead
                 try {
@@ -161,9 +161,9 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                     else
                         GameSaver.saveGame(gamePreview, gameName)
 
-                    Gdx.app.postRunnable { reloadGameListUI() }
+                    postCrashHandlingRunnable { reloadGameListUI() }
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         val errorPopup = Popup(this)
                         errorPopup.addGoodSizedLabel("Could not download game!")
                         errorPopup.row()
@@ -172,7 +172,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                     }
                 }
             } catch (ex: Exception) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     val errorPopup = Popup(this)
                     errorPopup.addGoodSizedLabel("Could not download game!")
                     errorPopup.row()
@@ -180,7 +180,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                     errorPopup.open()
                 }
             }
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 addGameButton.setText(addGameText)
                 addGameButton.enable()
             }
@@ -197,7 +197,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             // For whatever reason, the only way to show the popup before the ANRs started was to
             // call the loadGame explicitly with a runnable on the main thread.
             // Maybe this adds just enough lag for the popup to show up
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 game.loadGame(OnlineMultiplayer().tryDownloadGame((multiplayerGames[selectedGameFile]!!.gameId)))
             }
         } catch (ex: Exception) {
@@ -288,7 +288,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                         multiplayerGames[gameSaveFile] = game
                     }
 
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         turnIndicator.clear()
                         if (isUsersTurn(game)) {
                             turnIndicator.add(ImageGetter.getImage("OtherIcons/ExclamationMark")).size(50f)
@@ -299,7 +299,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                     }
                 } catch (usx: UncivShowableException) {
                     //Gets thrown when mods are not installed
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         val popup = Popup(this)
                         popup.addGoodSizedLabel(usx.message!! + " in ${gameSaveFile.name()}").row()
                         popup.addCloseButton()
@@ -309,7 +309,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                         turnIndicator.add(ImageGetter.getImage("StatIcons/Malcontent")).size(50f)
                     }
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         ToastPopup("Could not refresh!", this)
                         turnIndicator.clear()
                         turnIndicator.add(ImageGetter.getImage("StatIcons/Malcontent")).size(50f)
@@ -347,21 +347,21 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                         multiplayerGames[fileHandle] = game
 
                     } catch (ex: Exception) {
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             ToastPopup("Could not download game!" + " ${fileHandle.name()}", this)
                         }
                     }
                 } catch (ex: Exception) {
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         ToastPopup("Could not download game!" + " ${fileHandle.name()}", this)
                     }
                 }
             }
 
             //Reset UI
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 addGameButton.enable()
                 refreshButton.setText(refreshText)
                 refreshButton.enable()

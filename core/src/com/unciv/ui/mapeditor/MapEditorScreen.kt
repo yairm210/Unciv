@@ -147,7 +147,7 @@ class MapEditorScreen(): BaseScreen() {
         tileMap.mapParameters.run {
             val areaFromSize = getArea()
             if (areaFromSize == areaFromTiles) return
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 val message = ("Invalid map: Area ([$areaFromTiles]) does not match saved dimensions ([" +
                         displayMapDimensions() + "]).").tr() +
                         "\n" + "The dimensions have now been fixed for you.".tr()

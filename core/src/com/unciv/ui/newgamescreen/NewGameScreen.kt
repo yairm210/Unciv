@@ -109,7 +109,7 @@ class NewGameScreen(
                 val mapSize = gameSetupInfo.mapParameters.mapSize
                 val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
                 if (message != null) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
                         with (mapOptionsTable.generatedMapOptionsTable) {
                             customMapSizeRadius.text = mapSize.radius.toString()
@@ -181,7 +181,7 @@ class NewGameScreen(
             newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
             exception.printStackTrace()
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 Popup(this).apply {
                     addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
                     addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
@@ -202,7 +202,7 @@ class NewGameScreen(
                 // Save gameId to clipboard because you have to do it anyway.
                 Gdx.app.clipboard.contents = newGame!!.gameId
                 // Popup to notify the User that the gameID got copied to the clipboard
-                Gdx.app.postRunnable { ToastPopup("gameID copied to clipboard".tr(), game.worldScreen, 2500) }
+                postCrashHandlingRunnable { ToastPopup("gameID copied to clipboard".tr(), game.worldScreen, 2500) }
 
                 GameSaver.autoSave(newGame!!) {}
 
@@ -210,7 +210,7 @@ class NewGameScreen(
                 val newGamePreview = newGame!!.asPreview()
                 GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
             } catch (ex: Exception) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     Popup(this).apply {
                         addGoodSizedLabel("Could not upload game!")
                         addCloseButton()

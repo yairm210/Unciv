@@ -207,7 +207,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             val toast = ToastPopup("Quicksaving...", this)
             crashHandlingThread(name = "SaveGame") {
                 GameSaver.saveGame(gameInfo, "QuickSave") {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         toast.close()
                         if (it != null)
                             ToastPopup("Could not save game!", this)
@@ -224,13 +224,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             crashHandlingThread(name = "SaveGame") {
                 try {
                     val loadedGame = GameSaver.loadGameByName("QuickSave")
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         toast.close()
                         UncivGame.Current.loadGame(loadedGame)
                         ToastPopup("Quickload successful.", this)
                     }
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         ToastPopup("Could not load game!", this)
                     }
                 }
@@ -328,7 +328,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         // Since we're on a background thread, all the UI calls in this func need to run from the
         // main thread which has a GL context
         val loadingGamePopup = Popup(this)
-        Gdx.app.postRunnable {
+        postCrashHandlingRunnable {
             loadingGamePopup.add("Loading latest game state...".tr())
             loadingGamePopup.open()
         }
@@ -343,18 +343,18 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 && gameInfo.turns == latestGame.turns 
                 && latestGame.currentPlayer != gameInfo.getPlayerToViewAs().civName
             ) {
-                Gdx.app.postRunnable { loadingGamePopup.close() }
+                postCrashHandlingRunnable { loadingGamePopup.close() }
                 shouldUpdate = true
                 return
             } else { // if the game updated, even if it's not our turn, reload the world -
                 // stuff has changed and the "waiting for X" will now show the correct civ
                 stopMultiPlayerRefresher()
                 latestGame.isUpToDate = true
-                Gdx.app.postRunnable { createNewWorldScreen(latestGame) }
+                postCrashHandlingRunnable { createNewWorldScreen(latestGame) }
             }
 
         } catch (ex: Throwable) {
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 val couldntDownloadLatestGame = Popup(this)
                 couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
                 couldntDownloadLatestGame.addCloseButton()
@@ -645,7 +645,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 try {
                     OnlineMultiplayer().tryUploadGame(gameInfoClone, withPreview = true)
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable { // Since we're changing the UI, that should be done on the main thread
+                    postCrashHandlingRunnable { // Since we're changing the UI, that should be done on the main thread
                         val cantUploadNewGamePopup = Popup(this)
                         cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
                         cantUploadNewGamePopup.addCloseButton()
@@ -665,7 +665,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
             // create a new WorldScreen to show the new stuff we've changed, and switch out the current screen.
             // do this on main thread - it's the only one that has a GL context to create images from
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
 
 
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
@@ -796,7 +796,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     crashHandlingThread(name="Move automated units") {
                         for (unit in viewingCiv.getCivUnits())
                             unit.doAction()
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             shouldUpdate = true
                             isPlayersTurn = true //Re-enable state changes
                             nextTurnButton.enable()

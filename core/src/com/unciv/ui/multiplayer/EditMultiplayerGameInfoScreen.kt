@@ -107,14 +107,14 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
                     GameSaver.saveGame(updatedSave, gameName)
                     OnlineMultiplayer().tryUploadGame(gameInfo, withPreview = true)
 
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         popup.close()
                         //go back to the MultiplayerScreen
                         backScreen.game.setScreen(backScreen)
                         backScreen.reloadGameListUI()
                     }
                 } else {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         //change popup text
                         popup.innerTable.clear()
                         popup.addGoodSizedLabel("You can only resign if it's your turn").row()
@@ -122,7 +122,7 @@ class EditMultiplayerGameInfoScreen(val gameInfo: GameInfoPreview?, gameName: St
                     }
                 }
             } catch (ex: Exception) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     //change popup text
                     popup.innerTable.clear()
                     popup.addGoodSizedLabel("Could not upload game!").row()

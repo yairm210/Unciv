@@ -71,7 +71,7 @@ class MainMenuScreen: BaseScreen() {
         crashHandlingThread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
                     .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
-            Gdx.app.postRunnable { // for GL context
+            postCrashHandlingRunnable { // for GL context
                 ImageGetter.setNewRuleset(RulesetCache.getBaseRuleset())
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
                 backgroundTable.addAction(Actions.sequence(
@@ -200,7 +200,7 @@ class MainMenuScreen: BaseScreen() {
         crashHandlingThread {
             // Load game from file to class on separate thread to avoid ANR...
             fun outOfMemory() {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     loadingPopup.close()
                     ToastPopup("Not enough memory on phone to load game!", this)
                 }
@@ -223,7 +223,7 @@ class MainMenuScreen: BaseScreen() {
                     outOfMemory()
                     return@crashHandlingThread
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         loadingPopup.close()
                         ToastPopup("Cannot resume game!", this)
                     }
@@ -231,7 +231,7 @@ class MainMenuScreen: BaseScreen() {
                 }
             }
 
-            Gdx.app.postRunnable { /// ... and load it into the screen on main thread for GL context
+            postCrashHandlingRunnable { /// ... and load it into the screen on main thread for GL context
                 try {
                     game.loadGame(savedGame)
                     dispose()
@@ -251,12 +251,12 @@ class MainMenuScreen: BaseScreen() {
             try {
                 newGame = GameStarter.startNewGame(GameSetupInfo.fromSettings("Chieftain"))
             } catch (ex: Exception) {
-                Gdx.app.postRunnable { ToastPopup(errorText, this) }
+                postCrashHandlingRunnable { ToastPopup(errorText, this) }
                 return@crashHandlingThread
             }
 
             // ...or when loading the game
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 try {
                     game.loadGame(newGame)
                 } catch (outOfMemory: OutOfMemoryError) {

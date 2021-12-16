@@ -199,14 +199,14 @@ class ModManagementScreen(
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     ToastPopup("Could not download mod list", this)
                 }
                 runningSearchThread = null
                 return@crashHandlingThread
             }
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 // clear and remove last cell if it is the "..." indicator
                 val lastCell = downloadTable.cells.lastOrNull()
                 if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
@@ -215,7 +215,7 @@ class ModManagementScreen(
                 }
 
                 for (repo in repoSearch.items) {
-                    if (stopBackgroundTasks) return@postRunnable
+                    if (stopBackgroundTasks) return@postCrashHandlingRunnable
                     repo.name = repo.name.replace('-', ' ')
 
                     // Mods we have manually decided to remove for instability are removed here
@@ -410,7 +410,7 @@ class ModManagementScreen(
                     Gdx.files.local("mods"))
                     ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 rewriteModOptions(repo, modFolder)
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     ToastPopup("[${repo.name}] Downloaded!", this)
                     RulesetCache.loadRulesets()
                     RulesetCache[repo.name]?.let { 
@@ -421,7 +421,7 @@ class ModManagementScreen(
                     unMarkUpdatedMod(repo.name)
                 }
             } catch (ex: Exception) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     ToastPopup("Could not download [${repo.name}]", this)
                 }
             } finally {

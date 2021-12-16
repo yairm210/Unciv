@@ -297,7 +297,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
             if (noProblem) lines += FormattedLine("{No problems found}.",)
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
                 // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
                 // Instead, some manual work needs to be put in.
@@ -504,7 +504,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         label.wrap = true
         add(label).padTop(20f).colspan(2).fillX().row()
         previousScreen.game.musicController.onChange {
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 label.setText("Currently playing: [$it]".tr())
             }
         }
@@ -526,12 +526,12 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             crashHandlingThread(name = "Music") {
                 try {
                     previousScreen.game.musicController.downloadDefaultFile()
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         tabs.replacePage("Sound", getSoundTab())
                         previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                     }
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         errorTable.clear()
                         errorTable.add("Could not download music!".toLabel(Color.RED))
                     }

@@ -211,7 +211,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 return@crashHandlingThread
             } // can't move here
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 try {
                     // Because this is darned concurrent (as it MUST be to avoid ANRs),
                     // there are edge cases where the canReach is true,
@@ -279,12 +279,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 unitToTurnsToTile[unit] = turnsToGetThere
             }
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 val unitsWhoCanMoveThere = HashMap(unitToTurnsToTile.filter { it.value != 0 })
                 if (unitsWhoCanMoveThere.isEmpty()) { // give the regular tile overlays with no unit movement
                     addTileOverlays(tileInfo)
                     worldScreen.shouldUpdate = true
-                    return@postRunnable
+                    return@postCrashHandlingRunnable
                 }
 
                 val turnsToGetThere = unitsWhoCanMoveThere.values.maxOrNull()!!

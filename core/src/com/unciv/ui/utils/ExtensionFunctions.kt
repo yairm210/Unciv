@@ -330,7 +330,7 @@ fun <R> (() -> R).wrapCrashHandling(
             this()
         } catch (e: Throwable) {
             if (postToMainThread) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     UncivGame.Current.setScreen(CrashScreen(e))
                 }
             } else {
