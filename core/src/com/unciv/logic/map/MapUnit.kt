@@ -170,6 +170,8 @@ class MapUnit {
     var religion: String? = null
     var religiousStrengthLost = 0
 
+    var isLinked = false
+
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
@@ -1124,6 +1126,8 @@ class MapUnit {
             return true
         return getTile().neighbors.any { it.getOwner() == civInfo }
     }
+
+
 
     //endregion
 }

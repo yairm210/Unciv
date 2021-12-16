@@ -730,6 +730,16 @@ object UnitActions {
                 action = { unit.fortify() }.takeIf { !isFortified })
     }
 
+    private fun addChainAction(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean){
+        if (unit.isCivilian() && unit.getTile().militaryUnit != null){
+            // TODO: 15/12/2021
+        }
+        else if (!unit.isCivilian() && unit.getTile().civilianUnit != null){
+            // TODO: 15/12/2021
+        }
+        else return
+    }
+
     private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
         if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
         // If this unit is working on an improvement, it cannot sleep
@@ -747,6 +757,10 @@ object UnitActions {
                 action = { unit.action = UnitActionType.Sleep.value }.takeIf { !isSleeping }
             )
         }
+    }
+
+    private fun addLinkActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean){
+
     }
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {

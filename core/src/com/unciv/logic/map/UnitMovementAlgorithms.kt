@@ -202,6 +202,15 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         var distance = 1
         val newTilesToCheck = ArrayList<TileInfo>()
         val distanceToDestination = HashMap<TileInfo, Float>()
+
+        //if (unit.isLinked){
+          //  val otherUnitMovement = unit.getTile().getUnitNotOfType(unit).currentMovement
+
+            //movementThisTurn = if (unit.currentMovement <= otherUnitMovement)
+              //  unit.currentMovement
+           // else otherUnitMovement
+       // }
+
         while (true) {
             if (distance == 2) // only set this once after distance > 1
                 movementThisTurn = unit.getMaxMovement().toFloat()
@@ -213,6 +222,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     // Avoid damaging terrain on first pass
                     if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile) > 0)
                         continue
+
                     if (reachableTile == destination)
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
                     else {
@@ -398,7 +408,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         else unit.destroy()
     }
 
-    fun moveToTile(destination: TileInfo, considerZoneOfControl: Boolean = true) {
+    fun moveToTile(destination: TileInfo, considerZoneOfControl: Boolean = true, destinationChosen: Boolean = false) {
         if (destination == unit.getTile()) return // already here!
 
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
@@ -455,6 +465,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 // we try again.
                 needToFindNewRoute = true
                 break // If you ever remove this break, remove the `assumeCanPassThrough` param below
+            }
+
+            if (unit.isLinked || destinationChosen){
+                val otherUnitMovement = unit.getTile().getUnitNotOfType(unit)!!
+                if (!otherUnitMovement.movement.canReachInCurrentTurn(tile)) continue
+
+                otherUnitMovement.movement.moveToTile(tile, destinationChosen = true)
             }
             unit.moveThroughTile(tile)
 
