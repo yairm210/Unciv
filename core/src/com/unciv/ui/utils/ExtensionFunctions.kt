@@ -94,14 +94,19 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table
 }
 
 /** Wrap an [Actor] in a [Group] of a given size */
-fun Actor.sizeWrapped(x: Float, y: Float) = Group().also {
-    it.isTransform =
-        false // performance helper - nothing here is rotated or scaled
-    it.setSize(x, y)
-    this.setSize(x, y)
-    this.center(it)
-    it.addActor(this)
+fun Actor.sizeWrapped(x: Float, y: Float): Group {
+    val wrapper = Group().apply {
+        isTransform = false // performance helper - nothing here is rotated or scaled
+        setSize(x, y)
+    }
+    this.apply {
+        setSize(x, y)
+        center(wrapper)
+    }
+    wrapper.addActor(this)
+    return wrapper
 }
+
 
 /** get background Image for a new separator */
 private fun getSeparatorImage(color: Color) = ImageGetter.getDot(
@@ -319,7 +324,10 @@ object UncivDateFormat {
  * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
  * @return Result from the function, or null if an exception is thrown.
  * */
-fun <R> (() -> R).wrapCrashHandling(postToMainThread: Boolean = false): () -> R? = {
+fun <R> (() -> R).wrapCrashHandling(
+    postToMainThread: Boolean = false
+): () -> R?
+    = {
         try {
             this()
         } catch (e: Throwable) {
@@ -339,6 +347,10 @@ fun <R> (() -> R).wrapCrashHandling(postToMainThread: Boolean = false): () -> R?
  *
  * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
  * */
-fun (() -> Unit).wrapCrashHandlingUnit(postToMainThread: Boolean = false): () -> Unit
-    = with(this.wrapCrashHandling(postToMainThread)) // Don't instantiate a new lambda every time.
-        { { this() ?: Unit } }
+fun (() -> Unit).wrapCrashHandlingUnit(
+    postToMainThread: Boolean = false
+): () -> Unit {
+    val wrappedReturning = this.wrapCrashHandling(postToMainThread)
+    // Don't instantiate a new lambda every time.
+    return { wrappedReturning() ?: Unit }
+}
