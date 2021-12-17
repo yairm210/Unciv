@@ -38,9 +38,14 @@ class CrashHandlingStage: Stage {
 
 // Another stack trace from an exception after setting TileInfo.naturalWonder to an invalid value is below that.
 
+// Below that are another two exceptions from a lambda given to Gdx.app.postRunnable{} and another to thread{}.
+
 // Stage()'s event handlers seem to be the most universal place to intercept exceptions from events.
 
 // Events and the render loop are the main ways that code gets run with GDX, right? So if we wrap both of those in exception handling, it should hopefully gracefully catch most unhandled exceptions… Threads may be the exception, hence why I put the wrapping as extension functions that can be invoked on the lambdas passed to threads.
+
+
+// Button click (event):
 
 /*
 Exception in thread "main" com.badlogic.gdx.utils.GdxRuntimeException: java.lang.Exception
@@ -79,6 +84,8 @@ E/AndroidRuntime: FATAL EXCEPTION: GLThread 299
         at android.opengl.GLSurfaceView$GLThread.run(GLSurfaceView.java:1239)
  */
 
+// Invalid Natural Wonder (rendering):
+
 /*
 Exception in thread "main" java.lang.NullPointerException
         at com.unciv.logic.map.TileInfo.getNaturalWonder(TileInfo.kt:149)
@@ -93,4 +100,26 @@ Exception in thread "main" java.lang.NullPointerException
         at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:143)
         at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:116)
         at com.unciv.app.desktop.DesktopLauncher.main(DesktopLauncher.kt:61)
+ */
+
+// Thread:
+
+/*
+Exception in thread "Thread-5" java.lang.Exception
+        at com.unciv.MainMenuScreen$newGameButton$1$1.invoke(MainMenuScreen.kt:107)
+        at com.unciv.MainMenuScreen$newGameButton$1$1.invoke(MainMenuScreen.kt:107)
+        at kotlin.concurrent.ThreadsKt$thread$thread$1.run(Thread.kt:30)
+ */
+
+// Gdx.app.postRunnable:
+
+/*
+Exception in thread "main" com.badlogic.gdx.utils.GdxRuntimeException: java.lang.Exception
+        at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:122)
+        at com.unciv.app.desktop.DesktopLauncher.main(DesktopLauncher.kt:61)
+Caused by: java.lang.Exception
+        at com.unciv.MainMenuScreen$loadGameTable$1.invoke$lambda-0(MainMenuScreen.kt:112)
+        at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.loop(Lwjgl3Application.java:159)
+        at com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application.<init>(Lwjgl3Application.java:116)
+        ... 1 more
  */
