@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.unciv.ui.utils.*
 
+
 /** Stage that safely brings the game to a [CrashScreen] if any event handlers throw an exception or an error that doesn't get otherwise handled. */
 class CrashHandlingStage: Stage {
     constructor(): super()

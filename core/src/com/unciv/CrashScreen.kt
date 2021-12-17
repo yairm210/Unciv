@@ -14,6 +14,16 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.concurrent.thread
 
+/*
+Crashes are now handled from:
+- Event listeners, by [CrashHandlingStage].
+- The main rendering loop, by [UncivGame.render].
+- Threads, by [crashHandlingThread].
+- Main loop runnables, by [postCrashHandlingRunnable].
+
+Altogether, I *think* that should cover 90%-99% of all potential crashes.
+ */
+
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
 class CrashScreen(val exception: Throwable): BaseScreen() {
 
