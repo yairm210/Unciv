@@ -48,7 +48,7 @@ object UnitActions {
 
         addSleepActions(actionList, unit, false)
         addFortifyActions(actionList, unit, false)
-        addChainAction(actionList, unit, false)
+        addChainAction(actionList, unit)
 
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
@@ -731,16 +731,18 @@ object UnitActions {
                 action = { unit.fortify() }.takeIf { !isFortified })
     }
 
-    private fun addChainAction(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean){
+    private fun addChainAction(actionList: ArrayList<UnitAction>, unit: MapUnit){
         val otherUnit = unit.getTile().getUnitNotOfType(unit) ?: return
-        if (unit.isLinked) {
-            actionList += UnitAction(UnitActionType.UnChainUnits,
-                action = { unit.action = UnitActionType.UnChainUnits.value })
-        }
-        else {
-            actionList += UnitAction(UnitActionType.ChainUnits,
-                action = { unit.action = UnitActionType.ChainUnits.value })
-        }
+
+        val title: String = if (unit.isLinked) "[Unlink ${unit.name} with ${otherUnit.name}]"
+        else "[Link ${unit.name} with ${otherUnit.name}]"
+
+        val image = if (unit.isLinked) UnitActionType.UnChainUnits
+        else UnitActionType.ChainUnits
+
+        actionList += UnitAction(UnitActionType.ChainUnits,
+        action = { unit.isLinked = !unit.isLinked; otherUnit.isLinked = !otherUnit.isLinked },
+        title = title)
     }
 
     private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
@@ -760,10 +762,6 @@ object UnitActions {
                 action = { unit.action = UnitActionType.Sleep.value }.takeIf { !isSleeping }
             )
         }
-    }
-
-    private fun addLinkActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean){
-
     }
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {

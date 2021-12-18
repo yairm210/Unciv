@@ -467,9 +467,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 break // If you ever remove this break, remove the `assumeCanPassThrough` param below
             }
 
-            if (unit.isLinked || destinationChosen){
+            if (unit.isLinked && !destinationChosen){
                 val otherUnitMovement = unit.getTile().getUnitNotOfType(unit)!!
                 if (!otherUnitMovement.movement.canReachInCurrentTurn(tile)) continue
+                print(otherUnitMovement)
 
                 otherUnitMovement.movement.moveToTile(tile, destinationChosen = true)
             }
