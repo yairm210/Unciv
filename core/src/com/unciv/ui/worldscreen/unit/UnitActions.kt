@@ -377,8 +377,14 @@ object UnitActions {
         if (unit.isEmbarked()) return
 
         val canConstruct = unit.currentMovement > 0
-                && !tile.isCityCenter()
-                && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) && unit.canBuildImprovement(it) }
+            && !tile.isCityCenter()
+            && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
+                tile.canBuildImprovement(it, unit.civInfo) 
+                && unit.canBuildImprovement(it)
+                // Excluded actions for water improvements and great improvements, which are handled seperately
+                && it.turnsToBuild != 0 
+            }
+        
 
         actionList += UnitAction(UnitActionType.ConstructImprovement,
             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
