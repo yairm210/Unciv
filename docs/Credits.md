@@ -727,8 +727,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
     *    [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic
 * [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
 * Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
-
-* Excerpt from [Campfire](https://www.soundjay.com/fire-sound-effects.html) by SoundJay for Fire & 'remove heresy' action of inquisitor
+* Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor ([License](http://creativecommons.org/licenses/by/3.0/))
 
 # Music
 The following music is from https://filmmusic.io
