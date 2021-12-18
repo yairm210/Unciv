@@ -15,6 +15,11 @@
  - [Deprecated uniques](#deprecated-uniques)
 
 ## Global uniques
+#### [stats]
+Example: "[+1 Gold, +2 Production]"
+
+Applicable to: Improvement, Global, FollowerBelief
+
 #### [stats] [cityFilter]
 Example: "[+1 Gold, +2 Production] [in all cities]"
 
@@ -59,6 +64,11 @@ Applicable to: Global
 Example: "[20]% [Culture] [in all cities]"
 
 Applicable to: Global
+
+#### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
+Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
+
+Applicable to: Resource, Global, FollowerBelief
 
 #### [amount]% Production when constructing [buildingFilter] buildings [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] buildings [in all cities]"
@@ -149,6 +159,29 @@ Applicable to: Global
 
 #### Triggers a Cultural Victory upon completion
 Applicable to: Global
+
+#### [amount]% Strength
+Example: "[20]% Strength"
+
+Applicable to: Unit, Global
+
+#### [amount] Movement
+Example: "[20] Movement"
+
+Applicable to: Unit, Global
+
+#### [amount] Sight
+Example: "[20] Sight"
+
+Applicable to: Unit, Global, Terrain
+
+#### [amount]% Spread Religion Strength
+Example: "[20]% Spread Religion Strength"
+
+Applicable to: Unit, Global
+
+#### Normal vision when embarked
+Applicable to: Unit, Global
 
 #### Free [baseUnitFilter] appears
 Example: "Free [Melee] appears"
@@ -316,10 +349,11 @@ Applicable to: Building
 #### Consumes [amount] [resource]
 Example: "Consumes [20] [Iron]"
 
-Applicable to: Building, Unit, Improvement
+Applicable to: Unit, Improvement, Building
 
 #### Provides [amount] [resource]
 Example: "Provides [20] [Iron]"
+
 
 Applicable to: Building, Improvement
 
@@ -329,6 +363,7 @@ Applicable to: Building, Unit
 #### Cannot be purchased
 Applicable to: Building, Unit
 
+
 #### Can be purchased with [stat] [cityFilter]
 Example: "Can be purchased with [Culture] [in all cities]"
 
@@ -337,12 +372,13 @@ Applicable to: Building, Unit
 #### Can be purchased for [amount] [stat] [cityFilter]
 Example: "Can be purchased for [20] [Culture] [in all cities]"
 
+
 Applicable to: Building, Unit
 
 #### Limited to [amount] per Civilization
 Example: "Limited to [20] per Civilization"
 
-Applicable to: Building, Unit
+Applicable to: Unit, Building
 
 #### Hidden until [amount] social policy branches have been completed
 Example: "Hidden until [20] social policy branches have been completed"
@@ -372,6 +408,7 @@ Applicable to: Building
 #### Not displayed as an available construction without [buildingName/tech/resource/policy]
 Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
 
+
 Applicable to: Building, Unit
 
 #### Must be on [terrainFilter]
@@ -397,6 +434,10 @@ Applicable to: Building
 #### Unsellable
 Applicable to: Building
 
+
+#### Hidden when religion is disabled
+Applicable to: Unit, Ruins, Building
+
 #### Hidden when [victoryType] Victory is disabled
 Example: "Hidden when [victoryType] Victory is disabled"
 
@@ -419,15 +460,11 @@ Example: "Can see invisible [Wounded] units"
 
 Applicable to: Unit
 
-#### [amount]% Strength
-Example: "[20]% Strength"
-
-Applicable to: Unit, Global
-
 #### [amount]% Strength decreasing with distance from the capital
 Example: "[20]% Strength decreasing with distance from the capital"
 
 Applicable to: Unit
+
 
 #### [amount] Movement
 Example: "[20] Movement"
@@ -444,9 +481,6 @@ Applicable to: Unit
 
 #### May enhance a religion
 Applicable to: Unit
-
-#### Normal vision when embarked
-Applicable to: Unit, Global
 
 #### Cannot attack
 Applicable to: Unit
@@ -599,7 +633,8 @@ Applicable to: Terrain
 Applicable to: Terrain
 
 #### Tile provides yield without assigned population
-Applicable to: Terrain, Improvement
+
+Applicable to: Improvement, Terrain
 
 #### Nullifies all other stats this tile provides
 Applicable to: Terrain
@@ -657,6 +692,9 @@ Applicable to: Terrain
 Example: "Considered [terrainQuality] when determining start locations"
 
 Applicable to: Terrain
+
+#### Doesn't generate naturally
+Applicable to: Resource, Terrain
 
 #### Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]
 Example: "Occurs at temperature between [20] and [20] and humidity between [20] and [20]"
@@ -752,6 +790,7 @@ Applicable to: Improvement
 Applicable to: Improvement
 
 ## Resource uniques
+
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
 
@@ -782,9 +821,6 @@ Applicable to: Resource
 
 #### Guaranteed with Strategic Balance resource option
 Applicable to: Resource
-
-#### Doesn't generate naturally
-Applicable to: Resource, Terrain
 
 #### Deposits in [tileFilter] tiles always provide [amount] resources
 Example: "Deposits in [Farm] tiles always provide [20] resources"

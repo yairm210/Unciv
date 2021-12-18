@@ -1,3 +1,15 @@
+## 3.18.10
+
+Sort Maintenance Using Fixed Point - By itanasi
+
+Moved Coal discovery back to industrialization - By xlenstra
+
+Improvements to TurnChecker data usage - By GGGuenni
+
+AI for Inquisitor and Missionary - By Interdice
+
+Add a couple missing template strings - By SimonCeder
+
 ## 3.18.9
 
 Uniques and conditionals for translating are taken directly from the uniquetypes
