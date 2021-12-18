@@ -737,9 +737,6 @@ object UnitActions {
         val title: String = if (unit.isLinked) "[Unlink ${unit.name} with ${otherUnit.name}]"
         else "[Link ${unit.name} with ${otherUnit.name}]"
 
-        val image = if (unit.isLinked) UnitActionType.UnChainUnits
-        else UnitActionType.ChainUnits
-
         actionList += UnitAction(UnitActionType.ChainUnits,
         action = { unit.isLinked = !unit.isLinked; otherUnit.isLinked = !otherUnit.isLinked },
         title = title)

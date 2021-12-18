@@ -86,8 +86,7 @@ enum class UnitActionType(
         { ImageGetter.getImage("OtherIcons/Sleep") }, 'h'),
     ChainUnits("Chain units",
         { ImageGetter.getImage("OtherIcons/Chain") }, 't'),
-    UnChainUnits("Unchain units",
-        { ImageGetter.getImage("OtherIcons/Unchain") }, 't'),
+
     // Note: Both Fortify actions are a special case. The button starting fortification uses the `value` here,
     // the button label as shown when the unit is already fortifying is "Fortification".tr() + " nn%".
     // For now we keep it simple, and the unit test `allUnitActionsHaveTranslation` does not know about the latter.
