@@ -39,7 +39,7 @@ class CrashHandlingStage: Stage {
 
 // Another stack trace from an exception after setting TileInfo.naturalWonder to an invalid value is below that.
 
-// Below that are another two exceptions from a lambda given to Gdx.app.postRunnable{} and another to thread{}.
+// Below that are another two exceptions, from a lambda given to thread{} and another given to Gdx.app.postRunnable{}.
 
 // Stage()'s event handlers seem to be the most universal place to intercept exceptions from events.
 

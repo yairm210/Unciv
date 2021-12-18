@@ -95,8 +95,8 @@ $message
 ${tryGetSaveMods()}
 ```
 
-**Show Save Data:**
-<details><summary>Saved Game</summary>
+**Save Data:**
+<details><summary>Show Saved Game</summary>
 
 ```
 ${tryGetSaveGame()}

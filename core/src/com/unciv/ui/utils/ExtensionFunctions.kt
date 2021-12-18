@@ -12,7 +12,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.concurrent.thread
 import kotlin.random.Random
 
 /**
@@ -334,7 +333,7 @@ fun <R> (() -> R).wrapCrashHandling(
             this()
         } catch (e: Throwable) {
             if (postToMainThread) {
-                postCrashHandlingRunnable {
+                Gdx.app.postRunnable {
                     UncivGame.Current.setScreen(CrashScreen(e))
                 }
             } else {
@@ -357,6 +356,6 @@ fun (() -> Unit).wrapCrashHandlingUnit(
     postToMainThread: Boolean = false
 ): () -> Unit {
     val wrappedReturning = this.wrapCrashHandling(postToMainThread)
-    // Don't instantiate a new lambda every time.
+    // Don't instantiate a new lambda every time the return get called.
     return { wrappedReturning() ?: Unit }
 }
