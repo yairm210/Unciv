@@ -336,6 +336,14 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
             BaseScreen.enableSceneDebug = it
         }).row()
+        val unlockTechsButton = "Unlock all techs".toTextButton()
+        unlockTechsButton.onChange {
+            for (tech in game.gameInfo.ruleSet.technologies.keys) {
+                if (tech !in game.gameInfo.getCurrentPlayerCivilization().tech.techsResearched)
+                    game.gameInfo.getCurrentPlayerCivilization().tech.addTechnology(tech)
+            }
+        }
+        add(unlockTechsButton)
     }
 
     //endregion
