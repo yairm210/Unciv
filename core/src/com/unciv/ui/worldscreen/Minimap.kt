@@ -163,9 +163,75 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
     private var minimapSize = Int.MIN_VALUE
     lateinit var minimap: Minimap
 
-    private var yieldImageButton: Actor? = null
-    private var populationImageButton: Actor? = null
-    private var resourceImageButton: Actor? = null
+    /**
+     * Class that unifies the behaviour of the little green map overlay toggle buttons shown next to the minimap.
+     *
+     * @param icon An [Image] to display.
+     * @property getter A function that returns the current backing state of the toggle.
+     * @property setter A function for setting the backing state of the toggle.
+     * @param backgroundColor If non-null, a background colour to show behind the image.
+     */
+    class MapOverlayToggleButton(
+        icon: Image,
+        private val getter: () -> Boolean,
+        private val setter: (Boolean) -> Unit,
+        backgroundColor: Color? = null
+    ) {
+        /** [Actor] of the button. Add this to whatever layout. */
+        val actor: IconCircleGroup by lazy {
+            var innerActor: Actor = icon
+            if (backgroundColor != null) {
+                innerActor = innerActor
+                    .surroundWithCircle(30f)
+                    .apply {
+                        circle.color = backgroundColor
+
+                    }
+            }
+            // So, the "Food" and "Population" stat icons have green as part of their image, but the "Cattle" icon needs a ackground colour, which is… An interesting mixture/reuse of texture data and render-time processing.
+            innerActor.surroundWithCircle(40f).apply {
+                circle.color = Color.BLACK
+            }
+        }
+
+        init {
+            actor.onClick(::toggle)
+        }
+
+        /** Toggle overlay. Called on click. */
+        fun toggle() {
+            setter(!getter())
+            UncivGame.Current.worldScreen.shouldUpdate = true
+            // Setting worldScreen.shouldUpdate implicitly causes this.update() to be called by the WorldScreen on the next update.
+        }
+
+        /** Update. Called via [WorldScreen.shouldUpdate] on toggle. */
+        fun update() {
+            actor.actor.color.a = if (getter()) 1f else 0.5f
+        }
+    }
+
+    /** Button, next to the minimap, to toggle the tile yield map overlay. */
+    protected val yieldImageButton = MapOverlayToggleButton(
+        ImageGetter.getImage("StatIcons/Food"),
+        // This is a use in the UI that has little to do with the stat… These buttons have more in common with each other than they do with other uses of getStatIcon().
+        getter = { UncivGame.Current.settings.showTileYields },
+        setter = { UncivGame.Current.settings.showTileYields = it }
+    )
+    /** Button, next to the minimap, to toggle the worked tiles map overlay. */
+    protected val populationImageButton = MapOverlayToggleButton(
+        ImageGetter.getImage("StatIcons/Population"),
+        getter = { UncivGame.Current.settings.showWorkedTiles },
+        setter = { UncivGame.Current.settings.showWorkedTiles = it }
+    )
+    /** Button, next to the minimap, to toggle the resource icons map overlay. */
+    protected val resourceImageButton = MapOverlayToggleButton(
+        ImageGetter.getImage("ResourceIcons/Cattle"),
+        getter = { UncivGame.Current.settings.showResourcesAndImprovements },
+        setter = { UncivGame.Current.settings.showResourcesAndImprovements = it },
+        backgroundColor = Color.GREEN
+    )
+    // Hm. If I put these into a MutableList instead, scripted mods (WIP in fork) would immediately be able to inject their own fully functional toggles. But then again, scripted mods can *already* inject UI elements basically anywhere they want, and the canonical way to do that is by adding to the correct Table themselves on Screen/layout instantiation.
 
     init {
         rebuildIfSizeChanged()
@@ -197,46 +263,13 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
         return externalMinimapWrapper
     }
 
+    /** @return Layout table for the little green map overlay toggle buttons, show to the left of the minimap. */
     private fun getToggleIcons(): Table {
         val toggleIconTable = Table()
-        val settings = UncivGame.Current.settings
 
-        val yieldImage = ImageGetter.getStatIcon("Food").surroundWithCircle(40f)
-        yieldImage.circle.color = Color.BLACK
-        yieldImage.actor.color.a = if (settings.showTileYields) 1f else 0.5f
-        yieldImage.onClick {
-            settings.showTileYields = !settings.showTileYields
-            yieldImage.actor.color.a = if (settings.showTileYields) 1f else 0.5f
-            worldScreen.shouldUpdate = true
-        }
-        toggleIconTable.add(yieldImage).row()
-
-        val populationImage = ImageGetter.getStatIcon("Population").surroundWithCircle(40f)
-        populationImage.circle.color = Color.BLACK
-        populationImage.actor.color.a = if (settings.showWorkedTiles) 1f else 0.5f
-        populationImage.onClick {
-            settings.showWorkedTiles = !settings.showWorkedTiles
-            populationImage.actor.color.a = if (settings.showWorkedTiles) 1f else 0.5f
-            worldScreen.shouldUpdate = true
-        }
-        toggleIconTable.add(populationImage).row()
-
-        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle")
-                .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
-                .surroundWithCircle(40f, false).apply { circle.color = Color.BLACK }
-
-        resourceImage.actor.color.a = if (settings.showResourcesAndImprovements) 1f else 0.5f
-        resourceImage.onClick {
-            settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
-            resourceImage.actor.color.a = if (settings.showResourcesAndImprovements) 1f else 0.5f
-            worldScreen.shouldUpdate = true
-        }
-        toggleIconTable.add(resourceImage)
-        toggleIconTable.pack()
-
-        yieldImageButton = yieldImage.actor
-        populationImageButton = populationImage.actor
-        resourceImageButton = resourceImage.actor
+        toggleIconTable.add(yieldImageButton.actor).row()
+        toggleIconTable.add(populationImageButton.actor).row()
+        toggleIconTable.add(resourceImageButton.actor).row()
 
         return toggleIconTable
     }
@@ -246,11 +279,9 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
         isVisible = UncivGame.Current.settings.showMinimap
         if (isVisible) {
             minimap.update(civInfo)
-            with(UncivGame.Current.settings) {
-                yieldImageButton?.color?.a = if (showTileYields) 1f else 0.5f
-                populationImageButton?.color?.a = if (showWorkedTiles) 1f else 0.5f
-                resourceImageButton?.color?.a = if (showResourcesAndImprovements) 1f else 0.5f
-            }
+            yieldImageButton.update()
+            populationImageButton.update()
+            resourceImageButton.update()
         }
     }
 
