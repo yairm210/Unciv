@@ -231,7 +231,6 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
         setter = { UncivGame.Current.settings.showResourcesAndImprovements = it },
         backgroundColor = Color.GREEN
     )
-    // Hm. If I put these into a MutableList instead, scripted mods (WIP in fork) would immediately be able to inject their own fully functional toggles. But then again, scripted mods can *already* inject UI elements basically anywhere they want, and the canonical way to do that is by adding to the correct Table themselves on Screen/layout instantiation.
 
     init {
         rebuildIfSizeChanged()
