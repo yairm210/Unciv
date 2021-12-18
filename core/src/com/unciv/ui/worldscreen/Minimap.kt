@@ -212,20 +212,20 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
     }
 
     /** Button, next to the minimap, to toggle the tile yield map overlay. */
-    protected val yieldImageButton = MapOverlayToggleButton(
+    val yieldImageButton = MapOverlayToggleButton(
         ImageGetter.getImage("StatIcons/Food"),
         // This is a use in the UI that has little to do with the stat… These buttons have more in common with each other than they do with other uses of getStatIcon().
         getter = { UncivGame.Current.settings.showTileYields },
         setter = { UncivGame.Current.settings.showTileYields = it }
     )
     /** Button, next to the minimap, to toggle the worked tiles map overlay. */
-    protected val populationImageButton = MapOverlayToggleButton(
+    val populationImageButton = MapOverlayToggleButton(
         ImageGetter.getImage("StatIcons/Population"),
         getter = { UncivGame.Current.settings.showWorkedTiles },
         setter = { UncivGame.Current.settings.showWorkedTiles = it }
     )
     /** Button, next to the minimap, to toggle the resource icons map overlay. */
-    protected val resourceImageButton = MapOverlayToggleButton(
+    val resourceImageButton = MapOverlayToggleButton(
         ImageGetter.getImage("ResourceIcons/Cattle"),
         getter = { UncivGame.Current.settings.showResourcesAndImprovements },
         setter = { UncivGame.Current.settings.showResourcesAndImprovements = it },
