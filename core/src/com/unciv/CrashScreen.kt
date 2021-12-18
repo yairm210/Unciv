@@ -13,6 +13,7 @@ import java.io.StringWriter
 
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
 class CrashScreen(message: String): BaseScreen() {
+    constructor(exception: Throwable): this(exception.stringify())
 
     private companion object {
         fun Throwable.stringify(): String {
@@ -22,10 +23,7 @@ class CrashScreen(message: String): BaseScreen() {
         }
     }
 
-    constructor(exception: Throwable): this(exception.stringify())
-
     val text = generateReportHeader() + message
-
     var copied = false
         private set
 
@@ -50,37 +48,27 @@ class CrashScreen(message: String): BaseScreen() {
             it.width = stage.width
             it.height = stage.height
         }
-
-        layoutTable.add(
-            makeTitleLabel()
-        ).padBottom(15f)
+        layoutTable.add(makeTitleLabel())
+            .padBottom(15f)
             .width(stage.width)
             .row()
-
-        layoutTable.add(
-            makeErrorScroll()
-        ).maxWidth(stage.width * 0.7f)
+        layoutTable.add(makeErrorScroll())
+            .maxWidth(stage.width * 0.7f)
             .maxHeight(stage.height * 0.5f)
             .minHeight(stage.height * 0.2f)
             .row()
-
-        layoutTable.add(
-            makeInstructionLabel()
-        ).padTop(15f)
+        layoutTable.add(makeInstructionLabel())
+            .padTop(15f)
             .width(stage.width)
             .row()
-
-        layoutTable.add(
-            makeActionButtonsTable()
-        ).padTop(10f)
-
+        layoutTable.add(makeActionButtonsTable())
+            .padTop(10f)
         return layoutTable
     }
 
     /** @return Label for title at top of screen. */
     private fun makeTitleLabel()
-        = "An unrecoverable error has occurred in Unciv:"
-        .toLabel(fontSize = 24)
+        = "An unrecoverable error has occurred in Unciv:".toLabel(fontSize = 24)
         .apply {
             wrap = true
             setAlignment(Align.center)
@@ -92,18 +80,15 @@ class CrashScreen(message: String): BaseScreen() {
             setFontSize(15)
         }
         val errorTable = Table()
-        errorTable.add(
-            errorLabel
-        ).pad(10f)
-        return AutoScrollPane(
-            errorTable
-        ).addBorder(4f, Color.DARK_GRAY)
+        errorTable.add(errorLabel)
+            .pad(10f)
+        return AutoScrollPane(errorTable)
+            .addBorder(4f, Color.DARK_GRAY)
     }
 
     /** @return Label to give the user more information and context below the error report. */
     private fun makeInstructionLabel()
-        = "{If this keeps happening, you can try disabling mods.}\n{You can also report this on the issue tracker.}"
-        .toLabel()
+        = "{If this keeps happening, you can try disabling mods.}\n{You can also report this on the issue tracker.}".toLabel()
         .apply {
             wrap = true
             setAlignment(Align.center)
@@ -111,9 +96,7 @@ class CrashScreen(message: String): BaseScreen() {
 
     /** @return Table that displays decision buttons for the bottom of the screen. */
     private fun makeActionButtonsTable(): Table {
-        val copyButton
-            = "Copy"
-            .toButton()
+        val copyButton = "Copy".toButton()
             .onClick {
                 Gdx.app.clipboard.contents = text
                 copied = true
@@ -122,9 +105,7 @@ class CrashScreen(message: String): BaseScreen() {
                     this@CrashScreen
                 )
             }
-        val reportButton
-            = "Open Issue Tracker"
-            .toButton(icon = "OtherIcons/Link")
+        val reportButton = "Open Issue Tracker".toButton(icon = "OtherIcons/Link")
             .onClick {
                 if (copied) {
                     Gdx.net.openURI("https://github.com/yairm210/Unciv/issues")
@@ -135,8 +116,7 @@ class CrashScreen(message: String): BaseScreen() {
                     )
                 }
             }
-        val closeButton
-            = "Close Unciv".toButton()
+        val closeButton = "Close Unciv".toButton()
             .onClick {
                 Gdx.app.exit()
             }

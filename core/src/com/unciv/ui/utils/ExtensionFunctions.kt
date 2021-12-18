@@ -99,10 +99,8 @@ fun Actor.sizeWrapped(x: Float, y: Float): Group {
         isTransform = false // performance helper - nothing here is rotated or scaled
         setSize(x, y)
     }
-    this.apply {
-        setSize(x, y)
-        center(wrapper)
-    }
+    setSize(x, y)
+    center(wrapper)
     wrapper.addActor(this)
     return wrapper
 }
