@@ -72,37 +72,43 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
      * @return Message with application, platform, and game state metadata.
      * */
     private fun formatReport(message: String): String {
+        val indent = " ".repeat(4)
+        val baseIndent = indent.repeat(3) // To be even with the template string.
+        val subIndent = baseIndent + indent // TO be one level more than the template string.
+        /** We only need the indent after any new lines in each substitution itself. So this prepends to all lines, and then removes from the start. */
+        fun String.prependIndentToOnlyNewLines(indent: String) = this.prependIndent(indent).removePrefix(indent)
+        /// The $lastScreenType substitution is the only one completely under the control of this class— Everything else can, in theory, have new lines in it due to containing strings or custom .toString behaviour with new lines (which… I think Table.toString or something actually does). So normalize indentation for basically everything.
         return """
-**Platform:** ${Gdx.app.type}
-**Version:** ${UncivGame.Current.version}
-**Rulesets:** ${RulesetCache.keys}
-**Last Screen:** `$lastScreenType`
-
---------------------------------
-
-${UncivGame.Current.crashReportSysInfo?.getInfo()}
-
---------------------------------
-
-
-**Message:**
-```
-$message
-```
-
-**Save Mods:**
-```
-${tryGetSaveMods()}
-```
-
-**Save Data:**
-<details><summary>Show Saved Game</summary>
-
-```
-${tryGetSaveGame()}
-```
-</details>
-""".trim() // Can't really use .trimIndent(), because the substitutions might have new lines.
+            **Platform:** ${Gdx.app.type.toString().prependIndentToOnlyNewLines(subIndent)}
+            **Version:** ${UncivGame.Current.version.prependIndentToOnlyNewLines(subIndent)}
+            **Rulesets:** ${RulesetCache.keys.toString().prependIndentToOnlyNewLines(subIndent)}
+            **Last Screen:** `$lastScreenType`
+            
+            --------------------------------
+            
+            ${UncivGame.Current.crashReportSysInfo?.getInfo().toString().prependIndentToOnlyNewLines(baseIndent)}
+            
+            --------------------------------
+            
+            
+            **Message:**
+            ```
+            ${message.prependIndentToOnlyNewLines(baseIndent)}
+            ```
+            
+            **Save Mods:**
+            ```
+            ${tryGetSaveMods().prependIndentToOnlyNewLines(baseIndent)}
+            ```
+            
+            **Save Data:**
+            <details><summary>Show Saved Game</summary>
+            
+            ```
+            ${tryGetSaveGame().prependIndentToOnlyNewLines(baseIndent)}
+            ```
+            </details>
+            """.trimIndent()
     }
 
     init {
