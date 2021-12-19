@@ -156,9 +156,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         pad(10f)
         defaults().pad(2.5f)
 
+        addYesNoRow("Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
+        addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
         addYesNoRow("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
         addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
-        addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
         addYesNoRow("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
         addMinimapSizeSlider()
 

@@ -19,6 +19,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
@@ -363,6 +364,24 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
     }
 
+    /** @return Whether a unit's past movements should be visible to the player. */
+    private fun isUnitPastVisible(unit: MapUnit): Boolean {
+        if (unit.civInfo == viewingCiv)
+            return true
+        val checkPositions = sequenceOf(unit.movementMemories.asSequence().map { it.position }, sequenceOf(unit.getTile().position)).flatten()
+        return checkPositions.all { mapHolder.tileMap[it] in viewingCiv.viewableTiles }
+            && (!unit.isInvisible(viewingCiv) || unit.getTile() in viewingCiv.viewableInvisibleUnitsTiles)
+        // Past should always be visible for own units. Past should be visible for foreign units if the unit is visible and both its current tile and previous tiles are visible.
+    }
+
+    /** @return Whether a unit's planned movements should be visible to the player. */
+    private fun isUnitFutureVisible(unit: MapUnit) = (viewingCiv.isSpectator() || unit.civInfo == viewingCiv)
+    // Plans should be visible always for own units and never for foreign units.
+
+    /** @return Whether an attack by a unit to a target should be visible to the player. */
+    private fun isAttackVisible(attacker: MapUnit, target: Vector2) = (attacker.civInfo == viewingCiv || attacker.getTile() in viewingCiv.viewableTiles || mapHolder.tileMap[target] in viewingCiv.viewableTiles)
+    // Attacks by the player civ should always be visible, and attacks by foreign civs should be visible if either the tile they targeted or the attacker's tile are visible. E.G. Civ V shows bombers coming out of the Fog of War.
+
     // This is private so that we will set the shouldUpdate to true instead.
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
@@ -399,6 +418,15 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         keyPressDispatcher.revertToCheckPoint()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
+
+        mapHolder.resetArrows()
+        val allUnits = gameInfo.civilizations.asSequence().flatMap { it.getCivUnits() }
+        val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> unit to attacked } }.flatten()
+        mapHolder.updateMovementOverlay(
+            allUnits.filter(::isUnitPastVisible),
+            allUnits.filter(::isUnitFutureVisible),
+            allAttacks.filter { (attacker, target) -> isAttackVisible(attacker, target) }
+        )
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder

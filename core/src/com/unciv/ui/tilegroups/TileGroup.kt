@@ -8,16 +8,18 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.*
+import com.unciv.models.helpers.MapArrowType
+import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.models.helpers.TintedMapArrow
+import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.cityscreen.YieldGroup
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.centerX
-import kotlin.math.PI
-import kotlin.math.atan
-import kotlin.math.atan2
+import com.unciv.ui.utils.*
+import kotlin.math.*
 import kotlin.random.Random
 
 /** A lot of the render time was spent on snapshot arrays of the TileGroupMap's groups, in the act() function.
@@ -31,7 +33,7 @@ open class ActionlessGroup(val checkHit:Boolean=false):Group() {
     }
 }
 
-open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, private val groupSize: Float = 54f) : ActionlessGroup(true) {
+open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, private val groupSize: Float = 54f) : ActionlessGroup(true) {
     /*
     Layers:
     Base image (+ overlay)
@@ -93,7 +95,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     )
 
     private val roadImages = HashMap<TileInfo, RoadImage>()
-    private val borderSegments = HashMap<TileInfo, BorderSegment>() // map of neighboring tile to border segments
+    /** map of neighboring tile to border segments */
+    private val borderSegments = HashMap<TileInfo, BorderSegment>()
+    private val arrows = HashMap<TileInfo, ArrayList<Actor>>()
 
     @Suppress("LeakingThis")    // we trust TileGroupIcons not to use our `this` in its constructor except storing it for later
     val icons = TileGroupIcons(this)
@@ -117,6 +121,30 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
     private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair") // for when a unit is targeted
     private val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon)
 
+    /**
+     * Class for representing an arrow to add to the map at this tile.
+     *
+     * @property targetTile The tile that arrow should stretch to.
+     * @property arrowType Style of the arrow.
+     * @property tileSetStrings Helper for getting the paths of images in the current tileset.
+     * */
+    private class MapArrow(val targetTile: TileInfo, val arrowType: MapArrowType, val tileSetStrings: TileSetStrings) {
+        /** @return An Image from a named arrow texture. */
+        private fun getArrow(imageName: String): Image {
+            val imagePath = tileSetStrings.getString(tileSetStrings.tileSetLocation, "Arrows/", imageName)
+            return ImageGetter.getImage(imagePath)
+        }
+        /** @return An actor for the arrow, based on the type of the arrow. */
+        fun getImage(): Image = when (arrowType) {
+            is UnitMovementMemoryType -> getArrow(arrowType.name)
+            is MiscArrowTypes -> getArrow(arrowType.name)
+            is TintedMapArrow -> getArrow("Generic").apply { color = arrowType.color }
+            else -> getArrow("Generic")
+        }
+    }
+
+    /** Array list of all arrows to draw from this tile on the next update. */
+    private val arrowsToDraw = ArrayList<MapArrow>()
 
     var showEntireMap = UncivGame.Current.viewEntireMapForDebug
     var forMapEditorIcon = false
@@ -332,6 +360,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
 
         updateRoadImages()
         updateBorderImages()
+        updateArrows()
 
         crosshairImage.isVisible = false
         fogImage.isVisible = !(tileIsViewable || showEntireMap)
@@ -514,6 +543,45 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
         }
     }
 
+    /** Create and setup Actors for all arrows to be drawn from this tile. */
+    private fun updateArrows() {
+        for (actorList in arrows.values) {
+            for (actor in actorList) {
+                actor.remove()
+            }
+        }
+        arrows.clear()
+
+        val tileScale = 50f * 0.8f // See notes in updateRoadImages.
+
+        for (arrowToAdd in arrowsToDraw) {
+            val targetTile = arrowToAdd.targetTile
+            val targetRelative = HexMath.hex2WorldCoords(HexMath.getUnwrappedNearestTo(targetTile.position, tileInfo.position, tileInfo.tileMap.maxLongitude))
+                .sub(HexMath.hex2WorldCoords(tileInfo.position))
+
+            val targetDistance = sqrt(targetRelative.x.pow(2) + targetRelative.y.pow(2))
+            val targetAngle = atan2(targetRelative.y, targetRelative.x)
+
+            if (targetTile !in arrows) {
+                arrows[targetTile] = ArrayList()
+            }
+
+            val arrowImage = arrowToAdd.getImage()
+            arrowImage.moveBy(25f, -5f) // Move to tile center— Y is +25f too, but subtract half the image height. Based on updateRoadImages.
+
+            arrowImage.setSize(tileScale * targetDistance, 60f)
+            arrowImage.setOrigin(0f, 30f)
+
+            arrowImage.rotation = targetAngle / Math.PI.toFloat() * 180
+
+            arrows[targetTile]!!.add(arrowImage)
+            miscLayerGroup.addActor(arrowImage)
+            // FIXME: Occluded when too large and panned away.
+            // https://libgdx.badlogicgames.com/ci/nightlies/docs/api/com/badlogic/gdx/scenes/scene2d/utils/Cullable.html
+            // .getCullingArea returns null for both miscLayerGroup and worldMapHolder. Don't know where it's happening. Somewhat rare, and fixing it may have a hefty performance cost.
+        }
+    }
+
     private fun updateRoadImages() {
         if (forMapEditorIcon) return
         for (neighbor in tileInfo.neighbors) {
@@ -688,6 +756,31 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings, 
             setHexagonImageSize(newImage)
             return newImage
         }
+    }
+
+    /**
+     * Add an arrow to be drawn from this tile.
+     * Similar to [showCircle].
+     *
+     * Zero-length arrows are ignored.
+     *
+     * @param targetTile The tile the arrow should stretch to.
+     * @param type Style of the arrow.
+     * */
+    fun addArrow(targetTile: TileInfo, type: MapArrowType) {
+        if (targetTile.position != tileInfo.position) {
+            arrowsToDraw.add(
+                MapArrow(targetTile, type, tileSetStrings)
+            )
+        }
+    }
+
+    /**
+     * Clear all arrows to be drawn from this tile.
+     * Similar to [hideCircle].
+     */
+    fun resetArrows() {
+        arrowsToDraw.clear()
     }
 
     fun showCircle(color: Color, alpha: Float = 0.3f) {
