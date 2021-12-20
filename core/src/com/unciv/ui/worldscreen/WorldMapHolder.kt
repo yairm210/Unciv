@@ -451,7 +451,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     /**
-     * Add arrows to show all past and planned movements and attacks, if the the options setting to do so is enabled,
+     * Add arrows to show all past and planned movements and attacks, if the the options setting to do so is enabled.
      *
      * @param pastVisibleUnits Sequence of [MapUnit]s for which the last turn's movement history can be displayed.
      * @param targetVisibleUnits Sequence of [MapUnit]s for which the active movement target can be displayed.

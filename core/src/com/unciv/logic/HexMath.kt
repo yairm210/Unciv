@@ -90,12 +90,15 @@ object HexMath {
     /**
      * @param unwrapHexCoord Hex coordinate to unwrap.
      * @param staticHexCoord Reference hex coordinate.
-     * @param longitudinalRadius Maximum longitudinal absolute value of world, such as from [TileMap.maxLongitude]. The total width is assumed one less than twice this.
+     * @param longitudinalRadius Maximum longitudinal absolute value of world tiles, such as from [TileMap.maxLongitude]. The total width is assumed one less than twice this.
+     *
      * @return The closest hex coordinate to [staticHexCoord] that is equivalent to [unwrapHexCoord]. THIS MAY NOT BE A VALID TILE COORDINATE. It may also require rounding for further use.
+     *
+     * @see [com.unciv.logic.map.TileMap.getUnWrappedPosition]
      */
     fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Number): Vector2 {
         val referenceLong = getLongitude(staticHexCoord)
-        val toWrapLat = getLatitude(unwrapHexCoord) // Working in Cartesian space is easier, but
+        val toWrapLat = getLatitude(unwrapHexCoord) // Working in Cartesian space is easier.
         val toWrapLong = getLongitude(unwrapHexCoord)
         val longRadius = longitudinalRadius.toFloat()
         return hexFromLatLong(toWrapLat, (toWrapLong - referenceLong + longRadius).mod(longRadius * 2f) - longRadius + referenceLong)

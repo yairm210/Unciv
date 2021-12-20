@@ -2,6 +2,7 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -556,7 +557,10 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
         for (arrowToAdd in arrowsToDraw) {
             val targetTile = arrowToAdd.targetTile
-            val targetRelative = HexMath.hex2WorldCoords(HexMath.getUnwrappedNearestTo(targetTile.position, tileInfo.position, tileInfo.tileMap.maxLongitude))
+            var targetCoord = Vector2(targetTile.position)
+            if (tileInfo.tileMap.mapParameters.worldWrap)
+                targetCoord = HexMath.getUnwrappedNearestTo(targetCoord, tileInfo.position, tileInfo.tileMap.maxLongitude)
+            val targetRelative = HexMath.hex2WorldCoords(targetCoord)
                 .sub(HexMath.hex2WorldCoords(tileInfo.position))
 
             val targetDistance = sqrt(targetRelative.x.pow(2) + targetRelative.y.pow(2))

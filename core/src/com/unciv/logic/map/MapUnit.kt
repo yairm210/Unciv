@@ -175,7 +175,7 @@ class MapUnit {
     /**
      * Container class to represent a single instant in a [MapUnit]'s recent movement history.
      *
-     * @property position Position onthe map at this instant.
+     * @property position Position on the map at this instant.
      * @property type Category of the last change in position that brought the unit to this position.
      * */
     class UnitMovementMemory() {
@@ -195,7 +195,7 @@ class MapUnit {
     /** FIFO list of this unit's past positions. Should never exceed two items in length. New item added once at end of turn and once at start, to allow rare between-turn movements like melee withdrawal to be distinguished. Used in movement arrow overlay. */
     var movementMemories = ArrayList<UnitMovementMemory>()
 
-    /** Add the current frame and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
+    /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
     fun addMovementMemory() {
         movementMemories.add(UnitMovementMemory(Vector2(getTile().position), mostRecentMoveType))
         while (movementMemories.size > 2) { // O(n) but n == 2.
