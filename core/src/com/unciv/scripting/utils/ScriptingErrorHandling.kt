@@ -12,7 +12,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 object ScriptingErrorHandling {
     fun notifyPlayerScriptFailure(text: String, asName: String? = null, toConsole: Boolean = true) {
         Gdx.app.postRunnable { // This can potentially be run for scripts in worker threads, so in that case needs to go to the main thread to have OpenGL context and not crash.
-            val popup = Popup(UncivGame.Current.screen as BaseScreen)
+            val popup = Popup(UncivGame.Current.screen as BaseScreen) // TODO: Make this a class.
             val widthTarget = popup.screen.stage.width / 2
             val msg1 = "{An error has occurred with the mod/script} \"${asName ?: ScriptingRunLock.runningName}\".\n\n{See system terminal output for details.}\n{Consider disabling mods if this keeps happening.}" // TODO: Translation.
             popup.add(msg1.toLabel().apply
@@ -27,7 +27,7 @@ object ScriptingErrorHandling {
                 wrap = true
             }).width(widthTarget).row()
             val scrollPane = ScrollPane(contentTable)
-            popup.add(scrollPane).row()
+            popup.add(scrollPane).row() // TODO: "Copy" button.
             popup.addOKButton{}
             popup.open(true)
             if (toConsole)

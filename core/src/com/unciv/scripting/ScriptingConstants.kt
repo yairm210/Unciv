@@ -14,7 +14,7 @@ val ScriptingConstants: _ScriptingConstantsClasses.ScriptingConstantsClass = Jso
  * Class defining the structure of ScriptingConstants.
  */
 object _ScriptingConstantsClasses{
-    // Need to define classes to deserialize the JSONs into, but really this whole file should be one singleton.
+    // Need to define classes to deserialize the JSONs into, but really the whole file should be one singleton.
     // It would be slightly better with KotlinX, I think, since then I could at least use data classes and don't have to initialize all the properties with mutable values. LibGDX instantiates with no constructor arguments, and then assigns to properties/fields/whatever.
 
     /**

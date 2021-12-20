@@ -126,7 +126,7 @@ _magicmeths = (
 #	@indexOf # Not actually totally sure what this is. I thought it was implemented in lists and tuples as `.index()`?
 #	'__setitem__', # Implemented through foreign request.
 	('__hash__', 'hash') # Monkey-patched into operator module above.
-)
+) # TODO: __int__, __float__, and other stuff missing from operator. https://docs.python.org/3/reference/datamodel.html
 
 _rmagicmeths = (
 	'__radd__',

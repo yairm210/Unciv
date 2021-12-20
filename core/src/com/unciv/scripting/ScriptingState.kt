@@ -4,11 +4,14 @@ import com.unciv.UncivGame // Only for  blocking execution in multiplayer.
 import com.unciv.scripting.api.ScriptingScope
 import com.unciv.scripting.sync.ScriptingRunLock
 import com.unciv.scripting.sync.makeScriptingRunName
+import com.unciv.scripting.utils.ScriptingDebugParameters
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ToastPopup
 import com.unciv.ui.utils.clipIndexToBounds
 import com.unciv.ui.utils.enforceValidIndex
 import com.unciv.ui.worldscreen.WorldScreen // Only for  blocking execution in multiplayer.
+import java.lang.IllegalStateException
+import java.util.concurrent.Semaphore
 import kotlin.collections.ArrayList
 
 // TODO: Add .github/CODEOWNERS file for automatic PR notifications.
@@ -126,18 +129,42 @@ object ScriptingState {
         }
     }
 
+    private val runLock = Semaphore(1, true)
+    var runningName: String? = null
+        private set
+
     // @throws IllegalStateException On failure to acquire scripting lock.
-    @Synchronized fun exec(command: String, asName: String? = null, withParams: Map<String, Any?>? = null): ExecResult {
-        if (UncivGame.Current.screen is WorldScreen && UncivGame.Current.isGameInfoInitialized() && UncivGame.Current.gameInfo.gameParameters.isOnlineMultiplayer) { // TODO: After leaving game?
+    fun exec(
+        command: String,
+        asName: String? = null,
+        withParams: Map<String, Any?>? = null,
+        allowWait: Boolean = false
+    ): ExecResult {
+        // TODO: Synchronize here instead of in ScriptingRunLock and ScriptingRunThreader.
+        if (ScriptingDebugParameters.printCommandsForDebug) {
+            println("Running: $command")
+        }
+        if (UncivGame.Current.screen is WorldScreen
+            && UncivGame.Current.isGameInfoInitialized()
+            && UncivGame.Current.gameInfo.gameParameters.isOnlineMultiplayer
+        ) { // TODO: After leaving game?
             ToastPopup("Scripting not allowed in online multiplayer.", UncivGame.Current.screen as BaseScreen) // TODO: Translation.
             return ExecResult("", true)
         }
         val backend = activeBackend
         val name = asName ?: makeScriptingRunName(this::class.simpleName, backend)
-        val releaseKey = ScriptingRunLock.acquire(name)
+//        val releaseKey = ScriptingRunLock.acquire(name)
         // Lock acquisition failure gets propagated as thrown Exception, rather than as return. E.G.: Lets lambdas (from modApiHelpers) fail and trigger their own error handling (exposing misbehaving mods to the user via popup).
         // isException in ExecResult return value means exception in completely opaque scripting backend. Kotlin exception should still be thrown and propagated like normal.
         try {
+            if (allowWait) {
+                runLock.acquire()
+            } else {
+                if (!runLock.tryAcquire()) {
+                    throw IllegalStateException()
+                }
+            }
+            runningName = name
             ScriptingScope.apiExecutionContext.apply {
                 handlerParameters = withParams?.toMap()
                 // Looking at the source code, some .to<Collection>() extensions actually return mutable instances, and just type the return.
@@ -154,7 +181,10 @@ object ScriptingState {
                 }
             }
             activeCommandHistory = 0
-            var out = if (hasBackend()) backend.exec(command) else ExecResult("")
+            var out = if (hasBackend())
+                    backend.exec(command)
+                else
+                    ExecResult("${this::class.simpleName} has no backends.", true)
             echo(out.resultPrint)
             return out
         } finally {
@@ -162,16 +192,25 @@ object ScriptingState {
                 handlerParameters = null
                 scriptingBackend = null
             }
-            ScriptingRunLock.release(releaseKey)
+            runningName = null
+            runLock.release()
+//            ScriptingRunLock.release(releaseKey)
         }
     }
 
-    fun exec(command: String, asName: String? = null, withParams: Map<String, Any?>? = null, withBackend: ScriptingBackend): ExecResult {
+    fun exec(
+        command: String,
+        asName: String? = null,
+        withParams: Map<String, Any?>? = null,
+        allowWait: Boolean = false,
+        withBackend: ScriptingBackend
+    ): ExecResult {
         switchToBackend(withBackend)
         return exec(
             command = command,
             asName = asName,
-            withParams = withParams
+            withParams = withParams,
+            allowWait = allowWait
         )
     }
 }

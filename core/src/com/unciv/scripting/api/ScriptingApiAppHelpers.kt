@@ -9,12 +9,15 @@ import java.io.ByteArrayOutputStream
 
 object ScriptingApiAppHelpers {
     //Debug/dev identity function for both Kotlin and scripts. Check if value survives serialization, force something to be added to ScriptingProtocol.instanceSaver, etc.
+
     // @param path Path of an internal file as exposed in Gdx.files.internal.
     // @return The contents of the internal file read as a text string.
     fun assetFileString(path: String) = Gdx.files.internal(path).readString()
+
     // @param path Path of an internal file as exposed in Gdx.files.internal.
     // @return The contents of the internal file encoded as a Base64 string.
     fun assetFileB64(path: String) = String(Base64Coder.encode(Gdx.files.internal(path).readBytes()))
+
     // @param path Path of an internal image as exposed in ImageGetter as a TextureRegionDrawable from an atlas.
     // @return The image encoded as a PNG file encoded as a Base64 string.
     fun assetImageB64(path: String): String {
@@ -30,4 +33,11 @@ object ScriptingApiAppHelpers {
         exporter.dispose() // This one should be called automatically by GC anyway.
         return String(Base64Coder.encode(fakepng.toByteArray()))
     }
+
+    //val isMainThread get() = Thread().getCurrentThread() == UncivGame.mainThread
+
+    //fun runInThread(func: () -> Unit) {}
+
+    //fun runInMainLoop(func: () -> Unit) {}
+
 }

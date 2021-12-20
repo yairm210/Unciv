@@ -9,17 +9,20 @@ Call extendTechTree() at any time to add a new tier of technology.
 Call clearTechTree() and then extendTechTree(iterations=20) at any time to replace all undiscovered parts of the base tech tree with an entire new randomly generated one.
 
 Call scrambleTechTree() to keep all current technologies but randomize the order in which they are unlocked.
+
+Call reorgTechTree(webifyTechTree()) to turn the current tech tree into a tech web.
 """
 
 # from unciv_scripting_examples.ProceduralTechtree import *
 # from unciv_scripting_examples.ProceduralTechtree import *; scrambleTechTree()
+# from unciv_scripting_examples.ProceduralTechtree import *; reorgTechTree(webifyTechTree())
 # tuple(real(t) for t in apiHelpers.instancesAsInstances[gameInfo.ruleSet.technologies['Civil Service'].prerequisites.toArray()])
 
 # This means that some kind of handler for the modding API, once it's implemented, would have to be called before the JVM has a chance to crash, so the script can read its own serialized data out of GameInfo and inject items into the ruleset… You can already provably have a GameInfo with invalid values that doesn't crash until WorldScreen tries to render it, so running onGameLoad immediately after deserializing the save might be good enough.
 # Or I guess there could be a Kotlin-side mechanism for serializing injected rules. But on the Kotlin side, I think it would be cleaner to just let the script handle everything. Such a mechanism still may not cover the entire range of wild behaviours that can be done by scripts, and the entire point of having a dynamic scripting API is to avoid having to statically hard-code niche or esoteric uses.
 
 
-import random
+import random, math
 
 from unciv import *
 from unciv_pyhelpers import *
@@ -135,3 +138,43 @@ def scrambleTechTree():
 			except: print(tname, ot)
 		tech.prerequisites.addAll([techreplacements[ot] for ot in originalpreqs[techpositions[tname]]])
 		# toprereqs, oprereqs = (real(t.prerequisites) for t in (tech, other))
+
+def reorgTechTree(techmap):
+	Constructors = apiHelpers.Jvm.constructorByQualname
+	techs = techtree()
+	columns = {x: Constructors['com.unciv.models.ruleset.tech.TechColumn']() for x in set(x for (x, y, era) in techmap.values())}
+	columneras = {x: era for (x, y, era) in techmap.values()}
+	for x, column in columns.items():
+		column.era = columneras[x]
+		column.columnNumber = x
+	for name, (x, y, era) in techmap.items():
+		techs[name].row = y
+		techs[name].column = columns[x]
+
+def webifyTechTree(*, coordscale=(0.5, 2.0), fuzz=1.0):
+	techlocs = {}
+	for name, tech in techtree().items():
+		techlocs[name] = (tech.column.columnNumber, tech.row)
+		if tech.hasUnique("Starting tech", None):
+			era = tech.column.era
+			startingpos = techlocs[name]
+	oldmaxrow = max(y for (x, y) in techlocs.values())
+	techlocs = {name: tuple(round(trig((y-startingpos[1]+fuz)/oldmaxrow*math.pi*2)*(x-startingpos[0])*cscale) for trig, cscale in zip((math.sin, math.cos), coordscale)) for name, (x, y) in techlocs.items() for fuz in (fuzz and random.random()*fuzz,)}
+	def inc(n, chance=1.0):
+		return (round(n-1) if n < 0 else round(n+1) if n > 0 else round(n+random.getrandbits(1)*2-1)) if random.random() < chance else n
+	mutatechances = max(coordscale)
+	mutatechances = tuple(c/mutatechances for c in coordscale)
+	for i in range(100):
+		if len(set(techlocs.values())) == len(techlocs):
+			break
+		for name, pos in techlocs.items():
+			if tuple(techlocs.values()).count(pos) > 1:
+				techlocs[name] = tuple(inc(c, cscale) for c, cscale in zip(pos, mutatechances))
+	else:
+		raise RuntimeError(f"Couldn't generate unique tech positions:\n{locals()}")
+	mincolumn = min(x for (x, y) in techlocs.values())
+	minrow = min(y for (x, y) in techlocs.values())
+	techmap = {name: (x-mincolumn, y-minrow+1, era) for name, (x, y) in techlocs.items()}
+	return techmap
+
+

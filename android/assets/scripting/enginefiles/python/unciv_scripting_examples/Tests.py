@@ -16,9 +16,43 @@ from . import EndTimes, EventPopup, ExternalPipe, MapEditingMacros, Merfolk, Pla
 
 
 # from unciv_scripting_examples.Tests import *; TestRunner.run_tests()
+# import cProfile; cProfile.run("from unciv_scripting_examples.Tests import *; TestRunner.run_tests()", sort='tottime')
 # from unciv_scripting_examples.Tests import *; InMapEditor.__enter__()
 # from unciv_scripting_examples.Tests import *; import time; Start=time.time(); tryRun(TestRunner.run_tests); print(time.time()-Start)
 # from unciv_scripting_examples.Tests import *; import timeit; x=timeit.repeat(stmt='tryRun(TestRunner.run_tests)', setup='tryRun(TestRunner.run_tests)', repeat=3, number=3, globals=globals()); print(x); unciv.apiHelpers.Sys.copyToClipboard(repr(x)); unciv.apiHelpers.Sys.printLine(repr(x))
+
+# TODO: Protocol desync:
+# import cProfile; cProfile.run("from unciv_scripting_examples.Tests import *; TestRunner.run_tests()", sort='cumtime')
+# Ran first without sort, then with.
+# Or just run twice.
+# Wait, there's erroring due to unrelated handlers too…
+
+
+# I have no idea how it managed to print out to the system terminal.
+	         # 4932599 function calls (4929366 primitive calls) in 23.806 seconds
+
+	   # Ordered by: internal time
+
+	   # ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+	    # 40610   17.682    0.000   17.822    0.000 {method 'readline' of '_io.TextIOWrapper' objects}
+	# 1624812/1623564    0.764    0.000    0.869    0.000 wrapping.py:267(__getattribute__)
+	# 40610/40604    0.534    0.000    0.540    0.000 encoder.py:204(iterencode)
+	    # 40657    0.440    0.000    0.440    0.000 {built-in method builtins.print}
+	    # 75512    0.381    0.000    0.865    0.000 wrapping.py:231(__init__)
+	   # 631561    0.358    0.000    0.358    0.000 wrapping.py:207(__setattr__)
+	    # 75512    0.244    0.000    1.263    0.000 wrapping.py:244(_clone_)
+	    # 35849    0.206    0.000   21.154    0.001 wrapping.py:250(_bakereal_)
+	# 40610/40604    0.183    0.000   20.482    0.001 ipc.py:70(GetForeignActionResponse)
+	    # 40611    0.178    0.000    0.178    0.000 decoder.py:343(raw_decode)
+	    # 40610    0.156    0.000    0.695    0.000 ipc.py:30(deserialized)
+	# 40610/40604    0.155    0.000   20.890    0.001 wrapping.py:17(meth)
+	# 40610/40604    0.135    0.000    0.859    0.000 __init__.py:183(dumps)
+	    # 40611    0.116    0.000    0.392    0.000 decoder.py:332(decode)
+	# 40610/40604    0.114    0.000    0.682    0.000 encoder.py:182(encode)
+	    # 27010    0.100    0.000    7.731    0.000 wrapping.py:257(__getattr__)
+	    # 40610    0.099    0.000    0.134    0.000 ipc.py:13(makeUniqueId)
+
+# Is it going to turn out that Kotlin, not Python, is the bottleneck? I suppose that wouldn't be wholly a bad thing; It also means that the API design is sanely keeping the heavier lifting in the compiled part.
 
 
 def tryRun(func):

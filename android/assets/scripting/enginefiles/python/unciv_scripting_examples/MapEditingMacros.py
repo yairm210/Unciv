@@ -19,16 +19,21 @@ from . import Utils
 
 # If you modify this file, please add any new functions to Tests.py.
 
+def stripJsonComments(text):
+	re.sub("//.*", "", re.sub('/\*.*?\*/', "", text, flags=re.DOTALL))
+
 try:
-	t = re.sub("//.*", "", re.sub('/\*.*\*/', "", real(unciv.apiHelpers.App.assetFileString("jsons/Civ V - Gods & Kings/Terrains.json")), flags=re.DOTALL))
-	terrainsjson = json.loads(t)
+	terrainsjson = json.loads(stripJsonComments(real(unciv.apiHelpers.App.assetFileString("jsons/Civ V - Gods & Kings/Terrains.json"))))
 	# In an actual implementation, you would want to read from the ruleset instead of the JSON. But this is easier for me.
-	del t
 except Exception as e:
 	print("Couldn't load terrains Terrains.json")
 else:
 	terrainbases = {t['name']: t for t in terrainsjson if t['type'] in ('Water', 'Land')}
 	terrainfeatures = {t['name']: t for t in terrainsjson if t['type'] == 'TerrainFeature'}
+
+
+def showProgress():
+	return progressupdater, finisher
 
 
 def genValidTerrains(*, forbid=('Fallout',)):

@@ -503,7 +503,8 @@ class ReflectiveScriptingBackend(): ScriptingBackend() {
 }
 
 // Uses SourceManager to copy library files for engine type into a temporary directory per instance.
-// Deletes
+
+// Tries to deletes temporary directory on backend termination, and registers a handler with UncivGame to delete temporary directory on application end as well.
 abstract class EnvironmentedScriptingBackend(): ScriptingBackend() {
 
     companion object Metadata: EnvironmentedScriptBackend_metadata() {

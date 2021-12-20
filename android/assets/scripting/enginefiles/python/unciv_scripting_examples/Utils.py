@@ -5,9 +5,12 @@ import unciv, unciv_pyhelpers
 
 RegistryKey = "python-package:Unciv/unciv_scripting_examples"
 
-unciv.apiHelpers.registeredInstances[RegistryKey] = {}
+registeredInstances = unciv.apiHelpers.registeredInstances
 
-memalloc = unciv.apiHelpers.registeredInstances[RegistryKey]
+if RegistryKey not in registeredInstances:
+	registeredInstances[RegistryKey] = {}
+
+memalloc = registeredInstances[RegistryKey]
 
 
 def singleton(*args, **kwargs):

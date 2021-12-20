@@ -55,7 +55,8 @@ object ModScriptingRunManager {
                     command = registeredHandler.code,
                     asName = name,
                     withParams = withParams,
-                    withBackend = registeredHandler.backend
+                    withBackend = registeredHandler.backend,
+                    allowWait = true
                 )
             } catch(e: Throwable) {
                 ScriptingErrorHandling.notifyPlayerScriptFailure(exception = e, asName = name)
@@ -107,6 +108,9 @@ object ModScriptingRunManager {
         } else {
             after()
         }
+    }
+
+    fun queueRuns() {
     }
 
     private fun lockGame() {

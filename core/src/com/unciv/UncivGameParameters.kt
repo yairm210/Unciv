@@ -14,5 +14,5 @@ class UncivGameParameters(val version: String,
                           val consoleMode: Boolean = false,
                           val customSaveLocationHelper: CustomSaveLocationHelper? = null,
                           val limitOrientationsHelper: LimitOrientationsHelper? = null,
-                          val runScriptAndExit: Triple<ScriptingBackendType, String, ((ExecResult) -> Unit)?>? = null
+                          val runScriptAndExit: Triple<ScriptingBackendType, String, ((ExecResult) -> Unit)?>? = null // TODO: Probably make exit optional? Or just make the scripts do it themselves.
 ) { }

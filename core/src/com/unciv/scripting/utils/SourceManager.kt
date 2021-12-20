@@ -9,7 +9,7 @@ import kotlin.concurrent.thread
 
 
 /**
- * Object for managing, and using (copying/instantiating) internal assets associated with each script interpreter engine type.
+ * Functions for managing, and using (copying/instantiating) internal assets and modded files associated with each script interpreter engine type.
  */
 object SourceManager {
 
@@ -52,4 +52,12 @@ object SourceManager {
         }
         return outdir
     }
+
+    fun applyModToInterpreterEnvironment( // It looks like mod loading is in RulesetCache?
+        modDir: FileHandle,
+        interpreterDir: FileHandle,
+        engine: String
+    ) { // https://github.com/yairm210/Unciv/pull/1825
+
+    } // TODO
 }

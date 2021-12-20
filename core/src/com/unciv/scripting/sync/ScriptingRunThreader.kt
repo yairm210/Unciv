@@ -8,9 +8,8 @@ import java.util.concurrent.Semaphore
 import kotlin.concurrent.thread
 
 // Utility to run multiple actions related to scripting in separate threads, but still sequentially.
-object ScriptingRunThreader {
+object ScriptingRunThreader { // TODO: Probably obsolete this whole class, right?
     private val runLock = Semaphore(1, true)
-    //// Should only ever be called from main thread actually, so fairness shouldn't matter. Nevermind. // Switched from AtomicBoolean to ReentrantLock, and now going to switch to a semaphore of some kind.
     private val runQueue = ConcurrentLinkedDeque<() -> Unit>()
     @Synchronized fun queueRun(toRun: () -> Unit) {
         if (ScriptingDebugParameters.printThreadingStatus) {
@@ -56,7 +55,7 @@ object ScriptingRunThreader {
     }
 }
 
-// When run the given function toRun, using the given concurrentRunner to run it, and block until it's done.
+// Run the given function toRun, using the given concurrentRunner to run it, and block until it's done.
 
 // @throws IllegalStateException If already on the main thread.
 fun blockingConcurrentRun(concurrentRunner: (Runnable) -> Unit, toRun: () -> Unit) {

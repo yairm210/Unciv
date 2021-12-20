@@ -8,17 +8,53 @@ object ModScriptingRegistrationManager {
 
     val activeMods = mutableSetOf<ScriptedModRules>()
 
-    init {
+    fun init() {
+//        registerMod(
+//            ScriptedModRules.fromJsonString(
+//                """
+//                    {
+//                        "name": "Test Mod",
+//                        "language": "pathcode",
+//                        "handlers": {
+//                            "ConsoleScreen": {
+//                                "after_open": {
+//                                    "background": ["examples", "get apiExecutionContext.handlerParameters", "get apiExecutionContext.scriptingBackend", "faef"]
+//                                }
+//                            }
+//                        }
+//                    }
+//                    """
+//            )
+//        )
+//        registerMod(
+//            ScriptedModRules.fromJsonString(
+//                """
+//                    {
+//                        "name": "Test Mod2",
+//                        "language": "python",
+//                        "handlers": {
+//                            "ConsoleScreen": {
+//                                "before_close": {
+//                                    "background": ["from unciv_scripting_examples.MapEditingMacros import *; (makeMandelbrot() if unciv.apiHelpers.isInGame else None)"],
+//                                    "foreground": ["from unciv_scripting_examples.EventPopup import *; (showEventPopup(**EVENT_POPUP_DEMOARGS()) if apiHelpers.isInGame else None)"]
+//                                }
+//                            }
+//                        }
+//                    }
+//                    """
+//            )
+//        )
         registerMod(
             ScriptedModRules.fromJsonString(
                 """
                     {
-                        "name": "Test Mod",
-                        "language": "pathcode",
+                        "name": "Test ModA",
+                        "language": "python",
                         "handlers": {
                             "ConsoleScreen": {
                                 "after_open": {
-                                    "background": ["examples", "get apiExecutionContext.handlerParameters", "get apiExecutionContext.scriptingBackend", "faef"]
+                                    "background": ["import time; time.sleep(1); 'Ab'", "import time; time.sleep(2); 'Ab'"],
+                                    "foreground": ["import time; time.sleep(1); 'Af'", "import time; time.sleep(2); 'Af'"]
                                 }
                             }
                         }
@@ -30,13 +66,13 @@ object ModScriptingRegistrationManager {
             ScriptedModRules.fromJsonString(
                 """
                     {
-                        "name": "Test Mod2",
+                        "name": "Test ModB",
                         "language": "python",
                         "handlers": {
                             "ConsoleScreen": {
-                                "before_close": {
-                                    "background": ["from unciv_scripting_examples.MapEditingMacros import *; (makeMandelbrot() if unciv.apiHelpers.isInGame else None)"],
-                                    "foreground": ["from unciv_scripting_examples.EventPopup import *; (showEventPopup(**EVENT_POPUP_DEMOARGS()) if apiHelpers.isInGame else None)"]
+                                "after_open": {
+                                    "background": ["import time; time.sleep(1); 'Bb'", "import time; time.sleep(2); 'Bb'"],
+                                    "foreground": ["import time; time.sleep(1); 'Bf'", "import time; time.sleep(2); 'Bf'"]
                                 }
                             }
                         }

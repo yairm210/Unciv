@@ -193,11 +193,11 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
             showWarningPopup()
         }
         ModScriptingRegistrationManager.activeMods
-        ModScriptingRunManager.runHandler(HANDLER_DEFINITIONS[ContextId.ConsoleScreen, HandlerId.after_open], this)
+//        ModScriptingRunManager.runHandler(HANDLER_DEFINITIONS[ContextId.ConsoleScreen, HandlerId.after_open], this)
     }
 
     fun closeConsole() {
-        ModScriptingRunManager.runHandler(HANDLER_DEFINITIONS[ContextId.ConsoleScreen, HandlerId.before_close], this)
+//        ModScriptingRunManager.runHandler(HANDLER_DEFINITIONS[ContextId.ConsoleScreen, HandlerId.before_close], this)
         closeAction()
         keyPressDispatcher.uninstall()
         this.isOpen = false
@@ -220,9 +220,10 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
                 updateRunning()
             }
             var termbutton = ImageGetter.getImage("OtherIcons/Stop")
-            val terminable = backend.userTerminable
+            val terminable = backend.userTerminable // Grey out if not terminable.
             if (!terminable) {
                 termbutton.setColor(0.7f, 0.7f, 0.7f, 0.3f)
+//                termbutton.color.a = 0.3f
             }
             termbutton.onClick {
                 if (backend.userTerminable) {
