@@ -1,3 +1,30 @@
+## 3.18.11
+
+Resolved mod dependencies leading to incompatible rulesets
+
+By will-ca:
+- Add new universal crash handlers and error reporting screen.
+- Refactor MiniMapHolder's little green map overlay toggle icons.
+
+By xlenstra:
+- Extended use for "in [tileFilter] tiles" conditionals
+- Replaced illegal / questionably legal assets
+- Fixed an infinite loop where mod units could upgrade to the unit they replaced
+
+Fixed warnings in linux desktop file - By touhidurrr
+
+## 3.18.10
+
+Sort Maintenance Using Fixed Point - By itanasi
+
+Moved Coal discovery back to industrialization - By xlenstra
+
+Improvements to TurnChecker data usage - By GGGuenni
+
+AI for Inquisitor and Missionary - By Interdice
+
+Add a couple missing template strings - By SimonCeder
+
 ## 3.18.9
 
 Uniques and conditionals for translating are taken directly from the uniquetypes

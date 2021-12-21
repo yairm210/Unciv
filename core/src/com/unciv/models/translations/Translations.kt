@@ -389,9 +389,9 @@ fun String.fillPlaceholders(vararg strings: String): String {
     if (keys.size > strings.size)
         throw Exception("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
 
-    var filledString = this
+    var filledString = this.replace(squareBraceRegex, "[]")
     for (i in keys.indices)
-        filledString = filledString.replaceFirst(keys[i], strings[i])
+        filledString = filledString.replaceFirst("[]", "[${strings[i]}]")
     return filledString
 }
 

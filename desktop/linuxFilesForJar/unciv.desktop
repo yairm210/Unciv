@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Comment=Open-source Android/Desktop remake of Civ V
 Exec=Unciv
 GenericName=4X Game
@@ -7,6 +6,6 @@ Icon=unciv
 Name=Unciv
 NoDisplay=false
 StartupNotify=true
-Terminal=0
+Terminal=false
 Type=Application
 Categories=Game
