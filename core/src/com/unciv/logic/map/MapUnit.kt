@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
+import kotlin.random.Random
 
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
@@ -116,6 +117,11 @@ class MapUnit {
     @Transient
     var hasUniqueToBuildImprovements = false    // not canBuildImprovements to avoid confusion
 
+    @Transient
+    /** Random integer for internal use. Shouldn't change. Not guaranteed to be unique. */
+    var randomnessSeed = Random.nextInt()
+        private set
+
     /** civName owning the unit */
     lateinit var owner: String
 
@@ -176,6 +182,7 @@ class MapUnit {
         toReturn.baseUnit = baseUnit
         toReturn.name = name
         toReturn.civInfo = civInfo
+        toReturn.randomnessSeed = randomnessSeed
         toReturn.owner = owner
         toReturn.originalOwner = originalOwner
         toReturn.instanceName = instanceName
