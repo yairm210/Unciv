@@ -12,8 +12,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
-class CrashScreen(message: String): BaseScreen() {
-    constructor(exception: Throwable): this(exception.stringify())
+class CrashScreen(val exception: Throwable): BaseScreen() {
 
     private companion object {
         fun Throwable.stringify(): String {
@@ -23,7 +22,7 @@ class CrashScreen(message: String): BaseScreen() {
         }
     }
 
-    val text = generateReportHeader() + message
+    val text = generateReportHeader() + exception.stringify()
     var copied = false
         private set
 
@@ -118,7 +117,7 @@ class CrashScreen(message: String): BaseScreen() {
             }
         val closeButton = "Close Unciv".toButton()
             .onClick {
-                Gdx.app.exit()
+                throw exception  // throw the original exception to allow crash recording on GP
             }
 
         val buttonsTable = Table()
