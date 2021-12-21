@@ -498,6 +498,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             payload.removeFromTile()
             payload.putInTile(lastReachableTile)
             payload.isTransported = true // restore the flag to not leave the payload in the cit
+            payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         }
 
         // Unit maintenance changed
