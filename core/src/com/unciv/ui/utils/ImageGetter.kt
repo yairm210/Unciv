@@ -28,6 +28,7 @@ import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
@@ -95,6 +96,42 @@ object ImageGetter {
                 val drawable = TextureRegionDrawable(region)
                 textureRegionDrawables[region.name] = drawable
             }
+        }
+    }
+
+    /**
+     * Get, where available, a random variant of an image.
+     *
+     * Variants are the base file name followed by a hyphen and then a single capital letter.
+     * Variants must be consecutively available in alphabetical order. The first variant that fails to be found terminates the search for further variants.
+     * The base file name itself is always treated as and can always be returned as an available variant.
+     *
+     * The return result is a string, so it can further be used with other image-getting functions, such as [getImage] and [getLayeredImageColored].
+     *
+     * Example: Mountain, Mountain-A, Mountain-B
+     * The selected variant can then be further used with [getLayeredImageColored]. E.G.: Mountain-A, Mountain-A-1, Mountain-A-2
+     *
+     * In some cases, it may be desirable to ensure that the same variant is chosen across different invocations.
+     * To do this, pass the same seed each time.
+     *
+     * @param baseFileName The filename of the base image.
+     * @param seed If given, a number with which different uses must always return the same variant.
+     * @return The path of a variant to use in the place of the base image.
+     */
+    fun getRandomImageVariant(baseFileName: String, seed: Int? = null): String {
+        val candidateNames = arrayListOf(baseFileName)
+        for (char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ") { // Usually I'd encode an incrementing integer in base 26. But as this could be run many times on every update, it's probably faster to loop through a literal.
+            val candidate = "$baseFileName-$char"
+            if (imageExists(candidate))
+                candidateNames.add(candidate)
+            else
+                break
+        }
+        return if (candidateNames.size == 1) { // Skip a couple function calls if no variants found.
+            baseFileName
+        } else {
+            val randomSource = if (seed == null) Random else Random(seed)
+            candidateNames[randomSource.nextInt(candidateNames.size)]
         }
     }
 
