@@ -28,12 +28,15 @@ open class BaseScreen : Screen {
 
     val keyPressDispatcher = KeyPressDispatcher(this.javaClass.simpleName)
 
+    /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
+    protected open fun makeStage(height: Float): Stage = CrashHandlingStage(ExtendViewport(height, height), SpriteBatch())
+    // Open method so CrashScreen can override the crash handling.
+
     init {
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
         val height = resolutions[1]
 
-        /** The ExtendViewport sets the _minimum_(!) world size - the actual world size will be larger, fitted to screen/window aspect ratio. */
-        stage = CrashHandlingStage(ExtendViewport(height, height), SpriteBatch())
+        stage = makeStage(height)
 
         if (enableSceneDebug) {
             stage.setDebugUnderMouse(true)

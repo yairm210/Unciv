@@ -1,11 +1,15 @@
 package com.unciv
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.utils.*
 import java.io.PrintWriter
@@ -13,7 +17,11 @@ import java.io.StringWriter
 
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
 class CrashScreen(message: String): BaseScreen() {
-    constructor(exception: Throwable): this(exception.stringify())
+    constructor(exception: Throwable): this(exception.stringify()) {
+        this.exception = exception
+    }
+
+    override fun makeStage(height: Float) = Stage(ExtendViewport(height, height), SpriteBatch()) // Override the use of CrashHandlingStage, so the exception can be re-thrown for Android analytics on the Close button.
 
     private companion object {
         fun Throwable.stringify(): String {
@@ -24,6 +32,8 @@ class CrashScreen(message: String): BaseScreen() {
     }
 
     val text = generateReportHeader() + message
+    var exception: Throwable? = null
+        private set
     var copied = false
         private set
 
@@ -118,7 +128,10 @@ class CrashScreen(message: String): BaseScreen() {
             }
         val closeButton = "Close Unciv".toButton()
             .onClick {
-                Gdx.app.exit()
+                if (Gdx.app.type == Application.ApplicationType.Android)
+                    throw exception!!
+                else
+                    Gdx.app.exit()
             }
 
         val buttonsTable = Table()
