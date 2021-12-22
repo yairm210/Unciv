@@ -120,7 +120,6 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         }
 
                         val canUnitReachTile = unit.movement.canReach(tile)
-                        // joel
                         if (canUnitReachTile) {
                             moveUnitToTargetTile(listOf(unit), tile)
                             return@thread
@@ -670,7 +669,6 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     private fun canUnitMoveThere(){
         println("yes")
-        // joel
     }
 
     // For debugging purposes
