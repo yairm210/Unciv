@@ -922,6 +922,12 @@ open class TileInfo {
         this.continent = continent
     }
 
+    fun getUnitNotOfType(unit: MapUnit): MapUnit? {
+        return if (unit.isCivilian())
+            militaryUnit
+        else civilianUnit
+    }
+
     /** Clear continent ID, for map editor */
     fun clearContinent() { continent = -1 }
 

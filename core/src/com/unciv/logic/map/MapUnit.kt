@@ -170,6 +170,8 @@ class MapUnit {
     var religion: String? = null
     var religiousStrengthLost = 0
 
+    var isLinked = false
+
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
@@ -189,6 +191,7 @@ class MapUnit {
         toReturn.maxAbilityUses.putAll(maxAbilityUses)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
+        toReturn.isLinked = isLinked
         return toReturn
     }
 

@@ -98,6 +98,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 override fun clicked(event: InputEvent?, x: Float, y: Float) {
                     val unit = worldScreen.bottomUnitTable.selectedUnit
                         ?: return
+                    val linkedUnit = unit.currentTile.getUnitNotOfType(unit)
+
                     thread {
                         val tile = tileGroup.tileInfo
 
@@ -118,6 +120,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         }
 
                         val canUnitReachTile = unit.movement.canReach(tile)
+                        // joel
                         if (canUnitReachTile) {
                             moveUnitToTargetTile(listOf(unit), tile)
                             return@thread
@@ -663,6 +666,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         for (overlay in unitActionOverlays)
             overlay.remove()
         unitActionOverlays.clear()
+    }
+
+    private fun canUnitMoveThere(){
+        println("yes")
+        // joel
     }
 
     // For debugging purposes
