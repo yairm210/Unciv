@@ -339,29 +339,31 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }).row()
         val unlockTechsButton = "Unlock all techs".toTextButton()
         unlockTechsButton.onClick {
-            if (game.isGameInfoInitialized()) {
-                for (tech in game.gameInfo.ruleSet.technologies.keys) {
-                    if (tech !in game.gameInfo.getCurrentPlayerCivilization().tech.techsResearched) {
-                        game.gameInfo.getCurrentPlayerCivilization().tech.addTechnology(tech)
-                        game.gameInfo.getCurrentPlayerCivilization().popupAlerts.removeLastOrNull()
-                    }
+            if (!game.isGameInfoInitialized())
+                return@onClick
+            for (tech in game.gameInfo.ruleSet.technologies.keys) {
+                if (tech !in game.gameInfo.getCurrentPlayerCivilization().tech.techsResearched) {
+                    game.gameInfo.getCurrentPlayerCivilization().tech.addTechnology(tech)
+                    game.gameInfo.getCurrentPlayerCivilization().popupAlerts.removeLastOrNull()
                 }
-                game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
-                game.worldScreen.shouldUpdate = true
             }
+            game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
+            game.worldScreen.shouldUpdate = true
         }
         add(unlockTechsButton).row()
         val giveResourcesButton = "Give all strategic resources".toTextButton()
         giveResourcesButton.onClick {
-            if (game.isGameInfoInitialized()) {
-                for ((tile, resource) in game.gameInfo.tileMap.values.asSequence().filter { it.getOwner() == game.gameInfo.getCurrentPlayerCivilization() } zip game.gameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic } ) {
-                    tile.resource = resource.name
-                    tile.resourceAmount = 999
-                    tile.improvement = resource.improvement
-                }
-                game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
-                game.worldScreen.shouldUpdate = true
+            if (!game.isGameInfoInitialized())
+                return@onClick
+            val ownedTiles = game.gameInfo.tileMap.values.asSequence().filter { it.getOwner() == game.gameInfo.getCurrentPlayerCivilization() }
+            val resourceTypes = game.gameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }
+            for ((tile, resource) in ownedTiles zip resourceTypes) {
+                tile.resource = resource.name
+                tile.resourceAmount = 999
+                tile.improvement = resource.improvement
             }
+            game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
+            game.worldScreen.shouldUpdate = true
         }
         add(giveResourcesButton).row()
     }
