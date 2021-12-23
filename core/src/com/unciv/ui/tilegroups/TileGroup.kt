@@ -580,7 +580,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
             arrows[targetTile]!!.add(arrowImage)
             miscLayerGroup.addActor(arrowImage)
-            // FIXME: Occluded when too large and panned away.
+            // FIXME: Culled when too large and panned away.
             // https://libgdx.badlogicgames.com/ci/nightlies/docs/api/com/badlogic/gdx/scenes/scene2d/utils/Cullable.html
             // .getCullingArea returns null for both miscLayerGroup and worldMapHolder. Don't know where it's happening. Somewhat rare, and fixing it may have a hefty performance cost.
         }

@@ -451,35 +451,37 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     /**
-     * Add arrows to show all past and planned movements and attacks, if the the options setting to do so is enabled.
+     * Add arrows to show all past and planned movements and attacks, if the options setting to do so is enabled.
      *
      * @param pastVisibleUnits Sequence of [MapUnit]s for which the last turn's movement history can be displayed.
      * @param targetVisibleUnits Sequence of [MapUnit]s for which the active movement target can be displayed.
      * @param visibleAttacks Sequence of pairs of MapUnits to the target coordinates of attacks that they have done and can be displayed.
      * */
     internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<MapUnit, Vector2>>) {
-        if (UncivGame.Current.settings.showUnitMovements) {
-            for (unit in pastVisibleUnits) {
-                if (unit.movementMemories.isNotEmpty()) {
-                    val stepIter = unit.movementMemories.iterator()
-                    var previous = stepIter.next()
-                    while (stepIter.hasNext()) {
-                        val next = stepIter.next()
-                        addArrow(tileMap[previous.position], tileMap[next.position], next.type)
-                        previous = next
-                    }
-                    addArrow(tileMap[previous.position], unit.getTile(),  unit.mostRecentMoveType)
-                }
+        if (!UncivGame.Current.settings.showUnitMovements) {
+            return
+        }
+        for (unit in pastVisibleUnits) {
+            if (unit.movementMemories.isEmpty()) {
+                continue
             }
-            for (unit in targetVisibleUnits) {
-                if (!unit.isMoving())
-                    continue
-                val toTile = unit.getMovementDestination()
-                addArrow(unit.getTile(), toTile, MiscArrowTypes.UnitMoving)
+            val stepIter = unit.movementMemories.iterator()
+            var previous = stepIter.next()
+            while (stepIter.hasNext()) {
+                val next = stepIter.next()
+                addArrow(tileMap[previous.position], tileMap[next.position], next.type)
+                previous = next
             }
-            for ((from, to) in visibleAttacks) {
-                addArrow(tileMap[from.getTile().position], tileMap[to], MiscArrowTypes.UnitHasAttacked)
-            }
+            addArrow(tileMap[previous.position], unit.getTile(),  unit.mostRecentMoveType)
+        }
+        for (unit in targetVisibleUnits) {
+            if (!unit.isMoving())
+                continue
+            val toTile = unit.getMovementDestination()
+            addArrow(unit.getTile(), toTile, MiscArrowTypes.UnitMoving)
+        }
+        for ((from, to) in visibleAttacks) {
+            addArrow(tileMap[from.getTile().position], tileMap[to], MiscArrowTypes.UnitHasAttacked)
         }
     }
 
