@@ -928,6 +928,8 @@ class CivilizationInfo {
     fun mayVoteForDiplomaticVictory() =
         getTurnsTillNextDiplomaticVote() == 0 
         && civName !in gameInfo.diplomaticVictoryVotesCast.keys
+        // Only vote if there is someone to vote for, may happen in one-more-turn mode
+        && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     fun diplomaticVoteForCiv(chosenCivName: String?) {
         if (chosenCivName != null) gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
@@ -935,10 +937,12 @@ class CivilizationInfo {
 
     fun shouldShowDiplomaticVotingResults() =
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
+         && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     // Yes, this is the same function as above, but with a different use case so it has a different name.
     fun shouldCheckForDiplomaticVictory() =
         flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
+        && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
