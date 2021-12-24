@@ -667,6 +667,27 @@ class CivilizationInfo {
     }
     fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
+    fun calculateScore(): Int {
+        // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
+        // but they have bigger maps
+        var mapSizeModifier = 1276.0 / gameInfo.tileMap.mapParameters.numberOfTiles()
+        if (mapSizeModifier > 1)
+            mapSizeModifier = (mapSizeModifier - 1) / 3 + 1
+        
+        var score = 0.0
+        score += cities.count() * 10 * mapSizeModifier
+        score += cities.sumOf { it.population.population } * 3 * mapSizeModifier
+        score += cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
+        score += 40 * cities
+            .sumOf { city -> city.cityConstructions.builtBuildings
+                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.count() 
+            }
+        score += tech.getNumberOfTechsResearched() * 4
+        score += tech.repeatingTechsResearched * 10
+        
+        return score.toInt()
+    }
+    
     //endregion
 
     //region state-changing functions
