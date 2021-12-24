@@ -578,7 +578,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
     * [royal crown](https://thenounproject.com/term/royal-crown/2054222/) by Vectors Market
     * [Spear](https://thenounproject.com/term/spear/3930020/) by Firza Alamsyah
     * [pennant](https://thenounproject.com/term/pennant/194797/) by Sara Jeffries
-* [Maya civilization](https://thenounproject.com/term/maya-civilization/1715786/) by Olena Panasovska for The Maya
+* [Maya](https://github.com/ravignir/RekMOD/blob/master/Images/NationIcons/The%20Maya.png) by Ravignir for The Maya
 
 ## Promotions
 
