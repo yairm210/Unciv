@@ -38,11 +38,10 @@ class GameOptionsTable(
         defaults().pad(5f)
 
         // We assign this first to make sure addBaseRulesetSelectBox doesn't reference a null object
-        if (isPortrait) {
-            modCheckboxes = getModCheckboxes(isPortrait = true)
-        } else {
-            modCheckboxes = getModCheckboxes()
-        }
+        modCheckboxes = 
+            if (isPortrait) 
+                getModCheckboxes(isPortrait = true)
+            else getModCheckboxes()
 
         add(Table().apply {
             defaults().pad(5f)
@@ -50,12 +49,14 @@ class GameOptionsTable(
             addDifficultySelectBox()
             addGameSpeedSelectBox()
             addEraSelectBox()
+            addMaxTurnsSelectBox()
             // align left and right edges with other SelectBoxes but allow independent dropdown width
             add(Table().apply {
                 cityStateSlider = addCityStatesSlider()
             }).colspan(2).fillX().row()
         }).row()
         addVictoryTypeCheckboxes()
+        
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         checkboxTable.addNoBarbariansCheckbox()
@@ -205,6 +206,13 @@ class GameOptionsTable(
         { gameParameters.startingEra = it; null }
     }
 
+    private fun Table.addMaxTurnsSelectBox() {
+        if (!gameParameters.victoryTypes.contains(VictoryType.Time)) return
+        
+        val maxTurns = listOf(450,500,550,600,650,700,750,800,850,900,950,1000,1100,1250,1350,1500).map { it.toString() }
+        addSelectBox( "{Max Turns}:", maxTurns, gameParameters.maxTurns.toString())
+        { gameParameters.maxTurns = it.toInt(); null }
+    }
 
     private fun addVictoryTypeCheckboxes() {
         add("{Victory Conditions}:".toLabel()).colspan(2).row()
@@ -221,6 +229,9 @@ class GameOptionsTable(
                 } else {
                     gameParameters.victoryTypes.remove(victoryType)
                 }
+                // show or hide the max turns select box
+                if (victoryType == VictoryType.Time)
+                    update()
             }
             victoryCheckbox.name = victoryType.name
             victoryCheckbox.isDisabled = locked

@@ -34,6 +34,8 @@ class GameParameters { // Default values are the default new game
     var isOnlineMultiplayer = false
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
+    
+    var maxTurns = 550
 
     fun clone(): GameParameters {
         val parameters = GameParameters()

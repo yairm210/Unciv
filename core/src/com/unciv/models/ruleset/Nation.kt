@@ -20,6 +20,7 @@ enum class VictoryType {
     Diplomatic,
     Domination,
     Scientific,
+    Time,
 }
 
 class Nation : RulesetObject() {
