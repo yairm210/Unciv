@@ -209,7 +209,7 @@ class GameOptionsTable(
     private fun Table.addMaxTurnsSelectBox() {
         if (!gameParameters.victoryTypes.contains(VictoryType.Time)) return
         
-        val maxTurns = listOf(450,500,550,600,650,700,750,800,850,900,950,1000,1100,1250,1350,1500).map { it.toString() }
+        val maxTurns = listOf(250,300,350,400,450,500,550,600,650,700,750,800,900,1000,1250,1500,2000).map { it.toString() }
         addSelectBox( "{Max Turns}:", maxTurns, gameParameters.maxTurns.toString())
         { gameParameters.maxTurns = it.toInt(); null }
     }

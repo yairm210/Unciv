@@ -79,6 +79,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun wonOrLost(description: String) {
         // description will be empty when the player loses - no parameters - so this will be when(null) and end up in the else branch:
         val endGameMessage = when (description.getPlaceholderParameters().firstOrNull()) {
+            VictoryType.Time.name -> "The world has been convulsed by war. Many great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!"
             VictoryType.Cultural.name -> "You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart."
             VictoryType.Domination.name -> "The world has been convulsed by war. Many great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!"
             VictoryType.Scientific.name -> "You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!"

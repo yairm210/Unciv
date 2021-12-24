@@ -27,7 +27,7 @@ class GameParameters { // Default values are the default new game
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
 
-    // By default, all victory types except Diplomacy as it is quite new
+    // By default, all victory types except Diplomacy and time as they are quite new
     var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)  
     var startingEra = "Ancient era"
 
@@ -35,7 +35,7 @@ class GameParameters { // Default values are the default new game
     var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
     
-    var maxTurns = 550
+    var maxTurns = 500
 
     fun clone(): GameParameters {
         val parameters = GameParameters()
