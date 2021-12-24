@@ -136,12 +136,12 @@ class GameOptionsTable(
         if (!gameParameters.victoryTypes.contains(VictoryType.Time)) return null
 
         add("{Max Turns}:".toLabel()).left().expandX()
-        val slider = UncivSlider(250f, 2000f, 25f) {
+        val slider = UncivSlider(250f, 1500f, 50f) {
             gameParameters.maxTurns = it.toInt()
         }
         slider.permanentTip = true
         slider.isDisabled = locked
-        val snapValues = floatArrayOf(250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f,2000f)
+        val snapValues = floatArrayOf(250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
         slider.setSnapToValues(snapValues, 250f)
         slider.value = gameParameters.maxTurns.toFloat()
         return slider
