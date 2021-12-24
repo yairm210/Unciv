@@ -13,10 +13,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSpeed
-import com.unciv.models.ruleset.Difficulty
-import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -209,6 +206,7 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
             if (currentPlayerIndex == 0) {
                 turns++
+                checkForTimeVictory()
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -285,6 +283,17 @@ class GameInfo {
                 enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= city.range }
                 }
         )
+    }
+    
+    private fun checkForTimeVictory() {
+        if (turns != gameParameters.maxTurns || !gameParameters.victoryTypes.contains(VictoryType.Time)) return
+        
+        val winningCiv = civilizations
+            .filter { it.isMajorCiv() && !it.isSpectator() && !it.isBarbarian() }
+            .maxByOrNull { it.calculateScore() } 
+            ?: return // Are there no civs left?
+        
+        winningCiv.victoryManager.hasWonTimeVictory = true
     }
 
     private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
