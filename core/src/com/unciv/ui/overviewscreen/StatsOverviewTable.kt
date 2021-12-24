@@ -142,7 +142,7 @@ class StatsOverviewTable (
         scoreTable.add(scoreTableHeader).colspan(2).row()
         scoreTable.addSeparator()
         
-        val scoreBreakdown = viewingPlayer.calculateScoreBreakdown()
+        val scoreBreakdown = viewingPlayer.calculateScoreBreakdown().filter { it.value != 0.0 }
         for ((label, value) in scoreBreakdown) {
             scoreTable.add(label.toLabel())
             scoreTable.add(value.toInt().toLabel()).row()
