@@ -2,13 +2,15 @@ package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
 /**
- * A widget containing two expanders, one for base mods, one for extension mods.
+ * A widget containing one expander for extension mods. 
+ * Manages compatibility checks, warns or prevents incompatibilities.
  * 
  * @param mods In/out set of active mods, modified in place
  * @param baseRuleset The selected base Ruleset //todo clarify
@@ -28,10 +30,11 @@ class ModCheckboxTable(
     private val extensionRulesetModButtons = ArrayList<CheckBox>()
 
     init {
+
         for (mod in modRulesets.sortedBy { it.name }) {
             val checkBox = mod.name.toCheckBox(mod.name in mods)
             checkBox.onChange {
-                if (checkBoxChanged(checkBox, mod)) {
+                if (checkBoxChanged(checkBox, it!!, mod)) {
                     onUpdate(mod.name)
                 }
             }
@@ -55,7 +58,22 @@ class ModCheckboxTable(
         }
     }
 
-    private fun checkBoxChanged(checkBox: CheckBox, mod: Ruleset): Boolean {
+
+    fun popupToastError(rulesetErrorList:Ruleset.RulesetErrorList) {
+        val initialText =
+            if (rulesetErrorList.isError()) "The mod combination you selected is incorrectly defined!".tr()
+            else "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr()
+        val toastMessage =  "$initialText\n\n${rulesetErrorList.getErrorText()}"
+
+        lastToast?.close()
+        lastToast = ToastPopup(toastMessage, screen, 5000L)
+    }
+
+    private fun checkBoxChanged(
+        checkBox: CheckBox,
+        changeEvent: ChangeListener.ChangeEvent,
+        mod: Ruleset
+    ): Boolean {
         if (checkBox.isChecked) {
             // First the quick standalone check
             val modLinkErrors = mod.checkModLinks()
@@ -64,7 +82,7 @@ class ModCheckboxTable(
                 val toastMessage =
                     "The mod you selected is incorrectly defined!".tr() + "\n\n${modLinkErrors.getErrorText()}"
                 lastToast = ToastPopup(toastMessage, screen, 5000L)
-                checkBox.isChecked = false
+                changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()
                 return false
             }
 
@@ -73,23 +91,31 @@ class ModCheckboxTable(
             // Check over complete combination of selected mods
             val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods, baseRuleset)
             if (complexModLinkCheck.isWarnUser()) {
-                lastToast?.close()
-                val toastMessage = (
-                    if (complexModLinkCheck.isError()) "The mod combination you selected is incorrectly defined!".tr()
-                    else "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr()
-                ) + 
-                    "\n\n${complexModLinkCheck.getErrorText()}"
-                
-                lastToast = ToastPopup(toastMessage, screen, 5000L)
-
+                popupToastError(complexModLinkCheck)
                 if (complexModLinkCheck.isError()) {
-                    checkBox.isChecked = false
+                    changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()
+                    mods.remove(mod.name)
                     return false
                 }
             }
 
         } else {
+            /**
+             * Turns out we need to check ruleset when REMOVING a mod as well, since if mod A references something in mod B (like a promotion),
+             *   and then we remove mod B, then the entire ruleset is now broken!
+             */
+
             mods.remove(mod.name)
+            val complexModLinkCheck = RulesetCache.checkCombinedModLinks(mods, baseRuleset)
+            if (complexModLinkCheck.isWarnUser()) {
+                popupToastError(complexModLinkCheck)
+                if (complexModLinkCheck.isError()) {
+                    changeEvent.cancel() // Cancel event to reset to previous state - see Button.setChecked()
+                    mods.add(mod.name)
+                    return false
+                }
+            }
+
         }
 
         return true

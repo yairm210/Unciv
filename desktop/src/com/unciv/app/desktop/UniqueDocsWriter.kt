@@ -56,7 +56,7 @@ class UniqueDocsWriter {
                 lines += "#### $uniqueText"
                 if (uniqueType.text.contains('['))
                     lines += "Example: \"${replaceExamples(uniqueText)}\"\n"
-                lines += "Applicable to: " + uniqueType.targetTypes.joinToString()
+                lines += "Applicable to: " + uniqueType.targetTypes.sorted().joinToString()
                 lines += ""
             }
         }

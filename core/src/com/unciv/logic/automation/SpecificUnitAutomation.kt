@@ -300,7 +300,8 @@ object SpecificUnitAutomation {
         val destination = cities.getTiles().asSequence()
             .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
             .filter { unit.movement.canMoveTo(it) }
-            .minByOrNull { it.aerialDistanceTo(unit.currentTile) }
+            .sortedBy { it.aerialDistanceTo(unit.currentTile) }
+            .firstOrNull { unit.movement.canReach(it) }
 
 
         if (destination != null) {
@@ -311,7 +312,7 @@ object SpecificUnitAutomation {
             doReligiousAction(unit, unit.getTile())
     }
 
-    fun automateInquisitor(unit: MapUnit){
+    fun automateInquisitor(unit: MapUnit) {
         val cityToConvert = unit.civInfo.cities.asSequence()
             .filterNot { it.religion.getMajorityReligion()?.name == null }
             .filterNot { it.religion.getMajorityReligion()?.name == unit.religion }
@@ -319,33 +320,34 @@ object SpecificUnitAutomation {
 
         val cityToProtect = unit.civInfo.cities.asSequence()
             .filter { it.religion.getMajorityReligion()?.name == unit.religion }
-            .filter { isInquisitorInTheCity(it, unit)}
+            .filter { isInquisitorInTheCity(it, unit) }
             .maxByOrNull { it.population.population }  // cities with most populations will be prioritized by the AI
 
         var destination: TileInfo? = null
 
-        if (cityToProtect != null){
+        if (cityToProtect != null) {
             destination = cityToProtect.getCenterTile().neighbors.asSequence()
-                    .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
-                    .filter { unit.movement.canMoveTo(it) }
-                    .minByOrNull { it.aerialDistanceTo(unit.currentTile) }
+                .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
+                .filter { unit.movement.canMoveTo(it) }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
+                .firstOrNull { unit.movement.canReach(it) }
         }
-        if (destination == null){
+        if (destination == null) {
             if (cityToConvert == null) return
             destination = cityToConvert.getCenterTile().neighbors.asSequence()
                 .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
                 .filter { unit.movement.canMoveTo(it) }
-                .minByOrNull { it.aerialDistanceTo(unit.currentTile) }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
+                .firstOrNull { unit.movement.canReach(it) }
         }
 
         if (destination != null)
             unit.movement.headTowards(destination)
 
 
-        if (cityToConvert != null && unit.currentTile.getCity() == destination!!.getCity()){
+        if (cityToConvert != null && unit.currentTile.getCity() == destination!!.getCity()) {
             doReligiousAction(unit, destination)
         }
-
 
     }
 

@@ -18,7 +18,7 @@
 #### [stats]
 Example: "[+1 Gold, +2 Production]"
 
-Applicable to: Improvement, Global, FollowerBelief
+Applicable to: Global, FollowerBelief, Improvement
 
 #### [stats] [cityFilter]
 Example: "[+1 Gold, +2 Production] [in all cities]"
@@ -88,7 +88,7 @@ Applicable to: Global
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
 
-Applicable to: Resource, Global, FollowerBelief
+Applicable to: Global, FollowerBelief, Resource
 
 #### [amount]% Production when constructing [buildingFilter] buildings [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] buildings [in all cities]"
@@ -218,25 +218,25 @@ Applicable to: Global
 #### [amount]% Strength
 Example: "[20]% Strength"
 
-Applicable to: Unit, Global
+Applicable to: Global, Unit
 
 #### [amount] Movement
 Example: "[20] Movement"
 
-Applicable to: Unit, Global
+Applicable to: Global, Unit
 
 #### [amount] Sight
 Example: "[20] Sight"
 
-Applicable to: Unit, Global, Terrain
+Applicable to: Global, Unit, Terrain
 
 #### [amount]% Spread Religion Strength
 Example: "[20]% Spread Religion Strength"
 
-Applicable to: Unit, Global
+Applicable to: Global, Unit
 
 #### Normal vision when embarked
-Applicable to: Unit, Global
+Applicable to: Global, Unit
 
 #### Free [baseUnitFilter] appears
 Example: "Free [Melee] appears"
@@ -344,38 +344,38 @@ Applicable to: Building
 #### Consumes [amount] [resource]
 Example: "Consumes [20] [Iron]"
 
-Applicable to: Unit, Improvement, Building
+Applicable to: Building, Unit, Improvement
 
 #### Provides [amount] [resource]
 Example: "Provides [20] [Iron]"
 
-Applicable to: Improvement, Building
+Applicable to: Building, Improvement
 
 #### Unbuildable
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Cannot be purchased
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Can be purchased with [stat] [cityFilter]
 Example: "Can be purchased with [Culture] [in all cities]"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Can be purchased for [amount] [stat] [cityFilter]
 Example: "Can be purchased for [20] [Culture] [in all cities]"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Limited to [amount] per Civilization
 Example: "Limited to [20] per Civilization"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Hidden until [amount] social policy branches have been completed
 Example: "Hidden until [20] social policy branches have been completed"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Cost increases by [amount] per owned city
 Example: "Cost increases by [20] per owned city"
@@ -400,7 +400,7 @@ Applicable to: Building
 #### Not displayed as an available construction without [buildingName/tech/resource/policy]
 Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Must be on [terrainFilter]
 Example: "Must be on [Grassland]"
@@ -426,12 +426,12 @@ Applicable to: Building
 Applicable to: Building
 
 #### Hidden when religion is disabled
-Applicable to: Unit, Ruins, Building
+Applicable to: Building, Unit, Ruins
 
 #### Hidden when [victoryType] Victory is disabled
 Example: "Hidden when [victoryType] Victory is disabled"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 ## Unit uniques
 #### Founds a new city
@@ -607,7 +607,7 @@ Applicable to: Terrain
 Applicable to: Terrain
 
 #### Tile provides yield without assigned population
-Applicable to: Improvement, Terrain
+Applicable to: Terrain, Improvement
 
 #### Nullifies all other stats this tile provides
 Applicable to: Terrain
@@ -667,7 +667,7 @@ Example: "Considered [terrainQuality] when determining start locations"
 Applicable to: Terrain
 
 #### Doesn't generate naturally
-Applicable to: Resource, Terrain
+Applicable to: Terrain, Resource
 
 #### Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]
 Example: "Occurs at temperature between [20] and [20] and humidity between [20] and [20]"

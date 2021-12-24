@@ -240,4 +240,11 @@ class MapParameters {
         yield(", {Biome areas extension}=$tilesPerBiomeArea")
         yield(", {Water level}=" + waterThreshold.niceToString(2))
     }.joinToString("")
+    
+    fun numberOfTiles() =
+        if (shape == MapShape.hexagonal) {
+            1 + 3 * mapSize.radius * (mapSize.radius - 1)
+        } else {
+            mapSize.width * mapSize.height
+        }
 }
