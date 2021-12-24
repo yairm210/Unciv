@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
 
@@ -13,7 +12,6 @@ class StatsOverviewTable (
     private val viewingPlayer: CivilizationInfo,
     private val overviewScreen: EmpireOverviewScreen
 ) : Table() {
-    //val game = overviewScreen.game
 
     init {
         defaults().pad(40f)
@@ -21,6 +19,7 @@ class StatsOverviewTable (
         add(getGoldTable()).top()
         add(getScienceTable()).top()
         add(getGreatPeopleTable()).top()
+        add(getScoreTable()).top()
     }
 
     private fun getHappinessTable(): Table {
@@ -35,10 +34,10 @@ class StatsOverviewTable (
         val happinessBreakdown = viewingPlayer.stats().getHappinessBreakdown()
 
         for (entry in happinessBreakdown.filterNot { it.value.roundToInt()==0 }) {
-            happinessTable.add(entry.key.tr())
+            happinessTable.add(entry.key.toLabel())
             happinessTable.add(entry.value.roundToInt().toString()).right().row()
         }
-        happinessTable.add("Total".tr())
+        happinessTable.add("Total".toLabel())
         happinessTable.add(happinessBreakdown.values.sum().roundToInt().toString()).right()
         happinessTable.pack()
         return happinessTable
@@ -55,11 +54,11 @@ class StatsOverviewTable (
         var total = 0f
         for (entry in viewingPlayer.stats().getStatMapForNextTurn()) {
             if (entry.value.gold == 0f) continue
-            goldTable.add(entry.key.tr())
+            goldTable.add(entry.key.toLabel())
             goldTable.add(entry.value.gold.roundToInt().toString()).right().row()
             total += entry.value.gold
         }
-        goldTable.add("Total".tr())
+        goldTable.add("Total".toLabel())
         goldTable.add(total.roundToInt().toString()).right()
 
         if (viewingPlayer.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience)) {
@@ -93,10 +92,10 @@ class StatsOverviewTable (
         val scienceStats = viewingPlayer.stats().getStatMapForNextTurn()
             .filter { it.value.science != 0f }
         for (entry in scienceStats) {
-            scienceTable.add(entry.key.tr())
+            scienceTable.add(entry.key.toLabel())
             scienceTable.add(entry.value.science.roundToInt().toString()).right().row()
         }
-        scienceTable.add("Total".tr())
+        scienceTable.add("Total".toLabel())
         scienceTable.add(scienceStats.map { it.value.science }.sum().roundToInt().toString()).right()
         scienceTable.pack()
         return scienceTable
@@ -114,23 +113,43 @@ class StatsOverviewTable (
         greatPeopleTable.add(greatPeopleHeader).colspan(3).row()
         greatPeopleTable.addSeparator()
         greatPeopleTable.add()
-        greatPeopleTable.add("Current points".tr())
-        greatPeopleTable.add("Points per turn".tr()).row()
+        greatPeopleTable.add("Current points".toLabel())
+        greatPeopleTable.add("Points per turn".toLabel()).row()
 
         val greatPersonPoints = viewingPlayer.greatPeople.greatPersonPointsCounter
         val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn()
         val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
 
         for((greatPerson, points) in greatPersonPoints) {
-            greatPeopleTable.add(greatPerson.tr())
+            greatPeopleTable.add(greatPerson.toLabel())
             greatPeopleTable.add("$points/$pointsToGreatPerson")
             greatPeopleTable.add(greatPersonPointsPerTurn[greatPerson].toString()).row()
         }
         val pointsForGreatGeneral = viewingPlayer.greatPeople.greatGeneralPoints
         val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneral
-        greatPeopleTable.add("Great General".tr())
+        greatPeopleTable.add("Great General".toLabel())
         greatPeopleTable.add("$pointsForGreatGeneral/$pointsForNextGreatGeneral").row()
         greatPeopleTable.pack()
         return greatPeopleTable
+    }
+    
+    private fun getScoreTable(): Table {
+        val scoreTableHeader = Table(BaseScreen.skin)
+        scoreTableHeader.add("Score".toLabel(fontSize = 24)).padBottom(6f)
+        
+        val scoreTable = Table(BaseScreen.skin)
+        scoreTable.defaults().pad(5f)
+        scoreTable.add(scoreTableHeader).colspan(2).row()
+        scoreTable.addSeparator()
+        
+        val scoreBreakdown = viewingPlayer.calculateScoreBreakdown()
+        for ((label, value) in scoreBreakdown) {
+            scoreTable.add(label.toLabel())
+            scoreTable.add(value.toInt().toLabel()).row()
+        }
+        
+        scoreTable.add("Total".toLabel())
+        scoreTable.add(scoreBreakdown.values.sum().toInt().toLabel())
+        return scoreTable
     }
 }
