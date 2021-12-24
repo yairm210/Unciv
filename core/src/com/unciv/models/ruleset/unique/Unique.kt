@@ -88,16 +88,16 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalBelowHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalInTiles ->
-                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0]))
-                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0]))
+                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo))
+                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0], state.civInfo))
             UniqueType.ConditionalFightingInTiles ->
-                state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0])
+                state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo)
             UniqueType.ConditionalInTilesAnd ->
-                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0]) && state.attackedTile.matchesFilter(condition.params[1]))
-                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0]) && state.unit.getTile().matchesFilter(condition.params[1]))
+                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo) && state.attackedTile.matchesFilter(condition.params[1], state.civInfo))
+                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0], state.civInfo) && state.unit.getTile().matchesFilter(condition.params[1], state.civInfo))
             UniqueType.ConditionalInTilesNot ->
-                state.attackedTile != null && !state.attackedTile.matchesFilter(condition.params[0])
-                || (state.unit != null && !state.unit.getTile().matchesFilter(condition.params[0]))
+                state.attackedTile != null && !state.attackedTile.matchesFilter(condition.params[0], state.civInfo)
+                || (state.unit != null && !state.unit.getTile().matchesFilter(condition.params[0], state.civInfo))
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
