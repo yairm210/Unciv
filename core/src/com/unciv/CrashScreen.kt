@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.utils.*
 import java.io.PrintWriter
 import java.io.StringWriter
+import kotlin.concurrent.thread
 
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
 class CrashScreen(val exception: Throwable): BaseScreen() {
@@ -38,6 +39,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     init {
         println(text) // Also print to system terminal.
+        thread { throw exception } // this is so the GPC logs catch the exception
         stage.addActor(makeLayoutTable())
     }
 
