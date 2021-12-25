@@ -19,6 +19,8 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
@@ -63,6 +65,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
+    val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
     private val minimapWrapper = MinimapHolder(mapHolder)
@@ -399,6 +402,15 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         keyPressDispatcher.revertToCheckPoint()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
+
+        mapHolder.resetArrows()
+        val allUnits = gameInfo.civilizations.asSequence().flatMap { it.getCivUnits() }
+        val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> unit to attacked } }.flatten()
+        mapHolder.updateMovementOverlay(
+            allUnits.filter(mapVisualization::isUnitPastVisible),
+            allUnits.filter(mapVisualization::isUnitFutureVisible),
+            allAttacks.filter { (attacker, target) -> mapVisualization.isAttackVisible(attacker, target) }
+        )
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder

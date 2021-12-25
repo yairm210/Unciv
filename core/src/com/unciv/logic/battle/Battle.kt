@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
@@ -10,6 +11,8 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.UnitActionType
+import com.unciv.models.helpers.UnitMovementMemoryType
+
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
@@ -57,6 +60,9 @@ object Battle {
                     defender.getCivInfo().civName + " " + defender.getName())
         }
         val attackedTile = defender.getTile()
+        if (attacker is MapUnitCombatant) {
+            attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position))
+        }
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isAirUnit()) {
             tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo())
@@ -369,6 +375,7 @@ object Battle {
             // are exempt from zone of control, since units that cannot move after attacking already
             // lose all remaining movement points anyway.
             attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
+            attacker.unit.mostRecentMoveType = UnitMovementMemoryType.UnitAttacked
         }
     }
 
@@ -899,6 +906,7 @@ object Battle {
         // NOT defender.unit.movement.moveToTile(toTile) - we want a free teleport
         defender.unit.removeFromTile()
         defender.unit.putInTile(toTile)
+        defender.unit.mostRecentMoveType = UnitMovementMemoryType.UnitWithdrew
         // and count 1 attack for attacker but leave it in place
         reduceAttackerMovementPointsAndAttacks(attacker, defender)
 
