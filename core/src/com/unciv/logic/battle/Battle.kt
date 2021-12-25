@@ -40,7 +40,7 @@ object Battle {
              */
             if (attacker.unit.currentMovement == 0f)
                 return
-            if (attacker.unit.hasUnique(UniqueType.MustSetUp) && !attacker.unit.isSetUpForSiege()) {
+            if (attacker.hasUnique(UniqueType.MustSetUp) && !attacker.unit.isSetUpForSiege()) {
                 attacker.unit.action = UnitActionType.SetUp.value
                 attacker.unit.useMovementPoints(1f)
             }
@@ -137,7 +137,7 @@ object Battle {
 
         val stateForConditionals = StateForConditionals(civInfo = civUnit.getCivInfo(), ourCombatant = civUnit, theirCombatant = defeatedUnit)
         if (civUnit is MapUnitCombatant) {
-            bonusUniques.addAll(civUnit.unit.getMatchingUniques(UniqueType.KillUnitPlunder, stateForConditionals, true))
+            bonusUniques.addAll(civUnit.getMatchingUniques(UniqueType.KillUnitPlunder, stateForConditionals, true))
         } else {
             bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(UniqueType.KillUnitPlunder, stateForConditionals))
         }
@@ -413,7 +413,7 @@ object Battle {
         
         val stateForConditionals = StateForConditionals(civInfo = thisCombatant.getCivInfo(), ourCombatant = thisCombatant, theirCombatant = otherCombatant)
 
-        for (unique in thisCombatant.unit.getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true))
+        for (unique in thisCombatant.getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true))
             baseXP += unique.params[0].toInt()
 
         var xpModifier = 1f
@@ -422,11 +422,11 @@ object Battle {
                 if (thisCombatant.unit.matchesFilter(unique.params[0]))
                     xpModifier += unique.params[1].toFloat() / 100
             }
-            for (unique in thisCombatant.unit.getMatchingUniques(UniqueType.BonuxXPGain))
+            for (unique in thisCombatant.getMatchingUniques(UniqueType.BonuxXPGain))
                 xpModifier += unique.params[0].toFloat() / 100
         //
         
-        for (unique in thisCombatant.unit.getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true))
+        for (unique in thisCombatant.getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true))
             xpModifier += unique.params[0].toFloat() / 100
         
         val xpGained = (baseXP * xpModifier).toInt()
@@ -435,7 +435,7 @@ object Battle {
 
         if (thisCombatant.getCivInfo().isMajorCiv() && !otherCombatant.getCivInfo().isBarbarian()) { // Can't get great generals from Barbarians
             var greatGeneralPointsModifier = 1f
-            for (unique in thisCombatant.unit.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
+            for (unique in thisCombatant.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
                 val unitName = unique.params[0]
                 // From the unique we know this unit exists
                 val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]!!
@@ -462,7 +462,7 @@ object Battle {
         }
 
         val stateForConditionals = StateForConditionals(civInfo = attackerCiv, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
-        for (unique in attacker.unit.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
+        for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
             attackerCiv.addStat(
                 Stat.valueOf(unique.params[2]),
                 unique.params[0].toInt() * city.cityStats.currentCityStats[Stat.valueOf(unique.params[1])].toInt()
@@ -562,8 +562,8 @@ object Battle {
     
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: TileInfo): Boolean {
         val blastRadius =
-            if (!nuke.unit.hasUnique(UniqueType.BlastRadius)) 2
-            else nuke.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+            if (!nuke.hasUnique(UniqueType.BlastRadius)) 2
+            else nuke.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
 
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()
@@ -596,8 +596,8 @@ object Battle {
         }
 
         val blastRadius =
-            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
-            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+            if (!attacker.hasUnique(UniqueType.BlastRadius)) 2
+            else attacker.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
 
         val strength = when {
             (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->

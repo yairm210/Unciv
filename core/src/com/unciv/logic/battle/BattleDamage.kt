@@ -42,12 +42,12 @@ object BattleDamage {
                 combatAction = combatAction, attackedTile = attackedTile
             )
 
-            for (unique in combatant.unit.getMatchingUniques(
+            for (unique in combatant.getMatchingUniques(
                 UniqueType.Strength, conditionalState, true
             )) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
-            for (unique in combatant.unit.getMatchingUniques(
+            for (unique in combatant.getMatchingUniques(
                 UniqueType.StrengthNearCapital, conditionalState, true
             )) {
                 if (civInfo.cities.isEmpty()) break
