@@ -52,7 +52,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Centaur](https://thenounproject.com/search/?q=horse+archer&i=1791296) by Michael Wohlwend for Horse Archer 
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
-* [Transparent Medieval Battering Ram Png Logo](https://www.pngimages.pics/275495/transparent-medieval-battering-ram-png.php) for Battering Ram
+* [ram](https://thenounproject.com/icon/ram-3971194/) by Becris for Battering Ram
 * [Spear](https://thenounproject.com/term/spear/313412/) by lastspark for Marauder
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 * [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
@@ -120,8 +120,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
 * [Battleship](https://thenounproject.com/search/?q=battleship&i=1986807) By Vitaliy Gorbachev, KZ for Battleship
 * [machine-gun](https://thenounproject.com/search/?q=machine%20gun&i=591058) By Joana Pereira for Machine Gun
-* Icon for Anti-Aircraft made by Yair Morgenstern, based on a free design
-[on Vectorstock](https://www.vectorstock.com/royalty-free-vector/flat-icon-design-collection-anti-aircraft-gun-vector-16396060)
+* [artillery](https://www.vectorstock.com/royalty-free-vector/flat-icon-design-collection-anti-aircraft-gun-vector-16396060) by Izwar Muis for Anti-Aircraft Gun
 * [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
 * [Warship](https://thenounproject.com/term/warship/1597474/) By zidney for Destroyer
 
@@ -399,7 +398,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet for Protectionism
 * [Coins](https://thenounproject.com/term/coins/1915881/) By icon 54 for Mercantilism
 * [Sextant](https://thenounproject.com/term/sextant/313438) By lastspark for Naval Tradition
-* [Merchant Navy Icon](https://www.pngkit.com/view/u2w7i1i1o0t4a9y3_png-file-merchant-navy-icon/) for Merchant Navy
+* [captain](https://thenounproject.com/icon/captain-2379135/) by taamir468 
+   and [Wheel](https://thenounproject.com/icon/wheel-2526426/) by Andrejs Kirma for Merchant Navy
 
 ### Rationalism
 
@@ -561,7 +561,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Variation on [crescent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
 * [Korea](https://thenounproject.com/search/?q=korea&i=1689701) by CJS for Korea
 * Two [Sword](https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) Scimitars by Those Icons for Persia
-* [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
+* [Swirl](https://thenounproject.com/icon/swirl-4040027/) by IronSV for Polynesia
 * [Dharmachakra](https://thenounproject.com/search/?q=dharmachakra&i=740796) by Parkjisun for Siam
 * [Inca](https://github.com/ravignir/5Hex-Tileset/blob/master/Images/NationIcons/Inca.png) by Ravignir for Inca
 * [Sun symbol black](https://en.wikiquote.org/wiki/File:Sun_symbol_black.svg) by Eddo for The Huns
@@ -672,6 +672,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains
 * [File:Maya.svg](https://en.wikipedia.org/wiki/File:Maya.svg) for Mayan numerals
 * [East side of stela C, Quirigua](https://en.wikipedia.org/wiki/File:East_side_of_stela_C,_Quirigua.PNG) for Mayan calendar symbols
+* [Footprints](https://thenounproject.com/icon/footprints-1393611/) by Abdul Wahhab for movement overlay toggle, slightly modified. Currently unused.
+* Arrows.svg by Intralexical (@will-ca), CC0.
 
 ## Main menu
 
@@ -727,10 +729,8 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
     *    [Artillery Explosion (Close) (Mixed)](https://freesound.org/people/EFlexMusic/sounds/388528/) by EFlexMusic
 * [elephant 44](https://freesound.org/people/y89312/sounds/139875/) by y89312 for Naruesan's Elephant sound
 * Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
-
-* Excerpt from [Campfire](https://www.soundjay.com/fire-sound-effects.html) by SoundJay for Fire & 'remove heresy' action of inquisitor
+* Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor ([License](http://creativecommons.org/licenses/by/3.0/))
 
 # Music
 The following music is from https://filmmusic.io
-"Thatched Villagers" by Kevin MacLeod (https://incompetech.com)
-License: CC BY (http://creativecommons.org/licenses/by/4.0/)
+"[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com)

@@ -138,26 +138,28 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkBoatChoice() {
         val buildableWorkboatUnits = cityInfo.cityConstructions.getConstructableUnits()
-                .filter { it.hasUnique(UniqueType.CreateWaterImprovements)
-                        && Automation.allowSpendingResource(civInfo, it) }
+            .filter {
+                it.hasUnique(UniqueType.CreateWaterImprovements)
+                        && Automation.allowSpendingResource(civInfo, it)
+            }
         val canBuildWorkboat = buildableWorkboatUnits.any()
-                && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true }
+                && !cityInfo.getTiles()
+            .any { it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true }
         if (!canBuildWorkboat) return
-        val tilesThatNeedWorkboat = cityInfo.getTiles()
-                .filter { it.isWater && it.hasViewableResource(civInfo) && it.improvement == null }.toList()
-        if (tilesThatNeedWorkboat.isEmpty()) return
 
-        // If we can't reach the tile we need to improve within 15 tiles, it's probably unreachable.
-        val bfs = BFS(cityInfo.getCenterTile()) { (it.isWater || it.isCityCenter()) && it.isFriendlyTerritory(civInfo) }
-        for (i in 1..15) {
-            bfs.nextStep()
-            if (tilesThatNeedWorkboat.any { bfs.hasReachedTile(it) })
-                break
-            if (bfs.hasEnded()) break
+
+        val bfs = BFS(cityInfo.getCenterTile()) {
+            (it.isWater || it.isCityCenter()) && it.isFriendlyTerritory(civInfo)
         }
-        if (tilesThatNeedWorkboat.none { bfs.hasReachedTile(it) }) return
+        for (i in 1..10) bfs.nextStep()
+        if (!bfs.getReachedTiles()
+                .any { it.hasViewableResource(civInfo) && it.improvement == null && it.getOwner() == civInfo }
+        ) return
 
-        addChoice(relativeCostEffectiveness, buildableWorkboatUnits.minByOrNull { it.cost }!!.name, 0.6f)
+        addChoice(
+            relativeCostEffectiveness, buildableWorkboatUnits.minByOrNull { it.cost }!!.name,
+            0.6f
+        )
     }
 
     private fun addWorkerChoice() {

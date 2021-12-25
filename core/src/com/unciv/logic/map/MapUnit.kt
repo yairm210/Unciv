@@ -10,6 +10,7 @@ import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
@@ -23,6 +24,7 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
+
 
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
@@ -149,7 +151,7 @@ class MapUnit {
 
     fun shortDisplayName(): String {
         return if (instanceName != null) "[$instanceName]"
-            else "[$name]" 
+            else "[$name]"
     }
 
     var currentMovement: Float = 0f
@@ -170,6 +172,47 @@ class MapUnit {
     var religion: String? = null
     var religiousStrengthLost = 0
 
+    /**
+     * Container class to represent a single instant in a [MapUnit]'s recent movement history.
+     *
+     * @property position Position on the map at this instant.
+     * @property type Category of the last change in position that brought the unit to this position.
+     * */
+    class UnitMovementMemory() {
+        constructor(position: Vector2, type: UnitMovementMemoryType): this() {
+            this.position = position
+            this.type = type
+        }
+        lateinit var position: Vector2
+        lateinit var type: UnitMovementMemoryType
+        fun clone() = UnitMovementMemory(Vector2(position), type)
+        override fun toString() = "${this::class.simpleName}($position, $type)"
+    }
+
+    /** Deep clone an ArrayList of [UnitMovementMemory]s. */
+    private fun ArrayList<UnitMovementMemory>.copy() = ArrayList(this.map { it.clone() })
+
+    /** FIFO list of this unit's past positions. Should never exceed two items in length. New item added once at end of turn and once at start, to allow rare between-turn movements like melee withdrawal to be distinguished. Used in movement arrow overlay. */
+    var movementMemories = ArrayList<UnitMovementMemory>()
+
+    /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
+    fun addMovementMemory() {
+        movementMemories.add(UnitMovementMemory(Vector2(getTile().position), mostRecentMoveType))
+        while (movementMemories.size > 2) { // O(n) but n == 2.
+            // Keep at most one arrow segment— A lot of the time even that won't be rendered because the two positions will be the same.
+            // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.
+            // When not in the unit's turn— I.E. For a foreign unit— The segment from the end of .movementMemories to the unit's current position will have zero length, while the last two entries here will be from .startTurn() followed by .endTurn(), so the segment here will be what gets shown.
+            // The exception is when a unit changes position when not in its turn, such as by melee withdrawal or foreign territory expulsion. Then the segment here and the segment from the end of here to the current position can both be shown.
+            movementMemories.removeFirst()
+        }
+    }
+
+    /** The most recent type of position change this unit has experienced. Used in movement arrow overlay.*/
+    var mostRecentMoveType = UnitMovementMemoryType.UnitMoved
+
+    /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
+    var attacksSinceTurnStart = ArrayList<Vector2>()
+
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
@@ -189,6 +232,9 @@ class MapUnit {
         toReturn.maxAbilityUses.putAll(maxAbilityUses)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
+        toReturn.movementMemories = movementMemories.copy()
+        toReturn.mostRecentMoveType = mostRecentMoveType
+        toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
         return toReturn
     }
 
@@ -740,6 +786,8 @@ class MapUnit {
 
         doCitadelDamage()
         doTerrainDamage()
+
+        addMovementMemory()
     }
 
     fun startTurn() {
@@ -773,6 +821,9 @@ class MapUnit {
         val tileOwner = getTile().getOwner()
         if (tileOwner != null && !canEnterForeignTerrain && !civInfo.canPassThroughTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movement.teleportToClosestMoveableTile()
+
+        addMovementMemory()
+        attacksSinceTurnStart.clear()
     }
 
     fun destroy() {
@@ -1050,6 +1101,8 @@ class MapUnit {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
+        // Workers (and similar) should never be able to (instantly) construct things, only build them
+        if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) return false
         val matchingUniques = getMatchingUniques(UniqueType.BuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }

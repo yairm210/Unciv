@@ -238,15 +238,8 @@ class TabbedPager(
             name = caption  // enable finding pages by untranslated caption without needing our own field
             if (icon != null) {
                 if (iconSize != 0f) {
-                    val wrapper = Group().apply {
-                        isTransform =
-                            false // performance helper - nothing here is rotated or scaled
-                        setSize(iconSize, iconSize)
-                        icon.setSize(iconSize, iconSize)
-                        icon.center(this)
-                        addActor(icon)
-                    }
-                    add(wrapper).padRight(headerPadding * 0.5f)
+                    add(icon.sizeWrapped(iconSize, iconSize))
+                        .padRight(headerPadding * 0.5f)
                 } else {
                     add(icon)
                 }
