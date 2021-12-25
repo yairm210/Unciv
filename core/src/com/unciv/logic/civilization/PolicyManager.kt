@@ -47,8 +47,11 @@ class PolicyManager {
     }
 
     fun addPolicyToTransients(policy: Policy) {
-        for (unique in policy.uniqueObjects)
-            policyUniques.addUnique(unique)
+        for (unique in policy.uniqueObjects) {
+            // Should be replaced with a conditional of the same form later
+            if (!unique.text.contains(Regex("for \\[[0-9]*\\] turns")))
+                policyUniques.addUnique(unique)
+        }
     }
 
     fun addCulture(culture: Int) {

@@ -160,3 +160,20 @@ class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.j
     fun getUniques(uniqueType: UniqueType): Sequence<Unique> =
         this[uniqueType]?.asSequence() ?: sequenceOf()
 }
+
+
+// Will probably be allowed to be used as a conditional when I get the motivation to work on that -xlenstra
+class TemporaryUnique() {
+
+    constructor(uniqueObject: Unique, turns: Int) : this() {
+        unique = uniqueObject.text
+        turnsLeft = turns
+    }
+
+    var unique: String = ""
+
+    @delegate:Transient
+    val uniqueObject: Unique by lazy { Unique(unique) }
+
+    var turnsLeft: Int = 0
+}

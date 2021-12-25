@@ -299,8 +299,8 @@ Example: "Quantity of strategic resources produced by the empire +[20]%"
 
 Applicable to: Global
 
-#### +[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns
-Example: "+[20]% attack strength to all [Wounded] Units for [20] turns"
+#### +[amount]% attack strength to all [mapUnitFilter] units for [amount] turns
+Example: "+[20]% attack strength to all [Wounded] units for [20] turns"
 
 Applicable to: Global
 

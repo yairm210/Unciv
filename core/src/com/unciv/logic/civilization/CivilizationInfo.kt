@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.TemporaryUnique
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -142,12 +143,12 @@ class CivilizationInfo {
 
     /** See DiplomacyManager.flagsCountdown for why this does not map Enums to ints */
     private var flagsCountdown = HashMap<String, Int>()
-    /** Arraylist instead of HashMap as there might be doubles
-     * Pairs of Uniques and the amount of turns they are still active
-     * If the counter reaches 0 at the end of a turn, it is removed immediately
+    
+    /** Arraylist instead of HashMap as the same unique might appear multiple times
+     * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
      */
-    val temporaryUniques = ArrayList<Pair<Unique, Int>>()
-
+    val temporaryUniques = ArrayList<TemporaryUnique>()
+    
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
     // This is basically a way to ensure our lists are immutable.
@@ -358,7 +359,7 @@ class CivilizationInfo {
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null, cityToIgnore: CityInfo? = null) = sequence {
-        yieldAll(nation.uniqueObjects.asSequence().filter {it.isOfType(uniqueType) })
+        yieldAll(nation.uniqueObjects.asSequence().filter { it.isOfType(uniqueType) })
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
             .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType) }
@@ -366,7 +367,7 @@ class CivilizationInfo {
         yieldAll(policies.policyUniques.getUniques(uniqueType))
         yieldAll(tech.techUniques.getUniques(uniqueType))
         yieldAll(temporaryUniques.asSequence()
-            .map { it.first }
+            .map { it.uniqueObject }
             .filter { it.isOfType(uniqueType) }
         )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
@@ -385,7 +386,8 @@ class CivilizationInfo {
         yieldAll(policies.policyUniques.getUniques(uniqueTemplate))
         yieldAll(tech.techUniques.getUniques(uniqueTemplate))
         yieldAll(temporaryUniques.asSequence()
-            .filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+            .map { it.uniqueObject }
+            .filter { it.placeholderText == uniqueTemplate }
         )
         yieldAll(getEra().getMatchingUniques(uniqueTemplate).asSequence())
         if (religionManager.religion != null)
@@ -725,7 +727,7 @@ class CivilizationInfo {
         tech.setTransients()
 
         ruinsManager.setTransients(this)
-
+        
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
             diplomacyManager.updateHasOpenBorders()
@@ -852,10 +854,10 @@ class CivilizationInfo {
         }
 
         // Update turn counter for temporary uniques
-        for (unique in temporaryUniques.toList()) {
-            temporaryUniques.remove(unique)
-            if (unique.second > 1) temporaryUniques.add(Pair(unique.first, unique.second - 1))
+        for (unique in temporaryUniques) {
+            unique.turnsLeft -= 1
         }
+        temporaryUniques.removeAll { it.turnsLeft <= 0 }
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
