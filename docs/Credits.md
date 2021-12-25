@@ -672,6 +672,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Mountains ](https://thenounproject.com/term/mountains/15616/) by Andrew J. Young as base for Civilopedia category Terrains
 * [File:Maya.svg](https://en.wikipedia.org/wiki/File:Maya.svg) for Mayan numerals
 * [East side of stela C, Quirigua](https://en.wikipedia.org/wiki/File:East_side_of_stela_C,_Quirigua.PNG) for Mayan calendar symbols
+* [Footprints](https://thenounproject.com/icon/footprints-1393611/) by Abdul Wahhab for movement overlay toggle, slightly modified. Currently unused.
+* Arrows.svg by Intralexical (@will-ca), CC0.
 
 ## Main menu
 

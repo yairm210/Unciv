@@ -12,7 +12,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
-
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
