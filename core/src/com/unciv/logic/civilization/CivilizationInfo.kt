@@ -613,7 +613,7 @@ class CivilizationInfo {
 
     fun getStatForRanking(category: RankingType): Int {
         return when (category) {
-            RankingType.Score -> calculateScore()
+            RankingType.Score -> calculateScoreBreakdown().values.sum().toInt()
             RankingType.Population -> cities.sumOf { it.population.population }
             RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
             RankingType.Production -> statsForNextTurn.production.roundToInt()
@@ -668,25 +668,25 @@ class CivilizationInfo {
     }
     fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
-    fun calculateScore(): Int {
+    fun calculateScoreBreakdown(): HashMap<String,Double> {
+        val scoreBreakdown = hashMapOf<String,Double>();
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps
-        var mapSizeModifier = 1276.0 / gameInfo.tileMap.mapParameters.numberOfTiles()
+        var mapSizeModifier = 1276 / gameInfo.tileMap.mapParameters.numberOfTiles().toDouble()
         if (mapSizeModifier > 1)
             mapSizeModifier = (mapSizeModifier - 1) / 3 + 1
         
-        var score = 0.0
-        score += cities.count() * 10 * mapSizeModifier
-        score += cities.sumOf { it.population.population } * 3 * mapSizeModifier
-        score += cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
-        score += 40 * cities
+        scoreBreakdown["Cities"] = cities.count() * 10 * mapSizeModifier
+        scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
+        scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
+        scoreBreakdown["Wonders"] = 40 * cities
             .sumOf { city -> city.cityConstructions.builtBuildings
                 .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.count() 
-            }
-        score += tech.getNumberOfTechsResearched() * 4
-        score += tech.repeatingTechsResearched * 10
+            }.toDouble()
+        scoreBreakdown["Techs"] = tech.getNumberOfTechsResearched() * 4.toDouble()
+        scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
         
-        return score.toInt()
+        return scoreBreakdown
     }
     
     //endregion

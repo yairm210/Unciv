@@ -49,9 +49,11 @@ class GameOptionsTable(
             addDifficultySelectBox()
             addGameSpeedSelectBox()
             addEraSelectBox()
-            addMaxTurnsSelectBox()
             // align left and right edges with other SelectBoxes but allow independent dropdown width
             add(Table().apply {
+                val turnSlider = addMaxTurnsSlider()
+                if (turnSlider != null) 
+                    add(turnSlider).padTop(10f).row()
                 cityStateSlider = addCityStatesSlider()
             }).colspan(2).fillX().row()
         }).row()
@@ -130,6 +132,21 @@ class GameOptionsTable(
         return slider
     }
 
+    private fun Table.addMaxTurnsSlider(): UncivSlider? {
+        if (!gameParameters.victoryTypes.contains(VictoryType.Time)) return null
+
+        add("{Max Turns}:".toLabel()).left().expandX()
+        val slider = UncivSlider(250f, 1500f, 50f) {
+            gameParameters.maxTurns = it.toInt()
+        }
+        slider.permanentTip = true
+        slider.isDisabled = locked
+        val snapValues = floatArrayOf(250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
+        slider.setSnapToValues(snapValues, 250f)
+        slider.value = gameParameters.maxTurns.toFloat()
+        return slider
+    }
+
     private fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> String?) {
         add(text.toLabel()).left()
         val selectBox = TranslatedSelectBox(values, initialState, BaseScreen.skin)
@@ -205,15 +222,7 @@ class GameOptionsTable(
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it; null }
     }
-
-    private fun Table.addMaxTurnsSelectBox() {
-        if (!gameParameters.victoryTypes.contains(VictoryType.Time)) return
-        
-        val maxTurns = listOf(250,300,350,400,450,500,550,600,650,700,750,800,900,1000,1250,1500,2000).map { it.toString() }
-        addSelectBox( "{Max Turns}:", maxTurns, gameParameters.maxTurns.toString())
-        { gameParameters.maxTurns = it.toInt(); null }
-    }
-
+    
     private fun addVictoryTypeCheckboxes() {
         add("{Victory Conditions}:".toLabel()).colspan(2).row()
 

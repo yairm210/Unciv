@@ -37,7 +37,7 @@ class DiplomacyOverviewTable (
         titleTable.add("Our Civilization:".toLabel()).colspan(2).row()
         titleTable.add(ImageGetter.getNationIndicator(viewingPlayer.nation, 25f)).pad(5f)
         titleTable.add(viewingPlayer.civName.toLabel()).left().padRight(10f)
-        titleTable.add(viewingPlayer.calculateScore().toLabel()).row()
+        titleTable.add(viewingPlayer.calculateScoreBreakdown().values.sum().toInt().toLabel()).row()
 
 
         val civTableScrollPane = getCivTableScroll(relevantCivs, titleTable, playerKnowsAndUndefeatedCivs, playerKnowsAndDefeatedCivs)
@@ -87,7 +87,7 @@ class DiplomacyOverviewTable (
                 if (it.isCityState()) {
                     cityStatesParsed++
                 } else {
-                    civTable.add(it.calculateScore().toLabel()).left()
+                    civTable.add(it.calculateScoreBreakdown().values.sum().toInt().toLabel()).left()
                 }
                 if (!it.isCityState() || cityStatesParsed % 2 == 0) 
                     civTable.row()
@@ -104,7 +104,7 @@ class DiplomacyOverviewTable (
                 if (it.isCityState()) {
                     cityStatesParsed++
                 } else {
-                    civTable.add(it.calculateScore().toLabel()).left()
+                    civTable.add(it.calculateScoreBreakdown().values.sum().toInt().toLabel()).left()
                 }
                 if (!it.isCityState() || cityStatesParsed % 2 == 0)
                     civTable.row()
