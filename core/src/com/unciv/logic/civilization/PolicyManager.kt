@@ -28,7 +28,11 @@ class PolicyManager {
     var shouldOpenPolicyPicker = false
         get() = field && canAdoptPolicy()
 
-
+    // Only instantiate a single value for all policy managers
+    companion object {
+        private val turnCountRegex by lazy { Regex("for \\[[0-9]*\\] turns") }
+    }
+    
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
         toReturn.numberOfAdoptedPolicies = numberOfAdoptedPolicies
@@ -49,7 +53,7 @@ class PolicyManager {
     fun addPolicyToTransients(policy: Policy) {
         for (unique in policy.uniqueObjects) {
             // Should be replaced with a conditional of the same form later
-            if (!unique.text.contains(Regex("for \\[[0-9]*\\] turns")))
+            if (!unique.text.contains(turnCountRegex))
                 policyUniques.addUnique(unique)
         }
     }
