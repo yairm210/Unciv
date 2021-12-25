@@ -613,6 +613,7 @@ class CivilizationInfo {
 
     fun getStatForRanking(category: RankingType): Int {
         return when (category) {
+            RankingType.Score -> calculateScoreBreakdown().values.sum().toInt()
             RankingType.Population -> cities.sumOf { it.population.population }
             RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
             RankingType.Production -> statsForNextTurn.production.roundToInt()
@@ -667,6 +668,27 @@ class CivilizationInfo {
     }
     fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
+    fun calculateScoreBreakdown(): HashMap<String,Double> {
+        val scoreBreakdown = hashMapOf<String,Double>();
+        // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
+        // but they have bigger maps
+        var mapSizeModifier = 1276 / gameInfo.tileMap.mapParameters.numberOfTiles().toDouble()
+        if (mapSizeModifier > 1)
+            mapSizeModifier = (mapSizeModifier - 1) / 3 + 1
+        
+        scoreBreakdown["Cities"] = cities.count() * 10 * mapSizeModifier
+        scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
+        scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
+        scoreBreakdown["Wonders"] = 40 * cities
+            .sumOf { city -> city.cityConstructions.builtBuildings
+                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.count() 
+            }.toDouble()
+        scoreBreakdown["Techs"] = tech.getNumberOfTechsResearched() * 4.toDouble()
+        scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
+        
+        return scoreBreakdown
+    }
+    
     //endregion
 
     //region state-changing functions

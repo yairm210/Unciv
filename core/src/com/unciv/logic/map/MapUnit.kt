@@ -1101,6 +1101,8 @@ class MapUnit {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
+        // Workers (and similar) should never be able to (instantly) construct things, only build them
+        if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) return false
         val matchingUniques = getMatchingUniques(UniqueType.BuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }

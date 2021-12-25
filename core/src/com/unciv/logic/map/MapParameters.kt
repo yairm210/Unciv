@@ -229,4 +229,11 @@ class MapParameters {
         yield("$elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/")
         yield("$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold")
     }.joinToString("", postfix = ")")
+    
+    fun numberOfTiles() =
+        if (shape == MapShape.hexagonal) {
+            1 + 3 * mapSize.radius * (mapSize.radius - 1)
+        } else {
+            mapSize.width * mapSize.height
+        }
 }

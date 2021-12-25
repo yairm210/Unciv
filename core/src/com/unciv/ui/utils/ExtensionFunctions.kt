@@ -1,13 +1,13 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.unciv.CrashScreen
+import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import java.text.SimpleDateFormat
@@ -92,6 +92,19 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table
     table.pack()
     return table
 }
+
+/** Wrap an [Actor] in a [Group] of a given size */
+fun Actor.sizeWrapped(x: Float, y: Float): Group {
+    val wrapper = Group().apply {
+        isTransform = false // performance helper - nothing here is rotated or scaled
+        setSize(x, y)
+    }
+    setSize(x, y)
+    center(wrapper)
+    wrapper.addActor(this)
+    return wrapper
+}
+
 
 /** get background Image for a new separator */
 private fun getSeparatorImage(color: Color) = ImageGetter.getDot(
@@ -183,6 +196,21 @@ fun Float.toPercent() = 1 + this/100
 
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton() = TextButton(this.tr(), BaseScreen.skin)
+
+/** Translate a [String] and make a [Button] widget from it, with control over font size, font colour, and an optional icon. */
+fun String.toButton(fontColor: Color = Color.WHITE, fontSize: Int = 24, icon: String? = null): Button {
+    val button = Button(BaseScreen.skin)
+    if (icon != null) {
+        val size = fontSize.toFloat()
+        button.add(
+            ImageGetter.getImage(icon).sizeWrapped(size, size)
+        ).padRight(size / 3)
+    }
+    button.add(
+        this.toLabel(fontColor, fontSize)
+    )
+    return button
+}
 
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
@@ -283,4 +311,44 @@ object UncivDateFormat {
      * example: `"2021-04-11T14:43:33Z".parseDate()`
      */
     fun String.parseDate(): Date = utcFormat.parse(this)
+}
+
+
+/**
+ * Returns a wrapped version of a function that safely crashes the game to [CrashScreen] if an exception or error is thrown.
+ *
+ * In case an exception or error is thrown, the return will be null. Therefore the return type is always nullable.
+ *
+ * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
+ * @return Result from the function, or null if an exception is thrown.
+ * */
+fun <R> (() -> R).wrapCrashHandling(
+    postToMainThread: Boolean = false
+): () -> R?
+    = {
+        try {
+            this()
+        } catch (e: Throwable) {
+            if (postToMainThread) {
+                Gdx.app.postRunnable {
+                    UncivGame.Current.setScreen(CrashScreen(e))
+                }
+            } else {
+                UncivGame.Current.setScreen(CrashScreen(e))
+            }
+            null
+        }
+    }
+
+/**
+ * Returns a wrapped a version of a Unit-returning function which safely crashes the game to [CrashScreen] if an exception or error is thrown.
+ *
+ * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
+ * */
+fun (() -> Unit).wrapCrashHandlingUnit(
+    postToMainThread: Boolean = false
+): () -> Unit {
+    val wrappedReturning = this.wrapCrashHandling(postToMainThread)
+    // Don't instantiate a new lambda every time.
+    return { wrappedReturning() ?: Unit }
 }
