@@ -68,12 +68,12 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     }
 
     /** @return Label for title at top of screen. */
-    private fun makeTitleLabel()
-        = "An unrecoverable error has occurred in Unciv:".toLabel(fontSize = 24)
-        .apply {
-            wrap = true
-            setAlignment(Align.center)
-        }
+    private fun makeTitleLabel() =
+        "An unrecoverable error has occurred in Unciv:".toLabel(fontSize = 24)
+            .apply {
+                wrap = true
+                setAlignment(Align.center)
+            }
 
     /** @return Actor that displays a scrollable view of the error report text. */
     private fun makeErrorScroll(): Actor {
@@ -88,12 +88,12 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
     }
 
     /** @return Label to give the user more information and context below the error report. */
-    private fun makeInstructionLabel()
-        = "{If this keeps happening, you can try disabling mods.}\n{You can also report this on the issue tracker.}".toLabel()
-        .apply {
-            wrap = true
-            setAlignment(Align.center)
-        }
+    private fun makeInstructionLabel() =
+        "{If this keeps happening, you can try disabling mods.}\n{You can also report this on the issue tracker.}".toLabel()
+            .apply {
+                wrap = true
+                setAlignment(Align.center)
+            }
 
     /** @return Table that displays decision buttons for the bottom of the screen. */
     private fun makeActionButtonsTable(): Table {
@@ -118,9 +118,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                 }
             }
         val closeButton = "Close Unciv".toButton()
-            .onClick {
-                throw exception  // throw the original exception to allow crash recording on GP
-            }
+            .onClick { Gdx.app.exit() }
 
         val buttonsTable = Table()
         buttonsTable.add(copyButton)
