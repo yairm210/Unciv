@@ -418,11 +418,11 @@ object Battle {
 
         var xpModifier = 1f
         // Deprecated since 3.18.12
-            for (unique in thisCombatant.getCivInfo().getMatchingUniques("[] units gain []% more Experience from combat")) {
+            for (unique in thisCombatant.getCivInfo().getMatchingUniques(UniqueType.BonusXPGainForUnits, stateForConditionals)) {
                 if (thisCombatant.unit.matchesFilter(unique.params[0]))
                     xpModifier += unique.params[1].toFloat() / 100
             }
-            for (unique in thisCombatant.getMatchingUniques(UniqueType.BonuxXPGain))
+            for (unique in thisCombatant.getMatchingUniques(UniqueType.BonuxXPGain, stateForConditionals, true))
                 xpModifier += unique.params[0].toFloat() / 100
         //
         
@@ -435,7 +435,7 @@ object Battle {
 
         if (thisCombatant.getCivInfo().isMajorCiv() && !otherCombatant.getCivInfo().isBarbarian()) { // Can't get great generals from Barbarians
             var greatGeneralPointsModifier = 1f
-            for (unique in thisCombatant.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
+            for (unique in thisCombatant.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)) {
                 val unitName = unique.params[0]
                 // From the unique we know this unit exists
                 val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]!!
@@ -563,8 +563,9 @@ object Battle {
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: TileInfo): Boolean {
         val blastRadius =
             if (!nuke.hasUnique(UniqueType.BlastRadius)) 2
-            else nuke.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
-
+            // Don't check conditionals as these are not supported
+            else nuke.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+        
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
@@ -597,7 +598,8 @@ object Battle {
 
         val blastRadius =
             if (!attacker.hasUnique(UniqueType.BlastRadius)) 2
-            else attacker.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
+            // Don't check conditionals as there are not supported
+            else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
 
         val strength = when {
             (attacker.unit.hasUnique("Nuclear weapon of Strength []")) ->

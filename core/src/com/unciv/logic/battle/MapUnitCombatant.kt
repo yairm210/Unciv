@@ -49,6 +49,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     fun getMatchingUniques(uniqueType: UniqueType, conditionalState: StateForConditionals, checkCivUniques: Boolean): Sequence<Unique> = 
         unit.getMatchingUniques(uniqueType, conditionalState, checkCivUniques)
 
-    fun hasUnique(uniqueType: UniqueType, conditionalState: StateForConditionals, checkCivUniques: Boolean): Boolean =
-        unit.hasUnique(uniqueType, conditionalState)
+    fun hasUnique(uniqueType: UniqueType, conditionalState: StateForConditionals? = null): Boolean =
+        if (conditionalState == null) unit.hasUnique(uniqueType)
+        else unit.hasUnique(uniqueType, conditionalState)
 }
