@@ -48,8 +48,7 @@ object BattleDamage {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
             for (unique in combatant.unit.getMatchingUniques(
-                UniqueType.StrengthNearCapital,
-                checkCivInfoUniques = true
+                UniqueType.StrengthNearCapital, conditionalState, true
             )) {
                 if (civInfo.cities.isEmpty()) break
                 val distance =
