@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
@@ -338,13 +339,34 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             BaseScreen.enableSceneDebug = it
         }).row()
         val unlockTechsButton = "Unlock all techs".toTextButton()
-        unlockTechsButton.onChange {
+        unlockTechsButton.onClick {
+            if (!game.isGameInfoInitialized())
+                return@onClick
             for (tech in game.gameInfo.ruleSet.technologies.keys) {
-                if (tech !in game.gameInfo.getCurrentPlayerCivilization().tech.techsResearched)
+                if (tech !in game.gameInfo.getCurrentPlayerCivilization().tech.techsResearched) {
                     game.gameInfo.getCurrentPlayerCivilization().tech.addTechnology(tech)
+                    game.gameInfo.getCurrentPlayerCivilization().popupAlerts.removeLastOrNull()
+                }
             }
+            game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
+            game.worldScreen.shouldUpdate = true
         }
-        add(unlockTechsButton)
+        add(unlockTechsButton).row()
+        val giveResourcesButton = "Give all strategic resources".toTextButton()
+        giveResourcesButton.onClick {
+            if (!game.isGameInfoInitialized())
+                return@onClick
+            val ownedTiles = game.gameInfo.tileMap.values.asSequence().filter { it.getOwner() == game.gameInfo.getCurrentPlayerCivilization() }
+            val resourceTypes = game.gameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }
+            for ((tile, resource) in ownedTiles zip resourceTypes) {
+                tile.resource = resource.name
+                tile.resourceAmount = 999
+                tile.improvement = resource.improvement
+            }
+            game.gameInfo.getCurrentPlayerCivilization().updateSightAndResources()
+            game.worldScreen.shouldUpdate = true
+        }
+        add(giveResourcesButton).row()
     }
 
     //endregion

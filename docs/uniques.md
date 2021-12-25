@@ -18,7 +18,7 @@
 #### [stats]
 Example: "[+1 Gold, +2 Production]"
 
-Applicable to: Improvement, Global, FollowerBelief
+Applicable to: Global, FollowerBelief, Improvement
 
 #### [stats] [cityFilter]
 Example: "[+1 Gold, +2 Production] [in all cities]"
@@ -88,7 +88,7 @@ Applicable to: Global
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
 
-Applicable to: Resource, Global, FollowerBelief
+Applicable to: Global, FollowerBelief, Resource
 
 #### [amount]% Production when constructing [buildingFilter] buildings [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] buildings [in all cities]"
@@ -218,25 +218,60 @@ Applicable to: Global
 #### [amount]% Strength
 Example: "[20]% Strength"
 
-Applicable to: Unit, Global
+Applicable to: Global, Unit
+
+#### [amount]% Strength decreasing with distance from the capital
+Example: "[20]% Strength decreasing with distance from the capital"
+
+Applicable to: Global, Unit
 
 #### [amount] Movement
 Example: "[20] Movement"
 
-Applicable to: Unit, Global
+Applicable to: Global, Unit
 
 #### [amount] Sight
 Example: "[20] Sight"
 
-Applicable to: Unit, Global, Terrain
+Applicable to: Global, Unit, Terrain
 
 #### [amount]% Spread Religion Strength
 Example: "[20]% Spread Religion Strength"
 
-Applicable to: Unit, Global
+Applicable to: Global, Unit
 
 #### Normal vision when embarked
-Applicable to: Unit, Global
+Applicable to: Global, Unit
+
+#### [amount]% maintenance costs
+Example: "[20]% maintenance costs"
+
+Applicable to: Global, Unit
+
+#### [greatPerson] is earned [amount]% faster
+Example: "[greatPerson] is earned [20]% faster"
+
+Applicable to: Global, Unit
+
+#### Upon capturing a city, receive [amount] times its [stat] production as [stat] immediately
+Example: "Upon capturing a city, receive [20] times its [Culture] production as [Culture] immediately"
+
+Applicable to: Global, Unit
+
+#### Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stat]
+Example: "Earn [20]% of killed [Wounded] unit's [costOrStrength] as [Culture]"
+
+Applicable to: Global, Unit
+
+#### [amount] XP gained from combat
+Example: "[20] XP gained from combat"
+
+Applicable to: Global, Unit
+
+#### [amount]% XP gained from combat
+Example: "[20]% XP gained from combat"
+
+Applicable to: Global, Unit
 
 #### Free [baseUnitFilter] appears
 Example: "Free [Melee] appears"
@@ -337,6 +372,11 @@ Example: "[20]% [Culture] from every follower, up to [20]%"
 
 Applicable to: FollowerBelief
 
+#### Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stat] when killed within 4 tiles of a city following this religion
+Example: "Earn [20]% of [Wounded] unit's [costOrStrength] as [Culture] when killed within 4 tiles of a city following this religion"
+
+Applicable to: FollowerBelief
+
 ## Building uniques
 #### Remove extra unhappiness from annexed cities
 Applicable to: Building
@@ -344,38 +384,38 @@ Applicable to: Building
 #### Consumes [amount] [resource]
 Example: "Consumes [20] [Iron]"
 
-Applicable to: Unit, Improvement, Building
+Applicable to: Building, Unit, Improvement
 
 #### Provides [amount] [resource]
 Example: "Provides [20] [Iron]"
 
-Applicable to: Improvement, Building
+Applicable to: Building, Improvement
 
 #### Unbuildable
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Cannot be purchased
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Can be purchased with [stat] [cityFilter]
 Example: "Can be purchased with [Culture] [in all cities]"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Can be purchased for [amount] [stat] [cityFilter]
 Example: "Can be purchased for [20] [Culture] [in all cities]"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Limited to [amount] per Civilization
 Example: "Limited to [20] per Civilization"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Hidden until [amount] social policy branches have been completed
 Example: "Hidden until [20] social policy branches have been completed"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Cost increases by [amount] per owned city
 Example: "Cost increases by [20] per owned city"
@@ -400,7 +440,7 @@ Applicable to: Building
 #### Not displayed as an available construction without [buildingName/tech/resource/policy]
 Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 #### Must be on [terrainFilter]
 Example: "Must be on [Grassland]"
@@ -426,12 +466,12 @@ Applicable to: Building
 Applicable to: Building
 
 #### Hidden when religion is disabled
-Applicable to: Unit, Ruins, Building
+Applicable to: Building, Unit, Ruins
 
 #### Hidden when [victoryType] Victory is disabled
 Example: "Hidden when [victoryType] Victory is disabled"
 
-Applicable to: Unit, Building
+Applicable to: Building, Unit
 
 ## Unit uniques
 #### Founds a new city
@@ -447,11 +487,6 @@ Applicable to: Unit
 
 #### Can see invisible [mapUnitFilter] units
 Example: "Can see invisible [Wounded] units"
-
-Applicable to: Unit
-
-#### [amount]% Strength decreasing with distance from the capital
-Example: "[20]% Strength decreasing with distance from the capital"
 
 Applicable to: Unit
 
@@ -487,11 +522,6 @@ Applicable to: Unit
 
 #### Cannot be carried by [mapUnitFilter] units
 Example: "Cannot be carried by [Wounded] units"
-
-Applicable to: Unit
-
-#### [amount]% maintenance costs
-Example: "[20]% maintenance costs"
 
 Applicable to: Unit
 
@@ -607,7 +637,7 @@ Applicable to: Terrain
 Applicable to: Terrain
 
 #### Tile provides yield without assigned population
-Applicable to: Improvement, Terrain
+Applicable to: Terrain, Improvement
 
 #### Nullifies all other stats this tile provides
 Applicable to: Terrain
@@ -667,7 +697,7 @@ Example: "Considered [terrainQuality] when determining start locations"
 Applicable to: Terrain
 
 #### Doesn't generate naturally
-Applicable to: Resource, Terrain
+Applicable to: Terrain, Resource
 
 #### Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]
 Example: "Occurs at temperature between [20] and [20] and humidity between [20] and [20]"
@@ -1051,6 +1081,7 @@ Applicable to: Conditional
  - "+[amount]% Production when constructing [constructionFilter] [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
+ - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
@@ -1068,5 +1099,6 @@ Applicable to: Conditional
  - "+[amount]% Strength in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
  - "[amount] Visibility Range" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
+ - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"
