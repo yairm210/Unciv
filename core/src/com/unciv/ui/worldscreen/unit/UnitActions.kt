@@ -381,8 +381,6 @@ object UnitActions {
             && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { 
                 tile.canBuildImprovement(it, unit.civInfo) 
                 && unit.canBuildImprovement(it)
-                // Excluded actions for water improvements and great improvements, which are handled seperately
-                && it.turnsToBuild != 0 
             }
         
 
