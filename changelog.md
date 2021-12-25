@@ -1,3 +1,17 @@
+## 3.18.12
+
+AI cities now build workboats for use in other cities
+
+Caught Out Of Memory error for large saved games
+
+By will-ca:
+- Show arrows on map for unit actions
+
+By xlenstra:
+- Added score and time victory
+- Fixed a policy not working
+- Fixed a bug where an empty improvement picker screen could open
+
 ## 3.18.11
 
 Resolved mod dependencies leading to incompatible rulesets
