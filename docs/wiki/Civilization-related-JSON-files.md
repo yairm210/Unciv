@@ -19,7 +19,7 @@ Each belief can have the following attributes:
 | name | String | Required | Name of the belief |
 | type | String | Required | The type of the belief. Valid values are: "Pantheon" and "Follower". Later "Founder" will be added, but this has not been implemented yet |
 | uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](./Uniques.md#buildings-only), as well as the general uniques on that page |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](./Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
 ## Buildings.json
@@ -42,13 +42,13 @@ Each building can have the following attributes:
 | maintenance | Integer (≥0) | defaults to 0 | Maintenance cost of the building |
 | isWonder | Boolean | defaults to false | Whether this building is a global wonder |
 | isNationalWonder | Boolean | defaults to false | Whether this building is a national wonder |
-| requiredBuilding | String | defaults to none | A building that has to be built before this building can be built. Must be in [Buildings.json](Buildings.json) |
-| requiredBuildingInAllCities | String | defaults to none | A building that has to be built in all cities before this building can be built. Must be in [Buildings.json](Buildings.json) |
-| cannotBeBuiltWith | String | defaults to none | The building [cannotBeBuiltWith] and this building cannot exist in the same city together. Should be in [Buildings.json](Buildings.json) |
+| requiredBuilding | String | defaults to none | A building that has to be built before this building can be built. Must be in [Buildings.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
+| requiredBuildingInAllCities | String | defaults to none | A building that has to be built in all cities before this building can be built. Must be in [Buildings.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
+| cannotBeBuiltWith | String | defaults to none | The building [cannotBeBuiltWith] and this building cannot exist in the same city together. Should be in [Buildings.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
 | providesFreeBuilding | String | defaults to none | When the building is built, [providesFreeBuilding] is also automatically added to the city |
 | requiredTech | String | defaults to none | The tech that should be researched before this building may be built. Must be in [Techs.json](#techsjson) |
-| requiredResource | String | defaults to none | The resource that is consumed when building this building. Must be in [TileResources.json](#tileresourcesjson) |
-| requiredNearbyImprovedResources | List of Strings | defaults to none | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in [TileResources.json](#tileresourcesjson) |
+| requiredResource | String | defaults to none | The resource that is consumed when building this building. Must be in [TileResources.json](./Map-related-JSON-files.md#tileresourcesjson) |
+| requiredNearbyImprovedResources | List of Strings | defaults to none | The building can only be built if any of the resources in this list are within the borders of this city and have been improved. Each resource must be in [TileResources.json](./Map-related-JSON-files.md#tileresourcesjson) |
 | replaces | String | defaults to none | The name of a building that should be replaced by this building. Must be in [Buildings.json](#buildingsjson) |
 | uniqueTo | String | defaults to none | If supplied, only the nation with this name can build this building. Must be in [Nations.json](#nationsjson) |
 | xpForNewUnits | Integer | defaults to 0 | XP granted automatically to units built in this city |
@@ -60,8 +60,8 @@ Each building can have the following attributes:
 | replacementTextForUniques | String | defaults to none | If provided, this string will be shown instead of all of the uniques |
 | percentStatBonus | Object | defaults to none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers (≥0) |
 | greatPersonPoints | Object | defaults to none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc. .), valid values are Integers (≥0) |
-| specialistSlots | Object | defaults to none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](Specialists.json)), valid values are Integers, the amount of slots provided for this specialist |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+| specialistSlots | Object | defaults to none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Specialists.json)), valid values are Integers, the amount of slots provided for this specialist |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](./Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
 ## Nations.json
@@ -93,7 +93,7 @@ This file contains all the nations and city states, including Barbarians and Spe
 | uniqueText | String | Default empty | Replacement text for "uniques". If empty, uniques are listed individually. |
 | uniques | List | Default empty | Properties of the civilization - see [here](./Uniques.md#general-uniques) |
 | cities | List | Default empty | City names used sequentially for newly founded cities. |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](./Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
 ## Policies.json
@@ -107,7 +107,7 @@ Each policy branch can have the following properties:
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | name | String | Required |  |
-| era | String | Required | Unlocking era as defined in [Eras.json](#erasjson) |
+| era | String | Required | Unlocking era as defined in [Eras.json](./Miscellaneous-JSON-files.md#erasjson) |
 | uniques | List | Default empty | List of effects, [see here](./Uniques.md#general-uniques) |
 | policies | List | Default empty | List of member policies |
 
@@ -170,7 +170,7 @@ This file contains all the technologies. It is organized into an outer list of '
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | columnNumber | Integer | Required | Horizontal placement in the Tech Tree. |
-| era | String | Required | References [Eras.json](#erasjson). |
+| era | String | Required | References [Eras.json](./Miscellaneous-JSON-files.md#erasjson). |
 | techCost | Integer | Required | Default cost of the techs in this column. |
 | buildingCost | Integer | Required | Default cost of buildings requiring this tech. |
 | wonderCost | Integer | Required | Default cost of wonders requiring this tech. |
@@ -185,4 +185,4 @@ This file contains all the technologies. It is organized into an outer list of '
 | prerequisites | List | Default empty | A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary. |
 | quote | String | Default empty | A nice story presented to the player when they research this tech. |
 | uniques | List | Default empty | Properties granted by the tech - see [here](./Uniques.md#general-uniques). |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text). |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](./Miscellaneous-JSON-files.md#civilopedia-text). |

@@ -6,7 +6,7 @@ In order to add a tileset mod (yes, tilesets are just another type of mod), all 
 
 Let's look at the example "Grassland+Jungle+Dyes+Trading post" to learn how the game decides which images it should use for this tile:
 
-1. When there is a rule variant entry in the [tileset config](./Creating-a-custom-tileset.md/tileset-config) for this tile we will use the entry. 
+1. When there is a rule variant entry in the [tileset config](#tileset-config) for this tile we will use the entry. 
 
 2. Else if there is an image called "Grassland+Jungle+Dyes+Trading post" we will use it instead.
 

@@ -10,10 +10,12 @@ Each civ has some basic information - what the civ name is, the leader's name, c
 
 In addition, each civ has flavor text when declaring war, intoduction etc.
 
-All of these need to be filled in in [Nations.json](/android/assets/jsons/Nations.json)
+All of these need to be filled in in [Nations.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Nations.json)
 
 Adding your Civ and leader names in the [Nations translation file](/android/assets/jsons/Translations/Diplomacy%2CTrade%2CNations.json)
 will notify translators that they should translate them =)
+
+[comment]: <> (TODO: Broken link. Obsolete?)
 
 ## Get your Civ icon
 
@@ -32,8 +34,8 @@ But apart from the flavor, they are boring gameplay-wise, so now we need to add 
 
 ## Adding unique units
 
-Units in general are added in the [Units.json](/android/assets/jsons/Units.json) file, with an icon in the
- [UnitIcons](/android/Images/UnitIcons) folder.
+Units in general are added in the [Units.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Units.json) file, with an icon in the
+ [UnitIcons](/android/Images.Construction/UnitIcons) folder.
 
 The icon must be 200x200 pixels, white on transparent background - see [icon considerations](#icon-considerations) for details
 
@@ -41,13 +43,17 @@ Remember that these are unique units, so search for an existing unique unit to s
 
 Again, [translation file](/android/assets/jsons/Translations/Units%2CPromotions.json) for bonus points!
 
+[comment]: <> (TODO: Broken link. Obsolete? AFAIK translation's only via `template.properties` &#40;and automatic stuff from JSONs&#41; nowadays.)
+
 ## Adding unique buildings
 
-Same as the units - info is in the [Buildings.json](/android/assets/jsons/Buildings.json) file 
-and icons in the [BuildingIcons](/android/Images/BuildingIcons) folder, 
+Same as the units - info is in the [Buildings.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) file 
+and icons in the [BuildingIcons](/android/Images.Construction/BuildingIcons) folder, 
 same rules for the icons apply (200x200 pixels, icon considerations)
 
 Again, [translation file](/android/assets/jsons/Translations/Buildings.json) for bonus points!
+
+[comment]: <> (TODO: Broken link. Obsolete? AFAIK translation's only via `template.properties` &#40;and automatic stuff from JSONs&#41; nowadays.)
 
 ## Civ Unique
 

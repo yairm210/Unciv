@@ -46,7 +46,7 @@ As seen in the above example, in order to provide flexibility and generalization
 
 ### Generated Documentation
 
-This part of the wiki is human-edited and partially out of date. However, we now have automatically generated documentation, complete for all Uniques that have been updated to the new UniqueType system. [It is part of the main source tree](/yairm210/Unciv/blob/master/docs/uniques.md).
+This part of the wiki is human-edited and partially out of date. However, we now have automatically generated documentation, complete for all Uniques that have been updated to the new UniqueType system. [It is part of the main source tree](/docs/uniques.md).
 
 ### Unique locations
 

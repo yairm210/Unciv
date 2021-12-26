@@ -13,25 +13,25 @@ Each unit can have the following attributes:
 | attribute | Type | optional or not | notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the units (required) |
-| unitType | String | required | The type of the unit. Must be in [UnitTypes.json](UnitTypes.json) |
+| unitType | String | required | The type of the unit. Must be in [UnitTypes.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/UnitTypes.json) |
 | cost | Integer (≥0) | defaults to 0 | The amount of production required to build this unit |
 | movement | Integer (≥0) | defaults to 0 | The amount of movement points the unit has by default |
 | strength | Integer (≥0) | defaults to 0 | The melee attack and defensive strength of the unit. If this and rangedStrength are ommited or 0, the unit will be a civilian |
 | rangedStrength | Integer (≥0) | defaults to 0 | The ranged attack strength of the unit. If omitted, the unit cannot ranged attack |
 | range | Integer (≥0) | defaults to 2 | The default range from which ranged attacks can be preformed |
 | interceptRange | Integer (≥0) | defaults to 0 | Air units attacking within in this range will be intercepted |
-| requiredTech | String | defaults to none | The tech required to build this unit. Must be in [Techs.json](#techsjson) |
-| obsoleteTech | String | defaults to none | After researching this tech, the unit can no longer be build. Must be in [Techs.json](#techsjson) |
-| requiredResource | String | defaults to none | Resource that is consumed by building this unit. Must be in [TileResources.json](#tilereousrcesjson) |
+| requiredTech | String | defaults to none | The tech required to build this unit. Must be in [Techs.json](./Civilization-related-JSON-files.md#techsjson) |
+| obsoleteTech | String | defaults to none | After researching this tech, the unit can no longer be build. Must be in [Techs.json](./Civilization-related-JSON-files.md#techsjson) |
+| requiredResource | String | defaults to none | Resource that is consumed by building this unit. Must be in [TileResources.json](./Map-related-JSON-files.md#tileresourcesjson) |
 | upgradesTo | String | defaults to none | Unit that this unit can upgrade to when it is available. Must be in [Units.json](#unitsjson) |
 | replaces | String | defaults to none | If this unit is unique to a nation, this is the unit it replaces. Must be in [Units.json](#unitsjson) |
-| uniqueTo | String | defaults to none | The nation that this unit is unique to. Must be in [Nations.json](#nationsjson) |
+| uniqueTo | String | defaults to none | The nation that this unit is unique to. Must be in [Nations.json](./Civilization-related-JSON-files.md#nationsjson) |
 | hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it's price is increased by so much percent |
 | promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
 | uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](./Uniques.md#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
 | attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [sounds](#Sounds)
-| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](./Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
 ## UnitPromotions.json
@@ -51,7 +51,7 @@ Each promotion can have the following properties:
 | effect | String | Default empty | Deprecated, use uniques instead |
 | unitTypes | List | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
 | uniques | List | Default empty | List of effects, [see here](./Uniques.md#unit-uniques) |
-| civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
+| civilopediaText | List | Default empty | see [civilopediaText chapter](./Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
 ## UnitTypes.json
