@@ -6,7 +6,7 @@ class TileSetConfig {
     var useColorAsBaseTerrain = true
     var unexploredTileColor: Color = Color.DARK_GRAY
     var fogOfWarColor: Color = Color.BLACK
-    /** Name of the tileset to use when this one is missing images. */
+    /** Name of the tileset to use when this one is missing images. Null to disable. */
     var fallbackTileSet: String? = "FantasyHex"
     var ruleVariants: HashMap<String, Array<String>> = HashMap()
 
