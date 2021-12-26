@@ -455,9 +455,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
      *
      * @param pastVisibleUnits Sequence of [MapUnit]s for which the last turn's movement history can be displayed.
      * @param targetVisibleUnits Sequence of [MapUnit]s for which the active movement target can be displayed.
-     * @param visibleAttacks Sequence of pairs of MapUnits to the target coordinates of attacks that they have done and can be displayed.
+     * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
      * */
-    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<MapUnit, Vector2>>) {
+    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<Vector2, Vector2>>) {
         if (!UncivGame.Current.settings.showUnitMovements) {
             return
         }
@@ -481,7 +481,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             addArrow(unit.getTile(), toTile, MiscArrowTypes.UnitMoving)
         }
         for ((from, to) in visibleAttacks) {
-            addArrow(tileMap[from.getTile().position], tileMap[to], MiscArrowTypes.UnitHasAttacked)
+            addArrow(tileMap[from], tileMap[to], MiscArrowTypes.UnitHasAttacked)
         }
     }
 
