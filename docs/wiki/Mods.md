@@ -19,9 +19,9 @@ Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier
 
 ## Audiovisual Mods
 
-I addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](./Audiovisual-Mods).
+I addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](./Audiovisual-Mods.md).
 
-Custom tilesets are closely related, see [Creating a custom tileset](./Creating-a-custom-tileset).
+Custom tilesets are closely related, see [Creating a custom tileset](./Creating-a-custom-tileset.md).
 
 Such mods are candidates for the "Permanent audiovisual mod" switch available on the Mod Management Screen. Note that this feature includes graphics or sounds from the selected mod in _all_ games, even those started before installing the mod. In case of a mod bringing both changed rules and audiovisuals, the 'permanent' feature will include only the media on all games, to use the rules you will still need to select the mod for a new game.
 
@@ -35,7 +35,7 @@ Mods need to conform to github repo naming rules, but best stay simple and use o
 Mods are located in a `/mods` directory, on Desktop that should be next to your .jar file.
 
 Mods typically have 2 subfolders:
-- jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons). More information on these can be found [here](/yairm210/Unciv/wiki/JSON-files-for-mods)
+- jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons). More information on these can be found [here](./JSON-files-for-mods.md)
 - Images - here you should put game images, as in [the base image files](https://github.com/yairm210/Unciv/tree/master/android/Images). Please read the [atlas chapter](#more-on-images-and-the-texture-atlas) for important details.
 
 In order to remove objects from the game, you'll need to create a ModOptions file in the `/jsons` subfolder - there's an example [here](https://github.com/yairm210/Unciv-mod-example/blob/master/Removing%20Things/jsons/ModOptions.json)
@@ -44,7 +44,7 @@ In a base ruleset mod, ALL the original objects are removed - this is done by ad
 
 For an example, you can refer to [the example mod](https://github.com/yairm210/Unciv-mod-example) - just download the Example-Aliens-Mod and put it in a `/mods` folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Aliens as a playable civilization!
 
-If you want to add a new civilization as a mod, you should check out [the Civ making instructions](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization) to see what's required, or see the example Aliens mod =)
+If you want to add a new civilization as a mod, you should check out [the Civ making instructions](./Making-a-new-Civilization.md) to see what's required, or see the example Aliens mod =)
 
 ### More on Images and the texture atlas
 Images are combined (at runtime) into texture images with an 'atlas', so if you see "game.atlas" and "game.png" files being generated, now you know what for. Most mods will need only one pair of those, the base game has around four.
@@ -108,6 +108,6 @@ When loading a mod, it needs to be in its own folder in `/mods` - this is how yo
 
 Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
-A list of uniques and how to use them can be found [here](uniques)!
+A list of uniques and how to use them can be found [here](./Uniques.md)!
 
-Some images don't exist at all in the base game, but can be added in mods. For more info, see [Audiovisual Mods](./Audiovisual-Mods).
+Some images don't exist at all in the base game, but can be added in mods. For more info, see [Audiovisual Mods](./Audiovisual-Mods.md).

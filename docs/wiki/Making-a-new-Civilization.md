@@ -51,7 +51,7 @@ Again, [translation file](/android/assets/jsons/Translations/Buildings.json) for
 
 ## Civ Unique
 
-Check out our [list of uniques](../wiki/uniques) to see all the cool special effects you can add to your civilization!
+Check out our [list of uniques](./Uniques.md) to see all the cool special effects you can add to your civilization!
 
 ## Icon considerations
 
@@ -61,4 +61,4 @@ Icons directly from the base game belong to Firaxis, so I'm not sure we're legal
 
 One source I use constantly is [The Noun Project](https://thenounproject.com) - everything there is Creative Commons or open, so they can all be used!
 
-Credits for icons should go in the [Credits](Credits.md) page
+Credits for icons should go in the [Credits](/docs/Credits.md) page

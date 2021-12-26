@@ -1,12 +1,12 @@
 # How to make Unciv use your custom tileset
 
-### You should read the [Mods](https://github.com/yairm210/Unciv/wiki/Mods) page first before proceeding
+### You should read the [Mods](./Mods.md) page first before proceeding
 
 In order to add a tileset mod (yes, tilesets are just another type of mod), all you need to do is add your images under Images/Tilesets/MyCoolTilesetExample and enable the mod as a permanent visual mod - the game will recognize the tileset, and allow you to pick it in the options menu.
 
 Let's look at the example "Grassland+Jungle+Dyes+Trading post" to learn how the game decides which images it should use for this tile:
 
-1. When there is a rule variant entry in the [tileset config](https://github.com/yairm210/Unciv/wiki/Creating-a-custom-tileset/tileset-config) for this tile we will use the entry. 
+1. When there is a rule variant entry in the [tileset config](./Creating-a-custom-tileset.md/tileset-config) for this tile we will use the entry. 
 
 2. Else if there is an image called "Grassland+Jungle+Dyes+Trading post" we will use it instead.
 

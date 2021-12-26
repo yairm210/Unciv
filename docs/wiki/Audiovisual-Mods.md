@@ -1,7 +1,7 @@
 # Audiovisual Mods
-- [The 'Permanent audiovisual mod' feature](#permanent-audiovisual-mod)
+- [The 'Permanent audiovisual mod' feature](#permanent-audiovisual-mods)
 - [Mods can override built-in graphics](#override-built-in-graphics)
-- [Mods can supply additional tilesets - see separate page](./Creating-a-custom-tileset)
+- [Mods can supply additional tilesets - see separate page](./Creating-a-custom-tileset.md)
 - [Mods can supply additional graphics not included in the base game](#supply-additional-graphics)
 - [Mods can override built-in sounds](#override-built-in-sounds)
 - [Mods can supply additional music tracks](#supply-additional-music)
@@ -11,7 +11,7 @@ The following chapters describe possibilities that will work while a mod is ***a
 
 
 ## Override built-in graphics
-If a mod supplies an image with the same name and path as one included in the base game (and its [atlas](./Mods#more-on-images-and-the-texture-atlas) is up to date), and the mod is active, the mod's graphics will be used instead of the built-in one.
+If a mod supplies an image with the same name and path as one included in the base game (and its [atlas](./Mods.md#more-on-images-and-the-texture-atlas) is up to date), and the mod is active, the mod's graphics will be used instead of the built-in one.
 
 For example, if you include a file named "Images/OtherIcons/Link.png" in your mod, you will be overriding the little chain links icon denoting linked lines in Civilopedia.
 

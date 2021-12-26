@@ -28,7 +28,7 @@ Each unit can have the following attributes:
 | uniqueTo | String | defaults to none | The nation that this unit is unique to. Must be in [Nations.json](#nationsjson) |
 | hurryCostModifier | Integer | defaults to 0 | If this unit is bought for gold/faith, it's price is increased by so much percent |
 | promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
-| uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](https://github.com/yairm210/Unciv/wiki/Uniques#unit-uniques) |
+| uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](./Uniques.md#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
 | attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [sounds](#Sounds)
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
@@ -50,7 +50,7 @@ Each promotion can have the following properties:
 | prerequisites | List | Default empty | Prerequisite promotions |
 | effect | String | Default empty | Deprecated, use uniques instead |
 | unitTypes | List | Default empty | The unit types for which this promotion applies as specified in [UnitTypes.json](#unittypesjson) |
-| uniques | List | Default empty | List of effects, [see here](https://github.com/yairm210/Unciv/wiki/Uniques#unit-uniques) |
+| uniques | List | Default empty | List of effects, [see here](./Uniques.md#unit-uniques) |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
 
@@ -64,7 +64,7 @@ Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the unit type |
 | movementType | String | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
-| uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](https://github.com/yairm210/Unciv/wiki/Uniques#unit-uniques) |
+| uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](./Uniques.md#unit-uniques) |
 
 
 ## Sounds

@@ -18,7 +18,7 @@ Each belief can have the following attributes:
 | --------- | ---- | --------------- | ----- |
 | name | String | Required | Name of the belief |
 | type | String | Required | The type of the belief. Valid values are: "Pantheon" and "Follower". Later "Founder" will be added, but this has not been implemented yet |
-| uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](https://github.com/yairm210/Unciv/wiki/Uniques#buildings-only), as well as the general uniques on that page |
+| uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](./Uniques.md#buildings-only), as well as the general uniques on that page |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
 
@@ -56,7 +56,7 @@ Each building can have the following attributes:
 | cityHealth | Integer | defaults to 0 | Health bonus the city in which this building is built receives |
 | hurryCostModifier | Integer | defaults to 0 | When this building is bought using gold or faith, the price is increased by this much percent |
 | quote | String | defaults to none | If this building is a (national) wonder, this string will be shown on the completion popup |
-| uniques | List of Strings | defaults to none | List of unique abilities this building has. Most of these can be found [here](../Uniques#buildings-only) |
+| uniques | List of Strings | defaults to none | List of unique abilities this building has. Most of these can be found [here](./Uniques.md#buildings-only) |
 | replacementTextForUniques | String | defaults to none | If provided, this string will be shown instead of all of the uniques |
 | percentStatBonus | Object | defaults to none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers (≥0) |
 | greatPersonPoints | Object | defaults to none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc. .), valid values are Integers (≥0) |
@@ -91,7 +91,7 @@ This file contains all the nations and city states, including Barbarians and Spe
 | outerColor | 3x Integer | Required | R, G, B for inner circle of nation icon |
 | uniqueName | String | Default empty | Decorative name for the special characteristic of this Nation |
 | uniqueText | String | Default empty | Replacement text for "uniques". If empty, uniques are listed individually. |
-| uniques | List | Default empty | Properties of the civilization - see [here](../Uniques#general-uniques) |
+| uniques | List | Default empty | Properties of the civilization - see [here](./Uniques.md#general-uniques) |
 | cities | List | Default empty | City names used sequentially for newly founded cities. |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text) |
 
@@ -108,7 +108,7 @@ Each policy branch can have the following properties:
 |-----------|------|-----------|-------|
 | name | String | Required |  |
 | era | String | Required | Unlocking era as defined in [Eras.json](#erasjson) |
-| uniques | List | Default empty | List of effects, [see here](../Uniques#general-uniques) |
+| uniques | List | Default empty | List of effects, [see here](./Uniques.md#general-uniques) |
 | policies | List | Default empty | List of member policies |
 
 Each member policy can have the following properties:
@@ -118,7 +118,7 @@ Each member policy can have the following properties:
 | row | Integer | Required | Placement in UI, each unit approximately half the icon size |
 | column | Integer | Required | Placement in UI, each unit approximately half the icon size |
 | requires | List | Default empty | List of prerequisite policy names |
-| uniques | List | Default empty | List of effects, [see here](../Uniques#general-uniques) |
+| uniques | List | Default empty | List of effects, [see here](./Uniques.md#general-uniques) |
 
 
 ## Quests.json
@@ -184,5 +184,5 @@ This file contains all the technologies. It is organized into an outer list of '
 | cost | Integer | Defaults to column techCost | The amount of science required to research this tech. |
 | prerequisites | List | Default empty | A list of the names of techs that are prerequisites of this tech. Only direct prerequisites are necessary. |
 | quote | String | Default empty | A nice story presented to the player when they research this tech. |
-| uniques | List | Default empty | Properties granted by the tech - see [here](../Uniques#general-uniques). |
+| uniques | List | Default empty | Properties granted by the tech - see [here](./Uniques.md#general-uniques). |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](#civilopedia-text). |

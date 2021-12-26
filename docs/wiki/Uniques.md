@@ -921,19 +921,19 @@ Some of the terrain uniques have gameplay effect, others are used only for map g
 
 "Rare feature"
 
-"Always Fertility [amount] for Map Generation" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+"Always Fertility [amount] for Map Generation" - see [Regions](./Regions.md)
 
-"[amount] to Fertility for Map Generation" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+"[amount] to Fertility for Map Generation" - see [Regions](./Regions.md)
 
-"A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+"A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]" - see [Regions](./Regions.md)
 
-"A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+"A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]" - see [Regions](./Regions.md)
 
-"A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+"A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles" - see [Regions](./Regions.md)
 
-"Base Terrain on this tile is not counted for Region determination" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+"Base Terrain on this tile is not counted for Region determination" - see [Regions](./Regions.md)
 
-"Considered [terrainQuality] when determining start locations" - see [Regions](https://github.com/yairm210/Unciv/wiki/Regions)
+"Considered [terrainQuality] when determining start locations" - see [Regions](./Regions.md)
 
 
 # Resource Uniques
@@ -946,7 +946,7 @@ Some of the terrain uniques have gameplay effect, others are used only for map g
 
 
 # ModOptions Uniques
-These are valid only in a [ModOptions.json](/yairm210/Unciv/wiki/Miscellaneous-JSON-files#modoptionsjson) file.
+These are valid only in a [ModOptions.json](./Miscellaneous-JSON-files.md#modoptionsjson) file.
 
 |unique|comment|
 |------|-------|
