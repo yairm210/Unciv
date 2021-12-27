@@ -35,8 +35,8 @@ Mods need to conform to github repo naming rules, but best stay simple and use o
 Mods are located in a `/mods` directory, on Desktop that should be next to your .jar file.
 
 Mods typically have 2 subfolders:
-- jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons). More information on these can be found [here](./JSON-files-for-mods.md)
-- Images - here you should put game images, as in [the base image files](https://github.com/yairm210/Unciv/tree/master/android/Images). Please read the [atlas chapter](#more-on-images-and-the-texture-atlas) for important details.
+- jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](/android/assets/jsons). More information on these can be found [here](./JSON-files-for-mods.md)
+- Images - here you should put game images, as in [the base image files](/android/Images). Please read the [atlas chapter](#more-on-images-and-the-texture-atlas) for important details.
 
 In order to remove objects from the game, you'll need to create a ModOptions file in the `/jsons` subfolder - there's an example [here](https://github.com/yairm210/Unciv-mod-example/blob/master/Removing%20Things/jsons/ModOptions.json)
 

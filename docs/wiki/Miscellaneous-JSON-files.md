@@ -6,7 +6,7 @@
 
 
 ## Difficulties.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Difficulties.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Difficulties.json)
 
 This file defines the difficulty levels a player can choose when starting a new game.
 
@@ -39,7 +39,7 @@ Each difficulty level can have the following attributes:
 
 
 ## Eras.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Eras.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Eras.json)
 
 This file should contain all the era's you want to use in your mod.
 

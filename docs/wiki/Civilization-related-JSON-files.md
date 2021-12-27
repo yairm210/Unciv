@@ -9,7 +9,7 @@
 
 
 ## Beliefs.json
-[link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Beliefs.json)
+[link to original](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Beliefs.json)
 
 This file contains the beliefs that can be chosen for religions in your mod.
 
@@ -23,7 +23,7 @@ Each belief can have the following attributes:
 
 
 ## Buildings.json
-[link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Buildings.json)
+[link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Buildings.json)
 
 This file should contain all the buildings and wonders you want to use in your mod.
 
@@ -65,7 +65,7 @@ Each building can have the following attributes:
 
 
 ## Nations.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Nations.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Nations.json)
 
 This file contains all the nations and city states, including Barbarians and Spectator.
 
@@ -97,7 +97,7 @@ This file contains all the nations and city states, including Barbarians and Spe
 
 
 ## Policies.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Policies.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Policies.json)
 
 This file lists the available social policies that can be "bought" with culture.
 
@@ -122,7 +122,7 @@ Each member policy can have the following properties:
 
 
 ## Quests.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Quests.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Quests.json)
 
 This file contains the Quests that may be given to major Civilizations by City States.
 
@@ -137,13 +137,13 @@ This file contains the Quests that may be given to major Civilizations by City S
 
 
 ## Religions.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Religions.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Religions.json)
 
 This is just a list of Strings specifying all predefined Religion names. Corresponding icons must exist, that's all to it. After all, they're just containers for [Beliefs](#beliefsjson).
 
 
 ## Specialists.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Specialists.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Specialists.json)
 
 This file should contain a list of all possible specialists that you want in your mod.
 
@@ -162,7 +162,7 @@ Each specialist can have the following attributes:
 
 
 ## Techs.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Techs.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Techs.json)
 
 This file contains all the technologies. It is organized into an outer list of 'columns' which in turn contain one or more tech each.
 

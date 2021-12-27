@@ -75,7 +75,7 @@ Each resource can have the following properties:
 
 
 ## Ruins.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
 
 This file contains the possible rewards ancient ruins give. It is not required, if omitted, the default file for the game is used, even in baseRuleSet mods.
 

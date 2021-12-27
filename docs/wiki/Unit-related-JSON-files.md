@@ -5,7 +5,7 @@
 
 
 ## Units.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Units.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Units.json)
 
 This file should contain a list of all the units, both military and civilian, that you want to use in your mod.
 
@@ -35,7 +35,7 @@ Each unit can have the following attributes:
 
 
 ## UnitPromotions.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/UnitPromotions.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/UnitPromotions.json)
 
 This file lists the available unit promotions.
 
@@ -55,7 +55,7 @@ Each promotion can have the following properties:
 
 
 ## UnitTypes.json
-[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/UnitTypes.json)
+[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/UnitTypes.json)
 
 This optional file is used for defining new types of units. The names of these can be used in unitFilters, and these types determine what domain the unit moves in: over land, over water or through the air. If the file is ommitted, the following are automatically added:
 Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee, WaterRanged, WaterSubmarine, WaterAircraftCarrier, Fighter, Bomber, AtomicBomber, and Missile.
@@ -68,7 +68,7 @@ Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee
 
 
 ## Sounds
-Standard values are below. The sounds themselves can be found [here](https://github.com/yairm210/Unciv/tree/master/android/assets/sounds).
+Standard values are below. The sounds themselves can be found [here](/android/assets/sounds).
 
 - _arrow, artillery, bombard, bombing, cannon, chimes, choir, click, coin, construction, elephant, fortify, gdrAttack, horse, jetgun, machinegun, metalhit, missile, nonmetalhit, nuke, paper, policy, promote, setup, shipguns, shot, slider, swap, tankshot, throw, torpedo, upgrade, whoosh_.
 

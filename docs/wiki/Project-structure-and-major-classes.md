@@ -2,11 +2,11 @@
 
 Since LibGDX, and therefore Unciv, are built for multi-platform support, the project structure is built accordingly.
 
-99% of the code is in the [Core](https://github.com/yairm210/Unciv/tree/master/core/src/com/unciv) project, which contains all the platform-independant code.
+99% of the code is in the [Core](/core/src/com/unciv) project, which contains all the platform-independant code.
 
-The [Desktop](https://github.com/yairm210/Unciv/tree/master/desktop) and [Android](https://github.com/yairm210/Unciv/tree/master/android) folders contain platform-specific things, and the Android folder also contains the game Images and the all-important Assets, which are required for running from Desktop as well, so we bundle them up into the .jar file when releasing.
+The [Desktop](/desktop) and [Android](/android) folders contain platform-specific things, and the Android folder also contains the game Images and the all-important Assets, which are required for running from Desktop as well, so we bundle them up into the .jar file when releasing.
 
-The [Test](https://github.com/yairm210/Unciv/tree/master/tests/src/de/tomgrill/gdxtesting/examples) folder contains tests that can be run manually via gradle with `./gradlew tests:test`, and are run automatically by Travis for every push.
+The [Test](/tests/src/com/unciv) folder contains tests that can be run manually via gradle with `./gradlew tests:test`, and are run automatically by Travis for every push.
 
 # Translations
 Before we get to the Classes, a word on Languages. Unciv is playable in several handfuls of languages, and there's magic to support that. Whenever you include a new string in code you will need to give it a quick evaluation - will users see it, and if so, what do I need to do to support its translations. Sometimes you may not need to do anything, sometimes you will add a line to the [translation templates](/android/assets/jsons/translations/template.properties), and sometimes you will adapt the string formatting to support the translations. For details, see [the 'Translation generation - for developers' chapter](./Translating.md#translation-generation---for-developers).
