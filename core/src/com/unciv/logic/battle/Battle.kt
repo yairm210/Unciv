@@ -61,6 +61,12 @@ object Battle {
         val attackedTile = defender.getTile()
         if (attacker is MapUnitCombatant) {
             attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position))
+        } else {
+            attacker.getCivInfo().attacksSinceTurnStart.add(CivilizationInfo.HistoricalAttackMemory(
+                null,
+                Vector2(attacker.getTile().position),
+                Vector2(attackedTile.position)
+            ))
         }
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isAirUnit()) {
@@ -633,6 +639,8 @@ object Battle {
             }
         }
         if (attacker.isDefeated()) return
+
+        attacker.unit.attacksSinceTurnStart.add(Vector2(targetTile.position))
 
         // Destroy units on the target tile
         // Needs the toList() because if we're destroying the units, they're no longer part of the sequence

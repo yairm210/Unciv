@@ -177,6 +177,7 @@ class MapUnit {
      *
      * @property position Position on the map at this instant.
      * @property type Category of the last change in position that brought the unit to this position.
+     * @see [movementMemories]
      * */
     class UnitMovementMemory() {
         constructor(position: Vector2, type: UnitMovementMemoryType): this() {
@@ -827,6 +828,8 @@ class MapUnit {
     }
 
     fun destroy() {
+        val currentPosition = Vector2(getTile().position)
+        civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
