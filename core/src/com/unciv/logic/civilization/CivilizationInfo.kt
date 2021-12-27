@@ -183,7 +183,7 @@ class CivilizationInfo {
      * @property attackingUnit Name key of [BaseUnit] type that performed the attack, or null (E.G. for city bombardments).
      * @property source Position of the tile from which the attack was made.
      * @property target Position of the tile targetted by the attack.
-     * @see [MapUnit.UnitMovementMemory]
+     * @see [MapUnit.UnitMovementMemory], [attacksSinceTurnStart]
      */
     class HistoricalAttackMemory() {
         constructor(attackingUnit: String?, source: Vector2, target: Vector2): this() {
@@ -196,6 +196,7 @@ class CivilizationInfo {
         lateinit var target: Vector2
         fun clone() = HistoricalAttackMemory(attackingUnit, Vector2(source), Vector2(target))
     }
+    /** Deep clone an ArrayList of [HistoricalAttackMemory]s. */
     private fun ArrayList<HistoricalAttackMemory>.copy() = ArrayList(this.map { it.clone() })
     /**
      * List of attacks that this civilization has performed since the start of its most recent turn. Does not include attacks already tracked in [MapUnit.attacksSinceTurnStart] of living units. Used in movement arrow overlay.
