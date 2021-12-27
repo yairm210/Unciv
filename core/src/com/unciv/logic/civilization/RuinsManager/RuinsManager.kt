@@ -4,13 +4,14 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.RuinReward
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
 
-class RuinsManager {
+class RuinsManager: ICloneable<RuinsManager> {
     var lastChosenRewards: MutableList<String> = mutableListOf("", "")
     private fun rememberReward(reward: String) {
         lastChosenRewards[0] = lastChosenRewards[1]
@@ -22,7 +23,7 @@ class RuinsManager {
     @Transient
     lateinit var validRewards: List<RuinReward> 
     
-    fun clone(): RuinsManager {
+    override fun clone(): RuinsManager {
         val toReturn = RuinsManager()
         toReturn.lastChosenRewards = lastChosenRewards
         return toReturn

@@ -1,9 +1,10 @@
 package com.unciv.logic.map
 
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unit.Promotion
 
-class UnitPromotions {
+class UnitPromotions: ICloneable<UnitPromotions> {
     // Having this as mandatory constructor parameter would be safer, but this class is part of a
     // saved game and as usual the json deserializer needs a default constructor.
     // Initialization occurs in setTransients() - called as part of MapUnit.setTransients,
@@ -99,7 +100,7 @@ class UnitPromotions {
             }
     }
 
-    fun clone(): UnitPromotions {
+    override fun clone(): UnitPromotions {
         val toReturn = UnitPromotions()
         toReturn.XP = XP
         toReturn.promotions.addAll(promotions)

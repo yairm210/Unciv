@@ -12,6 +12,8 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.UnitActionType
+import com.unciv.models.helpers.ICloneable
+import com.unciv.models.helpers.copy
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -29,7 +31,7 @@ import kotlin.math.pow
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
  */
-class MapUnit {
+class MapUnit: ICloneable<MapUnit> {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -178,20 +180,16 @@ class MapUnit {
      * @property position Position on the map at this instant.
      * @property type Category of the last change in position that brought the unit to this position.
      * */
-    class UnitMovementMemory() {
+    class UnitMovementMemory(): ICloneable<UnitMovementMemory> {
         constructor(position: Vector2, type: UnitMovementMemoryType): this() {
             this.position = position
             this.type = type
         }
         lateinit var position: Vector2
         lateinit var type: UnitMovementMemoryType
-        fun clone() = UnitMovementMemory(Vector2(position), type)
+        override fun clone() = UnitMovementMemory(Vector2(position), type)
         override fun toString() = "${this::class.simpleName}($position, $type)"
     }
-
-    /** Deep clone an ArrayList of [UnitMovementMemory]s. */
-    private fun ArrayList<UnitMovementMemory>.copy() = ArrayList(this.map { it.clone() })
-
     /** FIFO list of this unit's past positions. Should never exceed two items in length. New item added once at end of turn and once at start, to allow rare between-turn movements like melee withdrawal to be distinguished. Used in movement arrow overlay. */
     var movementMemories = ArrayList<UnitMovementMemory>()
 
@@ -214,7 +212,7 @@ class MapUnit {
     var attacksSinceTurnStart = ArrayList<Vector2>()
 
     //region pure functions
-    fun clone(): MapUnit {
+    override fun clone(): MapUnit {
         val toReturn = MapUnit()
         toReturn.baseUnit = baseUnit
         toReturn.name = name

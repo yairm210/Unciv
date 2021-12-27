@@ -2,6 +2,7 @@ package com.unciv.models.metadata
 
 import com.unciv.Constants
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
@@ -11,7 +12,7 @@ enum class BaseRuleset(val fullName:String){
     Civ_V_GnK("Civ V - Gods & Kings"),
 }
 
-class GameParameters { // Default values are the default new game
+class GameParameters: ICloneable<GameParameters> { // Default values are the default new game
     var difficulty = "Prince"
     var gameSpeed = GameSpeed.Standard
     var players = ArrayList<Player>().apply {
@@ -37,7 +38,7 @@ class GameParameters { // Default values are the default new game
     
     var maxTurns = 500
 
-    fun clone(): GameParameters {
+    override fun clone(): GameParameters {
         val parameters = GameParameters()
         parameters.difficulty = difficulty
         parameters.gameSpeed = gameSpeed

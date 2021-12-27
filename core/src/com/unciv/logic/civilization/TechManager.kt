@@ -4,6 +4,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.tech.Technology
@@ -19,7 +20,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-class TechManager {
+class TechManager: ICloneable<TechManager> {
     @Transient
     lateinit var civInfo: CivilizationInfo
     /** This is the Transient list of Technologies */
@@ -61,7 +62,7 @@ class TechManager {
     var goldPercentConvertedToScience = 0.6f
 
     //region state-changing functions
-    fun clone(): TechManager {
+    override fun clone(): TechManager {
         val toReturn = TechManager()
         toReturn.techsResearched.addAll(techsResearched)
         toReturn.freeTechs = freeTechs

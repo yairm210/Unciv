@@ -4,6 +4,7 @@ import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -31,7 +32,7 @@ import kotlin.math.roundToInt
  * @property currentConstructionIsUserSet a flag indicating if the [currentConstructionFromQueue] has been set by the user or by the AI
  * @property constructionQueue a list of constructions names enqueued
  */
-class CityConstructions {
+class CityConstructions: ICloneable<CityConstructions> {
     @Transient
     lateinit var cityInfo: CityInfo
 
@@ -60,7 +61,7 @@ class CityConstructions {
     val freeBuildingsProvidedFromThisCity: HashMap<String, HashSet<String>> = hashMapOf()
     
     //region pure functions
-    fun clone(): CityConstructions {
+    override fun clone(): CityConstructions {
         val toReturn = CityConstructions()
         toReturn.builtBuildings.addAll(builtBuildings)
         toReturn.inProgressConstructions.putAll(inProgressConstructions)

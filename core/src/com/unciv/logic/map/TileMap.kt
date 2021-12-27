@@ -6,6 +6,8 @@ import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.helpers.ICloneable
+import com.unciv.models.helpers.copy
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -17,7 +19,7 @@ import kotlin.math.abs
  * 
  * Note: Will be Serialized -> Take special care with lateinit and lazy! 
  */
-class TileMap {
+class TileMap: ICloneable<TileMap> {
     companion object {
         /** Legacy way to store starting locations - now this is used only in [translateStartingLocationsFromMap] */
         const val startingLocationPrefix = "StartingLocation "
@@ -122,9 +124,9 @@ class TileMap {
     //region Operators and Standards
 
     /** @return a deep-copy clone of the serializable fields, no transients initialized */
-    fun clone(): TileMap {
+    override fun clone(): TileMap {
         val toReturn = TileMap()
-        toReturn.tileList.addAll(tileList.map { it.clone() })
+        toReturn.tileList = tileList.copy()
         toReturn.mapParameters = mapParameters
         toReturn.ruleset = ruleset
         toReturn.startingLocations.clear()

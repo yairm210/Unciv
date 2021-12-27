@@ -1,13 +1,14 @@
 package com.unciv.logic.civilization
 
 import com.unciv.models.Counter
+import com.unciv.models.helpers.ICloneable
 import java.util.HashSet
 
 // todo: Great Admiral?
 // todo: Free GP from policies and wonders should increase threshold according to the wiki
 // todo: GP from Maya long count should increase threshold as well - implement together
 
-class GreatPersonManager {
+class GreatPersonManager: ICloneable<GreatPersonManager> {
     var pointsForNextGreatPerson = 100
     var pointsForNextGreatGeneral = 200
 
@@ -19,7 +20,7 @@ class GreatPersonManager {
     /** Remaining candidates for maya ability - whenever empty refilled from all GP, starts out empty */
     var longCountGPPool = HashSet<String>()
 
-    fun clone(): GreatPersonManager {
+    override fun clone(): GreatPersonManager {
         val toReturn = GreatPersonManager()
         toReturn.freeGreatPeople = freeGreatPeople
         toReturn.greatPersonPointsCounter = greatPersonPointsCounter.clone()

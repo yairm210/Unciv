@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.Counter
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
@@ -55,7 +56,7 @@ class ModOptions : IHasUniques {
 
 }
 
-class Ruleset {
+class Ruleset: ICloneable<Ruleset> {
 
     private val jsonParser = JsonParser()
 
@@ -84,7 +85,7 @@ class Ruleset {
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
 
-    fun clone(): Ruleset {
+    override fun clone(): Ruleset {
         val newRuleset = Ruleset()
         newRuleset.add(this)
         return newRuleset

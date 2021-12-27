@@ -2,12 +2,13 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.models.Counter
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import java.util.*
 import kotlin.collections.HashMap
 
-class CivConstructions {
+class CivConstructions: ICloneable<CivConstructions> {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -33,7 +34,7 @@ class CivConstructions {
         }
     }
 
-    fun clone(): CivConstructions {
+    override fun clone(): CivConstructions {
         val toReturn = CivConstructions()
         toReturn.civInfo = civInfo
         toReturn.freeBuildings.putAll(freeBuildings)

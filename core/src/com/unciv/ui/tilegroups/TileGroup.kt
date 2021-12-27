@@ -14,10 +14,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.*
-import com.unciv.models.helpers.MapArrowType
-import com.unciv.models.helpers.MiscArrowTypes
-import com.unciv.models.helpers.TintedMapArrow
-import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.models.helpers.*
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.*
 import kotlin.math.*
@@ -34,7 +31,7 @@ open class ActionlessGroup(val checkHit:Boolean=false):Group() {
     }
 }
 
-open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, private val groupSize: Float = 54f) : ActionlessGroup(true) {
+open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, private val groupSize: Float = 54f) : ActionlessGroup(true), ICloneable<TileGroup> {
     /*
     Layers:
     Base image (+ overlay)
@@ -170,7 +167,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         isTransform = false // performance helper - nothing here is rotated or scaled
     }
 
-    open fun clone(): TileGroup = TileGroup(tileInfo, tileSetStrings)
+    override fun clone(): TileGroup = TileGroup(tileInfo, tileSetStrings)
 
 
     //region init functions

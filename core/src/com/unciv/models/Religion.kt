@@ -1,12 +1,13 @@
 package com.unciv.models
 
 import com.unciv.logic.GameInfo
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.stats.INamed
 
 /** Data object for Religions */
-class Religion() : INamed {
+class Religion() : INamed, ICloneable<Religion> {
 
     override lateinit var name: String
     var displayName: String? = null
@@ -24,7 +25,7 @@ class Religion() : INamed {
         this.gameInfo = gameInfo
     }
 
-    fun clone(): Religion {
+    override fun clone(): Religion {
         val toReturn = Religion(name, gameInfo, foundingCivName)
         toReturn.displayName = displayName
         toReturn.founderBeliefs.addAll(founderBeliefs)

@@ -1,8 +1,9 @@
 package com.unciv.logic.civilization
 
+import com.unciv.models.helpers.ICloneable
 import com.unciv.ui.utils.toPercent
 
-class GoldenAgeManager {
+class GoldenAgeManager: ICloneable<GoldenAgeManager> {
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -10,7 +11,7 @@ class GoldenAgeManager {
     private var numberOfGoldenAges = 0
     var turnsLeftForCurrentGoldenAge = 0
 
-    fun clone(): GoldenAgeManager {
+    override fun clone(): GoldenAgeManager {
         val toReturn = GoldenAgeManager()
         toReturn.numberOfGoldenAges = numberOfGoldenAges
         toReturn.storedHappiness = storedHappiness

@@ -1,10 +1,11 @@
 package com.unciv.logic.civilization
 
 import com.unciv.models.Counter
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
 
-class VictoryManager {
+class VictoryManager: ICloneable<VictoryManager> {
     @Transient
     lateinit var civInfo: CivilizationInfo
 
@@ -19,7 +20,7 @@ class VictoryManager {
         requiredSpaceshipParts.add("SS Stasis Chamber", 1)
     }
 
-    fun clone(): VictoryManager {
+    override fun clone(): VictoryManager {
         val toReturn = VictoryManager()
         toReturn.currentsSpaceshipParts.putAll(currentsSpaceshipParts)
         return toReturn

@@ -7,6 +7,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.QuestName
@@ -23,7 +24,7 @@ import kotlin.math.max
 import kotlin.random.Random
 
 @Suppress("NON_EXHAUSTIVE_WHEN")  // Many when uses in here are much clearer this way
-class QuestManager {
+class QuestManager: ICloneable<QuestManager> {
 
     companion object {
         const val UNSET = -1
@@ -78,7 +79,7 @@ class QuestManager {
             investmentQuest.data1.toPercent()
     }
 
-    fun clone(): QuestManager {
+    override fun clone(): QuestManager {
         val toReturn = QuestManager()
         toReturn.globalQuestCountdown = globalQuestCountdown
         toReturn.individualQuestCountdown.putAll(individualQuestCountdown)

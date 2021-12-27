@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.randomWeighted
@@ -15,7 +16,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.system.measureNanoTime
 
-class BarbarianManager {
+class BarbarianManager: ICloneable<BarbarianManager> {
     val camps = HashMap<Vector2, Encampment>()
 
     @Transient
@@ -24,10 +25,11 @@ class BarbarianManager {
     @Transient
     lateinit var tileMap: TileMap
 
-    fun clone(): BarbarianManager {
+    override fun clone(): BarbarianManager {
         val toReturn = BarbarianManager()
         for (camp in camps.values.map { it.clone() })
             toReturn.camps[camp.position] = camp
+            // Not using the .copy() extension in ICloneable.kt because camp.position, which is mutable, is taken from the clone.
         return toReturn
     }
 
@@ -167,7 +169,7 @@ class BarbarianManager {
     }
 }
 
-class Encampment() {
+class Encampment(): ICloneable<Encampment> {
     val position = Vector2()
     var countdown = 0
     var spawnedUnits = -1
@@ -181,7 +183,7 @@ class Encampment() {
         this.position.y = position.y
     }
 
-    fun clone(): Encampment {
+    override fun clone(): Encampment {
         val toReturn = Encampment(position)
         toReturn.countdown = countdown
         toReturn.spawnedUnits = spawnedUnits

@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.HexMath.getEquivalentRectangularSize
 import com.unciv.logic.HexMath.getNumberOfTilesInHexagon
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.RulesetCache
 
@@ -16,7 +17,7 @@ enum class MapSize(val radius: Int, val width: Int, val height: Int) {
     Huge(40, 87, 57)
 }
 
-class MapSizeNew {
+class MapSizeNew: ICloneable<MapSizeNew> {
     var radius = 0
     var width = 0
     var height = 0
@@ -57,7 +58,7 @@ class MapSizeNew {
         this.radius = getEquivalentHexagonalRadius(width, height)
     }
 
-    fun clone() = MapSizeNew().also { 
+    override fun clone() = MapSizeNew().also {
         it.name = name
         it.radius = radius
         it.width = width
@@ -139,7 +140,7 @@ object MapResources {
     const val legendaryStart = "Legendary Start"
 }
 
-class MapParameters {
+class MapParameters: ICloneable<MapParameters> {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
@@ -166,7 +167,7 @@ class MapParameters {
     var resourceRichness = 0.1f
     var waterThreshold = 0f
 
-    fun clone() = MapParameters().also {
+    override fun clone() = MapParameters().also {
         it.name = name
         it.type = type
         it.shape = shape

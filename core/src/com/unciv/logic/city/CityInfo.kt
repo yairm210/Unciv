@@ -11,6 +11,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -32,7 +33,7 @@ enum class CityFlags {
     Resistance
 }
 
-class CityInfo {
+class CityInfo: ICloneable<CityInfo> {
     @Suppress("JoinDeclarationAndAssignment")
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -232,7 +233,7 @@ class CityInfo {
 
 
     //region pure functions
-    fun clone(): CityInfo {
+    override fun clone(): CityInfo {
         val toReturn = CityInfo()
         toReturn.location = location
         toReturn.id = id

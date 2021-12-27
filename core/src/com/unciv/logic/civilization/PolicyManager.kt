@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.logic.map.MapSize
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.unique.UniqueMap
@@ -11,7 +12,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
-class PolicyManager {
+class PolicyManager: ICloneable<PolicyManager> {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -33,7 +34,7 @@ class PolicyManager {
         private val turnCountRegex by lazy { Regex("for \\[[0-9]*\\] turns") }
     }
     
-    fun clone(): PolicyManager {
+    override fun clone(): PolicyManager {
         val toReturn = PolicyManager()
         toReturn.numberOfAdoptedPolicies = numberOfAdoptedPolicies
         toReturn.adoptedPolicies.addAll(adoptedPolicies)

@@ -4,10 +4,11 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.Counter
 import com.unciv.models.Religion
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.unique.Unique
 
-class CityInfoReligionManager {
+class CityInfoReligionManager: ICloneable<CityInfoReligionManager> {
     @Transient
     lateinit var cityInfo: CityInfo
     
@@ -36,7 +37,7 @@ class CityInfoReligionManager {
         clearAllPressures()
     }
     
-    fun clone(): CityInfoReligionManager {
+    override fun clone(): CityInfoReligionManager {
         val toReturn = CityInfoReligionManager()
         toReturn.cityInfo = cityInfo
         toReturn.religionsAtSomePointAdopted.addAll(religionsAtSomePointAdopted)

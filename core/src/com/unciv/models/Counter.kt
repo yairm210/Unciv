@@ -1,10 +1,11 @@
 package com.unciv.models
 
+import com.unciv.models.helpers.ICloneable
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.LinkedHashMap
 
-open class Counter<K> : LinkedHashMap<K, Int>() {
+open class Counter<K> : LinkedHashMap<K, Int>(), ICloneable<Counter<K>> {
 
     override operator fun get(key: K): Int? { // don't return null if empty
         if (containsKey(key))

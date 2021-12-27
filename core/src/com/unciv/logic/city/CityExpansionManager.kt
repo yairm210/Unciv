@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.helpers.ICloneable
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
@@ -12,12 +13,12 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class CityExpansionManager {
+class CityExpansionManager: ICloneable<CityExpansionManager> {
     @Transient
     lateinit var cityInfo: CityInfo
     var cultureStored: Int = 0
 
-    fun clone(): CityExpansionManager {
+    override fun clone(): CityExpansionManager {
         val toReturn = CityExpansionManager()
         toReturn.cultureStored = cultureStored
         return toReturn

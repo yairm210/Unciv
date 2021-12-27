@@ -1,5 +1,6 @@
 package com.unciv.models.stats
 
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.translations.tr
 import kotlin.reflect.KMutableProperty0
 
@@ -19,7 +20,7 @@ open class Stats(
     var culture: Float = 0f,
     var happiness: Float = 0f,
     var faith: Float = 0f
-): Iterable<Stats.StatValuePair> {
+): Iterable<Stats.StatValuePair>, ICloneable<Stats> {
     // This is what facilitates indexed access by [Stat] or add(Stat,Float)
     // without additional memory allocation or expensive conditionals
     @delegate:Transient
@@ -55,7 +56,7 @@ open class Stats(
     }
 
     /** @return a new instance containing the same values as `this` */
-    fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
+    override fun clone() = Stats(production, food, gold, science, culture, happiness, faith)
 
     /** @return `true` if all values are zero */
     fun isEmpty() = (

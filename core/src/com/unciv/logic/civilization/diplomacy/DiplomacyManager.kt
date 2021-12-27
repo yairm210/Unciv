@@ -6,6 +6,8 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.helpers.ICloneable
+import com.unciv.models.helpers.copy
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.ui.utils.toPercent
@@ -85,7 +87,7 @@ enum class DiplomaticModifiers {
     ReturnedCapturedUnits,
 }
 
-class DiplomacyManager() {
+class DiplomacyManager(): ICloneable<DiplomacyManager> {
 
     companion object {
         /** The value city-state influence can't go below */
@@ -123,11 +125,11 @@ class DiplomacyManager() {
     /** Total of each turn Science during Research Agreement */
     private var totalOfScienceDuringRA = 0
 
-    fun clone(): DiplomacyManager {
+    override fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName = otherCivName
         toReturn.diplomaticStatus = diplomaticStatus
-        toReturn.trades.addAll(trades.map { it.clone() })
+        toReturn.trades = trades.copy()
         toReturn.influence = influence
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)

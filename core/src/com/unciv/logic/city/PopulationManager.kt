@@ -4,12 +4,13 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
+import com.unciv.models.helpers.ICloneable
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.floor
 import kotlin.math.pow
 
-class PopulationManager {
+class PopulationManager: ICloneable<PopulationManager> {
     @Transient
     lateinit var cityInfo: CityInfo
 
@@ -24,7 +25,7 @@ class PopulationManager {
 
 
     //region pure functions
-    fun clone(): PopulationManager {
+    override fun clone(): PopulationManager {
         val toReturn = PopulationManager()
         toReturn.specialistAllocations.add(specialistAllocations)
         toReturn.population = population

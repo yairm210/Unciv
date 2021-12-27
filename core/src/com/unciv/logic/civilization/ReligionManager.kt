@@ -3,13 +3,14 @@ package com.unciv.logic.civilization
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.Counter
 import com.unciv.models.Religion
+import com.unciv.models.helpers.ICloneable
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.toPercent
 import kotlin.random.Random
 
-class ReligionManager {
+class ReligionManager: ICloneable<ReligionManager> {
 
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -39,7 +40,7 @@ class ReligionManager {
     private var shouldChoosePantheonBelief: Boolean = false
 
 
-    fun clone(): ReligionManager {
+    override fun clone(): ReligionManager {
         val clone = ReligionManager()
         clone.foundingCityId = foundingCityId
         clone.shouldChoosePantheonBelief = shouldChoosePantheonBelief

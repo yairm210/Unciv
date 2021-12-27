@@ -4,8 +4,9 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.models.helpers.ICloneable
 
-class Trade{
+class Trade: ICloneable<Trade> {
 
     val theirOffers = TradeOffersList()
     val ourOffers = TradeOffersList()
@@ -30,7 +31,7 @@ class Trade{
         return true
     }
 
-    fun clone():Trade{
+    override fun clone(): Trade{
         val toReturn = Trade()
         toReturn.theirOffers.addAll(theirOffers)
         toReturn.ourOffers.addAll(ourOffers)

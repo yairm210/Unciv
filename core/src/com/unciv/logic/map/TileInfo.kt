@@ -7,6 +7,8 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.helpers.ICloneable
+import com.unciv.models.helpers.copy
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
@@ -19,7 +21,7 @@ import com.unciv.ui.utils.toPercent
 import kotlin.math.abs
 import kotlin.math.min
 
-open class TileInfo {
+open class TileInfo: ICloneable<TileInfo> {
     @Transient
     lateinit var tileMap: TileMap
 
@@ -81,11 +83,11 @@ open class TileInfo {
     val longitude: Float
         get() = HexMath.getLongitude(position)
 
-    fun clone(): TileInfo {
+    override fun clone(): TileInfo {
         val toReturn = TileInfo()
         if (militaryUnit != null) toReturn.militaryUnit = militaryUnit!!.clone()
         if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
-        for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
+        toReturn.airUnits = airUnits.copy()
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
         toReturn.terrainFeatures.addAll(terrainFeatures)

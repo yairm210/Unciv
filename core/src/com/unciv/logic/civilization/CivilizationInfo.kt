@@ -14,6 +14,8 @@ import com.unciv.logic.map.*
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.Counter
+import com.unciv.models.helpers.ICloneable
+import com.unciv.models.helpers.copy
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
@@ -45,7 +47,7 @@ enum class Proximity {
     Distant
 }
 
-class CivilizationInfo {
+class CivilizationInfo: ICloneable<CivilizationInfo> {
 
     @Transient
     private var workerAutomationCache: WorkerAutomation? = null
@@ -189,7 +191,7 @@ class CivilizationInfo {
         this.civName = civName
     }
 
-    fun clone(): CivilizationInfo {
+    override fun clone(): CivilizationInfo {
         val toReturn = CivilizationInfo()
         toReturn.gold = gold
         toReturn.playerType = playerType
@@ -205,10 +207,9 @@ class CivilizationInfo {
         toReturn.ruinsManager = ruinsManager.clone()
         toReturn.victoryManager = victoryManager.clone()
         toReturn.allyCivName = allyCivName
-        for (diplomacyManager in diplomacy.values.map { it.clone() })
-            toReturn.diplomacy[diplomacyManager.otherCivName] = diplomacyManager
+        toReturn.diplomacy = diplomacy.copy()
         toReturn.proximity.putAll(proximity)
-        toReturn.cities = cities.map { it.clone() }
+        toReturn.cities = cities.copy()
 
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
