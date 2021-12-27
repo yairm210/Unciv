@@ -1,5 +1,6 @@
 {
     "useColorAsBaseTerrain": "false",
+    "fallbackTileSet": null,
     "ruleVariants": {
         //Legacy hill support
         "Hill": ["Grassland","Hill"],

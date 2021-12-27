@@ -4,12 +4,18 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
+import com.unciv.ui.utils.ImageGetter
 
-class TileSetStrings {
+/**
+ * @param tileSet Name of the tileset. Defaults to active at time of instantiation.
+ * @param fallbackDepth Maximum number of fallback tilesets to try. Used to prevent infinite recursion.
+ * */
+class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallbackDepth: Int = 1) {
+
     // this is so that when we have 100s of TileGroups, they won't all individually come up with all these strings themselves,
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
-    val tileSetLocation = "TileSets/" + UncivGame.Current.settings.tileSet + "/"
-    val tileSetConfig = TileSetCache[UncivGame.Current.settings.tileSet] ?: TileSetConfig()
+    val tileSetLocation = "TileSets/$tileSet/"
+    val tileSetConfig = TileSetCache[tileSet] ?: TileSetConfig()
 
     val hexagon = tileSetLocation + "Hexagon"
     val crosshatchHexagon = tileSetLocation + "CrosshatchHexagon"
@@ -66,4 +72,30 @@ class TileSetStrings {
         if (baseTerrain != null) return getString(tilesLocation, baseTerrain, "+", city)
         else return cityTile
     }
+
+    /** Fallback [TileSetStrings] to use when the currently chosen tileset is missing an image. */
+    val fallback by lazy {
+        if (fallbackDepth <= 0 || tileSetConfig.fallbackTileSet == null)
+            null
+        else
+            TileSetStrings(tileSetConfig.fallbackTileSet!!, fallbackDepth-1)
+    }
+    /**
+     * @param image An image path string, such as returned from an instance of [TileSetStrings].
+     * @param fallbackImage A lambda function that will be run with the [fallback] as its receiver if the original image does not exist according to [ImageGetter.imageExists].
+     * @return The original image path string if its image exists, or the return result of the [fallbackImage] lambda if the original image does not exist.
+     * */
+    fun orFallback(image: String, fallbackImage: TileSetStrings.() -> String): String {
+        return if (fallback == null || ImageGetter.imageExists(image))
+            image
+        else
+            fallback!!.run(fallbackImage)
+    }
+    /** @see orFallback */
+    fun orFallback(image: TileSetStrings.() -> String, fallbackImage: TileSetStrings.() -> String)
+            = orFallback(this.run(image), fallbackImage)
+    /** @see orFallback */
+    fun orFallback(image: TileSetStrings.() -> String)
+            = orFallback(image, image)
+
 }
