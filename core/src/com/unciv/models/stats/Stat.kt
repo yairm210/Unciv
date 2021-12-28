@@ -2,7 +2,6 @@ package com.unciv.models.stats
 
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.models.UncivSound
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 
 enum class Stat(
@@ -21,8 +20,6 @@ enum class Stat(
     companion object {
         val statsUsableToBuy = listOf(Gold, Food, Science, Culture, Faith)
     }
-
-    override fun toString() = character + name.tr()
 }
 
 // Should the well-known colours for these be needed:

@@ -8,7 +8,6 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.stats.Stat
 import com.unciv.models.translations.squareBraceRegex
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -204,14 +203,14 @@ class Nation : RulesetObject() {
 
                 for ((key, value) in building)
                     if (value != originalBuilding[key])
-                        textList += FormattedLine( key.toString() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1)
+                        textList += FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1)
 
                 for (unique in building.uniques.filter { it !in originalBuilding.uniques })
                     textList += FormattedLine(unique, indent=1)
                 if (building.maintenance != originalBuilding.maintenance)
-                    textList += FormattedLine("{Maintenance} ${Stat.Gold} ".tr() + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1)
+                    textList += FormattedLine("{Maintenance} ".tr() + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1)
                 if (building.cost != originalBuilding.cost)
-                    textList += FormattedLine("{Cost} ${Stat.Production} ".tr() + "[${building.cost}] vs [${originalBuilding.cost}]".tr(), indent=1)
+                    textList += FormattedLine("{Cost} ".tr() + "[${building.cost}] vs [${originalBuilding.cost}]".tr(), indent=1)
                 if (building.cityStrength != originalBuilding.cityStrength)
                     textList += FormattedLine("{City strength} ".tr() + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr(), indent=1)
                 if (building.cityHealth != originalBuilding.cityHealth)
@@ -233,7 +232,7 @@ class Nation : RulesetObject() {
                 val originalUnit = ruleset.units[unit.replaces!!]!!
                 textList += FormattedLine("Replaces [${originalUnit.name}]", link="Unit/${originalUnit.name}", indent=1)
                 if (unit.cost != originalUnit.cost)
-                    textList += FormattedLine("{Cost} ${Stat.Production} ".tr() + "[${unit.cost}] vs [${originalUnit.cost}]".tr(), indent=1)
+                    textList += FormattedLine("{Cost} ".tr() + "[${unit.cost}] vs [${originalUnit.cost}]".tr(), indent=1)
                 if (unit.strength != originalUnit.strength)
                     textList += FormattedLine("${Fonts.strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr(), indent=1)
                 if (unit.rangedStrength != originalUnit.rangedStrength)

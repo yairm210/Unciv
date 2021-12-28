@@ -151,7 +151,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             lines += stats.toString()
 
         for ((stat, value) in getStatPercentageBonuses(cityInfo))
-            if (value != 0f) lines += "+${value.toInt()}% $stat\n"
+            if (value != 0f) lines += "+${value.toInt()}% {${stat.name}}"
 
         for ((greatPersonName, value) in greatPersonPoints)
             lines += "+$value " + "[$greatPersonName] points".tr()
@@ -164,7 +164,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         if (cityStrength != 0) lines += "{City strength} +$cityStrength"
         if (cityHealth != 0) lines += "{City health} +$cityHealth"
-        if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance ${Stat.Gold}"
+        if (maintenance != 0 && !isFree) lines += "{Maintenance cost}: $maintenance {Gold}"
         if (missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
             lines += "\n" + 
@@ -322,7 +322,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityStrength != 0 || cityHealth != 0 || maintenance != 0) textList += FormattedLine()
         if (cityStrength != 0) textList +=  FormattedLine("{City strength} +$cityStrength")
         if (cityHealth != 0) textList +=  FormattedLine("{City health} +$cityHealth")
-        if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance ${Stat.Gold}")
+        if (maintenance != 0) textList +=  FormattedLine("{Maintenance cost}: $maintenance {Gold}")
 
         val seeAlso = ArrayList<FormattedLine>()
         for (building in ruleset.buildings.values) {

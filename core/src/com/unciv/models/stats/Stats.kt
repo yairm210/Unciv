@@ -1,5 +1,6 @@
 package com.unciv.models.stats
 
+import com.unciv.models.translations.tr
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -121,7 +122,7 @@ open class Stats(
         happiness *= number
         faith *= number
     }
-
+    
     operator fun div(number: Float) = times(1/number)
 
     /** ***Not*** only a debug helper. It returns a string representing the content, already _translated_.
@@ -130,14 +131,14 @@ open class Stats(
      */
     override fun toString(): String {
         return this.joinToString {
-            (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString()
+            (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr()
         }
     }
 
     // For display in diplomacy window
     fun toStringWithDecimals(): String {
         return this.joinToString {
-            (if (it.value > 0) "+" else "") + it.value.toString().removeSuffix(".0") + " " + it.key.toString()
+            (if (it.value > 0) "+" else "") + it.value.toString().removeSuffix(".0") + " " + it.key.toString().tr()
         }
     }
 
