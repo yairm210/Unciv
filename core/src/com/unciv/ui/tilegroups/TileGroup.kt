@@ -20,6 +20,7 @@ import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.*
+import java.lang.IllegalStateException
 import kotlin.math.*
 import kotlin.random.Random
 
@@ -44,9 +45,12 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     City name
     */
 
-    // Cache simple but frequent calculations
+    /** Cache simple but frequent calculations. */
     private val hexagonImageWidth = groupSize * 1.5f
-    private val hexagonImageY = - groupSize / 6
+    /** Cache simple but frequent calculations. */
+    private val hexagonImageOrigin = Pair(hexagonImageWidth/2f, sqrt((hexagonImageWidth/2f).pow(2) - (hexagonImageWidth/4f).pow(2))) // Pair, not Vector2, for immutability. Second number is triangle height for hex center.
+    /** Cache simple but frequent calculations. */
+    private val hexagonImagePosition = Pair(-hexagonImageOrigin.first/3f, -hexagonImageOrigin.second/4f) // Honestly, I got these numbers empirically by printing `.x` and `.y` after `.center()`, and I'm not totally clear on the stack of transformations that makes them work. But they are still exact ratios, AFAICT.
 
     // For recognizing the group in the profiler
     class BaseLayerGroupClass:ActionlessGroup()
@@ -246,13 +250,15 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         else resourceAndImprovementSequence.map { tileSetStrings.orFallback { getTile(it) } }.toList()
     }
 
-    // Used for both the underlying tile and unit overlays, perhaps for other things in the future
-    // Parent should already be set when calling
+    /** Used for: Underlying tile, unit overlays, border images, perhaps for other things in the future.
+     Parent should already be set when calling. */
     private fun setHexagonImageSize(hexagonImage: Image) {
         // Using "scale" can get really confusing when positioning, how about no
+        // TODO: Make as many images use this as possible— Standardized "Image on tile" placement for consistently moddable crosshairs, circles, etc.
         hexagonImage.setSize(hexagonImageWidth, hexagonImage.height * hexagonImageWidth / hexagonImage.width)
-        hexagonImage.centerX(hexagonImage.parent)
-        hexagonImage.y = hexagonImageY
+        hexagonImage.setOrigin(hexagonImageOrigin.first, hexagonImageOrigin.second)
+        hexagonImage.x = hexagonImagePosition.first
+        hexagonImage.y = hexagonImagePosition.second
     }
 
     private fun updateTileImage(viewingCiv: CivilizationInfo?) {
@@ -505,41 +511,33 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                 val borderShapeString = when {
                     borderSegment.isLeftConcave && borderSegment.isRightConcave -> "Concave"
                     !borderSegment.isLeftConcave && !borderSegment.isRightConcave -> "Convex"
-                    else -> "ConvexConcave"
+                    !borderSegment.isLeftConcave && borderSegment.isRightConcave -> "ConvexConcave"
+                    borderSegment.isLeftConcave && !borderSegment.isRightConcave -> "ConcaveConvex"
+                    else -> throw IllegalStateException("This shouldn't happen?")
                 }
-                val isConcaveConvex = borderSegment.isLeftConcave && !borderSegment.isRightConcave
 
                 val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
 
-                // This is some crazy voodoo magic so I'll explain.
                 val sign = if (relativeWorldPosition.x < 0) -1 else 1
                 val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
                 
-                val innerBorderImage = ImageGetter.getImage("BorderImages/${borderShapeString}Inner")
-                if (isConcaveConvex) {
-                    innerBorderImage.scaleX = -innerBorderImage.scaleX
-                }
-                innerBorderImage.width = hexagonImageWidth
-                innerBorderImage.setOrigin(Align.center) // THEN the origin is correct,
-                innerBorderImage.rotateBy(angle) // and the rotation works.
-                innerBorderImage.center(this) // move to center of tile
-                innerBorderImage.moveBy(-relativeWorldPosition.x * 15f, -relativeWorldPosition.y * 15f)
-                innerBorderImage.color = civOuterColor
+                val innerBorderImage = ImageGetter.getImage(
+                        tileSetStrings.orFallback { getBorder("${borderShapeString}Inner") }
+                )
                 miscLayerGroup.addActor(innerBorderImage)
                 images.add(innerBorderImage)
+                setHexagonImageSize(innerBorderImage)
+                innerBorderImage.rotateBy(angle)
+                innerBorderImage.color = civOuterColor
 
-                val outerBorderImage = ImageGetter.getImage("BorderImages/${borderShapeString}Outer")
-                if (isConcaveConvex) {
-                    outerBorderImage.scaleX = -outerBorderImage.scaleX
-                }
-                outerBorderImage.width = hexagonImageWidth
-                outerBorderImage.setOrigin(Align.center) // THEN the origin is correct,
-                outerBorderImage.rotateBy(angle) // and the rotation works.
-                outerBorderImage.center(this) // move to center of tile
-                outerBorderImage.moveBy(-relativeWorldPosition.x * 15f, -relativeWorldPosition.y * 15f)
-                outerBorderImage.color = civInnerColor
+                val outerBorderImage = ImageGetter.getImage(
+                        tileSetStrings.orFallback { getBorder("${borderShapeString}Outer") }
+                )
                 miscLayerGroup.addActor(outerBorderImage)
                 images.add(outerBorderImage)
+                setHexagonImageSize(outerBorderImage)
+                outerBorderImage.rotateBy(angle)
+                outerBorderImage.color = civInnerColor
             }
         }
     }
