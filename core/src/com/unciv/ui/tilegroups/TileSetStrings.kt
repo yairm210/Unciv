@@ -36,6 +36,8 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     val landUnit = unitsLocation + "LandUnit"
     val waterUnit = unitsLocation + "WaterUnit"
 
+    val bordersLocation = tileSetLocation + "Borders/"
+
     // There aren't that many tile combinations, and so we end up joining the same strings over and over again.
     // On large maps, this can end up as quite a lot of space, some tens of MB!
     // In order to save on space, we have this function that gets several strings and returns their concat,
@@ -72,6 +74,8 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
         if (baseTerrain != null) return getString(tilesLocation, baseTerrain, "+", city)
         else return cityTile
     }
+
+    fun getBorder(imageName: String) = getString(bordersLocation, imageName)
 
     /** Fallback [TileSetStrings] to use when the currently chosen tileset is missing an image. */
     val fallback by lazy {
