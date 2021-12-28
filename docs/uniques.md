@@ -220,6 +220,11 @@ Example: "[20]% Strength"
 
 Applicable to: Global, Unit
 
+#### [amount]% Strength decreasing with distance from the capital
+Example: "[20]% Strength decreasing with distance from the capital"
+
+Applicable to: Global, Unit
+
 #### [amount] Movement
 Example: "[20] Movement"
 
@@ -236,6 +241,36 @@ Example: "[20]% Spread Religion Strength"
 Applicable to: Global, Unit
 
 #### Normal vision when embarked
+Applicable to: Global, Unit
+
+#### [amount]% maintenance costs
+Example: "[20]% maintenance costs"
+
+Applicable to: Global, Unit
+
+#### [greatPerson] is earned [amount]% faster
+Example: "[greatPerson] is earned [20]% faster"
+
+Applicable to: Global, Unit
+
+#### Upon capturing a city, receive [amount] times its [stat] production as [stat] immediately
+Example: "Upon capturing a city, receive [20] times its [Culture] production as [Culture] immediately"
+
+Applicable to: Global, Unit
+
+#### Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stat]
+Example: "Earn [20]% of killed [Wounded] unit's [costOrStrength] as [Culture]"
+
+Applicable to: Global, Unit
+
+#### [amount] XP gained from combat
+Example: "[20] XP gained from combat"
+
+Applicable to: Global, Unit
+
+#### [amount]% XP gained from combat
+Example: "[20]% XP gained from combat"
+
 Applicable to: Global, Unit
 
 #### Free [baseUnitFilter] appears
@@ -299,8 +334,8 @@ Example: "Quantity of strategic resources produced by the empire +[20]%"
 
 Applicable to: Global
 
-#### +[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns
-Example: "+[20]% attack strength to all [Wounded] Units for [20] turns"
+#### +[amount]% attack strength to all [mapUnitFilter] units for [amount] turns
+Example: "+[20]% attack strength to all [Wounded] units for [20] turns"
 
 Applicable to: Global
 
@@ -334,6 +369,11 @@ Applicable to: Nation
 ## FollowerBelief uniques
 #### [amount]% [stat] from every follower, up to [amount]%
 Example: "[20]% [Culture] from every follower, up to [20]%"
+
+Applicable to: FollowerBelief
+
+#### Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stat] when killed within 4 tiles of a city following this religion
+Example: "Earn [20]% of [Wounded] unit's [costOrStrength] as [Culture] when killed within 4 tiles of a city following this religion"
 
 Applicable to: FollowerBelief
 
@@ -450,11 +490,6 @@ Example: "Can see invisible [Wounded] units"
 
 Applicable to: Unit
 
-#### [amount]% Strength decreasing with distance from the capital
-Example: "[20]% Strength decreasing with distance from the capital"
-
-Applicable to: Unit
-
 #### May found a religion
 Applicable to: Unit
 
@@ -487,11 +522,6 @@ Applicable to: Unit
 
 #### Cannot be carried by [mapUnitFilter] units
 Example: "Cannot be carried by [Wounded] units"
-
-Applicable to: Unit
-
-#### [amount]% maintenance costs
-Example: "[20]% maintenance costs"
 
 Applicable to: Unit
 
@@ -1051,6 +1081,7 @@ Applicable to: Conditional
  - "+[amount]% Production when constructing [constructionFilter] [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
+ - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
@@ -1068,5 +1099,6 @@ Applicable to: Conditional
  - "+[amount]% Strength in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
  - "[amount] Visibility Range" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
+ - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"

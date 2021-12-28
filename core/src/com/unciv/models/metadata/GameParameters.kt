@@ -53,6 +53,7 @@ class GameParameters { // Default values are the default new game
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
+        parameters.maxTurns = maxTurns
         return parameters
     }
 

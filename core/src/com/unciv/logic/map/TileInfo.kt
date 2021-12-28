@@ -751,7 +751,8 @@ open class TileInfo {
             out.add("Terrain feature [$terrainFeature] does not exist in ruleset!")
         if (resource != null && !ruleset.tileResources.containsKey(resource))
             out.add("Resource [$resource] does not exist in ruleset!")
-        if (improvement != null && !ruleset.tileImprovements.containsKey(improvement))
+        if (improvement != null && !improvement!!.startsWith(TileMap.startingLocationPrefix)
+            && !ruleset.tileImprovements.containsKey(improvement))
             out.add("Improvement [$improvement] does not exist in ruleset!")
         return out
     }

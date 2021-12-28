@@ -3,10 +3,8 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
-import com.unciv.logic.BackwardCompatibility.replaceDiplomacyFlag
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -290,7 +288,7 @@ class GameInfo {
         
         val winningCiv = civilizations
             .filter { it.isMajorCiv() && !it.isSpectator() && !it.isBarbarian() }
-            .maxByOrNull { it.calculateScore() } 
+            .maxByOrNull { it.calculateScoreBreakdown().values.sum() } 
             ?: return // Are there no civs left?
         
         winningCiv.victoryManager.hasWonTimeVictory = true

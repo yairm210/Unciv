@@ -26,11 +26,11 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
         mods.addAll(ruleSetMods)
         clear()
         for (mod in mods.distinct()) {
-            val entry = allConfigs.entries.firstOrNull { it.key.mod == mod } ?: continue
-
-            val tileSet = entry.key.tileSet
-            if (tileSet in this) this[tileSet]!!.updateConfig(entry.value)
-            else this[tileSet] = entry.value
+            for (entry in allConfigs.entries.filter { it.key.mod == mod } ) { // Built-in tilesets all have empty strings as their `.mod`, so loop through all of them.
+                val tileSet = entry.key.tileSet
+                if (tileSet in this) this[tileSet]!!.updateConfig(entry.value)
+                else this[tileSet] = entry.value
+            }
         }
     }
 

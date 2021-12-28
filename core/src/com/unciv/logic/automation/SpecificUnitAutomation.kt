@@ -287,7 +287,7 @@ object SpecificUnitAutomation {
         }
     }
 
-    fun automateMissionary(unit: MapUnit){
+    fun automateMissionary(unit: MapUnit) {
         if (unit.religion != unit.civInfo.religionManager.religion?.name)
             return unit.destroy()
 
@@ -301,12 +301,9 @@ object SpecificUnitAutomation {
             .filterNot { unit.getTile().owningCity == it.owningCity } // to prevent the ai from moving around randomly
             .filter { unit.movement.canMoveTo(it) }
             .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-            .firstOrNull { unit.movement.canReach(it) }
+            .firstOrNull { unit.movement.canReach(it) } ?: return
 
-
-        if (destination != null) {
-            unit.movement.headTowards(destination)
-        }
+        unit.movement.headTowards(destination)
 
         if (unit.currentTile.owningCity?.religion?.getMajorityReligion()?.name != unit.religion)
             doReligiousAction(unit, unit.getTile())
@@ -341,8 +338,9 @@ object SpecificUnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
         }
 
-        if (destination != null)
-            unit.movement.headTowards(destination)
+        if (destination == null) return
+
+        unit.movement.headTowards(destination)
 
 
         if (cityToConvert != null && unit.currentTile.getCity() == destination!!.getCity()) {

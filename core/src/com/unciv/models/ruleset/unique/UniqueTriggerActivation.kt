@@ -246,7 +246,8 @@ object UniqueTriggerActivation {
             }
 
             TimedAttackStrength -> {
-                civInfo.temporaryUniques.add(Pair(unique, unique.params[2].toInt()))
+                val temporaryUnique = TemporaryUnique(unique, unique.params[2].toInt())
+                civInfo.temporaryUniques.add(temporaryUnique)
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationIcon.War)
                 }

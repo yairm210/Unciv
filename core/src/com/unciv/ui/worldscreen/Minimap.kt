@@ -188,7 +188,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
 
                     }
             }
-            // So, the "Food" and "Population" stat icons have green as part of their image, but the "Cattle" icon needs a ackground colour, which is… An interesting mixture/reuse of texture data and render-time processing.
+            // So, the "Food" and "Population" stat icons have green as part of their image, but the "Cattle" icon needs a background colour, which is… An interesting mixture/reuse of texture data and render-time processing.
             innerActor.surroundWithCircle(40f).apply {
                 circle.color = Color.BLACK
             }
@@ -211,6 +211,13 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
         }
     }
 
+    /** Button, next to the minimap, to toggle the unit movement map overlay. */
+    val movementsImageButton = MapOverlayToggleButton(
+        ImageGetter.getImage("StatIcons/Movement").apply { setColor(0f, 0f, 0f, 1f) },
+        getter = { UncivGame.Current.settings.showUnitMovements },
+        setter = { UncivGame.Current.settings.showUnitMovements = it },
+        backgroundColor = Color.GREEN
+    )
     /** Button, next to the minimap, to toggle the tile yield map overlay. */
     val yieldImageButton = MapOverlayToggleButton(
         ImageGetter.getImage("StatIcons/Food"),
@@ -266,6 +273,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
     private fun getToggleIcons(): Table {
         val toggleIconTable = Table()
 
+        toggleIconTable.add(movementsImageButton.actor).row()
         toggleIconTable.add(yieldImageButton.actor).row()
         toggleIconTable.add(populationImageButton.actor).row()
         toggleIconTable.add(resourceImageButton.actor).row()
@@ -278,6 +286,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
         isVisible = UncivGame.Current.settings.showMinimap
         if (isVisible) {
             minimap.update(civInfo)
+            movementsImageButton.update()
             yieldImageButton.update()
             populationImageButton.update()
             resourceImageButton.update()
