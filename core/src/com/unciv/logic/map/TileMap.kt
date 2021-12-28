@@ -497,6 +497,7 @@ class TileMap {
         unit.putInTile(unitToPlaceTile)
         unit.currentMovement = unit.getMaxMovement().toFloat()
         unit.addMovementMemory()
+        unit.lastTurnHealth = unit.health
 
         // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
         for (promotion in unit.baseUnit.promotions)

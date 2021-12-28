@@ -161,16 +161,19 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
         addYesNoRow("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
         addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
+        addYesNoRow("Show unit damage and heal", settings.showUnitDamage, true) { settings.showUnitDamage = it }
+
+        addSeparator().padTop(20f).padBottom(20f)
+
         addYesNoRow("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
         addMinimapSizeSlider()
-
         addYesNoRow("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
         addYesNoRow("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
+        addSeparator().padTop(20f).padBottom(20f)
+
         addResolutionSelectBox()
-
         addTileSetSelectBox()
-
         addYesNoRow("Continuous rendering", settings.continuousRendering) {
             settings.continuousRendering = it
             Gdx.graphics.isContinuousRendering = it

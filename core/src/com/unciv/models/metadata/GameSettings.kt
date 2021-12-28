@@ -15,6 +15,7 @@ class GameSettings {
     var showResourcesAndImprovements: Boolean = true
     var showTileYields: Boolean = false
     var showUnitMovements: Boolean = false
+    var showUnitDamage: Boolean = false
 
     var checkForDueUnits: Boolean = true
     var singleTapMove: Boolean = false

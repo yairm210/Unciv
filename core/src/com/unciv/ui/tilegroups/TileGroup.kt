@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -99,6 +100,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     /** map of neighboring tile to border segments */
     private val borderSegments = HashMap<TileInfo, BorderSegment>()
     private val arrows = HashMap<TileInfo, ArrayList<Actor>>()
+    private val healthText = ArrayList<Label>()
 
     @Suppress("LeakingThis")    // we trust TileGroupIcons not to use our `this` in its constructor except storing it for later
     val icons = TileGroupIcons(this)
@@ -362,6 +364,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         updateRoadImages()
         updateBorderImages()
         updateArrows()
+        updateHealthText(tileIsViewable)
 
         crosshairImage.isVisible = false
         fogImage.isVisible = !(tileIsViewable || showEntireMap)
@@ -583,6 +586,26 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             // FIXME: Culled when too large and panned away.
             // https://libgdx.badlogicgames.com/ci/nightlies/docs/api/com/badlogic/gdx/scenes/scene2d/utils/Cullable.html
             // .getCullingArea returns null for both miscLayerGroup and worldMapHolder. Don't know where it's happening. Somewhat rare, and fixing it may have a hefty performance cost.
+        }
+    }
+
+    /** Create and setup Actors to show the healing or damage of the military unit on this tile if doing so is enabled and applicable. */
+    private fun updateHealthText(tileIsViewable: Boolean) {
+        for (label in healthText)
+            label.remove()
+        healthText.clear()
+        if (!(UncivGame.Current.settings.showUnitDamage && tileIsViewable)) return
+        val unit = tileInfo.militaryUnit ?: return
+        val healthDelta = unit.health - (unit.lastTurnHealth ?: return)
+        if (healthDelta == 0) return
+        val labelText = "${if (healthDelta < 0) '-' else '+'}${abs(healthDelta)}"
+        healthText.add(labelText.toLabel(Color.BLACK, 18).apply { moveBy(1f, -1f) }) // Drop shadow— Actually important for legibility, E.G. green heal text on noisy green tundra forest hill.
+        healthText.add(labelText.toLabel(if (healthDelta < 0) Color.RED else Color.LIME, 18)) // Coloured label.
+        for (label in healthText) {
+            label.setAlignment(Align.center)
+            label.width = 50f // Try to span horizontal width of tile.
+            label.moveBy(0f, 15f) // Peek out between civilian and military icons.
+            miscLayerGroup.addActor(label)
         }
     }
 

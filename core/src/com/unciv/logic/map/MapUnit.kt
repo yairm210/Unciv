@@ -214,6 +214,9 @@ class MapUnit {
     /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
     var attacksSinceTurnStart = ArrayList<Vector2>()
 
+    /** This unit's [health] at the end of its last turn. Used to display damage/heal text. */
+    var lastTurnHealth: Int? = null
+
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
@@ -236,6 +239,7 @@ class MapUnit {
         toReturn.movementMemories = movementMemories.copy()
         toReturn.mostRecentMoveType = mostRecentMoveType
         toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
+        toReturn.lastTurnHealth = lastTurnHealth
         return toReturn
     }
 
@@ -740,6 +744,7 @@ class MapUnit {
     }
 
     fun endTurn() {
+        lastTurnHealth = health
         if (currentMovement > 0 &&
             getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
