@@ -266,8 +266,6 @@ class TradeEvaluation {
         val theirCombatStrength = otherCivilization.getStatForRanking(RankingType.Force)
         if (ourCombatStrength * 1.5f >= theirCombatStrength && theirCombatStrength * 1.5f >= ourCombatStrength)
             return 0 // we're roughly equal, there's no huge power imbalance
-        if (ourCombatStrength == 0) return -1000
-        if (theirCombatStrength == 0) return 1000 // Chumps got no combat units
         if (ourCombatStrength > theirCombatStrength) {
             val absoluteAdvantage = ourCombatStrength - theirCombatStrength
             val percentageAdvantage = absoluteAdvantage / theirCombatStrength.toFloat()

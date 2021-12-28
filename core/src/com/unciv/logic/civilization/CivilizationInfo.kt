@@ -663,7 +663,7 @@ class CivilizationInfo {
     }
 
     private fun calculateMilitaryMight(): Int {
-        var sum = 0
+        var sum = 1 // minimum value, so we never end up with 0
         for (unit in units) {
             sum += if (unit.baseUnit.isWaterUnit())
                 unit.getForceEvaluation() / 2   // Really don't value water units highly
