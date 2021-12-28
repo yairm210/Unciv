@@ -46,7 +46,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         }
 
         val costsToPay = ArrayList<Float>()
-
         for (unit in unitsToPayFor) {
             var unitMaintenance = civWideMaintenance
             for (unique in unit.getMatchingUniques(UniqueType.UnitMaintenanceDiscount)){
@@ -54,11 +53,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
             costsToPay.add(unitMaintenance)
         }
-        // Apply global discounts
+
         // Sort by descending maintenance, then drop most expensive X units to make them free
-        // If more free than units left, returns empty sequence
-        // There's something here that causes a bug and I'm not sure where, so let's try taking this apart piece by piece
-        // We tried toInt()ing, didn't help. Let's try converting to a final list before sorting.
+        // If more free than units left, runs sum on empty sequence
         costsToPay.sortDescending()
         val numberOfUnitsToPayFor = max(0.0, costsToPay.asSequence().drop(freeUnits).sumOf { it.toDouble() } ).toFloat()
 
