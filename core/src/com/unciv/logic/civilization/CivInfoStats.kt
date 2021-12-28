@@ -35,27 +35,32 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // Handle unit maintenance discounts
         // Have to capture global and per-unit
         // Free Garrison already removed above from sequence
-        // Initialize maintenance cost per unit, default 1 aka 100%
+        // Initialize base maintenance cost empire-wide, default 1 aka 100%
+        // Then calculate per-unit discounrts
         // Note all discounts are in the form of -X%, such as -25 for 25% reduction
-        for (unit in unitsToPayFor){
-            unit.maintenance = 1f
+
+        var civWideMaintenance = 1f
+        // Calculate global discounts
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscountGlobal, StateForConditionals(civInfo))) {
+            civWideMaintenance *= unique.params[0].toPercent()
+        }
+
+        val costsToPay = ArrayList<Float>()
+
+        for (unit in unitsToPayFor) {
+            var unitMaintenance = civWideMaintenance
             for (unique in unit.getMatchingUniques(UniqueType.UnitMaintenanceDiscount)){
-                unit.maintenance *= unique.params[0].toPercent()
+                unitMaintenance *= unique.params[0].toPercent()
             }
+            costsToPay.add(unitMaintenance)
         }
         // Apply global discounts
-        for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscountGlobal, StateForConditionals(civInfo))) {
-            for (unit in unitsToPayFor.filter { it.matchesFilter(unique.params[1]) }) {
-                unit.maintenance *= unique.params[0].toPercent()
-            }
-        }
         // Sort by descending maintenance, then drop most expensive X units to make them free
         // If more free than units left, returns empty sequence
         // There's something here that causes a bug and I'm not sure where, so let's try taking this apart piece by piece
         // We tried toInt()ing, didn't help. Let's try converting to a final list before sorting.
-        unitsToPayFor = unitsToPayFor.toList().sortedByDescending { it.maintenance }.asSequence()
-        unitsToPayFor = unitsToPayFor.drop(freeUnits)
-        val numberOfUnitsToPayFor = max(0.0, unitsToPayFor.sumOf { it.maintenance.toDouble() }).toFloat()
+        costsToPay.sortDescending()
+        val numberOfUnitsToPayFor = max(0.0, costsToPay.asSequence().drop(freeUnits).sumOf { it.toDouble() } ).toFloat()
 
         val turnLimit =
             BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier

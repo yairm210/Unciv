@@ -44,9 +44,6 @@ class MapUnit {
     val movement = UnitMovementAlgorithms(this)
 
     @Transient
-    var maintenance = 1f
-
-    @Transient
     var isDestroyed = false
 
     // This is saved per each unit because if we need to recalculate viewable tiles every time a unit moves,
