@@ -143,7 +143,7 @@ object Automation {
             return false
 
         var multiplier = if (civInfo.gameInfo.gameParameters.ragingBarbarians) 1.3f
-            else 1f // We're slightly more afraid of raging barbs
+        else 1f // We're slightly more afraid of raging barbs
 
         // Past the early game we are less afraid
         if (civInfo.gameInfo.turns > 120 * civInfo.gameInfo.gameParameters.gameSpeed.modifier * multiplier)
@@ -156,7 +156,8 @@ object Automation {
         // If we have vision of our entire starting continent (ish) we are not afraid
         civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
         val startingContinent = civInfo.getCapital().getCenterTile().getContinent()
-        if (civInfo.gameInfo.tileMap.continentSizes[startingContinent]!! < civInfo.viewableTiles.count() * multiplier)
+        val startingContinentSize = civInfo.gameInfo.tileMap.continentSizes[startingContinent]
+        if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.count() * multiplier)
             return false
 
         // Otherwise we're afraid
