@@ -1,3 +1,21 @@
+## 3.18.13
+
+Stat names also include the stat icon :)
+
+Better map-to-ruleset incompatibility checks
+
+'tile to expand to' choice incorporates city-specific bonuses
+
+Fixed a ton of very rare, but crashing, edge-case bugs
+
+By will-ca:
+- Save attacks per civ for arrows for cities, missiles, dead units.
+- Solved 'white blocks' on default tileset.
+
+By xlenstra:
+- Fixed a rare diplomacy voting bug in one-more-turn mode
+- Fixed a few combat bugs and changed the religions founded label
+
 ## 3.18.12
 
 AI cities now build workboats for use in other cities
