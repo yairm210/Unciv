@@ -15,10 +15,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.*
-import com.unciv.models.helpers.MapArrowType
-import com.unciv.models.helpers.MiscArrowTypes
-import com.unciv.models.helpers.TintedMapArrow
-import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.models.helpers.*
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.*
 import java.lang.IllegalStateException
@@ -135,17 +132,39 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
      * @property tileSetStrings Helper for getting the paths of images in the current tileset.
      * */
     private class MapArrow(val targetTile: TileInfo, val arrowType: MapArrowType, val tileSetStrings: TileSetStrings) {
-        /** @return An Image from a named arrow texture. */
-        private fun getArrow(imageName: String): Image {
-            val imagePath = tileSetStrings.orFallback { getString(tileSetLocation, "Arrows/", imageName) }
-            return ImageGetter.getImage(imagePath)
+        /** @return An image path from a named arrow type. */
+        private fun TileSetStrings.getArrow(imageName: String)
+            = this.getString(this.tileSetLocation, "Arrows/", imageName)
+        /** @return An image path from an arrow type representing a base unit and a base arrow. */
+        private fun TileSetStrings.getUnitArrow(unitArrowType: UnitArrowType): String? {
+            val era by lazy { UncivGame.Current.gameInfo.ruleSet.technologies[unitArrowType.baseUnit.requiredTech]?.era() }
+            val movementType by lazy { unitArrowType.baseUnit.getType().getMovementType()?.name }
+            return ImageAttempter(unitArrowType)
+                .tryImage { getArrow("Units/${baseUnit.name}-${baseArrowType.name}") }
+                .tryImage { if (era != null) getArrow("UnitTypes/${baseUnit.unitType}-${era}-${baseArrowType.name}") else null }
+                .tryImage { getArrow("UnitTypes/${baseUnit.unitType}-${baseArrowType.name}") }
+                .tryImage { if (era != null && movementType != null) getArrow("Units/${movementType}Unit-${era}-${baseArrowType.name}") else null }
+                .tryImage { if (movementType != null) getArrow("Units/${movementType}Unit-${baseArrowType.name}") else null }
+                .tryImage { getArrow(baseArrowType.name) }
+                .getPathOrNull()
+        }
+        /** @return An image path from an arrow type representing an era and a base arrow. */
+        private fun TileSetStrings.getCityArrow(cityArrowType: CityArrowType): String? {
+            return ImageAttempter(cityArrowType)
+                .tryImage { if (era != null) getArrow("City/${baseArrowType.name}-${era.name}") else null }
+                .tryImage { getArrow("City/${baseArrowType.name}") }
+                .tryImage { getArrow(baseArrowType.name) }
+                .getPathOrNull()
         }
         /** @return An actor for the arrow, based on the type of the arrow. */
         fun getImage(): Image = when (arrowType) {
-            is UnitMovementMemoryType -> getArrow(arrowType.name)
-            is MiscArrowTypes -> getArrow(arrowType.name)
-            is TintedMapArrow -> getArrow("Generic").apply { color = arrowType.color }
-            else -> getArrow("Generic")
+            is UnitMovementMemoryType -> ImageGetter.getImage(tileSetStrings.orFallback { getArrow(arrowType.name) } )
+            is MiscArrowTypes -> ImageGetter.getImage(tileSetStrings.orFallback { getArrow(arrowType.name) } )
+            is UnitArrowType -> ImageGetter.getImage(tileSetStrings.getUnitArrow(arrowType) ?: tileSetStrings.fallback?.getUnitArrow(arrowType))
+            is CityArrowType -> ImageGetter.getImage(tileSetStrings.getCityArrow(arrowType) ?: tileSetStrings.fallback?.getCityArrow(arrowType))
+            is TintedMapArrow -> ImageGetter.getImage(tileSetStrings.orFallback { getArrow("Generic") } ).apply { color = arrowType.color }
+            is BaseMapArrowType -> ImageGetter.getImage(tileSetStrings.orFallback { getArrow(arrowType.name) } )
+//             else -> ImageGetter.getImage(tileSetStrings.orFallback { getArrow("Generic") } ) // Not needed for now— MapArrowType is sealed class, and this is exhaustive.
         }
     }
 
@@ -561,11 +580,14 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                 arrows[targetTile] = ArrayList()
             }
 
-            val arrowImage = arrowToAdd.getImage()
-            arrowImage.moveBy(25f, -5f) // Move to tile center— Y is +25f too, but subtract half the image height. Based on updateRoadImages.
+            val angleSide = if ((targetAngle - Math.PI / 2).mod(Math.PI * 2) > Math.PI) 1f else -1f
+            // 1 if pointing right, -1 if pointing left. Coefficient for flipping image when pointing left.
 
-            arrowImage.setSize(tileScale * targetDistance, 60f)
-            arrowImage.setOrigin(0f, 30f)
+            val arrowImage = arrowToAdd.getImage()
+            arrowImage.moveBy(27f, 27f - 30f * angleSide) // Move to tile center— Y is +27f too, but subtract half the image height. Based on updateRoadImages.
+
+            arrowImage.setSize(tileScale * targetDistance, 60f * angleSide)
+            arrowImage.setOrigin(0f, 30f * angleSide)
 
             arrowImage.rotation = targetAngle / Math.PI.toFloat() * 180
 

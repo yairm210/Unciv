@@ -23,8 +23,10 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
 import com.unciv.models.*
+import com.unciv.models.helpers.CityArrowType
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.models.helpers.UnitArrowType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
@@ -470,19 +472,22 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             var previous = stepIter.next()
             while (stepIter.hasNext()) {
                 val next = stepIter.next()
-                addArrow(tileMap[previous.position], tileMap[next.position], next.type)
+                addArrow(tileMap[previous.position], tileMap[next.position], UnitArrowType(unit.baseUnit, next.type))
                 previous = next
             }
-            addArrow(tileMap[previous.position], unit.getTile(),  unit.mostRecentMoveType)
+            addArrow(tileMap[previous.position], unit.getTile(), UnitArrowType(unit.baseUnit, unit.mostRecentMoveType))
         }
         for (unit in targetVisibleUnits) {
             if (!unit.isMoving())
                 continue
             val toTile = unit.getMovementDestination()
-            addArrow(unit.getTile(), toTile, MiscArrowTypes.UnitMoving)
+            addArrow(unit.getTile(), toTile, UnitArrowType(unit.baseUnit, MiscArrowTypes.UnitMoving))
         }
         for ((baseUnit, from, to) in visibleAttacks) {
-            addArrow(tileMap[from], tileMap[to], MiscArrowTypes.UnitHasAttacked)
+            if (baseUnit == null)
+                addArrow(tileMap[from], tileMap[to], CityArrowType(tileMap[from].getOwner()?.getEra(), MiscArrowTypes.CityHasAttacked))
+            else
+                addArrow(tileMap[from], tileMap[to], UnitArrowType(baseUnit, MiscArrowTypes.UnitHasAttacked))
         }
     }
 
