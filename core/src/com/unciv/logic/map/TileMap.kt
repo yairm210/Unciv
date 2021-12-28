@@ -374,11 +374,17 @@ class TileMap {
      *  Is run before setTransients, so make do without startingLocationsByNation
      */
     fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
-        setTransients(ruleset)
-        setStartingLocationsTransients()
         val rulesetIncompatibilities = HashSet<String>()
         for (set in values.map { it.getRulesetIncompatibility(ruleset) })
             rulesetIncompatibilities.addAll(set)
+
+        // All the rest is to find missing nations
+        try { // This can fail if the map contains a resource that isn't in the ruleset, in TileInfo.tileResource
+            setTransients(ruleset)
+        } catch (ex: Exception) {
+            return rulesetIncompatibilities
+        }
+        setStartingLocationsTransients()
         for ((_, nationName) in startingLocations) {
             if (nationName !in ruleset.nations)
                 rulesetIncompatibilities.add("Nation [$nationName] does not exist in ruleset!")
