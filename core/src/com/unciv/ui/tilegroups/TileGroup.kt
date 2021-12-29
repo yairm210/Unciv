@@ -40,8 +40,8 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     Layers:
     Base image (+ overlay)
     Feature overlay / city overlay
-    Misc: Units, improvements, resources, border
-    Circle, Crosshair, Fog layer
+    Misc: Units, improvements, resources, border, arrows
+    Highlight, Crosshair, Fog layer
     City name
     */
 
@@ -121,9 +121,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     val cityButtonLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize)
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }
 
-    val circleCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
-    val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
-    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair") // for when a unit is targeted
+    val highlightCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    val highlightImage = ImageGetter.getImage(tileSetStrings.orFallback { getString(tileSetLocation, "Highlight") }) // for blue and red circles/emphasis on the tile
+    private val crosshairImage = ImageGetter.getImage(tileSetStrings.orFallback { getString(tileSetLocation, "Crosshair") }) // for when a unit is targeted
     private val fogImage = ImageGetter.getImage(tileSetStrings.orFallback { crosshatchHexagon } )
 
     /**
@@ -161,14 +161,14 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         this.addActor(miscLayerGroup)
         this.addActor(unitLayerGroup)
         this.addActor(cityButtonLayerGroup)
-        this.addActor(circleCrosshairFogLayerGroup)
+        this.addActor(highlightCrosshairFogLayerGroup)
 
         terrainFeatureLayerGroup.addActor(pixelMilitaryUnitGroup)
         terrainFeatureLayerGroup.addActor(pixelCivilianUnitGroup)
 
         updateTileImage(null)
 
-        addCircleImage()
+        addHighlightImage()
         addFogImage()
         addCrosshairImage()
         isTransform = false // performance helper - nothing here is rotated or scaled
@@ -178,34 +178,27 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
 
     //region init functions
-    private fun addCircleImage() {
-        circleImage.width = 50f
-        circleImage.height = 50f
-        circleImage.center(this)
-        circleCrosshairFogLayerGroup.addActor(circleImage)
-        circleImage.isVisible = false
+    private fun addHighlightImage() {
+        highlightCrosshairFogLayerGroup.addActor(highlightImage)
+        setHexagonImageSize(highlightImage)
+        highlightImage.isVisible = false
     }
 
     private fun addFogImage() {
-        val imageScale = groupSize * 1.5f / fogImage.width
-        fogImage.setScale(imageScale)
-        fogImage.setOrigin(Align.center)
-        fogImage.center(this)
         fogImage.color = Color.WHITE.cpy().apply { a = 0.2f }
-        circleCrosshairFogLayerGroup.addActor(fogImage)
+        highlightCrosshairFogLayerGroup.addActor(fogImage)
+        setHexagonImageSize(fogImage)
     }
 
     private fun addCrosshairImage() {
-        crosshairImage.width = 70f
-        crosshairImage.height = 70f
-        crosshairImage.center(this)
         crosshairImage.isVisible = false
-        circleCrosshairFogLayerGroup.addActor(crosshairImage)
+        highlightCrosshairFogLayerGroup.addActor(crosshairImage)
+        setHexagonImageSize(crosshairImage)
     }
     //endregion
 
-    fun showCrosshair(color: Color) {
-        crosshairImage.color = color.cpy().apply { a = 0.5f }
+    fun showCrosshair(alpha: Float = 1f) {
+        crosshairImage.color.a = alpha
         crosshairImage.isVisible = true
     }
 
@@ -254,7 +247,6 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
      Parent should already be set when calling. */
     private fun setHexagonImageSize(hexagonImage: Image) {
         // Using "scale" can get really confusing when positioning, how about no
-        // TODO: Make as many images use this as possible— Standardized "Image on tile" placement for consistently moddable crosshairs, circles, etc.
         hexagonImage.setSize(hexagonImageWidth, hexagonImage.height * hexagonImageWidth / hexagonImage.width)
         hexagonImage.setOrigin(hexagonImageOrigin.first, hexagonImageOrigin.second)
         hexagonImage.x = hexagonImagePosition.first
@@ -339,7 +331,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             fogImage.isVisible = true
         }
 
-        hideCircle()
+        hideHighlight()
         if (viewingCiv != null && !isExplored(viewingCiv)) {
             clearUnexploredTiles()
             for(image in tileBaseImages) image.color = tileSetStrings.tileSetConfig.unexploredTileColor
@@ -768,7 +760,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     /**
      * Add an arrow to be drawn from this tile.
-     * Similar to [showCircle].
+     * Similar to [showHighlight].
      *
      * Zero-length arrows are ignored.
      *
@@ -785,18 +777,18 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     /**
      * Clear all arrows to be drawn from this tile.
-     * Similar to [hideCircle].
+     * Similar to [hideHighlight].
      */
     fun resetArrows() {
         arrowsToDraw.clear()
     }
 
-    fun showCircle(color: Color, alpha: Float = 0.3f) {
-        circleImage.isVisible = true
-        circleImage.color = color.cpy().apply { a = alpha }
+    fun showHighlight(color: Color, alpha: Float = 0.3f) {
+        highlightImage.isVisible = true
+        highlightImage.color = color.cpy().apply { a = alpha }
     }
 
-    fun hideCircle() { circleImage.isVisible = false }
+    fun hideHighlight() { highlightImage.isVisible = false }
 
     /** This exists so we can easily find the TileGroup draw method in the android profiling, otherwise it's just a mass of Group.draw->drawChildren->Group.draw etc. */
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }

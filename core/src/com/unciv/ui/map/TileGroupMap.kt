@@ -95,7 +95,7 @@ class TileGroupMap<T: TileGroup>(
             unitLayers.add(group.unitLayerGroup.apply { setPosition(group.x,group.y) })
             unitImageLayers.add(group.unitImageLayerGroup.apply { setPosition(group.x,group.y) })
             cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
-            circleCrosshairFogLayers.add(group.circleCrosshairFogLayerGroup.apply { setPosition(group.x,group.y) })
+            circleCrosshairFogLayers.add(group.highlightCrosshairFogLayerGroup.apply { setPosition(group.x,group.y) })
 
             if (worldWrap) {
                 for (mirrorTile in mirrorTileGroups[group.tileInfo]!!.toList()) {
@@ -105,7 +105,7 @@ class TileGroupMap<T: TileGroup>(
                     unitLayers.add(mirrorTile.unitLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     unitImageLayers.add(mirrorTile.unitImageLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                     cityButtonLayers.add(mirrorTile.cityButtonLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
-                    circleCrosshairFogLayers.add(mirrorTile.circleCrosshairFogLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
+                    circleCrosshairFogLayers.add(mirrorTile.highlightCrosshairFogLayerGroup.apply { setPosition(mirrorTile.x,mirrorTile.y) })
                 }
             }
         }
