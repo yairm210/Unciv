@@ -21,15 +21,16 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.*
-import com.unciv.models.AttackableTile
-import com.unciv.models.UncivSound
+import com.unciv.models.*
+import com.unciv.models.helpers.MapArrowType
+import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
+//import com.unciv.ui.worldscreen.unit.UnitMovementsOverlayGroup
 import kotlin.concurrent.thread
 
 
@@ -432,6 +433,58 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun isMapRevealEnabled(viewingCiv: CivilizationInfo) = !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
             && viewingCiv.isCurrentPlayer()
             && viewingCiv.isDefeated()
+
+    /** Clear all arrows to be drawn on the next update. */
+    fun resetArrows() {
+        for (tile in tileGroups.values) {
+            for (group in tile) {
+                group.resetArrows()
+            }
+        } // Inefficient?
+    }
+
+    /** Add an arrow to draw on the next update. */
+    fun addArrow(fromTile: TileInfo, toTile: TileInfo, arrowType: MapArrowType) {
+        val tile = tileGroups[fromTile]
+        if (tile != null) for (group in tile) {
+            group.addArrow(toTile, arrowType)
+        }
+    }
+
+    /**
+     * Add arrows to show all past and planned movements and attacks, if the options setting to do so is enabled.
+     *
+     * @param pastVisibleUnits Sequence of [MapUnit]s for which the last turn's movement history can be displayed.
+     * @param targetVisibleUnits Sequence of [MapUnit]s for which the active movement target can be displayed.
+     * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
+     * */
+    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<Vector2, Vector2>>) {
+        if (!UncivGame.Current.settings.showUnitMovements) {
+            return
+        }
+        for (unit in pastVisibleUnits) {
+            if (unit.movementMemories.isEmpty()) {
+                continue
+            }
+            val stepIter = unit.movementMemories.iterator()
+            var previous = stepIter.next()
+            while (stepIter.hasNext()) {
+                val next = stepIter.next()
+                addArrow(tileMap[previous.position], tileMap[next.position], next.type)
+                previous = next
+            }
+            addArrow(tileMap[previous.position], unit.getTile(),  unit.mostRecentMoveType)
+        }
+        for (unit in targetVisibleUnits) {
+            if (!unit.isMoving())
+                continue
+            val toTile = unit.getMovementDestination()
+            addArrow(unit.getTile(), toTile, MiscArrowTypes.UnitMoving)
+        }
+        for ((from, to) in visibleAttacks) {
+            addArrow(tileMap[from], tileMap[to], MiscArrowTypes.UnitHasAttacked)
+        }
+    }
 
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
 

@@ -36,6 +36,20 @@ object HexMath {
         return vector.x - vector.y
     }
 
+    /**
+     * Convert a latitude and longitude back into a hex coordinate.
+     * Inverse function of [getLatitude] and [getLongitude].
+     *
+     * @param latitude As from [getLatitude].
+     * @param longitude As from [getLongitude].
+     * @return Hex coordinate. May need to be passed through [roundHexCoords] for further use.
+     * */
+    fun hexFromLatLong(latitude: Float, longitude: Float): Vector2 {
+        val y = (latitude - longitude) / 2f
+        val x = longitude + y
+        return Vector2(x, y)
+    }
+
     /** returns a vector containing width and height a rectangular map should have to have
      *  approximately the same number of tiles as an hexagonal map given a height/width ratio */
     fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): Vector2 {
@@ -72,6 +86,23 @@ object HexMath {
     // Each (1,1) vector effectively brings us up a layer.
     // For example, to get to the cell above me, I'll use a (1,1) vector.
     // To get to the cell below the cell to my bottom-right, I'll use a (-1,-2) vector.
+
+    /**
+     * @param unwrapHexCoord Hex coordinate to unwrap.
+     * @param staticHexCoord Reference hex coordinate.
+     * @param longitudinalRadius Maximum longitudinal absolute value of world tiles, such as from [TileMap.maxLongitude]. The total width is assumed one less than twice this.
+     *
+     * @return The closest hex coordinate to [staticHexCoord] that is equivalent to [unwrapHexCoord]. THIS MAY NOT BE A VALID TILE COORDINATE. It may also require rounding for further use.
+     *
+     * @see [com.unciv.logic.map.TileMap.getUnWrappedPosition]
+     */
+    fun getUnwrappedNearestTo(unwrapHexCoord: Vector2, staticHexCoord: Vector2, longitudinalRadius: Number): Vector2 {
+        val referenceLong = getLongitude(staticHexCoord)
+        val toWrapLat = getLatitude(unwrapHexCoord) // Working in Cartesian space is easier.
+        val toWrapLong = getLongitude(unwrapHexCoord)
+        val longRadius = longitudinalRadius.toFloat()
+        return hexFromLatLong(toWrapLat, (toWrapLong - referenceLong + longRadius).mod(longRadius * 2f) - longRadius + referenceLong)
+    }
 
     fun hex2WorldCoords(hexCoord: Vector2): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
