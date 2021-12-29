@@ -40,6 +40,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         val canBePromoted = unit.promotions.canBePromoted()
         val canChangeState = game.worldScreen.canChangeState
         val canPromoteNow = canBePromoted && canChangeState
+                && unit.currentMovement > 0 && unit.attacksThisTurn == 0
         if (!canPromoteNow)
             rightSideButton.isEnabled = false
 

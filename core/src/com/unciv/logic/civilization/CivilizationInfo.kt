@@ -178,6 +178,33 @@ class CivilizationInfo {
     var totalCultureForContests = 0
     var totalFaithForContests = 0
 
+    /**
+     * Container class to represent a historical attack recently performed by this civilization.
+     *
+     * @property attackingUnit Name key of [BaseUnit] type that performed the attack, or null (E.G. for city bombardments).
+     * @property source Position of the tile from which the attack was made.
+     * @property target Position of the tile targetted by the attack.
+     * @see [MapUnit.UnitMovementMemory], [attacksSinceTurnStart]
+     */
+    class HistoricalAttackMemory() {
+        constructor(attackingUnit: String?, source: Vector2, target: Vector2): this() {
+            this.attackingUnit = attackingUnit
+            this.source = source
+            this.target = target
+        }
+        var attackingUnit: String? = null
+        lateinit var source: Vector2
+        lateinit var target: Vector2
+        fun clone() = HistoricalAttackMemory(attackingUnit, Vector2(source), Vector2(target))
+    }
+    /** Deep clone an ArrayList of [HistoricalAttackMemory]s. */
+    private fun ArrayList<HistoricalAttackMemory>.copy() = ArrayList(this.map { it.clone() })
+    /**
+     * List of attacks that this civilization has performed since the start of its most recent turn. Does not include attacks already tracked in [MapUnit.attacksSinceTurnStart] of living units. Used in movement arrow overlay.
+     * @see [MapUnit.attacksSinceTurnStart]
+     */
+    var attacksSinceTurnStart = ArrayList<HistoricalAttackMemory>()
+
     var hasMovedAutomatedUnits = false
 
     @Transient
@@ -230,6 +257,7 @@ class CivilizationInfo {
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
+        toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         return toReturn
     }
@@ -635,7 +663,7 @@ class CivilizationInfo {
     }
 
     private fun calculateMilitaryMight(): Int {
-        var sum = 0
+        var sum = 1 // minimum value, so we never end up with 0
         for (unit in units) {
             sum += if (unit.baseUnit.isWaterUnit())
                 unit.getForceEvaluation() / 2   // Really don't value water units highly
@@ -782,6 +810,7 @@ class CivilizationInfo {
 
     fun startTurn() {
         civConstructions.startTurn()
+        attacksSinceTurnStart.clear()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Generate great people at the start of the turn,

@@ -455,9 +455,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
      *
      * @param pastVisibleUnits Sequence of [MapUnit]s for which the last turn's movement history can be displayed.
      * @param targetVisibleUnits Sequence of [MapUnit]s for which the active movement target can be displayed.
-     * @param visibleAttacks Sequence of pairs of MapUnits to the target coordinates of attacks that they have done and can be displayed.
+     * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
      * */
-    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<MapUnit, Vector2>>) {
+    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<Vector2, Vector2>>) {
         if (!UncivGame.Current.settings.showUnitMovements) {
             return
         }
@@ -481,7 +481,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             addArrow(unit.getTile(), toTile, MiscArrowTypes.UnitMoving)
         }
         for ((from, to) in visibleAttacks) {
-            addArrow(tileMap[from.getTile().position], tileMap[to], MiscArrowTypes.UnitHasAttacked)
+            addArrow(tileMap[from], tileMap[to], MiscArrowTypes.UnitHasAttacked)
         }
     }
 
@@ -502,13 +502,13 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
             if (tileGroup.tileInfo.getShownImprovement(viewingCiv) == Constants.barbarianEncampment
                     && tileGroup.tileInfo.position in viewingCiv.exploredTiles)
-                tileGroup.showCircle(Color.RED)
+                tileGroup.showHighlight(Color.RED)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()
             val canSeeEnemy = unitsInTile.any() && unitsInTile.first().civInfo.isAtWarWith(viewingCiv)
                     && tileGroup.showMilitaryUnit(viewingCiv)
             if (tileGroup.isViewable(viewingCiv) && canSeeEnemy)
-                tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
+                tileGroup.showHighlight(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
 
         val unitTable = worldScreen.bottomUnitTable
@@ -531,7 +531,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val worldTileGroupsForSelectedTile = tileGroups[selectedTile]
         if (worldTileGroupsForSelectedTile != null)
             for (group in worldTileGroupsForSelectedTile)
-                group.showCircle(Color.WHITE)
+                group.showHighlight(Color.WHITE)
 
         zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
     }
@@ -563,7 +563,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             val swapUnitsTileOverlayColor = Color.PURPLE
             for (tile in unitSwappableTiles)  {
                 for (tileToColor in tileGroups[tile]!!) {
-                    tileToColor.showCircle(swapUnitsTileOverlayColor,
+                    tileToColor.showHighlight(swapUnitsTileOverlayColor,
                         if (UncivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
                 }
             }
@@ -579,14 +579,14 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 if (isAirUnit)
                     if (tile.aerialDistanceTo(unit.getTile()) <= unit.getRange()) {
                         // The tile is within attack range
-                        tileToColor.showCircle(Color.RED, 0.3f)
+                        tileToColor.showHighlight(Color.RED, 0.3f)
                     } else {
                         // The tile is within move range
-                        tileToColor.showCircle(Color.BLUE, 0.3f)
+                        tileToColor.showHighlight(Color.BLUE, 0.3f)
                     }
                 if (unit.movement.canMoveTo(tile) ||
                         unit.movement.isUnknownTileWeShouldAssumeToBePassable(tile) && !unit.baseUnit.movesLikeAirUnits())
-                    tileToColor.showCircle(moveTileOverlayColor,
+                    tileToColor.showHighlight(moveTileOverlayColor,
                             if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
             }
         }
@@ -595,14 +595,14 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if (unitMovementPaths.containsKey(unit)) {
             for (tile in unitMovementPaths[unit]!!) {
                 for (tileToColor in tileGroups[tile]!!)
-                    tileToColor.showCircle(Color.SKY, 0.8f)
+                    tileToColor.showHighlight(Color.SKY, 0.8f)
             }
         }
 
         if (unit.isMoving()) {
             val destinationTileGroups = tileGroups[unit.getMovementDestination()]!!
             for (destinationTileGroup in destinationTileGroups)
-                destinationTileGroup.showCircle(Color.WHITE, 0.7f)
+                destinationTileGroup.showHighlight(Color.WHITE, 0.7f)
         }
 
         val attackableTiles: List<AttackableTile> = if (unit.isCivilian()) listOf()
@@ -617,12 +617,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         for (attackableTile in attackableTiles) {
             for (tileGroupToAttack in tileGroups[attackableTile.tileToAttack]!!) {
-                tileGroupToAttack.showCircle(colorFromRGB(237, 41, 57))
+                tileGroupToAttack.showHighlight(colorFromRGB(237, 41, 57))
                 tileGroupToAttack.showCrosshair(
                         // the targets which cannot be attacked without movements shown as orange-ish
                         if (attackableTile.tileToAttackFrom != unit.currentTile)
-                            colorFromRGB(255, 75, 0)
-                        else Color.RED
+                            0.5f
+                        else 1f
                 )
             }
         }
@@ -635,8 +635,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         for (attackableTile in attackableTiles) {
             for (group in tileGroups[attackableTile]!!) {
-                group.showCircle(colorFromRGB(237, 41, 57))
-                group.showCrosshair(Color.RED)
+                group.showHighlight(colorFromRGB(237, 41, 57))
+                group.showCrosshair()
             }
         }
     }
@@ -685,9 +685,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         removeAction(blinkAction) // so we don't have multiple blinks at once
         blinkAction = Actions.repeat(3, Actions.sequence(
-                Actions.run { tileGroup.circleImage.isVisible = false },
+                Actions.run { tileGroup.highlightImage.isVisible = false },
                 Actions.delay(.3f),
-                Actions.run { tileGroup.circleImage.isVisible = true },
+                Actions.run { tileGroup.highlightImage.isVisible = true },
                 Actions.delay(.3f)
         ))
         addAction(blinkAction) // Don't set it on the group because it's an actionless group

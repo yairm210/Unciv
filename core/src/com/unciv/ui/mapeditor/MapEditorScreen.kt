@@ -106,7 +106,7 @@ class MapEditorScreen(): BaseScreen() {
                 if (isPainting) {
 
                     for (tileInfo in lastDrawnTiles)
-                        mapHolder.tileGroups[tileInfo]!!.forEach { it.hideCircle() }
+                        mapHolder.tileGroups[tileInfo]!!.forEach { it.hideHighlight() }
                     lastDrawnTiles.clear()
 
                     val stageCoords = mapHolder.actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
@@ -120,7 +120,7 @@ class MapEditorScreen(): BaseScreen() {
                             tileInfo.setTerrainTransients()
                             mapHolder.tileGroups[tileInfo]!!.forEach {
                                 it.update()
-                                it.showCircle(Color.WHITE)
+                                it.showHighlight(Color.WHITE)
                             }
 
                             lastDrawnTiles.add(tileInfo)
