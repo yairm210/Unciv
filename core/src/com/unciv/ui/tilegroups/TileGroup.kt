@@ -246,11 +246,11 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     /** Used for: Underlying tile, unit overlays, border images, perhaps for other things in the future.
      Parent should already be set when calling. */
     private fun setHexagonImageSize(hexagonImage: Image) {
-        // Using "scale" can get really confusing when positioning, how about no
         hexagonImage.setSize(hexagonImageWidth, hexagonImage.height * hexagonImageWidth / hexagonImage.width)
         hexagonImage.setOrigin(hexagonImageOrigin.first, hexagonImageOrigin.second)
         hexagonImage.x = hexagonImagePosition.first
         hexagonImage.y = hexagonImagePosition.second
+        hexagonImage.setScale(tileSetStrings.tileSetConfig.tileScale)
     }
 
     private fun updateTileImage(viewingCiv: CivilizationInfo?) {
