@@ -366,6 +366,11 @@ Example: "Retain [20]% of the happiness from a luxury after the last copy has be
 
 Applicable to: Nation
 
+#### Cannot build [baseUnitFilter] units
+Example: "Cannot build [Melee] units"
+
+Applicable to: Nation
+
 ## FollowerBelief uniques
 #### [amount]% [stat] from every follower, up to [amount]%
 Example: "[20]% [Culture] from every follower, up to [20]%"
@@ -549,9 +554,6 @@ Applicable to: Unit
 Applicable to: Unit
 
 #### Cannot enter ocean tiles
-Applicable to: Unit
-
-#### Cannot enter ocean tiles until Astronomy
 Applicable to: Unit
 
 #### Never appears as a Barbarian unit
@@ -748,11 +750,6 @@ Applicable to: Improvement
 Applicable to: Improvement
 
 #### Can be built just outside your borders
-Applicable to: Improvement
-
-#### Cannot be built on [tileFilter] tiles until [tech] is discovered
-Example: "Cannot be built on [Farm] tiles until [tech] is discovered"
-
 Applicable to: Improvement
 
 #### Cannot be built on [tileFilter] tiles
@@ -1084,6 +1081,7 @@ Applicable to: Conditional
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
+ - "Cannot enter ocean tiles until Astronomy" - Deprecated As of 3.18.6, replace with "Cannot enter ocean tiles <before discovering [Astronomy]>"
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
@@ -1101,4 +1099,5 @@ Applicable to: Conditional
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
  - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
+ - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated As of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before researching [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"

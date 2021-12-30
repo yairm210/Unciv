@@ -333,9 +333,8 @@ class MapUnit {
         //
 
         hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
-        canEnterForeignTerrain =
-            hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
-                    || hasUnique(UniqueType.CanEnterForeignTiles)
+        canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
+            || hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {
