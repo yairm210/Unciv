@@ -1,9 +1,7 @@
 package com.unciv.logic.automation
 
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.NotificationIcon
