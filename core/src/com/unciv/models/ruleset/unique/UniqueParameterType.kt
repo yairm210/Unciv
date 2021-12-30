@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.unique
 
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
@@ -57,6 +58,15 @@ enum class UniqueParameterType(val parameterName:String) {
             //  so we could accept that unique-targeting uniques are OK. Maybe later.
 
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
+        }
+    },
+    GreatPerson("greatPerson") {
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            return if (parameterText in ruleset.units && ruleset.units[parameterText]!!.hasUnique("Great Person - []")) null
+            else UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
     Stats("stats") {
@@ -117,7 +127,8 @@ enum class UniqueParameterType(val parameterName:String) {
     TerrainFilter("terrainFilter") {
         private val knownValues = setOf("All",
             "Coastal", "River", "Open terrain", "Rough terrain", "Water resource",
-            "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy")
+            "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
+            "Featureless", "Fresh Water")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
@@ -252,6 +263,25 @@ enum class UniqueParameterType(val parameterName:String) {
                 in ruleset.policies -> null
                 else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             }
+        }
+    },
+    VictoryT("victoryType") {
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            return if (parameterText in VictoryType.values().map { it.name }) null 
+            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        }
+    },
+    CostOrStrength("costOrStrength") {
+        private val knownValues = setOf("Cost", "Strength")
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            return if (parameterText in knownValues) null
+            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
     },
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */

@@ -19,6 +19,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.MapVisualization
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
@@ -63,6 +64,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
+    val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
     private val minimapWrapper = MinimapHolder(mapHolder)
@@ -334,12 +336,18 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         try {
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
 
-            // if we find it still isn't player's turn...nothing changed
-            if (viewingCiv.playerId != latestGame.getCurrentPlayerCivilization().playerId) {
+            // if we find the current player didn't change, don't update
+            // Additionally, check if we are the current player, and in that case always stop
+            // This fixes a bug where for some reason players were waiting for themselves.
+            if (gameInfo.currentPlayer == latestGame.currentPlayer 
+                && gameInfo.turns == latestGame.turns 
+                && latestGame.currentPlayer != gameInfo.getPlayerToViewAs().civName
+            ) {
                 Gdx.app.postRunnable { loadingGamePopup.close() }
                 shouldUpdate = true
                 return
-            } else { //else we found it is the player's turn again, turn off polling and load turn
+            } else { // if the game updated, even if it's not our turn, reload the world -
+                // stuff has changed and the "waiting for X" will now show the correct civ
                 stopMultiPlayerRefresher()
                 latestGame.isUpToDate = true
                 Gdx.app.postRunnable { createNewWorldScreen(latestGame) }
@@ -393,6 +401,17 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         keyPressDispatcher.revertToCheckPoint()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
+
+        mapHolder.resetArrows()
+        val allUnits = gameInfo.civilizations.asSequence().flatMap { it.getCivUnits() }
+        val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
+            gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
+        mapHolder.updateMovementOverlay(
+            allUnits.filter(mapVisualization::isUnitPastVisible),
+            allUnits.filter(mapVisualization::isUnitFutureVisible),
+            allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
+                    .map { (attacker, source, target) -> source to target }
+        )
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder

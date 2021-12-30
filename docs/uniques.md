@@ -1,16 +1,17 @@
 ## Table of Contents
 
  - [Global uniques](#global-uniques)
- - [Building uniques](#building-uniques)
- - [CityState uniques](#citystate-uniques)
  - [Nation uniques](#nation-uniques)
+ - [FollowerBelief uniques](#followerbelief-uniques)
+ - [Building uniques](#building-uniques)
  - [Unit uniques](#unit-uniques)
- - [Terrain uniques](#terrain-uniques)
- - [Resource uniques](#resource-uniques)
- - [Improvement uniques](#improvement-uniques)
- - [Conditional uniques](#conditional-uniques)
- - [Ruins uniques](#ruins-uniques)
  - [Promotion uniques](#promotion-uniques)
+ - [Terrain uniques](#terrain-uniques)
+ - [Improvement uniques](#improvement-uniques)
+ - [Resource uniques](#resource-uniques)
+ - [Ruins uniques](#ruins-uniques)
+ - [CityState uniques](#citystate-uniques)
+ - [Conditional uniques](#conditional-uniques)
  - [Deprecated uniques](#deprecated-uniques)
 
 ## Global uniques
@@ -84,15 +85,10 @@ Example: "[20]% [Culture] [in all cities]"
 
 Applicable to: Global
 
-#### [amount]% [stat] from every follower, up to [amount]%
-Example: "[20]% [Culture] from every follower, up to [20]%"
-
-Applicable to: Global, FollowerBelief
-
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
 
-Applicable to: Global, Resource, FollowerBelief
+Applicable to: Global, FollowerBelief, Resource
 
 #### [amount]% Production when constructing [buildingFilter] buildings [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] buildings [in all cities]"
@@ -224,6 +220,11 @@ Example: "[20]% Strength"
 
 Applicable to: Global, Unit
 
+#### [amount]% Strength decreasing with distance from the capital
+Example: "[20]% Strength decreasing with distance from the capital"
+
+Applicable to: Global, Unit
+
 #### [amount] Movement
 Example: "[20] Movement"
 
@@ -232,7 +233,7 @@ Applicable to: Global, Unit
 #### [amount] Sight
 Example: "[20] Sight"
 
-Applicable to: Global, Unit
+Applicable to: Global, Unit, Terrain
 
 #### [amount]% Spread Religion Strength
 Example: "[20]% Spread Religion Strength"
@@ -240,6 +241,36 @@ Example: "[20]% Spread Religion Strength"
 Applicable to: Global, Unit
 
 #### Normal vision when embarked
+Applicable to: Global, Unit
+
+#### [amount]% maintenance costs
+Example: "[20]% maintenance costs"
+
+Applicable to: Global, Unit
+
+#### [greatPerson] is earned [amount]% faster
+Example: "[greatPerson] is earned [20]% faster"
+
+Applicable to: Global, Unit
+
+#### Upon capturing a city, receive [amount] times its [stat] production as [stat] immediately
+Example: "Upon capturing a city, receive [20] times its [Culture] production as [Culture] immediately"
+
+Applicable to: Global, Unit
+
+#### Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stat]
+Example: "Earn [20]% of killed [Wounded] unit's [costOrStrength] as [Culture]"
+
+Applicable to: Global, Unit
+
+#### [amount] XP gained from combat
+Example: "[20] XP gained from combat"
+
+Applicable to: Global, Unit
+
+#### [amount]% XP gained from combat
+Example: "[20]% XP gained from combat"
+
 Applicable to: Global, Unit
 
 #### Free [baseUnitFilter] appears
@@ -303,8 +334,8 @@ Example: "Quantity of strategic resources produced by the empire +[20]%"
 
 Applicable to: Global
 
-#### +[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns
-Example: "+[20]% attack strength to all [Wounded] Units for [20] turns"
+#### +[amount]% attack strength to all [mapUnitFilter] units for [amount] turns
+Example: "+[20]% attack strength to all [Wounded] units for [20] turns"
 
 Applicable to: Global
 
@@ -317,6 +348,34 @@ Applicable to: Global
 Example: "Provides a [Library] in your first [20] cities for free"
 
 Applicable to: Global
+
+## Nation uniques
+#### Will not be chosen for new games
+Applicable to: Nation
+
+#### Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.
+Example: "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once."
+
+Applicable to: Nation
+
+#### Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.
+Applicable to: Nation
+
+#### Retain [amount]% of the happiness from a luxury after the last copy has been traded away
+Example: "Retain [20]% of the happiness from a luxury after the last copy has been traded away"
+
+Applicable to: Nation
+
+## FollowerBelief uniques
+#### [amount]% [stat] from every follower, up to [amount]%
+Example: "[20]% [Culture] from every follower, up to [20]%"
+
+Applicable to: FollowerBelief
+
+#### Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stat] when killed within 4 tiles of a city following this religion
+Example: "Earn [20]% of [Wounded] unit's [costOrStrength] as [Culture] when killed within 4 tiles of a city following this religion"
+
+Applicable to: FollowerBelief
 
 ## Building uniques
 #### Remove extra unhappiness from annexed cities
@@ -353,6 +412,11 @@ Example: "Limited to [20] per Civilization"
 
 Applicable to: Building, Unit
 
+#### Hidden until [amount] social policy branches have been completed
+Example: "Hidden until [20] social policy branches have been completed"
+
+Applicable to: Building, Unit
+
 #### Cost increases by [amount] per owned city
 Example: "Cost increases by [20] per owned city"
 
@@ -365,6 +429,11 @@ Applicable to: Building
 
 #### Requires a [buildingName] in this city
 Example: "Requires a [Library] in this city"
+
+Applicable to: Building
+
+#### Requires a [buildingName] in all cities
+Example: "Requires a [Library] in all cities"
 
 Applicable to: Building
 
@@ -393,46 +462,16 @@ Example: "Must not be next to [Grassland]"
 
 Applicable to: Building
 
-## CityState uniques
-#### Provides [stats] per turn
-Example: "Provides [+1 Gold, +2 Production] per turn"
+#### Unsellable
+Applicable to: Building
 
-Applicable to: CityState
+#### Hidden when religion is disabled
+Applicable to: Building, Unit, Ruins
 
-#### Provides [stats] [cityFilter] per turn
-Example: "Provides [+1 Gold, +2 Production] [in all cities] per turn"
+#### Hidden when [victoryType] Victory is disabled
+Example: "Hidden when [victoryType] Victory is disabled"
 
-Applicable to: CityState
-
-#### Provides [amount] Happiness
-Example: "Provides [20] Happiness"
-
-Applicable to: CityState
-
-#### Provides military units every ≈[amount] turns
-Example: "Provides military units every ≈[20] turns"
-
-Applicable to: CityState
-
-#### Provides a unique luxury
-Applicable to: CityState
-
-## Nation uniques
-#### Will not be chosen for new games
-Applicable to: Nation
-
-#### Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.
-Example: "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once."
-
-Applicable to: Nation
-
-#### Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.
-Applicable to: Nation
-
-#### Retain [amount]% of the happiness from a luxury after the last copy has been traded away
-Example: "Retain [20]% of the happiness from a luxury after the last copy has been traded away"
-
-Applicable to: Nation
+Applicable to: Building, Unit
 
 ## Unit uniques
 #### Founds a new city
@@ -448,11 +487,6 @@ Applicable to: Unit
 
 #### Can see invisible [mapUnitFilter] units
 Example: "Can see invisible [Wounded] units"
-
-Applicable to: Unit
-
-#### [amount]% Strength decreasing with distance from the capital
-Example: "[20]% Strength decreasing with distance from the capital"
 
 Applicable to: Unit
 
@@ -488,11 +522,6 @@ Applicable to: Unit
 
 #### Cannot be carried by [mapUnitFilter] units
 Example: "Cannot be carried by [Wounded] units"
-
-Applicable to: Unit
-
-#### [amount]% maintenance costs
-Example: "[20]% maintenance costs"
 
 Applicable to: Unit
 
@@ -538,6 +567,12 @@ Applicable to: Unit
 
 #### Religious Unit
 Applicable to: Unit
+
+## Promotion uniques
+#### Heal this unit by [amount] HP
+Example: "Heal this unit by [20] HP"
+
+Applicable to: Promotion
 
 ## Terrain uniques
 #### Must be adjacent to [amount] [simpleTerrain] tiles
@@ -648,13 +683,21 @@ Applicable to: Terrain
 #### Base Terrain on this tile is not counted for Region determination
 Applicable to: Terrain
 
+#### Starts in regions of this type receive an extra [resource]
+Example: "Starts in regions of this type receive an extra [Iron]"
+
+Applicable to: Terrain
+
+#### Never receives any resources
+Applicable to: Terrain
+
 #### Considered [terrainQuality] when determining start locations
 Example: "Considered [terrainQuality] when determining start locations"
 
 Applicable to: Terrain
 
 #### Doesn't generate naturally
-Applicable to: Terrain
+Applicable to: Terrain, Resource
 
 #### Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]
 Example: "Occurs at temperature between [20] and [20] and humidity between [20] and [20]"
@@ -665,6 +708,11 @@ Applicable to: Terrain
 Applicable to: Terrain
 
 #### Occurs in groups around high elevations
+Applicable to: Terrain
+
+#### Every [amount] tiles with this terrain will receive a major deposit of a strategic resource.
+Example: "Every [20] tiles with this terrain will receive a major deposit of a strategic resource."
+
 Applicable to: Terrain
 
 #### Rare feature
@@ -681,33 +729,6 @@ Applicable to: Terrain
 
 #### Rough terrain
 Applicable to: Terrain
-
-## Resource uniques
-#### Appears in [regionType] regions with weight [amount]
-Example: "Appears in [regionType] regions with weight [20]"
-
-Applicable to: Resource
-
-#### Appears near City States with weight [amount]
-Example: "Appears near City States with weight [20]"
-
-Applicable to: Resource
-
-#### Special placement during map generation
-Applicable to: Resource
-
-#### Deposits in [tileFilter] tiles always provide [amount] resources
-Example: "Deposits in [Farm] tiles always provide [20] resources"
-
-Applicable to: Resource
-
-#### Deposits in [tileFilter] tiles always provide [amount] resources
-Example: "Deposits in [Farm] tiles always provide [20] resources"
-
-Applicable to: Resource
-
-#### Can only be created by Mercantile City-States
-Applicable to: Resource
 
 ## Improvement uniques
 #### Can also be built on tiles adjacent to fresh water
@@ -770,6 +791,131 @@ Applicable to: Improvement
 
 #### Indestructible
 Applicable to: Improvement
+
+## Resource uniques
+#### Generated with weight [amount]
+Example: "Generated with weight [20]"
+
+Applicable to: Resource
+
+#### Minor deposits generated with weight [amount]
+Example: "Minor deposits generated with weight [20]"
+
+Applicable to: Resource
+
+#### Generated near City States with weight [amount]
+Example: "Generated near City States with weight [20]"
+
+Applicable to: Resource
+
+#### Special placement during map generation
+Applicable to: Resource
+
+#### Generated on every [amount] tiles
+Example: "Generated on every [20] tiles"
+
+Applicable to: Resource
+
+#### Guaranteed with Strategic Balance resource option
+Applicable to: Resource
+
+#### Deposits in [tileFilter] tiles always provide [amount] resources
+Example: "Deposits in [Farm] tiles always provide [20] resources"
+
+Applicable to: Resource
+
+#### Can only be created by Mercantile City-States
+Applicable to: Resource
+
+## Ruins uniques
+#### Free [baseUnitFilter] found in the ruins
+Example: "Free [Melee] found in the ruins"
+
+Applicable to: Ruins
+
+#### [amount] population in a random city
+Example: "[20] population in a random city"
+
+Applicable to: Ruins
+
+#### [amount] free random researchable Tech(s) from the [era]
+Example: "[20] free random researchable Tech(s) from the [era]"
+
+Applicable to: Ruins
+
+#### Gain [amount] [stat]
+Example: "Gain [20] [Culture]"
+
+Applicable to: Ruins
+
+#### Gain [amount]-[amount] [stat]
+Example: "Gain [20]-[20] [Culture]"
+
+Applicable to: Ruins
+
+#### Gain enough Faith for a Pantheon
+Applicable to: Ruins
+
+#### Gain enough Faith for [amount]% of a Great Prophet
+Example: "Gain enough Faith for [20]% of a Great Prophet"
+
+Applicable to: Ruins
+
+#### Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius
+Example: "Reveal up to [amount/'all'] [Farm] within a [20] tile radius"
+
+Applicable to: Ruins
+
+#### From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance
+Example: "From a randomly chosen tile [20] tiles away from the ruins, reveal tiles up to [20] tiles away with [20]% chance"
+
+Applicable to: Ruins
+
+#### This Unit gains [amount] XP
+Example: "This Unit gains [20] XP"
+
+Applicable to: Ruins
+
+#### This Unit upgrades for free including special upgrades
+Applicable to: Ruins
+
+#### Hidden before founding a Pantheon
+Applicable to: Ruins
+
+#### Hidden after founding a Pantheon
+Applicable to: Ruins
+
+#### Hidden after generating a Great Prophet
+Applicable to: Ruins
+
+#### Only available after [amount] turns
+Example: "Only available after [20] turns"
+
+Applicable to: Ruins
+
+## CityState uniques
+#### Provides [stats] per turn
+Example: "Provides [+1 Gold, +2 Production] per turn"
+
+Applicable to: CityState
+
+#### Provides [stats] [cityFilter] per turn
+Example: "Provides [+1 Gold, +2 Production] [in all cities] per turn"
+
+Applicable to: CityState
+
+#### Provides [amount] Happiness
+Example: "Provides [20] Happiness"
+
+Applicable to: CityState
+
+#### Provides military units every ≈[amount] turns
+Example: "Provides military units every ≈[20] turns"
+
+Applicable to: CityState
+
+#### Provides a unique luxury
+Applicable to: CityState
 
 ## Conditional uniques
 #### <when at war>
@@ -874,6 +1020,21 @@ Example: "<with [20] to [20] neighboring [Farm] [Farm] tiles>"
 
 Applicable to: Conditional
 
+#### <in [tileFilter] tiles>
+Example: "<in [Farm] tiles>"
+
+Applicable to: Conditional
+
+#### <in [tileFilter] [tileFilter] tiles>
+Example: "<in [Farm] [Farm] tiles>"
+
+Applicable to: Conditional
+
+#### <in tiles without [tileFilter]>
+Example: "<in tiles without [Farm]>"
+
+Applicable to: Conditional
+
 #### <on water maps>
 Applicable to: Conditional
 
@@ -886,81 +1047,6 @@ Applicable to: Conditional
 Example: "<in all except [regionType] Regions>"
 
 Applicable to: Conditional
-
-## Ruins uniques
-#### Free [baseUnitFilter] found in the ruins
-Example: "Free [Melee] found in the ruins"
-
-Applicable to: Ruins
-
-#### [amount] population in a random city
-Example: "[20] population in a random city"
-
-Applicable to: Ruins
-
-#### [amount] free random researchable Tech(s) from the [era]
-Example: "[20] free random researchable Tech(s) from the [era]"
-
-Applicable to: Ruins
-
-#### Gain [amount] [stat]
-Example: "Gain [20] [Culture]"
-
-Applicable to: Ruins
-
-#### Gain [amount]-[amount] [stat]
-Example: "Gain [20]-[20] [Culture]"
-
-Applicable to: Ruins
-
-#### Gain enough Faith for a Pantheon
-Applicable to: Ruins
-
-#### Gain enough Faith for [amount]% of a Great Prophet
-Example: "Gain enough Faith for [20]% of a Great Prophet"
-
-Applicable to: Ruins
-
-#### Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius
-Example: "Reveal up to [amount/'all'] [Farm] within a [20] tile radius"
-
-Applicable to: Ruins
-
-#### From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance
-Example: "From a randomly chosen tile [20] tiles away from the ruins, reveal tiles up to [20] tiles away with [20]% chance"
-
-Applicable to: Ruins
-
-#### This Unit gains [amount] XP
-Example: "This Unit gains [20] XP"
-
-Applicable to: Ruins
-
-#### This Unit upgrades for free including special upgrades
-Applicable to: Ruins
-
-#### Hidden when religion is disabled
-Applicable to: Ruins, Building, Unit
-
-#### Hidden before founding a Pantheon
-Applicable to: Ruins
-
-#### Hidden after founding a Pantheon
-Applicable to: Ruins
-
-#### Hidden after generating a Great Prophet
-Applicable to: Ruins
-
-#### Only available after [amount] turns
-Example: "Only available after [20] turns"
-
-Applicable to: Ruins
-
-## Promotion uniques
-#### Heal this unit by [amount] HP
-Example: "Heal this unit by [20] HP"
-
-Applicable to: Promotion
 
 ## Deprecated uniques
  - "+[amount]% [stat] [cityFilter]" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [cityFilter]"
@@ -995,6 +1081,7 @@ Applicable to: Promotion
  - "+[amount]% Production when constructing [constructionFilter] [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
+ - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
@@ -1012,5 +1099,6 @@ Applicable to: Promotion
  - "+[amount]% Strength in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
  - "[amount] Visibility Range" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
+ - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"

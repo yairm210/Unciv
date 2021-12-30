@@ -43,6 +43,8 @@ class TechManager {
     var roadsConnectAcrossRivers = false
 
     var freeTechs = 0
+    // For calculating score
+    var repeatingTechsResearched = 0 
 
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
     var scienceOfLast8Turns = IntArray(8) { 0 }
@@ -63,6 +65,7 @@ class TechManager {
         val toReturn = TechManager()
         toReturn.techsResearched.addAll(techsResearched)
         toReturn.freeTechs = freeTechs
+        toReturn.repeatingTechsResearched = repeatingTechsResearched
         toReturn.techsInProgress.putAll(techsInProgress)
         toReturn.techsToResearch.addAll(techsToResearch)
         toReturn.scienceOfLast8Turns = scienceOfLast8Turns.clone()
@@ -239,6 +242,8 @@ class TechManager {
         val newTech = getRuleset().technologies[techName]!!
         if (!newTech.isContinuallyResearchable())
             techsToResearch.remove(techName)
+        else
+            repeatingTechsResearched++
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         addTechToTransients(newTech)
         for (unique in newTech.uniqueObjects) {

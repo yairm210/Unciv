@@ -46,6 +46,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
                 worldScreen.keyPressDispatcher[key] = {
                     thread(name = "Sound") { Sounds.play(unitAction.uncivSound) }
                     action()
+                    worldScreen.mapHolder.removeUnitActionOverlay()
                 }
         }
 

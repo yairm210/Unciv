@@ -425,8 +425,9 @@ class CityInfo {
             buildingsCounter.add(building.greatPersonPoints)
         sourceToGPP["Buildings"] = buildingsCounter
 
+        val stateForConditionals = StateForConditionals(civInfo = civInfo, cityInfo = this)
         for ((_, gppCounter) in sourceToGPP) {
-            for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
                 val unitName = unique.params[0]
                 if (!gppCounter.containsKey(unitName)) continue
                 gppCounter.add(unitName, gppCounter[unitName]!! * unique.params[1].toInt() / 100)
@@ -440,9 +441,8 @@ class CityInfo {
 
             // Sweden UP
             for (otherCiv in civInfo.getKnownCivs()) {
-                if (!civInfo.getDiplomacyManager(otherCiv)
-                        .hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                ) continue
+                if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 
+                    continue
 
                 for (ourUnique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
                     allGppPercentageBonus += ourUnique.params[0].toInt()
@@ -558,6 +558,14 @@ class CityInfo {
 
     fun setFlag(flag: CityFlags, amount: Int) {
         flagsCountdown[flag.name] = amount
+    }
+    
+    fun resetWLTKD() {
+        // Removes the flags for we love the king & resource demand
+        // The resource demand flag will automatically be readded with 15 turns remaining, see startTurn()
+        flagsCountdown.remove(CityFlags.WeLoveTheKing.name)
+        flagsCountdown.remove(CityFlags.ResourceDemand.name)
+        demandedResource = ""
     }
 
     fun reassignPopulation() {

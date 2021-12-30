@@ -56,7 +56,7 @@ enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
 }
 
 enum class UniqueFlag {
-    HideInCivilopedia,
+    HiddenToUsers,
 }
 
 enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
@@ -94,7 +94,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     @Deprecated("As of 3.17.1", ReplaceWith("[amount]% [stat] [in all cities] <while the empire is happy>"), DeprecationLevel.WARNING)
     StatPercentBonusCitiesDeprecatedWhileEmpireHappy("[amount]% [stat] while the empire is happy", UniqueTarget.Global),
 
-    StatPercentFromReligionFollowers("[amount]% [stat] from every follower, up to [amount]%", UniqueTarget.FollowerBelief, UniqueTarget.Global),
+    StatPercentFromReligionFollowers("[amount]% [stat] from every follower, up to [amount]%", UniqueTarget.FollowerBelief),
 
     //endregion Stat providing uniques
 
@@ -189,7 +189,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CanBePurchasedWithStat("Can be purchased with [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedForAmountStat("Can be purchased for [amount] [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     MaxNumberBuildable("Limited to [amount] per Civilization", UniqueTarget.Building, UniqueTarget.Unit),
-
+    HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
+    
     //endregion
     
     
@@ -199,6 +200,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
+    RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
 
     NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
     //UniqueType added in 3.18.4
@@ -209,6 +211,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     MustNotBeOn("Must not be on [terrainFilter]", UniqueTarget.Building),
     MustBeNextTo("Must be next to [terrainFilter]", UniqueTarget.Building),
     MustNotBeNextTo("Must not be next to [terrainFilter]", UniqueTarget.Building),
+
+    Unsellable("Unsellable", UniqueTarget.Building),
+
 
     //endregion
 
@@ -221,11 +226,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
     
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
-    StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit),
+    StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit, UniqueTarget.Global),
 
 
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
-    Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global),
+    Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
     SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
@@ -242,8 +247,16 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
 
-    UnitMaintenanceDiscount("[amount]% maintenance costs", UniqueTarget.Unit),
-
+    UnitMaintenanceDiscount("[amount]% maintenance costs", UniqueTarget.Unit, UniqueTarget.Global),
+    GreatPersonEarnedFaster("[greatPerson] is earned [amount]% faster", UniqueTarget.Unit, UniqueTarget.Global),
+    
+    CaptureCityPlunder("Upon capturing a city, receive [amount] times its [stat] production as [stat] immediately", UniqueTarget.Unit, UniqueTarget.Global),
+    KillUnitPlunder("Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [stat]", UniqueTarget.Unit, UniqueTarget.Global),
+    KillUnitPlunderNearCity("Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [stat] when killed within 4 tiles of a city following this religion", UniqueTarget.FollowerBelief),
+    
+    FlatXPGain("[amount] XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
+    PercentageXPGain("[amount]% XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
+    
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
@@ -255,26 +268,27 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
     @Deprecated("As of 3.18.6", ReplaceWith("Cannot enter ocean tiles <before discovering [Astronomy]>"))
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
-    CannotBeBarbarian("Never appears as a Barbarian unit", UniqueTarget.Unit, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    CannotBeBarbarian("Never appears as a Barbarian unit", UniqueTarget.Unit, flags = listOf(UniqueFlag.HiddenToUsers)),
     CanEnterForeignTiles("May enter foreign tiles without open borders", UniqueTarget.Unit),
     CanEnterForeignTilesButLosesReligiousStrength("May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there", UniqueTarget.Unit),
 
     ReligiousUnit("Religious Unit", UniqueTarget.Unit),
+    SpaceshipPart("Spaceship part", UniqueTarget.Building, UniqueTarget.Unit),
 
     //endregion
 
     ///////////////////////////////////////// region TILE UNIQUES /////////////////////////////////////////
 
     // region natural wonders
-    NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    NaturalWonderSmallerLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    NaturalWonderLargerLandmass("Must be on [amount] largest landmasses", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    NaturalWonderNeighborCount("Must be adjacent to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    NaturalWonderNeighborsRange("Must be adjacent to [amount] to [amount] [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    NaturalWonderSmallerLandmass("Must not be on [amount] largest landmasses", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    NaturalWonderLargerLandmass("Must be on [amount] largest landmasses", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    NaturalWonderLatitude("Occurs on latitudes from [amount] to [amount] percent of distance equator to pole", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    NaturalWonderGroups("Occurs in groups of [amount] to [amount] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    NaturalWonderConvertNeighbors("Neighboring tiles will convert to [baseTerrain]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
     // The "Except [terrainFilter]" could theoretically be implemented with a conditional
-    NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    NaturalWonderConvertNeighborsExcept("Neighboring tiles except [baseTerrain] will convert to [baseTerrain]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
     GrantsGoldToFirstToDiscover("Grants 500 Gold to the first civilization to discover it", UniqueTarget.Terrain),
     // endregion
 
@@ -290,27 +304,32 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     BlocksLineOfSightAtSameElevation("Blocks line-of-sight from tiles at same elevation", UniqueTarget.Terrain),
     VisibilityElevation("Has an elevation of [amount] for visibility calculations", UniqueTarget.Terrain),
   
-    OverrideFertility("Always Fertility [amount] for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    AddFertility("[amount] to Fertility for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    OverrideFertility("Always Fertility [amount] for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    AddFertility("[amount] to Fertility for Map Generation", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
 
-    RegionRequirePercentSingleType("A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    RegionRequirePercentSingleType("A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
     RegionRequirePercentTwoTypes("A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]",
-            UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+            UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    RegionRequireFirstLessThanSecond("A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    IgnoreBaseTerrainForRegion("Base Terrain on this tile is not counted for Region determination", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    RegionExtraResource("Starts in regions of this type receive an extra [resource]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    BlocksResources("Never receives any resources", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
 
-    HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
 
-    LuxuryWeighting("Appears in [regionType] regions with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    LuxuryWeightingForCityStates("Appears near City States with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HiddenToUsers)),
+    MinorDepositWeighting("Minor deposits generated with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HiddenToUsers)),
+    LuxuryWeightingForCityStates("Generated near City States with weight [amount]", UniqueTarget.Resource, flags = listOf(UniqueFlag.HiddenToUsers)),
+    LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = listOf(UniqueFlag.HiddenToUsers)),
+    ResourceFrequency("Generated on every [amount] tiles", UniqueTarget.Resource, flags = listOf(UniqueFlag.HiddenToUsers)),
 
-    OverrideDepositAmountOnTileFilter("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
+    StrategicBalanceResource("Guaranteed with Strategic Balance resource option", UniqueTarget.Resource),
   
-    NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
-    OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HideInCivilopedia)),
+    NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, UniqueTarget.Resource, flags = listOf(UniqueFlag.HiddenToUsers)),
+    TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    OccursInGroups("Occurs in groups around high elevations", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
+    MajorStrategicFrequency("Every [amount] tiles with this terrain will receive a major deposit of a strategic resource.", UniqueTarget.Terrain, flags = listOf(UniqueFlag.HiddenToUsers)),
   
     RareFeature("Rare feature", UniqueTarget.Terrain),
     
@@ -384,7 +403,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
     ConditionalAttacking("when attacking", UniqueTarget.Conditional),
     ConditionalDefending("when defending", UniqueTarget.Conditional),
-    ConditionalInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalFightingInTiles("when fighting in [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalForeignContinent("on foreign continents", UniqueTarget.Conditional),
     ConditionalAboveHP("when above [amount] HP", UniqueTarget.Conditional),
     ConditionalBelowHP("when below [amount] HP", UniqueTarget.Conditional),
@@ -392,6 +411,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     /////// tile conditionals
     ConditionalNeighborTiles("with [amount] to [amount] neighboring [tileFilter] tiles", UniqueTarget.Conditional),
     ConditionalNeighborTilesAnd("with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalInTiles("in [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalInTilesAnd("in [tileFilter] [tileFilter] tiles", UniqueTarget.Conditional),
+    ConditionalInTilesNot("in tiles without [tileFilter]", UniqueTarget.Conditional),
 
     /////// area conditionals
     ConditionalOnWaterMaps("on water maps", UniqueTarget.Conditional),
@@ -435,7 +457,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     // todo: remove forced sign
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[amount]%", UniqueTarget.Global),  // used in Policy
     // todo: remove forced sign
-    TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] Units for [amount] turns", UniqueTarget.Global),  // used in Policy
+    // todo: convert to "[amount]% Strength <when attacking> <for [baseUnitFilter] units> <for [amount] turns>"
+    TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] units for [amount] turns", UniqueTarget.Global),  // used in Policy
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
 
@@ -449,6 +472,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
+    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit),
 
 
     // region DEPRECATED AND REMOVED
@@ -545,7 +569,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     @Deprecated("As of 3.16.16 - removed 3.17.11", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
 
-
+    @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat"))
+    BonuxXPGain("[amount]% Bonus XP gain", UniqueTarget.Unit),
+    @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat <for [mapUnitFilter] units>"))
+    BonusXPGainForUnits("[mapUnitFilter] units gain [amount]% more Experience from combat", UniqueTarget.Global),
+    
     // endregion
 
     ;

@@ -12,7 +12,8 @@ class UniqueDocsWriter {
 
     fun write() {
         val lines = ArrayList<String>()
-        val targetTypesToUniques = UniqueType.values().groupBy { it.targetTypes.first() }
+        val targetTypesToUniques = UniqueType.values().groupBy { it.targetTypes.minOrNull()!! }
+            .toSortedMap()
 
         fun replaceExamples(text:String):String {
             return text.replace("[amount]", "[20]")
@@ -55,7 +56,7 @@ class UniqueDocsWriter {
                 lines += "#### $uniqueText"
                 if (uniqueType.text.contains('['))
                     lines += "Example: \"${replaceExamples(uniqueText)}\"\n"
-                lines += "Applicable to: " + uniqueType.targetTypes.joinToString()
+                lines += "Applicable to: " + uniqueType.targetTypes.sorted().joinToString()
                 lines += ""
             }
         }

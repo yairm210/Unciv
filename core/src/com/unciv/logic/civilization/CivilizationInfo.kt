@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.TemporaryUnique
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -142,12 +143,12 @@ class CivilizationInfo {
 
     /** See DiplomacyManager.flagsCountdown for why this does not map Enums to ints */
     private var flagsCountdown = HashMap<String, Int>()
-    /** Arraylist instead of HashMap as there might be doubles
-     * Pairs of Uniques and the amount of turns they are still active
-     * If the counter reaches 0 at the end of a turn, it is removed immediately
+    
+    /** Arraylist instead of HashMap as the same unique might appear multiple times
+     * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
      */
-    val temporaryUniques = ArrayList<Pair<Unique, Int>>()
-
+    val temporaryUniques = ArrayList<TemporaryUnique>()
+    
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
     // This is basically a way to ensure our lists are immutable.
@@ -176,6 +177,33 @@ class CivilizationInfo {
 
     var totalCultureForContests = 0
     var totalFaithForContests = 0
+
+    /**
+     * Container class to represent a historical attack recently performed by this civilization.
+     *
+     * @property attackingUnit Name key of [BaseUnit] type that performed the attack, or null (E.G. for city bombardments).
+     * @property source Position of the tile from which the attack was made.
+     * @property target Position of the tile targetted by the attack.
+     * @see [MapUnit.UnitMovementMemory], [attacksSinceTurnStart]
+     */
+    class HistoricalAttackMemory() {
+        constructor(attackingUnit: String?, source: Vector2, target: Vector2): this() {
+            this.attackingUnit = attackingUnit
+            this.source = source
+            this.target = target
+        }
+        var attackingUnit: String? = null
+        lateinit var source: Vector2
+        lateinit var target: Vector2
+        fun clone() = HistoricalAttackMemory(attackingUnit, Vector2(source), Vector2(target))
+    }
+    /** Deep clone an ArrayList of [HistoricalAttackMemory]s. */
+    private fun ArrayList<HistoricalAttackMemory>.copy() = ArrayList(this.map { it.clone() })
+    /**
+     * List of attacks that this civilization has performed since the start of its most recent turn. Does not include attacks already tracked in [MapUnit.attacksSinceTurnStart] of living units. Used in movement arrow overlay.
+     * @see [MapUnit.attacksSinceTurnStart]
+     */
+    var attacksSinceTurnStart = ArrayList<HistoricalAttackMemory>()
 
     var hasMovedAutomatedUnits = false
 
@@ -229,6 +257,7 @@ class CivilizationInfo {
         toReturn.numMinorCivsAttacked = numMinorCivsAttacked
         toReturn.totalCultureForContests = totalCultureForContests
         toReturn.totalFaithForContests = totalFaithForContests
+        toReturn.attacksSinceTurnStart = attacksSinceTurnStart.copy()
         toReturn.hasMovedAutomatedUnits = hasMovedAutomatedUnits
         return toReturn
     }
@@ -358,7 +387,7 @@ class CivilizationInfo {
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null, cityToIgnore: CityInfo? = null) = sequence {
-        yieldAll(nation.uniqueObjects.asSequence().filter {it.isOfType(uniqueType) })
+        yieldAll(nation.uniqueObjects.asSequence().filter { it.isOfType(uniqueType) })
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
             .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType) }
@@ -366,7 +395,7 @@ class CivilizationInfo {
         yieldAll(policies.policyUniques.getUniques(uniqueType))
         yieldAll(tech.techUniques.getUniques(uniqueType))
         yieldAll(temporaryUniques.asSequence()
-            .map { it.first }
+            .map { it.uniqueObject }
             .filter { it.isOfType(uniqueType) }
         )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
@@ -385,7 +414,8 @@ class CivilizationInfo {
         yieldAll(policies.policyUniques.getUniques(uniqueTemplate))
         yieldAll(tech.techUniques.getUniques(uniqueTemplate))
         yieldAll(temporaryUniques.asSequence()
-            .filter { it.first.placeholderText == uniqueTemplate }.map { it.first }
+            .map { it.uniqueObject }
+            .filter { it.placeholderText == uniqueTemplate }
         )
         yieldAll(getEra().getMatchingUniques(uniqueTemplate).asSequence())
         if (religionManager.religion != null)
@@ -613,6 +643,7 @@ class CivilizationInfo {
 
     fun getStatForRanking(category: RankingType): Int {
         return when (category) {
+            RankingType.Score -> calculateScoreBreakdown().values.sum().toInt()
             RankingType.Population -> cities.sumOf { it.population.population }
             RankingType.Crop_Yield -> statsForNextTurn.food.roundToInt()
             RankingType.Production -> statsForNextTurn.production.roundToInt()
@@ -632,7 +663,7 @@ class CivilizationInfo {
     }
 
     private fun calculateMilitaryMight(): Int {
-        var sum = 0
+        var sum = 1 // minimum value, so we never end up with 0
         for (unit in units) {
             sum += if (unit.baseUnit.isWaterUnit())
                 unit.getForceEvaluation() / 2   // Really don't value water units highly
@@ -667,6 +698,27 @@ class CivilizationInfo {
     }
     fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
+    fun calculateScoreBreakdown(): HashMap<String,Double> {
+        val scoreBreakdown = hashMapOf<String,Double>();
+        // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
+        // but they have bigger maps
+        var mapSizeModifier = 1276 / gameInfo.tileMap.mapParameters.numberOfTiles().toDouble()
+        if (mapSizeModifier > 1)
+            mapSizeModifier = (mapSizeModifier - 1) / 3 + 1
+        
+        scoreBreakdown["Cities"] = cities.count() * 10 * mapSizeModifier
+        scoreBreakdown["Population"] = cities.sumOf { it.population.population } * 3 * mapSizeModifier
+        scoreBreakdown["Tiles"] = cities.sumOf { city -> city.getTiles().filter { !it.isWater}.count() } * 1 * mapSizeModifier
+        scoreBreakdown["Wonders"] = 40 * cities
+            .sumOf { city -> city.cityConstructions.builtBuildings
+                .filter { gameInfo.ruleSet.buildings[it]!!.isWonder }.count() 
+            }.toDouble()
+        scoreBreakdown["Techs"] = tech.getNumberOfTechsResearched() * 4.toDouble()
+        scoreBreakdown["Future Tech"] = tech.repeatingTechsResearched * 10.toDouble()
+        
+        return scoreBreakdown
+    }
+    
     //endregion
 
     //region state-changing functions
@@ -703,7 +755,7 @@ class CivilizationInfo {
         tech.setTransients()
 
         ruinsManager.setTransients(this)
-
+        
         for (diplomacyManager in diplomacy.values) {
             diplomacyManager.civInfo = this
             diplomacyManager.updateHasOpenBorders()
@@ -758,6 +810,7 @@ class CivilizationInfo {
 
     fun startTurn() {
         civConstructions.startTurn()
+        attacksSinceTurnStart.clear()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Generate great people at the start of the turn,
@@ -830,10 +883,10 @@ class CivilizationInfo {
         }
 
         // Update turn counter for temporary uniques
-        for (unique in temporaryUniques.toList()) {
-            temporaryUniques.remove(unique)
-            if (unique.second > 1) temporaryUniques.add(Pair(unique.first, unique.second - 1))
+        for (unique in temporaryUniques) {
+            unique.turnsLeft -= 1
         }
+        temporaryUniques.removeAll { it.turnsLeft <= 0 }
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
@@ -906,6 +959,8 @@ class CivilizationInfo {
     fun mayVoteForDiplomaticVictory() =
         getTurnsTillNextDiplomaticVote() == 0 
         && civName !in gameInfo.diplomaticVictoryVotesCast.keys
+        // Only vote if there is someone to vote for, may happen in one-more-turn mode
+        && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     fun diplomaticVoteForCiv(chosenCivName: String?) {
         if (chosenCivName != null) gameInfo.diplomaticVictoryVotesCast[civName] = chosenCivName
@@ -913,10 +968,11 @@ class CivilizationInfo {
 
     fun shouldShowDiplomaticVotingResults() =
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
+         && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     // Yes, this is the same function as above, but with a different use case so it has a different name.
     fun shouldCheckForDiplomaticVictory() =
-        flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
+        shouldShowDiplomaticVotingResults()
 
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)

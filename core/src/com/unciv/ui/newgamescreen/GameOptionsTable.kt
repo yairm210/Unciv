@@ -38,11 +38,10 @@ class GameOptionsTable(
         defaults().pad(5f)
 
         // We assign this first to make sure addBaseRulesetSelectBox doesn't reference a null object
-        if (isPortrait) {
-            modCheckboxes = getModCheckboxes(isPortrait = true)
-        } else {
-            modCheckboxes = getModCheckboxes()
-        }
+        modCheckboxes = 
+            if (isPortrait) 
+                getModCheckboxes(isPortrait = true)
+            else getModCheckboxes()
 
         add(Table().apply {
             defaults().pad(5f)
@@ -52,10 +51,14 @@ class GameOptionsTable(
             addEraSelectBox()
             // align left and right edges with other SelectBoxes but allow independent dropdown width
             add(Table().apply {
+                val turnSlider = addMaxTurnsSlider()
+                if (turnSlider != null) 
+                    add(turnSlider).padTop(10f).row()
                 cityStateSlider = addCityStatesSlider()
             }).colspan(2).fillX().row()
         }).row()
         addVictoryTypeCheckboxes()
+        
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         checkboxTable.addNoBarbariansCheckbox()
@@ -126,6 +129,21 @@ class GameOptionsTable(
         slider.isDisabled = locked
         add(slider).padTop(10f).row()
         slider.value = gameParameters.numberOfCityStates.toFloat()
+        return slider
+    }
+
+    private fun Table.addMaxTurnsSlider(): UncivSlider? {
+        if (!gameParameters.victoryTypes.contains(VictoryType.Time)) return null
+
+        add("{Max Turns}:".toLabel()).left().expandX()
+        val slider = UncivSlider(250f, 1500f, 50f) {
+            gameParameters.maxTurns = it.toInt()
+        }
+        slider.permanentTip = true
+        slider.isDisabled = locked
+        val snapValues = floatArrayOf(250f,300f,350f,400f,450f,500f,550f,600f,650f,700f,750f,800f,900f,1000f,1250f,1500f)
+        slider.setSnapToValues(snapValues, 250f)
+        slider.value = gameParameters.maxTurns.toFloat()
         return slider
     }
 
@@ -204,8 +222,7 @@ class GameOptionsTable(
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it; null }
     }
-
-
+    
     private fun addVictoryTypeCheckboxes() {
         add("{Victory Conditions}:".toLabel()).colspan(2).row()
 
@@ -221,6 +238,9 @@ class GameOptionsTable(
                 } else {
                     gameParameters.victoryTypes.remove(victoryType)
                 }
+                // show or hide the max turns select box
+                if (victoryType == VictoryType.Time)
+                    update()
             }
             victoryCheckbox.name = victoryType.name
             victoryCheckbox.isDisabled = locked

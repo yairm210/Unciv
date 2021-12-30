@@ -209,7 +209,7 @@ class Technology: RulesetObject() {
         if (uniques.isNotEmpty()) {
             lineList += FormattedLine()
             uniqueObjects.forEach {
-                if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
                     lineList += FormattedLine(it)
             }
         }

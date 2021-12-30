@@ -374,11 +374,17 @@ class TileMap {
      *  Is run before setTransients, so make do without startingLocationsByNation
      */
     fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
-        setTransients(ruleset)
-        setStartingLocationsTransients()
         val rulesetIncompatibilities = HashSet<String>()
         for (set in values.map { it.getRulesetIncompatibility(ruleset) })
             rulesetIncompatibilities.addAll(set)
+
+        // All the rest is to find missing nations
+        try { // This can fail if the map contains a resource that isn't in the ruleset, in TileInfo.tileResource
+            setTransients(ruleset)
+        } catch (ex: Exception) {
+            return rulesetIncompatibilities
+        }
+        setStartingLocationsTransients()
         for ((_, nationName) in startingLocations) {
             if (nationName !in ruleset.nations)
                 rulesetIncompatibilities.add("Nation [$nationName] does not exist in ruleset!")
@@ -496,6 +502,7 @@ class TileMap {
         // only once we know the unit can be placed do we add it to the civ's unit list
         unit.putInTile(unitToPlaceTile)
         unit.currentMovement = unit.getMaxMovement().toFloat()
+        unit.addMovementMemory()
 
         // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
         for (promotion in unit.baseUnit.promotions)
