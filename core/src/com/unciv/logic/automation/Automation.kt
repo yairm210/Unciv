@@ -173,7 +173,7 @@ object Automation {
             return true
 
         // Spaceships are always allowed
-        if (construction.hasUnique("Spaceship part"))
+        if (construction.hasUnique(UniqueType.SpaceshipPart))
             return true
 
         val requiredResources = construction.getResourceRequirements()
