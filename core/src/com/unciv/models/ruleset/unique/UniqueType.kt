@@ -356,7 +356,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     CanBuildOutsideBorders("Can be built outside your borders", UniqueTarget.Improvement),
     CanBuildJustOutsideBorders("Can be built just outside your borders", UniqueTarget.Improvement),
-    @Deprecated("As of 3.18.5", ReplaceWith("Cannot be built on [tileFilter] tiles <before researching [tech]>"))
+    @Deprecated("As of 3.18.5", ReplaceWith("Cannot be built on [tileFilter] tiles <before discovering [tech]>"))
     RequiresTechToBuildOnTile("Cannot be built on [tileFilter] tiles until [tech] is discovered", UniqueTarget.Improvement),
     CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
     NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),

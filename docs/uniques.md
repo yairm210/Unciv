@@ -1099,5 +1099,5 @@ Applicable to: Conditional
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
  - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
- - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated As of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before researching [tech]>"
+ - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated As of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before discovering [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"
