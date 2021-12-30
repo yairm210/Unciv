@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.INonPerpetualConstruction
@@ -194,7 +195,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addSpaceshipPartChoice() {
-        val spaceshipPart = buildableNotWonders.firstOrNull { it.uniques.contains("Spaceship part") }
+        val spaceshipPart = buildableNotWonders.firstOrNull { it.hasUnique(UniqueType.SpaceshipPart) }
         if (spaceshipPart != null) {
             var modifier = 1.5f
             if (preferredVictoryType == VictoryType.Scientific) modifier = 2f
