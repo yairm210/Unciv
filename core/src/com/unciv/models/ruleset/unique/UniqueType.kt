@@ -269,7 +269,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CanEnterForeignTilesButLosesReligiousStrength("May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there", UniqueTarget.Unit),
 
     ReligiousUnit("Religious Unit", UniqueTarget.Unit),
-    SpaceshipPart("Spaceship part", UniqueTarget.Unit),
+    SpaceshipPart("Spaceship part", UniqueTarget.Building, UniqueTarget.Unit),
 
     //endregion
 
