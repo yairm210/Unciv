@@ -131,11 +131,6 @@ Example: "[20] units cost no maintenance"
 
 Applicable to: Global
 
-#### [amount]% maintenance costs for [mapUnitFilter] units
-Example: "[20]% maintenance costs for [Wounded] units"
-
-Applicable to: Global
-
 #### [amount]% growth [cityFilter]
 Example: "[20]% growth [in all cities]"
 
@@ -464,6 +459,9 @@ Applicable to: Building
 
 #### Unsellable
 Applicable to: Building
+
+#### Spaceship part
+Applicable to: Building, Unit
 
 #### Hidden when religion is disabled
 Applicable to: Building, Unit, Ruins
@@ -1082,6 +1080,7 @@ Applicable to: Conditional
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
+ - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"

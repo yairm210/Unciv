@@ -553,6 +553,7 @@ class MapUnit {
         return getMatchingUniques("All adjacent units heal [] HP when healing").sumOf { it.params[0].toInt() }
     }
 
+    // Only military land units can truly "garrison"
     fun canGarrison() = baseUnit.isMilitary() && baseUnit.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()

@@ -130,7 +130,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     /////// Other global uniques
 
     FreeUnits("[amount] units cost no maintenance", UniqueTarget.Global),
-    UnitMaintenanceDiscountGlobal("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
 
     ConsumesResources("Consumes [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
     ProvidesResources("Provides [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building),
@@ -568,6 +567,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     BonuxXPGain("[amount]% Bonus XP gain", UniqueTarget.Unit),
     @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat <for [mapUnitFilter] units>"))
     BonusXPGainForUnits("[mapUnitFilter] units gain [amount]% more Experience from combat", UniqueTarget.Global),
+
+    @Deprecated("As of 3.18.14", ReplaceWith("[amount]% maintenance costs <for [mapUnitFilter] units>"))
+    UnitMaintenanceDiscountGlobal("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
     
     // endregion
 
