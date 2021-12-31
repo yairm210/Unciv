@@ -1964,7 +1964,21 @@ TileSets/FantasyHex/Borders/ConcaveConvexInner
   orig: 81, 15
   offset: 0, 0
   index: -1
+TileSets/Default/Borders/ConcaveConvexInner
+  rotate: false
+  xy: 406, 1409
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
 TileSets/FantasyHex/Borders/ConcaveConvexOuter
+  rotate: false
+  xy: 436, 447
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConcaveConvexOuter
   rotate: false
   xy: 436, 447
   size: 81, 15
@@ -1978,7 +1992,21 @@ TileSets/FantasyHex/Borders/ConcaveInner
   orig: 81, 15
   offset: 0, 0
   index: -1
+TileSets/Default/Borders/ConcaveInner
+  rotate: false
+  xy: 544, 555
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
 TileSets/FantasyHex/Borders/ConcaveOuter
+  rotate: false
+  xy: 652, 629
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConcaveOuter
   rotate: false
   xy: 652, 629
   size: 81, 15
@@ -1992,7 +2020,21 @@ TileSets/FantasyHex/Borders/ConvexConcaveInner
   orig: 81, 15
   offset: 0, 0
   index: -1
+TileSets/Default/Borders/ConvexConcaveInner
+  rotate: false
+  xy: 760, 731
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
 TileSets/FantasyHex/Borders/ConvexConcaveOuter
+  rotate: false
+  xy: 868, 839
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConvexConcaveOuter
   rotate: false
   xy: 868, 839
   size: 81, 15
@@ -2006,7 +2048,21 @@ TileSets/FantasyHex/Borders/ConvexInner
   orig: 81, 15
   offset: 0, 0
   index: -1
+TileSets/Default/Borders/ConvexInner
+  rotate: false
+  xy: 976, 947
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
 TileSets/FantasyHex/Borders/ConvexOuter
+  rotate: false
+  xy: 1084, 1095
+  size: 81, 15
+  orig: 81, 15
+  offset: 0, 0
+  index: -1
+TileSets/Default/Borders/ConvexOuter
   rotate: false
   xy: 1084, 1095
   size: 81, 15
