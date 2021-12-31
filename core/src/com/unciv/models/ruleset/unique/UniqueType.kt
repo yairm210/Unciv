@@ -177,7 +177,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     TriggersVictory("Triggers victory", UniqueTarget.Global),
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
     
-    CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Nation),
+    CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Global),
     
     //endregion Global uniques
 
