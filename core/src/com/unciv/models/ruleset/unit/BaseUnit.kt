@@ -444,8 +444,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (hasUnique(UniqueType.FoundCity) &&
             (civInfo.isCityState() || civInfo.isOneCityChallenger())
-        )
+        ) {
             rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
+        }
+        
+        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits, StateForConditionals(civInfo=civInfo))
+            .any { matchesFilter(it.params[0]) }
+        ) {
+            rejectionReasons.add(RejectionReason.CannotBeBuilt)
+        }
+            
         return rejectionReasons
     }
 

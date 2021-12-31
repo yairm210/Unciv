@@ -94,6 +94,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                                 game.setScreen(MapEditorScreen(map))
                                 dispose()
                             } catch (ex: Throwable) {
+                                ex.printStackTrace()
                                 needPopup = false
                                 popup?.close()
                                 println("Error displaying map \"$chosenMap\": ${ex.localizedMessage}")
@@ -103,6 +104,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                         }
                     } catch (ex: Throwable) {
                         needPopup = false
+                        ex.printStackTrace()
                         Gdx.app.postRunnable {
                             popup?.close()
                             println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
@@ -148,6 +150,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString, checkSizeErrors = false)
                     game.setScreen(MapEditorScreen(loadedMap))
                 } catch (ex: Exception) {
+                    ex.printStackTrace()
                     couldNotLoadMapLabel.isVisible = true
                 }
             }

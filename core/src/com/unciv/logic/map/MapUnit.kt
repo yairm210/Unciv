@@ -327,13 +327,14 @@ class MapUnit {
 
         //todo: consider parameterizing [terrainFilter] in some of the following:
         canEnterIceTiles = hasUnique(UniqueType.CanEnterIceTiles)
-        cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean)
-        cannotEnterOceanTilesUntilAstronomy = hasUnique(UniqueType.CannotEnterOceanUntilAstronomy)
+        cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean, StateForConditionals(civInfo=civInfo, unit=this))
+        // Deprecated as of 3.18.6
+            cannotEnterOceanTilesUntilAstronomy = hasUnique(UniqueType.CannotEnterOceanUntilAstronomy)
+        //
 
         hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
-        canEnterForeignTerrain =
-            hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
-                    || hasUnique(UniqueType.CanEnterForeignTiles)
+        canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
+            || hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {

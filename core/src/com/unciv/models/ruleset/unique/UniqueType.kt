@@ -175,9 +175,12 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),
     TriggersVictory("Triggers victory", UniqueTarget.Global),
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
-
+    
+    CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Global),
+    
     //endregion Global uniques
 
+    
     ///////////////////////////////////////// region CONSTRUCTION UNIQUES /////////////////////////////////////////
 
     Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit),
@@ -188,8 +191,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
     
     //endregion
-
-
+    
+    
     ///////////////////////////////////////// region BUILDING UNIQUES /////////////////////////////////////////
 
 
@@ -213,7 +216,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     //endregion
 
-
+    
     ///////////////////////////////////////// region UNIT UNIQUES /////////////////////////////////////////
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
@@ -262,6 +265,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     RoughTerrainPenalty("Rough terrain penalty", UniqueTarget.Unit),
     CanEnterIceTiles("Can enter ice tiles", UniqueTarget.Unit),
     CannotEnterOcean("Cannot enter ocean tiles", UniqueTarget.Unit),
+    @Deprecated("As of 3.18.6", ReplaceWith("Cannot enter ocean tiles <before discovering [Astronomy]>"))
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
     CannotBeBarbarian("Never appears as a Barbarian unit", UniqueTarget.Unit, flags = listOf(UniqueFlag.HiddenToUsers)),
     CanEnterForeignTiles("May enter foreign tiles without open borders", UniqueTarget.Unit),
@@ -351,6 +355,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     CanBuildOutsideBorders("Can be built outside your borders", UniqueTarget.Improvement),
     CanBuildJustOutsideBorders("Can be built just outside your borders", UniqueTarget.Improvement),
+    @Deprecated("As of 3.18.5", ReplaceWith("Cannot be built on [tileFilter] tiles <before discovering [tech]>"))
     RequiresTechToBuildOnTile("Cannot be built on [tileFilter] tiles until [tech] is discovered", UniqueTarget.Improvement),
     CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
     NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
