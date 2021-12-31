@@ -24,6 +24,7 @@ import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -403,14 +404,15 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         unitActionsTable.y = bottomUnitTable.height
 
         mapHolder.resetArrows()
+        data class AttackOnMap(val attackingBaseUnit: BaseUnit?, val attackingCiv: CivilizationInfo, val source: Vector2, val target: Vector2)
         val allUnits = gameInfo.civilizations.asSequence().flatMap { it.getCivUnits() }
-        val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
-            gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
+        val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> AttackOnMap(unit.baseUnit, unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
+            gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { civAttack -> AttackOnMap(civAttack.attackingUnit?.let { gameInfo.ruleSet.units[it] }, civInfo, civAttack.source, civAttack.target) } }
         mapHolder.updateMovementOverlay(
             allUnits.filter(mapVisualization::isUnitPastVisible),
             allUnits.filter(mapVisualization::isUnitFutureVisible),
-            allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
-                    .map { (attacker, source, target) -> source to target }
+            allAttacks.filter { (_, attackingCiv, source, target) -> mapVisualization.isAttackVisible(attackingCiv, source, target) }
+                    .map { (attackingBaseUnit, _, source, target) -> Triple(attackingBaseUnit, source, target) }
         )
 
         // if we use the clone, then when we update viewable tiles

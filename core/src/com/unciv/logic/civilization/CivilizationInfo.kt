@@ -181,6 +181,8 @@ class CivilizationInfo {
     /**
      * Container class to represent a historical attack recently performed by this civilization.
      *
+     * Properties: [attackingUnit], [source], [target]
+     *
      * @property attackingUnit Name key of [BaseUnit] type that performed the attack, or null (E.G. for city bombardments).
      * @property source Position of the tile from which the attack was made.
      * @property target Position of the tile targetted by the attack.

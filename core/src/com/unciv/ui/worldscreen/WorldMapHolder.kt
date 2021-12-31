@@ -25,6 +25,7 @@ import com.unciv.logic.map.*
 import com.unciv.models.*
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -455,9 +456,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
      *
      * @param pastVisibleUnits Sequence of [MapUnit]s for which the last turn's movement history can be displayed.
      * @param targetVisibleUnits Sequence of [MapUnit]s for which the active movement target can be displayed.
-     * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
+     * @param visibleAttacks Sequence of [Triple]s which each represent one attack that can be displayed. In each Triple, the first element is the [BaseUnit] of the attacker, and the second and third elements are the [Vector2] source and target positions of the attack.
      * */
-    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<Vector2, Vector2>>) {
+    internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Triple<BaseUnit?, Vector2, Vector2>>) {
         if (!UncivGame.Current.settings.showUnitMovements) {
             return
         }
@@ -480,7 +481,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             val toTile = unit.getMovementDestination()
             addArrow(unit.getTile(), toTile, MiscArrowTypes.UnitMoving)
         }
-        for ((from, to) in visibleAttacks) {
+        for ((baseUnit, from, to) in visibleAttacks) {
             addArrow(tileMap[from], tileMap[to], MiscArrowTypes.UnitHasAttacked)
         }
     }
