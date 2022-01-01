@@ -5,7 +5,7 @@ package com.unciv.ui.utils
  *
  * Has a [tryImage] method that can be chain-called with functions which return candidate image paths. The first function to return a valid image path stops subsequently chained calls from having any effect, and its result is saved to be retrieved by the [getPath] and [getImage] methods at the end of the candidate chain. Has a [forceImage] method that can be used in place of [tryImage] to force a candidate image path to be treated as valid.
  *
- * Binds candidate functions to an instance provided to primary constructor, for syntactic convenience. Has a fake, zero-argument secondary constructor at [ImageAttempter.invoke] that binds to an anonymous, empty object.
+ * Binds candidate functions to a [scope] instance provided to primary constructor, for syntactic convenience. Bind to [Unit] when not needed.
  *
  * Non-reusable.
  *
@@ -13,13 +13,6 @@ package com.unciv.ui.utils
  */
 // TODO: There's a lot of things in TileGroup that can probably be simplified with this— The giant `when` blocks used for pixel units, for one.
 class ImageAttempter<out T: Any>(val scope: T) {
-    companion object {
-        /**
-         * Fake zero-argument constructor.
-         * @return A new [ImageAttempter] bound to an anonymous [Any].
-         */
-        operator fun invoke() = ImageAttempter(object {} as Any)
-    }
     /** The first valid filename tried if any, or the last filename tried if none have succeeded. */
     var lastTriedFileName: String? = null
         private set
