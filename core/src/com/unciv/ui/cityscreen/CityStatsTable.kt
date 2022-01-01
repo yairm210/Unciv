@@ -63,7 +63,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 } else "Stopped expansion".tr()
         if (cityInfo.expansion.chooseNewTileToOwn() != null)
             turnsToExpansionString +=
-                    " (${cityInfo.expansion.cultureStored}♪/${cityInfo.expansion.getCultureToNextTile()}♪)"
+                    " (${cityInfo.expansion.cultureStored}${Fonts.culture}/${cityInfo.expansion.getCultureToNextTile()}${Fonts.culture})"
 
         var turnsToPopString =
                 when {
@@ -74,7 +74,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     -> "Food converts to production"
                     else -> "Stopped population growth"
                 }.tr()
-        turnsToPopString += " (${cityInfo.population.foodStored}⁂/${cityInfo.population.getFoodToNextPopulation()}⁂)"
+        turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
 
         innerTable.add(unassignedPopString.toLabel()).row()
         innerTable.add(turnsToExpansionString.toLabel()).row()
