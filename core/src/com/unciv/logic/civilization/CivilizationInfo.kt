@@ -1055,8 +1055,9 @@ class CivilizationInfo {
 
     fun addUnit(unitName: String, city: CityInfo? = null): MapUnit? {
         if (cities.isEmpty()) return null
-        val cityToAddTo = city ?: cities.random()
         if (!gameInfo.ruleSet.units.containsKey(unitName)) return null
+
+        val cityToAddTo = city ?: cities.random()
         val unit = getEquivalentUnit(unitName)
         val placedUnit = placeUnitNearTile(cityToAddTo.location, unit.name)
         // silently bail if no tile to place the unit is found

@@ -322,10 +322,11 @@ class CityInfo {
                 }
             }
         }
-        
+
+        val freeBuildings = civInfo.civConstructions.getFreeBuildings(id)
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
-            if (building.name in civInfo.civConstructions.getFreeBuildings(id))
+            if (building.name in freeBuildings)
                 continue
             for ((resourceName, amount) in building.getResourceRequirements()) {
                 val resource = getRuleset().tileResources[resourceName]!!
