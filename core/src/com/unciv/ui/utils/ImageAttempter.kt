@@ -11,7 +11,6 @@ package com.unciv.ui.utils
  *
  * @property scope Instance to which to bind the candidate-returning functions. For syntactic terseness when making lots of calls to, E.G., [com.unciv.ui.tilegroups.TileSetStrings].
  */
-// TODO: There's a lot of things in TileGroup that can probably be simplified with this— The giant `when` blocks used for pixel units, for one.
 class ImageAttempter<out T: Any>(val scope: T) {
     /** The first valid filename tried if any, or the last filename tried if none have succeeded. */
     var lastTriedFileName: String? = null
