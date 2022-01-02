@@ -222,7 +222,7 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
     var labelStyle = BaseScreen.skin.get(Label.LabelStyle::class.java)
-    if(fontColor != Color.WHITE || fontSize != 18) { // if we want the default we don't need to create another style
+    if (fontColor != Color.WHITE || fontSize != 18) { // if we want the default we don't need to create another style
         labelStyle = Label.LabelStyle(labelStyle) // clone this to another
         labelStyle.fontColor = fontColor
         if (fontSize != 18) labelStyle.font = Fonts.font

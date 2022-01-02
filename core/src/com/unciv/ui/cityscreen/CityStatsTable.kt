@@ -63,7 +63,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 } else "Stopped expansion".tr()
         if (cityInfo.expansion.chooseNewTileToOwn() != null)
             turnsToExpansionString +=
-                    " (${cityInfo.expansion.cultureStored}/${cityInfo.expansion.getCultureToNextTile()})"
+                    " (${cityInfo.expansion.cultureStored}${Fonts.culture}/${cityInfo.expansion.getCultureToNextTile()}${Fonts.culture})"
 
         var turnsToPopString =
                 when {
@@ -74,17 +74,26 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     -> "Food converts to production"
                     else -> "Stopped population growth"
                 }.tr()
-        turnsToPopString += " (${cityInfo.population.foodStored}/${cityInfo.population.getFoodToNextPopulation()})"
+        turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
 
         innerTable.add(unassignedPopString.toLabel()).row()
         innerTable.add(turnsToExpansionString.toLabel()).row()
         innerTable.add(turnsToPopString.toLabel()).row()
-        if (cityInfo.isInResistance())
-            innerTable.add("In resistance for another [${cityInfo.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
-        if (cityInfo.isWeLoveTheKingDay())
-            innerTable.add("We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel()).row()
-        else if (cityInfo.demandedResource != "")
-            innerTable.add("Demanding [${cityInfo.demandedResource}]".toLabel()).row()
+        
+        val tableWithIcons = Table()
+        tableWithIcons.defaults().pad(2f)
+        if (cityInfo.isInResistance()) {
+            tableWithIcons.add(ImageGetter.getImage("StatIcons/Resistance")).size(20f)
+            tableWithIcons.add("In resistance for another [${cityInfo.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
+        }
+        if (cityInfo.isWeLoveTheKingDay()) {
+            tableWithIcons.add(ImageGetter.getStatIcon("Food")).size(20f)
+            tableWithIcons.add("We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel()).row()
+        } else if (cityInfo.demandedResource != "") {
+            tableWithIcons.add(ImageGetter.getResourceImage(cityInfo.demandedResource, 20f)).padRight(5f)
+            tableWithIcons.add("Demanding [${cityInfo.demandedResource}]".toLabel()).left().row()
+        }
+        innerTable.add(tableWithIcons).row()
     }
 
     private fun addReligionInfo() {
