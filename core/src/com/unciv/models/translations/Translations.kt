@@ -3,6 +3,7 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.HashMap
@@ -213,7 +214,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals   
         const val englishConditionalOrderingString = 
-            "<for [mapUnitFilter] units> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <before the [era]> <starting from the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
+            "<for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <before the [era]> <starting from the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
     }
@@ -254,10 +255,12 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
  */
 fun String.tr(): String {
     val activeMods = with(UncivGame.Current) {
-        if (isGameInfoInitialized()) gameInfo.gameParameters.mods else translations.translationActiveMods
-    }
+        if (isGameInfoInitialized())
+            gameInfo.gameParameters.mods + gameInfo.gameParameters.baseRuleset
+        else translations.translationActiveMods
+    }.toHashSet()
     val language = UncivGame.Current.settings.language
-    
+
     if (contains('<')) { // Conditionals!
         /**
          * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
@@ -267,33 +270,34 @@ fun String.tr(): String {
          * of the rest of the translatable string.
          * All of this nesting makes it quite difficult to translate, and is the reason we check
          * for these first.
-         * 
+         *
          * The plan: First translate each of the conditionals on its own, and then combine them
          * together into the final fully translated string.
          */
-        
+
         var translatedBaseUnique = this.removeConditionals().tr()
-        
+
         val conditionals = this.getConditionals().map { it.placeholderText }
         val conditionsWithTranslation: HashMap<String, String> = hashMapOf()
-        
+
         for (conditional in this.getConditionals())
             conditionsWithTranslation[conditional.placeholderText] = conditional.text.tr()
-        
+
         val translatedConditionals: MutableList<String> = mutableListOf()
-        
+
         // Somewhere, we asked the translators to reorder all possible conditionals in a way that
         // makes sense in their language. We get this ordering, and than extract each of the
         // translated conditionals, removing the <> surrounding them, and removing param values
         // where it exists.
         val conditionalOrdering = UncivGame.Current.translations.getConditionalOrder(language)
-        for (placedConditional in pointyBraceRegex.findAll(conditionalOrdering).map { it.value.substring(1, it.value.length-1).getPlaceholderText() }) {
+        for (placedConditional in pointyBraceRegex.findAll(conditionalOrdering)
+            .map { it.value.substring(1, it.value.length - 1).getPlaceholderText() }) {
             if (placedConditional in conditionals) {
                 translatedConditionals.add(conditionsWithTranslation[placedConditional]!!)
                 conditionsWithTranslation.remove(placedConditional)
             }
         }
-        
+
         // If the translated string that should contain all conditionals doesn't contain
         // a few conditionals used here, just add the translations of these to the end.
         // We do test for this, but just in case.
@@ -307,8 +311,10 @@ fun String.tr(): String {
                 translatedBaseUnique = translatedBaseUnique.replaceFirstChar { it.lowercase() }
             translatedConditionals.add(translatedBaseUnique)
         }
-        
-        var fullyTranslatedString = translatedConditionals.joinToString(UncivGame.Current.translations.getSpaceEquivalent(language))
+
+        var fullyTranslatedString = translatedConditionals.joinToString(
+            UncivGame.Current.translations.getSpaceEquivalent(language)
+        )
         if (UncivGame.Current.translations.shouldCapitalize(language))
             fullyTranslatedString = fullyTranslatedString.replaceFirstChar { it.uppercase() }
         return fullyTranslatedString
@@ -333,7 +339,7 @@ fun String.tr(): String {
         val translationStringWithSquareBracketsOnly = this.getPlaceholderText()
         // That is now the key into the translation HashMap!
         val translationEntry = UncivGame.Current.translations
-                .get(translationStringWithSquareBracketsOnly, language, activeMods)
+            .get(translationStringWithSquareBracketsOnly, language, activeMods)
 
         var languageSpecificPlaceholder: String
         val originalEntry: String
@@ -349,12 +355,16 @@ fun String.tr(): String {
         // Take the terms in the message, WITHOUT square brackets
         val termsInMessage = this.getPlaceholderParameters()
         // Take the term from the placeholder, INCLUDING the square brackets
-        val termsInTranslationPlaceholder = squareBraceRegex.findAll(originalEntry).map { it.value }.toList()
+        val termsInTranslationPlaceholder =
+            squareBraceRegex.findAll(originalEntry).map { it.value }.toList()
         if (termsInMessage.size != termsInTranslationPlaceholder.size)
             throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
 
         for (i in termsInMessage.indices) {
-            languageSpecificPlaceholder = languageSpecificPlaceholder.replace(termsInTranslationPlaceholder[i], termsInMessage[i].tr())
+            languageSpecificPlaceholder = languageSpecificPlaceholder.replace(
+                termsInTranslationPlaceholder[i],
+                termsInMessage[i].tr()
+            )
         }
         return languageSpecificPlaceholder      // every component is already translated
     }
@@ -365,7 +375,12 @@ fun String.tr(): String {
 
     if (Stats.isStats(this)) return Stats.parse(this).toString()
 
-    return UncivGame.Current.translations.getText(this, language, activeMods)
+    val translation = UncivGame.Current.translations.getText(this, language, activeMods)
+
+    val stat = Stat.values().firstOrNull { it.name == this }
+    if (stat != null) return stat.character + translation
+
+    return translation
 }
 
 fun String.getPlaceholderText() = this
@@ -387,9 +402,9 @@ fun String.fillPlaceholders(vararg strings: String): String {
     if (keys.size > strings.size)
         throw Exception("String $this has a different number of placeholders ${keys.joinToString()} (${keys.size}) than the substitutive strings ${strings.joinToString()} (${strings.size})!")
 
-    var filledString = this
+    var filledString = this.replace(squareBraceRegex, "[]")
     for (i in keys.indices)
-        filledString = filledString.replaceFirst(keys[i], strings[i])
+        filledString = filledString.replaceFirst("[]", "[${strings[i]}]")
     return filledString
 }
 

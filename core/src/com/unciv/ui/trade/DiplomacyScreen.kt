@@ -32,7 +32,7 @@ import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() {
+class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
     private val leftSideTable = Table().apply { defaults().pad(10f) }
     private val rightSideTable = Table()
@@ -159,6 +159,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
                 wrapper.onClick {
                     val pedia = CivilopediaScreen(
                         UncivGame.Current.gameInfo.ruleSet,
+                        this,
                         link = "Resource/$name"
                     )
                     UncivGame.Current.setScreen(pedia)
@@ -417,15 +418,15 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
             return null
 
         val diplomaticMarriageButton =
-            "Diplomatic Marriage ([${otherCiv.getDiplomaticMarriageCost()}] Gold)".toTextButton()
+            "Diplomatic Marriage ([${otherCiv.cityStateFunctions.getDiplomaticMarriageCost()}] Gold)".toTextButton()
         diplomaticMarriageButton.onClick {
             val newCities = otherCiv.cities
-            otherCiv.diplomaticMarriage(viewingCiv)
+            otherCiv.cityStateFunctions.diplomaticMarriage(viewingCiv)
             UncivGame.Current.setWorldScreen() // The other civ will no longer exist
             for (city in newCities)
                 viewingCiv.popupAlerts.add(PopupAlert(AlertType.DiplomaticMarriage, city.id))   // Player gets to choose between annex and puppet
         }
-        if (isNotPlayersTurn() || !otherCiv.canBeMarriedBy(viewingCiv)) diplomaticMarriageButton.disable()
+        if (isNotPlayersTurn() || !otherCiv.cityStateFunctions.canBeMarriedBy(viewingCiv)) diplomaticMarriageButton.disable()
         return diplomaticMarriageButton
     }
 
@@ -434,7 +435,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
         diplomacyTable.addSeparator()
 
         for (giftAmount in listOf(250, 500, 1000)) {
-            val influenceAmount = otherCiv.influenceGainedByGift(viewingCiv, giftAmount)
+            val influenceAmount = otherCiv.cityStateFunctions.influenceGainedByGift(viewingCiv, giftAmount)
             val giftButton =
                 "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
             giftButton.onClick {
@@ -456,8 +457,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
     }
 
     fun getImprovableResourceTiles(otherCiv:CivilizationInfo) =  otherCiv.getCapital().getTiles()
-        .filter { it.hasViewableResource(otherCiv) && it.improvement == null
-                && it.tileResource.resourceType!=ResourceType.Bonus }
+        .filter { it.hasViewableResource(otherCiv) && it.tileResource.resourceType!=ResourceType.Bonus
+                && it.tileResource.improvement != it.improvement }
 
     private fun getImprovementGiftTable(otherCiv: CivilizationInfo): Table {
         val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
@@ -465,12 +466,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
 
         val improvableResourceTiles = getImprovableResourceTiles(otherCiv)
         val tileImprovements =
-            otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
+            otherCiv.gameInfo.ruleSet.tileImprovements
 
         for (improvableTile in improvableResourceTiles) {
             for (tileImprovement in tileImprovements.values) {
-                if (improvableTile.canBuildImprovement(tileImprovement, otherCiv) &&
-                    improvableTile.tileResource.improvement == tileImprovement.name
+                if (improvableTile.tileResource.improvement == tileImprovement.name
+                    && improvableTile.canBuildImprovement(tileImprovement, otherCiv)
                 ) {
                     val improveTileButton =
                         "Build [${tileImprovement}] on [${improvableTile.tileResource}] (200 Gold)".toTextButton()
@@ -504,7 +505,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
         diplomacyTable.addSeparator()
         diplomacyTable.add("Tribute Willingness".toLabel()).row()
         val modifierTable = Table()
-        val tributeModifiers = otherCiv.getTributeModifiers(viewingCiv, requireWholeList = true)
+        val tributeModifiers = otherCiv.cityStateFunctions.getTributeModifiers(viewingCiv, requireWholeList = true)
         for (item in tributeModifiers) {
             val color = if (item.value >= 0) Color.GREEN else Color.RED
             modifierTable.add(item.key.toLabel(color))
@@ -516,9 +517,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
         diplomacyTable.add("At least 0 to take gold, at least 30 and size 4 city for worker".toLabel()).row()
         diplomacyTable.addSeparator()
 
-        val demandGoldButton = "Take [${otherCiv.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
+        val demandGoldButton = "Take [${otherCiv.cityStateFunctions.goldGainedByTribute()}] gold (-15 Influence)".toTextButton()
         demandGoldButton.onClick {
-            otherCiv.tributeGold(viewingCiv)
+            otherCiv.cityStateFunctions.tributeGold(viewingCiv)
             rightSideTable.clear()
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }
@@ -527,7 +528,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): CameraStageBaseScreen() 
 
         val demandWorkerButton = "Take worker (-50 Influence)".toTextButton()
         demandWorkerButton.onClick {
-            otherCiv.tributeWorker(viewingCiv)
+            otherCiv.cityStateFunctions.tributeWorker(viewingCiv)
             rightSideTable.clear()
             rightSideTable.add(ScrollPane(getCityStateDiplomacyTable(otherCiv)))
         }

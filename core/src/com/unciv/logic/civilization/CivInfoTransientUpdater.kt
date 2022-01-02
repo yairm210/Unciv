@@ -98,7 +98,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (civInfo.playerType == PlayerType.AI) return // don't bother for AI, they don't really use the info anyway
 
         for (tile in civInfo.viewableTiles) {
-            val before = civInfo.lastSeenImprovement[tile.position]
             if (tile.improvement == null)
                 civInfo.lastSeenImprovement.remove(tile.position)
             else
@@ -123,7 +122,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
                     .flatMap { it.naturalWonders }
-            if (tile.hasUnique("Grants 500 Gold to the first civilization to discover it")
+            if (tile.hasUnique(UniqueType.GrantsGoldToFirstToDiscover)
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
                 goldGained += 500
             }

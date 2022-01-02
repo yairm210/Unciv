@@ -28,14 +28,11 @@ class PolicyManager {
     var shouldOpenPolicyPicker = false
         get() = field && canAdoptPolicy()
 
-    // Deprecated since 3.16.15
-        @Deprecated("Deprecated since 3.16.15", ReplaceWith("civInfo.civWideConstructions.freeStatBuildingsProvided[Stat.Culture]"))
-        var cultureBuildingsAdded = HashMap<String, String>() // Maps cities to buildings
-        @Deprecated("Deprecated since 3.16.15", ReplaceWith("civInfo.civWideConstructions.freeSpecificBuildingsProvided"))
-        var specificBuildingsAdded = HashMap<String, MutableSet<String>>() // Maps buildings to cities
-    //
-
-
+    // Only instantiate a single value for all policy managers
+    companion object {
+        private val turnCountRegex by lazy { Regex("for \\[[0-9]*\\] turns") }
+    }
+    
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
         toReturn.numberOfAdoptedPolicies = numberOfAdoptedPolicies
@@ -43,35 +40,22 @@ class PolicyManager {
         toReturn.freePolicies = freePolicies
         toReturn.shouldOpenPolicyPicker = shouldOpenPolicyPicker
         toReturn.storedCulture = storedCulture
-        // Deprecated since 3.16.15
-            toReturn.cultureBuildingsAdded.putAll(cultureBuildingsAdded)
-            toReturn.specificBuildingsAdded.putAll(specificBuildingsAdded)
-        //
-
         return toReturn
     }
 
     fun getPolicyByName(name: String): Policy = civInfo.gameInfo.ruleSet.policies[name]!!
 
     fun setTransients() {
-        // Deprecated "Patronage " policy since 3.16.15
-            if (adoptedPolicies.contains("Patronage ")) {
-                adoptedPolicies.remove("Patronage ")
-                adoptedPolicies.add("Patronage")
-            }
-            if (adoptedPolicies.contains("Patronage  Complete")) {
-                adoptedPolicies.remove("Patronage  Complete")
-                adoptedPolicies.add("Patronage Complete")
-            }
-        //
-        
         for (policyName in adoptedPolicies)
             addPolicyToTransients(getPolicyByName(policyName))
     }
 
     fun addPolicyToTransients(policy: Policy) {
-        for (unique in policy.uniqueObjects)
-            policyUniques.addUnique(unique)
+        for (unique in policy.uniqueObjects) {
+            // Should be replaced with a conditional of the same form later
+            if (!unique.text.contains(turnCountRegex))
+                policyUniques.addUnique(unique)
+        }
     }
 
     fun addCulture(culture: Int) {

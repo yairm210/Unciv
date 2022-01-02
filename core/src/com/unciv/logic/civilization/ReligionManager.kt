@@ -28,12 +28,6 @@ class ReligionManager {
     // But the other one should still be _somewhere_. So our only option is to have the GameInfo
     // contain the master list, and the ReligionManagers retrieve it from there every time the game loads.
 
-    // Deprecated since 3.16.13
-        @Deprecated("Replace by adding to `civInfo.civWideConstructions.boughtItemsWithIncreasingPrice`")
-        var greatProphetsEarned = 0
-            private set
-    //
-
     var religionState = ReligionState.None
         private set
 
@@ -65,13 +59,6 @@ class ReligionManager {
         religion = civInfo.gameInfo.religions.values.firstOrNull {
             it.foundingCivName == civInfo.civName
         }
-        
-        // greatProphetsEarned deprecated since 3.16.13, replacement code
-            if (greatProphetsEarned != 0) {
-                civInfo.civConstructions.boughtItemsWithIncreasingPrice[getGreatProphetEquivalent()!!] = greatProphetsEarned
-                greatProphetsEarned = 0
-            }
-        //
     }
 
     fun startTurn() {
@@ -268,7 +255,7 @@ class ReligionManager {
         shouldChoosePantheonBelief = false
 
         for (unit in civInfo.getCivUnits()) 
-            if (unit.hasUnique("Religious Unit") && unit.hasUnique("Takes your religion over the one in their birth city"))
+            if (unit.hasUnique(UniqueType.ReligiousUnit) && unit.hasUnique("Takes your religion over the one in their birth city"))
                 unit.religion = newReligion.name
     }
 

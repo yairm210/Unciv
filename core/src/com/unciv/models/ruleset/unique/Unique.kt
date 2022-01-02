@@ -5,6 +5,9 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
 import com.unciv.logic.civilization.CivilizationInfo
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -22,6 +25,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     val conditionals: List<Unique> = text.getConditionals()
 
     val allParams = params + conditionals.flatMap { it.params }
+
+    val isLocalEffect = params.contains("in this city")
+    val isAntiLocalEffect = params.contains("in other cities")
+
+    fun hasFlag(flag: UniqueFlag) = type != null && type.flags.contains(flag)
 
     fun isOfType(uniqueType: UniqueType) = uniqueType == type
 
@@ -75,16 +83,32 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 || (state.unit != null && state.unit.matchesFilter(condition.params[0]))
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
-            UniqueType.ConditionalInTiles -> 
-                state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0])
+            UniqueType.ConditionalAboveHP -> 
+                state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
+            UniqueType.ConditionalBelowHP ->
+                state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
+            UniqueType.ConditionalInTiles ->
+                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo))
+                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0], state.civInfo))
+            UniqueType.ConditionalFightingInTiles ->
+                state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo)
+            UniqueType.ConditionalInTilesAnd ->
+                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo) && state.attackedTile.matchesFilter(condition.params[1], state.civInfo))
+                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0], state.civInfo) && state.unit.getTile().matchesFilter(condition.params[1], state.civInfo))
+            UniqueType.ConditionalInTilesNot ->
+                state.attackedTile != null && !state.attackedTile.matchesFilter(condition.params[0], state.civInfo)
+                || (state.unit != null && !state.unit.getTile().matchesFilter(condition.params[0], state.civInfo))
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
-            UniqueType.ConditionalForeignContinent -> state.unit != null &&
-                    (state.unit.civInfo.cities.isEmpty() ||
-                            state.unit.civInfo.getCapital().getCenterTile().getContinent() != state.unit.getTile().getContinent())
+            UniqueType.ConditionalForeignContinent -> 
+                state.civInfo != null 
+                && state.unit != null
+                && (state.civInfo.cities.isEmpty() 
+                    || state.civInfo.getCapital().getCenterTile().getContinent() != state.unit.getTile().getContinent()
+                )
 
             UniqueType.ConditionalNeighborTiles ->
                 state.cityInfo != null &&
@@ -97,6 +121,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                     it.matchesFilter(condition.params[2], state.civInfo) &&
                     it.matchesFilter(condition.params[3], state.civInfo)
                 } in (condition.params[0].toInt())..(condition.params[1].toInt())
+
+            UniqueType.ConditionalOnWaterMaps -> state.region?.continentID == -1
+            UniqueType.ConditionalInRegionOfType -> state.region?.type == condition.params[0]
+            UniqueType.ConditionalInRegionExceptOfType -> state.region != null && state.region.type != condition.params[0]
+
             else -> false
         }
     }
@@ -107,6 +136,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
 class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     //todo Once all untyped Uniques are converted, this should be  HashMap<UniqueType, *>
+    // For now, we can have both map types "side by side" each serving their own purpose,
+    // and gradually this one will be deprecated in favor of the other
     fun addUnique(unique: Unique) {
         if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
         this[unique.placeholderText]!!.add(unique)
@@ -121,3 +152,31 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
 
+/** DOES NOT hold untyped uniques! */
+class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.java) {
+    fun addUnique(unique: Unique) {
+        if(unique.type==null) return
+        if (!containsKey(unique.type)) this[unique.type] = ArrayList()
+        this[unique.type]!!.add(unique)
+    }
+
+    fun getUniques(uniqueType: UniqueType): Sequence<Unique> =
+        this[uniqueType]?.asSequence() ?: sequenceOf()
+}
+
+
+// Will probably be allowed to be used as a conditional when I get the motivation to work on that -xlenstra
+class TemporaryUnique() {
+
+    constructor(uniqueObject: Unique, turns: Int) : this() {
+        unique = uniqueObject.text
+        turnsLeft = turns
+    }
+
+    var unique: String = ""
+
+    @delegate:Transient
+    val uniqueObject: Unique by lazy { Unique(unique) }
+
+    var turnsLeft: Int = 0
+}

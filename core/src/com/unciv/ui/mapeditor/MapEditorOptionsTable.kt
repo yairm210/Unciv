@@ -19,7 +19,7 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 
-class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin) {
+class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScreen.skin) {
     private val tileSetLocation = "TileSets/" + UncivGame.Current.settings.tileSet + "/"
 
     var tileAction: (TileInfo) -> Unit = {}
@@ -143,7 +143,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                     }
                 }
                 val improvementIcon = getHex(ImageGetter.getImprovementIcon(improvement.name, 40f))
-                setCurrentHex(improvementIcon, improvement.name.tr() + "\n" + improvement.clone().toString())
+                setCurrentHex(improvementIcon, improvement.name.tr() + "\n" + improvement.cloneStats().toString())
             }
             improvementsTable.add(improvementImage).row()
         }
@@ -299,17 +299,19 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                 tileInfo.ruleset = mapEditorScreen.ruleset
                 val terrain = resource.terrainsCanBeFoundOn.first { ruleset.terrains.containsKey(it) }
                 val terrainObject = ruleset.terrains[terrain]!!
-                if (terrainObject.type == TerrainType.TerrainFeature) {
+
+                if (terrainObject.type != TerrainType.TerrainFeature) tileInfo.baseTerrain = terrain
+                else {
                     tileInfo.baseTerrain =
-                            if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
-                            else "Grassland"
+                        if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
+                        else ruleset.terrains.values.first { it.type == TerrainType.Land }.name
                     tileInfo.terrainFeatures.add(terrain)
-                } else tileInfo.baseTerrain = terrain
+                }
 
                 tileInfo.resource = resource.name
                 tileInfo.setTerrainTransients()
 
-                setCurrentHex(tileInfo, resource.name.tr() + "\n" + resource.clone().toString())
+                setCurrentHex(tileInfo, resource.name.tr() + "\n" + resource.cloneStats().toString())
             }
             resources.add(resourceHex)
         }
@@ -340,7 +342,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraS
                         else -> it.baseTerrain = terrain.name
                     }
                 }
-                setCurrentHex(tileInfo, terrain.name.tr() + "\n" + terrain.clone().toString())
+                setCurrentHex(tileInfo, terrain.name.tr() + "\n" + terrain.cloneStats().toString())
             }
 
             if (terrain.type == TerrainType.TerrainFeature)

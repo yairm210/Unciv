@@ -14,8 +14,6 @@ class TileResource : RulesetStatsObject() {
     var improvement: String? = null
     var improvementStats: Stats? = null
     var revealedBy: String? = null
-    @Deprecated("As of 3.16.16 - replaced by uniques")
-    var unique: String? = null
     var majorDepositAmount: DepositAmount = DepositAmount()
     var minorDepositAmount: DepositAmount = DepositAmount()
     
@@ -30,7 +28,7 @@ class TileResource : RulesetStatsObject() {
         textList += FormattedLine("${resourceType.name} resource", header = 4, color = resourceType.color)
         textList += FormattedLine()
 
-        textList += FormattedLine(this.clone().toString())
+        textList += FormattedLine(cloneStats().toString())
 
         if (terrainsCanBeFoundOn.isNotEmpty()) {
             textList += FormattedLine()

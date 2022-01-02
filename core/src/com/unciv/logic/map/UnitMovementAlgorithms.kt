@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.HexMath.getDistance
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.helpers.UnitMovementMemoryType
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
 
@@ -392,6 +393,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // Cancel sleep or fortification if forcibly displaced - for now, leave movement / auto / explore orders
             if (unit.isSleeping() || unit.isFortified())
                 unit.action = null
+            unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
         }
         // it's possible that there is no close tile, and all the guy's cities are full.
         // Nothing we can do.
@@ -401,18 +403,21 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun moveToTile(destination: TileInfo, considerZoneOfControl: Boolean = true) {
         if (destination == unit.getTile()) return // already here!
 
+
         if (unit.baseUnit.movesLikeAirUnits()) { // air units move differently from all other units
             unit.action = null
             unit.removeFromTile()
             unit.isTransported = false // it has left the carrier by own means
             unit.putInTile(destination)
             unit.currentMovement = 0f
+            unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
             return
         } else if (unit.isPreparingParadrop()) { // paradropping units move differently
             unit.action = null
             unit.removeFromTile()
             unit.putInTile(destination)
-            unit.currentMovement -= 1f
+            unit.mostRecentMoveType = UnitMovementMemoryType.UnitTeleported
+            unit.useMovementPoints(1f)
             unit.attacksThisTurn += 1
             // Check if unit maintenance changed
             // Is also done for other units, but because we skip everything else, we have to manually check it
@@ -430,6 +435,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         val movableTiles = pathToDestination.takeWhile { canPassThrough(it) }
         val lastReachableTile = movableTiles.lastOrNull { canMoveTo(it) }
             ?: return  // no tiles can pass though/can move to
+        unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         val pathToLastReachableTile = distanceToTiles.getPathToTile(lastReachableTile)
 
         if (unit.isFortified() || unit.isSetUpForSiege() || unit.isSleeping())
@@ -466,7 +472,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // We can assume we can pass through this tile, as we would have broken earlier
             if (unit.movement.canMoveTo(tile, assumeCanPassThrough = true)) {
                 lastReachedEnterableTile = tile
-                unit.currentMovement -= passingMovementSpent
+                unit.useMovementPoints(passingMovementSpent)
                 passingMovementSpent = 0f
             }
 
@@ -492,6 +498,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             payload.removeFromTile()
             payload.putInTile(lastReachableTile)
             payload.isTransported = true // restore the flag to not leave the payload in the cit
+            payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         }
 
         // Unit maintenance changed
@@ -524,6 +531,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         otherUnit.putInTile(theirOldPosition)
         otherUnit.movement.moveToTile(ourOldPosition)
         unit.putInTile(theirOldPosition)
+        otherUnit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
+        unit.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
     }
 
     /**

@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.unique.UniqueType
 
 class VictoryManager {
     @Transient
@@ -9,7 +10,7 @@ class VictoryManager {
 
     var requiredSpaceshipParts = Counter<String>()
     var currentsSpaceshipParts = Counter<String>()
-    var hasWonDiplomaticVictory = false
+    var hasWonTimeVictory = false
 
     init {
         requiredSpaceshipParts.add("SS Booster", 3)
@@ -65,27 +66,30 @@ class VictoryManager {
     
     private fun hasVictoryType(victoryType: VictoryType) = civInfo.gameInfo.gameParameters.victoryTypes.contains(victoryType)
 
-    fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) && spaceshipPartsRemaining() == 0
+    fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) 
+            && spaceshipPartsRemaining() == 0
 
     fun hasWonCulturalVictory() = hasVictoryType(VictoryType.Cultural)
-            && civInfo.hasUnique("Triggers a Cultural Victory upon completion")
+            && civInfo.hasUnique(UniqueType.TriggersCulturalVictory)
 
-    fun hasWonDominationVictory(): Boolean {
-        return hasVictoryType(VictoryType.Domination)
-                && civInfo.gameInfo.civilizations.all { it == civInfo || it.isDefeated() || !it.isMajorCiv() }
-    }
+    fun hasWonDominationVictory()= hasVictoryType(VictoryType.Domination)
+            && civInfo.gameInfo.civilizations.all { it == civInfo || it.isDefeated() || !it.isMajorCiv() }
     
     fun hasWonDiplomaticVictory() = hasVictoryType(VictoryType.Diplomatic) 
             && civInfo.shouldCheckForDiplomaticVictory()
             && hasEnoughVotesForDiplomaticVictory()
 
+    fun hasWonTimeVictory() = hasVictoryType(VictoryType.Time)
+            && hasWonTimeVictory
+    
     fun hasWonVictoryType(): VictoryType? {
         if (!civInfo.isMajorCiv()) return null
+        if (hasWonTimeVictory()) return VictoryType.Time
         if (hasWonDominationVictory()) return VictoryType.Domination
         if (hasWonScientificVictory()) return VictoryType.Scientific
         if (hasWonCulturalVictory()) return VictoryType.Cultural
         if (hasWonDiplomaticVictory()) return VictoryType.Diplomatic
-        if (civInfo.hasUnique("Triggers victory")) return VictoryType.Neutral
+        if (civInfo.hasUnique(UniqueType.TriggersVictory)) return VictoryType.Neutral
         return null
     }
 

@@ -228,5 +228,11 @@
       "",
       "The Maya measured time in days from what we would call 11th of August, 3114 BCE. A day is called K'in, 20 days are a Winal, 18 Winals are a Tun, 20 Tuns are a K'atun, 20 K'atuns are a B'ak'tun, 20 B'ak'tuns a Piktun, and so on.",
       "Unciv only displays ය B'ak'tuns, ඹ K'atuns and ම Tuns (from left to right) since that is enough to approximate gregorian calendar years. The Maya numerals are pretty obvious to understand. Have fun deciphering them!"
+    ],
+  "We_Love_The_King_Day": [
+        "Your cities will periodically demand different luxury goods to satisfy their desire for new things in life.",
+        "If you manage to acquire the demanded luxury by trade, expansion, or conquest, the city will celebrate We Love The King Day for 20 turns.",
+        "During the We Love The King Day, the city will grow 25% faster.",
+        "This means exploration and trade is important to grow your cities!"
     ]
 }

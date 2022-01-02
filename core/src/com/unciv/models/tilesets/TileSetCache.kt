@@ -16,19 +16,21 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
      * Other active mods can be passed in parameter [ruleSetMods], if that is `null` and a game is in
      * progress, that game's mods are used instead.
      */
-    fun assembleTileSetConfigs(ruleSetMods: HashSet<String>? = null) {
-        val mods = mutableSetOf("")
+    fun assembleTileSetConfigs(ruleSetMods: Set<String>) {
+        // Needs to be a list and not a set, so subsequent mods override the previous ones
+        // Otherwise you rely on hash randomness to determine override order... not good
+        val mods = mutableListOf("")
         if (UncivGame.isCurrentInitialized()) {
             mods.addAll(UncivGame.Current.settings.visualMods)
-            if (ruleSetMods != null)
-                mods.addAll(ruleSetMods)
-            else if (UncivGame.Current.isGameInfoInitialized())
-                mods.addAll(UncivGame.Current.gameInfo.ruleSet.mods)
         }
+        mods.addAll(ruleSetMods)
         clear()
-        allConfigs.filter { it.key.mod in mods }.forEach {
-            if (it.key.tileSet in this) this[it.key.tileSet]!!.updateConfig(it.value)
-            else this[it.key.tileSet] = it.value
+        for (mod in mods.distinct()) {
+            for (entry in allConfigs.entries.filter { it.key.mod == mod } ) { // Built-in tilesets all have empty strings as their `.mod`, so loop through all of them.
+                val tileSet = entry.key.tileSet
+                if (tileSet in this) this[tileSet]!!.updateConfig(entry.value)
+                else this[tileSet] = entry.value
+            }
         }
     }
 
@@ -90,6 +92,6 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
             }
         }
 
-        assembleTileSetConfigs()
+        assembleTileSetConfigs(hashSetOf()) // no game is loaded, this is just the initial game setup
     }
 }

@@ -246,7 +246,8 @@ object UniqueTriggerActivation {
             }
 
             TimedAttackStrength -> {
-                civInfo.temporaryUniques.add(Pair(unique, unique.params[2].toInt()))
+                val temporaryUnique = TemporaryUnique(unique, unique.params[2].toInt())
+                civInfo.temporaryUniques.add(temporaryUnique)
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationIcon.War)
                 }
@@ -401,12 +402,19 @@ object UniqueTriggerActivation {
                     }
                     .map { it.position }
                 if (nearbyRevealableTiles.none()) return false
-                civInfo.exploredTiles.addAll(nearbyRevealableTiles
-                    .shuffled(tileBasedRandom)
-                    .apply {
-                        if (unique.params[0] != "All") this.take(unique.params[0].toInt())
-                    }
-                )
+                val revealedTiles = nearbyRevealableTiles
+                        .shuffled(tileBasedRandom)
+                        .apply {
+                            if (unique.params[0] != "All") this.take(unique.params[0].toInt())
+                        }
+                for (position in revealedTiles) {
+                    civInfo.exploredTiles.add(position)
+                    val revealedTileInfo = civInfo.gameInfo.tileMap[position]
+                    if (revealedTileInfo.improvement == null)
+                        civInfo.lastSeenImprovement.remove(position)
+                    else
+                        civInfo.lastSeenImprovement[position] = revealedTileInfo.improvement!!
+                }
 
                 if (notification != null) {
                     civInfo.addNotification(

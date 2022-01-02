@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.withoutItem
 import java.util.*
 import kotlin.math.max
@@ -58,7 +59,6 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
 
             // Remove all buildings provided for free from here to other cities (e.g. CN Tower)
-            println("Removing buildings: ${cityConstructions.freeBuildingsProvidedFromThisCity}")
             for ((cityId, buildings) in cityConstructions.freeBuildingsProvidedFromThisCity) {
                 val city = oldCiv.cities.firstOrNull { it.id == cityId } ?: continue
                 println("Removing buildings $buildings from city ${city.name}")
@@ -68,10 +68,23 @@ class CityInfoConquestFunctions(val city: CityInfo){
             }
             cityConstructions.freeBuildingsProvidedFromThisCity.clear()
 
-            // Remove national wonders
             for (building in cityConstructions.getBuiltBuildings()) {
+                // Remove national wonders
                 if (building.isNationalWonder && !building.hasUnique("Never destroyed when the city is captured"))
                     cityConstructions.removeBuilding(building.name)
+
+                // Check if we exceed MaxNumberBuildable for any buildings
+                for (unique in building.getMatchingUniques(UniqueType.MaxNumberBuildable)) {
+                    if (civInfo.cities
+                        .count {
+                            it.cityConstructions.containsBuildingOrEquivalent(building.name)
+                            || it.cityConstructions.isBeingConstructedOrEnqueued(building.name)
+                        } >= unique.params[0].toInt()
+                    ) {
+                        // For now, just destroy in new city. Even if constructing in own cities
+                        city.cityConstructions.removeBuilding(building.name)
+                    }
+                }
             }
         }
     }
@@ -86,7 +99,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
             conqueringCiv.addGold(goldPlundered)
             conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", getCenterTile().position, NotificationIcon.Gold)
 
-            val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && resistanceCounter != 0
+            val reconqueredCityWhileStillInResistance = previousOwner == conqueringCiv.civName && isInResistance()
 
             destroyBuildingsOnCapture()
             
@@ -98,10 +111,12 @@ class CityInfoConquestFunctions(val city: CityInfo){
             if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             reassignPopulation()
 
-            resistanceCounter = 
+            setFlag(CityFlags.Resistance,
                 if (reconqueredCityWhileStillInResistance || foundingCiv == receivingCiv.civName) 0
                 else population.population // I checked, and even if you puppet there's resistance for conquering
+            )
         }
+        conqueringCiv.updateViewableTiles() // Might see new tiles from this city
     }
 
 
@@ -229,10 +244,21 @@ class CityInfoConquestFunctions(val city: CityInfo){
     fun moveToCiv(newCivInfo: CivilizationInfo) {
         city.apply {
             val oldCiv = civInfo
+
+
+            // Remove/relocate palace for old Civ - need to do this BEFORE we move the cities between
+            //  civs so the capitalCityIndicator recognizes the unique buildings of the conquered civ
+            val capitalCityIndicator = capitalCityIndicator()
+            if (cityConstructions.isBuilt(capitalCityIndicator)) {
+                cityConstructions.removeBuilding(capitalCityIndicator)
+                val firstOtherCity = oldCiv.cities.firstOrNull { it != this }
+                if (firstOtherCity != null)
+                    firstOtherCity.cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
+            }
+
             civInfo.cities = civInfo.cities.toMutableList().apply { remove(city) }
             newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(city) }
             civInfo = newCivInfo
-            if (isOriginalCapital) civInfo.hasEverOwnedOriginalCapital = true
             hasJustBeenConquered = false
             turnAcquired = civInfo.gameInfo.turns
             previousOwner = oldCiv.civName
@@ -243,24 +269,21 @@ class CityInfoConquestFunctions(val city: CityInfo){
                 population.autoAssignPopulation()
             }
 
-            // Remove/relocate palace for old Civ
-            val capitalCityIndicator = capitalCityIndicator()
-            if (cityConstructions.isBuilt(capitalCityIndicator)) {
-                cityConstructions.removeBuilding(capitalCityIndicator)
-                if (oldCiv.cities.isNotEmpty()) {
-                    oldCiv.cities.first().cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
-                }
-            }
+            // Stop WLTKD if it's still going
+            resetWLTKD()
     
             // Remove their free buildings from this city and remove free buildings provided by the city from their cities
             removeBuildingsOnMoveToCiv(oldCiv)
-            // Add our free buildings to this city and add free buildings provided by the city to other cities
-            civInfo.civConstructions.tryAddFreeBuildings() 
 
             // Place palace for newCiv if this is the only city they have
+            // This needs to happen _before_ free buildings are added, as somtimes these should 
+            // only be placed in the capital, and then there needs to be a capital.
             if (newCivInfo.cities.count() == 1) {
                 cityConstructions.addBuilding(capitalCityIndicator)
             }
+
+            // Add our free buildings to this city and add free buildings provided by the city to other cities
+            civInfo.civConstructions.tryAddFreeBuildings()
 
             isBeingRazed = false
 

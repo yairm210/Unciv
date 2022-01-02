@@ -20,7 +20,7 @@ import java.util.concurrent.CancellationException
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disableScroll = true) {
+class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = true) {
     lateinit var selectedSave: String
     private val copySavedGameToClipboardButton = "Copy saved game to clipboard".toTextButton()
     private val saveTable = Table()
@@ -80,7 +80,9 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disabl
         loadFromClipboardButton.onClick {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                val decoded = Gzip.unzip(clipboardContentsString)
+                val decoded =
+                    if (clipboardContentsString.startsWith("{")) clipboardContentsString
+                    else Gzip.unzip(clipboardContentsString)
                 val loadedGame = GameSaver.gameInfoFromString(decoded)
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
@@ -187,6 +189,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen(disabl
                 val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                 textToSet += "\n" + playerCivNames +
                         ", " + game.difficulty.tr() + ", ${Fonts.turn}" + game.turns
+                textToSet += "\n${"Base ruleset:".tr()} " + game.gameParameters.baseRuleset
                 if (game.gameParameters.mods.isNotEmpty())
                     textToSet += "\n${"Mods:".tr()} " + game.gameParameters.mods.joinToString()
             } catch (ex: Exception) {

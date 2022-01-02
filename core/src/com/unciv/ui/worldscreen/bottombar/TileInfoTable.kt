@@ -9,11 +9,11 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toLabel
 
-class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStageBaseScreen.skin) {
+class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen.skin) {
     init {
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
     }
@@ -24,7 +24,8 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(CameraStag
         if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.exploredTiles.contains(tile.position)) ) {
             add(getStatsTable(tile))
             add( MarkupRenderer.render(tile.toMarkup(viewingCiv), padding = 0f, iconDisplay = IconDisplay.None) {
-                UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, link = it))
+                // We need to pass the current screen here to get this to work and I can't be bothered now
+                // UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet,  link = it))
             } ).pad(5f).row()
             if (UncivGame.Current.viewEntireMapForDebug)
                 add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f)

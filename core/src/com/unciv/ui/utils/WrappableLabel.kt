@@ -16,7 +16,7 @@ class WrappableLabel(
     private val expectedWidth: Float,
     fontColor: Color = Color.WHITE,
     fontSize: Int = 18
-) : Label(text.tr(), CameraStageBaseScreen.skin) {
+) : Label(text.tr(), BaseScreen.skin) {
     private var _measuredWidth = 0f
 
     init {

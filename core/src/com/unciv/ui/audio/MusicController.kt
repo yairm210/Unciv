@@ -21,7 +21,7 @@ class MusicController {
         private val musicLocation = FileType.Local
         const val musicPath = "music"
         const val modPath = "mods"
-        const val musicFallbackLocation = "music/thatched-villagers.mp3"
+        const val musicFallbackLocation = "/music/thatched-villagers.mp3"
         const val maxVolume = 0.6f                  // baseVolume has range 0.0-1.0, which is multiplied by this for the API
         private const val ticksPerSecond = 20       // Timer frequency defines smoothness of fade-in/out
         private const val timerPeriod = 1000L / ticksPerSecond
@@ -87,7 +87,7 @@ class MusicController {
     /** @return the path of the playing track or null if none playing */
     private fun currentlyPlaying(): String = when(state) {
         ControllerState.Playing, ControllerState.PlaySingle, ControllerState.Pause ->
-            musicHistory.peekLast()
+            musicHistory.peekLast() ?: ""
         else -> ""
     }
 

@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -89,7 +90,10 @@ open class Policy : RulesetObject() {
 
         if (uniques.isNotEmpty()) {
             lineList += FormattedLine()
-            for (unique in uniqueObjects) lineList += FormattedLine(unique)
+            uniqueObjects.forEach {
+                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
+                    lineList += FormattedLine(it)
+            }
         }
 
         return lineList

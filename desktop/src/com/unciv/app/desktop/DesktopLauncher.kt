@@ -3,10 +3,10 @@ package com.unciv.app.desktop
 import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRPC
 import club.minnced.discord.rpc.DiscordRichPresence
-import com.badlogic.gdx.Files
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.sun.jna.Native
 import com.unciv.JsonParser
 import com.unciv.UncivGame
@@ -29,32 +29,36 @@ internal object DesktopLauncher {
 
         ImagePacker.packImages()
 
-        val config = LwjglApplicationConfiguration()
-        // Don't activate GL 3.0 because it causes problems for MacOS computers
-        config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
-        config.title = "Unciv"
-        config.useHDPI = true
+        val config = Lwjgl3ApplicationConfiguration()
+        config.setWindowIcon("ExtraImages/Icon.png")
+        config.setTitle("Unciv")
+        config.setHdpiMode(HdpiMode.Logical)
         if (FileHandle(GameSaver.settingsFileName).exists()) {
-            val settings = JsonParser().getFromJson(GameSettings::class.java, FileHandle(GameSaver.settingsFileName))
-            config.width = settings.windowState.width
-            config.height = settings.windowState.height
+            val settings = JsonParser().getFromJson(
+                GameSettings::class.java,
+                FileHandle(GameSaver.settingsFileName)
+            )
+            config.setWindowedMode(settings.windowState.width, settings.windowState.height)
         }
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
+        if (versionFromJar == "Desktop") {
+            UniqueDocsWriter().write()
+        }
+
         val desktopParameters = UncivGameParameters(
-                versionFromJar,
-                cancelDiscordEvent = { discordTimer?.cancel() },
-                fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt()),
-                customSaveLocationHelper = CustomSaveLocationHelperDesktop()
+            versionFromJar,
+            cancelDiscordEvent = { discordTimer?.cancel() },
+            fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt()),
+            customSaveLocationHelper = CustomSaveLocationHelperDesktop()
         )
 
         val game = UncivGame(desktopParameters)
 
-        if (!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
-            tryActivateDiscord(game)
+        tryActivateDiscord(game)
 
-        LwjglApplication(game, config)
+        Lwjgl3Application(game, config)
     }
 
     private fun tryActivateDiscord(game: UncivGame) {
@@ -86,9 +90,9 @@ internal object DesktopLauncher {
         if (!game.isInitialized) return
         val presence = DiscordRichPresence()
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
-        presence.details = currentPlayerCiv.nation.getLeaderDisplayName().tr()
+        presence.details = "${currentPlayerCiv.nation.leaderName} of ${currentPlayerCiv.nation.name}"
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
-        presence.largeImageText = "Turn".tr() + " " + currentPlayerCiv.gameInfo.turns
+        presence.largeImageText = "Turn" + " " + currentPlayerCiv.gameInfo.turns
         DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }

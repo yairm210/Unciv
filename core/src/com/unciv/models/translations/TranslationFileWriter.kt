@@ -11,7 +11,9 @@ import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueParameterType
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
@@ -90,6 +92,30 @@ object TranslationFileWriter {
             linesToTranslate.addAll(fileNameToGeneratedStrings.getValue(key))
         }
 
+
+        linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
+        for (unique in UniqueType.values()) {
+            val deprecationAnnotation = unique.declaringClass.getField(unique.name)
+                .getAnnotation(Deprecated::class.java)
+            if (deprecationAnnotation != null) continue
+            if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
+
+            // to get rid of multiple equal parameters, like "[amount] [amount]", don't use the unique.text directly
+            //  instead fill the placeholders with incremented values if the previous one exists
+            val newPlaceholders = ArrayList<String>()
+            for (placeholderText in unique.text.getPlaceholderParameters()) {
+                if (!newPlaceholders.contains(placeholderText))
+                    newPlaceholders += placeholderText
+                else {
+                    var i = 2
+                    while (newPlaceholders.contains(placeholderText + i)) i++
+                    newPlaceholders += placeholderText + i
+                }
+            }
+            val finalText = unique.text.fillPlaceholders(*newPlaceholders.toTypedArray())
+            linesToTranslate.add("$finalText = ")
+        }
+
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()
 
@@ -166,7 +192,9 @@ object TranslationFileWriter {
             countOfTranslatedLines[language] = translationsOfThisLanguage
 
             val fileWriter = getFileHandle(modFolder, languageFileLocation.format(language))
-            fileWriter.writeString(stringBuilder.toString(), false, TranslationFileReader.charset)
+            // Any time you have more than 3 line breaks, make it 3
+            val finalFileText = stringBuilder.toString().replace(Regex("\n{4,}"),"\n\n\n")
+            fileWriter.writeString(finalFileText, false, TranslationFileReader.charset)
         }
 
         // Calculate the percentages of translations
@@ -255,6 +283,8 @@ object TranslationFileWriter {
 
             fun submitString(string: String) {
                 val unique = Unique(string)
+                if(unique.type?.flags?.contains(UniqueFlag.HiddenToUsers)==true)
+                    return // We don't need to translate this at all, not user-visible
                 var stringToTranslate = string.removeConditionals()
 
                 val existingParameterNames = HashSet<String>()

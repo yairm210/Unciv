@@ -23,7 +23,7 @@ class OffersListScroll(
     private val persistenceID: String,
     private val onOfferClicked: (TradeOffer) -> Unit
 ) : ScrollPane(null) {
-    val table = Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
+    val table = Table(BaseScreen.skin).apply { defaults().pad(5f) }
 
 
     private val expanderTabs = HashMap<TradeType, ExpanderTab>()

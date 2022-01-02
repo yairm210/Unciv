@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
@@ -10,6 +11,8 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.UnitActionType
+import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -27,16 +30,19 @@ object Battle {
     fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile) {
         if (attacker is MapUnitCombatant) {
             attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
-            /** You might ask: When can this possibly happen?
-             * We always receive an AttackableTile, which means that it was returned from getAttackableTiles!
-             * The answer is: when crossing a HIDDEN TILE.
+            /**
              * When calculating movement distance, we assume that a hidden tile is 1 movement point,
              * which can lead to EXCEEDINGLY RARE edge cases where you think
-             * that you can attack a tile by passing through a hidden tile,
+             * that you can attack a tile by passing through a HIDDEN TILE,
              * but the hidden tile is actually IMPASSIBLE so you stop halfway!
              */
             if (attacker.getTile() != attackableTile.tileToAttackFrom) return
-            if (attacker.unit.hasUnique(UniqueType.MustSetUp) && !attacker.unit.isSetUpForSiege()) {
+            /** Alternatively, maybe we DID reach that tile, but it turned out to be a hill or something,
+             * so we expended all of our movement points!
+             */
+            if (attacker.unit.currentMovement == 0f)
+                return
+            if (attacker.hasUnique(UniqueType.MustSetUp) && !attacker.unit.isSetUpForSiege()) {
                 attacker.unit.action = UnitActionType.SetUp.value
                 attacker.unit.useMovementPoints(1f)
             }
@@ -53,6 +59,15 @@ object Battle {
                     defender.getCivInfo().civName + " " + defender.getName())
         }
         val attackedTile = defender.getTile()
+        if (attacker is MapUnitCombatant) {
+            attacker.unit.attacksSinceTurnStart.add(Vector2(attackedTile.position))
+        } else {
+            attacker.getCivInfo().attacksSinceTurnStart.add(CivilizationInfo.HistoricalAttackMemory(
+                null,
+                Vector2(attacker.getTile().position),
+                Vector2(attackedTile.position)
+            ))
+        }
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isAirUnit()) {
             tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo())
@@ -128,25 +143,22 @@ object Battle {
     private fun tryEarnFromKilling(civUnit: ICombatant, defeatedUnit: MapUnitCombatant) {
         val unitStr = max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength)
         val unitCost = defeatedUnit.unit.baseUnit.cost
-        var bonusUniquePlaceholderText = "Earn []% of killed [] unit's [] as []"
 
         val bonusUniques = ArrayList<Unique>()
 
-
+        val stateForConditionals = StateForConditionals(civInfo = civUnit.getCivInfo(), ourCombatant = civUnit, theirCombatant = defeatedUnit)
         if (civUnit is MapUnitCombatant) {
-            bonusUniques.addAll(civUnit.getMatchingUniques(bonusUniquePlaceholderText))
-            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
+            bonusUniques.addAll(civUnit.getMatchingUniques(UniqueType.KillUnitPlunder, stateForConditionals, true))
         } else {
-            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(bonusUniquePlaceholderText))
+            bonusUniques.addAll(civUnit.getCivInfo().getMatchingUniques(UniqueType.KillUnitPlunder, stateForConditionals))
         }
 
-        bonusUniquePlaceholderText = "Earn []% of [] unit's [] as [] when killed within 4 tiles of a city following this religion"
         val cityWithReligion =
             civUnit.getTile().getTilesInDistance(4).firstOrNull {
-                it.isCityCenter() && it.getCity()!!.getMatchingUniques(bonusUniquePlaceholderText).any()
+                it.isCityCenter() && it.getCity()!!.getLocalMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals).any()
             }?.getCity()
         if (cityWithReligion != null) {
-            bonusUniques.addAll(cityWithReligion.getLocalMatchingUniques(bonusUniquePlaceholderText))
+            bonusUniques.addAll(cityWithReligion.getLocalMatchingUniques(UniqueType.KillUnitPlunderNearCity, stateForConditionals))
         }
 
         for (unique in bonusUniques) {
@@ -169,7 +181,7 @@ object Battle {
         if (defeatedUnit.matchesCategory("Barbarian") && defeatedUnit.matchesCategory("Military") && civUnit.getCivInfo().isMajorCiv()) {
             for (cityState in UncivGame.Current.gameInfo.getAliveCityStates()) {
                 if (civUnit.getCivInfo().knows(cityState) && defeatedUnit.unit.threatensCiv(cityState)) {
-                    cityState.threateningBarbarianKilledBy(civUnit.getCivInfo())
+                    cityState.cityStateFunctions.threateningBarbarianKilledBy(civUnit.getCivInfo())
                 }
             }
         }
@@ -368,6 +380,7 @@ object Battle {
             // are exempt from zone of control, since units that cannot move after attacking already
             // lose all remaining movement points anyway.
             attacker.unit.movement.moveToTile(attackedTile, considerZoneOfControl = false)
+            attacker.unit.mostRecentMoveType = UnitMovementMemoryType.UnitAttacked
         }
     }
 
@@ -402,29 +415,43 @@ object Battle {
 
     // XP!
     private fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
+        var baseXP = amount
         if (thisCombatant !is MapUnitCombatant) return
         if (thisCombatant.unit.promotions.totalXpProduced() >= thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.maxXPfromBarbarians
-                && otherCombatant.getCivInfo().isBarbarian())
+            && otherCombatant.getCivInfo().isBarbarian()
+        ) {
             return
+        }
+        
+        val stateForConditionals = StateForConditionals(civInfo = thisCombatant.getCivInfo(), ourCombatant = thisCombatant, theirCombatant = otherCombatant)
+
+        for (unique in thisCombatant.getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true))
+            baseXP += unique.params[0].toInt()
 
         var xpModifier = 1f
-        for (unique in thisCombatant.getCivInfo().getMatchingUniques("[] units gain []% more Experience from combat")) {
-            if (thisCombatant.unit.matchesFilter(unique.params[0]))
-                xpModifier += unique.params[1].toFloat() / 100
-        }
-        for (unique in thisCombatant.unit.getMatchingUniques("[]% Bonus XP gain"))
+        // Deprecated since 3.18.12
+            for (unique in thisCombatant.getCivInfo().getMatchingUniques(UniqueType.BonusXPGainForUnits, stateForConditionals)) {
+                if (thisCombatant.unit.matchesFilter(unique.params[0]))
+                    xpModifier += unique.params[1].toFloat() / 100
+            }
+            for (unique in thisCombatant.getMatchingUniques(UniqueType.BonuxXPGain, stateForConditionals, true))
+                xpModifier += unique.params[0].toFloat() / 100
+        //
+        
+        for (unique in thisCombatant.getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true))
             xpModifier += unique.params[0].toFloat() / 100
-
-        val xpGained = (amount * xpModifier).toInt()
+        
+        val xpGained = (baseXP * xpModifier).toInt()
         thisCombatant.unit.promotions.XP += xpGained
 
 
         if (thisCombatant.getCivInfo().isMajorCiv() && !otherCombatant.getCivInfo().isBarbarian()) { // Can't get great generals from Barbarians
             var greatGeneralPointsModifier = 1f
-            for (unique in thisCombatant.getMatchingUniques("[] is earned []% faster")) {
+            for (unique in thisCombatant.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals, true)) {
                 val unitName = unique.params[0]
-                val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]
-                if (unit != null && unit.uniques.contains("Great Person - [War]"))
+                // From the unique we know this unit exists
+                val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]!!
+                if (unit.uniques.contains("Great Person - [War]"))
                     greatGeneralPointsModifier += unique.params[1].toFloat() / 100
             }
 
@@ -435,7 +462,8 @@ object Battle {
 
     private fun conquerCity(city: CityInfo, attacker: MapUnitCombatant) {
         val attackerCiv = attacker.getCivInfo()
-
+        
+        
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, NotificationIcon.War)
 
         city.hasJustBeenConquered = true
@@ -445,7 +473,8 @@ object Battle {
             for (airUnit in airUnits.toList()) airUnit.destroy()
         }
 
-        for (unique in attacker.getMatchingUniques("Upon capturing a city, receive [] times its [] production as [] immediately")) {
+        val stateForConditionals = StateForConditionals(civInfo = attackerCiv, unit = attacker.unit, ourCombatant = attacker, attackedTile = city.getCenterTile())
+        for (unique in attacker.getMatchingUniques(UniqueType.CaptureCityPlunder, stateForConditionals, true)) {
             attackerCiv.addStat(
                 Stat.valueOf(unique.params[2]),
                 unique.params[0].toInt() * city.cityStats.currentCityStats[Stat.valueOf(unique.params[1])].toInt()
@@ -517,6 +546,7 @@ object Battle {
                 capturedUnit.capturedBy(attacker.getCivInfo())
                 attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.RecapturedCivilian, capturedUnitTile.position.toString()))
             }
+
             // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
             capturedUnit.hasUnique("Founds a new city") && !attacker.getCivInfo().isBarbarian() -> {
                 capturedUnit.destroy()
@@ -525,9 +555,7 @@ object Battle {
                 capturedUnit.civInfo = attacker.getCivInfo()
                 attacker.getCivInfo().placeUnitNearTile(capturedUnitTile.position, Constants.worker)
             }
-            else -> {
-                capturedUnit.capturedBy(attacker.getCivInfo())
-            }
+            else -> capturedUnit.capturedBy(attacker.getCivInfo())
         }
 
         if (checkDefeat)
@@ -538,7 +566,7 @@ object Battle {
     fun destroyIfDefeated(attackedCiv: CivilizationInfo, attacker: CivilizationInfo) {
         if (attackedCiv.isDefeated()) {
             if (attackedCiv.isCityState())
-                attackedCiv.cityStateDestroyed(attacker)
+                attackedCiv.cityStateFunctions.cityStateDestroyed(attacker)
             attackedCiv.destroy()
             attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
         }
@@ -546,9 +574,10 @@ object Battle {
     
     fun mayUseNuke(nuke: MapUnitCombatant, targetTile: TileInfo): Boolean {
         val blastRadius =
-            if (!nuke.unit.hasUnique(UniqueType.BlastRadius)) 2
+            if (!nuke.hasUnique(UniqueType.BlastRadius)) 2
+            // Don't check conditionals as these are not supported
             else nuke.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
-
+        
         var canNuke = true
         val attackerCiv = nuke.getCivInfo()
         for (tile in targetTile.getTilesInDistance(blastRadius)) {
@@ -580,7 +609,8 @@ object Battle {
         }
 
         val blastRadius =
-            if (!attacker.unit.hasUnique(UniqueType.BlastRadius)) 2
+            if (!attacker.hasUnique(UniqueType.BlastRadius)) 2
+            // Don't check conditionals as there are not supported
             else attacker.unit.getMatchingUniques(UniqueType.BlastRadius).first().params[0].toInt()
 
         val strength = when {
@@ -609,6 +639,8 @@ object Battle {
             }
         }
         if (attacker.isDefeated()) return
+
+        attacker.unit.attacksSinceTurnStart.add(Vector2(targetTile.position))
 
         // Destroy units on the target tile
         // Needs the toList() because if we're destroying the units, they're no longer part of the sequence
@@ -881,6 +913,7 @@ object Battle {
         // NOT defender.unit.movement.moveToTile(toTile) - we want a free teleport
         defender.unit.removeFromTile()
         defender.unit.putInTile(toTile)
+        defender.unit.mostRecentMoveType = UnitMovementMemoryType.UnitWithdrew
         // and count 1 attack for attacker but leave it in place
         reduceAttackerMovementPointsAndAttacks(attacker, defender)
 

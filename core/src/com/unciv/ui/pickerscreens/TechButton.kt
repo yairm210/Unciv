@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
 import com.unciv.ui.utils.*
 
-class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(CameraStageBaseScreen.skin) {
+class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
     val text = "".toLabel().apply { setAlignment(Align.center) }
 
     init {

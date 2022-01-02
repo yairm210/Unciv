@@ -9,7 +9,8 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
@@ -41,7 +42,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     private fun addMapTypeSelection() {
         val mapTypes = arrayListOf("Generated")
         if (mapFilesSequence.any()) mapTypes.add(MapType.custom)
-        mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
+        mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", BaseScreen.skin)
 
         savedMapOptionsTable.defaults().pad(5f)
         savedMapOptionsTable.add("{Map file}:".toLabel()).left()
@@ -83,13 +84,14 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
     }
 
     private fun createMapFileSelectBox(): SelectBox<FileHandleWrapper> {
-        val mapFileSelectBox = SelectBox<FileHandleWrapper>(CameraStageBaseScreen.skin)
+        val mapFileSelectBox = SelectBox<FileHandleWrapper>(BaseScreen.skin)
         mapFileSelectBox.onChange {
             val mapFile = mapFileSelectBox.selected.fileHandle
             val map: TileMap
             try {
                 map = MapSaver.loadMap(mapFile)
             } catch (ex:Exception){
+                ex.printStackTrace()
                 Popup(newGameScreen).apply {
                     addGoodSizedLabel("Could not load map!").row()
                     if (ex is UncivShowableException)
@@ -101,7 +103,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             }
             mapParameters.name = mapFile.name()
             newGameScreen.gameSetupInfo.mapFile = mapFile
-            newGameScreen.gameSetupInfo.gameParameters.mods = map.mapParameters.mods
+            newGameScreen.gameSetupInfo.gameParameters.mods = LinkedHashSet(map.mapParameters.mods.filter { RulesetCache[it]?.modOptions?.isBaseRuleset != true })
+            newGameScreen.gameSetupInfo.gameParameters.baseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset == true } ?: map.mapParameters.baseRuleset
             newGameScreen.updateRuleset()
             newGameScreen.updateTables()
         }

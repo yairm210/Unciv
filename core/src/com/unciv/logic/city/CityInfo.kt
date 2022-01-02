@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.civilization.Proximity
 import com.unciv.logic.civilization.ReligionState
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -24,6 +25,12 @@ import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
+
+enum class CityFlags {
+    WeLoveTheKing,
+    ResourceDemand,
+    Resistance
+}
 
 class CityInfo {
     @Suppress("JoinDeclarationAndAssignment")
@@ -54,6 +61,8 @@ class CityInfo {
     var previousOwner = "" 
     var turnAcquired = 0
     var health = 200
+
+    @Deprecated("As of 3.18.4", ReplaceWith("CityFlags.Resistance"), DeprecationLevel.WARNING)
     var resistanceCounter = 0
 
     var religion = CityInfoReligionManager()
@@ -81,6 +90,11 @@ class CityInfo {
      * while the _current_ capital can be any other city after the original one is captured.
      * It is important to distinguish them since the original cannot be razed and defines the Domination Victory. */
     var isOriginalCapital = false
+
+    /** For We Love the King Day */
+    var demandedResource = ""
+
+    private var flagsCountdown = HashMap<String, Int>()
 
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
@@ -233,11 +247,12 @@ class CityInfo {
         toReturn.lockedTiles = lockedTiles
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
-        toReturn.resistanceCounter = resistanceCounter
         toReturn.foundingCiv = foundingCiv
         toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
         toReturn.isOriginalCapital = isOriginalCapital
+        toReturn.flagsCountdown.putAll(flagsCountdown)
+        toReturn.demandedResource = demandedResource
         return toReturn
     }
 
@@ -264,7 +279,11 @@ class CityInfo {
 
     }
 
-    fun isInResistance() = resistanceCounter > 0
+    fun hasFlag(flag: CityFlags) = flagsCountdown.containsKey(flag.name)
+    fun getFlag(flag: CityFlags) = flagsCountdown[flag.name]!!
+
+    fun isWeLoveTheKingDay() = hasFlag(CityFlags.WeLoveTheKing)
+    fun isInResistance() = hasFlag(CityFlags.Resistance)
 
     /** @return the number of tiles 4 out from this city that could hold a city, ie how lonely this city is */
     fun getFrontierScore() = getCenterTile().getTilesAtDistance(4).count { it.canBeSettled() && (it.getOwner() == null || it.getOwner() == civInfo ) }
@@ -313,7 +332,7 @@ class CityInfo {
                 cityResources.add(resource, -amount, "Buildings")
             }
         }
-        
+
         for (unique in getLocalMatchingUniques(UniqueType.ProvidesResources)) { // E.G "Provides [1] [Iron]"
             if (!unique.conditionalsApply(civInfo, this)) continue
             val resource = getRuleset().tileResources[unique.params[1]]
@@ -406,8 +425,9 @@ class CityInfo {
             buildingsCounter.add(building.greatPersonPoints)
         sourceToGPP["Buildings"] = buildingsCounter
 
+        val stateForConditionals = StateForConditionals(civInfo = civInfo, cityInfo = this)
         for ((_, gppCounter) in sourceToGPP) {
-            for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.GreatPersonEarnedFaster, stateForConditionals)) {
                 val unitName = unique.params[0]
                 if (!gppCounter.containsKey(unitName)) continue
                 gppCounter.add(unitName, gppCounter[unitName]!! * unique.params[1].toInt() / 100)
@@ -421,9 +441,8 @@ class CityInfo {
 
             // Sweden UP
             for (otherCiv in civInfo.getKnownCivs()) {
-                if (!civInfo.getDiplomacyManager(otherCiv)
-                        .hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                ) continue
+                if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 
+                    continue
 
                 for (ourUnique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
                     allGppPercentageBonus += ourUnique.params[0].toInt()
@@ -477,6 +496,11 @@ class CityInfo {
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)
+
+        if (resistanceCounter > 0) {
+            setFlag(CityFlags.Resistance, resistanceCounter)
+            resistanceCounter = 0
+        }
     }
 
     fun startTurn() {
@@ -488,17 +512,60 @@ class CityInfo {
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
-        if (isInResistance()) {
-            resistanceCounter--
-            if (!isInResistance())
-                civInfo.addNotification(
-                    "The resistance in [$name] has ended!",
-                    location,
-                    "StatIcons/Resistance"
-                )
-        }
 
         if (isPuppet) reassignPopulation()
+
+        // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
+        if (!hasFlag(CityFlags.WeLoveTheKing))
+            tryWeLoveTheKing()
+        nextTurnFlags()
+
+        // Seed resource demand countdown
+        if(demandedResource == "" && !hasFlag(CityFlags.ResourceDemand)) {
+            setFlag(CityFlags.ResourceDemand,
+                    (if (isCapital()) 25 else 15) + Random().nextInt(10))
+        }
+    }
+
+    // cf DiplomacyManager nextTurnFlags
+    private fun nextTurnFlags() {
+        for (flag in flagsCountdown.keys.toList()) {
+            if (flagsCountdown[flag]!! > 0)
+                flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+
+            if (flagsCountdown[flag] == 0) {
+                flagsCountdown.remove(flag)
+
+                when (flag) {
+                    CityFlags.ResourceDemand.name -> {
+                        demandNewResource()
+                    }
+                    CityFlags.WeLoveTheKing.name -> {
+                        civInfo.addNotification(
+                                "We Love The King Day in [$name] has ended.",
+                                location, NotificationIcon.City)
+                        demandNewResource()
+                    }
+                    CityFlags.Resistance.name -> {
+                        civInfo.addNotification(
+                                "The resistance in [$name] has ended!",
+                                location,"StatIcons/Resistance")
+                    }
+                }
+            }
+        }
+    }
+
+    fun setFlag(flag: CityFlags, amount: Int) {
+        flagsCountdown[flag.name] = amount
+    }
+    
+    fun resetWLTKD() {
+        // Removes the flags for we love the king & resource demand
+        // The resource demand flag will automatically be readded with 15 turns remaining, see startTurn()
+        flagsCountdown.remove(CityFlags.WeLoveTheKing.name)
+        flagsCountdown.remove(CityFlags.ResourceDemand.name)
+        demandedResource = ""
     }
 
     fun reassignPopulation() {
@@ -624,6 +691,38 @@ class CityInfo {
         civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
     }
 
+    private fun demandNewResource() {
+        val candidates = getRuleset().tileResources.values.filter {
+            it.resourceType == ResourceType.Luxury && // Must be luxury
+            !it.hasUnique(UniqueType.CityStateOnlyResource) && // Not a city-state only resource eg jewelry
+            it.name != demandedResource && // Not same as last time
+            !civInfo.hasResource(it.name) && // Not one we already have
+            it.name in tileMap.resources && // Must exist somewhere on the map
+            getCenterTile().getTilesInDistance(3).none { nearTile -> nearTile.resource == it.name } // Not in this city's radius
+        }
+
+        val chosenResource = candidates.randomOrNull()
+        /* What if we had a WLTKD before but now the player has every resource in the game? We can't
+           pick a new resource, so the resource will stay stay the same and the city will demand it
+           again even if the player still has it. But we shouldn't punish success. */
+        if (chosenResource != null)
+            demandedResource = chosenResource.name
+        if (demandedResource == "") // Failed to get a valid resource, try again some time later
+            setFlag(CityFlags.ResourceDemand, 15 + Random().nextInt(10))
+        else
+            civInfo.addNotification("[$name] demands [$demandedResource]!", location, NotificationIcon.City, "ResourceIcons/$demandedResource")
+    }
+
+    private fun tryWeLoveTheKing() {
+        if (demandedResource == "") return
+        if (civInfo.getCivResourcesByName()[demandedResource]!! > 0) {
+            setFlag(CityFlags.WeLoveTheKing, 20 + 1) // +1 because it will be decremented by 1 in the same startTurn()
+            civInfo.addNotification(
+                    "Because they have [$demandedResource], the citizens of [$name] are celebrating We Love The King Day!",
+                    location, NotificationIcon.City, NotificationIcon.Happiness)
+        }
+    }
+
     /*
      When someone settles a city within 6 tiles of another civ, this makes the AI unhappy and it starts a rolling event.
      The SettledCitiesNearUs flag gets added to the AI so it knows this happened,
@@ -635,7 +734,7 @@ class CityInfo {
      */
     private fun triggerCitiesSettledNearOtherCiv() {
         val citiesWithin6Tiles =
-            civInfo.gameInfo.civilizations
+            civInfo.gameInfo.civilizations.asSequence()
                 .filter { it.isMajorCiv() && it != civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
@@ -652,7 +751,7 @@ class CityInfo {
         val tile = getCenterTile()
         return when {
             construction.isCivilian() -> tile.civilianUnit == null
-            construction.movesLikeAirUnits() -> tile.airUnits.filter { !it.isTransported }.size < 6
+            construction.movesLikeAirUnits() -> tile.airUnits.count { !it.isTransported } < 6
             else -> tile.militaryUnit == null
         }
     }
@@ -709,10 +808,7 @@ class CityInfo {
         // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
         // The time loss shouldn't be that large I don't think
         return civInfo.getMatchingUniques(placeholderText, this) +
-                localUniques.filter { 
-                    it.placeholderText == placeholderText
-                    && it.params.none { param -> param == "in other cities" }
-                }
+                localUniques.filter { it.placeholderText == placeholderText }
     }
 
     // Finds matching uniques provided from both local and non-local sources.
@@ -727,14 +823,14 @@ class CityInfo {
     // Matching uniques provided by sources in the city itself
     fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { it.params.none { param -> param == "in other cities" } } +
+            .filter { !it.isAntiLocalEffect } +
                 religion.getUniques().filter { it.placeholderText == placeholderText }
     }
 
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
         return (
             cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-                .filter { it.params.none { param -> param == "in other cities" } } 
+                .filter { !it.isAntiLocalEffect }
             + religion.getUniques().filter { it.isOfType(uniqueType) }
         ).filter {
             it.conditionalsApply(stateForConditionals)
@@ -749,21 +845,21 @@ class CityInfo {
     // Get all matching uniques that don't apply to only this city
     fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { it.params.none { param -> param == "in this city" } }
+            .filter { !it.isLocalEffect }
         // Note that we don't query religion here, as those only have local effects
     }
 
 
     fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { it.params.none { param -> param == "in this city" } }
+            .filter { !it.isLocalEffect }
         // Note that we don't query religion here, as those only have local effects
     }
 
     // Get all uniques that don't apply to only this city
     fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getAllUniques()
-            .filter { it.params.none { param -> param == "in this city" } }
+            .filter { !it.isLocalEffect }
         // Note that we don't query religion here, as those only have local effects
     }
 

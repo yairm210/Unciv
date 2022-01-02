@@ -37,7 +37,7 @@ class TileImprovement : RulesetStatsObject() {
     fun getDescription(ruleset: Ruleset): String {
         val lines = ArrayList<String>()
 
-        val statsDesc = this.clone().toString()
+        val statsDesc = cloneStats().toString()
         if (statsDesc.isNotEmpty()) lines += statsDesc
         if (!terrainsCanBeBuiltOn.isEmpty()) {
             val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
@@ -96,7 +96,7 @@ class TileImprovement : RulesetStatsObject() {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
-        val statsDesc = this.clone().toString()
+        val statsDesc = cloneStats().toString()
         if (statsDesc.isNotEmpty()) textList += FormattedLine(statsDesc)
 
         if (uniqueTo!=null) {

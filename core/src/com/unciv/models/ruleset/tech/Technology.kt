@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -153,12 +154,21 @@ class Technology: RulesetObject() {
     private fun getSeeAlsoObjects(ruleset: Ruleset) =
         // This is a band-aid to clarify the relation Offshore platform - Refrigeration. A generic variant
         // covering all mentions in uniques in all ruleset objects would be possible here but - overkill for now.
-        ruleset.tileImprovements.values.asSequence()
-        .filter { improvement ->
-            improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
-                it.params[1] == name
+        ruleset.tileImprovements.values
+            .asSequence()
+            .filter { improvement ->
+                // Deprecated since 3.18.6
+                    improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
+                        it.params[1] == name
+                    } ||
+                //
+                improvement.uniqueObjects.any { 
+                    unique -> unique.conditionals.any { 
+                        (it.isOfType(UniqueType.ConditionalTech) || it.isOfType(UniqueType.ConditionalNoTech)) 
+                        && it.params[0] == name 
+                    } 
+                }
             }
-        }
 
 
     override fun makeLink() = "Technology/$name"
@@ -198,7 +208,10 @@ class Technology: RulesetObject() {
 
         if (uniques.isNotEmpty()) {
             lineList += FormattedLine()
-            for (unique in uniqueObjects) lineList += FormattedLine(unique)
+            uniqueObjects.forEach {
+                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
+                    lineList += FormattedLine(it)
+            }
         }
 
         var wantEmpty = true

@@ -31,6 +31,7 @@ class MapParametersTable(
     private var customWorldSizeTable = Table ()
     private var hexagonalSizeTable = Table()
     private var rectangularSizeTable = Table()
+    lateinit var resourceSelectBox: TranslatedSelectBox
     private lateinit var noRuinsCheckbox: CheckBox
     private lateinit var noNaturalWondersCheckbox: CheckBox
     private lateinit var worldWrapCheckbox: CheckBox
@@ -42,11 +43,12 @@ class MapParametersTable(
     private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
     init {
-        skin = CameraStageBaseScreen.skin
+        skin = BaseScreen.skin
         defaults().pad(5f, 10f)
         addMapShapeSelectBox()
         addMapTypeSelectBox()
         addWorldSizeTable()
+        addResourceSelectBox()
         addWrappedCheckBoxes()
         addAdvancedSettings()
     }
@@ -161,6 +163,25 @@ class MapParametersTable(
             mapParameters.mapSize = MapSizeNew(worldSizeSelectBox.selected.value)
     }
 
+    private fun addResourceSelectBox() {
+        val mapTypes = listOfNotNull(
+                MapResources.sparse,
+                MapResources.default,
+                MapResources.abundant,
+                MapResources.strategicBalance,
+                MapResources.legendaryStart
+        )
+
+        resourceSelectBox = TranslatedSelectBox(mapTypes, mapParameters.mapResources, skin)
+
+        resourceSelectBox.onChange {
+            mapParameters.mapResources = resourceSelectBox.selected.value
+        }
+
+        add("{Resource Setting}:".toLabel()).left()
+        add(resourceSelectBox).fillX().row()
+    }
+
     private fun Table.addNoRuinsCheckbox() {
         noRuinsCheckbox = "No Ancient Ruins".toCheckBox(mapParameters.noRuins) {
             mapParameters.noRuins = it
@@ -229,7 +250,7 @@ class MapParametersTable(
             return slider
         }
 
-        addSlider("Map Height", {mapParameters.elevationExponent}, 0.6f,0.8f)
+        addSlider("Map Elevation", {mapParameters.elevationExponent}, 0.6f,0.8f)
         { mapParameters.elevationExponent = it }
 
         addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)

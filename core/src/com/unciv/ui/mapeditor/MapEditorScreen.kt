@@ -18,7 +18,7 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-class MapEditorScreen(): CameraStageBaseScreen() {
+class MapEditorScreen(): BaseScreen() {
     var mapName = ""
     var tileMap = TileMap()
     var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) }
@@ -34,7 +34,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     constructor(map: TileMap) : this() {
         tileMap = map
         checkAndFixMapSize()
-        ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods)
+        ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
         initialize()
     }
 
@@ -106,7 +106,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                 if (isPainting) {
 
                     for (tileInfo in lastDrawnTiles)
-                        mapHolder.tileGroups[tileInfo]!!.forEach { it.hideCircle() }
+                        mapHolder.tileGroups[tileInfo]!!.forEach { it.hideHighlight() }
                     lastDrawnTiles.clear()
 
                     val stageCoords = mapHolder.actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
@@ -120,7 +120,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                             tileInfo.setTerrainTransients()
                             mapHolder.tileGroups[tileInfo]!!.forEach {
                                 it.update()
-                                it.showCircle(Color.WHITE)
+                                it.showHighlight(Color.WHITE)
                             }
 
                             lastDrawnTiles.add(tileInfo)

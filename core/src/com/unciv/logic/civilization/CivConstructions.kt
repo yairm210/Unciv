@@ -45,43 +45,6 @@ class CivConstructions {
 
     fun setTransients(civInfo: CivilizationInfo) {
         this.civInfo = civInfo
-
-        // civInfo.boughtConstructionsWithGloballyIncreasingPrice deprecated since 3.16.15, this is replacement code
-            if (civInfo.boughtConstructionsWithGloballyIncreasingPrice.isNotEmpty()) {
-                for (item in civInfo.boughtConstructionsWithGloballyIncreasingPrice) {
-                    boughtItemsWithIncreasingPrice.add(item.key, item.value)
-                }
-                civInfo.boughtConstructionsWithGloballyIncreasingPrice.clear()
-            }
-        //
-
-        // Deprecated variables in civ.policies since 3.16.15, this is replacement code
-            if (civInfo.policies.specificBuildingsAdded.isNotEmpty()) {
-                for ((building, cities) in civInfo.policies.specificBuildingsAdded) {
-                    for (cityId in cities) {
-                        if (building !in freeSpecificBuildingsProvided)
-                            freeSpecificBuildingsProvided[building] = hashSetOf()
-                        freeSpecificBuildingsProvided[building]!!.add(cityId)
-
-                        if (cityId !in freeBuildings)
-                            freeBuildings[cityId] = hashSetOf()
-                        freeBuildings[cityId]!!.add(building)
-                    }
-                }
-                civInfo.policies.specificBuildingsAdded.clear()
-            }
-
-            if (civInfo.policies.cultureBuildingsAdded.isNotEmpty()) {
-                for ((cityId, building) in civInfo.policies.cultureBuildingsAdded) {
-                    freeStatBuildingsProvided[Stat.Culture.name]!!.add(cityId)
-
-                    if (cityId !in freeBuildings)
-                        freeBuildings[cityId] = hashSetOf()
-                    freeBuildings[cityId]!!.add(building)
-                }
-                civInfo.policies.cultureBuildingsAdded.clear()
-            }
-        //
     }
 
     fun startTurn() {
@@ -104,7 +67,7 @@ class CivConstructions {
     private fun addFreeBuilding(cityId: String, building: String) {
         if (!freeBuildings.containsKey(cityId))
             freeBuildings[cityId] = hashSetOf()
-        freeBuildings[cityId]!!.add(building)
+        freeBuildings[cityId]!!.add(civInfo.getEquivalentBuilding(building).name)
     }
 
     private fun addFreeStatsBuildings() {
@@ -113,13 +76,6 @@ class CivConstructions {
             .mapKeys { Stat.valueOf(it.key) }
             .mapValues { unique -> unique.value.sumOf { it.params[1].toInt() } }
             .toMutableMap()
-
-        // Deprecated since 3.16.15
-            statUniquesData[Stat.Culture] = (statUniquesData[Stat.Culture] ?: 0) +
-                civInfo.getMatchingUniques("Immediately creates the cheapest available cultural building in each of your first [] cities for free")
-                    .sumOf { it.params[0].toInt() }
-        //
-
 
         for ((stat, amount) in statUniquesData) {
             addFreeStatBuildings(stat, amount)
@@ -139,11 +95,8 @@ class CivConstructions {
     }
 
     private fun addFreeSpecificBuildings() {
-        val buildingsUniquesData = (civInfo.getMatchingUniques(UniqueType.FreeSpecificBuildings)
-            // Deprecated since 3.16.15
-                + civInfo.getMatchingUniques("Immediately creates a [] in each of your first [] cities for free")
-            //
-            ).groupBy { it.params[0] }
+        val buildingsUniquesData = civInfo.getMatchingUniques(UniqueType.FreeSpecificBuildings)
+            .groupBy { it.params[0] }
             .mapValues { unique -> unique.value.sumOf { it.params[1].toInt() } }
 
         for ((building, amount) in buildingsUniquesData) {

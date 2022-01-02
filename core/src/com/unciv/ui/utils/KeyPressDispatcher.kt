@@ -167,13 +167,17 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
         if (installStage != null) uninstall()
         listener =
             object : InputListener() {
-                override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
+                    /*
+                    : Boolean {
+                    return super.keyDown(event, keycode)
+                        }(event: InputEvent?, character: Char)
+                     */
+
                     // look for both key code and ascii entries - ascii first as the
                     // Char constructor of KeyCharAndCode generates keyCode based instances
                     // preferentially but we would miss Ctrl- combos otherwise
                     val key = when {
-                        contains(KeyCharAndCode.ascii(character)) ->
-                            KeyCharAndCode.ascii(character)
                         event == null ->
                             KeyCharAndCode.UNKNOWN
                         else ->
@@ -182,7 +186,7 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
 
                     // see if we want to handle this key, and if not, let it propagate
                     if (!contains(key) || (checkIgnoreKeys?.invoke() == true))
-                        return super.keyTyped(event, character)
+                        return super.keyDown(event, keycode)
                     
                     // try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                     try {

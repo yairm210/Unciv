@@ -63,14 +63,17 @@ object GameSaver {
         customSaveLocationHelper!!.saveGame(game, GameName, forcePrompt = true, saveCompleteCallback = saveCompletionCallback)
     }
 
-    fun loadGameByName(GameName: String, multiplayer: Boolean = false) =
-            loadGameFromFile(getSave(GameName, multiplayer))
+    fun loadGameByName(GameName: String) =
+            loadGameFromFile(getSave(GameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
         val game = json().fromJson(GameInfo::class.java, gameFile)
         game.setTransients()
         return game
     }
+
+    fun loadGamePreviewByName(GameName: String) =
+            loadGamePreviewFromFile(getSave(GameName, true))
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
         return json().fromJson(GameInfoPreview::class.java, gameFile)
@@ -149,24 +152,15 @@ object GameSaver {
     }
 
     fun autoSaveSingleThreaded(gameInfo: GameInfo) {
-/*
-        ... out of order until further notice, see #3898
-        // If the user has chosen a custom save location outside of the usual game directories,
-        // they'll probably expect us to overwrite that instead. E.g. if the user is saving their
-        // game to their Google Drive folder, they'll probably want that progress to be synced to
-        // other devices automatically so they don't have to remember to manually save before
-        // exiting the game.
-        if (gameInfo.customSaveLocation != null) {
-            // GameName is unused here since we're just overwriting the existing file
-            saveGame(gameInfo, "", false)
-            return
+        try {
+            saveGame(gameInfo, "Autosave")
+        } catch (oom: OutOfMemoryError) {
+            return  // not much we can do here
         }
-*/
-
-        saveGame(gameInfo, "Autosave")
 
         // keep auto-saves for the last 10 turns for debugging purposes
-        val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfo.turns}"
+        val newAutosaveFilename =
+            saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfo.turns}"
         getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
 
         fun getAutosaves(): Sequence<FileHandle> {
@@ -176,14 +170,5 @@ object GameSaver {
             val saveToDelete = getAutosaves().minByOrNull { it: FileHandle -> it.lastModified() }!!
             deleteSave(saveToDelete.name())
         }
-    }
-
-    /**
-     * Returns the gameId from a GameInfo which was saved as JSON for multiplayer
-     * Does not initialize transitive GameInfo data.
-     * It is therefore stateless and save to call for Multiplayer Turn Notifier.
-     */
-    fun getGameIdFromFile(gameFile: FileHandle): String {
-        return json().fromJson(GameInfo::class.java, gameFile).gameId
     }
 }

@@ -3,19 +3,16 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
-import com.unciv.logic.BackwardCompatibility.replaceDiplomacyFlag
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSpeed
-import com.unciv.models.ruleset.Difficulty
-import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import java.util.*
@@ -118,7 +115,7 @@ class GameInfo {
     }
 
     /** Get a civ by name
-     *  @throws NoSuchElementException if no civ of than name is in the game (alive or dead)! */
+     *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
@@ -207,6 +204,7 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
             if (currentPlayerIndex == 0) {
                 turns++
+                checkForTimeVictory()
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -277,6 +275,23 @@ class GameInfo {
                 enemyUnitsCloseToTerritory.filter { it.getOwner() != thisPlayer },
                 "near"
         )
+
+        addBombardNotification(thisPlayer,
+                thisPlayer.cities.filter { city -> city.canBombard() &&
+                enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= city.range }
+                }
+        )
+    }
+    
+    private fun checkForTimeVictory() {
+        if (turns != gameParameters.maxTurns || !gameParameters.victoryTypes.contains(VictoryType.Time)) return
+        
+        val winningCiv = civilizations
+            .filter { it.isMajorCiv() && !it.isSpectator() && !it.isBarbarian() }
+            .maxByOrNull { it.calculateScoreBreakdown().values.sum() } 
+            ?: return // Are there no civs left?
+        
+        winningCiv.victoryManager.hasWonTimeVictory = true
     }
 
     private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
@@ -292,24 +307,92 @@ class GameInfo {
         }
     }
 
+    private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
+        if (cities.count() < 3) {
+            for (city in cities)
+                thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair)
+
+        } else
+            thisPlayer.addNotification("[${cities.count()}] of your cities can bombard the enemy!", LocationAction(cities.map { it.location }), NotificationIcon.City, NotificationIcon.Crosshair)
+    }
+
+    fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
+        // Calling with `maxDistance = 0` removes distance limitation.
+        data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
+
+        var exploredRevealTiles:Sequence<TileInfo>
+
+        if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+            // Look for matching mercantile CS centers 
+            exploredRevealTiles = getAliveCityStates()
+                .asSequence()
+                .filter { it.cityStateResource == resourceName }
+                .map { it.getCapital().getCenterTile() }
+        } else {
+            exploredRevealTiles = tileMap.values
+                .asSequence()
+                .filter { it.resource == resourceName }
+        }
+
+        val exploredRevealInfo = exploredRevealTiles
+            .filter { it.position in civInfo.exploredTiles }
+            .flatMap { tile -> civInfo.cities.asSequence()
+                .map {
+                    // build a full cross join all revealed tiles * civ's cities (should rarely surpass a few hundred)
+                    // cache distance for each pair as sort will call it ~ 2n log n times
+                    // should still be cheaper than looking up 'the' closest city per reveal tile before sorting
+                    city -> CityTileAndDistance(city, tile, tile.aerialDistanceTo(city.getCenterTile()))
+                }
+            }
+            .filter { (maxDistance == 0 || it.distance <= maxDistance) && (showForeign || it.tile.getOwner() == null || it.tile.getOwner() == civInfo) }
+            .sortedWith ( compareBy { it.distance } )
+            .distinctBy { it.tile }
+
+        val chosenCity = exploredRevealInfo.firstOrNull()?.city ?: return
+        val positions = exploredRevealInfo
+            // re-sort to a more pleasant display order
+            .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
+            .map { it.tile.position }
+            .toList()       // explicit materialization of sequence to satisfy addNotification overload
+
+        val text =  if(positions.size==1)
+            "[$resourceName] revealed near [${chosenCity.name}]"
+        else
+            "[${positions.size}] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
+
+        civInfo.addNotification(
+            text,
+            LocationAction(positions),
+            "ResourceIcons/$resourceName"
+        )
+    }
+
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
         tileMap.gameInfo = this
-        ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods)
+
+        // [TEMPORARY] Convert old saves to newer ones by moving base rulesets from the mod list to the base ruleset field
+        val baseRulesetInMods = gameParameters.mods.firstOrNull { RulesetCache[it]?.modOptions?.isBaseRuleset==true }
+        if (baseRulesetInMods != null) {
+            gameParameters.baseRuleset = baseRulesetInMods
+            gameParameters.mods = LinkedHashSet(gameParameters.mods.filter { it != baseRulesetInMods })
+        }
+
+        ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods, gameParameters.baseRuleset)
+        
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.
         // Player's fault, so better complain early:
-        val missingMods = gameParameters.mods
-                .filterNot { it in ruleSet.mods }
-                .joinToString(limit = 120) { it }
+        val missingMods = (gameParameters.mods + gameParameters.baseRuleset)
+            .filterNot { it in ruleSet.mods }
+            .joinToString(limit = 120) { it }
         if (missingMods.isNotEmpty()) {
             throw UncivShowableException("Missing mods: [$missingMods]")
         }
 
         removeMissingModReferences()
 
-        replaceDiplomacyFlag(DiplomacyFlags.Denunceation, DiplomacyFlags.Denunciation)
 
         for (baseUnit in ruleSet.units.values)
             baseUnit.ruleset = ruleSet
@@ -353,6 +436,10 @@ class GameInfo {
                 if (cityInfo.isPuppet && cityInfo.cityConstructions.constructionQueue.isEmpty())
                     cityInfo.cityConstructions.chooseNextConstruction()
 
+                // We also remove resources that the city may be demanding but are no longer in the ruleset
+                if (!ruleSet.tileResources.containsKey(cityInfo.demandedResource))
+                    cityInfo.demandedResource = ""
+
                 cityInfo.cityStats.update()
             }
 
@@ -361,7 +448,7 @@ class GameInfo {
             }
         }
 
-        spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique("Spaceship part") }
+        spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirements().keys } )
         
         barbarians.setTransients(this)
@@ -412,6 +499,20 @@ class GameInfoPreview() {
         currentTurnStartTime = gameInfo.currentTurnStartTime
         //We update the civilizations in case someone is removed from the game (resign/kick)
         civilizations = gameInfo.getCivilizationsAsPreviews()
+
+        return this
+    }
+
+    /**
+     * Updates the current player and turn information in the GameInfoPreview object with the
+     * help of another GameInfoPreview object.
+     */
+    fun updateCurrentTurn(gameInfo: GameInfoPreview) : GameInfoPreview {
+        currentPlayer = gameInfo.currentPlayer
+        turns = gameInfo.turns
+        currentTurnStartTime = gameInfo.currentTurnStartTime
+        //We update the civilizations in case someone is removed from the game (resign/kick)
+        civilizations = gameInfo.civilizations
 
         return this
     }

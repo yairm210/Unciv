@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.squareBraceRegex
@@ -19,6 +20,7 @@ enum class VictoryType {
     Diplomatic,
     Domination,
     Scientific,
+    Time,
 }
 
 class Nation : RulesetObject() {
@@ -117,7 +119,8 @@ class Nation : RulesetObject() {
             textList += FormattedLine(uniqueText, indent = 1)
         } else {
             uniqueObjects.forEach {
-                textList += FormattedLine(it)
+                if (!it.hasFlag(UniqueFlag.HiddenToUsers))
+                    textList += FormattedLine(it)
             }
             textList += FormattedLine()
         }
@@ -175,8 +178,7 @@ class Nation : RulesetObject() {
 
         if (showResources) {
             val allMercantileResources = ruleset.tileResources.values
-                .filter { it.unique == "Can only be created by Mercantile City-States" // Deprecated 3.16.16
-                        || it.hasUnique(UniqueType.CityStateOnlyResource) }
+                .filter { it.hasUnique(UniqueType.CityStateOnlyResource) }
 
             if (allMercantileResources.isNotEmpty()) {
                 textList += FormattedLine()
@@ -246,13 +248,16 @@ class Nation : RulesetObject() {
                 // This does not use the auto-linking FormattedLine(Unique) for two reasons:
                 // would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
                 // No .copy() factory on FormattedLine and no FormattedLine(Unique, all other val's) constructor either
-                for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
-                    textList += FormattedLine(unique, indent=1)
-                for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
+                for (unique in unit.uniqueObjects.filterNot { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
+
+                    textList += FormattedLine(unique.text.tr(), indent = 1)
+                }
+                for (unique in originalUnit.uniqueObjects.filterNot { it.text in unit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
                     textList += FormattedLine("Lost ability".tr() + " (" + "vs [${originalUnit.name}]".tr() + "): " +
-                            unique.tr(), indent=1)
+                            unique.text.tr(), indent = 1)
+                }
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions }) {
-                    val effect = ruleset.unitPromotions[promotion]!!.uniquesWithEffect()
+                    val effect = ruleset.unitPromotions[promotion]!!.uniques
                     // "{$promotion} ({$effect})" won't work as effect may contain [] and tr() does not support that kind of nesting
                     textList += FormattedLine(
                         "${promotion.tr()} (${effect.joinToString(",") { it.tr() }})",
@@ -272,10 +277,10 @@ class Nation : RulesetObject() {
 
     private fun addUniqueImprovementsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (improvement in ruleset.tileImprovements.values) {
-            if (improvement.uniqueTo != name ) continue
+            if (improvement.uniqueTo != name) continue
 
             textList += FormattedLine(improvement.name, link = "Improvement/${improvement.name}")
-            textList += FormattedLine(improvement.clone().toString(), indent = 1)   // = (improvement as Stats).toString minus import plus copy overhead
+            textList += FormattedLine(improvement.cloneStats().toString(), indent = 1)   // = (improvement as Stats).toString minus import plus copy overhead
             if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
                 improvement.terrainsCanBeBuiltOn.withIndex().forEach {
                     textList += FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",

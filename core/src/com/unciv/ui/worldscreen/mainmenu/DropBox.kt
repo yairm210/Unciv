@@ -49,7 +49,7 @@ object DropBox {
                     throw FileNotFoundException()
                 if (responseString.contains("path/conflict/file"))
                     throw DropBoxFileConflictException()
-
+                
                 return null
             } catch (error: Error) {
                 println(error.message)
@@ -171,16 +171,6 @@ class OnlineMultiplayer {
     fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
         val zippedGameInfo = DropBox.downloadFileAsString("${getGameLocation(gameId)}_Preview")
         return GameSaver.gameInfoPreviewFromString(Gzip.unzip(zippedGameInfo))
-    }
-
-    /**
-     * WARNING!
-     * Does not initialize transitive GameInfo data.
-     * It is therefore stateless and safe to call for Multiplayer Turn Notifier, unlike tryDownloadGame().
-     */
-    fun tryDownloadGameUninitialized(gameId: String): GameInfo {
-        val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
-        return GameSaver.gameInfoFromStringWithoutTransients(Gzip.unzip(zippedGameInfo))
     }
 }
 

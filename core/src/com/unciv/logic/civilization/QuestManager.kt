@@ -16,6 +16,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.randomWeighted
 import com.unciv.ui.utils.toPercent
 import kotlin.math.max
@@ -217,7 +218,7 @@ class QuestManager {
 
     private fun tryBarbarianInvasion() {
         if ((civInfo.getTurnsTillCallForBarbHelp() == null || civInfo.getTurnsTillCallForBarbHelp() == 0)
-            && civInfo.getNumThreateningBarbarians() >= 2) {
+            && civInfo.cityStateFunctions.getNumThreateningBarbarians() >= 2) {
 
             for (otherCiv in civInfo.getKnownCivs().filter {
                     it.isMajorCiv()
@@ -242,12 +243,11 @@ class QuestManager {
         if (quests.isEmpty())
             return
 
-        val topScore = quests.map { getScoreForQuest(it) }.maxOrNull()!!
-
-        for (quest in quests) {
-            if (getScoreForQuest(quest) >= topScore)
-                giveReward(quest)
-        }
+        val topScore = quests.maxOf { getScoreForQuest(it) }
+        val winners = quests.filter { getScoreForQuest(it) == topScore }
+        winners.forEach { giveReward(it) }
+        for (loser in quests.filterNot { it in winners })
+            notifyExpired(loser, winners)
 
         assignedQuests.removeAll(quests)
     }
@@ -278,11 +278,15 @@ class QuestManager {
             return true
         }
 
-        if (isObsolete(assignedQuest))
+        if (isObsolete(assignedQuest)) {
+            notifyExpired(assignedQuest)
             return true
+        }
 
-        if (assignedQuest.isExpired())
+        if (assignedQuest.isExpired()) {
+            notifyExpired(assignedQuest)
             return true
+        }
 
         return false
     }
@@ -433,6 +437,21 @@ class QuestManager {
             city.cityStats.update()
     }
 
+    /** Notifies the assignee of [assignedQuest] that the quest is now obsolete or expired.
+     *  Optionally displays the [winners] of global quests. */
+    private fun notifyExpired(assignedQuest: AssignedQuest, winners: List<AssignedQuest> = emptyList()) {
+        val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
+        if (winners.isEmpty()) {
+            assignee.addNotification(
+                    "[${civInfo.civName}] no longer needs your help with the [${assignedQuest.questName}] quest.",
+                    civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest")
+        } else {
+            assignee.addNotification(
+                    "The [${assignedQuest.questName}] quest for [${civInfo.civName}] has ended. It was won by [${winners.joinToString { it.assignee.tr() }}].",
+                    civInfo.getCapital().location, civInfo.civName, "OtherIcons/Quest")
+        }
+    }
+
     /** Returns the score for the [assignedQuest] */
     private fun getScoreForQuest(assignedQuest: AssignedQuest): Int {
         val assignee = civInfo.gameInfo.getCivilization(assignedQuest.assignee)
@@ -451,9 +470,9 @@ class QuestManager {
             return ""
 
         return when (questName){
-            QuestName.ContestCulture.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} [Culture] generated."
-            QuestName.ContestFaith.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} [Faith] generated."
-            QuestName.ContestTech.value -> "Current leader is ${leadingQuest.assignee} with ${getScoreForQuest(leadingQuest)} Technologies discovered."
+            QuestName.ContestCulture.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Culture] generated."
+            QuestName.ContestFaith.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] [Faith] generated."
+            QuestName.ContestTech.value -> "Current leader is [${leadingQuest.assignee}] with [${getScoreForQuest(leadingQuest)}] Technologies discovered."
             else -> ""
         }
     }
@@ -506,7 +525,7 @@ class QuestManager {
         if (civInfo == cityState) {
             // Revoke most quest types from the bully
             val revokedQuests = assignedQuests.asSequence()
-                .filter { it.isIndividual() || it.questName == QuestName.Invest.value }
+                .filter { it.assignee == bully.civName && (it.isIndividual() || it.questName == QuestName.Invest.value) }
             assignedQuests.removeAll(revokedQuests)
             if (revokedQuests.count() > 0)
                 bully.addNotification("[${civInfo.civName}] cancelled the quests they had given you because you demanded tribute from them.",

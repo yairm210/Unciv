@@ -143,7 +143,7 @@ object Automation {
             return false
 
         var multiplier = if (civInfo.gameInfo.gameParameters.ragingBarbarians) 1.3f
-            else 1f // We're slightly more afraid of raging barbs
+        else 1f // We're slightly more afraid of raging barbs
 
         // Past the early game we are less afraid
         if (civInfo.gameInfo.turns > 120 * civInfo.gameInfo.gameParameters.gameSpeed.modifier * multiplier)
@@ -156,7 +156,8 @@ object Automation {
         // If we have vision of our entire starting continent (ish) we are not afraid
         civInfo.gameInfo.tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
         val startingContinent = civInfo.getCapital().getCenterTile().getContinent()
-        if (civInfo.gameInfo.tileMap.continentSizes[startingContinent]!! < civInfo.viewableTiles.count() * multiplier)
+        val startingContinentSize = civInfo.gameInfo.tileMap.continentSizes[startingContinent]
+        if (startingContinentSize != null && startingContinentSize < civInfo.viewableTiles.count() * multiplier)
             return false
 
         // Otherwise we're afraid
@@ -172,7 +173,7 @@ object Automation {
             return true
 
         // Spaceships are always allowed
-        if (construction.hasUnique("Spaceship part"))
+        if (construction.hasUnique(UniqueType.SpaceshipPart))
             return true
 
         val requiredResources = construction.getResourceRequirements()
@@ -282,7 +283,6 @@ object Automation {
         if (tile.hasViewableResource(cityInfo.civInfo)) {
             if (tile.tileResource.resourceType != ResourceType.Bonus) score -= 105
             else if (distance <= 3) score -= 104
-            
         } else {
             // Water tiles without resources aren't great
             if (tile.isWater) score += 25
@@ -295,13 +295,10 @@ object Automation {
             tile.getImprovementStats(tile.getTileImprovement()!!, cityInfo.civInfo, cityInfo).values.sum() > 0f
         ) score -= 5
 
-        // The original checks if the tile has a road, but adds a score of 0 if it does.
-        // Therefore, this check is removed here.
-        
         if (tile.naturalWonder != null) score -= 105
 
         // Straight up take the sum of all yields
-        score -= tile.getTileStats(null, cityInfo.civInfo).values.sum().toInt()
+        score -= tile.getTileStats(cityInfo, cityInfo.civInfo).values.sum().toInt()
 
         // Check if we get access to better tiles from this tile
         var adjacentNaturalWonder = false

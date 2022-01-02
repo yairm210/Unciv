@@ -22,6 +22,8 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 
+
+
 class UncivGame(parameters: UncivGameParameters) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
     constructor(version: String) : this(UncivGameParameters(version, null))
@@ -62,6 +64,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
     var isInitialized = false
 
+    /** A wrapped render() method that crashes to [CrashScreen] on a unhandled exception or error. */
+    private val wrappedCrashHandlingRender = { super.render() }.wrapCrashHandlingUnit()
+    // Stored here because I imagine that might be slightly faster than allocating for a new lambda every time, and the render loop is possibly one of the only places where that could have a significant impact.
+
 
     val translations = Translations()
 
@@ -81,8 +87,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
          * ALL objects that were related to the old context - need to be recreated.
          * So far we have:
          * - All textures (hence the texture atlas)
-         * - SpriteBatch (hence CameraStageBaseScreen uses a new SpriteBatch for each screen)
-         * - Skin (hence CameraStageBaseScreen.setSkin())
+         * - SpriteBatch (hence BaseScreen uses a new SpriteBatch for each screen)
+         * - Skin (hence BaseScreen.setSkin())
          * - Font (hence Fonts.resetFont() inside setSkin())
          */
         settings = GameSaver.getGeneralSettings() // needed for the screen
@@ -95,7 +101,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             settings.tileSet = "FantasyHex"
         }
 
-        CameraStageBaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
+        BaseScreen.setSkin() // needs to come AFTER the Texture reset, since the buttons depend on it
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
@@ -128,7 +134,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun loadGame(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
         ImageGetter.setNewRuleset(gameInfo.ruleSet)
-        musicController.setModList(gameInfo.gameParameters.mods)
+        // Clone the mod list and add the base ruleset to it
+        val fullModList = gameInfo.gameParameters.getModsAndBaseRuleset()
+        musicController.setModList(fullModList)
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
         if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1 && !gameInfo.gameParameters.isOnlineMultiplayer)
             setScreen(PlayerReadyScreen(gameInfo, gameInfo.getPlayerToViewAs()))
@@ -138,7 +146,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
-    fun setScreen(screen: CameraStageBaseScreen) {
+    fun setScreen(screen: BaseScreen) {
         Gdx.input.inputProcessor = screen.stage
         super.setScreen(screen)
     }
@@ -164,6 +172,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun resize(width: Int, height: Int) {
         screen.resize(width, height)
     }
+
+    override fun render() = wrappedCrashHandlingRender()
 
     override fun dispose() {
         cancelDiscordEvent?.invoke()
@@ -197,7 +207,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     }
 }
 
-private class LoadingScreen : CameraStageBaseScreen() {
+private class LoadingScreen : BaseScreen() {
     init {
         val happinessImage = ImageGetter.getExternalImage("LoadScreen.png")
         happinessImage.center(stage)

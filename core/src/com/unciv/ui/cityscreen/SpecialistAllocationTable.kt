@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.ui.utils.*
 
-class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBaseScreen.skin){
+class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.skin){
     val cityInfo = cityScreen.city
 
     fun update() {

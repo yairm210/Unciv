@@ -1,12 +1,10 @@
 package com.unciv.models.ruleset
 
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
-import com.unciv.ui.civilopedia.ICivilopediaText
 import kotlin.collections.ArrayList
 
 class Belief : RulesetObject() {
@@ -30,7 +28,8 @@ class Belief : RulesetObject() {
         if (type != BeliefType.None)
             textList += FormattedLine("{Type}: $type", color = type.color, centered = centerType)
         uniqueObjects.forEach {
-            textList += FormattedLine(it)
+            if (!it.hasFlag(UniqueFlag.HiddenToUsers))
+                textList += FormattedLine(it)
         }
         return textList
     }

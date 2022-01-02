@@ -16,6 +16,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.io.Writer
@@ -170,11 +171,14 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             var count = 0
             for (gameFile in gameFiles) {
                 try {
-                    gameIds[count] = GameSaver.getGameIdFromFile(gameFile)
-                    gameNames[count] = gameFile.name()
-                    count++
-                } catch (ex: Exception) {
-                    //only getGameIdFromFile can throw an exception
+                    val gamePreview = GameSaver.loadGamePreviewFromFile(gameFile)
+                    if (gamePreview.turnNotification) {
+                        gameIds[count] = gamePreview.gameId
+                        gameNames[count] = gameFile.name()
+                        count++
+                    }
+                } catch (ex: Throwable) {
+                    //only loadGamePreviewFromFile can throw an exception
                     //nothing will be added to the arrays if it fails
                     //just skip one file
                 }
@@ -231,35 +235,47 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             var arrayIndex = 0
             // We only want to notify the user or update persisted notification once but still want
             // to download all games to update the files hence this bool
-            var foundGame = false
+            var foundGame = ""
 
             for (gameId in gameIds){
                 //gameId could be an empty string if startTurnChecker fails to load all files
                 if (gameId.isEmpty())
                     continue
 
-                val game = OnlineMultiplayer().tryDownloadGameUninitialized(gameId)
-                val currentTurnPlayer = game.getCivilization(game.currentPlayer)
+                try {
+                    val gamePreview = OnlineMultiplayer().tryDownloadGamePreview(gameId)
+                    val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 
-                //Save game so MultiplayerScreen gets updated
-                /*
-                I received multiple reports regarding broken save games.
-                All of them where missing a few thousand chars at the end of the save game.
-                I assume this happened because the TurnCheckerWorker gets canceled by the AndroidLauncher
-                while saves are getting saved right here.
-                 */
-                //GameSaver.saveGame(game, gameNames[arrayIndex], true)
+                    //Save game so MultiplayerScreen gets updated
+                    /*
+                    I received multiple reports regarding broken save games.
+                    All of them where missing a few thousand chars at the end of the save game.
+                    I assume this happened because the TurnCheckerWorker gets canceled by the AndroidLauncher
+                    while saves are getting saved right here.
+                    Lets hope it works with gamePreview as they are a lot smaller and faster to save
+                    Well they don't work either ¯\_(ツ)_/¯
+                    I will have to find a different way (see #5756 for more info)
+                     */
+                    //GameSaver.saveGame(gamePreview, gameNames[arrayIndex])
 
-                if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!!) {
-                    foundGame = true
-                    //As we do not need to look any further we can just break here
-                    break
+                    if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame.isEmpty()) {
+                        // We only save the first found game as the player will go into the
+                        // multiplayer screen anyway to join the game and see the other ones
+                        foundGame = gameNames[arrayIndex]
+                    }
+                    arrayIndex++
+                } catch (ex: FileNotFoundException){
+                    // FileNotFoundException is thrown by OnlineMultiplayer().tryDownloadGamePreview(gameId)
+                    // and indicates that there is no game preview present for this game
+                    // in the dropbox so we should not check for this game in the future anymore
+                    val currentGamePreview = GameSaver.loadGamePreviewByName(gameNames[arrayIndex])
+                    currentGamePreview.turnNotification = false
+                    GameSaver.saveGame(currentGamePreview, gameNames[arrayIndex])
                 }
-                arrayIndex++
             }
 
-            if (foundGame){
-                notifyUserAboutTurn(applicationContext, gameNames[arrayIndex])
+            if (foundGame.isNotEmpty()){
+                notifyUserAboutTurn(applicationContext, foundGame)
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }
@@ -287,6 +303,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 val inputDataFailIncrease = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, failCount + 1).build()
                 enqueue(applicationContext, 1, inputDataFailIncrease)
             }
+        } catch (outOfMemory: OutOfMemoryError){ // no point in trying multiple times if this was an oom error
+            return Result.failure()
         }
         return Result.success()
     }

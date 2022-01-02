@@ -6,10 +6,8 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.VictoryType
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import kotlin.math.min
 import kotlin.random.Random
 
@@ -63,22 +61,23 @@ object ChooseBeliefsAutomation {
         val ruleSet = civInfo.gameInfo.ruleSet
         for (unique in belief.uniqueObjects) {
             var modifier = 1f
-            if (unique.conditionals.any { it.placeholderText == "when at war" || it.placeholderText == "when not at war" })
+            if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalWar) || it.isOfType(UniqueType.ConditionalNotWar) })
                 modifier *= 0.5f 
             // Multiply by 3/10 if has an obsoleted era
             // Multiply by 2 if enough pop/followers (best implemented with conditionals, so left open for now)
             // If obsoleted, continue
             score += modifier * when (unique.placeholderText) {
-                "[] growth []" -> unique.params[0].toFloat() / 3f
+                UniqueType.GrowthPercentBonus.placeholderText -> unique.params[0].toFloat() / 3f
                 "[]% cost of natural border growth" -> -unique.params[0].toFloat() * 2f / 10f
                 "[]% attacking Strength for cities" -> unique.params[0].toFloat() / 10f // Modified by personality
                 "[] Units adjacent to this city heal [] HP per turn when healing" -> unique.params[1].toFloat() / 10f
                 "+[]% Production when constructing []" -> unique.params[0].toFloat() / 3f
-                "[] in cities on [] tiles" -> 
+                UniqueType.StatsFromCitiesOnSpecificTiles.placeholderText ->
                     if (city.getCenterTile().matchesFilter(unique.params[1])) 
                         unique.stats.values.sum() // Modified by personality 
                     else 0f
-                UniqueType.StatsFromObject.placeholderText, "[] from every [] in cities where this religion has at least [] followers" ->
+                UniqueType.StatsFromObject.placeholderText,
+                "[] from every [] in cities where this religion has at least [] followers" ->
                     when {
                         ruleSet.buildings.containsKey(unique.params[1]) -> {
                             unique.stats.values.sum() / 
@@ -93,7 +92,7 @@ object ChooseBeliefsAutomation {
                         }
                         else -> 0f
                     }
-                "[] in cities with [] or more population", "[] if this city has at least [] specialists" -> 
+                UniqueType.StatsFromXPopulation.placeholderText ->
                     unique.stats.values.sum() // Modified by personality
                 "[] from each Trade Route" ->
                     unique.stats.values.sum() *
@@ -101,7 +100,7 @@ object ChooseBeliefsAutomation {
                         else 1f
                 "[]% [] from every follower, up to []%" -> 
                     min(unique.params[0].toFloat() * city.population.population, unique.params[2].toFloat()) 
-                "[] []" ->
+                UniqueType.StatsPerCity.placeholderText ->
                     if (city.matchesFilter(unique.params[1]))
                         unique.stats.values.sum()
                     else 0f
@@ -168,13 +167,13 @@ object ChooseBeliefsAutomation {
                     unique.stats.values.sum() / 2f
                 "[]% Natural religion spread to []" ->
                     unique.params[0].toFloat() / 4f
-                "[]% Strength" ->
+                UniqueType.Strength.placeholderText ->
                     unique.params[0].toInt() / 4f
                 "Religion naturally spreads to cities [] tiles away" ->
                     (10 + unique.params[0].toInt()) / goodEarlyModifier
                 "[]% Natural religion spread []", "[]% Natural religion spread [] with []" ->
                     (10 + unique.params[0].toInt()) / goodEarlyModifier
-                "[]% Spread Religion Strength" ->
+                UniqueType.SpreadReligionStrength.placeholderText ->
                     unique.params[0].toInt() / goodLateModifier
                 "[]% Faith cost of generating Great Prophet equivalents" ->
                     unique.params[0].toInt() / goodLateModifier / 2f    

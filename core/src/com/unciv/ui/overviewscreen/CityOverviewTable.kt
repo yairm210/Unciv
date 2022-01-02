@@ -135,11 +135,17 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
 
         val constructionCells: MutableList<Cell<Label>> = mutableListOf()
         for (city in cityList) {
-            val button = Button(city.name.toLabel(), CameraStageBaseScreen.skin)
+            val button = Button(city.name.toLabel(), BaseScreen.skin)
             button.onClick {
                 overviewScreen.game.setScreen(CityScreen(city))
             }
             citiesTable.add(button)
+
+            if (city.cityConstructions.currentConstructionFromQueue.length > 0) {
+                citiesTable.add(ImageGetter.getConstructionImage(city.cityConstructions.currentConstructionFromQueue).surroundWithCircle(iconSize*0.8f)).padRight(paddingHorz)
+            } else {
+                citiesTable.add()
+            }
 
             val cell = citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton().toLabel())
             constructionCells.add(cell)

@@ -12,10 +12,10 @@ import com.unciv.UncivGame
  * @param restoreDefault A lambda to execute when "No" is chosen
  */
 open class YesNoPopup (
-            question: String,
-            action: ()->Unit,
-            screen: CameraStageBaseScreen = UncivGame.Current.worldScreen,
-            restoreDefault: ()->Unit = {}
+    question: String,
+    action: ()->Unit,
+    screen: BaseScreen = UncivGame.Current.worldScreen,
+    restoreDefault: ()->Unit = {}
         ) : Popup(screen) {
 
     /** The [Label][com.badlogic.gdx.scenes.scene2d.ui.Label] created for parameter `question` for optional layout tweaking */
@@ -31,7 +31,7 @@ open class YesNoPopup (
 }
 
 /** Shortcut to open a [YesNoPopup] with the exit game question */
-class ExitGamePopup(screen: CameraStageBaseScreen, force: Boolean = false)
+class ExitGamePopup(screen: BaseScreen, force: Boolean = false)
     : YesNoPopup (
         question = "Do you want to exit the game?",
         action = { Gdx.app.exit() },

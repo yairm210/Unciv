@@ -29,20 +29,32 @@ object GameStarter {
         val gameInfo = GameInfo()
         lateinit var tileMap: TileMap
 
-        // In the case where we used to have a mod, and now we don't, we cannot "unselect" it in the UI.
+        // In the case where we used to have an extension mod, and now we don't, we cannot "unselect" it in the UI.
         // We need to remove the dead mods so there aren't problems later.
         gameSetupInfo.gameParameters.mods.removeAll { !RulesetCache.containsKey(it) }
+        
+        // [TEMPORARY] If we have a base ruleset in the mod list, we make that our base ruleset
+        val baseRulesetInMods = gameSetupInfo.gameParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+        if (baseRulesetInMods != null)
+            gameSetupInfo.gameParameters.baseRuleset = baseRulesetInMods
 
+        if (!RulesetCache.containsKey(gameSetupInfo.gameParameters.baseRuleset))
+            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getBaseRuleset().name
+        
         gameInfo.gameParameters = gameSetupInfo.gameParameters
-        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
+        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)
         val mapGen = MapGenerator(ruleset)
 
         if (gameSetupInfo.mapParameters.name != "") runAndMeasure("loadMap") {
             tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
             // Don't override the map parameters - this can include if we world wrap or not!
         } else runAndMeasure("generateMap") {
-            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters)
+            // The mapgen needs to know what civs are in the game to generate regions, starts and resources
+            addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset, existingMap = false)
+            tileMap = mapGen.generateMap(gameSetupInfo.mapParameters, gameInfo.civilizations)
             tileMap.mapParameters = gameSetupInfo.mapParameters
+            // Now forget them for a moment! MapGen can silently fail to place some city states, so then we'll use the old fallback method to place those.
+            gameInfo.civilizations.clear()
         }
 
         runAndMeasure("addCivilizations") {
@@ -52,7 +64,8 @@ object GameStarter {
             addCivilizations(
                 gameSetupInfo.gameParameters,
                 gameInfo,
-                ruleset
+                ruleset,
+                existingMap = true
             ) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
         }
 
@@ -169,7 +182,7 @@ object GameStarter {
         }
     }
 
-    private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset) {
+    private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset, existingMap: Boolean) {
         val availableCivNames = Stack<String>()
         // CityState or Spectator civs are not available for Random pick
         availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
@@ -183,9 +196,16 @@ object GameStarter {
             gameInfo.civilizations.add(barbarianCivilization)
         }
 
+        val civNamesWithStartingLocations = if(existingMap) gameInfo.tileMap.startingLocationsByNation.keys
+            else emptySet()
+        val presetMajors = Stack<String>()
+        presetMajors.addAll(availableCivNames.filter { it in civNamesWithStartingLocations })
+
         for (player in newGameParameters.players.sortedBy { it.chosenCiv == "Random" }) {
             val nationName = if (player.chosenCiv != "Random") player.chosenCiv
+            else if (presetMajors.isNotEmpty()) presetMajors.pop()
             else availableCivNames.pop()
+            availableCivNames.remove(nationName) // In case we got it from a map preset
 
             val playerCiv = CivilizationInfo(nationName)
             for (tech in startingTechs)
@@ -194,8 +214,6 @@ object GameStarter {
             playerCiv.playerId = player.playerId
             gameInfo.civilizations.add(playerCiv)
         }
-
-        val civNamesWithStartingLocations = gameInfo.tileMap.startingLocationsByNation.keys
 
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
@@ -207,16 +225,7 @@ object GameStarter {
                 !it.value.hasUnique(UniqueType.CityStateDeprecated)
             }.keys
             .shuffled()
-            .sortedByDescending { it in civNamesWithStartingLocations } )
-
-
-        val allMercantileResources = ruleset.tileResources.values.filter {
-            it.unique == "Can only be created by Mercantile City-States" // Deprecated as of 3.16.16
-                || it.hasUnique(UniqueType.CityStateOnlyResource) }.map { it.name }
-
-
-        val unusedMercantileResources = Stack<String>()
-        unusedMercantileResources.addAll(allMercantileResources.shuffled())
+            .sortedBy { it in civNamesWithStartingLocations } ) // pop() gets the last item, so sort ascending
 
         var addedCityStates = 0
         // Keep trying to add city states until we reach the target number.
@@ -226,7 +235,7 @@ object GameStarter {
 
             val cityStateName = availableCityStatesNames.pop()
             val civ = CivilizationInfo(cityStateName)
-            if (civ.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {
+            if (civ.cityStateFunctions.initCityState(ruleset, newGameParameters.startingEra, availableCivNames)) {
                 gameInfo.civilizations.add(civ)
                 addedCityStates++
             }
@@ -268,14 +277,6 @@ object GameStarter {
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
-
-            if(civ.isMajorCiv() && startScores[startingLocation]!! < 45) {
-                // An unusually bad spawning location
-                addConsolationPrize(gameInfo, startingLocation, 45 - startingLocation.getTileStartScore().toInt())
-            }
-
-            if(civ.isCityState())
-                addCityStateLuxury(gameInfo, startingLocation)
 
             for (tile in startingLocation.getTilesInDistance(3)) {
                 if (tile.improvement != null
@@ -446,52 +447,5 @@ object GameStarter {
             }
         }
         return preferredTiles.lastOrNull() ?: freeTiles.last()
-    }
-
-    private fun addConsolationPrize(gameInfo: GameInfo, spawn: TileInfo, points: Int) {
-        val relevantTiles = spawn.getTilesInDistanceRange(1..2).shuffled()
-        var addedPoints = 0
-        var addedBonuses = 0
-
-        for (tile in relevantTiles) {
-            if (addedPoints >= points || addedBonuses >= 4) // At some point enough is enough
-                break
-            if (tile.resource != null || tile.baseTerrain == Constants.snow)    // Snow is quite irredeemable
-                continue
-
-            val bonusToAdd = gameInfo.ruleSet.tileResources.values
-                .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) && it.resourceType == ResourceType.Bonus }
-                .randomOrNull()
-
-            if (bonusToAdd != null) {
-                tile.resource = bonusToAdd.name
-                addedPoints += (bonusToAdd.food + bonusToAdd.production + bonusToAdd.gold + 1).toInt()  // +1 because resources can be improved
-                addedBonuses++
-            }
-        }
-    }
-
-    private fun addCityStateLuxury(gameInfo: GameInfo, spawn: TileInfo) {
-        // Every city state should have at least one luxury to trade
-        val relevantTiles = spawn.getTilesInDistance(2).shuffled()
-
-        for (tile in relevantTiles) {
-            if(tile.resource != null && tile.tileResource.resourceType == ResourceType.Luxury)
-                return  // At least one luxury; all set
-        }
-
-        for (tile in relevantTiles) {
-            // Add a luxury to the first eligible tile
-            if (tile.resource != null)
-                continue
-
-            val luxuryToAdd = gameInfo.ruleSet.tileResources.values
-                .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) && it.resourceType == ResourceType.Luxury }
-                .randomOrNull()
-            if (luxuryToAdd != null) {
-                tile.resource = luxuryToAdd.name
-                return
-            }
-        }
     }
 }

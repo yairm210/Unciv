@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
@@ -70,6 +71,9 @@ class TileMap {
 
     @delegate:Transient
     val naturalWonders: List<String> by lazy { tileList.asSequence().filter { it.isNaturalWonder() }.map { it.naturalWonder!! }.distinct().toList() }
+
+    @delegate:Transient
+    val resources: List<String> by lazy { tileList.asSequence().filter { it.resource != null }.map { it.resource!! }.distinct().toList() }
 
     // Excluded from Serialization by having no own backing field
     val values: Collection<TileInfo>
@@ -195,6 +199,27 @@ class TileMap {
                         yield(getIfTileExistsOrNull(currentX, currentY))
                         yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
                         currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
+                    }
+                }.filterNotNull()
+
+    /** @return all tiles within [rectangle], respecting world edges and wrap.
+     *  If using even Q coordinates the rectangle will be "straight" ie parallel with rectangular map edges. */
+    fun getTilesInRectangle(rectangle: Rectangle, evenQ: Boolean = false): Sequence<TileInfo> =
+            if (rectangle.width <= 0 || rectangle.height <= 0)
+                sequenceOf(get(rectangle.x.toInt(), rectangle.y.toInt()))
+            else
+                sequence {
+                    for (x in 0 until rectangle.width.toInt()) {
+                        for (y in 0 until rectangle.height.toInt()) {
+                            val currentX = rectangle.x + x
+                            val currentY = rectangle.y + y
+                            if (evenQ) {
+                                val hexCoords = HexMath.evenQ2HexCoords(Vector2(currentX, currentY))
+                                yield(getIfTileExistsOrNull(hexCoords.x.toInt(), hexCoords.y.toInt()))
+                            }
+                            else
+                                yield(getIfTileExistsOrNull(currentX.toInt(), currentY.toInt()))
+                        }
                     }
                 }.filterNotNull()
 
@@ -349,11 +374,17 @@ class TileMap {
      *  Is run before setTransients, so make do without startingLocationsByNation
      */
     fun getRulesetIncompatibility(ruleset: Ruleset): HashSet<String> {
-        setTransients(ruleset)
-        setStartingLocationsTransients()
         val rulesetIncompatibilities = HashSet<String>()
         for (set in values.map { it.getRulesetIncompatibility(ruleset) })
             rulesetIncompatibilities.addAll(set)
+
+        // All the rest is to find missing nations
+        try { // This can fail if the map contains a resource that isn't in the ruleset, in TileInfo.tileResource
+            setTransients(ruleset)
+        } catch (ex: Exception) {
+            return rulesetIncompatibilities
+        }
+        setStartingLocationsTransients()
         for ((_, nationName) in startingLocations) {
             if (nationName !in ruleset.nations)
                 rulesetIncompatibilities.add("Nation [$nationName] does not exist in ruleset!")
@@ -407,6 +438,20 @@ class TileMap {
         }
     }
 
+    fun removeMissingTerrainModReferences(ruleSet: Ruleset) {
+        for (tile in this.values) {
+            for (terrainFeature in tile.terrainFeatures.filter { !ruleSet.terrains.containsKey(it) })
+                tile.terrainFeatures.remove(terrainFeature)
+            if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
+                tile.resource = null
+            if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
+                tile.improvement = null
+        }
+        for (startingLocation in startingLocations.toList())
+            if (startingLocation.nation !in ruleSet.nations.keys)
+                startingLocations.remove(startingLocation)
+    }
+
     /** Tries to place the [unitName] into the [TileInfo] closest to the given [position]
      * @param position where to try to place the unit (or close - max 10 tiles distance)
      * @param unitName name of the [BaseUnit][com.unciv.models.ruleset.unit.BaseUnit] to create and place
@@ -457,6 +502,7 @@ class TileMap {
         // only once we know the unit can be placed do we add it to the civ's unit list
         unit.putInTile(unitToPlaceTile)
         unit.currentMovement = unit.getMaxMovement().toFloat()
+        unit.addMovementMemory()
 
         // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
         for (promotion in unit.baseUnit.promotions)

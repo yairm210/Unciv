@@ -6,21 +6,25 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
+import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
+
 
 /**
  * The immutable properties and mutable game state of an individual unit present on the map
@@ -144,7 +148,7 @@ class MapUnit {
 
     fun shortDisplayName(): String {
         return if (instanceName != null) "[$instanceName]"
-            else "[$name]" 
+            else "[$name]"
     }
 
     var currentMovement: Float = 0f
@@ -165,6 +169,48 @@ class MapUnit {
     var religion: String? = null
     var religiousStrengthLost = 0
 
+    /**
+     * Container class to represent a single instant in a [MapUnit]'s recent movement history.
+     *
+     * @property position Position on the map at this instant.
+     * @property type Category of the last change in position that brought the unit to this position.
+     * @see [movementMemories]
+     * */
+    class UnitMovementMemory() {
+        constructor(position: Vector2, type: UnitMovementMemoryType): this() {
+            this.position = position
+            this.type = type
+        }
+        lateinit var position: Vector2
+        lateinit var type: UnitMovementMemoryType
+        fun clone() = UnitMovementMemory(Vector2(position), type)
+        override fun toString() = "${this::class.simpleName}($position, $type)"
+    }
+
+    /** Deep clone an ArrayList of [UnitMovementMemory]s. */
+    private fun ArrayList<UnitMovementMemory>.copy() = ArrayList(this.map { it.clone() })
+
+    /** FIFO list of this unit's past positions. Should never exceed two items in length. New item added once at end of turn and once at start, to allow rare between-turn movements like melee withdrawal to be distinguished. Used in movement arrow overlay. */
+    var movementMemories = ArrayList<UnitMovementMemory>()
+
+    /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
+    fun addMovementMemory() {
+        movementMemories.add(UnitMovementMemory(Vector2(getTile().position), mostRecentMoveType))
+        while (movementMemories.size > 2) { // O(n) but n == 2.
+            // Keep at most one arrow segment— A lot of the time even that won't be rendered because the two positions will be the same.
+            // When in the unit's turn— I.E. For a player unit— The last two entries will be from .endTurn() followed by from .startTurn(), so the segment from .movementMemories will have zero length. Instead, what gets seen will be the segment from the end of .movementMemories to the unit's current position.
+            // When not in the unit's turn— I.E. For a foreign unit— The segment from the end of .movementMemories to the unit's current position will have zero length, while the last two entries here will be from .startTurn() followed by .endTurn(), so the segment here will be what gets shown.
+            // The exception is when a unit changes position when not in its turn, such as by melee withdrawal or foreign territory expulsion. Then the segment here and the segment from the end of here to the current position can both be shown.
+            movementMemories.removeFirst()
+        }
+    }
+
+    /** The most recent type of position change this unit has experienced. Used in movement arrow overlay.*/
+    var mostRecentMoveType = UnitMovementMemoryType.UnitMoved
+
+    /** Array list of all the tiles that this unit has attacked since the start of its most recent turn. Used in movement arrow overlay. */
+    var attacksSinceTurnStart = ArrayList<Vector2>()
+
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
@@ -184,6 +230,9 @@ class MapUnit {
         toReturn.maxAbilityUses.putAll(maxAbilityUses)
         toReturn.religion = religion
         toReturn.religiousStrengthLost = religiousStrengthLost
+        toReturn.movementMemories = movementMemories.copy()
+        toReturn.mostRecentMoveType = mostRecentMoveType
+        toReturn.attacksSinceTurnStart = ArrayList(attacksSinceTurnStart.map { Vector2(it) })
         return toReturn
     }
 
@@ -202,6 +251,9 @@ class MapUnit {
     @Transient
     private var tempUniques = ArrayList<Unique>()
 
+    @Transient
+    private var tempUniquesMap = UniqueMapTyped()
+
     fun getUniques(): ArrayList<Unique> = tempUniques
 
     fun getMatchingUniques(placeholderText: String): Sequence<Unique> =
@@ -212,9 +264,11 @@ class MapUnit {
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
         checkCivInfoUniques:Boolean = false
     ) = sequence {
-        yieldAll(tempUniques.asSequence()
-            .filter { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
-        )
+        val tempUniques = tempUniquesMap[uniqueType]
+        if (tempUniques != null)
+            yieldAll(
+                tempUniques.filter { it.conditionalsApply(stateForConditionals) }
+            )
         if (checkCivInfoUniques)
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
     }
@@ -225,7 +279,7 @@ class MapUnit {
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals
             = StateForConditionals(civInfo, unit=this)): Boolean {
-        return tempUniques.any { it.type == uniqueType && it.conditionalsApply(stateForConditionals) }
+        return getMatchingUniques(uniqueType, stateForConditionals).any()
     }
 
     fun updateUniques(ruleset: Ruleset) {
@@ -239,6 +293,11 @@ class MapUnit {
         }
 
         tempUniques = uniques
+        val newUniquesMap = UniqueMapTyped()
+        for (unique in uniques)
+            if (unique.type != null)
+                newUniquesMap.addUnique(unique)
+        tempUniquesMap = newUniquesMap
 
         allTilesCosts1 = hasUnique(UniqueType.AllTilesCost1Move)
         canPassThroughImpassableTiles = hasUnique(UniqueType.CanPassImpassable)
@@ -247,20 +306,6 @@ class MapUnit {
         roughTerrainPenalty = hasUnique(UniqueType.RoughTerrainPenalty)
 
         doubleMovementInTerrain.clear()
-        // Cache the deprecated uniques
-        if (hasUnique(UniqueType.DoubleMovementCoast)) {
-            doubleMovementInTerrain[Constants.coast] = DoubleMovementTerrainTarget.Base
-        }
-        if (hasUnique(UniqueType.DoubleMovementForestJungle)) {
-            doubleMovementInTerrain[Constants.forest] = DoubleMovementTerrainTarget.Feature
-            doubleMovementInTerrain[Constants.jungle] = DoubleMovementTerrainTarget.Feature
-        }
-        if (hasUnique(UniqueType.DoubleMovementSnowTundraHill)) {
-            doubleMovementInTerrain[Constants.snow] = DoubleMovementTerrainTarget.Base
-            doubleMovementInTerrain[Constants.tundra] = DoubleMovementTerrainTarget.Base
-            doubleMovementInTerrain[Constants.hill] = DoubleMovementTerrainTarget.Feature
-        }
-        // Now the current unique
         for (unique in getMatchingUniques(UniqueType.DoubleMovementOnTerrain)) {
             val param = unique.params[0]
             val terrain = ruleset.terrains[param]
@@ -274,7 +319,7 @@ class MapUnit {
         }
         // Init shortcut flags
         noTerrainMovementUniques = doubleMovementInTerrain.isEmpty() &&
-            !roughTerrainPenalty && !civInfo.nation.ignoreHillMovementCost
+                !roughTerrainPenalty && !civInfo.nation.ignoreHillMovementCost
         noBaseTerrainOrHillDoubleMovementUniques = doubleMovementInTerrain
             .none { it.value != DoubleMovementTerrainTarget.Feature }
         noFilteredDoubleMovementUniques = doubleMovementInTerrain
@@ -282,13 +327,14 @@ class MapUnit {
 
         //todo: consider parameterizing [terrainFilter] in some of the following:
         canEnterIceTiles = hasUnique(UniqueType.CanEnterIceTiles)
-        cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean)
-        cannotEnterOceanTilesUntilAstronomy = hasUnique(UniqueType.CannotEnterOceanUntilAstronomy)
+        cannotEnterOceanTiles = hasUnique(UniqueType.CannotEnterOcean, StateForConditionals(civInfo=civInfo, unit=this))
+        // Deprecated as of 3.18.6
+            cannotEnterOceanTilesUntilAstronomy = hasUnique(UniqueType.CannotEnterOceanUntilAstronomy)
+        //
 
         hasUniqueToBuildImprovements = hasUnique(UniqueType.BuildImprovements)
-        canEnterForeignTerrain =
-            hasUnique("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
-                    || hasUnique("May enter foreign tiles without open borders")
+        canEnterForeignTerrain = hasUnique(UniqueType.CanEnterForeignTiles)
+            || hasUnique(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
     }
 
     fun copyStatisticsTo(newUnit: MapUnit) {
@@ -316,17 +362,6 @@ class MapUnit {
         movement += getMatchingUniques(UniqueType.Movement, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
-        // Deprecated since 3.17.5
-            for (unique in getMatchingUniques(UniqueType.MovementUnits, checkCivInfoUniques = true))
-                if (matchesFilter(unique.params[1]))
-                    movement += unique.params[0].toInt()
-    
-            if (civInfo.goldenAges.isGoldenAge() &&
-                civInfo.hasUnique(UniqueType.MovementGoldenAge)
-            )
-                movement += 1
-        //
-
         
         if (movement < 1) movement = 1
 
@@ -347,24 +382,13 @@ class MapUnit {
             return 1
         }
         
-        visibilityRange += getMatchingUniques(UniqueType.Sight, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
+        visibilityRange += getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true)
+            .sumOf { it.params[0].toInt() }
 
-        // Deprecated since 3.17.5
-            for (unique in getMatchingUniques(UniqueType.SightUnits))
-                if (matchesFilter(unique.params[1]))
-                    visibilityRange += unique.params[0].toInt()
+        visibilityRange += getTile().getAllTerrains()
+            .flatMap { it.getMatchingUniques(UniqueType.Sight, conditionalState) }
+            .sumOf { it.params[0].toInt() }
         
-        
-            visibilityRange += getMatchingUniques(UniqueType.VisibilityRange).sumOf { it.params[0].toInt() }
-        
-            if (hasUnique(UniqueType.LimitedVisibility)) visibilityRange -= 1
-        //
-
-        // Maybe add the uniques of the tile a unit is standing on to the tempUniques of the unit?
-        for (unique in getTile().getAllTerrains().flatMap { it.uniqueObjects })
-            if (unique.placeholderText == "[] Sight for [] units" && matchesFilter(unique.params[1]))
-                visibilityRange += unique.params[0].toInt()
-
         if (visibilityRange < 1) visibilityRange = 1
 
         return visibilityRange
@@ -375,7 +399,7 @@ class MapUnit {
      */
     fun updateVisibleTiles() {
         if (baseUnit.isAirUnit()) {
-            viewableTiles = if (hasUnique("6 tiles in every direction always visible"))
+            viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
                 getTile().getTilesInDistance(6).toList()  // it's that simple
             else listOf() // bomber units don't do recon
             civInfo.updateViewableTiles() // for the civ
@@ -472,18 +496,23 @@ class MapUnit {
      * Used for upgrading units via ancient ruins.
      */
     fun canUpgrade(unitToUpgradeTo: BaseUnit = getUnitToUpgradeTo(), ignoreRequired: Boolean = false): Boolean {
-        // We need to remove the unit from the civ for this check,
-        // because if the unit requires, say, horses, and so does its upgrade,
-        // and the civ currently has 0 horses,
-        // if we don't remove the unit before the check it's return false!
-
         if (name == unitToUpgradeTo.name) return false
-        civInfo.removeUnit(this)
-        val canUpgrade = 
-            if (ignoreRequired) unitToUpgradeTo.isBuildableIgnoringTechs(civInfo)
-            else unitToUpgradeTo.isBuildable(civInfo)
-        civInfo.addUnit(this)
-        return canUpgrade
+        val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
+        if (rejectionReasons.isEmpty()) return true
+
+        if (rejectionReasons.size == 1 && rejectionReasons.contains(RejectionReason.ConsumesResources)) {
+            // We need to remove the unit from the civ for this check,
+            // because if the unit requires, say, horses, and so does its upgrade,
+            // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
+            // WHEN THE CURRENT UNIT IS NOT HERE
+            civInfo.removeUnit(this)
+            val canUpgrade =
+                if (ignoreRequired) unitToUpgradeTo.isBuildableIgnoringTechs(civInfo)
+                else unitToUpgradeTo.isBuildable(civInfo)
+            civInfo.addUnit(this)
+            return canUpgrade
+        }
+        return false
     }
 
     fun getCostOfUpgrade(): Int {
@@ -525,6 +554,7 @@ class MapUnit {
         return getMatchingUniques("All adjacent units heal [] HP when healing").sumOf { it.params[0].toInt() }
     }
 
+    // Only military land units can truly "garrison"
     fun canGarrison() = baseUnit.isMilitary() && baseUnit.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
@@ -709,8 +739,6 @@ class MapUnit {
     }
 
     fun endTurn() {
-        doAction()
-
         if (currentMovement > 0 &&
             getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
@@ -739,13 +767,13 @@ class MapUnit {
         if (isPreparingParadrop())
             action = null
 
-        if (hasUnique("Religious Unit")
+        if (hasUnique(UniqueType.ReligiousUnit)
             && getTile().getOwner() != null
             && !getTile().getOwner()!!.isCityState()
             && !civInfo.canPassThroughTiles(getTile().getOwner()!!)
         ) {
             val lostReligiousStrength =
-                getMatchingUniques("May enter foreign tiles without open borders, but loses [] religious strength each turn it ends there")
+                getMatchingUniques(UniqueType.CanEnterForeignTilesButLosesReligiousStrength)
                     .map { it.params[0].toInt() }
                     .minOrNull()
             if (lostReligiousStrength != null)
@@ -758,6 +786,8 @@ class MapUnit {
 
         doCitadelDamage()
         doTerrainDamage()
+
+        addMovementMemory()
     }
 
     fun startTurn() {
@@ -791,9 +821,14 @@ class MapUnit {
         val tileOwner = getTile().getOwner()
         if (tileOwner != null && !canEnterForeignTerrain && !civInfo.canPassThroughTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movement.teleportToClosestMoveableTile()
+
+        addMovementMemory()
+        attacksSinceTurnStart.clear()
     }
 
     fun destroy() {
+        val currentPosition = Vector2(getTile().position)
+        civInfo.attacksSinceTurnStart.addAll(attacksSinceTurnStart.asSequence().map { CivilizationInfo.HistoricalAttackMemory(this.name, currentPosition, it) })
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
@@ -969,7 +1004,7 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        return getUniques().filter { it.placeholderText == "[]% Damage when intercepting"}
+        return getMatchingUniques("[]% Damage when intercepting")
             .sumOf { it.params[0].toInt() }
     }
 
@@ -1068,6 +1103,8 @@ class MapUnit {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, tile: TileInfo = currentTile): Boolean {
+        // Workers (and similar) should never be able to (instantly) construct things, only build them
+        if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) return false
         val matchingUniques = getMatchingUniques(UniqueType.BuildImprovements)
         return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
@@ -1111,12 +1148,6 @@ class MapUnit {
 
     fun getPressureAddedFromSpread(): Int {
         var pressureAdded = baseUnit.religiousStrength.toFloat()
-
-        // Deprecated since 3.17.5
-            for (unique in civInfo.getMatchingUniques(UniqueType.SpreadReligionStrengthUnits))
-                if (matchesFilter(unique.params[0]))
-                    pressureAdded *= unique.params[0].toPercent()
-        //
 
         for (unique in getMatchingUniques(UniqueType.SpreadReligionStrength, checkCivInfoUniques = true))
             pressureAdded *= unique.params[0].toPercent()

@@ -128,7 +128,7 @@
     {
         "name": "Cathedrals",
         "type": "Follower",
-        "uniques": ["May buy [Cathedral] buildings for [200] [Faith] [in cities following this religion]"]
+        "uniques": ["May buy [Cathedral] buildings with [Faith] [in cities following this religion]"]
     },
     {
         "name": "Choral Music",
@@ -163,17 +163,17 @@
     {
         "name": "Monasteries",
         "type": "Follower",
-        "uniques": ["May buy [Monastery] buildings for [200] [Faith] [in cities following this religion]"]
+        "uniques": ["May buy [Monastery] buildings with [Faith] [in cities following this religion]"]
     },
     {
         "name": "Mosques",
         "type": "Follower",
-        "uniques": ["May buy [Mosque] buildings for [200] [Faith] [in cities following this religion]"]
+        "uniques": ["May buy [Mosque] buildings with [Faith] [in cities following this religion]"]
     },
     {
         "name": "Pagodas",
         "type": "Follower",
-        "uniques": ["May buy [Pagoda] buildings for [200] [Faith] [in cities following this religion]"]
+        "uniques": ["May buy [Pagoda] buildings with [Faith] [in cities following this religion]"]
     },
     {
         "name": "Peace Gardens",

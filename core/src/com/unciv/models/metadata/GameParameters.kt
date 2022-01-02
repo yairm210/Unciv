@@ -2,10 +2,13 @@ package com.unciv.models.metadata
 
 import com.unciv.Constants
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
 
 enum class BaseRuleset(val fullName:String){
     Civ_V_Vanilla("Civ V - Vanilla"),
+    Civ_V_GnK("Civ V - Gods & Kings"),
 }
 
 class GameParameters { // Default values are the default new game
@@ -24,13 +27,15 @@ class GameParameters { // Default values are the default new game
     var nuclearWeaponsEnabled = true
     var religionEnabled = false
 
-    // By default, all victory types except Diplomacy as it is quite new
+    // By default, all victory types except Diplomacy and time as they are quite new
     var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific)  
     var startingEra = "Ancient era"
 
     var isOnlineMultiplayer = false
-    var baseRuleset: BaseRuleset = BaseRuleset.Civ_V_Vanilla
+    var baseRuleset: String = BaseRuleset.Civ_V_GnK.fullName
     var mods = LinkedHashSet<String>()
+    
+    var maxTurns = 500
 
     fun clone(): GameParameters {
         val parameters = GameParameters()
@@ -48,6 +53,7 @@ class GameParameters { // Default values are the default new game
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
         parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
+        parameters.maxTurns = maxTurns
         return parameters
     }
 
@@ -67,6 +73,11 @@ class GameParameters { // Default values are the default new game
             for (victoryType in VictoryType.values()) {
                 if (victoryType !in victoryTypes) yield("No $victoryType Victory")
             }
+            yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )
         }.joinToString(prefix = "(", postfix = ")")
+    
+    fun getModsAndBaseRuleset(): HashSet<String> {
+        return mods.toHashSet().apply { add(baseRuleset) }
+    }
 }

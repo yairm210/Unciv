@@ -31,12 +31,13 @@ class DiplomacyOverviewTable (
         val playerKnowsAndUndefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && !it.isDefeated() }
         val playerKnowsAndDefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && it.isDefeated() }
         if (playerKnowsAndUndefeatedCivs.size > 1)
-            add(diplomacyGroup)
+            add(diplomacyGroup).top()
 
         val titleTable = Table()
-        titleTable.add("Our Civilization:".toLabel())
+        titleTable.add("Our Civilization:".toLabel()).colspan(2).row()
         titleTable.add(ImageGetter.getNationIndicator(viewingPlayer.nation, 25f)).pad(5f)
-        titleTable.add(viewingPlayer.civName.toLabel()).left().row()
+        titleTable.add(viewingPlayer.civName.toLabel()).left().padRight(10f)
+        titleTable.add(viewingPlayer.calculateScoreBreakdown().values.sum().toInt().toLabel()).row()
 
 
         val civTableScrollPane = getCivTableScroll(relevantCivs, titleTable, playerKnowsAndUndefeatedCivs, playerKnowsAndDefeatedCivs)
@@ -55,7 +56,7 @@ class DiplomacyOverviewTable (
     private fun getCivMiniTable(civInfo: CivilizationInfo): Table {
         val table = Table()
         table.add(ImageGetter.getNationIndicator(civInfo.nation, 25f)).pad(5f)
-        table.add(civInfo.civName.toLabel()).left()
+        table.add(civInfo.civName.toLabel()).left().padRight(10f)
         table.touchable = Touchable.enabled
         table.onClick {
             if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer) return@onClick
@@ -80,9 +81,16 @@ class DiplomacyOverviewTable (
             .pad(5f).colspan(2).row()
         if (playerKnowsAndUndefeatedCivs.size > 1) {
             civTable.addSeparator()
+            var cityStatesParsed = 0
             playerKnowsAndUndefeatedCivs.filter { it != viewingPlayer }.forEach {
                 civTable.add(getCivMiniTable(it)).left()
-                if (playerKnowsAndUndefeatedCivs.indexOf(it) % 2 == 0) civTable.row()
+                if (it.isCityState()) {
+                    cityStatesParsed++
+                } else {
+                    civTable.add(it.calculateScoreBreakdown().values.sum().toInt().toLabel()).left()
+                }
+                if (!it.isCityState() || cityStatesParsed % 2 == 0) 
+                    civTable.row()
             }
         }
         civTable.addSeparator()
@@ -90,9 +98,16 @@ class DiplomacyOverviewTable (
             .pad(5f).colspan(2).row()
         if (playerKnowsAndDefeatedCivs.isNotEmpty()) {
             civTable.addSeparator()
+            var cityStatesParsed = 0
             playerKnowsAndDefeatedCivs.forEach {
                 civTable.add(getCivMiniTable(it)).left()
-                if (playerKnowsAndDefeatedCivs.indexOf(it) % 2 == 0) civTable.row()
+                if (it.isCityState()) {
+                    cityStatesParsed++
+                } else {
+                    civTable.add(it.calculateScoreBreakdown().values.sum().toInt().toLabel()).left()
+                }
+                if (!it.isCityState() || cityStatesParsed % 2 == 0)
+                    civTable.row()
             }
         }
         val civTableScrollPane = AutoScrollPane(civTable)
@@ -173,7 +188,7 @@ class DiplomacyOverviewTable (
                     val statusLine = ImageGetter.getLine(civGroup.x + civGroup.width / 2, civGroup.y + civGroup.height / 2,
                         otherCivGroup.x + otherCivGroup.width / 2, otherCivGroup.y + otherCivGroup.height / 2, 2f)
 
-                    statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.Peace) Color.GREEN else Color.RED
+                    statusLine.color = if (diplomacy.diplomaticStatus == DiplomaticStatus.War) Color.RED else Color.GREEN
 
                     civLines[civ.civName]!!.add(statusLine)
 

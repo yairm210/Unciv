@@ -18,7 +18,7 @@ class CityScreen(
     internal val city: CityInfo,
     var selectedConstruction: IConstruction? = null,
     var selectedTile: TileInfo? = null
-): CameraStageBaseScreen() {
+): BaseScreen() {
     companion object {
         /** Distance from stage edges to floating widgets */
         const val posFromEdge = 5f
@@ -51,7 +51,7 @@ class CityScreen(
     private var tileTable = CityScreenTileTable(this)
 
     /** Displays selected construction info, alternate with tileTable - sits on BOTTOM RIGHT */
-    private var selectedConstructionTable = ConstructionInfoTable(this.city)
+    private var selectedConstructionTable = ConstructionInfoTable(this)
 
     /** Displays city name, allows switching between cities - sits on BOTTOM CENTER */
     private var cityPickerTable = CityScreenCityPickerTable(this)
@@ -158,16 +158,16 @@ class CityScreen(
         val nextTile = city.expansion.chooseNewTileToOwn()
         for (tileGroup in tileGroups) {
             tileGroup.update()
-            tileGroup.hideCircle()
+            tileGroup.hideHighlight()
             if (city.tiles.contains(tileGroup.tileInfo.position)
                     && constructionsTable.improvementBuildingToConstruct != null) {
                 val improvement = constructionsTable.improvementBuildingToConstruct!!.getImprovement(city.getRuleset())!!
                 if (tileGroup.tileInfo.canBuildImprovement(improvement, city.civInfo))
-                    tileGroup.showCircle(Color.GREEN)
-                else tileGroup.showCircle(Color.RED)
+                    tileGroup.showHighlight(Color.GREEN)
+                else tileGroup.showHighlight(Color.RED)
             }
             if (tileGroup.tileInfo == nextTile) {
-                tileGroup.showCircle(Color.PURPLE)
+                tileGroup.showHighlight(Color.PURPLE)
                 tileGroup.setColor(0f, 0f, 0f, 0.7f)
             }
         }

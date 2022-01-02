@@ -9,7 +9,7 @@ import com.unciv.ui.utils.*
 class CityReligionInfoTable(
     private val religionManager: CityInfoReligionManager,
     showMajority: Boolean = false
-) : Table(CameraStageBaseScreen.skin) {
+) : Table(BaseScreen.skin) {
     private val gameInfo = religionManager.cityInfo.civInfo.gameInfo
 
     init {
@@ -31,24 +31,26 @@ class CityReligionInfoTable(
             add("Holy city of: [$label]".toLabel()).colspan(3).center().row()
         }
 
-        add().pad(5f)  // column for icon
-        addSeparatorVertical(gridColor)
-        add("Followers".toLabel()).pad(5f)
-        addSeparatorVertical(gridColor)
-        add("Pressure".toLabel()).pad(5f).row()
-        addSeparator(gridColor)
+        if (!followers.isEmpty()) {
+            add().pad(5f)  // column for icon
+            addSeparatorVertical(gridColor)
+            add("Followers".toLabel()).pad(5f)
+            addSeparatorVertical(gridColor)
+            add("Pressure".toLabel()).pad(5f).row()
+            addSeparator(gridColor)
 
-        for ((religion, followerCount) in followers) {
-            val iconName = gameInfo.religions[religion]!!.getIconName()
-            add(ImageGetter.getCircledReligionIcon(iconName, 30f)).pad(5f)
-            addSeparatorVertical(gridColor)
-            add(followerCount.toLabel()).pad(5f)
-            addSeparatorVertical(gridColor)
-            if (futurePressures.containsKey(religion))
-                add(("+ [${futurePressures[religion]!!}] pressure").toLabel()).pad(5f)
-            else
-                add()
-            row()
+            for ((religion, followerCount) in followers) {
+                val iconName = gameInfo.religions[religion]!!.getIconName()
+                add(ImageGetter.getCircledReligionIcon(iconName, 30f)).pad(5f)
+                addSeparatorVertical(gridColor)
+                add(followerCount.toLabel()).pad(5f)
+                addSeparatorVertical(gridColor)
+                if (futurePressures.containsKey(religion))
+                    add(("+ [${futurePressures[religion]!!}] pressure").toLabel()).pad(5f)
+                else
+                    add()
+                row()
+            }
         }
     }
 

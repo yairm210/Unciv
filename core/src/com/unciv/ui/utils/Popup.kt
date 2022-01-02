@@ -11,13 +11,13 @@ import com.unciv.Constants
  * Base class for all Popups, i.e. Tables that get rendered in the middle of a screen and on top of everything else
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen.skin) {
+open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
     // This exists to differentiate the actual popup (the inner table)
     // from the 'screen blocking' part of the popup (which covers the entire screen)
-    val innerTable = Table(CameraStageBaseScreen.skin)
+    val innerTable = Table(BaseScreen.skin)
 
     /** The [KeyPressDispatcher] for the popup - Key handlers from the parent screen are inactive
-     * while the popup is active through the [hasOpenPopups][CameraStageBaseScreen.hasOpenPopups] mechanism.
+     * while the popup is active through the [hasOpenPopups][BaseScreen.hasOpenPopups] mechanism.
      * @see [KeyPressDispatcher.install]
      */
     val keyPressDispatcher = KeyPressDispatcher(this.javaClass.simpleName)
@@ -198,25 +198,25 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
  * Checks if there are visible [Popup]s.
  * @return `true` if any were found.
  */
-fun CameraStageBaseScreen.hasOpenPopups(): Boolean = stage.actors.any { it is Popup && it.isVisible }
+fun BaseScreen.hasOpenPopups(): Boolean = stage.actors.any { it is Popup && it.isVisible }
 
 /**
  * Counts number of visible[Popup]s.
  * 
  * Used for key dispatcher precedence.
  */
-fun CameraStageBaseScreen.countOpenPopups() = stage.actors.count { it is Popup && it.isVisible }
+fun BaseScreen.countOpenPopups() = stage.actors.count { it is Popup && it.isVisible }
 
 /** Closes all [Popup]s. */
-fun CameraStageBaseScreen.closeAllPopups() = popups.forEach { it.close() }
+fun BaseScreen.closeAllPopups() = popups.forEach { it.close() }
 
 /**
  * Closes the topmost visible [Popup].
  * @return The [name][Popup.name] of the closed [Popup] if any popup was closed and if it had a name.
  */
-fun CameraStageBaseScreen.closeOneVisiblePopup() = popups.lastOrNull { it.isVisible }?.apply { close() }?.name
+fun BaseScreen.closeOneVisiblePopup() = popups.lastOrNull { it.isVisible }?.apply { close() }?.name
 
 /** @return A [List] of currently active or pending [Popup] screens. */
-val CameraStageBaseScreen.popups: List<Popup>
+val BaseScreen.popups: List<Popup>
     get() = stage.actors.filterIsInstance<Popup>()
 

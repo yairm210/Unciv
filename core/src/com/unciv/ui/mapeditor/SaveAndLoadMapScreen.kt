@@ -17,7 +17,7 @@ import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousScreen: CameraStageBaseScreen)
+class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousScreen: BaseScreen)
         : PickerScreen(disableScroll = true) {
     private var chosenMap: FileHandle? = null
     val deleteButton = "Delete map".toTextButton()
@@ -66,8 +66,15 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     }
                     try {
                         val map = MapSaver.loadMap(chosenMap!!, checkSizeErrors = false)
-
-                        val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }
+                        
+                        val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
+                        // [TEMPORARY] conversion of old maps with a base ruleset contained in the mods
+                            val newBaseRuleset = map.mapParameters.mods.filter { it !in missingMods }.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+                            if (newBaseRuleset != null) map.mapParameters.baseRuleset = newBaseRuleset
+                        //
+                        
+                        if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
+                        
                         if (missingMods.isNotEmpty()) {
                             Gdx.app.postRunnable {
                                 needPopup = false
@@ -77,9 +84,17 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                         } else Gdx.app.postRunnable {
                             Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                             try {
+                                // For deprecated maps, set the base ruleset field if it's still saved in the mods field
+                                val modBaseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+                                if (modBaseRuleset != null) {
+                                    map.mapParameters.baseRuleset = modBaseRuleset
+                                    map.mapParameters.mods -= modBaseRuleset
+                                }
+                                    
                                 game.setScreen(MapEditorScreen(map))
                                 dispose()
                             } catch (ex: Throwable) {
+                                ex.printStackTrace()
                                 needPopup = false
                                 popup?.close()
                                 println("Error displaying map \"$chosenMap\": ${ex.localizedMessage}")
@@ -89,6 +104,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                         }
                     } catch (ex: Throwable) {
                         needPopup = false
+                        ex.printStackTrace()
                         Gdx.app.postRunnable {
                             popup?.close()
                             println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
@@ -134,6 +150,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     val loadedMap = MapSaver.mapFromSavedString(clipboardContentsString, checkSizeErrors = false)
                     game.setScreen(MapEditorScreen(loadedMap))
                 } catch (ex: Exception) {
+                    ex.printStackTrace()
                     couldNotLoadMapLabel.isVisible = true
                 }
             }

@@ -88,9 +88,8 @@ class WonderOverviewTable(
         Constants.hideFromCivilopediaUnique in wonder.uniques -> false
         wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
         wonder.name in startingObsolete -> false
-        wonder.uniqueObjects.filter { unique ->
-                unique.placeholderText == "Hidden when [] Victory is disabled"
-            }.any { unique ->
+        wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
+            .any { unique ->
                 !gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0]))
             } -> false
         else -> wonderEra <= viewerEra
@@ -222,7 +221,7 @@ class WonderOverviewTable(
 
             val image = wonder.getImage()
             image?.onClick {
-                UncivGame.Current.setScreen(CivilopediaScreen(ruleSet, wonder.category, wonder.name))
+                UncivGame.Current.setScreen(CivilopediaScreen(ruleSet, overviewScreen, wonder.category, wonder.name))
             }
             // Terrain image padding is a bit unpredictable, they need ~5f more. Ensure equal line spacing on name, not image:
             add(image).pad(0f, 10f, 0f, 10f)

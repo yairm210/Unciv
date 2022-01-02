@@ -1,9 +1,7 @@
 package com.unciv.ui.overviewscreen
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
@@ -16,7 +14,6 @@ import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
 import kotlin.math.max
-import kotlin.math.min
 
 class ReligionOverviewTable(
     private val viewingPlayer: CivilizationInfo,
@@ -25,13 +22,13 @@ class ReligionOverviewTable(
     
     val gameInfo = viewingPlayer.gameInfo
     
-    private val civStatsTable = Table(CameraStageBaseScreen.skin)
+    private val civStatsTable = Table(BaseScreen.skin)
     
-    private val religionsTable = Table(CameraStageBaseScreen.skin)
-    private val topButtons = Table(CameraStageBaseScreen.skin)
+    private val religionsTable = Table(BaseScreen.skin)
+    private val topButtons = Table(BaseScreen.skin)
     private val topButtonLabel = "Click an icon to see the stats of this religion".toLabel()
-    private val statsTable = Table(CameraStageBaseScreen.skin)
-    private val beliefsTable = Table(CameraStageBaseScreen.skin)
+    private val statsTable = Table(BaseScreen.skin)
+    private val beliefsTable = Table(BaseScreen.skin)
     private var selectedReligion: String? = null
     
     init {
@@ -60,7 +57,7 @@ class ReligionOverviewTable(
             ).right().pad(5f).row()
         }
         
-        statsTable.add("Religions founded:".toLabel()).left()
+        statsTable.add("Religions to be founded:".toLabel()).left()
         
         val foundedReligions = viewingPlayer.gameInfo.civilizations.count { it.religionManager.religionState >= ReligionState.Religion }
         statsTable.add((viewingPlayer.religionManager.amountOfFoundableReligions() - foundedReligions).toLabel()).right().pad(5f).row()
@@ -79,11 +76,11 @@ class ReligionOverviewTable(
                     ImageGetter.getNationIndicator(gameInfo.getCivilization(religion.foundingCivName).nation, 60f)
                 else
                     ImageGetter.getRandomNationIndicator(60f)
-                button = Button(image, CameraStageBaseScreen.skin)
+                button = Button(image, BaseScreen.skin)
             } else {
                 button = Button(
                     ImageGetter.getCircledReligionIcon(religion.getIconName(), 60f),
-                    CameraStageBaseScreen.skin
+                    BaseScreen.skin
                 )
             }
             
@@ -146,7 +143,7 @@ class ReligionOverviewTable(
                 yieldAll(getCivilopediaTextLines(gameInfo.ruleSet, true))
             } }.toList()
         ) {
-            UncivGame.Current.setScreen(CivilopediaScreen(gameInfo.ruleSet, link = it))
+            UncivGame.Current.setScreen(CivilopediaScreen(gameInfo.ruleSet, overviewScreen, link = it))
         }.apply {
             background = ImageGetter.getBackground(ImageGetter.getBlue())
         }

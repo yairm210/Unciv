@@ -4,6 +4,8 @@ import com.unciv.Constants
 import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.HexMath.getEquivalentRectangularSize
 import com.unciv.logic.HexMath.getNumberOfTilesInHexagon
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.ruleset.RulesetCache
 
 
 enum class MapSize(val radius: Int, val width: Int, val height: Int) {
@@ -129,17 +131,27 @@ object MapType {
     const val empty = "Empty"
 }
 
+object MapResources {
+    const val sparse = "Sparse"
+    const val default = "Default"
+    const val abundant = "Abundant"
+    const val strategicBalance = "Strategic Balance"
+    const val legendaryStart = "Legendary Start"
+}
+
 class MapParameters {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
     var mapSize = MapSizeNew(MapSize.Medium)
+    var mapResources = MapResources.default
     var noRuins = false
     var noNaturalWonders = false
     var worldWrap = false
 
     /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
+    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the Rulesetcache is not yet initialized when starting up 
 
     /** Unciv Version of creation for support cases */
     var createdWithVersion = ""
@@ -159,10 +171,12 @@ class MapParameters {
         it.type = type
         it.shape = shape
         it.mapSize = mapSize.clone()
+        it.mapResources = mapResources
         it.noRuins = noRuins
         it.noNaturalWonders = noNaturalWonders
         it.worldWrap = worldWrap
         it.mods = LinkedHashSet(mods)
+        it.baseRuleset = baseRuleset
         it.seed = seed
         it.tilesPerBiomeArea = tilesPerBiomeArea
         it.maxCoastExtension = maxCoastExtension
@@ -209,9 +223,17 @@ class MapParameters {
         if (worldWrap) yield("wrapped ")
         yield(shape)
         yield(" " + displayMapDimensions())
+        yield(mapResources)
         if (name.isEmpty()) return@sequence
         yield(", $type, Seed $seed, ")
         yield("$elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/")
         yield("$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold")
     }.joinToString("", postfix = ")")
+    
+    fun numberOfTiles() =
+        if (shape == MapShape.hexagonal) {
+            1 + 3 * mapSize.radius * (mapSize.radius - 1)
+        } else {
+            mapSize.width * mapSize.height
+        }
 }

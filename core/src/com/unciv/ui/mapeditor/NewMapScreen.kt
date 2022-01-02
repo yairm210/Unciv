@@ -12,9 +12,11 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.MapParametersTable
 import com.unciv.ui.newgamescreen.ModCheckboxTable
+import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
+import kotlin.math.max
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** New map generation screen */
@@ -23,6 +25,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
     private val ruleset = RulesetCache.getBaseRuleset()
     private var generatedMap: TileMap? = null
     private val mapParametersTable: MapParametersTable
+    private val modCheckBoxes: ModCheckboxTable
 
     companion object {
         private fun getDefaultParameters(): MapParameters {
@@ -41,21 +44,32 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
 
     init {
         setDefaultCloseAction(MainMenuScreen())
-
+        
+        // To load in the mods selected last time this screen was exited 
+        reloadRuleset()
+                
         mapParametersTable = MapParametersTable(mapParameters, isEmptyMapAllowed = true)
         val newMapScreenOptionsTable = Table(skin).apply {
             pad(10f)
             add("Map Options".toLabel(fontSize = 24)).row()
+            
+            // Add the selector for the base ruleset
+            val baseRulesetBox = getBaseRulesetSelectBox()
+            if (baseRulesetBox != null) {
+                // TODO: For some reason I'm unable to get these two tables to be equally wide
+                // someone who knows what they're doing should fix this
+                val maxWidth = max(baseRulesetBox.minWidth, mapParametersTable.minWidth)
+                baseRulesetBox.width = maxWidth
+                mapParametersTable.width = maxWidth
+                add(getBaseRulesetSelectBox()).row()
+            }
+            
             add(mapParametersTable).row()
-            add(ModCheckboxTable(mapParameters.mods, this@NewMapScreen) {
-                ruleset.clear()
-                val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods)
-                ruleset.add(newRuleset)
-                ruleset.mods += mapParameters.mods
-                ruleset.modOptions = newRuleset.modOptions
-
-                ImageGetter.setNewRuleset(ruleset)
-            })
+            
+            modCheckBoxes = ModCheckboxTable(mapParameters.mods, mapParameters.baseRuleset, this@NewMapScreen) {
+                reloadRuleset()
+            }
+            add(modCheckBoxes)
             pack()
         }
 
@@ -70,7 +84,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
             if (message != null) {
                 Gdx.app.postRunnable {
-                    ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                    ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
                     with (mapParameters.mapSize) {
                         mapParametersTable.customMapSizeRadius.text = radius.toString()
                         mapParametersTable.customMapWidth.text = width.toString()
@@ -120,5 +134,76 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
         }
+    }
+    
+    private fun getBaseRulesetSelectBox(): Table? {
+        val rulesetSelectionBox = Table()
+
+        val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
+        if (sortedBaseRulesets.size < 2) return null
+
+        rulesetSelectionBox.add("{Base Ruleset}:".toLabel()).left()
+        val selectBox = TranslatedSelectBox(sortedBaseRulesets, mapParameters.baseRuleset, skin)
+
+        val onChange = onChange@{ newBaseRuleset: String ->
+            val previousSelection = mapParameters.baseRuleset
+            if (newBaseRuleset == previousSelection) return@onChange null
+
+            // Check if this mod is well-defined
+            val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
+            if (baseRulesetErrors.isError()) {
+                val toastMessage = "The mod you selected is incorrectly defined!".tr() + "\n\n${baseRulesetErrors.getErrorText()}"
+                ToastPopup(toastMessage, this@NewMapScreen, 5000L)
+                return@onChange previousSelection
+            }
+
+            // If so, add it to the current ruleset
+            mapParameters.baseRuleset = newBaseRuleset
+            reloadRuleset()
+
+            // Check if the ruleset in it's entirety is still well-defined
+            val modLinkErrors = ruleset.checkModLinks()
+            if (modLinkErrors.isError()) {
+                mapParameters.mods.clear()
+                reloadRuleset()
+                val toastMessage =
+                    "This base ruleset is not compatible with the previously selected\nextension mods. They have been disabled.".tr()
+                ToastPopup(toastMessage, this@NewMapScreen, 5000L)
+
+                modCheckBoxes.disableAllCheckboxes()
+            } else if (modLinkErrors.isWarnUser()) {
+                val toastMessage =
+                    "{The mod combination you selected has problems.}\n{You can play it, but don't expect everything to work!}".tr() +
+                        "\n\n${modLinkErrors.getErrorText()}"
+                ToastPopup(toastMessage, this@NewMapScreen, 5000L)
+            }
+
+
+            modCheckBoxes.setBaseRuleset(newBaseRuleset)
+
+            null
+        }
+        
+        
+        selectBox.onChange {
+            val changedValue = onChange(selectBox.selected.value)
+            if (changedValue != null) selectBox.setSelected(changedValue)
+        }
+
+        onChange(mapParameters.baseRuleset)
+        
+        rulesetSelectionBox.add(selectBox).fillX().row()
+        return rulesetSelectionBox
+    }
+    
+    private fun reloadRuleset() {
+        ruleset.clear()
+        val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods, mapParameters.baseRuleset)
+        ruleset.add(newRuleset)
+        ruleset.mods += mapParameters.baseRuleset
+        ruleset.mods += mapParameters.mods
+        ruleset.modOptions = newRuleset.modOptions
+
+        ImageGetter.setNewRuleset(ruleset)
     }
 }

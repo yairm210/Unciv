@@ -22,12 +22,12 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
 class NewGameScreen(
-    private val previousScreen: CameraStageBaseScreen,
+    private val previousScreen: BaseScreen,
     _gameSetupInfo: GameSetupInfo? = null
 ): IPreviousScreen, PickerScreen() {
 
     override val gameSetupInfo = _gameSetupInfo ?: GameSetupInfo.fromSettings()
-    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods) // needs to be set because the GameOptionsTable etc. depend on this
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset) // needs to be set because the GameOptionsTable etc. depend on this
     private val newGameOptionsTable: GameOptionsTable
     private val playerPickerTable: PlayerPickerTable
     private val mapOptionsTable: MapOptionsTable
@@ -110,7 +110,7 @@ class NewGameScreen(
                 val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
                 if (message != null) {
                     Gdx.app.postRunnable {
-                        ToastPopup( message, UncivGame.Current.screen as CameraStageBaseScreen, 4000 )
+                        ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
                         with (mapOptionsTable.generatedMapOptionsTable) {
                             customMapSizeRadius.text = mapSize.radius.toString()
                             customMapWidth.text = mapSize.width.toString()
@@ -162,7 +162,7 @@ class NewGameScreen(
         }).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
 
-        topTable.add(newGameOptionsTable.getModCheckboxes(isPortrait = true)).expandX().fillX().row()
+        topTable.add(newGameOptionsTable.modCheckboxes).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
         
         topTable.add(ExpanderTab("Map Options") {
@@ -226,9 +226,9 @@ class NewGameScreen(
 
     fun updateRuleset() {
         ruleset.clear()
-        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods))
+        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods, gameSetupInfo.gameParameters.baseRuleset))
         ImageGetter.setNewRuleset(ruleset)
-        game.musicController.setModList(gameSetupInfo.gameParameters.mods)
+        game.musicController.setModList(gameSetupInfo.gameParameters.getModsAndBaseRuleset())
     }
 
     fun lockTables() {
@@ -283,5 +283,9 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         values.forEach { array.add(TranslatedString(it)) }
         items = array
         selected = array.firstOrNull { it.value == default } ?: array.first()
+    }
+    
+    fun setSelected(newValue: String) {
+        selected = items.firstOrNull { it == TranslatedString(newValue) } ?: return
     }
 }
