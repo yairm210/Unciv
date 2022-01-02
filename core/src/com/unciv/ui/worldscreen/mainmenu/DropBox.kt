@@ -267,6 +267,9 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
      * @see lock
      */
     fun unlock() {
+        if (!locked)
+            return
+
         DropBox.deleteFile("${OnlineMultiplayer().getGameLocation(gameInfo.gameId)}_Lock")
         locked = false
     }
