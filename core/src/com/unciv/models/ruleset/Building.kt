@@ -765,6 +765,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             name -> true
             "Building", "Buildings" -> !isAnyWonder()
             "Wonder", "Wonders" -> isAnyWonder()
+            "National Wonder" -> isNationalWonder
+            "Non-national Wonder" -> isWonder
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true
