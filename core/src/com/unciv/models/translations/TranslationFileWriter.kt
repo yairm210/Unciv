@@ -254,7 +254,7 @@ object TranslationFileWriter {
             "Wonders",
             "Wonder",
             "National Wonder",
-            "Non-nationl Wonder",
+            "Non-national Wonder",
             "Buildings",
             "Building"
         )) }
