@@ -1,3 +1,25 @@
+## 3.18.14
+
+By will-ca:
+- Unify and improve moddability of more tile-based images.
+- Arrows in Default tileset.
+- Move BorderImages to tileset. Set origin in setHexagonImageSize().
+
+By yairm210:
+- Can no longer promote units with 0 movement by sneaking into the promotion screen from elsewhere
+
+By xlenstra:
+- Added more yield icons to the city stats table
+- Revamped nukes again to closer match the original
+- Updated uniques
+- Fixed a bug where all global unit discounts would always apply, despite only being for certain units
+
+Delete Ship Of The Line.png - By hundun000
+
+Remove periodic saving again - By GGGuenni
+
+Dispose object Graphics2D if it isn't used - By lishaoxia1985
+
 ## 3.18.13
 
 Stat names also include the stat icon :)
