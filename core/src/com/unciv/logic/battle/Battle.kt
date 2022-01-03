@@ -405,7 +405,8 @@ object Battle {
     private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant) {
         if (attacker is MapUnitCombatant) {
             val unit = attacker.unit
-            unit.attacksThisTurn += 1
+            if(!defender.isCivilian())  // Civilian units don't cost an attack
+                unit.attacksThisTurn += 1
             if (unit.hasUnique("Can move after attacking") || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
