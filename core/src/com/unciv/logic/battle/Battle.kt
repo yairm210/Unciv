@@ -223,7 +223,8 @@ object Battle {
 
         val defenderHealthBefore = defender.getHealth()
 
-        if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker is MapUnitCombatant) {
+        if (defender is MapUnitCombatant && defender.unit.isCivilian()
+                && attacker is MapUnitCombatant && !attacker.unit.baseUnit.isAirUnit()) {
             captureCivilianUnit(attacker, defender)
         } else if (attacker.isRanged()) {
             defender.takeDamage(potentialDamageToDefender) // straight up
@@ -370,7 +371,7 @@ object Battle {
         // (assume own civ since we captured it in takeDamage()), then move
         // Otherwise, stay still
         if (attacker.isRanged()
-                && !(attacker is MapUnitCombatant && defender.isCivilian())){
+                && !(attacker is MapUnitCombatant && !attacker.unit.baseUnit.isAirUnit() && defender.isCivilian())){
             return
         }
         if (!defender.isDefeated() && defender.getCivInfo() != attacker.getCivInfo()) return
