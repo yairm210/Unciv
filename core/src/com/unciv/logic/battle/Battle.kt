@@ -50,15 +50,7 @@ object Battle {
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon())
             return NUKE(attacker, attackableTile.tileToAttack)
-        // special capture civilian action for Ranged unit instead of doing battle
-        if (attacker is MapUnitCombatant && attacker.isRanged() &&
-                // only returns civilian if no military unit guarding
-                getMapCombatantOfTile(attackableTile.tileToAttack)!!.isCivilian() &&
-                attackableTile.tileToAttack.civilianUnit!!.civInfo != attacker.getCivInfo()) {
-            captureCivilianUnit(attacker, MapUnitCombatant(attackableTile.tileToAttack.civilianUnit!!))
-        }else{
-            attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
-        }
+        attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {
@@ -231,7 +223,7 @@ object Battle {
 
         val defenderHealthBefore = defender.getHealth()
 
-        if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker.isMelee()) {
+        if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker is MapUnitCombatant) {
             captureCivilianUnit(attacker, defender)
         } else if (attacker.isRanged()) {
             defender.takeDamage(potentialDamageToDefender) // straight up
@@ -373,17 +365,13 @@ object Battle {
     }
 
     private fun postBattleMoveToAttackedTile(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
-        if (!attacker.isMelee()){
-            // for ranged unit, if target tile has
-            // no defending military unit
-            // a civilian unit that is not own civ
-            // capture unit!
-            if (attackedTile.militaryUnit == null && attackedTile.civilianUnit != null
-                    && attackedTile.civilianUnit!!.civInfo != attacker.getCivInfo()){
-                captureCivilianUnit(attacker, MapUnitCombatant(attackedTile.civilianUnit!!))
-            }else {
-                return
-            }
+        // for ranged unit (not city),
+        // if we attacked a civilian unit (no military defender)
+        // (assume own civ since we captured it in takeDamage()), then move
+        // Otherwise, stay still
+        if (attacker.isRanged()
+                && !(attacker is MapUnitCombatant && defender.isCivilian())){
+            return
         }
         if (!defender.isDefeated() && defender.getCivInfo() != attacker.getCivInfo()) return
 

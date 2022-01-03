@@ -159,8 +159,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else if (damageToDefender>defender.getHealth()) damageToDefender=defender.getHealth()
 
 
-        if(attacker.isMelee() && (defender.isCivilian()
-                        || defender is CityCombatant && defender.isDefeated())) {
+        if(attacker is MapUnitCombatant && defender.isCivilian()
+                        || defender is CityCombatant && defender.isDefeated()) {
             add("")
             add(
                 if (defender.isCivilian()
