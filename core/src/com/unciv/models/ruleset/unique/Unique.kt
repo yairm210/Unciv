@@ -87,16 +87,28 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
             UniqueType.ConditionalBelowHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
-            UniqueType.ConditionalInTiles -> 
-                state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0])
+            UniqueType.ConditionalInTiles ->
+                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo))
+                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0], state.civInfo))
+            UniqueType.ConditionalFightingInTiles ->
+                state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo)
+            UniqueType.ConditionalInTilesAnd ->
+                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo) && state.attackedTile.matchesFilter(condition.params[1], state.civInfo))
+                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0], state.civInfo) && state.unit.getTile().matchesFilter(condition.params[1], state.civInfo))
+            UniqueType.ConditionalInTilesNot ->
+                state.attackedTile != null && !state.attackedTile.matchesFilter(condition.params[0], state.civInfo)
+                || (state.unit != null && !state.unit.getTile().matchesFilter(condition.params[0], state.civInfo))
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
-            UniqueType.ConditionalForeignContinent -> state.unit != null &&
-                    (state.unit.civInfo.cities.isEmpty() ||
-                            state.unit.civInfo.getCapital().getCenterTile().getContinent() != state.unit.getTile().getContinent())
+            UniqueType.ConditionalForeignContinent -> 
+                state.civInfo != null 
+                && state.unit != null
+                && (state.civInfo.cities.isEmpty() 
+                    || state.civInfo.getCapital().getCenterTile().getContinent() != state.unit.getTile().getContinent()
+                )
 
             UniqueType.ConditionalNeighborTiles ->
                 state.cityInfo != null &&
@@ -150,4 +162,21 @@ class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.j
 
     fun getUniques(uniqueType: UniqueType): Sequence<Unique> =
         this[uniqueType]?.asSequence() ?: sequenceOf()
+}
+
+
+// Will probably be allowed to be used as a conditional when I get the motivation to work on that -xlenstra
+class TemporaryUnique() {
+
+    constructor(uniqueObject: Unique, turns: Int) : this() {
+        unique = uniqueObject.text
+        turnsLeft = turns
+    }
+
+    var unique: String = ""
+
+    @delegate:Transient
+    val uniqueObject: Unique by lazy { Unique(unique) }
+
+    var turnsLeft: Int = 0
 }

@@ -24,7 +24,7 @@ android {
     }
     defaultConfig {
         applicationId = "com.unciv.app"
-        minSdk = 17
+        minSdk = 21
         targetSdk = 30 // See #5044
         versionCode = BuildConfig.appCodeNumber
         versionName = BuildConfig.appVersion
@@ -51,6 +51,7 @@ android {
 
     buildTypes {
         getByName("release") {
+            // If you make this true you get a version of the game that just flat-out does't run
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }

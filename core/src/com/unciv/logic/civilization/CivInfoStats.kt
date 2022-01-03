@@ -28,43 +28,40 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         var unitsToPayFor = civInfo.getCivUnits()
         if (civInfo.hasUnique("Units in cities cost no Maintenance"))
-        // Only land military units can truly "garrison"
             unitsToPayFor = unitsToPayFor.filterNot {
                 it.getTile().isCityCenter() && it.canGarrison()
             }
         // Handle unit maintenance discounts
-        // Have to capture global and per-unit
         // Free Garrison already removed above from sequence
-        // Initialize maintenance cost per unit, default 1 aka 100%
+        // To try and avoid concurrent modifications leading to crashes,
+        // we calculate the costs of one unit at a time.
+        // Each unit starts with 1f aka 100% of cost, and then the discout is addded.
         // Note all discounts are in the form of -X%, such as -25 for 25% reduction
-        for (unit in unitsToPayFor){
-            unit.maintenance = 1f
-            for (unique in unit.getMatchingUniques(UniqueType.UnitMaintenanceDiscount)){
-                unit.maintenance *= unique.params[0].toPercent()
-            }
-        }
-        // Apply global discounts
-        for (unique in civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscountGlobal, StateForConditionals(civInfo))) {
-            for (unit in unitsToPayFor.filter { it.matchesFilter(unique.params[1]) }) {
-                unit.maintenance *= unique.params[0].toPercent()
-            }
-        }
-        // Sort by descending maintenance, then drop most expensive X units to make them free
-        // If more free than units left, returns empty sequence
-        // There's something here that causes a bug and I'm not sure where, so let's try taking this apart piece by piece
-        unitsToPayFor = unitsToPayFor.sortedByDescending { it.maintenance }.toList().asSequence()
-        unitsToPayFor = unitsToPayFor.drop(freeUnits)
-        val numberOfUnitsToPayFor = max(0.0, unitsToPayFor.sumOf { it.maintenance.toDouble() }).toFloat()
 
-        val turnLimit =
-            BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        val gameProgress =
-            min(civInfo.gameInfo.turns / turnLimit, 1f) // as game progresses Maintenance cost rises
+        val costsToPay = ArrayList<Float>()
+        for (unit in unitsToPayFor) {
+            val stateForConditionals = StateForConditionals(civInfo=civInfo, unit=unit)
+            var unitMaintenance = 1f
+            for (unique in unit.getMatchingUniques(UniqueType.UnitMaintenanceDiscount, stateForConditionals, true)){
+                unitMaintenance *= unique.params[0].toPercent()
+            }
+            costsToPay.add(unitMaintenance)
+        }
+
+        // Sort by descending maintenance, then drop most expensive X units to make them free
+        // If more free than units left, runs sum on empty sequence
+        costsToPay.sortDescending()
+        val numberOfUnitsToPayFor = max(0.0, costsToPay.asSequence().drop(freeUnits).sumOf { it.toDouble() } ).toFloat()
+
+        // as game progresses Maintenance cost rises
+        val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        val gameProgress = min(civInfo.gameInfo.turns / turnLimit, 1f)
+        
         var cost = baseUnitCost * numberOfUnitsToPayFor * (1 + gameProgress)
         cost = cost.pow(1 + gameProgress / 3) // Why 3? To spread 1 to 1.33
+        
         if (!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
-
 
         return cost.toInt()
     }

@@ -16,7 +16,7 @@ object MapSaver {
 
     fun mapFromSavedString(mapString: String, checkSizeErrors: Boolean = true): TileMap {
         val unzippedJson = try {
-            Gzip.unzip(mapString)
+            Gzip.unzip(mapString.trim())
         } catch (ex: Exception) {
             mapString
         }

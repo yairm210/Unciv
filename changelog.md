@@ -1,3 +1,86 @@
+## 3.18.13
+
+Stat names also include the stat icon :)
+
+Better map-to-ruleset incompatibility checks
+
+'tile to expand to' choice incorporates city-specific bonuses
+
+Fixed a ton of very rare, but crashing, edge-case bugs
+
+By will-ca:
+- Save attacks per civ for arrows for cities, missiles, dead units.
+- Solved 'white blocks' on default tileset.
+
+By xlenstra:
+- Fixed a rare diplomacy voting bug in one-more-turn mode
+- Fixed a few combat bugs and changed the religions founded label
+
+## 3.18.12
+
+AI cities now build workboats for use in other cities
+
+Caught Out Of Memory error for large saved games
+
+By will-ca:
+- Show arrows on map for unit actions
+
+By xlenstra:
+- Added score and time victory
+- Fixed a policy not working
+- Fixed a bug where an empty improvement picker screen could open
+
+## 3.18.11
+
+Resolved mod dependencies leading to incompatible rulesets
+
+By will-ca:
+- Add new universal crash handlers and error reporting screen.
+- Refactor MiniMapHolder's little green map overlay toggle icons.
+
+By xlenstra:
+- Extended use for "in [tileFilter] tiles" conditionals
+- Replaced illegal / questionably legal assets
+- Fixed an infinite loop where mod units could upgrade to the unit they replaced
+
+Fixed warnings in linux desktop file - By touhidurrr
+
+## 3.18.10
+
+Sort Maintenance Using Fixed Point - By itanasi
+
+Moved Coal discovery back to industrialization - By xlenstra
+
+Improvements to TurnChecker data usage - By GGGuenni
+
+AI for Inquisitor and Missionary - By Interdice
+
+Add a couple missing template strings - By SimonCeder
+
+## 3.18.9
+
+Uniques and conditionals for translating are taken directly from the uniquetypes
+
+Can gift improvements to city states also on water tiles / when other improvements have been built on the resource
+
+Enabled code minify, hopefully shrinks apk size
+
+Resolved crash when selecting resources in map editor
+
+## 3.18.8
+
+Solved bug that made civilian units uncapturable
+
+Don't show 'fortify until healed' if the unit won't actually heal in this tile
+
+By xlenstra:
+- Band-aided a bug where players in multiplayer games were waiting for themselves.
+- Fixed a crash that occasionally happened when liberating a city to a dead civ
+- Added icon for telegraph
+- Fixed the unique for giving sight to units no longer working
+
+Regions part 3 - resource placement, resource settings  - By SimonCeder
+
 ## 3.18.7
 
 Multiplayer game info is updated as each intermediate player finishes their turn

@@ -144,7 +144,7 @@
 		"movement": 4,
 		"cost": 30,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles until Astronomy", "May create improvements on water resources", "Uncapturable"]
+		"uniques": ["Cannot enter ocean tiles <before discovering [Astronomy]>", "May create improvements on water resources", "Uncapturable"]
 	},
 	{
 		"name": "Trireme",
@@ -914,12 +914,12 @@
 	{
 		"name": "Foreign Legion",
 		"unitType": "Gunpowder",
-		"replaces": "Infantry",
+		"replaces": "Rifleman",
 		"uniqueTo": "France",
 		"movement": 2,
 		"strength": 50,
 		"cost": 320,
-		"requiredTech": "Replaceable Parts",
+		"requiredTech": "Rifling",
 		"upgradesTo": "Infantry",
 		"obsoleteTech": "Plastics",
 		"uniques": ["[+20]% Strength <when fighting in [Foreign Land] tiles>"],

@@ -158,16 +158,16 @@ class CityScreen(
         val nextTile = city.expansion.chooseNewTileToOwn()
         for (tileGroup in tileGroups) {
             tileGroup.update()
-            tileGroup.hideCircle()
+            tileGroup.hideHighlight()
             if (city.tiles.contains(tileGroup.tileInfo.position)
                     && constructionsTable.improvementBuildingToConstruct != null) {
                 val improvement = constructionsTable.improvementBuildingToConstruct!!.getImprovement(city.getRuleset())!!
                 if (tileGroup.tileInfo.canBuildImprovement(improvement, city.civInfo))
-                    tileGroup.showCircle(Color.GREEN)
-                else tileGroup.showCircle(Color.RED)
+                    tileGroup.showHighlight(Color.GREEN)
+                else tileGroup.showHighlight(Color.RED)
             }
             if (tileGroup.tileInfo == nextTile) {
-                tileGroup.showCircle(Color.PURPLE)
+                tileGroup.showHighlight(Color.PURPLE)
                 tileGroup.setColor(0f, 0f, 0f, 0.7f)
             }
         }

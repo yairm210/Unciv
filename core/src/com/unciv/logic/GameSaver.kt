@@ -63,14 +63,17 @@ object GameSaver {
         customSaveLocationHelper!!.saveGame(game, GameName, forcePrompt = true, saveCompleteCallback = saveCompletionCallback)
     }
 
-    fun loadGameByName(GameName: String, multiplayer: Boolean = false) =
-            loadGameFromFile(getSave(GameName, multiplayer))
+    fun loadGameByName(GameName: String) =
+            loadGameFromFile(getSave(GameName))
 
     fun loadGameFromFile(gameFile: FileHandle): GameInfo {
         val game = json().fromJson(GameInfo::class.java, gameFile)
         game.setTransients()
         return game
     }
+
+    fun loadGamePreviewByName(GameName: String) =
+            loadGamePreviewFromFile(getSave(GameName, true))
 
     fun loadGamePreviewFromFile(gameFile: FileHandle): GameInfoPreview {
         return json().fromJson(GameInfoPreview::class.java, gameFile)
@@ -167,14 +170,5 @@ object GameSaver {
             val saveToDelete = getAutosaves().minByOrNull { it: FileHandle -> it.lastModified() }!!
             deleteSave(saveToDelete.name())
         }
-    }
-
-    /**
-     * Returns the gameId from a GameInfo which was saved as JSON for multiplayer
-     * Does not initialize transitive GameInfo data.
-     * It is therefore stateless and save to call for Multiplayer Turn Notifier.
-     */
-    fun getGameIdFromFile(gameFile: FileHandle): String {
-        return json().fromJson(GameInfo::class.java, gameFile).gameId
     }
 }

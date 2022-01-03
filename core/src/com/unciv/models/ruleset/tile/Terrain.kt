@@ -116,7 +116,7 @@ class Terrain : RulesetStatsObject() {
         if (turnsInto == null && displayAs(TerrainType.Land, ruleset) && !isRough())
             textList += FormattedLine("Open terrain")   // Rough is in uniques
         uniqueObjects.forEach {
-            if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+            if (!it.hasFlag(UniqueFlag.HiddenToUsers))
                 textList += FormattedLine(it)
         }
 

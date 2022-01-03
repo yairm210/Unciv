@@ -73,14 +73,20 @@ class UncivSlider (
             slider.stepSize = value
             stepChanged()
         }
+    /** Returns true if the slider is being dragged. */
     val isDragging: Boolean
         get() = slider.isDragging
     var isDisabled: Boolean
         get() = slider.isDisabled
         set(value) { slider.isDisabled = value }
+    /** Sets the range of this progress bar. The progress bar's current value is clamped to the range. */
     fun setRange(min: Float, max: Float) {
         slider.setRange(min, max)
         setPlusMinusEnabled()
+    }
+    /** Will make this progress bar snap to the specified values, if the knob is within the threshold. */
+    fun setSnapToValues(values: FloatArray?, threshold: Float) {
+        slider.setSnapToValues(values, threshold)
     }
 
     // Value tip format

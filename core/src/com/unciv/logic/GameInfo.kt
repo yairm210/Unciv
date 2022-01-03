@@ -3,20 +3,15 @@ package com.unciv.logic
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
-import com.unciv.logic.BackwardCompatibility.replaceDiplomacyFlag
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSpeed
-import com.unciv.models.ruleset.Difficulty
-import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
@@ -120,7 +115,7 @@ class GameInfo {
     }
 
     /** Get a civ by name
-     *  @throws NoSuchElementException if no civ of than name is in the game (alive or dead)! */
+     *  @throws NoSuchElementException if no civ of that name is in the game (alive or dead)! */
     fun getCivilization(civName: String) = civilizations.first { it.civName == civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getCivilizationsAsPreviews() = civilizations.map { it.asPreview() }.toMutableList()
@@ -209,6 +204,7 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex + 1) % civilizations.size
             if (currentPlayerIndex == 0) {
                 turns++
+                checkForTimeVictory()
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -285,6 +281,17 @@ class GameInfo {
                 enemyUnitsCloseToTerritory.any { tile -> tile.aerialDistanceTo(city.getCenterTile()) <= city.range }
                 }
         )
+    }
+    
+    private fun checkForTimeVictory() {
+        if (turns != gameParameters.maxTurns || !gameParameters.victoryTypes.contains(VictoryType.Time)) return
+        
+        val winningCiv = civilizations
+            .filter { it.isMajorCiv() && !it.isSpectator() && !it.isBarbarian() }
+            .maxByOrNull { it.calculateScoreBreakdown().values.sum() } 
+            ?: return // Are there no civs left?
+        
+        winningCiv.victoryManager.hasWonTimeVictory = true
     }
 
     private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
@@ -429,6 +436,10 @@ class GameInfo {
                 if (cityInfo.isPuppet && cityInfo.cityConstructions.constructionQueue.isEmpty())
                     cityInfo.cityConstructions.chooseNextConstruction()
 
+                // We also remove resources that the city may be demanding but are no longer in the ruleset
+                if (!ruleSet.tileResources.containsKey(cityInfo.demandedResource))
+                    cityInfo.demandedResource = ""
+
                 cityInfo.cityStats.update()
             }
 
@@ -437,7 +448,7 @@ class GameInfo {
             }
         }
 
-        spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique("Spaceship part") }
+        spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirements().keys } )
         
         barbarians.setTransients(this)
@@ -488,6 +499,20 @@ class GameInfoPreview() {
         currentTurnStartTime = gameInfo.currentTurnStartTime
         //We update the civilizations in case someone is removed from the game (resign/kick)
         civilizations = gameInfo.getCivilizationsAsPreviews()
+
+        return this
+    }
+
+    /**
+     * Updates the current player and turn information in the GameInfoPreview object with the
+     * help of another GameInfoPreview object.
+     */
+    fun updateCurrentTurn(gameInfo: GameInfoPreview) : GameInfoPreview {
+        currentPlayer = gameInfo.currentPlayer
+        turns = gameInfo.turns
+        currentTurnStartTime = gameInfo.currentTurnStartTime
+        //We update the civilizations in case someone is removed from the game (resign/kick)
+        civilizations = gameInfo.civilizations
 
         return this
     }

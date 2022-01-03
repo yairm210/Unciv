@@ -149,6 +149,7 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
 
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
+    CannotBeBuilt(false, "Cannot be built by this nation"),
 
     Obsoleted(false, "Obsolete"),
     RequiresTech(false, "Required tech not researched"),
@@ -178,7 +179,7 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
 
     PopulationRequirement(true, "Requires more population"),
 
-    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers");
+    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
 }
 
 

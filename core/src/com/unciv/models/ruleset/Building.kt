@@ -283,7 +283,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 textList += FormattedLine(replacementTextForUniques)
             else
                 uniqueObjects.forEach {
-                    if (!it.hasFlag(UniqueFlag.HideInCivilopedia))
+                    if (!it.hasFlag(UniqueFlag.HiddenToUsers))
                         textList += FormattedLine(it)
                 }
         }
@@ -629,7 +629,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        if ("Spaceship part" in uniques) {
+        if (hasUnique(UniqueType.SpaceshipPart)) {
             if (!civInfo.hasUnique("Enables construction of Spaceship parts"))
                 rejectionReasons.add(
                     RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" }
@@ -722,7 +722,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
 
-        if ("Spaceship part" in uniques) {
+        if (hasUnique(UniqueType.SpaceshipPart)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }

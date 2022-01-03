@@ -106,7 +106,7 @@
 			},
 			{
 				"name": "Military Tradition",
-				"uniques":["[Military] units gain [50]% more Experience from combat"],
+				"uniques":["[+50]% XP gained from combat <for [Military] units>"],
 				"requires": ["Warrior Code"],
 				"row": 2,
 				"column": 2
@@ -368,7 +368,7 @@
 	{
 		"name": "Autocracy",
 		"era": "Industrial era",
-		"uniques": ["[-33]% maintenance costs for [All] units", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
+		"uniques": ["[-33]% maintenance costs <for [All] units>", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
 			"Incompatible with [Order]", "Incompatible with [Freedom]"],
 		"policies": [
 			{

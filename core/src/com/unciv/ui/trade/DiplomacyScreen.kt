@@ -457,8 +457,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
     }
 
     fun getImprovableResourceTiles(otherCiv:CivilizationInfo) =  otherCiv.getCapital().getTiles()
-        .filter { it.hasViewableResource(otherCiv) && it.improvement == null
-                && it.tileResource.resourceType!=ResourceType.Bonus }
+        .filter { it.hasViewableResource(otherCiv) && it.tileResource.resourceType!=ResourceType.Bonus
+                && it.tileResource.improvement != it.improvement }
 
     private fun getImprovementGiftTable(otherCiv: CivilizationInfo): Table {
         val improvementGiftTable = getCityStateDiplomacyTableHeader(otherCiv)
@@ -466,12 +466,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
         val improvableResourceTiles = getImprovableResourceTiles(otherCiv)
         val tileImprovements =
-            otherCiv.gameInfo.ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
+            otherCiv.gameInfo.ruleSet.tileImprovements
 
         for (improvableTile in improvableResourceTiles) {
             for (tileImprovement in tileImprovements.values) {
-                if (improvableTile.canBuildImprovement(tileImprovement, otherCiv) &&
-                    improvableTile.tileResource.improvement == tileImprovement.name
+                if (improvableTile.tileResource.improvement == tileImprovement.name
+                    && improvableTile.canBuildImprovement(tileImprovement, otherCiv)
                 ) {
                     val improveTileButton =
                         "Build [${tileImprovement}] on [${improvableTile.tileResource}] (200 Gold)".toTextButton()
