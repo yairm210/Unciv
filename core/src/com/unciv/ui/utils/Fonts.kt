@@ -123,7 +123,7 @@ class NativeBitmapFontData(
 
 object Fonts {
 
-    /** All text is originally rendered in 50px (set in AndroidLauncher and DesktopLauncher), and thn scaled to fit the size of the text we need now.
+    /** All text is originally rendered in 50px (set in AndroidLauncher and DesktopLauncher), and then scaled to fit the size of the text we need now.
      * This has several advantages: It means we only render each character once (good for both runtime and RAM),
      * AND it means that our 'custom' emojis only need to be once size (50px) and they'll be rescaled for what's needed. */
     const val ORIGINAL_FONT_SIZE = 50f
