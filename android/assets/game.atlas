@@ -4085,13 +4085,6 @@ TileSets/FantasyHex/Units/Settler
   orig: 32, 29
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Units/Ship Of The Line
-  rotate: false
-  xy: 1364, 887
-  size: 32, 29
-  orig: 32, 29
-  offset: 0, 0
-  index: -1
 TileSets/FantasyHex/Units/Ship of the Line
   rotate: false
   xy: 1364, 887
