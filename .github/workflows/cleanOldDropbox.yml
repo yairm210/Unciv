@@ -1,0 +1,95 @@
+name: Clean old DropBox files.
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  clean_dropbox:
+    if: always()
+    runs-on: ubuntu-latest
+    env:
+      # TODO: Setup repo, use real secret with key?
+      GH_ARCHIVE_URL: https://secrets.PlaceholderString@github.com/account/repo.git
+      ARCHIVE_DIR: SomeArchiveRepository
+    steps:
+      - name: Setup Python.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install DropBox.
+        shell: bash
+        run: "pip3 install dropbox"
+      - name: Setup Archive.
+        shell: bash
+        # TODO: Archive old saves in GH repo?
+        run: |
+          set -euo pipefail
+          echo "Cloning archive repository."
+          echo git clone "$GH_ARCHIVE_URL" "$ARCHIVE_DIR"
+          mkdir -p "$ARCHIVE_DIR"
+      - name: Clean DropBox.
+        shell: python
+        # TODO: Put key in secrets instead of hardcoded.
+        env:
+          DROPBOX_KEY: secrets.PLACEHOLDER_KEY
+        run: |
+          import dropbox, os
+          from datetime import datetime
+
+          os.chdir(os.environ['ARCHIVE_DIR'])
+          print(f"In {os.getcwd()}.")
+
+          LAST_YEAR_TO_REMOVE = 2021
+          LAST_MONTH_TO_REMOVE = 3
+          LAST_DAY_TO_REMOVE = 31
+
+
+          last_date_to_remove = datetime(LAST_YEAR_TO_REMOVE, LAST_MONTH_TO_REMOVE, LAST_DAY_TO_REMOVE)
+
+          dbx = dropbox.Dropbox("LTdBbopPUQ0AAAAAAAACxh4_Qd1eVMM7IBK3ULV3BgxzWZDMfhmgFbuUNF_rXQWb")
+          #TODO: Move this to GH secrets.
+          print(f"dbx = dropbox.Dropbox({os.environ['DROPBOX_KEY']})")
+
+          stop = False
+
+          i = 0
+          while True:
+              print("Starting with page {0}".format(i))
+              i += 1
+
+              # We can just use the list_folder and ignore the cursor
+              # as we delete all files anyway
+              folderList = dbx.files_list_folder('/MultiplayerGames')
+
+              for entry in folderList.entries:
+                  print("Found file {0}".format(entry.name))
+                  metadata = dbx.files_download_to_file(entry.name, "/MultiplayerGames/{0}".format(entry.name))
+                  print("Downloaded file {0}".format(entry.name))
+
+                  if (metadata.client_modified <= last_date_to_remove and metadata.server_modified <= last_date_to_remove and entry.name != ""):
+                      #dbx.files_delete("/MultiplayerGames/{0}".format(entry.name)) # TODO: Uncomment this to enable.
+                      print("Deleted file {0}".format(entry.name))
+                      # TODO: If it's decided to archive old saves somewhere, then the deletion should be done only after GH commit. Probably save the file paths in a file somewhere.
+                  else:
+                      stop = True
+                      break
+
+              if (stop):
+                  break
+      - name: Upload to Archive.
+        shell: bash
+        # TODO: Archive old saves in GH repo?
+        run: |
+          set -euo pipefail
+          cd "$ARCHIVE_DIR"
+          echo "In $(pwd)."
+          echo git config user.name "$GITHUB_ACTOR"
+          echo git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          echo git add .
+          echo git diff --stat --cached | cat
+          tree
+          echo git commit --allow-empty -m 'Update multiplayer archive.'
+          echo git push -f
+          echo "Done."
