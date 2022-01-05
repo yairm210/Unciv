@@ -221,13 +221,24 @@ fun Int.toLabel() = this.toString().toLabel()
 fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
+    
+    // To avoid recolouring icons, we use the colour markdown syntax, 
+    // instead of just applying a color via the style
+    // We also translate the string, as that fills in the placeholder tags, which prevents a 
+    // conflict between the square brackets used for those and those used for colour markdown.
+    var translatedText = "[#${fontColor}]${this.tr()}[]"
     var labelStyle = BaseScreen.skin.get(Label.LabelStyle::class.java)
-    if (fontColor != Color.WHITE || fontSize != 18) { // if we want the default we don't need to create another style
+    if (fontSize != 18) { // if we want the default we don't need to create another style
         labelStyle = Label.LabelStyle(labelStyle) // clone this to another
-        labelStyle.fontColor = fontColor
         if (fontSize != 18) labelStyle.font = Fonts.font
     }
-    return Label(this.tr(), labelStyle).apply { setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE) }
+    if (fontColor != Color.WHITE) {
+        // uncolour any font characters that should not be coloured
+        for (char in Fonts.uncolorableFontCharacters) {
+            translatedText = translatedText.replace(char.toString(), "[][#ffffff]${char}[][#${fontColor}]")
+        }
+    }
+    return Label(translatedText, labelStyle).apply { setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE) }
 }
 
 /**

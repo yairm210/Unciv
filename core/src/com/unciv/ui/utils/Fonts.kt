@@ -128,11 +128,12 @@ object Fonts {
      * AND it means that our 'custom' emojis only need to be once size (50px) and they'll be rescaled for what's needed. */
     const val ORIGINAL_FONT_SIZE = 50f
 
-    lateinit var font:BitmapFont
+    lateinit var font: BitmapFont
     fun resetFont() {
         val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
         font = BitmapFont(fontData, fontData.regions, false)
         font.setOwnsTexture(true)
+        font.data.markupEnabled = true;
     }
 
     // From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
@@ -171,6 +172,8 @@ object Fonts {
     const val happiness = '⌣'           // U+2323 'smile' (😀 U+1F600 'grinning face')
     const val faith = '☮'               // U+262E 'peace symbol' (🕊 U+1F54A 'dove of peace')
 
+    val uncolorableFontCharacters = listOf(production, gold, food, science, culture, happiness, faith)
+    
     fun statToChar(stat: Stat): Char {
         return when (stat) {
             Stat.Food -> food
