@@ -200,7 +200,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
 
                 val centerTable = Table()
                 centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
-                centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
+                centerTable.add(wonder.getShortDescription()
                         .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))

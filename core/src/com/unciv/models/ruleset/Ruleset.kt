@@ -173,6 +173,20 @@ class Ruleset {
 
         val buildingsFile = folderHandle.child("Buildings.json")
         if (buildingsFile.exists()) buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
+        for(building in buildings.values) {
+            if (building.uniqueTo != null)
+                building.uniques.add("Unique to [${building.uniqueTo}]")
+            if (building.replaces != null)
+                building.uniques.add("Replaces [${building.replaces}]")
+            if (building.requiredTech != null)
+                building.uniques.add("Required tech: [${building.requiredTech}]")
+            if (building.requiredResource != null)
+                building.uniques.add("Consumes [1] [${building.requiredResource}]")
+            if (building.requiredBuilding != null)
+                building.uniques.add("Requires a [${building.requiredBuilding}] in this city")
+            if (building.requiredBuildingInAllCities != null)
+                building.uniques.add("Requires a [${building.requiredBuildingInAllCities}] in all cities")
+        }
 
         val terrainsFile = folderHandle.child("Terrains.json")
         if (terrainsFile.exists()) {
@@ -198,6 +212,20 @@ class Ruleset {
         
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
+        for(unit in units.values) {
+            if (unit.uniqueTo != null)
+                unit.uniques.add("Unique to [${unit.uniqueTo}]")
+            if (unit.replaces != null)
+                unit.uniques.add("Replaces [${unit.replaces}]")
+            if (unit.requiredTech != null)
+                unit.uniques.add("Required tech: [${unit.requiredTech}]")
+            if (unit.requiredResource != null)
+                unit.uniques.add("Consumes [1] [${unit.requiredResource}]")
+            if (unit.obsoleteTech != null)
+                unit.uniques.add("Obsolete with [${unit.obsoleteTech}]")
+            if (unit.upgradesTo != null)
+                unit.uniques.add("Upgrades to [${unit.upgradesTo}]")
+        }
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))

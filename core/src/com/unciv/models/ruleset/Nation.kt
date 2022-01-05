@@ -219,7 +219,7 @@ class Nation : RulesetObject() {
             } else if (building.replaces != null) {
                 textList += FormattedLine("Replaces [${building.replaces}], which is not found in the ruleset!", indent=1)
             } else {
-                textList += FormattedLine(building.getShortDescription(ruleset), indent=1)
+                textList += FormattedLine(building.getShortDescription(), indent=1)
             }
         }
     }
