@@ -235,7 +235,7 @@ fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
     if (fontColor != Color.WHITE) {
         // uncolour any font characters that should not be coloured
         for (char in Fonts.uncolorableFontCharacters) {
-            translatedText = translatedText.replace(char.toString(), "[][#ffffff]${char}[][#${fontColor}]")
+            translatedText = translatedText.replace(char.toString(), "[#ffffff]${char}[]")
         }
     }
     return Label(translatedText, labelStyle).apply { setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE) }
