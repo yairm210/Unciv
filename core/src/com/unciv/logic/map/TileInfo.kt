@@ -377,13 +377,6 @@ open class TileInfo {
         if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name)
             stats.add(tileResource.improvementStats!!.clone()) // resource-specific improvement
 
-        // Deprecated since 3.17.10
-            for (unique in improvement.getMatchingUniques(UniqueType.StatsWithTech)) {
-                if (observingCiv.tech.isResearched(unique.params[1]))
-                    stats.add(unique.stats)
-            }
-        //
-        
         for (unique in improvement.getMatchingUniques(UniqueType.Stats, StateForConditionals(civInfo = observingCiv, cityInfo = city))) {
             stats.add(unique.stats)
         }
@@ -391,11 +384,7 @@ open class TileInfo {
         if (city != null) {
             val tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals(civInfo = observingCiv, cityInfo = city))
                 .filter { city.matchesFilter(it.params[2]) }
-            val improvementUniques = 
-                // Deprecated since 3.17.10
-                    improvement.getMatchingUniques(UniqueType.StatsOnTileWithTech)
-                        .filter { observingCiv.tech.isResearched(it.params[2]) } +
-                //
+            val improvementUniques =
                 improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, StateForConditionals(civInfo = observingCiv, cityInfo = city))
             
             for (unique in tileUniques + improvementUniques) {
@@ -445,11 +434,6 @@ open class TileInfo {
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
             } -> return false
-            // Deprecated since 3.18.5
-                improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
-                    matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
-                } -> false
-            //
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, StateForConditionals(civInfo=civInfo)).any {
                 matchesTerrainFilter(it.params[0])
             } -> false

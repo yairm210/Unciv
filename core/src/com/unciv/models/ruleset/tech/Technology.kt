@@ -39,13 +39,6 @@ class Technology: RulesetObject() {
 
         for (improvement in ruleset.tileImprovements.values) {
             for (unique in improvement.uniqueObjects) {
-                // Deprecated since 3.17.10
-                    if (unique.isOfType(UniqueType.StatsWithTech) && unique.params.last() == name)
-                        lineList += "[${unique.params[0]}] from every [${improvement.name}]"
-                    else if (unique.isOfType(UniqueType.StatsOnTileWithTech) && unique.params.last() == name)
-                        lineList += "[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles"
-                    else 
-                //
                 if (unique.isOfType(UniqueType.Stats)) {
                     val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
                     if (requiredTech != name) continue
@@ -157,12 +150,7 @@ class Technology: RulesetObject() {
         ruleset.tileImprovements.values
             .asSequence()
             .filter { improvement ->
-                // Deprecated since 3.18.6
-                    improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
-                        it.params[1] == name
-                    } ||
-                //
-                improvement.uniqueObjects.any { 
+                improvement.uniqueObjects.any {
                     unique -> unique.conditionals.any { 
                         (it.isOfType(UniqueType.ConditionalTech) || it.isOfType(UniqueType.ConditionalNoTech)) 
                         && it.params[0] == name 
@@ -217,18 +205,6 @@ class Technology: RulesetObject() {
         var wantEmpty = true
         for (improvement in ruleset.tileImprovements.values)
             for (unique in improvement.uniqueObjects) {
-                // Deprecated since 3.17.10
-                    if (unique.isOfType(UniqueType.StatsWithTech) && unique.params.last() == name) {
-                        if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
-                        lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}]",
-                            link = improvement.makeLink())
-                    } else if (unique.isOfType(UniqueType.StatsOnTileWithTech) && unique.params.last() == name) {
-                        if (wantEmpty) { lineList += FormattedLine(); wantEmpty = false }
-                        lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles",
-                            link = improvement.makeLink())
-                    }
-                    else
-                //
                 if (unique.isOfType(UniqueType.Stats)) {
                     val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
                     if (requiredTech != name) continue

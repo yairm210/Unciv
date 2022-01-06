@@ -88,15 +88,6 @@ class CityConstructions {
         val stats = Stats()
         for (building in getBuiltBuildings())
             stats.add(building.getStats(cityInfo))
-
-        
-        // Deprecated since 3.17.11
-            for (unique in cityInfo.getLocalMatchingUniques(UniqueType.StatsWithTech)) {
-                if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
-                    stats.add(unique.stats)
-            }
-        //
-        
         return stats
     }
 

@@ -48,6 +48,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var isWonder = false
     var isNationalWonder = false
     fun isAnyWonder() = isWonder || isNationalWonder
+    @Deprecated("Since 3.18.15 - replaced with RequiresAnotherBuilding unique")
     var requiredBuilding: String? = null
     var requiredBuildingInAllCities: String? = null
 
@@ -249,14 +250,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
-        if (requiredTech != null || requiredBuilding != null || requiredBuildingInAllCities != null)
+        if (requiredTech != null ||  requiredBuildingInAllCities != null)
             textList += FormattedLine()
         if (requiredTech != null)
             textList += FormattedLine("Required tech: [$requiredTech]",
                 link="Technology/$requiredTech")
-        if (requiredBuilding != null)
-            textList += FormattedLine("Requires [$requiredBuilding] to be built in the city",
-                link="Building/$requiredBuilding")
         if (requiredBuildingInAllCities != null)
             textList += FormattedLine("Requires [$requiredBuildingInAllCities] to be built in all cities",
                 link="Building/$requiredBuildingInAllCities")
@@ -484,11 +482,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for (unique in uniqueObjects) {
             when (unique.placeholderText) {
-                // Deprecated since 3.16.11, replace with "Not displayed [...] construction without []"
-                    UniqueType.NotDisplayedUnlessOtherBuildingBuilt.placeholderText ->
-                        if (!cityConstructions.containsBuildingOrEquivalent(unique.params[0]))
-                            rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
-                //
 
                 UniqueType.NotDisplayedWithout.placeholderText ->
                     if (unique.params[0] in ruleSet.tileResources && !civInfo.hasResource(unique.params[0])

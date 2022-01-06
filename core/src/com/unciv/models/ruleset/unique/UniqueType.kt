@@ -202,10 +202,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
 
     NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
-    //UniqueType added in 3.18.4
-    @Deprecated("As of 3.16.11", ReplaceWith("Not displayed as an available construction without [buildingName]"), DeprecationLevel.WARNING)
-    NotDisplayedUnlessOtherBuildingBuilt("Not displayed as an available construction unless [buildingName] is built", UniqueTarget.Building),
-
     MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
     MustNotBeOn("Must not be on [terrainFilter]", UniqueTarget.Building),
     MustBeNextTo("Must be next to [terrainFilter]", UniqueTarget.Building),
@@ -348,16 +344,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     ////// region Improvement uniques
     ImprovementBuildableByFreshWater("Can also be built on tiles adjacent to fresh water", UniqueTarget.Improvement),
     ImprovementStatsOnTile("[stats] from [tileFilter] tiles", UniqueTarget.Improvement),
-    @Deprecated("As of 3.17.10", ReplaceWith("[stats] from [tileFilter] tiles <after discovering [tech]>"), DeprecationLevel.WARNING)
-    StatsOnTileWithTech("[stats] on [tileFilter] tiles once [tech] is discovered", UniqueTarget.Improvement),
-    @Deprecated("As of 3.17.10", ReplaceWith("[stats] <after discovering [tech]>"), DeprecationLevel.WARNING)
-    StatsWithTech("[stats] once [tech] is discovered", UniqueTarget.Improvement, UniqueTarget.Building),
     ImprovementStatsForAdjacencies("[stats] for each adjacent [tileFilter]", UniqueTarget.Improvement),
 
     CanBuildOutsideBorders("Can be built outside your borders", UniqueTarget.Improvement),
     CanBuildJustOutsideBorders("Can be built just outside your borders", UniqueTarget.Improvement),
-    @Deprecated("As of 3.18.5", ReplaceWith("Cannot be built on [tileFilter] tiles <before discovering [tech]>"))
-    RequiresTechToBuildOnTile("Cannot be built on [tileFilter] tiles until [tech] is discovered", UniqueTarget.Improvement),
     CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
     NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
     
@@ -476,6 +466,15 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
 
     // region DEPRECATED AND REMOVED
+
+    @Deprecated("As of 3.18.5 - removed 3.18.15", ReplaceWith("Cannot be built on [tileFilter] tiles <before discovering [tech]>"), DeprecationLevel.ERROR)
+    RequiresTechToBuildOnTile("Cannot be built on [tileFilter] tiles until [tech] is discovered", UniqueTarget.Improvement),
+    @Deprecated("As of 3.17.10 - removed 3.18.15", ReplaceWith("[stats] from [tileFilter] tiles <after discovering [tech]>"), DeprecationLevel.ERROR)
+    StatsOnTileWithTech("[stats] on [tileFilter] tiles once [tech] is discovered", UniqueTarget.Improvement),
+    @Deprecated("As of 3.17.10 - removed 3.18.15", ReplaceWith("[stats] <after discovering [tech]>"), DeprecationLevel.ERROR)
+    StatsWithTech("[stats] once [tech] is discovered", UniqueTarget.Improvement, UniqueTarget.Building),
+    @Deprecated("As of 3.16.11 - removed 3.18.15", ReplaceWith("Not displayed as an available construction without [buildingName]"), DeprecationLevel.ERROR)
+    NotDisplayedUnlessOtherBuildingBuilt("Not displayed as an available construction unless [buildingName] is built", UniqueTarget.Building),
 
     @Deprecated("As of 3.16.15 - removed 3.18.4", ReplaceWith("Provides the cheapest [stat] building in your first [amount] cities for free"), DeprecationLevel.ERROR)
     FreeStatBuildingsDeprecated("Immediately creates the cheapest available cultural building in each of your first [amount] cities for free", UniqueTarget.Global),
