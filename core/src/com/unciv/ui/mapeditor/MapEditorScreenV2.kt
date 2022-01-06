@@ -129,7 +129,7 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
         mapHolder.remove()
         tileMap = map
         checkAndFixMapSize()
-        ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods)
+        ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
         mapHolder = newMapHolder()
         isDirty = false
         modsTabNeedsRefresh = true

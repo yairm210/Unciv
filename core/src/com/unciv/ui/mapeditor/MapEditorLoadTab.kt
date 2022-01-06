@@ -90,7 +90,13 @@ class MapEditorLoadTab(
         try {
             val map = MapSaver.loadMap(chosenMap!!, checkSizeErrors = false)
 
-            val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }
+            val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
+            // [TEMPORARY] conversion of old maps with a base ruleset contained in the mods
+            val newBaseRuleset = map.mapParameters.mods.filter { it !in missingMods }.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+            if (newBaseRuleset != null) map.mapParameters.baseRuleset = newBaseRuleset
+            //
+
+            if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
             if (missingMods.isNotEmpty()) {
                 Gdx.app.postRunnable {
                     needPopup = false
@@ -100,6 +106,13 @@ class MapEditorLoadTab(
             } else Gdx.app.postRunnable {
                 Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                 try {
+                    // For deprecated maps, set the base ruleset field if it's still saved in the mods field
+                    val modBaseRuleset = map.mapParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
+                    if (modBaseRuleset != null) {
+                        map.mapParameters.baseRuleset = modBaseRuleset
+                        map.mapParameters.mods -= modBaseRuleset
+                    }
+
                     editorScreen.loadMap(map)
                     needPopup = false
                     popup?.close()

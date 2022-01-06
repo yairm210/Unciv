@@ -244,6 +244,6 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
         /** Tests presence of a physical keyboard - static here as convenience shortcut only */
         val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
 
-        private const val consoleLog = true
+        private const val consoleLog = false
     }
 }
