@@ -362,7 +362,7 @@
 	{
 		"name": "Autocracy",
 		"era": "Industrial era",
-		"uniques": ["[-33]% maintenance costs for [All] units", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
+		"uniques": ["[-33]% maintenance costs <for [All] units>", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
 			"Incompatible with [Order]", "Incompatible with [Freedom]"],
 		"policies": [
 			{

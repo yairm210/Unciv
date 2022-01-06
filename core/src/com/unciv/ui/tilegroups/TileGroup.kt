@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.*
@@ -40,8 +41,8 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     Layers:
     Base image (+ overlay)
     Feature overlay / city overlay
-    Misc: Units, improvements, resources, border
-    Circle, Crosshair, Fog layer
+    Misc: Units, improvements, resources, border, arrows
+    Highlight, Crosshair, Fog layer
     City name
     */
 
@@ -121,9 +122,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     val cityButtonLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize)
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }
 
-    val circleCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
-    val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
-    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair") // for when a unit is targeted
+    val highlightCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    val highlightImage = ImageGetter.getImage(tileSetStrings.orFallback { getString(tileSetLocation, "Highlight") }) // for blue and red circles/emphasis on the tile
+    private val crosshairImage = ImageGetter.getImage(tileSetStrings.orFallback { getString(tileSetLocation, "Crosshair") }) // for when a unit is targeted
     private val fogImage = ImageGetter.getImage(tileSetStrings.orFallback { crosshatchHexagon } )
 
     /**
@@ -161,14 +162,14 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         this.addActor(miscLayerGroup)
         this.addActor(unitLayerGroup)
         this.addActor(cityButtonLayerGroup)
-        this.addActor(circleCrosshairFogLayerGroup)
+        this.addActor(highlightCrosshairFogLayerGroup)
 
         terrainFeatureLayerGroup.addActor(pixelMilitaryUnitGroup)
         terrainFeatureLayerGroup.addActor(pixelCivilianUnitGroup)
 
         updateTileImage(null)
 
-        addCircleImage()
+        addHighlightImage()
         addFogImage()
         addCrosshairImage()
         isTransform = false // performance helper - nothing here is rotated or scaled
@@ -178,34 +179,27 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
 
     //region init functions
-    private fun addCircleImage() {
-        circleImage.width = 50f
-        circleImage.height = 50f
-        circleImage.center(this)
-        circleCrosshairFogLayerGroup.addActor(circleImage)
-        circleImage.isVisible = false
+    private fun addHighlightImage() {
+        highlightCrosshairFogLayerGroup.addActor(highlightImage)
+        setHexagonImageSize(highlightImage)
+        highlightImage.isVisible = false
     }
 
     private fun addFogImage() {
-        val imageScale = groupSize * 1.5f / fogImage.width
-        fogImage.setScale(imageScale)
-        fogImage.setOrigin(Align.center)
-        fogImage.center(this)
         fogImage.color = Color.WHITE.cpy().apply { a = 0.2f }
-        circleCrosshairFogLayerGroup.addActor(fogImage)
+        highlightCrosshairFogLayerGroup.addActor(fogImage)
+        setHexagonImageSize(fogImage)
     }
 
     private fun addCrosshairImage() {
-        crosshairImage.width = 70f
-        crosshairImage.height = 70f
-        crosshairImage.center(this)
         crosshairImage.isVisible = false
-        circleCrosshairFogLayerGroup.addActor(crosshairImage)
+        highlightCrosshairFogLayerGroup.addActor(crosshairImage)
+        setHexagonImageSize(crosshairImage)
     }
     //endregion
 
-    fun showCrosshair(color: Color) {
-        crosshairImage.color = color.cpy().apply { a = 0.5f }
+    fun showCrosshair(alpha: Float = 1f) {
+        crosshairImage.color.a = alpha
         crosshairImage.isVisible = true
     }
 
@@ -253,12 +247,11 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     /** Used for: Underlying tile, unit overlays, border images, perhaps for other things in the future.
      Parent should already be set when calling. */
     private fun setHexagonImageSize(hexagonImage: Image) {
-        // Using "scale" can get really confusing when positioning, how about no
-        // TODO: Make as many images use this as possible— Standardized "Image on tile" placement for consistently moddable crosshairs, circles, etc.
         hexagonImage.setSize(hexagonImageWidth, hexagonImage.height * hexagonImageWidth / hexagonImage.width)
         hexagonImage.setOrigin(hexagonImageOrigin.first, hexagonImageOrigin.second)
         hexagonImage.x = hexagonImagePosition.first
         hexagonImage.y = hexagonImagePosition.second
+        hexagonImage.setScale(tileSetStrings.tileSetConfig.tileScale)
     }
 
     private fun updateTileImage(viewingCiv: CivilizationInfo?) {
@@ -339,7 +332,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             fogImage.isVisible = true
         }
 
-        hideCircle()
+        hideHighlight()
         if (viewingCiv != null && !isExplored(viewingCiv)) {
             clearUnexploredTiles()
             for(image in tileBaseImages) image.color = tileSetStrings.tileSetConfig.unexploredTileColor
@@ -659,33 +652,25 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
         val militaryUnit = tileInfo.militaryUnit
         if (militaryUnit != null && showMilitaryUnit) {
-            val unitType = militaryUnit.type
             fun TileSetStrings.getThisUnit(): String? {
                 val specificUnitIconLocation = this.unitsLocation + militaryUnit.name
-                return when {
-                    !UncivGame.Current.settings.showPixelUnits -> ""
-                    militaryUnit.civInfo.nation.style=="" &&
-                            ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
-                    ImageGetter.imageExists(specificUnitIconLocation + "-" + militaryUnit.civInfo.nation.style) ->
-                        specificUnitIconLocation + "-" + militaryUnit.civInfo.nation.style
-                    ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
-                    militaryUnit.baseUnit.replaces != null &&
-                            ImageGetter.imageExists(this.unitsLocation + militaryUnit.baseUnit.replaces) ->
-                        this.unitsLocation + militaryUnit.baseUnit.replaces
-
-                    militaryUnit.civInfo.gameInfo.ruleSet.units.values.any {
-                        it.unitType == unitType.name && ImageGetter.imageExists(this.unitsLocation + it.name)
-                    } ->
-                        {
-                            val unitWithSprite = militaryUnit.civInfo.gameInfo.ruleSet.units.values.first {
-                                it.unitType == unitType.name && ImageGetter.imageExists(this.unitsLocation + it.name)
-                            }.name
-                            this.unitsLocation + unitWithSprite
-                        }
-                    unitType.isLandUnit() && ImageGetter.imageExists(this.landUnit) -> this.landUnit
-                    unitType.isWaterUnit() && ImageGetter.imageExists(this.waterUnit) -> this.waterUnit
-                    else -> null
-                }
+                return ImageAttempter(militaryUnit)
+                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null } // For now I am just converting existing logic, but this should be made into a short-circuit at the very start.
+                        .tryImage { if (civInfo.nation.style.isEmpty()) specificUnitIconLocation else null }
+                        .tryImage { "$specificUnitIconLocation-${civInfo.nation.style}" }
+                        .tryImage { specificUnitIconLocation }
+                        .tryImage { if (baseUnit.replaces != null) "$unitsLocation${baseUnit.replaces}" else null }
+                        .tryImages(
+                                militaryUnit.civInfo.gameInfo.ruleSet.units.values.asSequence().map {
+                                    fun MapUnit.() = if (it.unitType == militaryUnit.type.name)
+                                        "$unitsLocation${it.name}"
+                                    else
+                                        null
+                                } // .tryImage/.tryImages takes functions as parameters, for lazy eval. Include the check as part of the .tryImage's lazy candidate parameter, and *not* as part of the .map's transform parameter, so even the name check will be skipped by ImageAttempter if an image has already been found.
+                        )
+                        .tryImage { if (type.isLandUnit()) landUnit else null } // FIXME: Based on FantasyHex's structure this also needs to be in .unitsLocation. But again I am just converting existing logic right now, will do later after this refactor has had a chance to be validated.
+                        .tryImage { if (type.isWaterUnit()) waterUnit else null }
+                        .getPathOrNull()
             }
             newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
         }
@@ -713,15 +698,12 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         if (civilianUnit != null && tileIsViewable) {
             fun TileSetStrings.getThisUnit(): String? {
                 val specificUnitIconLocation = this.unitsLocation + civilianUnit.name
-                return when {
-                    !UncivGame.Current.settings.showPixelUnits -> ""
-                    civilianUnit.civInfo.nation.style=="" &&
-                            ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
-                    ImageGetter.imageExists(specificUnitIconLocation + "-" + civilianUnit.civInfo.nation.style) ->
-                        specificUnitIconLocation + "-" + civilianUnit.civInfo.nation.style
-                    ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
-                    else -> null
-                }
+                return ImageAttempter(civilianUnit)
+                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null } // For now I am just converting existing logic, but this should be made into a short-circuit at the very start.
+                        .tryImage { if (civInfo.nation.style.isEmpty()) specificUnitIconLocation else null }
+                        .tryImage { "$specificUnitIconLocation-${civInfo.nation.style}" }
+                        .tryImage { specificUnitIconLocation } // This seems redundant with the one above… But right now I'm just converting the existing code. Could remove if you can confirm they're redundant.
+                        .getPathOrNull()
             }
             newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""
         }
@@ -768,7 +750,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     /**
      * Add an arrow to be drawn from this tile.
-     * Similar to [showCircle].
+     * Similar to [showHighlight].
      *
      * Zero-length arrows are ignored.
      *
@@ -785,18 +767,18 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     /**
      * Clear all arrows to be drawn from this tile.
-     * Similar to [hideCircle].
+     * Similar to [hideHighlight].
      */
     fun resetArrows() {
         arrowsToDraw.clear()
     }
 
-    fun showCircle(color: Color, alpha: Float = 0.3f) {
-        circleImage.isVisible = true
-        circleImage.color = color.cpy().apply { a = alpha }
+    fun showHighlight(color: Color, alpha: Float = 0.3f) {
+        highlightImage.isVisible = true
+        highlightImage.color = color.cpy().apply { a = alpha }
     }
 
-    fun hideCircle() { circleImage.isVisible = false }
+    fun hideHighlight() { highlightImage.isVisible = false }
 
     /** This exists so we can easily find the TileGroup draw method in the android profiling, otherwise it's just a mass of Group.draw->drawChildren->Group.draw etc. */
     override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }

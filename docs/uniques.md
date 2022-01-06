@@ -23,17 +23,17 @@ Applicable to: Global, FollowerBelief, Improvement
 #### [stats] [cityFilter]
 Example: "[+1 Gold, +2 Production] [in all cities]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### [stats] from every specialist [cityFilter]
 Example: "[+1 Gold, +2 Production] from every specialist [in all cities]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### [stats] per [amount] population [cityFilter]
 Example: "[+1 Gold, +2 Production] per [20] population [in all cities]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### [stats] in cities with [amount] or more population
 Example: "[+1 Gold, +2 Production] in cities with [20] or more population"
@@ -45,11 +45,6 @@ Example: "[+1 Gold, +2 Production] in cities on [Grassland] tiles"
 
 Applicable to: Global, FollowerBelief
 
-#### [stats] per turn from cities before [tech/policy]
-Example: "[+1 Gold, +2 Production] per turn from cities before [tech/policy]"
-
-Applicable to: Global
-
 #### [stats] whenever a Great Person is expended
 Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
 
@@ -58,7 +53,7 @@ Applicable to: Global
 #### [stats] from [tileFilter] tiles [cityFilter]
 Example: "[+1 Gold, +2 Production] from [Farm] tiles [in all cities]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### [stats] from [tileFilter] tiles without [tileFilter] [cityFilter]
 Example: "[+1 Gold, +2 Production] from [Farm] tiles without [Farm] [in all cities]"
@@ -73,7 +68,7 @@ Applicable to: Global, FollowerBelief
 #### [amount]% [stat]
 Example: "[20]% [Culture]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### [amount]% [stat] from City-States
 Example: "[20]% [Culture] from City-States"
@@ -83,7 +78,7 @@ Applicable to: Global
 #### [amount]% [stat] [cityFilter]
 Example: "[20]% [Culture] [in all cities]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
@@ -93,17 +88,17 @@ Applicable to: Global, FollowerBelief, Resource
 #### [amount]% Production when constructing [buildingFilter] buildings [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] buildings [in all cities]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### [amount]% Production when constructing [baseUnitFilter] units [cityFilter]
 Example: "[20]% Production when constructing [Melee] units [in all cities]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### [amount]% unhappiness from population [cityFilter]
 Example: "[20]% unhappiness from population [in all cities]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### Military Units gifted from City-States start with [amount] XP
 Example: "Military Units gifted from City-States start with [20] XP"
@@ -131,11 +126,6 @@ Example: "[20] units cost no maintenance"
 
 Applicable to: Global
 
-#### [amount]% maintenance costs for [mapUnitFilter] units
-Example: "[20]% maintenance costs for [Wounded] units"
-
-Applicable to: Global
-
 #### [amount]% growth [cityFilter]
 Example: "[20]% growth [in all cities]"
 
@@ -159,7 +149,7 @@ Applicable to: Global
 #### [amount]% food consumption by specialists [cityFilter]
 Example: "[20]% food consumption by specialists [in all cities]"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### [amount]% of excess happiness converted to [stat]
 Example: "[20]% of excess happiness converted to [Culture]"
@@ -169,12 +159,12 @@ Applicable to: Global
 #### May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])
 Example: "May buy [Melee] units for [20] [Culture] [in all cities] at an increasing price ([20])"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### May buy [buildingFilter] buildings for [amount] [stat] [cityFilter] at an increasing price ([amount])
 Example: "May buy [buildingFilter] buildings for [20] [Culture] [in all cities] at an increasing price ([20])"
 
-Applicable to: Global
+Applicable to: Global, FollowerBelief
 
 #### May buy [baseUnitFilter] units for [amount] [stat] [cityFilter]
 Example: "May buy [Melee] units for [20] [Culture] [in all cities]"
@@ -206,6 +196,19 @@ Example: "May buy [buildingFilter] buildings with [Culture] for [20] times their
 
 Applicable to: Global, FollowerBelief
 
+#### Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.
+Example: "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once."
+
+Applicable to: Global
+
+#### Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.
+Applicable to: Global
+
+#### Retain [amount]% of the happiness from a luxury after the last copy has been traded away
+Example: "Retain [20]% of the happiness from a luxury after the last copy has been traded away"
+
+Applicable to: Global
+
 #### Enables Research agreements
 Applicable to: Global
 
@@ -213,6 +216,11 @@ Applicable to: Global
 Applicable to: Global
 
 #### Triggers a Cultural Victory upon completion
+Applicable to: Global
+
+#### Cannot build [baseUnitFilter] units
+Example: "Cannot build [Melee] units"
+
 Applicable to: Global
 
 #### [amount]% Strength
@@ -353,19 +361,6 @@ Applicable to: Global
 #### Will not be chosen for new games
 Applicable to: Nation
 
-#### Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.
-Example: "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once."
-
-Applicable to: Nation
-
-#### Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.
-Applicable to: Nation
-
-#### Retain [amount]% of the happiness from a luxury after the last copy has been traded away
-Example: "Retain [20]% of the happiness from a luxury after the last copy has been traded away"
-
-Applicable to: Nation
-
 ## FollowerBelief uniques
 #### [amount]% [stat] from every follower, up to [amount]%
 Example: "[20]% [Culture] from every follower, up to [20]%"
@@ -378,9 +373,6 @@ Example: "Earn [20]% of [Wounded] unit's [costOrStrength] as [Culture] when kill
 Applicable to: FollowerBelief
 
 ## Building uniques
-#### Remove extra unhappiness from annexed cities
-Applicable to: Building
-
 #### Consumes [amount] [resource]
 Example: "Consumes [20] [Iron]"
 
@@ -464,6 +456,12 @@ Applicable to: Building
 
 #### Unsellable
 Applicable to: Building
+
+#### Remove extra unhappiness from annexed cities
+Applicable to: Building
+
+#### Spaceship part
+Applicable to: Building, Unit
 
 #### Hidden when religion is disabled
 Applicable to: Building, Unit, Ruins
@@ -549,9 +547,6 @@ Applicable to: Unit
 Applicable to: Unit
 
 #### Cannot enter ocean tiles
-Applicable to: Unit
-
-#### Cannot enter ocean tiles until Astronomy
 Applicable to: Unit
 
 #### Never appears as a Barbarian unit
@@ -748,11 +743,6 @@ Applicable to: Improvement
 Applicable to: Improvement
 
 #### Can be built just outside your borders
-Applicable to: Improvement
-
-#### Cannot be built on [tileFilter] tiles until [tech] is discovered
-Example: "Cannot be built on [Farm] tiles until [tech] is discovered"
-
 Applicable to: Improvement
 
 #### Cannot be built on [tileFilter] tiles
@@ -1049,6 +1039,7 @@ Example: "<in all except [regionType] Regions>"
 Applicable to: Conditional
 
 ## Deprecated uniques
+ - "[stats] per turn from cities before [tech/policy]" - Deprecated As of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
  - "+[amount]% [stat] [cityFilter]" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [cityFilter]"
  - "+[amount]% [stat] in all cities" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [in all cities]"
  - "[amount]% [stat] while the empire is happy" - Deprecated As of 3.17.1, replace with "[amount]% [stat] [in all cities] <while the empire is happy>"
@@ -1082,8 +1073,10 @@ Applicable to: Conditional
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
+ - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
+ - "Cannot enter ocean tiles until Astronomy" - Deprecated As of 3.18.6, replace with "Cannot enter ocean tiles <before discovering [Astronomy]>"
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
@@ -1101,4 +1094,5 @@ Applicable to: Conditional
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
  - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
+ - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated As of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before discovering [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"

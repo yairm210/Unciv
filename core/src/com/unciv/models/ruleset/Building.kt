@@ -629,7 +629,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        if ("Spaceship part" in uniques) {
+        if (hasUnique(UniqueType.SpaceshipPart)) {
             if (!civInfo.hasUnique("Enables construction of Spaceship parts"))
                 rejectionReasons.add(
                     RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" }
@@ -722,7 +722,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
 
-        if ("Spaceship part" in uniques) {
+        if (hasUnique(UniqueType.SpaceshipPart)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
@@ -792,13 +792,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
     fun isSellable() = !isAnyWonder() && !hasUnique(UniqueType.Unsellable)
 
-    override fun getResourceRequirements(): HashMap<String, Int> {
+    override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
+
+    private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in uniqueObjects)
             if (unique.isOfType(UniqueType.ConsumesResources))
                 resourceRequirements[unique.params[1]] = unique.params[0].toInt()
-        return resourceRequirements
+        resourceRequirements
     }
 
     override fun requiresResource(resource: String): Boolean {

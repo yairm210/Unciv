@@ -8,6 +8,8 @@ class TileSetConfig {
     var fogOfWarColor: Color = Color.BLACK
     /** Name of the tileset to use when this one is missing images. Null to disable. */
     var fallbackTileSet: String? = "FantasyHex"
+    /** Scale factor for hex images, with hex center as origin. */
+    var tileScale: Float = 1f
     var ruleVariants: HashMap<String, Array<String>> = HashMap()
 
     fun updateConfig(other: TileSetConfig){

@@ -103,9 +103,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
-            UniqueType.ConditionalForeignContinent -> state.unit != null &&
-                    (state.unit.civInfo.cities.isEmpty() ||
-                            state.unit.civInfo.getCapital().getCenterTile().getContinent() != state.unit.getTile().getContinent())
+            UniqueType.ConditionalForeignContinent -> 
+                state.civInfo != null 
+                && state.unit != null
+                && (state.civInfo.cities.isEmpty() 
+                    || state.civInfo.getCapital().getCenterTile().getContinent() != state.unit.getTile().getContinent()
+                )
 
             UniqueType.ConditionalNeighborTiles ->
                 state.cityInfo != null &&

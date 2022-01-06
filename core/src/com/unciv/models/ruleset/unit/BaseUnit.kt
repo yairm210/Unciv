@@ -444,8 +444,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (hasUnique(UniqueType.FoundCity) &&
             (civInfo.isCityState() || civInfo.isOneCityChallenger())
-        )
+        ) {
             rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
+        }
+        
+        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits, StateForConditionals(civInfo=civInfo))
+            .any { matchesFilter(it.params[0]) }
+        ) {
+            rejectionReasons.add(RejectionReason.CannotBeBuilt)
+        }
+            
         return rejectionReasons
     }
 
@@ -574,13 +582,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
-    override fun getResourceRequirements(): HashMap<String, Int> {
+    override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
+
+    private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
         for (unique in uniqueObjects)
             if (unique.isOfType(UniqueType.ConsumesResources))
                 resourceRequirements[unique.params[1]] = unique.params[0].toInt()
-        return resourceRequirements
+        resourceRequirements
     }
 
     override fun requiresResource(resource: String): Boolean {

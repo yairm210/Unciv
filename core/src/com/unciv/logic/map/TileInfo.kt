@@ -445,13 +445,24 @@ open class TileInfo {
             improvement.uniqueObjects.any {
                 it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
             } -> return false
-            improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
-                matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
+            // Deprecated since 3.18.5
+                improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
+                    matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
+                } -> false
+            //
+            improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, StateForConditionals(civInfo=civInfo)).any {
+                matchesTerrainFilter(it.params[0])
             } -> false
             improvement.uniqueObjects.any {
                 it.isOfType(UniqueType.ConsumesResources)
                 && civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
+            // Calling this function does double the check for 'cannot be build on tile', but this is unavoidable.
+            // Only in this function do we have the civInfo of the civ, so only here we can check whether
+            // conditionals apply. Additionally, the function below is also called when determining if
+            // an improvement can be on the tile in the given ruleset, in which case we do want to
+            // assume that all conditionals apply, which is done automatically when we don't include
+            // any state for conditionals. Therefore, duplicating the check is the easiest option.
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
     }

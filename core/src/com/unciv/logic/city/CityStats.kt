@@ -211,9 +211,11 @@ class CityStats(val cityInfo: CityInfo) {
             if (cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 addUniqueStats(unique)
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesBefore, cityConditionals))
-            if (!cityInfo.civInfo.hasTechOrPolicy(unique.params[1]))
-                addUniqueStats(unique)
+        // Deprecated since 3.18.14
+            for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesBefore, cityConditionals))
+                if (!cityInfo.civInfo.hasTechOrPolicy(unique.params[1]))
+                    addUniqueStats(unique)
+        //
 
         renameStatmapKeys(sourceToStats)
 

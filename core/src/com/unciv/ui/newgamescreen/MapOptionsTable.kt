@@ -91,6 +91,7 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             try {
                 map = MapSaver.loadMap(mapFile)
             } catch (ex:Exception){
+                ex.printStackTrace()
                 Popup(newGameScreen).apply {
                     addGoodSizedLabel("Could not load map!").row()
                     if (ex is UncivShowableException)

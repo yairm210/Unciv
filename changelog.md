@@ -1,3 +1,23 @@
+## 3.18.14
+
+By will-ca:
+- Unify and improve moddability of more tile-based images, including border images.
+- Arrows in Default tileset.
+
+By xlenstra:
+- Added more yield icons to the city screen
+- Reworked nukes again
+- Updated uniques
+- Fixed a bug with unit discount
+
+Stop promoting units with 0 movement via the promotion screen - By yairm210
+
+Delete unused image - By hundun000
+
+Remove periodic saving again - By GGGuenni
+
+Dispose object Graphics2D if it isn't used - By lishaoxia1985
+
 ## 3.18.13
 
 Stat names also include the stat icon :)

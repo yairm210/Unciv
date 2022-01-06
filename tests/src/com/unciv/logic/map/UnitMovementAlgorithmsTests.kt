@@ -188,7 +188,7 @@ class UnitMovementAlgorithmsTests {
                 if (this.isMelee())
                     uniques.add("Cannot enter ocean tiles")
                 if (this.isRanged())
-                    uniques.add("Cannot enter ocean tiles until Astronomy")
+                    uniques.add("Cannot enter ocean tiles <before researching [Astronomy]>")
             }
             unit.updateUniques(ruleSet)
 

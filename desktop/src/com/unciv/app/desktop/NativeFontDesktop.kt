@@ -6,7 +6,7 @@ import java.awt.*
 import java.awt.image.BufferedImage
 
 
-class NativeFontDesktop(val size: Int) : NativeFontImplementation {
+class NativeFontDesktop(private val size: Int) : NativeFontImplementation {
     private val font by lazy {
         Font("", Font.PLAIN, size)
     }
@@ -14,7 +14,9 @@ class NativeFontDesktop(val size: Int) : NativeFontImplementation {
         val bi = BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR)
         val g = bi.createGraphics()
         g.font = font
-        g.fontMetrics!!
+        val fontMetrics = g.fontMetrics
+        g.dispose()
+        fontMetrics
     }
 
     override fun getFontSize(): Int {
@@ -42,6 +44,7 @@ class NativeFontDesktop(val size: Int) : NativeFontImplementation {
                 pixmap.drawPixel(i, j)
             }
         }
+        g.dispose()
         return pixmap
     }
 }
