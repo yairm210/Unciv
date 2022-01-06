@@ -167,7 +167,7 @@ class PolicyManager {
         if (extraNotificationText != "") {
             extraNotificationTextCopy = "\n${extraNotificationText}"
         }
-        for (civ in civInfo.gameInfo.civilizations) {
+        for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() }) {
             if (civ == civInfo) continue
             val defaultNotificationText = 
                 if (civ.getKnownCivs().contains(civInfo)) {

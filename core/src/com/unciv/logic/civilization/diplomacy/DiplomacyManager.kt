@@ -466,8 +466,10 @@ class DiplomacyManager() {
 
             // Potentially notify about afraid status
             if (influence < 30  // We usually don't want to bully our friends
-            && !hasFlag(DiplomacyFlags.NotifiedAfraid)
-            && civInfo.getTributeWillingness(otherCiv()) > 0) {
+                && !hasFlag(DiplomacyFlags.NotifiedAfraid)
+                && civInfo.getTributeWillingness(otherCiv()) > 0
+                && otherCiv().isMajorCiv()
+            ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
                 val text = "[${civInfo.civName}] is afraid of your military power!"
                 if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)

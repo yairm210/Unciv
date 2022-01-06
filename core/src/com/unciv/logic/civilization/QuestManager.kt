@@ -500,7 +500,7 @@ class QuestManager {
     fun cityStateConquered(cityState: CivilizationInfo, attacker: CivilizationInfo) {
         val matchingQuests = assignedQuests.asSequence()
             .filter { it.questName == QuestName.ConquerCityState.value }
-            .filter { it.data1 == cityState.civName && it.assignee == attacker.civName}
+            .filter { it.data1 == cityState.civName && it.assignee == attacker.civName }
 
         for (quest in matchingQuests)
             giveReward(quest)
@@ -545,7 +545,7 @@ class QuestManager {
             else civInfo.getCapital().location
 
         // Ask for assistance
-        for (thirdCiv in civInfo.getKnownCivs().filter { it.isAlive() && !it.isAtWarWith(civInfo) }) {
+        for (thirdCiv in civInfo.getKnownCivs().filter { it.isAlive() && !it.isAtWarWith(civInfo) && it.isMajorCiv() }) {
             if (location != null)
                 thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}]! Kill [$unitsToKill] of the attacker's military units and they will be immensely grateful.",
                     location, civInfo.civName, "OtherIcons/Quest")
