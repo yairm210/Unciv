@@ -253,10 +253,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     I assume this happened because the TurnCheckerWorker gets canceled by the AndroidLauncher
                     while saves are getting saved right here.
                     Lets hope it works with gamePreview as they are a lot smaller and faster to save
-                    Well they don't work either ¯\_(ツ)_/¯
-                    I will have to find a different way (see #5756 for more info)
                      */
-                    //GameSaver.saveGame(gamePreview, gameNames[arrayIndex])
+                    GameSaver.saveGame(gamePreview, gameNames[arrayIndex])
 
                     if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame.isEmpty()) {
                         // We only save the first found game as the player will go into the
