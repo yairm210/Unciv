@@ -165,12 +165,12 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
 
     fun hideSelection() {
         for (group in highlightedTileGroups)
-            group.hideCircle()
+            group.hideHighlight()
         highlightedTileGroups.clear()
     }
     fun highlightTile(tile: TileInfo, color: Color = Color.WHITE) {
         for (group in mapHolder.tileGroups[tile] ?: return) {
-            group.showCircle(color)
+            group.showHighlight(color)
             highlightedTileGroups.add(group)
         }
     }
