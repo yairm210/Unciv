@@ -48,9 +48,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var isWonder = false
     var isNationalWonder = false
     fun isAnyWonder() = isWonder || isNationalWonder
-    @Deprecated("Since 3.18.15 - replaced with RequiresAnotherBuilding unique")
-    var requiredBuilding: String? = null
-    var requiredBuildingInAllCities: String? = null
 
     /** A strategic resource that will be consumed by this building */
     private var requiredResource: String? = null
@@ -250,14 +247,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
-        if (requiredTech != null ||  requiredBuildingInAllCities != null)
+        if (requiredTech != null) {
             textList += FormattedLine()
-        if (requiredTech != null)
-            textList += FormattedLine("Required tech: [$requiredTech]",
-                link="Technology/$requiredTech")
-        if (requiredBuildingInAllCities != null)
-            textList += FormattedLine("Requires [$requiredBuildingInAllCities] to be built in all cities",
-                link="Building/$requiredBuildingInAllCities")
+            textList += FormattedLine(
+                "Required tech: [$requiredTech]",
+                link = "Technology/$requiredTech"
+            )
+        }
 
         val resourceRequirements = getResourceRequirements()
         if (resourceRequirements.isNotEmpty()) {
@@ -601,25 +597,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (civInfo.cities.any { it.cityConstructions.isBuilt(name) })
                 rejectionReasons.add(RejectionReason.NationalWonderAlreadyBuilt)
 
-            if (requiredBuildingInAllCities != null && civInfo.gameInfo.ruleSet.buildings[requiredBuildingInAllCities!!] == null) {
-                rejectionReasons.add(RejectionReason.InvalidRequiredBuilding)
-            } else {
-                if (requiredBuildingInAllCities != null
-                    && civInfo.cities.any {
-                        !it.isPuppet && !it.cityConstructions
-                        .containsBuildingOrEquivalent(requiredBuildingInAllCities!!)
-                    }
-                ) {
-                    rejectionReasons.add(RejectionReason.RequiresBuildingInAllCities
-                        .apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(requiredBuildingInAllCities!!)}] in all cities"})
-                }
+            if (civInfo.cities.any { it != cityConstructions.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
+                rejectionReasons.add(RejectionReason.NationalWonderBeingBuiltElsewhere)
 
-                if (civInfo.cities.any { it != cityConstructions.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
-                    rejectionReasons.add(RejectionReason.NationalWonderBeingBuiltElsewhere)
+            if (civInfo.isCityState())
+                rejectionReasons.add(RejectionReason.CityStateNationalWonder)
 
-                if (civInfo.isCityState())
-                    rejectionReasons.add(RejectionReason.CityStateNationalWonder)
-            }
         }
 
         if (hasUnique(UniqueType.SpaceshipPart)) {
@@ -668,18 +651,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             }
         }
 
-        if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {
-            if (!civInfo.gameInfo.ruleSet.buildings.containsKey(requiredBuilding!!)) {
-                rejectionReasons.add(
-                    RejectionReason.InvalidRequiredBuilding
-                        .apply { errorMessage = "Requires a [${requiredBuilding}] in this city, which doesn't seem to exist in this ruleset!" }
-                )
-            } else {
-                rejectionReasons.add(
-                    RejectionReason.RequiresBuildingInThisCity.apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"}
-                )
-            }
-        }
         val cannotBeBuiltWithUnique = uniqueObjects
             .firstOrNull { it.isOfType(UniqueType.CannotBeBuiltWith) }
         if (cannotBeBuiltWithUnique != null && cityConstructions.isBuilt(cannotBeBuiltWithUnique.params[0]))
