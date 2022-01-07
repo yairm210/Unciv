@@ -475,6 +475,11 @@ Applicable to: Building, Unit
 #### Founds a new city
 Applicable to: Unit
 
+#### Can construct [improvementName]
+Example: "Can construct [improvementName]"
+
+Applicable to: Unit
+
 #### Can build [improvementFilter/terrainFilter] improvements on tiles
 Example: "Can build [improvementFilter/terrainFilter] improvements on tiles"
 
@@ -1047,6 +1052,8 @@ Applicable to: Conditional
  - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated As of 3.18.2, replace with "[-amount]% food consumption by specialists [cityFilter]"
  - "50% of excess happiness added to culture towards policies" - Deprecated As of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
  - "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])" - Deprecated As of 3.17.9, replace with "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"
+ - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
+ - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
  - "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides the cheapest [stat] building in your first [amount] cities for free"
  - "Immediately creates a [buildingName] in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides a [buildingName] in your first [amount] cities for free"
  - "[mapUnitFilter] units deal +[amount]% damage" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <for [mapUnitFilter] units>"
@@ -1072,11 +1079,10 @@ Applicable to: Conditional
  - "+[amount]% Production when constructing [constructionFilter] [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
- - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
- - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] <after discovering [tech]>"
  - "Cannot enter ocean tiles until Astronomy" - Deprecated As of 3.18.6, replace with "Cannot enter ocean tiles <before discovering [Astronomy]>"
+ - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
@@ -1092,7 +1098,6 @@ Applicable to: Conditional
  - "+[amount]% Strength in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
  - "[amount] Visibility Range" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
- - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
  - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated As of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before discovering [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"

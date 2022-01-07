@@ -438,11 +438,9 @@ class Ruleset {
                     lines += "${unit.name} contains promotion $promotion which does not exist!"
             if (!unitTypes.containsKey(unit.unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unit.unitType)))
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
-            for (unique in unit.getMatchingUniques("Can construct []")) {
+            for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)) {
                 val improvementName = unique.params[0]
-                if (improvementName !in tileImprovements)
-                    lines += "${unit.name} can place improvement $improvementName which does not exist!"
-                else if ((tileImprovements[improvementName] as Stats).none() &&
+                if ((tileImprovements[improvementName] as Stats).none() &&
                         unit.isCivilian() &&
                         !unit.hasUnique("Bonus for units in 2 tile radius 15%")) {
                     lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
