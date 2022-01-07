@@ -49,19 +49,25 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         condition: Unique,
         state: StateForConditionals
     ): Boolean {
+
+        val ruleset = state.civInfo?.gameInfo?.ruleSet
+
         return when (condition.type) {
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
-            UniqueType.ConditionalHappy -> 
+            UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
             UniqueType.ConditionalBeforeEra ->
-                state.civInfo != null && state.civInfo.getEraNumber() < state.civInfo.gameInfo.ruleSet.eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && ruleset!!.eras.containsKey(condition.params[0])
+                        && state.civInfo.getEraNumber() < ruleset.eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalStartingFromEra ->
-                state.civInfo != null && state.civInfo.getEraNumber() >= state.civInfo.gameInfo.ruleSet.eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && ruleset!!.eras.containsKey(condition.params[0])
+                        && state.civInfo.getEraNumber() >= ruleset.eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalDuringEra ->
-                state.civInfo != null && state.civInfo.getEraNumber() == state.civInfo.gameInfo.ruleSet.eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && ruleset!!.eras.containsKey(condition.params[0])
+                        && state.civInfo.getEraNumber() == ruleset.eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalTech ->
                 state.civInfo != null && state.civInfo.tech.isResearched(condition.params[0])
             UniqueType.ConditionalNoTech ->
@@ -70,61 +76,70 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.policies.isAdopted(condition.params[0])
             UniqueType.ConditionalNoPolicy ->
                 state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
-            
-            UniqueType.ConditionalSpecialistCount -> 
+
+            UniqueType.ConditionalSpecialistCount ->
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
 
-            UniqueType.ConditionalVsCity ->
-                state.theirCombatant != null && state.theirCombatant.matchesCategory("City")
-            UniqueType.ConditionalVsUnits ->
-                state.theirCombatant != null && state.theirCombatant.matchesCategory(condition.params[0])
+            UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesCategory("City") == true
+            UniqueType.ConditionalVsUnits -> state.theirCombatant?.matchesCategory(condition.params[0]) == true
             UniqueType.ConditionalOurUnit ->
-                (state.ourCombatant != null && state.ourCombatant.matchesCategory(condition.params[0]))
-                || (state.unit != null && state.unit.matchesFilter(condition.params[0]))
+                state.ourCombatant?.matchesCategory(condition.params[0]) == true
+                        || state.unit?.matchesFilter(condition.params[0]) == true
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
-            UniqueType.ConditionalAboveHP -> 
+            UniqueType.ConditionalAboveHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
             UniqueType.ConditionalBelowHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalInTiles ->
-                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo))
-                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0], state.civInfo))
+                state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
+                        || state.unit?.getTile()
+                    ?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalFightingInTiles ->
-                state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo)
+                state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
-                (state.attackedTile != null && state.attackedTile.matchesFilter(condition.params[0], state.civInfo) && state.attackedTile.matchesFilter(condition.params[1], state.civInfo))
-                || (state.unit != null && state.unit.getTile().matchesFilter(condition.params[0], state.civInfo) && state.unit.getTile().matchesFilter(condition.params[1], state.civInfo))
+                (state.attackedTile != null && state.attackedTile.matchesFilter(
+                    condition.params[0],
+                    state.civInfo
+                )
+                        && state.attackedTile.matchesFilter(condition.params[1], state.civInfo))
+                        || (state.unit != null && state.unit.getTile()
+                    .matchesFilter(condition.params[0], state.civInfo)
+                        && state.unit.getTile().matchesFilter(condition.params[1], state.civInfo))
             UniqueType.ConditionalInTilesNot ->
-                state.attackedTile != null && !state.attackedTile.matchesFilter(condition.params[0], state.civInfo)
-                || (state.unit != null && !state.unit.getTile().matchesFilter(condition.params[0], state.civInfo))
+                state.attackedTile != null && !state.attackedTile.matchesFilter(
+                    condition.params[0],
+                    state.civInfo
+                )
+                        || (state.unit != null && !state.unit.getTile()
+                    .matchesFilter(condition.params[0], state.civInfo))
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
-            UniqueType.ConditionalForeignContinent -> 
-                state.civInfo != null 
-                && state.unit != null
-                && (state.civInfo.cities.isEmpty() 
-                    || state.civInfo.getCapital().getCenterTile().getContinent() != state.unit.getTile().getContinent()
-                )
+            UniqueType.ConditionalForeignContinent ->
+                state.civInfo != null && state.unit != null
+                        && (state.civInfo.cities.isEmpty()
+                        || state.civInfo.getCapital().getCenterTile()
+                    .getContinent() != state.unit.getTile().getContinent()
+                        )
 
             UniqueType.ConditionalNeighborTiles ->
                 state.cityInfo != null &&
-                state.cityInfo.getCenterTile().neighbors.count {
-                    it.matchesFilter(condition.params[2], state.civInfo)
-                } in (condition.params[0].toInt())..(condition.params[1].toInt())
+                        state.cityInfo.getCenterTile().neighbors.count {
+                            it.matchesFilter(condition.params[2], state.civInfo)
+                        } in (condition.params[0].toInt())..(condition.params[1].toInt())
             UniqueType.ConditionalNeighborTilesAnd ->
-                state.cityInfo != null 
-                && state.cityInfo.getCenterTile().neighbors.count {
+                state.cityInfo != null
+                        && state.cityInfo.getCenterTile().neighbors.count {
                     it.matchesFilter(condition.params[2], state.civInfo) &&
-                    it.matchesFilter(condition.params[3], state.civInfo)
+                            it.matchesFilter(condition.params[3], state.civInfo)
                 } in (condition.params[0].toInt())..(condition.params[1].toInt())
 
             UniqueType.ConditionalOnWaterMaps -> state.region?.continentID == -1
             UniqueType.ConditionalInRegionOfType -> state.region?.type == condition.params[0]
-            UniqueType.ConditionalInRegionExceptOfType -> state.region != null && state.region.type != condition.params[0]
+            UniqueType.ConditionalInRegionExceptOfType -> state.region?.type != condition.params[0]
 
             else -> false
         }
