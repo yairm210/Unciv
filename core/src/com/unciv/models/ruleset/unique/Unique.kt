@@ -50,7 +50,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         state: StateForConditionals
     ): Boolean {
 
-        val ruleset = state.civInfo?.gameInfo?.ruleSet
+        fun ruleset() = state.civInfo!!.gameInfo.ruleSet
 
         return when (condition.type) {
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
@@ -60,14 +60,14 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
             UniqueType.ConditionalBeforeEra ->
-                state.civInfo != null && ruleset!!.eras.containsKey(condition.params[0])
-                        && state.civInfo.getEraNumber() < ruleset.eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
+                        && state.civInfo.getEraNumber() < ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalStartingFromEra ->
-                state.civInfo != null && ruleset!!.eras.containsKey(condition.params[0])
-                        && state.civInfo.getEraNumber() >= ruleset.eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
+                        && state.civInfo.getEraNumber() >= ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalDuringEra ->
-                state.civInfo != null && ruleset!!.eras.containsKey(condition.params[0])
-                        && state.civInfo.getEraNumber() == ruleset.eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
+                        && state.civInfo.getEraNumber() == ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalTech ->
                 state.civInfo != null && state.civInfo.tech.isResearched(condition.params[0])
             UniqueType.ConditionalNoTech ->
@@ -98,7 +98,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
-                (state.attackedTile != null && state.attackedTile.matchesFilter(
+                (state.attackedTile != null && state.attackedTile?.matchesFilter(
                     condition.params[0],
                     state.civInfo
                 )
