@@ -26,20 +26,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var cost: Int = 0
     var maintenance = 0
     private var percentStatBonus: Stats? = null
-    private var specialistSlots: Counter<String>? = null
-    fun newSpecialists(): Counter<String> {
-        if (specialistSlots == null) return Counter()
-        // Could have old specialist values of "gold", "science" etc - change them to the new specialist names
-        val counter = Counter<String>()
-        for ((entry, amount) in specialistSlots!!) {
-            val equivalentStat = Stat.values().firstOrNull { it.name.lowercase() == entry }
-
-            if (equivalentStat != null)
-                counter[Specialist.specialistNameByStat(equivalentStat)] = amount
-            else counter[entry] = amount
-        }
-        return counter
-    }
+    var specialistSlots: Counter<String> = Counter()
+    fun newSpecialists(): Counter<String>  = specialistSlots
 
     var greatPersonPoints = Counter<String>()
 

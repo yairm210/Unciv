@@ -456,6 +456,10 @@ class Ruleset {
         for (building in buildings.values) {
             if (building.requiredTech != null && !technologies.containsKey(building.requiredTech!!))
                 lines += "${building.name} requires tech ${building.requiredTech} which does not exist!"
+
+            for (specialistName in building.specialistSlots.keys)
+                if (!specialists.containsKey(specialistName))
+                    lines += "${building.name} provides specialist $specialistName which does not exist!"
             for (resource in building.getResourceRequirements().keys)
                 if (!tileResources.containsKey(resource))
                     lines += "${building.name} requires resource $resource which does not exist!"
