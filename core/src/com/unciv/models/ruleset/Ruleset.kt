@@ -302,6 +302,26 @@ class Ruleset {
                             " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
             }
 
+            for (conditional in unique.conditionals) {
+                if (conditional.type == null) {
+                    lines.add(
+                        "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                                " which is of an unknown type!",
+                        RulesetErrorSeverity.Warning
+                    )
+                } else {
+                    val conditionalComplianceErrors =
+                        conditional.type.getComplianceErrors(conditional, this)
+                    for (complianceError in conditionalComplianceErrors) {
+                        if (complianceError.errorSeverity == severityToReport)
+                            lines += "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                                    " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
+                                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+                    }
+                }
+            }
+
+
             if (severityToReport != UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
                 // If we don't filter these messages will be listed twice as this function is called twice on most objects
                 // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
