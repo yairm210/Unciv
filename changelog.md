@@ -1,3 +1,18 @@
+## 3.18.15
+
+Detailed sources of battle modifiers
+
+Performance improvements
+
+By xlenstra:
+- Disables '[cityState] is afraid of your military power' for spectators & other non-major civs
+- Fixed a bug where great improvements could not be repaired after being pillaged
+- Fixed border image alpha
+
+Revert "Remove periodic saving again " (#5883) - By touhidurrr
+
+Added `tileScale` in `TileSetConfig` - By will-ca
+
 ## 3.18.14
 
 By will-ca:
