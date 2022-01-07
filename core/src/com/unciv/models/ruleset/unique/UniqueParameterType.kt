@@ -102,7 +102,7 @@ enum class UniqueParameterType(val parameterName:String) {
         }
     },
     BuildingFilter("buildingFilter") {
-        private val knownValues = setOf("All","Building","Buildings","Wonder","Wonders","National Wonder","Non-national Wonder")
+        private val knownValues = setOf("All","Building","Buildings","Wonder","Wonders","National Wonder","World Wonder")
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
