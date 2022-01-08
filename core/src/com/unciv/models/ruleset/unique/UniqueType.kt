@@ -179,6 +179,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     
     CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Global),
     
+    SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
+    
     //endregion Global uniques
 
     

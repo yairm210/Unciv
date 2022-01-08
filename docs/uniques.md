@@ -223,6 +223,9 @@ Example: "Cannot build [Melee] units"
 
 Applicable to: Global
 
+#### Rebel units may spawn
+Applicable to: Global
+
 #### [amount]% Strength
 Example: "[20]% Strength"
 
