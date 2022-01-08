@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.INamed
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.SimpleCivilopediaText
@@ -70,10 +71,20 @@ class TutorialController(screen: BaseScreen) {
     /** Get all Tutorials intended to be displayed in the Civilopedia
      *  as a List of wrappers supporting INamed and ICivilopediaText
      */
-    fun getCivilopediaTutorials() =
-        tutorials.filter {
+    fun getCivilopediaTutorials(ruleset: Ruleset): List<CivilopediaTutorial> {
+        val civilopediaTutorials = tutorials.filter {
             Tutorial.findByName(it.key)!!.isCivilopedia
-        }.map {
-            CivilopediaTutorial(it.key, it.value)
+        }.map { tutorial ->
+            val lines = tutorial.value
+                
+            if (tutorial.key == "Unhappiness") {
+                for (unhappinessEffect in ruleset.unhappinessEffects.values.sortedByDescending { it.unhappiness }) {
+                    lines.add("\n${unhappinessEffect.toCivilopediaLines()}")
+                }
+            }
+            
+            CivilopediaTutorial(tutorial.key, lines)
         }
+        return civilopediaTutorials
+    }
 }
