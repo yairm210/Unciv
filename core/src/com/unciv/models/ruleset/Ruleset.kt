@@ -700,9 +700,12 @@ object RulesetCache : HashMap<String,Ruleset>() {
             newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
         }
 
-        // This one should be permanent
+        // These should be permanent
         if (newRuleset.ruinRewards.isEmpty()) {
             newRuleset.ruinRewards.putAll(getBaseRuleset().ruinRewards)
+        }
+        if (newRuleset.unhappinessEffects.isEmpty()) {
+            newRuleset.unhappinessEffects.putAll(getBaseRuleset().unhappinessEffects)
         }
 
         return newRuleset
