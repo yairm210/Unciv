@@ -431,6 +431,7 @@ object TranslationFileWriter {
             "TileImprovements" -> emptyArray<TileImprovement>().javaClass
             "TileResources" -> emptyArray<TileResource>().javaClass
             "Tutorials" -> this.javaClass // dummy value
+            "UnhappinessEffects" -> emptyArray<UnhappinessEffect>().javaClass
             "UnitPromotions" -> emptyArray<Promotion>().javaClass
             "Units" -> emptyArray<BaseUnit>().javaClass
             "UnitTypes" -> emptyArray<UnitType>().javaClass

@@ -77,6 +77,7 @@ class Ruleset {
     val terrains = LinkedHashMap<String, Terrain>()
     val tileImprovements = LinkedHashMap<String, TileImprovement>()
     val tileResources = LinkedHashMap<String, TileResource>()
+    val unhappinessEffects = LinkedHashMap<Int, UnhappinessEffect>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val unitTypes = LinkedHashMap<String, UnitType>()
@@ -116,6 +117,7 @@ class Ruleset {
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
+        unhappinessEffects.putAll(ruleset.unhappinessEffects)
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
@@ -141,6 +143,7 @@ class Ruleset {
         terrains.clear()
         tileImprovements.clear()
         tileResources.clear()
+        unhappinessEffects.clear()
         unitPromotions.clear()
         units.clear()
         unitTypes.clear()
@@ -190,7 +193,7 @@ class Ruleset {
         if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
         // While `eras.values.toList()` might seem more logical, eras.values is a MutableCollection and
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
-        // Using a map sidesteps this problem
+        // Using map{} sidesteps this problem
         eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
         
         val unitTypesFile = folderHandle.child("UnitTypes.json")
@@ -243,8 +246,17 @@ class Ruleset {
         }
 
         val difficultiesFile = folderHandle.child("Difficulties.json")
-        if (difficultiesFile.exists()) difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
+        if (difficultiesFile.exists()) 
+            difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
 
+        val unhappinessEffectsFile = folderHandle.child("Unhappiness.json")
+        if (unhappinessEffectsFile.exists()) {
+            val effects = jsonParser.getFromJson(Array<UnhappinessEffect>::class.java, unhappinessEffectsFile)
+            for (effect in effects) {
+                unhappinessEffects[effect.unhappiness] = effect
+            }
+        } 
+        
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
     }
@@ -263,9 +275,7 @@ class Ruleset {
             }
         }
     }
-
-    fun hasReligion() = beliefs.any() && modWithReligionLoaded
-
+    
     /** Used for displaying a RuleSet's name */
     override fun toString() = when {
         name.isNotEmpty() -> name
