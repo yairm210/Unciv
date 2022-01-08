@@ -2,7 +2,7 @@ package com.unciv.models
 
 class ModConstants {
     // Max amount of experience that can be gained from combat with barbarians
-    val maxXPfromBarbarians = 30
+    var maxXPfromBarbarians = 30
 
     // Formula for city Strength:
     // Strength = baseStrength * (%techs * multiplier) ^ exponent
