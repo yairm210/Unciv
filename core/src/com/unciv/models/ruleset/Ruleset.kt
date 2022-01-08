@@ -159,6 +159,8 @@ class Ruleset {
         if (modOptionsFile.exists()) {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
+                if (modOptions.maxXPfromBarbarians != 30)
+                    modOptions.constants.maxXPfromBarbarians = modOptions.constants.maxXPfromBarbarians
             } catch (ex: Exception) {}
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
         }
