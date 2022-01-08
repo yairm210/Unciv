@@ -51,6 +51,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     ): Boolean {
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleSet
+        val relevantUnitTile = state.attackedTile ?: state.unit?.getTile()
 
         return when (condition.type) {
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
@@ -60,14 +61,11 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
             UniqueType.ConditionalBeforeEra ->
-                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
-                        && state.civInfo.getEraNumber() < ruleset().eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && state.civInfo.getEraNumber() < ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalStartingFromEra ->
-                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
-                        && state.civInfo.getEraNumber() >= ruleset().eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && state.civInfo.getEraNumber() >= ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalDuringEra ->
-                state.civInfo != null && ruleset().eras.containsKey(condition.params[0])
-                        && state.civInfo.getEraNumber() == ruleset().eras[condition.params[0]]!!.eraNumber
+                state.civInfo != null && state.civInfo.getEraNumber() == ruleset().eras[condition.params[0]]!!.eraNumber
             UniqueType.ConditionalTech ->
                 state.civInfo != null && state.civInfo.tech.isResearched(condition.params[0])
             UniqueType.ConditionalNoTech ->
@@ -92,27 +90,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalBelowHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             UniqueType.ConditionalInTiles ->
-                state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
-                        || state.unit?.getTile()
-                    ?.matchesFilter(condition.params[0], state.civInfo) == true
+                relevantUnitTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
-                (state.attackedTile != null && state.attackedTile?.matchesFilter(
-                    condition.params[0],
-                    state.civInfo
-                )
-                        && state.attackedTile.matchesFilter(condition.params[1], state.civInfo))
-                        || (state.unit != null && state.unit.getTile()
-                    .matchesFilter(condition.params[0], state.civInfo)
-                        && state.unit.getTile().matchesFilter(condition.params[1], state.civInfo))
-            UniqueType.ConditionalInTilesNot ->
-                state.attackedTile != null && !state.attackedTile.matchesFilter(
-                    condition.params[0],
-                    state.civInfo
-                )
-                        || (state.unit != null && !state.unit.getTile()
-                    .matchesFilter(condition.params[0], state.civInfo))
+                relevantUnitTile!=null && relevantUnitTile.matchesFilter(condition.params[0], state.civInfo)
+                        && relevantUnitTile.matchesFilter(condition.params[1], state.civInfo)
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
@@ -121,8 +104,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalForeignContinent ->
                 state.civInfo != null && state.unit != null
                         && (state.civInfo.cities.isEmpty()
-                        || state.civInfo.getCapital().getCenterTile()
-                    .getContinent() != state.unit.getTile().getContinent()
+                        || state.civInfo.getCapital().getCenterTile().getContinent()
+                            != state.unit.getTile().getContinent()
                         )
 
             UniqueType.ConditionalNeighborTiles ->
