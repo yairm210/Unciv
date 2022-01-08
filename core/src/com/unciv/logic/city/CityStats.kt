@@ -7,10 +7,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueMapTyped
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -146,15 +143,15 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
-    private fun getGrowthBonusFromPoliciesAndWonders(): Float {
-        var bonus = 0f
+    private fun getGrowthBonus(totalFood: Float): StatMap {
+        val growthSources = StatMap()
+        val stateForConditionals = StateForConditionals(cityInfo.civInfo, cityInfo)
         // "[amount]% growth [cityFilter]"
-        for (unique in cityInfo.getMatchingUniques(UniqueType.GrowthPercentBonus)) {
-            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
-            if (cityInfo.matchesFilter(unique.params[1]))
-                bonus += unique.params[0].toFloat()
+        for (unique in cityInfo.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals = stateForConditionals)) {
+            if (!cityInfo.matchesFilter(unique.params[1])) continue
+            growthSources.add("${unique.sourceObjectType}", Stats(food = unique.params[0].toFloat()/100f * totalFood))
         }
-        return bonus / 100
+        return growthSources
     }
 
     fun hasExtraAnnexUnhappiness(): Boolean {
@@ -437,8 +434,8 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
     private fun updateBaseStatList(statsFromBuildings: Stats) {
-        val newBaseStatList =
-            StatMap() // we don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
+        // We don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
+        val newBaseStatList = StatMap() 
 
         newBaseStatList["Population"] = Stats(
             science = cityInfo.population.population.toFloat(),
@@ -473,6 +470,13 @@ class CityStats(val cityInfo: CityInfo) {
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
         newStatPercentBonusList["Religion"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.religion.getUniques())
         newStatPercentBonusList["Unit Supply"] = getStatPercentBonusesFromUnitSupply()
+        if (cityInfo.civInfo.happinessForNextTurn < 0) 
+            newStatPercentBonusList["Unhappiness"] = getStatPercentBonusesFromUniques(currentConstruction,
+                cityInfo.civInfo.gameInfo.ruleSet.unhappinessEffects
+                    .filter { it.key > cityInfo.civInfo.happinessForNextTurn }
+                    .minByOrNull { it.key }?.value
+                    ?.uniqueObjects?.asSequence() ?: sequenceOf()
+            )
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()
@@ -564,15 +568,12 @@ class CityStats(val cityInfo: CityInfo) {
         if (totalFood > 0) {
             // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
             // All bonuses except We Love The King do apply even when unhappy
-            val foodFromGrowthBonuses = Stats(food = getGrowthBonusFromPoliciesAndWonders() * totalFood)
-            newFinalStatList.add("Growth bonus", foodFromGrowthBonuses)
-            val happiness = cityInfo.civInfo.getHappiness()
-            if (happiness < 0) {
-                // Unhappiness -75% to -100%
-                val foodReducedByUnhappiness = if (happiness <= -10) Stats(food = totalFood * -1)
-                    else Stats(food = (totalFood * -3) / 4)
-                newFinalStatList.add("Unhappiness", foodReducedByUnhappiness)
-            } else if (cityInfo.isWeLoveTheKingDay()) {
+            val growthBonuses = getGrowthBonus(totalFood)
+            renameStatmapKeys(growthBonuses)
+            for (growthBonus in growthBonuses) {
+                newFinalStatList.add("${growthBonus.key} (Growth)", growthBonus.value)
+            }
+            if (cityInfo.isWeLoveTheKingDay() && cityInfo.civInfo.getHappiness() >= 0) {
                 // We Love The King Day +25%, only if not unhappy
                 val weLoveTheKingFood = Stats(food = totalFood / 4)
                 newFinalStatList.add("We Love The King Day", weLoveTheKingFood)

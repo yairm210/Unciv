@@ -401,6 +401,16 @@ class CivilizationInfo {
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
+        
+        if (happinessForNextTurn < 0) {
+            val matchingUniques =
+                gameInfo.ruleSet.unhappinessEffects
+                    .filter { it.key > happinessForNextTurn }
+                    .minByOrNull { it.key }?.value
+                    ?.getMatchingUniques(uniqueType, stateForConditionals)
+            if (matchingUniques != null)
+                yieldAll(matchingUniques)
+        }
     }.filter {
         it.conditionalsApply(stateForConditionals)
     }
@@ -423,8 +433,18 @@ class CivilizationInfo {
                 .asSequence()
                 .filter { it.placeholderText == uniqueTemplate }
             )
+        
+        if (happinessForNextTurn < 0) {
+            val matchingUniques = 
+                gameInfo.ruleSet.unhappinessEffects
+                    .filter { it.key > happinessForNextTurn }
+                    .minByOrNull { it.key }?.value
+                    ?.getMatchingUniques(uniqueTemplate)
+            if (matchingUniques != null)
+                yieldAll(matchingUniques)
+        }
     }
-
+ 
     //region Units
     fun getCivUnitsSize(): Int = units.size
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()

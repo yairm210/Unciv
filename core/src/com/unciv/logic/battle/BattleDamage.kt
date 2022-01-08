@@ -20,6 +20,7 @@ object BattleDamage {
         val source =  when (unique.sourceObjectType) {
             UniqueTarget.Unit -> "Unit ability"
             UniqueTarget.Nation -> "National ability"
+            UniqueTarget.Unhappiness -> unique.sourceObjectName!!
             else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
         }
         if (unique.conditionals.isEmpty()) return source
@@ -60,19 +61,6 @@ object BattleDamage {
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-            val civHappiness = if (civInfo.isCityState() && civInfo.getAllyCiv() != null)
-            // If we are a city state with an ally we are vulnerable to their unhappiness.
-                min(
-                    civInfo.gameInfo.getCivilization(civInfo.getAllyCiv()!!).getHappiness(),
-                    civInfo.getHappiness()
-                )
-            else civInfo.getHappiness()
-            if (civHappiness < 0)
-                modifiers["Unhappiness"] = max(
-                    2 * civHappiness,
-                    -90
-                ) // otherwise it could exceed -100% and start healing enemy units...
-
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
 
             for (unique in civInfo.getMatchingUniques("[]% Strength for [] units which have another [] unit in an adjacent tile")) {
