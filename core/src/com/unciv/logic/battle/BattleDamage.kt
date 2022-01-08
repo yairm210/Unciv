@@ -14,18 +14,18 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class BattleDamageModifier(val vs:String, val modificationAmount:Float){
-    fun getText(): String = "vs $vs"
-}
-
 object BattleDamage {
     
     private fun getModifierStringFromUnique(unique: Unique): String {
-        return when (unique.sourceObjectType) {
+        val source =  when (unique.sourceObjectType) {
             UniqueTarget.Unit -> "Unit ability"
             UniqueTarget.Nation -> "National ability"
             else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
         }
+        if (unique.conditionals.isEmpty()) return source
+
+        val conditionalsText = unique.conditionals.joinToString { it.text }
+        return "$source - $conditionalsText"
     }
 
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction): Counter<String> {

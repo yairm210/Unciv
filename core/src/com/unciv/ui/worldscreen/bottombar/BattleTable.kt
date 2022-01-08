@@ -24,7 +24,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     init {
         isVisible = false
         skin = BaseScreen.skin
-        background = ImageGetter.getBackground(ImageGetter.getBlue())
+        background = ImageGetter.getBackground(ImageGetter.getBlue().apply { a=0.8f })
 
         defaults().pad(5f)
         pad(5f)
@@ -130,9 +130,16 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                     }
                 else listOf()
 
-        for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
-            if (attackerModifiers.size > i) add(attackerModifiers[i].toLabel(fontSize = 14)) else add()
-            if (defenderModifiers.size > i) add(defenderModifiers[i].toLabel(fontSize = 14)) else add()
+        val quarterScreen = worldScreen.stage.width/4
+        for (i in 0..max(attackerModifiers.size,defenderModifiers.size)) {
+            if (attackerModifiers.size > i)
+                add(attackerModifiers[i].toLabel(fontSize = 14)
+                    .apply { wrap = true }).width(quarterScreen)
+            else add().width(quarterScreen)
+            if (defenderModifiers.size > i)
+                add(defenderModifiers[i].toLabel(fontSize = 14)
+                    .apply { wrap = true }).width(quarterScreen)
+            else add().width(quarterScreen)
             row().pad(2f)
         }
 

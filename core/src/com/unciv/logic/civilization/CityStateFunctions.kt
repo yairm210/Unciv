@@ -639,10 +639,15 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (civInfo.cities.isEmpty()) // Can't receive units with no cities
             return
 
-        for (thirdCiv in civInfo.getKnownCivs().filter {
-                it != attacker && it.isAlive() && it.knows(attacker) && !it.isAtWarWith(attacker) }) {
-            thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}] and asks all major civilizations to help them out by gifting them military units.",
-                civInfo.getCapital().location, civInfo.civName, "OtherIcons/Present")
+        for (thirdCiv in civInfo.getKnownCivs()
+            .filter { it != attacker && it.isAlive() && it.knows(attacker) && !it.isAtWarWith(attacker) && it.isMajorCiv() }
+        ) {
+            thirdCiv.addNotification(
+                "[${civInfo.civName}] is being attacked by [${attacker.civName}] and asks all major civilizations to help them out by gifting them military units.",
+                civInfo.getCapital().location, 
+                civInfo.civName, 
+                "OtherIcons/Present",
+            )
         }
     }
 
