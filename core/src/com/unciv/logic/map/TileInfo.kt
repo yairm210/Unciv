@@ -447,11 +447,11 @@ open class TileInfo {
             } -> return false
             // Deprecated since 3.18.5
                 improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
-                    matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
+                    matchesTerrainFilter(it.params[0], civInfo) && !civInfo.tech.isResearched(it.params[1])
                 } -> false
             //
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, StateForConditionals(civInfo=civInfo)).any {
-                matchesTerrainFilter(it.params[0])
+                matchesTerrainFilter(it.params[0], civInfo)
             } -> false
             improvement.uniqueObjects.any {
                 it.isOfType(UniqueType.ConsumesResources)
