@@ -1,3 +1,20 @@
+## 3.18.16
+
+Deprecation of requiredBuildingInAllCities
+
+Removed support for stat-named specialists
+
+Checks for parameter types of conditionals in mods
+
+By xlenstra:
+- Added a way to add moddable constants
+- Fixed 'cannot built on [strategic resource]' not working
+- Expanded the buildingFilter to include options for national wonders
+
+More informative reports for crashes in threads - By will-ca
+
+Fix missing siege unit resources needs for vanilla  - By AdityaMH
+
 ## 3.18.15
 
 Detailed sources of battle modifiers
