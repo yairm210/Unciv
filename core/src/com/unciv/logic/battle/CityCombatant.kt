@@ -37,6 +37,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     }
 
     fun getCityStrength(): Int { // Civ fanatics forum, from a modder who went through the original code
+        val modConstants = getCivInfo().gameInfo.ruleSet.modOptions.constants
         var strength = 8f
         strength += (city.population.population / 5) * 2 // Each 5 pop gives 2 defence
         val cityTile = city.getCenterTile()
@@ -45,7 +46,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         // as tech progresses so does city strength
         val techCount = getCivInfo().gameInfo.ruleSet.technologies.count()
         val techsPercentKnown: Float = if (techCount > 0) city.civInfo.tech.techsResearched.count().toFloat() / techCount else 0.5f // for mods with no tech
-        strength += (techsPercentKnown * 5.5).pow(2.8).toFloat()
+        strength += (techsPercentKnown * modConstants.cityStrengthFromTechsMultiplier).pow(modConstants.cityStrengthFromTechsExponent).toFloat()
 
 
         // The way all of this adds up...

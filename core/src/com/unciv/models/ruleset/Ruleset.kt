@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.Counter
+import com.unciv.models.ModConstants
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
@@ -46,6 +47,7 @@ class ModOptions : IHasUniques {
     var author = ""
     var modSize = 0
  
+    @Deprecated("As of 3.18.15")
     val maxXPfromBarbarians = 30
 
     override var uniques = ArrayList<String>()
@@ -53,6 +55,8 @@ class ModOptions : IHasUniques {
     override var uniqueObjects: List<Unique> = listOf()
     override fun getUniqueTarget() = UniqueTarget.ModOptions
 
+    val constants = ModConstants()
+    
 }
 
 class Ruleset {
@@ -155,6 +159,8 @@ class Ruleset {
         if (modOptionsFile.exists()) {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
+                if (modOptions.maxXPfromBarbarians != 30)
+                    modOptions.constants.maxXPfromBarbarians = modOptions.constants.maxXPfromBarbarians
             } catch (ex: Exception) {}
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
         }
@@ -603,6 +609,10 @@ class Ruleset {
         }
         for (unitType in unitTypes.values) {
             checkUniques(unitType, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        }
+        
+        if (modOptions.maxXPfromBarbarians != 30) {
+            lines.add("maxXPfromBarbarians is moved to the constants object, instead use: \nconstants: {\n    maxXPfromBarbarians: ${modOptions.maxXPfromBarbarians},\n}", RulesetErrorSeverity.Warning)
         }
 
         return lines

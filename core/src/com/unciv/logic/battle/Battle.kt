@@ -417,7 +417,8 @@ object Battle {
     private fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
         var baseXP = amount
         if (thisCombatant !is MapUnitCombatant) return
-        if (thisCombatant.unit.promotions.totalXpProduced() >= thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.maxXPfromBarbarians
+        val modConstants = thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.constants
+        if (thisCombatant.unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
             && otherCombatant.getCivInfo().isBarbarian()
         ) {
             return
