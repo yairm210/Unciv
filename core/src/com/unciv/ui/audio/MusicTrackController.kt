@@ -3,6 +3,7 @@ package com.unciv.ui.audio
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.ui.utils.crashHandlingThread
 import kotlin.concurrent.thread
 
 /** Wraps one Gdx Music instance and manages threaded loading, playback, fading and cleanup */
@@ -57,7 +58,7 @@ class MusicTrackController(private var volume: Float) {
     ) {
         if (state != State.None || loaderThread != null || music != null)
             throw IllegalStateException("MusicTrackController.load should only be called once")
-        loaderThread = thread(name = "MusicLoader") {
+        loaderThread = crashHandlingThread(name = "MusicLoader") {
             state = State.Loading
             try {
                 music = Gdx.audio.newMusic(file)

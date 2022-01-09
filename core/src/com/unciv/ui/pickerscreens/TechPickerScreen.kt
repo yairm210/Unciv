@@ -288,7 +288,7 @@ class TechPickerScreen(
     }
 
     private fun centerOnTechnology(tech: Technology) {
-        Gdx.app.postRunnable {
+        postCrashHandlingRunnable {
             techNameToButton[tech.name]?.let {
                 scrollPane.scrollTo(it.x, it.y, it.width, it.height, true, true)
                 scrollPane.updateVisualScroll()
