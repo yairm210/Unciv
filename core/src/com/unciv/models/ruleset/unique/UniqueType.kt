@@ -221,6 +221,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     ///////////////////////////////////////// region UNIT UNIQUES /////////////////////////////////////////
 
     FoundCity("Founds a new city", UniqueTarget.Unit),
+    ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
     CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
@@ -274,6 +275,16 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     ReligiousUnit("Religious Unit", UniqueTarget.Unit),
     SpaceshipPart("Spaceship part", UniqueTarget.Building, UniqueTarget.Unit),
+
+
+    @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat"), DeprecationLevel.WARNING)
+    BonuxXPGain("[amount]% Bonus XP gain", UniqueTarget.Unit),
+    @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    BonusXPGainForUnits("[mapUnitFilter] units gain [amount]% more Experience from combat", UniqueTarget.Global),
+
+    @Deprecated("As of 3.18.14", ReplaceWith("[amount]% maintenance costs <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    UnitMaintenanceDiscountGlobal("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
+
 
     //endregion
 
@@ -569,13 +580,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     @Deprecated("As of 3.16.16 - removed 3.17.11", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
 
-    @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat"))
-    BonuxXPGain("[amount]% Bonus XP gain", UniqueTarget.Unit),
-    @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat <for [mapUnitFilter] units>"))
-    BonusXPGainForUnits("[mapUnitFilter] units gain [amount]% more Experience from combat", UniqueTarget.Global),
-
-    @Deprecated("As of 3.18.14", ReplaceWith("[amount]% maintenance costs <for [mapUnitFilter] units>"))
-    UnitMaintenanceDiscountGlobal("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
     
     // endregion
 

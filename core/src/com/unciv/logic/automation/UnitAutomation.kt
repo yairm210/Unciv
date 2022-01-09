@@ -156,7 +156,7 @@ object UnitAutomation {
             if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
                 return SpecificUnitAutomation.automateGreatGeneral(unit)
 
-            if (unit.hasUnique("Can construct []"))
+            if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
             if (unit.getMatchingUniques("Can [] [] times").any{ it.params[0] == "Spread Religion" })

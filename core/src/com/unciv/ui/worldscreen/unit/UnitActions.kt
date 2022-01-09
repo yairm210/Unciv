@@ -600,7 +600,7 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        var uniquesToCheck = unit.getMatchingUniques("Can construct []")
+        var uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
         if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
             uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't used other actions yet")
         val civResources = unit.civInfo.getCivResourcesByName()

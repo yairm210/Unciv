@@ -202,6 +202,13 @@ enum class UniqueParameterType(val parameterName:String) {
                 else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             }
     },
+    ImprovementName("improvementName"){
+        override fun getErrorSeverity(parameterText: String,ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (ruleset.tileImprovements.containsKey(parameterText)) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
     /** should mirror TileImprovement.matchesFilter exactly */
     ImprovementFilter("improvementFilter") {
         private val knownValues = setOf("All", "All Road", "Great Improvement", "Great")
