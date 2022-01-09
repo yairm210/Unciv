@@ -22,6 +22,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
@@ -179,6 +180,9 @@ class Ruleset {
 
         val buildingsFile = folderHandle.child("Buildings.json")
         if (buildingsFile.exists()) buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
+        for(building in buildings.values)
+            if(building.requiredBuildingInAllCities != null)
+                building.uniques.add(UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!))
 
         val terrainsFile = folderHandle.child("Terrains.json")
         if (terrainsFile.exists()) {
@@ -491,8 +495,9 @@ class Ruleset {
                 lines += "${building.name} replaces ${building.replaces} which does not exist!"
             if (building.requiredBuilding != null && !buildings.containsKey(building.requiredBuilding!!))
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
-            if (building.requiredBuildingInAllCities != null && !buildings.containsKey(building.requiredBuildingInAllCities!!))
-                lines += "${building.name} requires ${building.requiredBuildingInAllCities} in all cities which does not exist!"
+            if (building.requiredBuildingInAllCities != null)
+                lines.add("${building.name} contains 'requiredBuildingInAllCities' - please convert to a \"" +
+                        UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!)+"\" unique", RulesetErrorSeverity.Warning)
             for (unique in building.uniqueObjects)
                 if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
