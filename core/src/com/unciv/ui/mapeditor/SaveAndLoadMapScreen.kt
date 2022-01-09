@@ -32,17 +32,17 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             rightSideButtonAction = {
                 mapToSave!!.mapParameters.name = mapNameTextField.text
                 mapToSave.mapParameters.type = MapType.custom
-                thread(name = "SaveMap") {
+                crashHandlingThread(name = "SaveMap") {
                     try {
                         MapSaver.saveMap(mapNameTextField.text, getMapCloneForSave(mapToSave))
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                             game.setScreen(MapEditorScreen(mapToSave))
                             dispose()
                         }
                     } catch (ex: Exception) {
                         ex.printStackTrace()
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             val cantLoadGamePopup = Popup(this)
                             cantLoadGamePopup.addGoodSizedLabel("It looks like your map can't be saved!").row()
                             cantLoadGamePopup.addCloseButton()
@@ -54,11 +54,11 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         } else {
             rightSideButton.setText("Load map".tr())
             rightSideButtonAction = {
-                thread(name = "MapLoader") {
+                crashHandlingThread(name = "MapLoader") {
                     var popup: Popup? = null
                     var needPopup = true    // loadMap can fail faster than postRunnable runs
-                    Gdx.app.postRunnable {
-                        if (!needPopup) return@postRunnable
+                    postCrashHandlingRunnable {
+                        if (!needPopup) return@postCrashHandlingRunnable
                         popup = Popup(this).apply {
                             addGoodSizedLabel("Loading...")
                             open()
@@ -76,12 +76,12 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                         if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
                         
                         if (missingMods.isNotEmpty()) {
-                            Gdx.app.postRunnable {
+                            postCrashHandlingRunnable {
                                 needPopup = false
                                 popup?.close()
                                 ToastPopup("Missing mods: [${missingMods.joinToString()}]", this)
                             }
-                        } else Gdx.app.postRunnable {
+                        } else postCrashHandlingRunnable {
                             Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                             try {
                                 // For deprecated maps, set the base ruleset field if it's still saved in the mods field
@@ -105,7 +105,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     } catch (ex: Throwable) {
                         needPopup = false
                         ex.printStackTrace()
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             popup?.close()
                             println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
                             ToastPopup("Error loading map!".tr() +

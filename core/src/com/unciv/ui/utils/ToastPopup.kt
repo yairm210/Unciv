@@ -21,9 +21,9 @@ class ToastPopup (message: String, screen: BaseScreen, val time: Long = 2000) : 
     }
 
     private fun startTimer(){
-        thread (name = "ResponsePopup") {
+        crashHandlingThread(name = "ResponsePopup") {
             Thread.sleep(time)
-            Gdx.app.postRunnable { this.close() }
+            postCrashHandlingRunnable { this.close() }
         }
     }
 

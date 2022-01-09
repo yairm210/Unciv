@@ -20,8 +20,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
-import kotlin.concurrent.thread
-
 
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -29,7 +27,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     constructor(version: String) : this(UncivGameParameters(version, null))
 
     val version = parameters.version
-    private val crashReportSender = parameters.crashReportSender
+    val crashReportSysInfo = parameters.crashReportSysInfo
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     val fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
@@ -39,7 +37,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings: GameSettings
-    lateinit var crashController: CrashController
     lateinit var musicController: MusicController
 
     /**
@@ -105,7 +102,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
-        thread(name = "LoadJSON") {
+        crashHandlingThread(name = "LoadJSON") {
             RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
@@ -117,7 +114,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             }
 
             // This stuff needs to run on the main thread because it needs the GL context
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 musicController.chooseTrack(suffix = MusicMood.Menu)
 
                 ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
@@ -128,7 +125,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
                 isInitialized = true
             }
         }
-        crashController = CrashController.Impl(crashReportSender)
     }
 
     fun loadGame(gameInfo: GameInfo) {

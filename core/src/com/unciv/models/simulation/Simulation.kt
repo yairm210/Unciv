@@ -4,8 +4,8 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.ui.utils.crashHandlingThread
 import kotlin.time.Duration
-import kotlin.concurrent.thread
 import kotlin.math.max
 import kotlin.time.ExperimentalTime
 
@@ -44,7 +44,7 @@ class Simulation(
         startTime = System.currentTimeMillis()
         val threads: ArrayList<Thread> = ArrayList()
         for (threadId in 1..threadsNumber) {
-            threads.add(thread {
+            threads.add(crashHandlingThread {
                 for (i in 1..simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
                     gameInfo.simulateMaxTurns = maxTurns
