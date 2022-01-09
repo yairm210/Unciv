@@ -267,7 +267,7 @@ class MapUnit {
         val tempUniques = tempUniquesMap[uniqueType]
         if (tempUniques != null)
             yieldAll(
-                tempUniques.filter { it.conditionalsApply(stateForConditionals) }
+                tempUniques.asSequence().filter { it.conditionalsApply(stateForConditionals) }
             )
         if (checkCivInfoUniques)
             yieldAll(civInfo.getMatchingUniques(uniqueType, stateForConditionals))
