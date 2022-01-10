@@ -374,7 +374,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     
     DefensiveBonus("Gives a defensive bonus of [amount]%", UniqueTarget.Improvement),
     ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused
-    DamagesAdjacentEnemyUnits("Deal [amount] damage to adjacent enemy units", UniqueTarget.Improvement),
+    DamagesAdjacentEnemyUnits("Adjacent enemy units ending their turn take [30] damage", UniqueTarget.Improvement),
+    @Deprecated("As of 3.18.17", ReplaceWith("Adjacent enemy units ending their turn take [amount] damage"), DeprecationLevel.WARNING)
+    DamagesAdjacentEnemyUnitsOld("Deal [amount] damage to adjacent enemy units", UniqueTarget.Improvement),
     @Deprecated("As of 3.17.10", ReplaceWith("Adjacent enemy units ending their turn take [30] damage"), DeprecationLevel.WARNING)
     DamagesAdjacentEnemyUnitsForExactlyThirtyDamage("Deal 30 damage to adjacent enemy units", UniqueTarget.Improvement),
     

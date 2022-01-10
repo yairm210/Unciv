@@ -770,8 +770,8 @@ Example: "Costs [20] gold per turn when in your territory"
 
 Applicable to: Improvement
 
-#### Deal [amount] damage to adjacent enemy units
-Example: "Deal [20] damage to adjacent enemy units"
+#### Adjacent enemy units ending their turn take [30] damage
+Example: "Adjacent enemy units ending their turn take [30] damage"
 
 Applicable to: Improvement
 
