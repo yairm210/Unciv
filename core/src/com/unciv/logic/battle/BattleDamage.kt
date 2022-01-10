@@ -199,8 +199,8 @@ object BattleDamage {
 
             if (defender.unit.isEmbarked()) {
                 // embarked units get no defensive modifiers apart from this unique
-                if (defender.unit.hasUnique("Defense bonus when embarked") ||
-                    defender.getCivInfo().hasUnique("Embarked units can defend themselves")
+                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked) ||
+                    defender.getCivInfo().hasUnique(UniqueType.DefenceBonusWhenEmbarkedCivwide)
                 )
                     modifiers["Embarked"] = 100
 
@@ -210,8 +210,8 @@ object BattleDamage {
             modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
             val tileDefenceBonus = tile.getDefensiveBonus()
-            if (!defender.unit.hasUnique("No defensive terrain bonus") && tileDefenceBonus > 0
-                || !defender.unit.hasUnique("No defensive terrain penalty") && tileDefenceBonus < 0
+            if (!defender.unit.hasUnique(UniqueType.NoDefensiveTerrainBonus) && tileDefenceBonus > 0
+                || !defender.unit.hasUnique(UniqueType.NoDefensiveTerrainPenalty) && tileDefenceBonus < 0
             )
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 

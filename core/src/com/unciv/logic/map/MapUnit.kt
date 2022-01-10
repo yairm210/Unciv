@@ -458,7 +458,7 @@ class MapUnit {
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
         var range = baseUnit().range
-        range += getMatchingUniques("[] Range").sumOf { it.params[0].toInt() }
+        range += getMatchingUniques(UniqueType.Range).sumOf { it.params[0].toInt() }
         return range
     }
 
@@ -472,9 +472,9 @@ class MapUnit {
     }
 
     fun isInvisible(to: CivilizationInfo): Boolean {
-        if (hasUnique("Invisible to others"))
+        if (hasUnique(UniqueType.Invisible))
             return true
-        if (hasUnique("Invisible to non-adjacent units"))
+        if (hasUnique(UniqueType.InvisibleToNonAdjacent))
             return getTile().getTilesInDistance(1).none {
                 it.getOwner() == to || it.getUnits().any { unit -> unit.owner == to.civName }
             }
@@ -533,7 +533,7 @@ class MapUnit {
         if (isCivilian()) return false
         if (baseUnit.movesLikeAirUnits()) return false
         if (isEmbarked()) return false
-        if (hasUnique("No defensive terrain bonus")) return false
+        if (hasUnique(UniqueType.NoDefensiveTerrainBonus)) return false
         if (isFortified()) return false
         return true
     }

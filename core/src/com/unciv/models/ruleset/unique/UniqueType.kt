@@ -232,15 +232,20 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
+    Range("[amount] Range", UniqueTarget.Unit, UniqueTarget.Global),
     SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
-    NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     CannotAttack("Cannot attack", UniqueTarget.Unit),
     MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
+    NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit),
+    NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit),
+
+    NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
+    DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit),
+    DefenceBonusWhenEmbarkedCivwide("Embarked units can defend themselves", UniqueTarget.Global),
 
     SixTilesAlwaysVisible("6 tiles in every direction always visible", UniqueTarget.Unit),
-
 
     BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
 
@@ -257,7 +262,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     
     FlatXPGain("[amount] XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
     PercentageXPGain("[amount]% XP gained from combat", UniqueTarget.Unit, UniqueTarget.Global),
-    
+
+    Invisible("Invisible to others", UniqueTarget.Unit),
+    InvisibleToNonAdjacent("Invisible to non-adjacent units", UniqueTarget.Unit),
+
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
