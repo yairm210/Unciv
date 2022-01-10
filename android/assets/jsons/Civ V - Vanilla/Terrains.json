@@ -358,9 +358,8 @@
 	{
 		"name": "Mount Fuji",
 		"type": "NaturalWonder",
-		"gold": 2,
-		"culture": 3,
-		"faith": 3,
+		"gold": 1,
+		"culture": 5,
 		"occursOn": ["Grassland","Plains"],
 		"uniques": ["Must be adjacent to [0] [Coast] tiles",
 			"Must be adjacent to [0] [Tundra] tiles",
@@ -427,70 +426,7 @@
 		"impassable": true,
 		"unbuildable": true,
 		"weight": 10
-	},
-	// G&K Wonders
-	{
-		"name": "Mount Kailash",
-		"type": "NaturalWonder",
-		"faith": 6,
-		"happiness": 2,
-		"occursOn": ["Plains","Grassland"],
-		"uniques": ["Must be adjacent to [0] [Coast] tiles",
-			"Must be adjacent to [0] [Marsh] tiles",
-			"Must be adjacent to [0] to [1] [Desert] tiles",
-			"Must be adjacent to [4] to [6] [Elevated] tiles"],
-		"turnsInto": "Mountain",
-		"impassable": true,
-		"unbuildable": true,
-		"weight": 10
-	},
-	{
-		"name": "Mount Sinai",
-		"type": "NaturalWonder",
-		"faith": 8,
-		"occursOn": ["Desert","Plains"],
-		"uniques": ["Must be adjacent to [0] [Coast] tiles",
-			"Must be adjacent to [0] [Grassland] tiles",
-			"Must be adjacent to [0] [Tundra] tiles",
-			"Must be adjacent to [0] [Marsh] tiles",
-			"Must be adjacent to [3] to [6] [Desert] tiles"],
-		"turnsInto": "Mountain",
-		"impassable": true,
-		"unbuildable": true,
-		"weight": 10
-	},
-	{
-		"name": "Sri Pada",
-		"type": "NaturalWonder",
-		"food": 2,
-		"faith": 4,
-		"happiness": 2,
-		"occursOn": ["Plains","Grassland"],
-		"uniques": ["Must be adjacent to [0] [Tundra] tiles",
-			"Must be adjacent to [0] [Desert] tiles",
-			"Must be adjacent to [0] [Marsh] tiles",
-			"Must not be on [1] largest landmasses"],
-		"turnsInto": "Mountain",
-		"impassable": true,
-		"unbuildable": true,
-		"weight": 10
-	},
-	{
-		"name": "Uluru",
-		"type": "NaturalWonder",
-		"food": 2,
-		"faith": 6,
-		"occursOn": ["Plains","Desert"],
-		"uniques": ["Must be adjacent to [0] [Coast] tiles",
-			"Must be adjacent to [0] [Grassland] tiles",
-			"Must be adjacent to [0] [Tundra] tiles",
-			"Must be adjacent to [0] [Marsh] tiles",
-			"Must be adjacent to [3] to [6] [Plains] tiles"],
-		"turnsInto": "Mountain",
-		"impassable": true,
-		"unbuildable": true,
-		"weight": 10
-	},
+	}
 	/*
         // BNW wonders
         {
