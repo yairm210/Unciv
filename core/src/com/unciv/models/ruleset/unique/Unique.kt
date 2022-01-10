@@ -51,7 +51,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     ): Boolean {
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleSet
-        val relevantUnitTile = state.attackedTile ?: state.unit?.getTile()
+        val relevantUnitTile by lazy { state.attackedTile ?: state.unit?.getTile() }
 
         return when (condition.type) {
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
@@ -94,8 +94,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
-                relevantUnitTile!=null && relevantUnitTile.matchesFilter(condition.params[0], state.civInfo)
-                        && relevantUnitTile.matchesFilter(condition.params[1], state.civInfo)
+                relevantUnitTile!=null && relevantUnitTile!!.matchesFilter(condition.params[0], state.civInfo)
+                        && relevantUnitTile!!.matchesFilter(condition.params[1], state.civInfo)
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
