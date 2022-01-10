@@ -428,7 +428,8 @@
 		"unbuildable": true,
 		"weight": 10
 	},
-	// G&K Wonders
+	/*
+        // G&K Wonders
 	{
 		"name": "Mount Kailash",
 		"type": "NaturalWonder",
@@ -491,7 +492,9 @@
 		"unbuildable": true,
 		"weight": 10
 	},
-	/*
+	*/
+
+        /*
         // BNW wonders
         {
             "name": "King Solomon's Mines",
