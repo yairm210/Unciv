@@ -231,7 +231,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         label.toBack() // this is so the label is rendered right before the population group,
         //  so we save the font texture and avoid another texture switch
 
-        val cityStrength = CityCombatant(city).getCityStrength()
+        val cityStrength = CityCombatant(city).getDefendingStrength()
         val cityStrengthLabel =
             "${Fonts.strength}$cityStrength".toLabel(city.civInfo.nation.getInnerColor(), 10)
         if (!forPopup) {

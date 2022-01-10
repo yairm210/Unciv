@@ -178,6 +178,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     
     CannotBuildUnits("Cannot build [baseUnitFilter] units", UniqueTarget.Global),
     
+    BetterDefensiveBuildings("[amount]% City Strength from defensive buildings", UniqueTarget.Global),
+    @Deprecated("As of 3.18.17", ReplaceWith("[+25]% City Strength from defensive buildings"))
+    DefensiveBuilding25("Defensive buildings in all cities are 25% more effective", UniqueTarget.Global),
+    
     //endregion Global uniques
 
     
@@ -189,6 +193,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     CanBePurchasedForAmountStat("Can be purchased for [amount] [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     MaxNumberBuildable("Limited to [amount] per Civilization", UniqueTarget.Building, UniqueTarget.Unit),
     HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
+    NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
+    //UniqueType added in 3.18.4
+    @Deprecated("As of 3.16.11", ReplaceWith("Not displayed as an available construction without [buildingName]"), DeprecationLevel.WARNING)
+    NotDisplayedUnlessOtherBuildingBuilt("Not displayed as an available construction unless [buildingName] is built", UniqueTarget.Building),
     
     //endregion
     
@@ -201,10 +209,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
 
-    NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
-    //UniqueType added in 3.18.4
-    @Deprecated("As of 3.16.11", ReplaceWith("Not displayed as an available construction without [buildingName]"), DeprecationLevel.WARNING)
-    NotDisplayedUnlessOtherBuildingBuilt("Not displayed as an available construction unless [buildingName] is built", UniqueTarget.Building),
+    
 
     MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
     MustNotBeOn("Must not be on [terrainFilter]", UniqueTarget.Building),
@@ -484,7 +489,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
     AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit),
-
+    
 
     // region DEPRECATED AND REMOVED
 
