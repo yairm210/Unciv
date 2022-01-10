@@ -76,7 +76,7 @@ class PopulationManager {
 
     private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
-    internal fun addPopulation(count: Int) {
+    fun addPopulation(count: Int) {
         val changedAmount = 
             if (population + count < 0) -population
             else count

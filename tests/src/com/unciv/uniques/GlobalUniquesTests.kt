@@ -95,5 +95,74 @@ class GlobalUniquesTests {
         return cityInfo
     }
     
+    private fun addEmptySpecialist(): String {
+        val name = "specialist-${objectsCreated}"
+        ++objectsCreated
+        ruleSet.specialists[name] = Specialist()
+        return name
+    }
+    
+    private fun createBuildingWithUnique(unique: String): Building {
+        val building = Building()
+        building.uniques = arrayListOf(unique)
+        building.name = "Building-${objectsCreated}"
+        objectsCreated++
+        ruleSet.buildings[building.name] = building
+        return building
+    }
+    
+    @Test
+    /** tests [UniqueType.Stats] */
+    fun stats() {
+        val civInfo = addCiv()
+        val tile = addTile(Constants.desert)
+        val cityInfo = addCity(civInfo, tile, true)
+        val buildingName = createBuildingWithUnique("[+1 Food]").name
+        
+        cityInfo.cityConstructions.addBuilding(buildingName)
+        cityInfo.cityStats.update()
+        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.equals(Stats(food=1f)))
+    }
+    
+    @Test
+    fun statsPerCity() {
+        val civInfo = addCiv()
+        val tile = addTile(Constants.desert)
+        val cityInfo = addCity(civInfo, tile, true)
+        val buildingName = createBuildingWithUnique("[+1 Production] [in this city]").name
+
+        cityInfo.cityConstructions.addBuilding(buildingName)
+        cityInfo.cityStats.update()
+        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.equals(Stats(production=1f)))
+    }
+    
+    @Test
+    fun statsPerSpecialist() {
+        val civInfo = addCiv()
+        val tile = addTile(Constants.desert)
+        val cityInfo = addCity(civInfo, tile, true)
+        val building = createBuildingWithUnique("[+3 Gold] from every specialist [in this city]")
+        val specialistName = addEmptySpecialist()
+        building.specialistSlots.add(specialistName,2)
+        cityInfo.population.addPopulation(2)
+        cityInfo.population.specialistAllocations[specialistName] = 2
+
+        cityInfo.cityConstructions.addBuilding(building.name)
+        cityInfo.cityStats.update()
+        Assert.assertTrue(cityInfo.cityStats.finalStatList["Specialists"]!!.equals(Stats(gold=6f)))
+    }
+    
+    @Test
+    fun statsPerPopulation() {
+        val civInfo = addCiv()
+        val tile = addTile(Constants.desert)
+        val cityInfo = addCity(civInfo, tile, true)
+        val building = createBuildingWithUnique("[+3 Gold] per [2] population [in this city]")
+        cityInfo.population.addPopulation(4)
+
+        cityInfo.cityConstructions.addBuilding(building.name)
+        cityInfo.cityStats.update()
+        println(cityInfo.cityStats.finalStatList)
+        Assert.assertTrue(cityInfo.cityStats.finalStatList["Buildings"]!!.gold == 6f)
     }
 }

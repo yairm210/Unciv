@@ -757,14 +757,4 @@ class Specialist: NamedStats() {
     var color = ArrayList<Int>()
     val colorObject by lazy { colorFromRGB(color) }
     var greatPersonPoints = Counter<String>()
-
-    companion object {
-        internal fun specialistNameByStat(stat: Stat) = when (stat) {
-            Stat.Production -> "Engineer"
-            Stat.Gold -> "Merchant"
-            Stat.Science -> "Scientist"
-            Stat.Culture -> "Artist"
-            else -> TODO()
-        }
-    }
 }
