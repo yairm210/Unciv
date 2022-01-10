@@ -1054,8 +1054,10 @@ class MapUnit {
                 && it.improvement != null
                 && civInfo.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
-                tile to tile.getTileImprovement()!!
-                    .getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
+                tile to (
+                        tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits) + 
+                        tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnitsOld)
+                    )
                     .sumOf { it.params[0].toInt() }
             }.maxByOrNull { it.second }
             ?: return
