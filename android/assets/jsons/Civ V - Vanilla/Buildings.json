@@ -694,7 +694,7 @@
 		"culture": 3,
 		"cityStrength": 12,
 		"isWonder": true,
-		"uniques": ["Defensive buildings in all cities are 25% more effective"],
+		"uniques": ["[+25]% City Strength from defensive buildings"],
 		"requiredTech": "Acoustics",
 		"quote": "'The Law is a fortress on a hill that armies cannot take or floods wash away.' - The Prophet Muhammed"
 	},

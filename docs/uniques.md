@@ -223,6 +223,11 @@ Example: "Cannot build [Melee] units"
 
 Applicable to: Global
 
+#### [amount]% City Strength from defensive buildings
+Example: "[20]% City Strength from defensive buildings"
+
+Applicable to: Global
+
 #### [amount]% Strength
 Example: "[20]% Strength"
 
@@ -417,6 +422,11 @@ Example: "Hidden until [20] social policy branches have been completed"
 
 Applicable to: Building, Unit
 
+#### Not displayed as an available construction without [buildingName/tech/resource/policy]
+Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
+
+Applicable to: Building, Unit
+
 #### Cost increases by [amount] per owned city
 Example: "Cost increases by [20] per owned city"
 
@@ -436,11 +446,6 @@ Applicable to: Building
 Example: "Requires a [Library] in all cities"
 
 Applicable to: Building
-
-#### Not displayed as an available construction without [buildingName/tech/resource/policy]
-Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
-
-Applicable to: Building, Unit
 
 #### Must be on [terrainFilter]
 Example: "Must be on [Grassland]"
@@ -1087,6 +1092,7 @@ Applicable to: Conditional
  - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated As of 3.18.2, replace with "[-amount]% food consumption by specialists [cityFilter]"
  - "50% of excess happiness added to culture towards policies" - Deprecated As of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
  - "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])" - Deprecated As of 3.17.9, replace with "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"
+ - "Defensive buildings in all cities are 25% more effective" - Deprecated As of 3.18.17, replace with "[+25]% City Strength from defensive buildings"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
  - "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides the cheapest [stat] building in your first [amount] cities for free"
