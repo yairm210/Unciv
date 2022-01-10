@@ -181,7 +181,7 @@ object UnitAutomation {
         if (unit.baseUnit.isNuclearWeapon())
             return SpecificUnitAutomation.automateNukes(unit)
         
-        if (unit.hasUnique("Self-destructs when attacking"))
+        if (unit.hasUnique(UniqueType.SelfDestructs))
             return SpecificUnitAutomation.automateMissile(unit)
 
         if (tryGoToRuinAndEncampment(unit)) {
@@ -230,7 +230,7 @@ object UnitAutomation {
     }
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
-        if (unit.hasUnique("Self-destructs when attacking")) return false // don't use single-use units against barbarians...
+        if (unit.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities

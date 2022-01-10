@@ -645,7 +645,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         // They did fix it in BNW so it was completely bugged and always 1, again math
         power = (power * movement.toFloat().pow(0.3f))
 
-        if (uniqueObjects.any { it.placeholderText =="Self-destructs when attacking" } )
+        if (hasUnique(UniqueType.SelfDestructs))
             power /= 2
         if (uniqueObjects.any { it.placeholderText =="Nuclear weapon of Strength []" } )
             power += 4000

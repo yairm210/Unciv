@@ -240,6 +240,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit),
+    Uncapturable("Uncapturable", UniqueTarget.Unit),
+    SelfDestructs("Self-destructs when attacking", UniqueTarget.Unit),
+    HealsOutsideFriendlyTerritory("May heal outside of friendly territory", UniqueTarget.Unit),
+    HealingEffectsDoubled("All healing effects doubled", UniqueTarget.Unit),
 
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit),

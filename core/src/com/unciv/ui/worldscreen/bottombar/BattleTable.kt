@@ -171,7 +171,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             add("")
             add(
                 if (defender.isCivilian()
-                    && (defender as MapUnitCombatant).unit.hasUnique("Uncapturable")
+                    && (defender as MapUnitCombatant).unit.hasUnique(UniqueType.Uncapturable)
                 ) ""
                 else if (defender.isCivilian()) "Captured!".tr()
                 else "Occupied!".tr()

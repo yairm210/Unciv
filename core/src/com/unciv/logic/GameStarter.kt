@@ -11,7 +11,6 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import java.util.*
 import kotlin.collections.HashMap

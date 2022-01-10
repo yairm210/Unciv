@@ -682,7 +682,7 @@ class MapUnit {
         if (civInfo.hasUnique("Can only heal by pillaging")) return
 
         var amountToHealBy = rankTileForHealing(getTile())
-        if (amountToHealBy == 0 && !(hasUnique("May heal outside of friendly territory") && !getTile().isFriendlyTerritory(civInfo))) return
+        if (amountToHealBy == 0 && !(hasUnique(UniqueType.HealsOutsideFriendlyTerritory) && !getTile().isFriendlyTerritory(civInfo))) return
 
         amountToHealBy += getMatchingUniques("[] HP when healing").sumOf { it.params[0].toInt() }
 
@@ -695,7 +695,7 @@ class MapUnit {
     }
 
     fun healBy(amount: Int) {
-        health += if (hasUnique("All healing effects doubled"))
+        health += if (hasUnique(UniqueType.HealingEffectsDoubled))
                 amount * 2
             else
                 amount
@@ -715,7 +715,7 @@ class MapUnit {
             else -> 5 // Enemy territory
         }
 
-        val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique("May heal outside of friendly territory"))
+        val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory))
         if (!mayHeal) return healing
 
 

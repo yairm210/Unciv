@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -366,7 +367,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         responseTable.add(getCloseButton("No", 'n') {
             // Take it for ourselves
             // Settlers become workers at this point
-            if (capturedUnit.hasUnique("Founds a new city")) {
+            if (capturedUnit.hasUnique(UniqueType.FoundCity)) {
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile

@@ -243,6 +243,11 @@ Example: "[20] Sight"
 
 Applicable to: Global, Unit, Terrain
 
+#### [amount] Range
+Example: "[20] Range"
+
+Applicable to: Global, Unit
+
 #### [amount]% Spread Religion Strength
 Example: "[20]% Spread Religion Strength"
 
@@ -250,6 +255,9 @@ Applicable to: Global, Unit
 
 #### Normal vision when embarked
 Applicable to: Global, Unit
+
+#### Embarked units can defend themselves
+Applicable to: Global
 
 #### [amount]% maintenance costs
 Example: "[20]% maintenance costs"
@@ -505,6 +513,27 @@ Applicable to: Unit
 #### Must set up to ranged attack
 Applicable to: Unit
 
+#### No defensive terrain bonus
+Applicable to: Unit
+
+#### No defensive terrain penalty
+Applicable to: Unit
+
+#### Uncapturable
+Applicable to: Unit
+
+#### Self-destructs when attacking
+Applicable to: Unit
+
+#### May heal outside of friendly territory
+Applicable to: Unit
+
+#### All healing effects doubled
+Applicable to: Unit
+
+#### Defense bonus when embarked
+Applicable to: Unit
+
 #### 6 tiles in every direction always visible
 Applicable to: Unit
 
@@ -526,6 +555,12 @@ Applicable to: Unit
 #### Cannot be carried by [mapUnitFilter] units
 Example: "Cannot be carried by [Wounded] units"
 
+Applicable to: Unit
+
+#### Invisible to others
+Applicable to: Unit
+
+#### Invisible to non-adjacent units
 Applicable to: Unit
 
 #### Double movement in [terrainFilter]
