@@ -249,6 +249,12 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     SelfDestructs("Self-destructs when attacking", UniqueTarget.Unit),
     HealsOutsideFriendlyTerritory("May heal outside of friendly territory", UniqueTarget.Unit),
     HealingEffectsDoubled("All healing effects doubled", UniqueTarget.Unit),
+    HealsEvenAfterAction("Unit will heal every turn, even if it performs an action", UniqueTarget.Unit),
+    NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit),
+    @Deprecated("As of 3.18.17", ReplaceWith("No movement cost to pillage <for [Melee] units>"), DeprecationLevel.WARNING)
+    NoMovementToPillageMelee("Melee units pay no movement cost to pillage", UniqueTarget.Unit),
+    CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
+    MoveImmediatelyOnceBought("Can move immediately once bought", UniqueTarget.Unit),
 
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit),
