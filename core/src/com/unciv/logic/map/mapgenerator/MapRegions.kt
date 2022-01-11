@@ -497,7 +497,7 @@ class MapRegions (val ruleset: Ruleset){
         // If terrible, try adding a hill to a dry flat tile
         if (innerProduction == 0 || (innerProduction < 2 && outerProduction < 8) || (minorCiv && innerProduction < 4)) {
             val hillSpot = startTile.neighbors
-                    .filter { it.isLand && it.terrainFeatures.isEmpty() && !it.isAdjacentToFreshwater }
+                    .filter { it.isLand && it.terrainFeatures.isEmpty() && !it.isAdjacentToFreshwater && !it.isImpassible() }
                     .toList().randomOrNull()
             val hillEquivalent = ruleset.terrains.values
                     .firstOrNull { it.type == TerrainType.TerrainFeature && it.production >= 2 && !it.hasUnique(UniqueType.RareFeature) }?.name
