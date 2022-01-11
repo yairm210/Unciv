@@ -327,7 +327,7 @@ object Battle {
 
     private fun tryHealAfterKilling(attacker: ICombatant) {
         if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getMatchingUniques("Heals [] damage if it kills a unit")) {
+            for (unique in attacker.unit.getMatchingUniques(UniqueType.HealsAfterKilling)) {
                 val amountToHeal = unique.params[0].toInt()
                 attacker.unit.healBy(amountToHeal)
             }

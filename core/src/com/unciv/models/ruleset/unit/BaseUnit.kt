@@ -45,10 +45,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
     val specialUpgradesTo: String? by lazy { 
-        uniqueObjects
-        .filter { it.placeholderText == "May upgrade to [] through ruins-like effects"}
-        .map { it.params[0] }
-        .firstOrNull() 
+        getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull() 
     }
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -388,7 +385,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (civRejectionReasons.isNotEmpty()) {
             rejectionReasons.addAll(civRejectionReasons)
         }
-        for (unique in uniqueObjects.filter { it.placeholderText == "Requires at least [] population" })
+        for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
                 rejectionReasons.add(RejectionReason.PopulationRequirement)
         return rejectionReasons
