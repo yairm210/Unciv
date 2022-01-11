@@ -585,7 +585,10 @@ class CityStats(val cityInfo: CityInfo) {
         val buildingsMaintenance = getBuildingMaintenanceCosts(citySpecificUniques) // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
-        if (totalFood > 0 && constructionMatchesFilter(currentConstruction, "Excess Food converted to Production when under construction")) {
+        if (totalFood > 0 
+            && currentConstruction is INonPerpetualConstruction 
+            && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
+        ) {
             newFinalStatList["Excess food to production"] = Stats(production = totalFood, food = -totalFood)
         }
 

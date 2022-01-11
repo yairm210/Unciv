@@ -198,6 +198,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     @Deprecated("As of 3.16.11", ReplaceWith("Not displayed as an available construction without [buildingName]"), DeprecationLevel.WARNING)
     NotDisplayedUnlessOtherBuildingBuilt("Not displayed as an available construction unless [buildingName] is built", UniqueTarget.Building),
     
+    ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
+    RequiresPopulation("Requires at least [amount] population", UniqueTarget.Building, UniqueTarget.Unit),
+    
     //endregion
     
     
@@ -229,11 +232,9 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     ConstructImprovementConsumingUnit("Can construct [improvementName]", UniqueTarget.Unit),
     BuildImprovements("Can build [improvementFilter/terrainFilter] improvements on tiles", UniqueTarget.Unit),
     CreateWaterImprovements("May create improvements on water resources", UniqueTarget.Unit),
-    CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
     
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit, UniqueTarget.Global),
-
 
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
@@ -241,23 +242,26 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
+    
+    CanOnlyAttackUnits("Can only attack [combatantFilter] units", UniqueTarget.Unit),
     CannotAttack("Cannot attack", UniqueTarget.Unit),
     MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
-    NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit),
-    NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit),
+    NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
+    NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
     Uncapturable("Uncapturable", UniqueTarget.Unit),
     SelfDestructs("Self-destructs when attacking", UniqueTarget.Unit),
-    HealsOutsideFriendlyTerritory("May heal outside of friendly territory", UniqueTarget.Unit),
-    HealingEffectsDoubled("All healing effects doubled", UniqueTarget.Unit),
+    BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
+
+    HealsOutsideFriendlyTerritory("May heal outside of friendly territory", UniqueTarget.Unit, UniqueTarget.Global),
+    HealingEffectsDoubled("All healing effects doubled", UniqueTarget.Unit, UniqueTarget.Global),
+    HealsAfterKilling("Heals [amount] damage if it kills a unit", UniqueTarget.Unit, UniqueTarget.Global),
 
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
-    DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit),
+    DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarkedCivwide("Embarked units can defend themselves", UniqueTarget.Global),
 
     SixTilesAlwaysVisible("6 tiles in every direction always visible", UniqueTarget.Unit),
-
-    BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
-
+    
     CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),
     CarryExtraAirUnits("Can carry [amount] extra [mapUnitFilter] units", UniqueTarget.Unit),
     CannotBeCarriedBy("Cannot be carried by [mapUnitFilter] units", UniqueTarget.Unit),
@@ -274,7 +278,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     Invisible("Invisible to others", UniqueTarget.Unit),
     InvisibleToNonAdjacent("Invisible to non-adjacent units", UniqueTarget.Unit),
-
+    CanSeeInvisibleUnits("Can see invisible [mapUnitFilter] units", UniqueTarget.Unit),
+    
+    RuinsUpgrade("May upgrade to [baseUnitFilter] through ruins-like effects", UniqueTarget.Unit),
+    
     // The following block gets cached in MapUnit for faster getMovementCostBetweenAdjacentTiles
     DoubleMovementOnTerrain("Double movement in [terrainFilter]", UniqueTarget.Unit),
     AllTilesCost1Move("All tiles cost 1 movement", UniqueTarget.Unit),
