@@ -243,7 +243,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
     MayEnhanceReligion("May enhance a religion", UniqueTarget.Unit),
     
-    CanOnlyAttackUnits("Can only attack [mapUnitFilter/\"City\"] units", UniqueTarget.Unit),
+    CanOnlyAttackUnits("Can only attack [combatantFilter] units", UniqueTarget.Unit),
     CannotAttack("Cannot attack", UniqueTarget.Unit),
     MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
