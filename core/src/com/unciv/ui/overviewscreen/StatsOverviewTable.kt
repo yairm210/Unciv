@@ -25,10 +25,7 @@ class StatsOverviewTable (
     private fun getHappinessTable(): Table {
         val happinessTable = Table(BaseScreen.skin)
         happinessTable.defaults().pad(5f)
-        val happinessHeader = Table(BaseScreen.skin)
-        happinessHeader.add(ImageGetter.getStatIcon("Happiness")).pad(5f,0f,5f,12f).size(20f)
-        happinessHeader.add("Happiness".toLabel(fontSize = 24)).padTop(5f)
-        happinessTable.add(happinessHeader).colspan(2).row()
+        happinessTable.add("Happiness".toLabel(fontSize = 24)).colspan(2).row()
         happinessTable.addSeparator()
 
         val happinessBreakdown = viewingPlayer.stats().getHappinessBreakdown()
@@ -46,10 +43,7 @@ class StatsOverviewTable (
     private fun getGoldTable(): Table {
         val goldTable = Table(BaseScreen.skin)
         goldTable.defaults().pad(5f)
-        val goldHeader = Table(BaseScreen.skin)
-        goldHeader.add(ImageGetter.getStatIcon("Gold")).pad(5f, 0f, 5f, 12f).size(20f)
-        goldHeader.add("Gold".toLabel(fontSize = 24)).padTop(5f)
-        goldTable.add(goldHeader).colspan(2).row()
+        goldTable.add("Gold".toLabel(fontSize = 24)).colspan(2).row()
         goldTable.addSeparator()
         var total = 0f
         for (entry in viewingPlayer.stats().getStatMapForNextTurn()) {
@@ -84,10 +78,7 @@ class StatsOverviewTable (
     private fun getScienceTable(): Table {
         val scienceTable = Table(BaseScreen.skin)
         scienceTable.defaults().pad(5f)
-        val scienceHeader = Table(BaseScreen.skin)
-        scienceHeader.add(ImageGetter.getStatIcon("Science")).pad(5f,0f,5f,12f).size(20f)
-        scienceHeader.add("Science".toLabel(fontSize = 24)).padTop(5f)
-        scienceTable.add(scienceHeader).colspan(2).row()
+        scienceTable.add("Science".toLabel(fontSize = 24)).colspan(2).row()
         scienceTable.addSeparator()
         val scienceStats = viewingPlayer.stats().getStatMapForNextTurn()
             .filter { it.value.science != 0f }
