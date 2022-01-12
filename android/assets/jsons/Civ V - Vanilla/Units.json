@@ -600,7 +600,7 @@
 		"cost": 120,
 		"requiredTech": "Steel",
 		"upgradesTo": "Musketman",
-		"obsoleteTech": "Gunpowder",
+		"obsoleteTech": "Rifling",
 		"requiredResource": "Iron",
 		"attackSound": "metalhit"
 	},
@@ -614,7 +614,7 @@
 		"cost": 120,
 		"requiredTech": "Steel",
 		"upgradesTo": "Musketman",
-		"obsoleteTech": "Gunpowder",
+		"obsoleteTech": "Rifling",
 		"requiredResource": "Iron",
 		"promotions": ["Shock I", "Great Generals II"],
 		"attackSound": "metalhit"
@@ -630,7 +630,7 @@
 		"cost": 120,
 		"requiredTech": "Metal Casting",
 		"upgradesTo": "Musketman",
-		"obsoleteTech": "Metallurgy",
+		"obsoleteTech": "Rifling",
 		"requiredResource": "Iron",
 		"promotions": ["Amphibious"],
 		"hurryCostModifier": 20,
