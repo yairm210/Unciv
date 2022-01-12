@@ -26,7 +26,7 @@ class TileImprovement : RulesetStatsObject() {
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        for (unique in civInfo.getMatchingUniques("[]% tile improvement construction time")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.TileImprovementTime)) {
             realTurnsToBuild *= unique.params[0].toPercent()
         }
         // In some weird cases it was possible for something to take 0 turns, leading to it instead never finishing

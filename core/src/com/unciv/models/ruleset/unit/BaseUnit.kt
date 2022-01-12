@@ -351,11 +351,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units []%")) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
 
@@ -501,7 +501,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var XP = 0
 
         for (unique in
-        cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
+        cityConstructions.cityInfo.getMatchingUniques(UniqueType.UnitStartingExperience)
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) }
         ) {
             if (unit.matchesFilter(unique.params[0]))

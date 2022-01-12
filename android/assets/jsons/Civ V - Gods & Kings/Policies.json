@@ -100,7 +100,7 @@
 			},
 			{
 				"name": "Discipline",
-				"uniques":["[+15]% Strength for [Melee] units which have another [Military] unit in an adjacent tile"],
+				"uniques":["[+15]% Strength <for [Melee] units> <when adjacent to a [Melee] unit>"],
 				"row": 1,
 				"column": 4
 			},
@@ -120,7 +120,7 @@
 			},
 			{
 				"name": "Professional Army",
-				"uniques": ["Gold cost of upgrading [Military] units reduced by [33]%", "[+1 Happiness] from every [Walls]",
+				"uniques": ["[-33]% Gold cost of upgrading <for [Military] units>", "[+1 Happiness] from every [Walls]",
 					"[+1 Happiness] from every [Castle]", "[+1 Happiness] from every [Arsenal]", "[+1 Happiness] from every [Military Base]"
 				],
 				"requires": ["Military Caste"],
@@ -152,7 +152,7 @@
 			},
 			{
 				"name": "Theocracy",
-				"uniques": ["+[10]% [Gold] from every [Temple]"],
+				"uniques": ["[+10]% [Gold] from every [Temple]"],
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 1
@@ -166,21 +166,21 @@
 			},
 			{
 				"name": "Free Religion",
-				"uniques": ["Culture cost of adopting new Policies reduced by [10]%"],
+				"uniques": ["[-10]% Culture cost of adopting new policies"],
 				"requires": ["Mandate Of Heaven", "Reformation"],
 				"row": 3,
 				"column": 4
 			},
 			{
 				"name": "Piety Complete",
-				"uniques": ["[Faith] cost of purchasing items in cities [-20]%", "[+3 Gold, +3 Culture] from every [Holy site]"]
+				"uniques": ["[Faith] cost of purchasing items in cities [-20]% ", "[+3 Gold, +3 Culture] from every [Holy site]"]
 			}
 		]
 	},
 	{
 		"name": "Patronage",
 		"era": "Classical era",
-		"uniques": ["City-State Influence degrades [25]% slower"],
+		"uniques": ["[-25]% City-State Influence degradation"],
 		"policies": [
 			{
 				"name": "Philantropy",
@@ -203,8 +203,8 @@
 			},
 			{
 				"name": "Cultural Diplomacy",
-				"uniques": ["Quantity of Resources gifted by City-States increased by [100]%",
-					"Happiness from Luxury Resources gifted by City-States increased by [50]%"],
+				"uniques": ["[+100]% resources gifted by City-States",
+					"[+50]% Happiness from luxury resources gifted by City-States"],
 				"requires": ["Scholasticism"],
 				"row": 3,
 				"column": 2
@@ -239,7 +239,7 @@
 			},
 			{
 				"name": "Trade Unions",
-				"uniques": ["Maintenance on roads & railroads reduced by [33]%", "[+1 Gold] from every [Harbor]", "[+1 Gold] from every [Seaport]"],
+				"uniques": ["[-33]% maintenance on roads & railroads", "[+1 Gold] from every [Harbor]", "[+1 Gold] from every [Seaport]"],
 				"row": 1,
 				"column": 4
 			},
@@ -260,14 +260,14 @@
 			},
 			{
 				"name": "Protectionism",
-				"uniques": ["+[2] happiness from each type of luxury resource"],
+				"uniques": ["[+2] happiness from each type of luxury resource"],
 				"requires": ["Mercantilism"],
 				"row": 3,
 				"column": 4
 			},
 			{
 				"name": "Commerce Complete",
-				"uniques": ["[+1 Gold] from every [Trading post]", "Double gold from Great Merchant trade missions",
+				"uniques": ["[+1 Gold] from every [Trading post]", "[+100]% Gold from Great Merchant trade missions",
 					"May buy [Great Merchant] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
 				]
 			}
@@ -293,7 +293,7 @@
 			},
 			{
 				"name": "Free Thought",
-				"uniques": ["[+1 Science] from every [Trading post]", "+[17]% [Science] from every [University]"],
+				"uniques": ["[+1 Science] from every [Trading post]", "[+17]% [Science] from every [University]"],
 				"requires": ["Secularism"],
 				"row": 2,
 				"column": 1
@@ -333,7 +333,7 @@
 			},
 			{
 				"name": "Universal Suffrage",
-				"uniques": ["+[33]% Defensive Strength for cities"],
+				"uniques": ["[+33]% Strength for cities <when defending>"],
 				"row": 1,
 				"column": 3
 			},
@@ -359,7 +359,7 @@
 			},
 			{
 				"name": "Freedom Complete",
-				"uniques": ["+[100]% yield from every [Great Improvement]", "Golden Age length increased by [50]%",
+				"uniques": ["[+100]% Yield from every [Great Improvement]", "[+50]% length of Golden Ages",
 					"May buy [Great Artist] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
 				]
 			}
@@ -427,7 +427,7 @@
         },
 		{
 			"name": "Planned Economy",
-			"uniques": ["+[25]% [Science] from every [Factory]", "[+100]% Production when constructing [Factory] buildings [in all cities]"],
+			"uniques": ["[+25]% [Science] from every [Factory]", "[+100]% Production when constructing [Factory] buildings [in all cities]"],
 			"row": 1,
 			"column": 3
 		},
@@ -440,7 +440,7 @@
         {
             "name": "Socialism",
             "requires": ["Planned Economy"],
-			"uniques": ["-[15]% maintenance cost for buildings [in all cities]"],
+			"uniques": ["[-15]% maintenance cost for buildings [in all cities]"],
             "row": 2,
             "column": 3
         },

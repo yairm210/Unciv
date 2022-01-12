@@ -61,15 +61,20 @@ object ChooseBeliefsAutomation {
         val ruleSet = civInfo.gameInfo.ruleSet
         for (unique in belief.uniqueObjects) {
             var modifier = 1f
-            if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalWar) || it.isOfType(UniqueType.ConditionalNotWar) })
-                modifier *= 0.5f 
+            if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalWar) 
+                || it.isOfType(UniqueType.ConditionalNotWar) 
+                || it.isOfType(UniqueType.ConditionalAttacking)
+                || it.isOfType(UniqueType.ConditionalDefending) }
+            ) {
+                modifier *= 0.5f
+            }
             // Multiply by 3/10 if has an obsoleted era
             // Multiply by 2 if enough pop/followers (best implemented with conditionals, so left open for now)
             // If obsoleted, continue
             score += modifier * when (unique.placeholderText) {
                 UniqueType.GrowthPercentBonus.placeholderText -> unique.params[0].toFloat() / 3f
                 "[]% cost of natural border growth" -> -unique.params[0].toFloat() * 2f / 10f
-                "[]% attacking Strength for cities" -> unique.params[0].toFloat() / 10f // Modified by personality
+                "[]% Strength for cities" -> unique.params[0].toFloat() / 10f // Modified by personality
                 "[] Units adjacent to this city heal [] HP per turn when healing" -> unique.params[1].toFloat() / 10f
                 "+[]% Production when constructing []" -> unique.params[0].toFloat() / 3f
                 UniqueType.StatsFromCitiesOnSpecificTiles.placeholderText ->

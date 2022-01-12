@@ -89,6 +89,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
             UniqueType.ConditionalBelowHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
+            
             UniqueType.ConditionalInTiles ->
                 relevantUnitTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalFightingInTiles ->
@@ -107,6 +108,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                         || state.civInfo.getCapital().getCenterTile().getContinent()
                             != state.unit.getTile().getContinent()
                         )
+            UniqueType.ConditionalAdjacentUnit ->
+                state.civInfo != null && relevantUnitTile!!.neighbors.any {
+                    it.militaryUnit != null
+                    && it.militaryUnit!!.civInfo == state.civInfo    
+                    && it.militaryUnit!!.matchesFilter(condition.params[0])
+                }
 
             UniqueType.ConditionalNeighborTiles ->
                 state.cityInfo != null &&
