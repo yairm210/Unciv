@@ -193,20 +193,20 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
         loadingGamePopup.add("Loading latest game state...".tr())
         loadingGamePopup.open()
 
-        // For whatever reason, the only way to show the popup before the ANRs started was to
-        // call the loadGame explicitly with a runnable on the main thread.
-        // Maybe this adds just enough lag for the popup to show up
-
-        postCrashHandlingRunnable {
+        crashHandlingThread(name = "JoinMultiplayerGame") {
             try {
-                game.loadGame(OnlineMultiplayer().tryDownloadGame((multiplayerGames[selectedGameFile]!!.gameId)))
+                val gameId = multiplayerGames[selectedGameFile]!!.gameId
+                val gameInfo = OnlineMultiplayer().tryDownloadGame(gameId)
+                postCrashHandlingRunnable { game.loadGame(gameInfo) }
             } catch (ex: Exception) {
-                loadingGamePopup.close()
-                val errorPopup = Popup(this)
-                errorPopup.addGoodSizedLabel("Could not download game!")
-                errorPopup.row()
-                errorPopup.addCloseButton()
-                errorPopup.open()
+                postCrashHandlingRunnable {
+                    loadingGamePopup.close()
+                    val errorPopup = Popup(this)
+                    errorPopup.addGoodSizedLabel("Could not download game!")
+                    errorPopup.row()
+                    errorPopup.addCloseButton()
+                    errorPopup.open()
+                }
             }
         }
     }
