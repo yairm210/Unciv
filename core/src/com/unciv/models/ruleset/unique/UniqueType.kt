@@ -231,8 +231,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     
     IncompatibleWith("Incompatible with [policy/tech/promotion]", UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
 
-    GoldenAgeLength("[amount]% length of Golden Ages", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% length of Golden Ages"))
+    GoldenAgeLength("[amount]% Golden Age length", UniqueTarget.Global),
+    @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% Golden Age length"))
     GoldenAgeLengthIncreased("Golden Age length increased by [amount]%", UniqueTarget.Global),
     
     StrengthForCities("[amount]% Strength for cities", UniqueTarget.Global),
