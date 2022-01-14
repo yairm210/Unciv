@@ -256,19 +256,6 @@ class CityStats(val cityInfo: CityInfo) {
             stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
-        // Deprecated since 3.17.0
-            // For instance "+[50]% [Production]
-            for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecated2))
-                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-        //
-
-        // Deprecated since 3.17.10
-            // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
-            // For instance "+[50]% [Production] [in all cities]
-            for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecated))
-                if (cityInfo.matchesFilter(unique.params[2]))
-                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-        //
 
         for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCities)) {
             if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
@@ -292,13 +279,6 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.production += unique.params[0].toInt()
         }
 
-
-        // Deprecated since 3.17.1
-            if (cityInfo.civInfo.getHappiness() >= 0) {
-                for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecatedWhileEmpireHappy))
-                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-            }
-        //
 
         for (unique in uniqueMap.getUniques(UniqueType.StatPercentFromReligionFollowers))
             stats.add(
