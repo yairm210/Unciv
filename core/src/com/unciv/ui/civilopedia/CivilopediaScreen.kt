@@ -107,7 +107,9 @@ class CivilopediaScreen(
             // Alphabetical order of localized names, using system default locale
             entries = entries.sortedWith(
                 compareBy<CivilopediaEntry>{ it.sortBy }
-                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), { it.name.tr() })
+                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), {
+                        // In order for the extra icons on Happiness and Faith to not affect sort order
+                        it.name.tr().replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
             )
 
         var currentY = -1f

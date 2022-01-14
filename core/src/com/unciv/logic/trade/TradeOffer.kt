@@ -45,7 +45,7 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, v
         }.tr()
 
         if (type.numberType == TradeTypeNumberType.Simple || name == Constants.researchAgreement) offerText += " ($amount)"
-        else if (type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount${Fonts.gold})"
+        else if (type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount)"
        
         if (duration > 0) offerText += "\n" + duration + Fonts.turn
 
