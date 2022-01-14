@@ -470,6 +470,7 @@ class Ruleset {
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
             for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)) {
                 val improvementName = unique.params[0]
+                if (tileImprovements[improvementName]==null) continue // this will be caught in the checkUniques
                 if ((tileImprovements[improvementName] as Stats).none() &&
                         unit.isCivilian() &&
                         !unit.hasUnique("Bonus for units in 2 tile radius 15%")) {
