@@ -200,7 +200,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
 
-        for (unique in civInfo.getMatchingUniques("+[]% [] from every []")) {
+        // Deprecated since 3.18.17
+            for (unique in civInfo.getMatchingUniques(UniqueType.StatPercentSignedFromObject)) {
+                if (matchesFilter(unique.params[2]))
+                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+            }
+        //
+        
+        for (unique in civInfo.getMatchingUniques(UniqueType.StatPercentFromObject)) {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
@@ -425,11 +432,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] buildings []%")) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyBuildingsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }

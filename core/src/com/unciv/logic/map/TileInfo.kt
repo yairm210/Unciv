@@ -423,7 +423,9 @@ open class TileInfo {
             stats.add(unique.stats.times(numberOfBonuses.toFloat()))
         }
 
-        for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
+        for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject) + 
+            observingCiv.getMatchingUniques(UniqueType.AllStatsSignedPercentFromObject)
+        )
             if (improvement.matchesFilter(unique.params[1]))
                 stats.timesInPlace(unique.params[0].toPercent())
 

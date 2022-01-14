@@ -346,8 +346,13 @@ class CityStats(val cityInfo: CityInfo) {
         }
 
         // e.g. "-[50]% maintenance costs for buildings [in this city]"
-        for (unique in cityInfo.getMatchingUniques("-[]% maintenance cost for buildings []", citySpecificUniques)) {
-            buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
+        // Deprecated since 3.18.17
+            for (unique in cityInfo.getMatchingUniques(UniqueType.DecrasedBuildingMaintenanceDeprecated, localUniques=citySpecificUniques)) {
+                buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
+            }
+        //
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuildingMaintenance, localUniques = citySpecificUniques)) {
+            buildingsMaintenance *= unique.params[0].toPercent()
         }
 
         return buildingsMaintenance
@@ -390,11 +395,11 @@ class CityStats(val cityInfo: CityInfo) {
         var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
 
         // Deprecated since 3.16.11
-        for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
-            unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
+            for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
+                unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
         //
 
-        for (unique in cityInfo.getMatchingUniques("[]% unhappiness from specialists []")) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromSpecialistsPercentageChange)) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 unhappinessFromSpecialists *= unique.params[0].toPercent()
         }

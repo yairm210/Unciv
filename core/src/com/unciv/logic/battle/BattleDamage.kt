@@ -32,19 +32,16 @@ object BattleDamage {
         val modifiers = Counter<String>()
 
         val civInfo = combatant.getCivInfo()
+        val attackedTile =
+            if (combatAction == CombatAction.Attack) enemy.getTile()
+            else combatant.getTile()
+        
+        val conditionalState = StateForConditionals(civInfo, ourCombatant = combatant, theirCombatant = enemy,
+            attackedTile = attackedTile, combatAction = combatAction)
+        
         if (combatant is MapUnitCombatant) {
-            val attackedTile =
-                if (combatAction == CombatAction.Attack) enemy.getTile()
-                else combatant.getTile()
 
-            val conditionalState = StateForConditionals(
-                civInfo, theirCombatant = enemy, ourCombatant = combatant,
-                combatAction = combatAction, attackedTile = attackedTile
-            )
-
-            for (unique in combatant.getMatchingUniques(
-                UniqueType.Strength, conditionalState, true
-            )) {
+            for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
             for (unique in combatant.getMatchingUniques(
@@ -75,13 +72,15 @@ object BattleDamage {
 
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
 
-            for (unique in civInfo.getMatchingUniques("[]% Strength for [] units which have another [] unit in an adjacent tile")) {
-                if (combatant.matchesCategory(unique.params[1])
-                    && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) }
-                ) {
-                    modifiers.add("Adjacent units", unique.params[0].toInt())
+            // Deprecated since 3.18.17
+                for (unique in civInfo.getMatchingUniques(UniqueType.StrengthFromAdjacentUnits)) {
+                    if (combatant.matchesCategory(unique.params[1])
+                        && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) }
+                    ) {
+                        modifiers.add("Adjacent units", unique.params[0].toInt())
+                    }
                 }
-            }
+            //
 
             for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
                 .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
@@ -118,6 +117,10 @@ object BattleDamage {
                 && civInfo.hasUnique("+30% Strength when fighting City-State units and cities")
             )
                 modifiers["vs [City-States]"] = 30
+        } else if (combatant is CityCombatant) {
+            for (unique in combatant.getCivInfo().getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
+                modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
+            }
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
@@ -183,7 +186,7 @@ object BattleDamage {
                 if (garrisonBonus != 0)
                     modifiers["Garrisoned unit"] = garrisonBonus
             }
-            for (unique in attacker.city.getMatchingUniques("[]% attacking Strength for cities")) {
+            for (unique in attacker.city.getMatchingUniques(UniqueType.StrengthForCitiesAttacking)) {
                 modifiers.add("Attacking Bonus", unique.params[0].toInt())
             }
         }
@@ -221,7 +224,7 @@ object BattleDamage {
         } else if (defender is CityCombatant) {
 
             modifiers["Defensive Bonus"] =
-                defender.city.civInfo.getMatchingUniques("+[]% Defensive strength for cities")
+                defender.city.civInfo.getMatchingUniques(UniqueType.StrengthForCitiesDefending)
                     .map { it.params[0].toFloat() / 100f }.sum().toInt()
         }
 
