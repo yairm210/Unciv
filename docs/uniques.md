@@ -2,6 +2,7 @@
 
  - [Global uniques](#global-uniques)
  - [Nation uniques](#nation-uniques)
+ - [Tech uniques](#tech-uniques)
  - [FollowerBelief uniques](#followerbelief-uniques)
  - [Building uniques](#building-uniques)
  - [Unit uniques](#unit-uniques)
@@ -70,6 +71,16 @@ Example: "[20]% [Culture]"
 
 Applicable to: Global, FollowerBelief
 
+#### [amount]% [stat] from every [tileFilter/specialist/buildingName]
+Example: "[20]% [Culture] from every [tileFilter/specialist/buildingName]"
+
+Applicable to: Global, FollowerBelief
+
+#### [amount]% Yield from every [tileFilter]
+Example: "[20]% Yield from every [Farm]"
+
+Applicable to: Global, FollowerBelief
+
 #### [amount]% [stat] from City-States
 Example: "[20]% [Culture] from City-States"
 
@@ -95,13 +106,13 @@ Example: "[20]% Production when constructing [Melee] units [in all cities]"
 
 Applicable to: Global, FollowerBelief
 
-#### [amount]% unhappiness from population [cityFilter]
-Example: "[20]% unhappiness from population [in all cities]"
-
-Applicable to: Global, FollowerBelief
-
 #### Military Units gifted from City-States start with [amount] XP
 Example: "Military Units gifted from City-States start with [20] XP"
+
+Applicable to: Global
+
+#### Militaristic City-States grant units [amount] times as fast when you are at war with a common nation
+Example: "Militaristic City-States grant units [20] times as fast when you are at war with a common nation"
 
 Applicable to: Global
 
@@ -119,6 +130,31 @@ Applicable to: Global
 Applicable to: Global
 
 #### Allied City-States will occasionally gift Great People
+Applicable to: Global
+
+#### [amount]% City-State Influence degradation
+Example: "[20]% City-State Influence degradation"
+
+Applicable to: Global
+
+#### Resting point for Influence with City-States is increased by [amount]
+Example: "Resting point for Influence with City-States is increased by [20]"
+
+Applicable to: Global
+
+#### Allied City-States provide [stat] equal to [amount]% of what they produce for themselves
+Example: "Allied City-States provide [Culture] equal to [20]% of what they produce for themselves"
+
+Applicable to: Global
+
+#### [amount]% resources gifted by City-States
+Example: "[20]% resources gifted by City-States"
+
+Applicable to: Global
+
+#### [amount]% Happiness from luxury resources gifted by City-States
+Example: "[20]% Happiness from luxury resources gifted by City-States"
+
 Applicable to: Global
 
 #### [amount] units cost no maintenance
@@ -145,6 +181,16 @@ Applicable to: Global
 Example: "May choose [20] additional belief(s) of any type when [foundingOrEnhancing] a religion"
 
 Applicable to: Global
+
+#### [amount]% unhappiness from population [cityFilter]
+Example: "[20]% unhappiness from population [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
+#### [amount]% unhappiness from specialists [cityFilter]
+Example: "[20]% unhappiness from specialists [in all cities]"
+
+Applicable to: Global, FollowerBelief
 
 #### [amount]% food consumption by specialists [cityFilter]
 Example: "[20]% food consumption by specialists [in all cities]"
@@ -196,6 +242,31 @@ Example: "May buy [buildingFilter] buildings with [Culture] for [20] times their
 
 Applicable to: Global, FollowerBelief
 
+#### [stat] cost of purchasing items in cities [amount]%
+Example: "[Culture] cost of purchasing items in cities [20]%"
+
+Applicable to: Global, FollowerBelief
+
+#### [stat] cost of purchasing [buildingFilter] buildings [amount]%
+Example: "[Culture] cost of purchasing [buildingFilter] buildings [20]%"
+
+Applicable to: Global, FollowerBelief
+
+#### [stat] cost of purchasing [baseUnitFilter] units in cities [amount]%
+Example: "[Culture] cost of purchasing [Melee] units in cities [20]%"
+
+Applicable to: Global, FollowerBelief
+
+#### [amount]% maintenance on road & railroads
+Example: "[20]% maintenance on road & railroads"
+
+Applicable to: Global
+
+#### [amount]% maintenance cost for buildings [cityFilter]
+Example: "[20]% maintenance cost for buildings [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
 #### Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.
 Example: "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once."
 
@@ -209,7 +280,27 @@ Example: "Retain [20]% of the happiness from a luxury after the last copy has be
 
 Applicable to: Global
 
+#### [amount] Happiness from each type of luxury resource
+Example: "[20] Happiness from each type of luxury resource"
+
+Applicable to: Global
+
+#### Each city founded increases culture cost of policies [amount]% less than normal
+Example: "Each city founded increases culture cost of policies [20]% less than normal"
+
+Applicable to: Global
+
+#### [amount]% Culture cost of adopting new policies
+Example: "[20]% Culture cost of adopting new policies"
+
+Applicable to: Global
+
 #### Enables Research agreements
+Applicable to: Global
+
+#### Science gained from research agreements [amount]%
+Example: "Science gained from research agreements [20]%"
+
 Applicable to: Global
 
 #### Triggers victory
@@ -227,6 +318,31 @@ Applicable to: Global
 Example: "[20]% City Strength from defensive buildings"
 
 Applicable to: Global
+
+#### [amount]% tile improvement construction time
+Example: "[20]% tile improvement construction time"
+
+Applicable to: Global
+
+#### [amount]% Gold from Great Merchant trade missions
+Example: "[20]% Gold from Great Merchant trade missions"
+
+Applicable to: Global
+
+#### [amount]% Golden Age length
+Example: "[20]% Golden Age length"
+
+Applicable to: Global
+
+#### [amount]% Strength for cities
+Example: "[20]% Strength for cities"
+
+Applicable to: Global
+
+#### New [baseUnitFilter] units start with [amount] Experience [cityFilter]
+Example: "New [Melee] units start with [20] Experience [in all cities]"
+
+Applicable to: Global, FollowerBelief
 
 #### [amount]% Strength
 Example: "[20]% Strength"
@@ -258,7 +374,30 @@ Example: "[20]% Spread Religion Strength"
 
 Applicable to: Global, Unit
 
+#### No defensive terrain bonus
+Applicable to: Global, Unit
+
+#### No defensive terrain penalty
+Applicable to: Global, Unit
+
+#### No movement cost to pillage
+Applicable to: Global, Unit
+
+#### May heal outside of friendly territory
+Applicable to: Global, Unit
+
+#### All healing effects doubled
+Applicable to: Global, Unit
+
+#### Heals [amount] damage if it kills a unit
+Example: "Heals [20] damage if it kills a unit"
+
+Applicable to: Global, Unit
+
 #### Normal vision when embarked
+Applicable to: Global, Unit
+
+#### Defense bonus when embarked
 Applicable to: Global, Unit
 
 #### Embarked units can defend themselves
@@ -266,6 +405,11 @@ Applicable to: Global
 
 #### [amount]% maintenance costs
 Example: "[20]% maintenance costs"
+
+Applicable to: Global, Unit
+
+#### [amount]% Gold cost of upgrading
+Example: "[20]% Gold cost of upgrading"
 
 Applicable to: Global, Unit
 
@@ -374,6 +518,12 @@ Applicable to: Global
 #### Will not be chosen for new games
 Applicable to: Nation
 
+## Tech uniques
+#### Incompatible with [policy/tech/promotion]
+Example: "Incompatible with [policy/tech/promotion]"
+
+Applicable to: Tech, Policy, Promotion
+
 ## FollowerBelief uniques
 #### [amount]% [stat] from every follower, up to [amount]%
 Example: "[20]% [Culture] from every follower, up to [20]%"
@@ -424,6 +574,14 @@ Applicable to: Building, Unit
 
 #### Not displayed as an available construction without [buildingName/tech/resource/policy]
 Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
+
+Applicable to: Building, Unit
+
+#### Excess Food converted to Production when under construction
+Applicable to: Building, Unit
+
+#### Requires at least [amount] population
+Example: "Requires at least [20] population"
 
 Applicable to: Building, Unit
 
@@ -501,15 +659,15 @@ Applicable to: Unit
 #### May create improvements on water resources
 Applicable to: Unit
 
-#### Can see invisible [mapUnitFilter] units
-Example: "Can see invisible [Wounded] units"
-
-Applicable to: Unit
-
 #### May found a religion
 Applicable to: Unit
 
 #### May enhance a religion
+Applicable to: Unit
+
+#### Can only attack [combatantFilter] units
+Example: "Can only attack [combatantFilter] units"
+
 Applicable to: Unit
 
 #### Cannot attack
@@ -518,33 +676,27 @@ Applicable to: Unit
 #### Must set up to ranged attack
 Applicable to: Unit
 
-#### No defensive terrain bonus
-Applicable to: Unit
-
-#### No defensive terrain penalty
-Applicable to: Unit
-
 #### Uncapturable
 Applicable to: Unit
 
 #### Self-destructs when attacking
 Applicable to: Unit
 
-#### May heal outside of friendly territory
+#### Unit will heal every turn, even if it performs an action
 Applicable to: Unit
 
-#### All healing effects doubled
+#### Can move after attacking
 Applicable to: Unit
 
-#### Defense bonus when embarked
-Applicable to: Unit
-
-#### 6 tiles in every direction always visible
+#### Can move immediately once bought
 Applicable to: Unit
 
 #### Blast radius [amount]
 Example: "Blast radius [20]"
 
+Applicable to: Unit
+
+#### 6 tiles in every direction always visible
 Applicable to: Unit
 
 #### Can carry [amount] [mapUnitFilter] units
@@ -566,6 +718,16 @@ Applicable to: Unit
 Applicable to: Unit
 
 #### Invisible to non-adjacent units
+Applicable to: Unit
+
+#### Can see invisible [mapUnitFilter] units
+Example: "Can see invisible [Wounded] units"
+
+Applicable to: Unit
+
+#### May upgrade to [baseUnitFilter] through ruins-like effects
+Example: "May upgrade to [Melee] through ruins-like effects"
+
 Applicable to: Unit
 
 #### Double movement in [terrainFilter]
@@ -810,8 +972,8 @@ Example: "Costs [20] gold per turn when in your territory"
 
 Applicable to: Improvement
 
-#### Adjacent enemy units ending their turn take [30] damage
-Example: "Adjacent enemy units ending their turn take [30] damage"
+#### Adjacent enemy units ending their turn take [amount] damage
+Example: "Adjacent enemy units ending their turn take [20] damage"
 
 Applicable to: Improvement
 
@@ -1035,6 +1197,11 @@ Applicable to: Conditional
 #### <on foreign continents>
 Applicable to: Conditional
 
+#### <when adjacent to a [mapUnitFilter] unit>
+Example: "<when adjacent to a [Wounded] unit>"
+
+Applicable to: Conditional
+
 #### <when above [amount] HP>
 Example: "<when above [20] HP>"
 
@@ -1085,14 +1252,30 @@ Applicable to: Conditional
 
 ## Deprecated uniques
  - "[stats] per turn from cities before [tech/policy]" - Deprecated As of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
+ - "+[amount]% [stat] from every [tileFilter/specialist/buildingName]" - Deprecated As of 3.18.17,
+ - "+[amount]% yield from every [tileFilter]" - Deprecated As of 3.18.17, replace with "[+amount]% Yield from every [tileFilter]"
  - "+[amount]% [stat] [cityFilter]" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [cityFilter]"
  - "+[amount]% [stat] in all cities" - Deprecated As of 3.17.10, replace with "[+amount]% [stat] [in all cities]"
  - "[amount]% [stat] while the empire is happy" - Deprecated As of 3.17.1, replace with "[amount]% [stat] [in all cities] <while the empire is happy>"
+ - "City-State Influence degrades [amount]% slower" - Deprecated As of 3.18.17, replace with "[-amount]% City-State Influence degradation"
+ - "Quantity of Resources gifted by City-States increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% resources gifted by City-States"
+ - "Happiness from Luxury Resources gifted by City-States increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% Happiness from luxury resources gifted by City-States"
  - "Provides a free [buildingName] [cityFilter]" - Deprecated As of 3.17.7, replace with "Gain a free [buildingName] [cityFilter]"
  - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated As of 3.18.2, replace with "[-amount]% food consumption by specialists [cityFilter]"
  - "50% of excess happiness added to culture towards policies" - Deprecated As of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
  - "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])" - Deprecated As of 3.17.9, replace with "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"
+ - "Maintenance on roads & railroads reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[-amount]% maintenance on road & railroads"
+ - "-[amount]% maintenance cost for buildings [cityFilter]" - Deprecated As of 3.18.17, replace with "[-amount]% maintenace cost for buildings [cityFilter]"
+ - "+[amount] happiness from each type of luxury resource" - Deprecated As of 3.18.17, replace with "[+amount] Happiness from each type of luxury resource"
+ - "Culture cost of adopting new Policies reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[amount]% Culture cost of adopting new policies"
  - "Defensive buildings in all cities are 25% more effective" - Deprecated As of 3.18.17, replace with "[+25]% City Strength from defensive buildings"
+ - "[amount]% Strength for [mapUnitFilter] units which have another [mapUnitFilter] unit in an adjacent tile" - Deprecated As of 3.18.17, replace with "[amount]% Strength <for [mapUnitFilter] units> <when adjacent to a [mapUnitFilter] unit>"
+ - "Gold cost of upgrading [baseUnitFilter] units reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[-amount]% Gold cost of upgrading <for [baseUnitFilter] units>"
+ - "Double gold from Great Merchant trade missions" - Deprecated As of 3.18.17, replace with "[+100]% Gold from Great Merchant trade missions"
+ - "Golden Age length increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% Golden Age length"
+ - "+[amount]% Defensive Strength for cities" - Deprecated As of 3.18.17, replace with "[+amount]% Strength for cities <when defending>"
+ - "[amount]% Attacking Strength for cities" - Deprecated As of 3.18.17, replace with "[amount]% Strength for cities <when attacking>"
+ - "Melee units pay no movement cost to pillage" - Deprecated As of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
  - "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides the cheapest [stat] building in your first [amount] cities for free"
@@ -1141,4 +1324,5 @@ Applicable to: Conditional
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
  - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated As of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before discovering [tech]>"
+ - "Deal [amount] damage to adjacent enemy units" - Deprecated As of 3.18.17, replace with "Adjacent enemy units ending their turn take [30] damage"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10, replace with "Adjacent enemy units ending their turn take [30] damage"

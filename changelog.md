@@ -1,3 +1,17 @@
+## 3.18.17
+
+Handling for multiplayer download errors
+
+Fixed fringe-case crashes
+
+By xlenstra:
+- Fixed a bug that occasionally placed hills on top of mountains
+- Made all the other constants determining the strength of cities moddable
+- Fixed a bug where citadels did not damage nearby units
+- Updated the natural wonders for vanilla
+
+Fix incorrect Archer obsolete  - By AdityaMH
+
 ## 3.18.16
 
 Deprecation of requiredBuildingInAllCities
