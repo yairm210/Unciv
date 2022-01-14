@@ -340,12 +340,12 @@ class TechManager {
 
     private fun updateTransientBooleans() {
         wayfinding = civInfo.hasUnique("Can embark and move over Coasts and Oceans immediately")
-        unitsCanEmbark = wayfinding || civInfo.hasUnique("Enables embarkation for land units")
+        unitsCanEmbark = wayfinding || civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
 
-        embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique("Enables embarked units to enter ocean tiles")
-        movementSpeedOnRoads = if (civInfo.hasUnique("Improves movement speed on roads"))
+        embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
+        movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))
             RoadStatus.Road.movementImproved else RoadStatus.Road.movement
-        roadsConnectAcrossRivers = civInfo.hasUnique("Roads connect tiles across rivers")
+        roadsConnectAcrossRivers = civInfo.hasUnique(UniqueType.RoadsConnectAcrossRivers)
     }
 
     fun getBestRoadAvailable(): RoadStatus {
