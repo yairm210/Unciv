@@ -73,7 +73,7 @@
       "You have encountered another civilization!\nOther civilizations start out peaceful, and you can trade with them,\n  but they may choose to declare war on you later on"
   ],
   Apollo_Program: [
-      "Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities\n (with the relevant technologies) to win a scientific victory!"
+      "Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities\n (with the relevant technologies) to win a Scientific Victory!"
   ],
   Injured_Units: [
       "Injured units deal less damage, but recover after turns that they have been inactive.\nUnits heal 5 health per turn in enemy territory, 10 in neutral land,\n  15 inside your territory and 20 in your cities."

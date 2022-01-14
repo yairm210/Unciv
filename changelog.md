@@ -2652,7 +2652,7 @@ Added an installation problem solution on Ubuntu - By illantalex
 
 ## 3.9.8
 
-Resolved #2787 - AIs MUCH more likely to build the Apollo Program and win a scientific victory
+Resolved #2787 - AIs MUCH more likely to build the Apollo Program and win a Scientific Victory
 
 Resolved #2789 - losing a resource no longer cancells all trades with that resource, only as many as is necessary to reach equilibrium
 
