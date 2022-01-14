@@ -471,7 +471,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
-        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
+        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.MoveImmediatelyOnceBought))
             unit.currentMovement = 0f
 
         // If this unit has special abilities that need to be kept track of, start doing so here

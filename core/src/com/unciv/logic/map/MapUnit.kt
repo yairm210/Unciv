@@ -760,7 +760,7 @@ class MapUnit {
             currentTile.neighbors.flatMap { it.getUnits() }.forEach { it.healBy(15) }
 
         if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
-            || hasUnique("Unit will heal every turn, even if it performs an action")
+            || hasUnique(UniqueType.HealsEvenAfterAction)
         ) heal()
 
         if (action != null && health > 99)

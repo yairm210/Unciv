@@ -243,7 +243,7 @@ object UnitAutomation {
     }
 
     private fun tryHealUnit(unit: MapUnit): Boolean {
-        if (unit.baseUnit.isRanged() && unit.hasUnique("Unit will heal every turn, even if it performs an action"))
+        if (unit.baseUnit.isRanged() && unit.hasUnique(UniqueType.HealsEvenAfterAction))
             return false // will heal anyway, and attacks don't hurt
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
