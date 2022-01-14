@@ -153,8 +153,8 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     UnhappinessFromPopulationPercentageChange("[amount]% unhappiness from population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     UnhappinessFromSpecialistsPercentageChange("[amount]% unhappiness from specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    FoodConsumptionBySpecialists("[amount]% food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.18.2", ReplaceWith("[-amount]% food consumption by specialists [cityFilter]"), DeprecationLevel.WARNING)
+    FoodConsumptionBySpecialists("[amount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.18.2", ReplaceWith("[-amount]% Food consumption by specialists [cityFilter]"), DeprecationLevel.WARNING)
     FoodConsumptionBySpecialistsDeprecated("-[amount]% food consumption by specialists [cityFilter]", UniqueTarget.Global),
 
     ExcessHappinessToGlobalStat("[amount]% of excess happiness converted to [stat]", UniqueTarget.Global),
@@ -176,12 +176,21 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     @Deprecated("As of 3.17.9", ReplaceWith ("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"))
     BuyUnitsIncreasingCostEra("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])", UniqueTarget.Global),
     
+    // ToDo: Unify
+    EnablesGoldProduction("Enables conversion of city production to gold", UniqueTarget.Global),
+    EnablesScienceProduction("Enables conversion of city production to science", UniqueTarget.Global),
+    
     BuyItemsDiscount("[stat] cost of purchasing items in cities [amount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyBuildingsDiscount("[stat] cost of purchasing [buildingFilter] buildings [amount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyUnitsDiscount("[stat] cost of purchasing [baseUnitFilter] units in cities [amount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    RoadMaintenance("[amount]% maintenance on road & railroads", UniqueTarget.Global), // Should be replaced with moddable improvements when roads become moddable
+
+    // Should be replaced with moddable improvements when roads become moddable
+    RoadMovementSpeed("Improves movement speed on roads",UniqueTarget.Global),
+    RoadsConnectAcrossRivers("Roads connect tiles across rivers", UniqueTarget.Global),
+    RoadMaintenance("[amount]% maintenance on road & railroads", UniqueTarget.Global), 
     @Deprecated("As of 3.18.17", ReplaceWith("[-amount]% maintenance on road & railroads"))
     DecreasedRoadMaintenanceDeprecated("Maintenance on roads & railroads reduced by [amount]%", UniqueTarget.Global),
+    
     BuildingMaintenance("[amount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.18.17", ReplaceWith("[-amount]% maintenace cost for buildings [cityFilter]"))
     DecrasedBuildingMaintenanceDeprecated("-[amount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -199,6 +208,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     @Deprecated("As of 3.18.17", ReplaceWith("[amount]% Culture cost of adopting new policies"))
     LessPolicyCostDeprecated("Culture cost of adopting new Policies reduced by [amount]%", UniqueTarget.Global),
 
+    EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
     EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),
     ScienceFromResearchAgreements("Science gained from research agreements [amount]%", UniqueTarget.Global),
@@ -220,8 +230,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     ReducedUpgradingGoldCost("Gold cost of upgrading [baseUnitFilter] units reduced by [amount]%", UniqueTarget.Unit, UniqueTarget.Global),
     @Deprecated("As of 3.18.17", ReplaceWith("[+100]% Gold from Great Merchant trade missions"))
     DoubleGoldFromTradeMissions("Double gold from Great Merchant trade missions", UniqueTarget.Global),
-    
-    IncompatibleWith("Incompatible with [policy/tech/promotion]", UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
 
     GoldenAgeLength("[amount]% Golden Age length", UniqueTarget.Global),
     @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% Golden Age length"))
@@ -234,9 +242,16 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     StrengthForCitiesAttacking("[amount]% Attacking Strength for cities", UniqueTarget.Global),
     
     UnitStartingExperience("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    // ToDo: make per unit and use unit filters?
+    LandUnitEmbarkation("Enables embarkation for land units", UniqueTarget.Global),
+    EmbarkedUnitsMayEnterOcean("Enables embarked units to enter ocean tiles", UniqueTarget.Global),
+    
+    IncompatibleWith("Incompatible with [policy/tech/promotion]", UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
+    StartingTech("Starting tech", UniqueTarget.Tech),
+    ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Global),
+
     //endregion Global uniques
 
-    
     ///////////////////////////////////////// region CONSTRUCTION UNIQUES /////////////////////////////////////////
 
     Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit),

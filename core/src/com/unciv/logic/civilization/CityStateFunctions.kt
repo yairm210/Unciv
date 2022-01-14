@@ -24,7 +24,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
             ?: return false
 
-        val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
+        val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
         for (tech in startingTechs)
             civInfo.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
 
