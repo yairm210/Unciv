@@ -1551,7 +1551,7 @@ Tech info can display more than one revealed resource
 
 Experimental World Wrap - By GGGuenni!
 
-Resolved #3639 - City states that can't be connected by land no longer assign road connection quests
+Resolved #3639 - City-States that can't be connected by land no longer assign road connection quests
 
 Fix when Trade Gold = 0 it also shows in offer - By lishaoxia1985
 
@@ -2553,7 +2553,7 @@ Greatly improved performance of worker's automated city connecting
 
 Resolved #2853 - Sped up loading of saved game list
 
-Resolved #2852 - cannot make peace with a city state while at war with its ally
+Resolved #2852 - cannot make peace with a City-State while at war with its ally
 
 Resolved #2864 - Locks on tiles are removed when the tile is no longer under your control
 

@@ -899,7 +899,7 @@ class MapUnit {
     private fun clearEncampment(tile: TileInfo) {
         tile.improvement = null
 
-        // Notify city states that this unit cleared a Barbarian Encampment, required for quests
+        // Notify City-States that this unit cleared a Barbarian Encampment, required for quests
         civInfo.gameInfo.getAliveCityStates()
             .forEach { it.questManager.barbarianCampCleared(civInfo, tile.position) }
 

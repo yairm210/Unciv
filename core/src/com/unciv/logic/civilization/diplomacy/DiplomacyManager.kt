@@ -751,7 +751,7 @@ class DiplomacyManager() {
             // Our ally city states make peace with us
             if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(otherCiv).makePeace()
-            // Other city states that are not our ally don't like the fact that we made peace with their enemy
+            // Other City-States that are not our ally don't like the fact that we made peace with their enemy
             if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(civInfo).addInfluence(-10f)
         }
