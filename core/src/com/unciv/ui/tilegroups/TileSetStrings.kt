@@ -35,6 +35,7 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     val unitsLocation = tileSetLocation + "Units/"
     val landUnit = unitsLocation + "LandUnit"
     val waterUnit = unitsLocation + "WaterUnit"
+    val civilianLandUnit = unitsLocation + "CivilianLandUnit"
 
     val bordersLocation = tileSetLocation + "Borders/"
 
