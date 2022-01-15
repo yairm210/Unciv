@@ -1,5 +1,6 @@
 package com.unciv.ui.pickerscreens
 
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -87,5 +88,17 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
     /** Remove listeners from [rightSideButton] to prepare giving it a new onClick */
     fun removeRightSideClickListeners() {
         rightSideButton.clearListeners()
+    }
+
+    companion object {
+        /** Icon size used in [getPickerOptionButton]. */
+        const val pickerOptionIconSize = 30f
+        /** Return a button for picker screens that display a list of big buttons with icons and labels. */
+        fun <I: Actor?> getPickerOptionButton(icon: I, label: String): Button {
+            return label.toButton(icon = icon) {
+                iconCell!!.size(pickerOptionIconSize).pad(10f)
+                labelCell.pad(10f)
+            }
+        }
     }
 }
