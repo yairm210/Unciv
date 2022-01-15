@@ -92,18 +92,6 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table
     return table
 }
 
-/** Wrap an [Actor] in a [Group] of a given size */
-fun Actor.sizeWrapped(x: Float, y: Float): Group {
-    val wrapper = Group().apply {
-        isTransform = false // performance helper - nothing here is rotated or scaled
-        setSize(x, y)
-    }
-    setSize(x, y)
-    center(wrapper)
-    wrapper.addActor(this)
-    return wrapper
-}
-
 
 /** get background Image for a new separator */
 private fun getSeparatorImage(color: Color) = ImageGetter.getDot(
@@ -197,13 +185,11 @@ fun Float.toPercent() = 1 + this/100
 fun String.toTextButton() = TextButton(this.tr(), BaseScreen.skin)
 
 /** Translate a [String] and make a [Button] widget from it, with control over font size, font colour, and an optional icon. */
-fun String.toButton(fontColor: Color = Color.WHITE, fontSize: Int = 18, icon: Actor? = null): Button {
+fun String.toButton(fontColor: Color = Color.WHITE, fontSize: Int = 18, icon: Actor? = null, iconSize: Float? = null): Button {
     val button = Button(BaseScreen.skin)
     if (icon != null) {
-        val size = fontSize.toFloat()
-        button.add(
-            icon.sizeWrapped(size, size)
-        ).padRight(size / 3)
+        val size = iconSize ?: fontSize.toFloat()
+        button.add(icon).size(size).padRight(size / 3)
     }
     button.add(
         this.toLabel(fontColor, fontSize)
