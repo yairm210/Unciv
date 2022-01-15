@@ -223,10 +223,7 @@ class CivilopediaScreen(
 
         var currentX = 10f  // = padLeft
         for (categoryKey in categoryToEntries.keys) {
-            val button = Button(skin)
-            if (categoryKey.headerIcon.isNotEmpty())
-                button.add(ImageGetter.getImage(categoryKey.headerIcon)).size(20f).padRight(5f)
-            button.add(categoryKey.label.toLabel())
+            val button = categoryKey.label.toButton(icon = if (categoryKey.headerIcon.isNotEmpty()) ImageGetter.getImage(categoryKey.headerIcon) else null)
             button.addTooltip(categoryKey.key)
 //            button.style = ImageButton.ImageButtonStyle(button.style)
             button.onClick { selectCategory(categoryKey) }
