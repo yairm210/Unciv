@@ -146,8 +146,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                             keyPressDispatcher['r'] = razeAction
                         }
                     }).row()
-                    addGoodSizedLabel("Razing the city annexes it, and starts razing the city to the ground.").row()
-                    addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
+                    if (city.canBeDestroyed(justCaptured = true)) {
+                        addGoodSizedLabel("Razing the city annexes it, and starts razing the city to the ground.").row()
+                        addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
+                    } else {
+                        addGoodSizedLabel("Original capitals and holy cities cannot be razed.").row()
+                    }
+
                 }
             }
             AlertType.BorderConflict -> {
