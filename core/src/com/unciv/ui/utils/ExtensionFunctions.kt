@@ -197,12 +197,12 @@ fun Float.toPercent() = 1 + this/100
 fun String.toTextButton() = TextButton(this.tr(), BaseScreen.skin)
 
 /** Translate a [String] and make a [Button] widget from it, with control over font size, font colour, and an optional icon. */
-fun String.toButton(fontColor: Color = Color.WHITE, fontSize: Int = 24, icon: String? = null): Button {
+fun String.toButton(fontColor: Color = Color.WHITE, fontSize: Int = 18, icon: Actor? = null): Button {
     val button = Button(BaseScreen.skin)
     if (icon != null) {
         val size = fontSize.toFloat()
         button.add(
-            ImageGetter.getImage(icon).sizeWrapped(size, size)
+            icon.sizeWrapped(size, size)
         ).padRight(size / 3)
     }
     button.add(
