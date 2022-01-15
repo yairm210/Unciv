@@ -619,6 +619,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 
         val firstUnit = tile.getFirstUnit()
+        // allow Ranged Units to capture Civilian
+        if (firstUnit != null && firstUnit.isCivilian() && unit.isRanged() )
+            return true
         if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
             return false
 
