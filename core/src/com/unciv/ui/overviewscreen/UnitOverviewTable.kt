@@ -1,7 +1,6 @@
 package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr
@@ -83,9 +82,7 @@ class UnitOverviewTable(
             )) {
                 val baseUnit = unit.baseUnit()
 
-                val button = Button(skin)
-                button.add(UnitGroup(unit, 20f)).padRight(5f)
-                button.add(unit.displayName().toLabel())
+                val button = unit.displayName().toButton(icon = UnitGroup(unit, 20f))
                 button.onClick {
                     game.setWorldScreen()
                     game.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)
