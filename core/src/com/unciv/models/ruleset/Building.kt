@@ -666,7 +666,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
         val cannotBeBuiltWithUnique = uniqueObjects
             .firstOrNull { it.isOfType(UniqueType.CannotBeBuiltWith) }
-        if (cannotBeBuiltWithUnique != null && cityConstructions.isBuilt(cannotBeBuiltWithUnique.params[0]))
+        if (cannotBeBuiltWithUnique != null && cityConstructions.containsBuildingOrEquivalent(cannotBeBuiltWithUnique.params[0]))
             rejectionReasons.add(RejectionReason.CannotBeBuiltWith.apply { errorMessage = cannotBeBuiltWithUnique.text })
 
         for ((resource, amount) in getResourceRequirements())
