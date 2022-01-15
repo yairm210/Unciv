@@ -2,6 +2,7 @@ package com.unciv.ui.trade
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.trade.TradeOffer
@@ -67,14 +68,18 @@ class OffersListScroll(
             }
 
             for (offer in offersOfType) {
-                val tradeButton = offer.getOfferText(untradableOffers.filter { it.resource.name == offer.name }.sumOf { it.amount }).toTextButton()
-                tradeButton.labelCell.pad(5f)
-                when (offer.type) {
+                val tradeLabel = offer.getOfferText(untradableOffers.filter { it.resource.name == offer.name }.sumOf { it.amount })
+                val tradeIcon = when (offer.type) {
                     Luxury_Resource, Strategic_Resource ->
-                        tradeButton.add(ImageGetter.getResourceImage(offer.name, 30f))
+                        ImageGetter.getResourceImage(offer.name, 30f)
                     WarDeclaration ->
-                        tradeButton.add(ImageGetter.getNationIndicator(UncivGame.Current.gameInfo.ruleSet.nations[offer.name]!!, 30f))
-                    else -> Unit // Remove warning
+                        ImageGetter.getNationIndicator(UncivGame.Current.gameInfo.ruleSet.nations[offer.name]!!, 30f)
+                    else -> null
+                }
+                val tradeButton = tradeLabel.toButton(icon = tradeIcon) {
+                    iconCell?.size(30f)
+                    label.setAlignment(Align.center)
+                    labelCell.pad(5f).grow()
                 }
                 
                 val amountPerClick =
