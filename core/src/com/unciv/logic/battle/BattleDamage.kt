@@ -307,6 +307,7 @@ object BattleDamage {
                 attacker,
                 defender
             )
+        if (defender.isCivilian()) return 40
         return (damageModifier(ratio, false) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
