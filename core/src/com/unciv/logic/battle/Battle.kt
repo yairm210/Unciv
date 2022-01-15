@@ -506,7 +506,7 @@ object Battle {
         return null
     }
 
-    private fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true) {
+    fun captureCivilianUnit(attacker: ICombatant, defender: MapUnitCombatant, checkDefeat: Boolean = true) {
         // need to save this because if the unit is captured its owner wil be overwritten
         val defenderCiv = defender.getCivInfo()
 

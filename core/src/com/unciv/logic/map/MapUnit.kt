@@ -5,6 +5,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
@@ -428,6 +430,7 @@ class MapUnit {
     fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else action!!
 
     fun isCivilian() = baseUnit.isCivilian()
+    fun isRanged() = baseUnit.isRanged()
 
     fun getFortificationTurns(): Int {
         if (!isFortified()) return 0
@@ -869,6 +872,10 @@ class MapUnit {
         }
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
+        // Capture Enemy Civilian Unit if you move ontop of it
+        if (tile.civilianUnit != null && tile.civilianUnit!!.owner != owner ) {
+            Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
+        }
 
         val promotionUniques = tile.neighbors
             .flatMap { it.getAllTerrains() }

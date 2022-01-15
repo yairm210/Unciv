@@ -553,7 +553,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return if (unit.isCivilian())
             tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else
-            tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner)
+            tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.isRanged())
     }
 
     private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {
