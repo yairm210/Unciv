@@ -154,7 +154,9 @@ class CivilizationInfo {
     // This is basically a way to ensure our lists are immutable.
     var cities = listOf<CityInfo>()
     var citiesCreated = 0
-    var exploredTiles = HashSet<Vector2>()
+    /** Do not add tiles to this directly - instead, create a copy, add to the copy, and switch to retain immutability
+     * Unfortunately we can't make this a setOf since the json parser doesn't know what to make of existing data... */
+    var exploredTiles = hashSetOf<Vector2>()
 
     // This double construction because for some reason the game wants to load a
     // map<Vector2, String> as a map<String, String> causing all sorts of type problems.
@@ -240,7 +242,7 @@ class CivilizationInfo {
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still lead to concurrency problems.
         // Cloning it by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
-        toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
+        toReturn.exploredTiles = exploredTiles
         toReturn.lastSeenImprovementSaved.putAll(lastSeenImprovement.mapKeys { it.key.toString() })
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated

@@ -16,14 +16,15 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         updateLastSeenImprovements()
 
-        // updating the viewable tiles also affects the explored tiles, obviously.
-        // So why don't we play switcharoo with the explored tiles as well?
-        // Well, because it gets REALLY LARGE so it's a lot of memory space,
-        // and we never actually iterate on the explored tiles (only check contains()),
-        // so there's no fear of concurrency problems.
+
         val newlyExploredTiles = civInfo.viewableTiles.asSequence().map { it.position }
-                .filterNot { civInfo.exploredTiles.contains(it) }
-        civInfo.exploredTiles.addAll(newlyExploredTiles)
+            .filterNot { civInfo.exploredTiles.contains(it) }
+        if (newlyExploredTiles.any()) { // no need to allocate memory if no new tiles are added
+            val newExploredTiles = HashSet(civInfo.exploredTiles)
+            newExploredTiles.addAll(newlyExploredTiles)
+            civInfo.exploredTiles = newExploredTiles
+        }
+
 
 
         val viewedCivs = HashMap<CivilizationInfo, TileInfo>()
