@@ -93,32 +93,37 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         return defender
     }
 
+    private fun getIcon(combatant:ICombatant) =
+        if (combatant is MapUnitCombatant) UnitGroup(combatant.unit,25f)
+        else ImageGetter.getNationIndicator(combatant.getCivInfo().nation, 25f)
+
     private fun simulateBattle(attacker: ICombatant, defender: ICombatant){
         clear()
 
         val attackerNameWrapper = Table()
         val attackerLabel = attacker.getName().toLabel()
-        if (attacker is MapUnitCombatant)
-            attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
+        attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
 
         val defenderNameWrapper = Table()
         val defenderLabel = Label(defender.getName().tr(), skin)
-        if (defender is MapUnitCombatant)
-            defenderNameWrapper.add(UnitGroup(defender.unit,25f)).padRight(5f)
+        defenderNameWrapper.add(getIcon(defender)).padRight(5f)
+
         defenderNameWrapper.add(defenderLabel)
         add(defenderNameWrapper).row()
 
         addSeparator().pad(0f)
 
-        add(attacker.getAttackingStrength().toString()+Fonts.strength)
-        add(defender.getDefendingStrength().toString()+Fonts.strength).row()
+        add(attacker.getAttackingStrength().toString() + Fonts.strength)
+        add(defender.getDefendingStrength().toString() + Fonts.strength).row()
 
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker, defender).map {
-                    val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
-                    val percentage = (if(it.value>0)"+" else "")+ it.value +"%"
+                    val description = if (it.key.startsWith("vs "))
+                        ("vs [" + it.key.replace("vs ", "") + "]").tr()
+                    else it.key.tr()
+                    val percentage = (if (it.value > 0) "+" else "") + it.value + "%"
                     "$description: $percentage"
                 }
         val defenderModifiers =
@@ -233,7 +238,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val attackerNameWrapper = Table()
         val attackerLabel = attacker.getName().toLabel()
-        attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
+        attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
         
@@ -248,16 +253,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             val defender = tryGetDefenderAtTile(tile, true) ?: continue
             
             val defenderLabel = Label(defender.getName().tr(), skin)
-            when (defender) {
-                is MapUnitCombatant ->
-                    defenderNameWrapper.add(UnitGroup(defender.unit, 25f)).padRight(5f)
-                is CityCombatant -> {
-                    val nation = defender.city.civInfo.nation
-                    val nationIcon = ImageGetter.getNationIcon(nation.name)
-                    nationIcon.color = nation.getInnerColor()
-                    defenderNameWrapper.add(nationIcon).size(25f).padRight(5f)
-                }
-            }
+            defenderNameWrapper.add(getIcon(defender)).padRight(5f)
             defenderNameWrapper.add(defenderLabel).row()
         }
         add(defenderNameWrapper).row()
