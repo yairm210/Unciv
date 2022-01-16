@@ -1,3 +1,18 @@
+## 3.18.18
+
+"Cannot be built with" unique catches building equivalents as well
+
+Unique deprecation and textual improvements
+
+By will-ca:
+- Explain when cities can't be razed in Civilopedia
+- Solved "overlapping tiles" in modded tilesets
+- Fix a tiny and limited memory leak
+
+Made attacked civilians lose 40 hp as in civ5.  - By ravignir
+
+Capturing Civilians not considered an Attack  - By itanasi
+
 ## 3.18.17
 
 Handling for multiplayer download errors
