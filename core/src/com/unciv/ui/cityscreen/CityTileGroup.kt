@@ -6,6 +6,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
+import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.centerX
 
@@ -27,21 +28,34 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     fun update() {
         super.update(city.civInfo, true, false)
 
+        fun dim(brightness: Float) {
+            // Dimming with alpha looks weird with overlapping tiles— Can't just set group alpha.
+            // Image.draw() doesn't inherit parent colour tints— Can't just set group colour.
+            // Covering up with fogImage or adding another tileset image with variable alpha doesn't look good for all terrain shapes— Can't cover up group with image.
+            // Directly setting child actor colors breaks Default tileset terrain colours— Need to interpolate between existing and background colour.
+            //
+            // Reapplying the colour with every update is fine, and doesn't cause the tiles to get darker with every click, because the colours are always reset in either TileGroup.updateTileColor() or the early exit by super.update()/TileGroup.update().
+            // Mutating the Color() in-place seems dangerous, but GDX source already mutates even when Kotlin notation suggests it's replacing.
+            for (image in tileBaseImages) {
+                image.color.lerp(BaseScreen.clearColor, 1-brightness)
+            }
+        }
+
         // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
         when {
             tileInfo.getOwner() != city.civInfo -> { // outside of civ boundary
-                baseLayerGroup.color.a = 0.3f
+                dim(0.3f)
                 yieldGroup.isVisible = false
             }
 
             tileInfo !in city.tilesInRange -> { // within city but not close enough to be workable
                 yieldGroup.isVisible = false
-                baseLayerGroup.color.a = 0.5f
+                dim(0.5f)
             }
 
             tileInfo.isWorked() && tileInfo.getWorkingCity() != city -> {
                 // Don't fade out, but don't add a population icon either.
-                baseLayerGroup.color.a = 0.5f
+                dim(0.5f)
             }
 
 

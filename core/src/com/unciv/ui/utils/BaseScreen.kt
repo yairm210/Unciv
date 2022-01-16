@@ -46,7 +46,7 @@ open class BaseScreen : Screen {
     override fun show() {}
 
     override fun render(delta: Float) {
-        Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f)
+        Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         stage.act()
@@ -102,6 +102,8 @@ open class BaseScreen : Screen {
             skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
             skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
         }
+        /** Colour to use for empty sections of the screen. */
+        val clearColor = Color(0f, 0f, 0.2f, 1f)
     }
 
     fun onBackButtonClicked(action: () -> Unit) {
