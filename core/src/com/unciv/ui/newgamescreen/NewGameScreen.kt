@@ -17,7 +17,6 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
-import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
@@ -177,6 +176,7 @@ class NewGameScreen(
     }
 
     private fun newGameThread() {
+        val newGame:GameInfo
         try {
             newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
@@ -192,22 +192,18 @@ class NewGameScreen(
                 rightSideButton.enable()
                 rightSideButton.setText("Start game!".tr())
             }
+            return
         }
 
-        if (newGame != null && gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-            newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
+        if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+            newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
-                OnlineMultiplayer().tryUploadGame(newGame!!, withPreview = true)
+                OnlineMultiplayer().tryUploadGame(newGame, withPreview = true)
 
-                // Save gameId to clipboard because you have to do it anyway.
-                Gdx.app.clipboard.contents = newGame!!.gameId
-                // Popup to notify the User that the gameID got copied to the clipboard
-                postCrashHandlingRunnable { ToastPopup("gameID copied to clipboard".tr(), game.worldScreen, 2500) }
-
-                GameSaver.autoSave(newGame!!) {}
+                GameSaver.autoSave(newGame)
 
                 // Saved as Multiplayer game to show up in the session browser
-                val newGamePreview = newGame!!.asPreview()
+                val newGamePreview = newGame.asPreview()
                 GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
@@ -217,11 +213,20 @@ class NewGameScreen(
                         open()
                     }
                 }
-                newGame = null
+                return
             }
         }
 
-        Gdx.graphics.requestRendering()
+        postCrashHandlingRunnable {
+            game.loadGame(newGame)
+            previousScreen.dispose()
+            if (newGame.gameParameters.isOnlineMultiplayer) {
+                // Save gameId to clipboard because you have to do it anyway.
+                Gdx.app.clipboard.contents = newGame.gameId
+                // Popup to notify the User that the gameID got copied to the clipboard
+                ToastPopup("Game ID copied to clipboard!".tr(), game.worldScreen, 2500)
+            }
+        }
     }
 
     fun updateRuleset() {
@@ -246,16 +251,6 @@ class NewGameScreen(
         playerPickerTable.update()
         newGameOptionsTable.gameParameters = gameSetupInfo.gameParameters
         newGameOptionsTable.update()
-    }
-
-    var newGame: GameInfo? = null
-
-    override fun render(delta: Float) {
-        if (newGame != null) {
-            game.loadGame(newGame!!)
-            previousScreen.dispose()
-        }
-        super.render(delta)
     }
 
     override fun resize(width: Int, height: Int) {
