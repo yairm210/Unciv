@@ -215,6 +215,18 @@ class UnitMovementAlgorithmsTests {
         otherCiv.nation = Nation().apply { name = Constants.barbarians }
         val otherUnit = MapUnit()
         otherUnit.civInfo = otherCiv
+        otherUnit.baseUnit = BaseUnit()
+        // melee check
+        otherUnit.baseUnit.strength = 1
+        tile.militaryUnit = otherUnit
+
+        for (type in ruleSet.unitTypes) {
+            unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
+
+            Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
+        }
+        // ranged check
+        otherUnit.baseUnit.rangedStrength = 1 // make non-Civilian ranged
         tile.militaryUnit = otherUnit
 
         for (type in ruleSet.unitTypes) {
