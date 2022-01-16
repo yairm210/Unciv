@@ -339,14 +339,19 @@ class WorkerAutomation(
         }
 
         // turnsToBuild is what defines them as buildable
-        val tileImprovements = ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
+        val tileImprovements = ruleSet.tileImprovements.filter {
+            it.value.turnsToBuild != 0 && tile.canImprovementBeBuiltHere(it.value, tile.hasViewableResource(civInfo)) }
         val uniqueImprovement = tileImprovements.values
             .firstOrNull { it.uniqueTo == civInfo.civName }
 
+        val currentlyBuildableImprovements = tileImprovements.values.filter { tile.canBuildImprovement(it, civInfo) }
+        val bestBuildableImprovement = currentlyBuildableImprovements.map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
+            .filter { it.second > 0f }
+            .maxByOrNull { it.second }?.first
+
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress!!
-            improvementStringForResource != null && tileImprovements.containsKey(improvementStringForResource)
-                    && tileImprovements[improvementStringForResource]!!.turnsToBuild != 0 -> improvementStringForResource
+            improvementStringForResource != null && tileImprovements.containsKey(improvementStringForResource) -> improvementStringForResource
             tile.containsGreatImprovement() -> return null
             tile.containsUnfinishedGreatImprovement() -> return null
 
@@ -362,11 +367,16 @@ class WorkerAutomation(
             tile.terrainFeatures.contains(Constants.marsh) -> "Remove Marsh"
             tile.terrainFeatures.contains(Constants.jungle) -> Constants.tradingPost
             tile.terrainFeatures.contains("Oasis") -> return null
-            tile.terrainFeatures.contains(Constants.forest) -> "Lumber mill"
-            tile.isHill() -> "Mine"
-            tile.baseTerrain in listOf(Constants.grassland, Constants.desert, Constants.plains) -> "Farm"
-            tile.isAdjacentToFreshwater -> "Farm"
-            tile.baseTerrain in listOf(Constants.tundra, Constants.snow) -> Constants.tradingPost
+            tile.terrainFeatures.contains(Constants.forest) && tileImprovements.containsKey("Lumber mill") -> "Lumber mill"
+            tile.isHill() && tileImprovements.containsKey("Mine") -> "Mine"
+            tile.baseTerrain in listOf(Constants.grassland, Constants.desert, Constants.plains)
+                    && tileImprovements.containsKey("Farm") -> "Farm"
+            tile.isAdjacentToFreshwater && tileImprovements.containsKey("Farm") -> "Farm"
+            tile.baseTerrain in listOf(Constants.tundra, Constants.snow) && tileImprovements.containsKey(Constants.tradingPost)
+                -> Constants.tradingPost
+
+            // This is the ONLY thing that will catch modded non-unique improvements
+            bestBuildableImprovement != null -> bestBuildableImprovement.name
             else -> return null
         }
         return ruleSet.tileImprovements[improvementString] // For mods, the tile improvement may not exist, so don't assume.
