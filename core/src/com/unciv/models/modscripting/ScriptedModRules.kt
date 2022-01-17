@@ -5,11 +5,14 @@ import com.badlogic.gdx.utils.JsonReader
 import com.badlogic.gdx.utils.JsonValue
 import com.unciv.scripting.ScriptingState
 
+
+// TODO: Make sure DropBox multiplayer doesn't provide quick and easy arbitrary code execution for would-be attackers?
+
 class ScriptedModLoadable(val modRules: ScriptedModRules) {
 
 }
 
-class ScriptedModRules {// See, try to follow conventions of, TilesetAndMod maybe?
+class ScriptedModRules {// See, try to follow conventions of, TilesetAndMod and TilesetCache/ModOptions, maybe?
 
     // Getting this deserializing from JSON was a humongous, humongous pain. GDX seems to take only three levels of nested mappings before it stops knowing what to do with the arrays at the deepest level. I could have just used KotlinX instead as I'm bringing in the dependency anyway, but for some reason I seem to want to align the parts of the scripting API that interact with the existing codebase with the tools that are already used.
 

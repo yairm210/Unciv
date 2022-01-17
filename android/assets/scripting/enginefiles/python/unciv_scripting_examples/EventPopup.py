@@ -117,7 +117,7 @@ This is your chance to roleplay a political decision:
 			(
 				(f"Let Chaos reign! (+{omniboost} {real(Fonts.gold.toString())}, {real(Fonts.culture.toString())}, {real(Fonts.science.toString())})", None),
 				(f"(+{sum(omniproductionboosts)} {real(Fonts.production.toString())} spread across all your cities.)", None),
-				(f"All cities enter resistance for +{omniresistance} turns.", GdxColours['SCARLET'])
+				(f"All your cities enter resistance for +{omniresistance} turns.", GdxColours['SCARLET'])
 			):
 				modApiHelpers.lambdifyCombine([
 					modApiHelpers.lambdifyReadPathcode(civInfo, f'.addGold({omniboost})'),

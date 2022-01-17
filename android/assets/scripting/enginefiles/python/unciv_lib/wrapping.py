@@ -5,6 +5,8 @@ from . import ipc, api
 
 # TODO: Definitely CProfile this.
 
+# Random.sample, collection ABCs sequence?
+
 class ForeignRequestMethod:
 	"""Decorator and descriptor protocol implementation for methods of ForeignObject subclasses that return values from foreign requests."""
 	def __init__(self, func):

@@ -221,7 +221,7 @@ class ConsoleScreen(var closeAction: () -> Unit): BaseScreen() {
             }
             var termbutton = ImageGetter.getImage("OtherIcons/Stop")
             val terminable = backend.userTerminable // Grey out if not terminable.
-            if (!terminable) {
+            if (!terminable) { // TODO: There's a Button.disable() extension function.
                 termbutton.setColor(0.7f, 0.7f, 0.7f, 0.3f)
 //                termbutton.color.a = 0.3f
             }

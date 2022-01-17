@@ -29,6 +29,12 @@ Call onUnitMove(worldScreen.bottomUnitTable.selectedUnit) every time a unit move
 
 #civInfo.addNotification("Test", civInfo.cities[0].location, apiHelpers.Jvm.arrayOfString(["StatIcons/Gold"]))
 
+#import random; [random.sample([*gameInfo.civilizations], 1)[0].placeUnitNearTile(t.position, random.sample(gameInfo.ruleSet.units.keys(), 1)[0]) for t in gameInfo.tileMap.values]
+
+# import random; [civInfo.placeUnitNearTile(t.position, unitgetter()) for unitgetter in (lambda: random.sample(gameInfo.ruleSet.units.keys(), 1)[0], lambda: random.sample(('Missile Cruiser', 'Nuclear Submarine'), 1)[0], lambda: 'Worker', lambda: 'Guided Missile') for t in gameInfo.tileMap.values]; ([setattr(unit, 'action', random.sample(('Sleep', 'Automate', 'Fortify 0', 'Explore'), 1)[0]) for unit in apiHelpers.Jvm.toList(civInfo.getCivUnits())], civInfo.addGold(99999))
+
+# [setattr(unit, 'action', 'Sleep') for unit in apiHelpers.Jvm.toList(civInfo.getIdleUnits())]
+
 def moveCity():
 	tileInfo.owningCity = city #Seems to be used for rendering only.
 	#city.tiles.add(tile) Causes exception in worker thread in next turn.
