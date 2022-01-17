@@ -29,7 +29,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         val key = if (keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
 
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
-        val actionButton = unitAction.title.toButton(fontColor, icon = icon)
+        val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
         actionButton.addTooltip(key)
         actionButton.pack()
         val action = {

@@ -58,7 +58,7 @@ class TabbedPager(
         var scrollX = 0f
         var scrollY = 0f
 
-        val button = caption.toButton(pager.headerFontColor, pager.headerFontSize, icon) {
+        val button = IconTextButton(caption, icon, pager.headerFontSize, pager.headerFontColor).apply {
             if (icon != null) {
                 if (iconSize != 0f)
                     iconCell!!.size(iconSize)

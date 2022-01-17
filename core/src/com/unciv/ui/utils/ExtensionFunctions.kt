@@ -184,60 +184,6 @@ fun Float.toPercent() = 1 + this/100
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton() = TextButton(this.tr(), BaseScreen.skin)
 
-/**
- * Builder-like configuration scope for [String.toButton].
- *
- * Properties: [button], [icon], [label], [iconCell], [labelCell]
- *
- * @param I [Actor] subclass of the icon given to [String.toButton].
- * */
-interface IIconAndLabelCellsInButton<I: Actor?> {
-    /** [Button] produced and to be returned by [String.toButton]. */
-    val button: Button
-    /** [Actor] subclass [I] instance, or `null`, as given to [String.toButton]. */
-    val icon: I?
-    /** [Label] instance produced by and with content and formatting as specified to [String.toButton]. */
-    val label: Label
-    /** [Cell]<[I]> instance containing the [icon] if any, or `null`. */
-    val iconCell: Cell<I>?
-    /** [Cell]<[Label]> instance containing the [label]. */
-    val labelCell: Cell<Label>
-}
-
-/**
- * Translate a [String] and make a [Button] widget from it, with control over font size, font colour, an optional icon, and custom formatting.
- *
- * @receiver Text of the button.
- * @param I [Actor] subclass of the [icon].
- *
- * @param fontColor Text colour for [String.toLabel].
- * @param fontSize Text size for [String.toLabel].
- * @param icon If non-null, [Actor] instance for icon left of the label. Often an [Image].
- * @param configure If non-null, function to modify this button and its layout. Is given an anonymous [IIconAndLabelCellsInButton] as receiver. Can be used to E.G. customize padding.
- *
- * @return New [Button] with the given parameters applied.
- */
-fun <I: Actor?> String.toButton(fontColor: Color = Color.WHITE, fontSize: Int = 18, icon: I? = null, configure: (IIconAndLabelCellsInButton<I>.() -> Unit)? = null): Button {
-    val button = Button(BaseScreen.skin)
-    val label = this.toLabel(fontColor, fontSize)
-    var iconCell: Cell<I>? = null
-    if (icon != null) {
-        val size = fontSize.toFloat()
-        iconCell = button.add(icon).size(size).padRight(size / 3)
-    }
-    val labelCell = button.add(label)
-    if (configure != null) {
-        (object: IIconAndLabelCellsInButton<I> {
-            override val button = button
-            override val icon = icon
-            override val label = label
-            override val iconCell = iconCell
-            override val labelCell = labelCell
-        }).run(configure)
-    }
-    return button
-}
-
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */

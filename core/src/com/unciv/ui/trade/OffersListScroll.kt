@@ -76,7 +76,7 @@ class OffersListScroll(
                         ImageGetter.getNationIndicator(UncivGame.Current.gameInfo.ruleSet.nations[offer.name]!!, 30f)
                     else -> null
                 }
-                val tradeButton = tradeLabel.toButton(icon = tradeIcon) {
+                val tradeButton = IconTextButton(tradeLabel, tradeIcon).apply {
                     iconCell?.size(30f)
                     label.setAlignment(Align.center)
                     labelCell.pad(5f).grow()

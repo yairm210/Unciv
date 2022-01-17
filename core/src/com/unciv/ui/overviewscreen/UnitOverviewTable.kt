@@ -82,7 +82,7 @@ class UnitOverviewTable(
             )) {
                 val baseUnit = unit.baseUnit()
 
-                val button = unit.displayName().toButton(icon = UnitGroup(unit, 20f))
+                val button = IconTextButton(unit.displayName(), UnitGroup(unit, 20f))
                 button.onClick {
                     game.setWorldScreen()
                     game.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)
