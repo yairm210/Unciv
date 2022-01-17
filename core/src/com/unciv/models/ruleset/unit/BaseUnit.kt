@@ -45,10 +45,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
     val specialUpgradesTo: String? by lazy { 
-        uniqueObjects
-        .filter { it.placeholderText == "May upgrade to [] through ruins-like effects"}
-        .map { it.params[0] }
-        .firstOrNull() 
+        getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull() 
     }
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -351,11 +348,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units []%")) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
 
@@ -388,7 +385,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (civRejectionReasons.isNotEmpty()) {
             rejectionReasons.addAll(civRejectionReasons)
         }
-        for (unique in uniqueObjects.filter { it.placeholderText == "Requires at least [] population" })
+        for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
                 rejectionReasons.add(RejectionReason.PopulationRequirement)
         return rejectionReasons
@@ -474,7 +471,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
-        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
+        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.MoveImmediatelyOnceBought))
             unit.currentMovement = 0f
 
         // If this unit has special abilities that need to be kept track of, start doing so here
@@ -501,7 +498,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var XP = 0
 
         for (unique in
-        cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
+        cityConstructions.cityInfo.getMatchingUniques(UniqueType.UnitStartingExperience)
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) }
         ) {
             if (unit.matchesFilter(unique.params[0]))
@@ -645,7 +642,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         // They did fix it in BNW so it was completely bugged and always 1, again math
         power = (power * movement.toFloat().pow(0.3f))
 
-        if (uniqueObjects.any { it.placeholderText =="Self-destructs when attacking" } )
+        if (hasUnique(UniqueType.SelfDestructs))
             power /= 2
         if (uniqueObjects.any { it.placeholderText =="Nuclear weapon of Strength []" } )
             power += 4000

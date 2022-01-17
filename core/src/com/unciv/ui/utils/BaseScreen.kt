@@ -17,7 +17,6 @@ import com.unciv.models.Tutorial
 import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
-import kotlin.concurrent.thread
 
 open class BaseScreen : Screen {
 
@@ -47,7 +46,7 @@ open class BaseScreen : Screen {
     override fun show() {}
 
     override fun render(delta: Float) {
-        Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f)
+        Gdx.gl.glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         stage.act()
@@ -103,6 +102,8 @@ open class BaseScreen : Screen {
             skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
             skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
         }
+        /** Colour to use for empty sections of the screen. */
+        val clearColor = Color(0f, 0f, 0.2f, 1f)
     }
 
     fun onBackButtonClicked(action: () -> Unit) {
@@ -127,12 +128,12 @@ open class BaseScreen : Screen {
             throw IllegalArgumentException("openOptionsPopup called on wrong derivative class")
         }
         limitOrientationsHelper.allowPortrait(false)
-        thread(name="WaitForRotation") {
+        crashHandlingThread(name="WaitForRotation") {
             var waited = 0
             while (true) {
                 val newScreen = (UncivGame.Current.screen as? BaseScreen)
                 if (waited >= 10000 || newScreen!=null && !newScreen.isPortrait() ) {
-                    Gdx.app.postRunnable { OptionsPopup(newScreen ?: this).open(true) }
+                    postCrashHandlingRunnable { OptionsPopup(newScreen ?: this).open(true) }
                     break
                 }
                 Thread.sleep(200)

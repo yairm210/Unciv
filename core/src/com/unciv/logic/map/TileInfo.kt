@@ -423,7 +423,9 @@ open class TileInfo {
             stats.add(unique.stats.times(numberOfBonuses.toFloat()))
         }
 
-        for (unique in observingCiv.getMatchingUniques("+[]% yield from every []"))
+        for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject) + 
+            observingCiv.getMatchingUniques(UniqueType.AllStatsSignedPercentFromObject)
+        )
             if (improvement.matchesFilter(unique.params[1]))
                 stats.timesInPlace(unique.params[0].toPercent())
 
@@ -447,11 +449,11 @@ open class TileInfo {
             } -> return false
             // Deprecated since 3.18.5
                 improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
-                    matchesTerrainFilter(it.params[0]) && !civInfo.tech.isResearched(it.params[1])
+                    matchesTerrainFilter(it.params[0], civInfo) && !civInfo.tech.isResearched(it.params[1])
                 } -> false
             //
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, StateForConditionals(civInfo=civInfo)).any {
-                matchesTerrainFilter(it.params[0])
+                matchesTerrainFilter(it.params[0], civInfo)
             } -> false
             improvement.uniqueObjects.any {
                 it.isOfType(UniqueType.ConsumesResources)

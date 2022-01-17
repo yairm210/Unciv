@@ -125,7 +125,7 @@ object Battle {
         }
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.unit.hasUnique("Self-destructs when attacking"))
+            if (attacker.unit.hasUnique(UniqueType.SelfDestructs))
                 attacker.unit.destroy()
             else if (attacker.unit.isMoving())
                 attacker.unit.action = null
@@ -327,7 +327,7 @@ object Battle {
 
     private fun tryHealAfterKilling(attacker: ICombatant) {
         if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getMatchingUniques("Heals [] damage if it kills a unit")) {
+            for (unique in attacker.unit.getMatchingUniques(UniqueType.HealsAfterKilling)) {
                 val amountToHeal = unique.params[0].toInt()
                 attacker.unit.healBy(amountToHeal)
             }
@@ -398,8 +398,13 @@ object Battle {
     private fun reduceAttackerMovementPointsAndAttacks(attacker: ICombatant, defender: ICombatant) {
         if (attacker is MapUnitCombatant) {
             val unit = attacker.unit
+            // If captured this civilian, doesn't count as attack
+            // And we've used a movement already
+            if(defender.isCivilian() && attacker.getTile() == defender.getTile()){
+                return
+            }
             unit.attacksThisTurn += 1
-            if (unit.hasUnique("Can move after attacking") || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
+            if (unit.hasUnique(UniqueType.CanMoveAfterAttacking) || unit.maxAttacksPerTurn() > unit.attacksThisTurn) {
                 // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
                 // for the movement to the enemy's tile!
                 // and if it's an air unit, it only has 1 movement anyway, so...
@@ -417,7 +422,8 @@ object Battle {
     private fun addXp(thisCombatant: ICombatant, amount: Int, otherCombatant: ICombatant) {
         var baseXP = amount
         if (thisCombatant !is MapUnitCombatant) return
-        if (thisCombatant.unit.promotions.totalXpProduced() >= thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.maxXPfromBarbarians
+        val modConstants = thisCombatant.unit.civInfo.gameInfo.ruleSet.modOptions.constants
+        if (thisCombatant.unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
             && otherCombatant.getCivInfo().isBarbarian()
         ) {
             return
@@ -521,11 +527,11 @@ object Battle {
 
         when {
             // Uncapturable units are destroyed
-            defender.unit.hasUnique("Uncapturable") -> {
+            defender.unit.hasUnique(UniqueType.Uncapturable) -> {
                 capturedUnit.destroy()
             }
             // City states can never capture settlers at all
-            capturedUnit.hasUnique("Founds a new city") && attacker.getCivInfo().isCityState() -> {
+            capturedUnit.hasUnique(UniqueType.FoundCity) && attacker.getCivInfo().isCityState() -> {
                 capturedUnit.destroy()
             }
             // Is it our old unit?
@@ -548,7 +554,7 @@ object Battle {
             }
 
             // Captured settlers are converted to workers unless captured by barbarians (so they can be returned later).
-            capturedUnit.hasUnique("Founds a new city") && !attacker.getCivInfo().isBarbarian() -> {
+            capturedUnit.hasUnique(UniqueType.FoundCity) && !attacker.getCivInfo().isBarbarian() -> {
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
@@ -656,7 +662,7 @@ object Battle {
         }
 
         // Instead of postBattleAction() just destroy the unit, all other functions are not relevant
-        if (attacker.unit.hasUnique("Self-destructs when attacking")) attacker.unit.destroy()
+        if (attacker.unit.hasUnique(UniqueType.SelfDestructs)) attacker.unit.destroy()
 
         // It's unclear whether using nukes results in a penalty with all civs, or only affected civs.
         // For now I'll make it give a diplomatic penalty to all known civs, but some testing for this would be appreciated

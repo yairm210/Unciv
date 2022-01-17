@@ -256,19 +256,6 @@ class CityStats(val cityInfo: CityInfo) {
             stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
-        // Deprecated since 3.17.0
-            // For instance "+[50]% [Production]
-            for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecated2))
-                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-        //
-
-        // Deprecated since 3.17.10
-            // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
-            // For instance "+[50]% [Production] [in all cities]
-            for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecated))
-                if (cityInfo.matchesFilter(unique.params[2]))
-                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-        //
 
         for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCities)) {
             if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
@@ -292,13 +279,6 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.production += unique.params[0].toInt()
         }
 
-
-        // Deprecated since 3.17.1
-            if (cityInfo.civInfo.getHappiness() >= 0) {
-                for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecatedWhileEmpireHappy))
-                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-            }
-        //
 
         for (unique in uniqueMap.getUniques(UniqueType.StatPercentFromReligionFollowers))
             stats.add(
@@ -346,8 +326,13 @@ class CityStats(val cityInfo: CityInfo) {
         }
 
         // e.g. "-[50]% maintenance costs for buildings [in this city]"
-        for (unique in cityInfo.getMatchingUniques("-[]% maintenance cost for buildings []", citySpecificUniques)) {
-            buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
+        // Deprecated since 3.18.17
+            for (unique in cityInfo.getMatchingUniques(UniqueType.DecrasedBuildingMaintenanceDeprecated, localUniques=citySpecificUniques)) {
+                buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
+            }
+        //
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuildingMaintenance, localUniques = citySpecificUniques)) {
+            buildingsMaintenance *= unique.params[0].toPercent()
         }
 
         return buildingsMaintenance
@@ -390,11 +375,11 @@ class CityStats(val cityInfo: CityInfo) {
         var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
 
         // Deprecated since 3.16.11
-        for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
-            unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
+            for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
+                unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
         //
 
-        for (unique in cityInfo.getMatchingUniques("[]% unhappiness from specialists []")) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromSpecialistsPercentageChange)) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 unhappinessFromSpecialists *= unique.params[0].toPercent()
         }
@@ -585,7 +570,10 @@ class CityStats(val cityInfo: CityInfo) {
         val buildingsMaintenance = getBuildingMaintenanceCosts(citySpecificUniques) // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
-        if (totalFood > 0 && constructionMatchesFilter(currentConstruction, "Excess Food converted to Production when under construction")) {
+        if (totalFood > 0 
+            && currentConstruction is INonPerpetualConstruction 
+            && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
+        ) {
             newFinalStatList["Excess food to production"] = Stats(production = totalFood, food = -totalFood)
         }
 

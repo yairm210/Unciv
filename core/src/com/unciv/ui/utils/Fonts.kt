@@ -135,6 +135,13 @@ object Fonts {
         font.setOwnsTexture(true)
     }
 
+    /**
+     * Turn a TextureRegion into a Pixmap.
+     *
+     * .dispose() must be called on the returned Pixmap when it is no longer needed, or else it will leave a memory leak behind.
+     *
+     * @return New Pixmap with all the size and pixel data from this TextureRegion copied into it.
+     */
     // From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
     fun extractPixmapFromTextureRegion(textureRegion:TextureRegion):Pixmap {
         val textureData = textureRegion.texture.textureData
@@ -146,8 +153,9 @@ object Fonts {
                 textureRegion.regionHeight,
                 textureData.format
         )
+        val textureDataPixmap = textureData.consumePixmap()
         pixmap.drawPixmap(
-                textureData.consumePixmap(), // The other Pixmap
+                textureDataPixmap, // The other Pixmap
                 0, // The target x-coordinate (top left corner)
                 0, // The target y-coordinate (top left corner)
                 textureRegion.regionX, // The source x-coordinate (top left corner)
@@ -155,6 +163,7 @@ object Fonts {
                 textureRegion.regionWidth, // The width of the area from the other Pixmap in pixels
                 textureRegion.regionHeight // The height of the area from the other Pixmap in pixels
         )
+        textureDataPixmap.dispose() // Prevent memory leak.
         return pixmap
     }
 

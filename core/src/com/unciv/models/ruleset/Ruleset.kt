@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.Counter
+import com.unciv.models.ModConstants
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
@@ -21,6 +22,7 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import kotlin.collections.set
@@ -46,6 +48,7 @@ class ModOptions : IHasUniques {
     var author = ""
     var modSize = 0
  
+    @Deprecated("As of 3.18.15")
     val maxXPfromBarbarians = 30
 
     override var uniques = ArrayList<String>()
@@ -53,6 +56,8 @@ class ModOptions : IHasUniques {
     override var uniqueObjects: List<Unique> = listOf()
     override fun getUniqueTarget() = UniqueTarget.ModOptions
 
+    val constants = ModConstants()
+    
 }
 
 class Ruleset {
@@ -155,6 +160,8 @@ class Ruleset {
         if (modOptionsFile.exists()) {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
+                if (modOptions.maxXPfromBarbarians != 30)
+                    modOptions.constants.maxXPfromBarbarians = modOptions.constants.maxXPfromBarbarians
             } catch (ex: Exception) {}
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
         }
@@ -173,6 +180,9 @@ class Ruleset {
 
         val buildingsFile = folderHandle.child("Buildings.json")
         if (buildingsFile.exists()) buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
+        for(building in buildings.values)
+            if(building.requiredBuildingInAllCities != null)
+                building.uniques.add(UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!))
 
         val terrainsFile = folderHandle.child("Terrains.json")
         if (terrainsFile.exists()) {
@@ -301,6 +311,26 @@ class Ruleset {
                             " which does not fit parameter type" +
                             " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
             }
+
+            for (conditional in unique.conditionals) {
+                if (conditional.type == null) {
+                    lines.add(
+                        "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                                " which is of an unknown type!",
+                        RulesetErrorSeverity.Warning
+                    )
+                } else {
+                    val conditionalComplianceErrors =
+                        conditional.type.getComplianceErrors(conditional, this)
+                    for (complianceError in conditionalComplianceErrors) {
+                        if (complianceError.errorSeverity == severityToReport)
+                            lines += "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                                    " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
+                                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+                    }
+                }
+            }
+
 
             if (severityToReport != UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
                 // If we don't filter these messages will be listed twice as this function is called twice on most objects
@@ -438,11 +468,10 @@ class Ruleset {
                     lines += "${unit.name} contains promotion $promotion which does not exist!"
             if (!unitTypes.containsKey(unit.unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unit.unitType)))
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
-            for (unique in unit.getMatchingUniques("Can construct []")) {
+            for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)) {
                 val improvementName = unique.params[0]
-                if (improvementName !in tileImprovements)
-                    lines += "${unit.name} can place improvement $improvementName which does not exist!"
-                else if ((tileImprovements[improvementName] as Stats).none() &&
+                if (tileImprovements[improvementName]==null) continue // this will be caught in the checkUniques
+                if ((tileImprovements[improvementName] as Stats).none() &&
                         unit.isCivilian() &&
                         !unit.hasUnique("Bonus for units in 2 tile radius 15%")) {
                     lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
@@ -456,6 +485,10 @@ class Ruleset {
         for (building in buildings.values) {
             if (building.requiredTech != null && !technologies.containsKey(building.requiredTech!!))
                 lines += "${building.name} requires tech ${building.requiredTech} which does not exist!"
+
+            for (specialistName in building.specialistSlots.keys)
+                if (!specialists.containsKey(specialistName))
+                    lines += "${building.name} provides specialist $specialistName which does not exist!"
             for (resource in building.getResourceRequirements().keys)
                 if (!tileResources.containsKey(resource))
                     lines += "${building.name} requires resource $resource which does not exist!"
@@ -463,8 +496,9 @@ class Ruleset {
                 lines += "${building.name} replaces ${building.replaces} which does not exist!"
             if (building.requiredBuilding != null && !buildings.containsKey(building.requiredBuilding!!))
                 lines += "${building.name} requires ${building.requiredBuilding} which does not exist!"
-            if (building.requiredBuildingInAllCities != null && !buildings.containsKey(building.requiredBuildingInAllCities!!))
-                lines += "${building.name} requires ${building.requiredBuildingInAllCities} in all cities which does not exist!"
+            if (building.requiredBuildingInAllCities != null)
+                lines.add("${building.name} contains 'requiredBuildingInAllCities' - please convert to a \"" +
+                        UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!)+"\" unique", RulesetErrorSeverity.Warning)
             for (unique in building.uniqueObjects)
                 if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
@@ -581,6 +615,10 @@ class Ruleset {
         }
         for (unitType in unitTypes.values) {
             checkUniques(unitType, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        }
+        
+        if (modOptions.maxXPfromBarbarians != 30) {
+            lines.add("maxXPfromBarbarians is moved to the constants object, instead use: \nconstants: {\n    maxXPfromBarbarians: ${modOptions.maxXPfromBarbarians},\n}", RulesetErrorSeverity.Warning)
         }
 
         return lines
@@ -720,14 +758,4 @@ class Specialist: NamedStats() {
     var color = ArrayList<Int>()
     val colorObject by lazy { colorFromRGB(color) }
     var greatPersonPoints = Counter<String>()
-
-    companion object {
-        internal fun specialistNameByStat(stat: Stat) = when (stat) {
-            Stat.Production -> "Engineer"
-            Stat.Gold -> "Merchant"
-            Stat.Science -> "Scientist"
-            Stat.Culture -> "Artist"
-            else -> TODO()
-        }
-    }
 }

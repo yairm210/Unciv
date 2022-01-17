@@ -14,37 +14,34 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class BattleDamageModifier(val vs:String, val modificationAmount:Float){
-    fun getText(): String = "vs $vs"
-}
-
 object BattleDamage {
     
     private fun getModifierStringFromUnique(unique: Unique): String {
-        return when (unique.sourceObjectType) {
+        val source =  when (unique.sourceObjectType) {
             UniqueTarget.Unit -> "Unit ability"
             UniqueTarget.Nation -> "National ability"
             else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
         }
+        if (unique.conditionals.isEmpty()) return source
+
+        val conditionalsText = unique.conditionals.joinToString { it.text }
+        return "$source - $conditionalsText"
     }
 
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant, combatAction: CombatAction): Counter<String> {
         val modifiers = Counter<String>()
 
         val civInfo = combatant.getCivInfo()
+        val attackedTile =
+            if (combatAction == CombatAction.Attack) enemy.getTile()
+            else combatant.getTile()
+        
+        val conditionalState = StateForConditionals(civInfo, ourCombatant = combatant, theirCombatant = enemy,
+            attackedTile = attackedTile, combatAction = combatAction)
+        
         if (combatant is MapUnitCombatant) {
-            val attackedTile =
-                if (combatAction == CombatAction.Attack) enemy.getTile()
-                else combatant.getTile()
 
-            val conditionalState = StateForConditionals(
-                civInfo, theirCombatant = enemy, ourCombatant = combatant,
-                combatAction = combatAction, attackedTile = attackedTile
-            )
-
-            for (unique in combatant.getMatchingUniques(
-                UniqueType.Strength, conditionalState, true
-            )) {
+            for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
             for (unique in combatant.getMatchingUniques(
@@ -75,13 +72,15 @@ object BattleDamage {
 
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
 
-            for (unique in civInfo.getMatchingUniques("[]% Strength for [] units which have another [] unit in an adjacent tile")) {
-                if (combatant.matchesCategory(unique.params[1])
-                    && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) }
-                ) {
-                    modifiers.add("Adjacent units", unique.params[0].toInt())
+            // Deprecated since 3.18.17
+                for (unique in civInfo.getMatchingUniques(UniqueType.StrengthFromAdjacentUnits)) {
+                    if (combatant.matchesCategory(unique.params[1])
+                        && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) }
+                    ) {
+                        modifiers.add("Adjacent units", unique.params[0].toInt())
+                    }
                 }
-            }
+            //
 
             for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
                 .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
@@ -118,6 +117,10 @@ object BattleDamage {
                 && civInfo.hasUnique("+30% Strength when fighting City-State units and cities")
             )
                 modifiers["vs [City-States]"] = 30
+        } else if (combatant is CityCombatant) {
+            for (unique in combatant.getCivInfo().getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
+                modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
+            }
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
@@ -183,7 +186,7 @@ object BattleDamage {
                 if (garrisonBonus != 0)
                     modifiers["Garrisoned unit"] = garrisonBonus
             }
-            for (unique in attacker.city.getMatchingUniques("[]% attacking Strength for cities")) {
+            for (unique in attacker.city.getMatchingUniques(UniqueType.StrengthForCitiesAttacking)) {
                 modifiers.add("Attacking Bonus", unique.params[0].toInt())
             }
         }
@@ -199,8 +202,8 @@ object BattleDamage {
 
             if (defender.unit.isEmbarked()) {
                 // embarked units get no defensive modifiers apart from this unique
-                if (defender.unit.hasUnique("Defense bonus when embarked") ||
-                    defender.getCivInfo().hasUnique("Embarked units can defend themselves")
+                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked) ||
+                    defender.getCivInfo().hasUnique(UniqueType.DefenceBonusWhenEmbarkedCivwide)
                 )
                     modifiers["Embarked"] = 100
 
@@ -210,8 +213,8 @@ object BattleDamage {
             modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
             val tileDefenceBonus = tile.getDefensiveBonus()
-            if (!defender.unit.hasUnique("No defensive terrain bonus") && tileDefenceBonus > 0
-                || !defender.unit.hasUnique("No defensive terrain penalty") && tileDefenceBonus < 0
+            if (!defender.unit.hasUnique(UniqueType.NoDefensiveTerrainBonus) && tileDefenceBonus > 0
+                || !defender.unit.hasUnique(UniqueType.NoDefensiveTerrainPenalty) && tileDefenceBonus < 0
             )
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 
@@ -221,7 +224,7 @@ object BattleDamage {
         } else if (defender is CityCombatant) {
 
             modifiers["Defensive Bonus"] =
-                defender.city.civInfo.getMatchingUniques("+[]% Defensive strength for cities")
+                defender.city.civInfo.getMatchingUniques(UniqueType.StrengthForCitiesDefending)
                     .map { it.params[0].toFloat() / 100f }.sum().toInt()
         }
 
@@ -304,6 +307,7 @@ object BattleDamage {
                 attacker,
                 defender
             )
+        if (defender.isCivilian()) return 40
         return (damageModifier(ratio, false) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 

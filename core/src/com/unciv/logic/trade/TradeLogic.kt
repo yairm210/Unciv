@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.UniqueType
 
 class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo) {
 
@@ -21,8 +22,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         if (!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
                 && !otherCivilization.isCityState()
-                && civInfo.hasUnique("Enables Open Borders agreements")
-                && otherCivilization.hasUnique("Enables Open Borders agreements")) {
+                && civInfo.hasUnique(UniqueType.EnablesOpenBorders)
+                && otherCivilization.hasUnique(UniqueType.EnablesOpenBorders)) {
             offers.add(TradeOffer(Constants.openBorders, TradeType.Agreement))
         }
 

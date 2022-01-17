@@ -156,7 +156,7 @@ object UnitAutomation {
             if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
                 return SpecificUnitAutomation.automateGreatGeneral(unit)
 
-            if (unit.hasUnique("Can construct []"))
+            if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
             if (unit.getMatchingUniques("Can [] [] times").any{ it.params[0] == "Spread Religion" })
@@ -181,7 +181,7 @@ object UnitAutomation {
         if (unit.baseUnit.isNuclearWeapon())
             return SpecificUnitAutomation.automateNukes(unit)
         
-        if (unit.hasUnique("Self-destructs when attacking"))
+        if (unit.hasUnique(UniqueType.SelfDestructs))
             return SpecificUnitAutomation.automateMissile(unit)
 
         if (tryGoToRuinAndEncampment(unit)) {
@@ -230,7 +230,7 @@ object UnitAutomation {
     }
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
-        if (unit.hasUnique("Self-destructs when attacking")) return false // don't use single-use units against barbarians...
+        if (unit.hasUnique(UniqueType.SelfDestructs)) return false // don't use single-use units against barbarians...
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities
@@ -243,7 +243,7 @@ object UnitAutomation {
     }
 
     private fun tryHealUnit(unit: MapUnit): Boolean {
-        if (unit.baseUnit.isRanged() && unit.hasUnique("Unit will heal every turn, even if it performs an action"))
+        if (unit.baseUnit.isRanged() && unit.hasUnique(UniqueType.HealsEvenAfterAction))
             return false // will heal anyway, and attacks don't hurt
 
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()

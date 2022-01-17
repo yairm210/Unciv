@@ -1,3 +1,64 @@
+## 3.18.18
+
+"Cannot be built with" unique catches building equivalents as well
+
+Unique deprecation and textual improvements
+
+By will-ca:
+- Explain when cities can't be razed in Civilopedia
+- Solved "overlapping tiles" in modded tilesets
+- Fix a tiny and limited memory leak
+
+Made attacked civilians lose 40 hp as in civ5.  - By ravignir
+
+Capturing Civilians not considered an Attack  - By itanasi
+
+## 3.18.17
+
+Handling for multiplayer download errors
+
+Fixed fringe-case crashes
+
+By xlenstra:
+- Fixed a bug that occasionally placed hills on top of mountains
+- Made all the other constants determining the strength of cities moddable
+- Fixed a bug where citadels did not damage nearby units
+- Updated the natural wonders for vanilla
+
+Fix incorrect Archer obsolete  - By AdityaMH
+
+## 3.18.16
+
+Deprecation of requiredBuildingInAllCities
+
+Removed support for stat-named specialists
+
+Checks for parameter types of conditionals in mods
+
+By xlenstra:
+- Added a way to add moddable constants
+- Fixed 'cannot built on [strategic resource]' not working
+- Expanded the buildingFilter to include options for national wonders
+
+More informative reports for crashes in threads - By will-ca
+
+Fix missing siege unit resources needs for vanilla  - By AdityaMH
+
+## 3.18.15
+
+Detailed sources of battle modifiers
+
+Performance improvements
+
+By xlenstra:
+- Disables '[cityState] is afraid of your military power' for spectators & other non-major civs
+- Fixed a bug where great improvements could not be repaired after being pillaged
+- Fixed border image alpha
+
+Revert "Remove periodic saving again " (#5883) - By touhidurrr
+
+Added `tileScale` in `TileSetConfig` - By will-ca
+
 ## 3.18.14
 
 By will-ca:
@@ -1505,7 +1566,7 @@ Tech info can display more than one revealed resource
 
 Experimental World Wrap - By GGGuenni!
 
-Resolved #3639 - City states that can't be connected by land no longer assign road connection quests
+Resolved #3639 - City-States that can't be connected by land no longer assign road connection quests
 
 Fix when Trade Gold = 0 it also shows in offer - By lishaoxia1985
 
@@ -2507,7 +2568,7 @@ Greatly improved performance of worker's automated city connecting
 
 Resolved #2853 - Sped up loading of saved game list
 
-Resolved #2852 - cannot make peace with a city state while at war with its ally
+Resolved #2852 - cannot make peace with a City-State while at war with its ally
 
 Resolved #2864 - Locks on tiles are removed when the tile is no longer under your control
 
@@ -2606,7 +2667,7 @@ Added an installation problem solution on Ubuntu - By illantalex
 
 ## 3.9.8
 
-Resolved #2787 - AIs MUCH more likely to build the Apollo Program and win a scientific victory
+Resolved #2787 - AIs MUCH more likely to build the Apollo Program and win a Scientific Victory
 
 Resolved #2789 - losing a resource no longer cancells all trades with that resource, only as many as is necessary to reach equilibrium
 

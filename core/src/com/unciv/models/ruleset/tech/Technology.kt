@@ -27,7 +27,7 @@ class Technology: RulesetObject() {
 
     fun era(): String = column!!.era
 
-    fun isContinuallyResearchable() = uniques.contains("Can be continually researched")
+    fun isContinuallyResearchable() = hasUnique(UniqueType.ResearchableMultipleTimes)
 
 
     /**

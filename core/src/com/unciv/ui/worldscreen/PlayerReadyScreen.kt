@@ -5,10 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) : BaseScreen(){
     init {
@@ -19,7 +16,7 @@ class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) 
         table.add("[$currentPlayerCiv] ready?".toLabel(currentPlayerCiv.nation.getInnerColor(),24))
 
         table.onClick {
-            Gdx.app.postRunnable { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms
+            postCrashHandlingRunnable { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms
                 game.worldScreen = WorldScreen(gameInfo, currentPlayerCiv)
                 game.setWorldScreen()
             }

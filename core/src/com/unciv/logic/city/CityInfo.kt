@@ -816,9 +816,10 @@ class CityInfo {
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals? = null,
+        localUniques: Sequence<Unique> = getLocalMatchingUniques(uniqueType, stateForConditionals),
     ): Sequence<Unique> {
         return civInfo.getMatchingUniques(uniqueType, stateForConditionals, this) +
-            getLocalMatchingUniques(uniqueType, stateForConditionals)
+            localUniques.filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
     }
 
     // Matching uniques provided by sources in the city itself
@@ -872,7 +873,7 @@ class CityInfo {
 
     fun getForceEvaluation(): Int {
         // Same as for units, so higher values count more
-        return CityCombatant(this).getCityStrength().toFloat().pow(1.5f).toInt()
+        return CityCombatant(this).getDefendingStrength().toFloat().pow(1.5f).toInt()
     }
 
 

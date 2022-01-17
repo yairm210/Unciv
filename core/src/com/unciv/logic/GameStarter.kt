@@ -11,7 +11,6 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import java.util.*
 import kotlin.collections.HashMap
@@ -189,7 +188,7 @@ object GameStarter {
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove(Constants.barbarians)
 
-        val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
+        val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
 
         if (!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
             val barbarianCivilization = CivilizationInfo(Constants.barbarians)

@@ -57,7 +57,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     class BaseLayerGroupClass:ActionlessGroup()
     val baseLayerGroup = BaseLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize)  }
 
-    private var tileBaseImages: ArrayList<Image> = ArrayList()
+    val tileBaseImages: ArrayList<Image> = ArrayList()
     /** List of image locations comprising the layers so we don't need to change images all the time */
     private var tileImageIdentifiers = listOf<String>()
 
@@ -655,7 +655,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             fun TileSetStrings.getThisUnit(): String? {
                 val specificUnitIconLocation = this.unitsLocation + militaryUnit.name
                 return ImageAttempter(militaryUnit)
-                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null } // For now I am just converting existing logic, but this should be made into a short-circuit at the very start.
+                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
                         .tryImage { if (civInfo.nation.style.isEmpty()) specificUnitIconLocation else null }
                         .tryImage { "$specificUnitIconLocation-${civInfo.nation.style}" }
                         .tryImage { specificUnitIconLocation }
@@ -668,7 +668,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                                         null
                                 } // .tryImage/.tryImages takes functions as parameters, for lazy eval. Include the check as part of the .tryImage's lazy candidate parameter, and *not* as part of the .map's transform parameter, so even the name check will be skipped by ImageAttempter if an image has already been found.
                         )
-                        .tryImage { if (type.isLandUnit()) landUnit else null } // FIXME: Based on FantasyHex's structure this also needs to be in .unitsLocation. But again I am just converting existing logic right now, will do later after this refactor has had a chance to be validated.
+                        .tryImage { if (type.isLandUnit()) landUnit else null }
                         .tryImage { if (type.isWaterUnit()) waterUnit else null }
                         .getPathOrNull()
             }
@@ -699,10 +699,10 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
             fun TileSetStrings.getThisUnit(): String? {
                 val specificUnitIconLocation = this.unitsLocation + civilianUnit.name
                 return ImageAttempter(civilianUnit)
-                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null } // For now I am just converting existing logic, but this should be made into a short-circuit at the very start.
-                        .tryImage { if (civInfo.nation.style.isEmpty()) specificUnitIconLocation else null }
-                        .tryImage { "$specificUnitIconLocation-${civInfo.nation.style}" }
-                        .tryImage { specificUnitIconLocation } // This seems redundant with the one above… But right now I'm just converting the existing code. Could remove if you can confirm they're redundant.
+                        .forceImage { if (!UncivGame.Current.settings.showPixelUnits) "" else null }
+                        .tryImage { if (civInfo.nation.style.isNotEmpty()) "$specificUnitIconLocation-${civInfo.nation.style}" else null }
+                        .tryImage { specificUnitIconLocation }
+                        .tryImage { civilianLandUnit }
                         .getPathOrNull()
             }
             newImageLocation = tileSetStrings.getThisUnit() ?: tileSetStrings.fallback?.getThisUnit() ?: ""

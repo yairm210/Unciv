@@ -26,20 +26,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var cost: Int = 0
     var maintenance = 0
     private var percentStatBonus: Stats? = null
-    private var specialistSlots: Counter<String>? = null
-    fun newSpecialists(): Counter<String> {
-        if (specialistSlots == null) return Counter()
-        // Could have old specialist values of "gold", "science" etc - change them to the new specialist names
-        val counter = Counter<String>()
-        for ((entry, amount) in specialistSlots!!) {
-            val equivalentStat = Stat.values().firstOrNull { it.name.lowercase() == entry }
-
-            if (equivalentStat != null)
-                counter[Specialist.specialistNameByStat(equivalentStat)] = amount
-            else counter[entry] = amount
-        }
-        return counter
-    }
+    var specialistSlots: Counter<String> = Counter()
+    fun newSpecialists(): Counter<String>  = specialistSlots
 
     var greatPersonPoints = Counter<String>()
 
@@ -49,6 +37,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     var isNationalWonder = false
     fun isAnyWonder() = isWonder || isNationalWonder
     var requiredBuilding: String? = null
+    @Deprecated("As of 3.18.15 - replace with RequiresBuildingInAllCities unique")
     var requiredBuildingInAllCities: String? = null
 
     /** A strategic resource that will be consumed by this building */
@@ -211,7 +200,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
 
-        for (unique in civInfo.getMatchingUniques("+[]% [] from every []")) {
+        // Deprecated since 3.18.17
+            for (unique in civInfo.getMatchingUniques(UniqueType.StatPercentSignedFromObject)) {
+                if (matchesFilter(unique.params[2]))
+                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+            }
+        //
+        
+        for (unique in civInfo.getMatchingUniques(UniqueType.StatPercentFromObject)) {
             if (matchesFilter(unique.params[2]))
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
@@ -249,17 +245,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             textList += FormattedLine(stats.joinToString(", ", "{Cost}: "))
         }
 
-        if (requiredTech != null || requiredBuilding != null || requiredBuildingInAllCities != null)
-            textList += FormattedLine()
         if (requiredTech != null)
             textList += FormattedLine("Required tech: [$requiredTech]",
                 link="Technology/$requiredTech")
         if (requiredBuilding != null)
             textList += FormattedLine("Requires [$requiredBuilding] to be built in the city",
                 link="Building/$requiredBuilding")
-        if (requiredBuildingInAllCities != null)
-            textList += FormattedLine("Requires [$requiredBuildingInAllCities] to be built in all cities",
-                link="Building/$requiredBuildingInAllCities")
 
         val resourceRequirements = getResourceRequirements()
         if (resourceRequirements.isNotEmpty()) {
@@ -441,11 +432,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] buildings []%")) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyBuildingsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
@@ -608,25 +599,11 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             if (civInfo.cities.any { it.cityConstructions.isBuilt(name) })
                 rejectionReasons.add(RejectionReason.NationalWonderAlreadyBuilt)
 
-            if (requiredBuildingInAllCities != null && civInfo.gameInfo.ruleSet.buildings[requiredBuildingInAllCities!!] == null) {
-                rejectionReasons.add(RejectionReason.InvalidRequiredBuilding)
-            } else {
-                if (requiredBuildingInAllCities != null
-                    && civInfo.cities.any {
-                        !it.isPuppet && !it.cityConstructions
-                        .containsBuildingOrEquivalent(requiredBuildingInAllCities!!)
-                    }
-                ) {
-                    rejectionReasons.add(RejectionReason.RequiresBuildingInAllCities
-                        .apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(requiredBuildingInAllCities!!)}] in all cities"})
-                }
+            if (civInfo.cities.any { it != cityConstructions.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
+                rejectionReasons.add(RejectionReason.NationalWonderBeingBuiltElsewhere)
 
-                if (civInfo.cities.any { it != cityConstructions.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
-                    rejectionReasons.add(RejectionReason.NationalWonderBeingBuiltElsewhere)
-
-                if (civInfo.isCityState())
-                    rejectionReasons.add(RejectionReason.CityStateNationalWonder)
-            }
+            if (civInfo.isCityState())
+                rejectionReasons.add(RejectionReason.CityStateNationalWonder)
         }
 
         if (hasUnique(UniqueType.SpaceshipPart)) {
@@ -689,7 +666,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
         val cannotBeBuiltWithUnique = uniqueObjects
             .firstOrNull { it.isOfType(UniqueType.CannotBeBuiltWith) }
-        if (cannotBeBuiltWithUnique != null && cityConstructions.isBuilt(cannotBeBuiltWithUnique.params[0]))
+        if (cannotBeBuiltWithUnique != null && cityConstructions.containsBuildingOrEquivalent(cannotBeBuiltWithUnique.params[0]))
             rejectionReasons.add(RejectionReason.CannotBeBuiltWith.apply { errorMessage = cannotBeBuiltWithUnique.text })
 
         for ((resource, amount) in getResourceRequirements())
@@ -765,6 +742,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             name -> true
             "Building", "Buildings" -> !isAnyWonder()
             "Wonder", "Wonders" -> isAnyWonder()
+            "National Wonder" -> isNationalWonder
+            "World Wonder" -> isWonder
             replaces -> true
             else -> {
                 if (uniques.contains(filter)) return true

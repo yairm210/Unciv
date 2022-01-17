@@ -296,8 +296,9 @@ object ImageGetter {
                 .surroundWithCircle(size)
                 .apply { circle.color = colorFromRGB(0, 12, 49) }
         if (level != 0) {
-            val starTable = Table().apply { defaults().pad(2f) }
-            for (i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(size / 3f)
+            val padding = if (level == 3) 0.5f else 2f
+            val starTable = Table().apply { defaults().pad(padding) }
+            for (i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(size / 4f)
             starTable.centerX(circle)
             starTable.y = size / 6f
             circle.addActor(starTable)

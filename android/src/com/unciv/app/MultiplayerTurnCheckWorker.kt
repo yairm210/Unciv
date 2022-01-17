@@ -186,7 +186,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
             if (currentGameInfo.currentPlayerCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
-                notifyUserAboutTurn(applicationContext, gameNames[gameIds.indexOf(currentGameInfo.gameId)])
+                val gameIndex = gameIds.indexOf(currentGameInfo.gameId)
+                // Of the turnNotification is OFF, this will be -1 since we never saved this game in the array
+                // Or possibly reading the preview file returned an exception
+                if (gameIndex!=-1)
+                    notifyUserAboutTurn(applicationContext, gameNames[gameIndex])
             } else {
                 val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAME, gameNames),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.multiplayerTurnCheckerDelayInMinutes),
@@ -253,10 +257,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     I assume this happened because the TurnCheckerWorker gets canceled by the AndroidLauncher
                     while saves are getting saved right here.
                     Lets hope it works with gamePreview as they are a lot smaller and faster to save
-                    Well they don't work either ¯\_(ツ)_/¯
-                    I will have to find a different way (see #5756 for more info)
                      */
-                    //GameSaver.saveGame(gamePreview, gameNames[arrayIndex])
+                    GameSaver.saveGame(gamePreview, gameNames[arrayIndex])
 
                     if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame.isEmpty()) {
                         // We only save the first found game as the player will go into the

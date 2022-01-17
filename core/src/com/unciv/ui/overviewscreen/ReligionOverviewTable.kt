@@ -47,7 +47,7 @@ class ReligionOverviewTable(
     
     private fun addCivSpecificStats(statsTable: Table) {
         if (viewingPlayer.religionManager.canGenerateProphet()) {
-            statsTable.add("Minimal faith required for\nthe next [great prophet equivalent]:"
+            statsTable.add("Minimal Faith required for\nthe next [great prophet equivalent]:"
                 .fillPlaceholders(viewingPlayer.religionManager.getGreatProphetEquivalent()!!)
                 .toLabel()
             ).left()

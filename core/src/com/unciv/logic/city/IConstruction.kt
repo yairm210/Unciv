@@ -195,7 +195,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
         const val CONVERSION_RATE: Int = 4
         val science = object : PerpetualConstruction("Science", "Convert production to science at a rate of [rate] to 1") {
             override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-                return cityConstructions.cityInfo.civInfo.hasUnique("Enables conversion of city production to science")
+                return cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesScienceProduction)
             }
             override fun getProductionTooltip(cityInfo: CityInfo): String {
                 return "\r\n${(cityInfo.cityStats.currentCityStats.production / getConversionRate(cityInfo)).roundToInt()}/${Fonts.turn}"
@@ -204,7 +204,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
         }
         val gold = object : PerpetualConstruction("Gold", "Convert production to gold at a rate of $CONVERSION_RATE to 1") {
             override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-                return cityConstructions.cityInfo.civInfo.hasUnique("Enables conversion of city production to gold")
+                return cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesGoldProduction)
             }
         }
         val idle = object : PerpetualConstruction("Nothing", "The city will not produce anything.") {

@@ -16,7 +16,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -25,6 +24,7 @@ import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.YesNoPopup
 import com.unciv.ui.utils.hasOpenPopups
+import com.unciv.ui.utils.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
 
@@ -285,9 +285,10 @@ object UnitActions {
                     tile.improvement = null
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
-                    val freePillage = unit.hasUnique("No movement cost to pillage")
-                        || unit.civInfo.hasUnique("No movement cost to pillage")
-                        || (unit.baseUnit.isMelee() && unit.civInfo.hasUnique("Melee units pay no movement cost to pillage"))
+                    val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage)
+                        || unit.civInfo.hasUnique(UniqueType.NoMovementToPillage)
+                            // Deprecated 3.18.17
+                        || (unit.baseUnit.isMelee() && unit.civInfo.hasUnique(UniqueType.NoMovementToPillageMelee))
                     if (!freePillage) unit.useMovementPoints(1f)
 
                     unit.healBy(25)
@@ -484,10 +485,14 @@ object UnitActions {
                 actionList += UnitAction(UnitActionType.ConductTradeMission,
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                        var goldEarned = ((350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
-                        if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
-                            goldEarned *= 2
-                        unit.civInfo.addGold(goldEarned)
+                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
+                        // Deprecated since 3.18.17
+                            if (unit.civInfo.hasUnique(UniqueType.DoubleGoldFromTradeMissions))
+                                goldEarned *= 2f
+                        //
+                        for (goldUnique in unit.civInfo.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
+                            goldEarned *= goldUnique.params[0].toPercent()
+                        unit.civInfo.addGold(goldEarned.toInt())
                         tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).addInfluence(influenceEarned)
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned}] gold and [$influenceEarned] influence!",
                             tile.owningCity!!.civInfo.civName, NotificationIcon.Gold, NotificationIcon.Culture)
@@ -600,7 +605,7 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        var uniquesToCheck = unit.getMatchingUniques("Can construct []")
+        var uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
         if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
             uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't used other actions yet")
         val civResources = unit.civInfo.getCivResourcesByName()

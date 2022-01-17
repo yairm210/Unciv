@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.toPercent
 
 class GoldenAgeManager {
@@ -26,7 +27,7 @@ class GoldenAgeManager {
 
     fun enterGoldenAge(unmodifiedNumberOfTurns: Int = 10) {
         var turnsToGoldenAge = unmodifiedNumberOfTurns.toFloat()
-        for (unique in civInfo.getMatchingUniques("Golden Age length increased by []%"))
+        for (unique in civInfo.getMatchingUniques(UniqueType.GoldenAgeLengthIncreased) + civInfo.getMatchingUniques(UniqueType.GoldenAgeLength))
             turnsToGoldenAge *= unique.params[0].toPercent()
         turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()

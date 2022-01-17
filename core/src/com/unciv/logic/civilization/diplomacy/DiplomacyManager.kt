@@ -234,7 +234,7 @@ class DiplomacyManager() {
     private fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
 
-        for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
+        for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateRestingPoint))
             restingPoint += unique.params[0].toInt()
 
         if (civInfo.cities.any()) // no capital if no cities
@@ -260,8 +260,12 @@ class DiplomacyManager() {
         }
 
         var modifierPercent = 0f
-        for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
-            modifierPercent -= unique.params[0].toFloat()
+        // Deprecated since 3.18.17
+            for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateInfluenceDegradationDeprecated))
+                modifierPercent -= unique.params[0].toFloat()
+        //
+        for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateInfluenceDegradation))
+            modifierPercent += unique.params[0].toFloat()
 
         val religion = if (civInfo.cities.isEmpty()) null
             else civInfo.getCapital().religion.getMajorityReligionName()
@@ -466,8 +470,10 @@ class DiplomacyManager() {
 
             // Potentially notify about afraid status
             if (influence < 30  // We usually don't want to bully our friends
-            && !hasFlag(DiplomacyFlags.NotifiedAfraid)
-            && civInfo.getTributeWillingness(otherCiv()) > 0) {
+                && !hasFlag(DiplomacyFlags.NotifiedAfraid)
+                && civInfo.getTributeWillingness(otherCiv()) > 0
+                && otherCiv().isMajorCiv()
+            ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
                 val text = "[${civInfo.civName}] is afraid of your military power!"
                 if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
@@ -485,7 +491,7 @@ class DiplomacyManager() {
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
             if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() && 
                     civInfo.gameInfo.civilizations.filter { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }.any()) {
-                for (unique in civInfo.getMatchingUniques("Militaristic City-States grant units [] times as fast when you are at war with a common nation")) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.CityStateMoreGiftedUnits)) {
                     flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
                         flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! - unique.params[0].toInt() + 1
                     if (flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! <= 0) {
@@ -745,7 +751,7 @@ class DiplomacyManager() {
             // Our ally city states make peace with us
             if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(otherCiv).makePeace()
-            // Other city states that are not our ally don't like the fact that we made peace with their enemy
+            // Other City-States that are not our ally don't like the fact that we made peace with their enemy
             if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(civInfo).addInfluence(-10f)
         }
