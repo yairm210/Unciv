@@ -171,7 +171,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return Table that displays decision buttons for the bottom of the screen. */
     private fun makeActionButtonsTable(): Table {
-        val copyButton = IconTextButton("Copy", null, 24) // Explicit null because I haven't been able to figure out how to make Kotlin infer a generic from a default parameter.
+        val copyButton = IconTextButton("Copy", fontSize = 24)
             .onClick {
                 Gdx.app.clipboard.contents = text
                 copied = true
@@ -191,7 +191,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                     )
                 }
             }
-        val closeButton = IconTextButton("Close Unciv", null, 24) // Explicit null because I haven't been able to figure out how to make Kotlin infer a generic from a default parameter.
+        val closeButton = IconTextButton("Close Unciv", fontSize = 24)
             .onClick { Gdx.app.exit() }
 
         val buttonsTable = Table()
