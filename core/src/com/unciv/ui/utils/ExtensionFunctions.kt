@@ -211,12 +211,10 @@ fun String.toButton(fontColor: Color = Color.WHITE, fontSize: Int = 24, icon: St
     return button
 }
 
-/** Translate a [String] and make a [Label] widget from it */
-fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
 fun Int.toLabel() = this.toString().toLabel()
 
-/** Translate a [String] and make a [Label] widget from it with a specified font color and size */
+/** Translate a [String] and make a [Label] widget from it with an optionally specified font color and size */
 fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
