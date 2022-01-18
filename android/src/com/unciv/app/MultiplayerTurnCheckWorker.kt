@@ -186,7 +186,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
             if (currentGameInfo.currentPlayerCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
-                notifyUserAboutTurn(applicationContext, gameNames[gameIds.indexOf(currentGameInfo.gameId)])
+                val gameIndex = gameIds.indexOf(currentGameInfo.gameId)
+                // Of the turnNotification is OFF, this will be -1 since we never saved this game in the array
+                // Or possibly reading the preview file returned an exception
+                if (gameIndex!=-1)
+                    notifyUserAboutTurn(applicationContext, gameNames[gameIndex])
             } else {
                 val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAME, gameNames),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.multiplayerTurnCheckerDelayInMinutes),

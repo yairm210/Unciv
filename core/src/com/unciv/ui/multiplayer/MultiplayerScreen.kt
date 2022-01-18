@@ -90,7 +90,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             val gameInfo = multiplayerGames[selectedGameFile]
             if (gameInfo != null) {
                 Gdx.app.clipboard.contents = gameInfo.gameId
-                ToastPopup("GameID copied to clipboard", this)
+                ToastPopup("Game ID copied to clipboard!", this)
             }
         }
         rightSideTable.add(copyGameIdButton).row()
