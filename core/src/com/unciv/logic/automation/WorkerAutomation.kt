@@ -11,6 +11,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 
 private object WorkerAutomationConst {
@@ -329,42 +330,56 @@ class WorkerAutomation(
      * Determine the improvement appropriate to a given tile and worker
      */
     private fun chooseImprovement(unit: MapUnit, tile: TileInfo): TileImprovement? {
-        val improvementStringForResource: String? = when {
-            tile.resource == null || !tile.hasViewableResource(civInfo) -> null
-            tile.terrainFeatures.contains(Constants.marsh) && !isImprovementOnFeatureAllowed(tile) -> "Remove Marsh"
-            tile.terrainFeatures.contains("Fallout") && !isImprovementOnFeatureAllowed(tile) -> "Remove Fallout"    // for really mad modders
-            tile.terrainFeatures.contains(Constants.jungle) && !isImprovementOnFeatureAllowed(tile) -> "Remove Jungle"
-            tile.terrainFeatures.contains(Constants.forest) && !isImprovementOnFeatureAllowed(tile) -> "Remove Forest"
-            else -> tile.tileResource.improvement
-        }
 
         // turnsToBuild is what defines them as buildable
         val tileImprovements = ruleSet.tileImprovements.filter {
-            it.value.turnsToBuild != 0 && tile.canImprovementBeBuiltHere(it.value, tile.hasViewableResource(civInfo)) }
+            it.value.turnsToBuild != 0 && tile.canImprovementBeBuiltHere(
+                it.value,
+                tile.hasViewableResource(civInfo)
+            )
+        }
         val uniqueImprovement = tileImprovements.values
             .firstOrNull { it.uniqueTo == civInfo.civName }
 
-        val currentlyBuildableImprovements = tileImprovements.values.filter { tile.canBuildImprovement(it, civInfo) }
-        val bestBuildableImprovement = currentlyBuildableImprovements.map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
-            .filter { it.second > 0f }
-            .maxByOrNull { it.second }?.first
+        val currentlyBuildableImprovements =
+            tileImprovements.values.filter { tile.canBuildImprovement(it, civInfo) }
+        val bestBuildableImprovement =
+            currentlyBuildableImprovements.map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
+                .filter { it.second > 0f }
+                .maxByOrNull { it.second }?.first
+
+        val lastTerrain = tile.getLastTerrain()
+
+        fun isUnbuildableAndRemovable(terrain: Terrain): Boolean = terrain.unbuildable
+                && ruleSet.tileImprovements.containsKey(Constants.remove + terrain.name)
+
+        val improvementStringForResource: String? = when {
+            tile.resource == null || !tile.hasViewableResource(civInfo) -> null
+            tile.terrainFeatures.isNotEmpty()
+                    && isUnbuildableAndRemovable(lastTerrain)
+                    && !isResourceImprovementAllowedOnFeature(tile) -> Constants.remove + lastTerrain.name
+            else -> tile.tileResource.improvement
+        }
 
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress!!
-            improvementStringForResource != null && tileImprovements.containsKey(improvementStringForResource) -> improvementStringForResource
+            improvementStringForResource != null
+                    && tileImprovements.containsKey(improvementStringForResource) -> improvementStringForResource
             tile.containsGreatImprovement() -> return null
             tile.containsUnfinishedGreatImprovement() -> return null
 
             // Defence is more important that civilian improvements
             // While AI sucks in strategical placement of forts, allow a human does it manually
-            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile, civInfo, false) -> Constants.fort
+            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile,
+                civInfo,false) -> Constants.fort
             // I think we can assume that the unique improvement is better
             uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo)
                     && unit.canBuildImprovement(uniqueImprovement, tile) ->
                 uniqueImprovement.name
 
-            tile.terrainFeatures.contains("Fallout") -> "Remove Fallout"
-            tile.terrainFeatures.contains(Constants.marsh) -> "Remove Marsh"
+            lastTerrain.let {
+                isUnbuildableAndRemovable(it) && Automation.rankStatsValue(it, civInfo) < 0
+            } -> Constants.remove + lastTerrain.name
             tile.terrainFeatures.contains(Constants.jungle) -> Constants.tradingPost
             tile.terrainFeatures.contains("Oasis") -> return null
             tile.terrainFeatures.contains(Constants.forest) && tileImprovements.containsKey("Lumber mill") -> "Lumber mill"
@@ -372,10 +387,7 @@ class WorkerAutomation(
             tile.baseTerrain in listOf(Constants.grassland, Constants.desert, Constants.plains)
                     && tileImprovements.containsKey("Farm") -> "Farm"
             tile.isAdjacentToFreshwater && tileImprovements.containsKey("Farm") -> "Farm"
-            tile.baseTerrain in listOf(Constants.tundra, Constants.snow) && tileImprovements.containsKey(Constants.tradingPost)
-                -> Constants.tradingPost
 
-            // This is the ONLY thing that will catch modded non-unique improvements
             bestBuildableImprovement != null -> bestBuildableImprovement.name
             else -> return null
         }
@@ -387,7 +399,7 @@ class WorkerAutomation(
      *
      * Assumes the caller ensured that terrainFeature and resource are both present!
      */
-    private fun isImprovementOnFeatureAllowed(tile: TileInfo): Boolean {
+    private fun isResourceImprovementAllowedOnFeature(tile: TileInfo): Boolean {
         val resourceImprovementName = tile.tileResource.improvement
             ?: return false
         val resourceImprovement = ruleSet.tileImprovements[resourceImprovementName]
