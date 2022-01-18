@@ -430,7 +430,6 @@ class MapUnit {
     fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else action!!
 
     fun isCivilian() = baseUnit.isCivilian()
-    fun isRanged() = baseUnit.isRanged()
 
     fun getFortificationTurns(): Int {
         if (!isFortified()) return 0
@@ -873,7 +872,7 @@ class MapUnit {
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
         // Capture Enemy Civilian Unit if you move on top of it
-        if (tile.civilianUnit != null && tile.civilianUnit!!.owner != owner ) {
+        if (tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.civilianUnit!!.civInfo)) {
             Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 
