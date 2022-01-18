@@ -132,7 +132,8 @@ open class TileInfo {
     fun getUnguardedCivilian(): MapUnit? {
         if (militaryUnit != null) return null
         if (airUnits.isNotEmpty()) return null
-        return civilianUnit!!
+        if (civilianUnit != null) return civilianUnit!!
+        return null
     }
 
     fun getCity(): CityInfo? = owningCity
