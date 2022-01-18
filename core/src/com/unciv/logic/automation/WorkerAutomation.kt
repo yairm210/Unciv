@@ -13,6 +13,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.UniqueType
 
 private object WorkerAutomationConst {
     /** Controls detailed logging of decisions to the console -Turn off for release builds! */
@@ -370,7 +371,8 @@ class WorkerAutomation(
                 uniqueImprovement.name
 
             lastTerrain.let {
-                isUnbuildableAndRemovable(it) && Automation.rankStatsValue(it, civInfo) < 0
+                isUnbuildableAndRemovable(it) &&
+                        (Automation.rankStatsValue(it, civInfo) < 0 || it.hasUnique(UniqueType.NullifyYields) )
             } -> Constants.remove + lastTerrain.name
             tile.terrainFeatures.contains(Constants.jungle) -> Constants.tradingPost
             tile.terrainFeatures.contains("Oasis") -> return null
