@@ -333,18 +333,12 @@ class WorkerAutomation(
 
         // turnsToBuild is what defines them as buildable
         val tileImprovements = ruleSet.tileImprovements.filter {
-            it.value.turnsToBuild != 0 && tile.canImprovementBeBuiltHere(
-                it.value,
-                tile.hasViewableResource(civInfo)
-            )
-        }
+            it.value.turnsToBuild != 0 && tile.canImprovementBeBuiltHere(it.value, tile.hasViewableResource(civInfo)) }
         val uniqueImprovement = tileImprovements.values
             .firstOrNull { it.uniqueTo == civInfo.civName }
 
-        val currentlyBuildableImprovements =
-            tileImprovements.values.filter { tile.canBuildImprovement(it, civInfo) }
-        val bestBuildableImprovement =
-            currentlyBuildableImprovements.map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
+        val currentlyBuildableImprovements = tileImprovements.values.filter { tile.canBuildImprovement(it, civInfo) }
+        val bestBuildableImprovement = currentlyBuildableImprovements.map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
                 .filter { it.second > 0f }
                 .maxByOrNull { it.second }?.first
 
@@ -363,15 +357,13 @@ class WorkerAutomation(
 
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress!!
-            improvementStringForResource != null
-                    && tileImprovements.containsKey(improvementStringForResource) -> improvementStringForResource
+            improvementStringForResource != null && tileImprovements.containsKey(improvementStringForResource) -> improvementStringForResource
             tile.containsGreatImprovement() -> return null
             tile.containsUnfinishedGreatImprovement() -> return null
 
             // Defence is more important that civilian improvements
             // While AI sucks in strategical placement of forts, allow a human does it manually
-            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile,
-                civInfo,false) -> Constants.fort
+            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile, civInfo,false) -> Constants.fort
             // I think we can assume that the unique improvement is better
             uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo)
                     && unit.canBuildImprovement(uniqueImprovement, tile) ->
