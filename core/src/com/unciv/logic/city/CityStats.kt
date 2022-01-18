@@ -185,34 +185,33 @@ class CityStats(val cityInfo: CityInfo) {
 
     private fun getStatsFromUniquesBySource():StatMap {
         val sourceToStats = StatMap()
-        val cityConditionals = StateForConditionals(cityInfo.civInfo, cityInfo)
         fun addUniqueStats(unique:Unique) =
             sourceToStats.add(unique.sourceObjectType?.name ?: "", unique.stats)
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.Stats, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.Stats))
             addUniqueStats(unique)
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerCity, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerCity))
             if (cityInfo.matchesFilter(unique.params[1]))
                 addUniqueStats(unique)
 
         // "[stats] per [amount] population [cityFilter]"
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerPopulation, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerPopulation))
             if (cityInfo.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 sourceToStats.add(unique.sourceObjectType?.name ?: "", unique.stats.times(amountOfEffects))
             }
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromXPopulation, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromXPopulation))
             if (cityInfo.population.population >= unique.params[1].toInt())
                 addUniqueStats(unique)
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesOnSpecificTiles, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesOnSpecificTiles))
             if (cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 addUniqueStats(unique)
 
         // Deprecated since 3.18.14
-            for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesBefore, cityConditionals))
+            for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesBefore))
                 if (!cityInfo.civInfo.hasTechOrPolicy(unique.params[1]))
                     addUniqueStats(unique)
         //
@@ -243,18 +242,28 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
-    private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniqueSequence: Sequence<Unique>): Stats {
+
+    private fun getStatsPercentBonusesFromUniquesBySource():StatMap {
+        val sourceToStats = StatMap()
+        fun addUniqueStats(unique: Unique, statsToAdd:Stats) =
+            sourceToStats.add(unique.sourceObjectType?.name ?: "", statsToAdd)
+
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentBonus)) {
+            addUniqueStats(unique, Stats().add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat()))
+        }
+
+        renameStatmapKeys(sourceToStats)
+
+        return sourceToStats
+    }
+
+        private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniqueSequence: Sequence<Unique>): Stats {
 
         val stats = Stats()
         val uniqueMap = UniqueMapTyped()
         for (unique in uniqueSequence) uniqueMap.addUnique(unique)
           // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
           // this helps mitigate concurrency problems.
-
-        for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonus)) {
-            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
-            stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-        }
 
 
         for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCities)) {
@@ -445,7 +454,8 @@ class CityStats(val cityInfo: CityInfo) {
 
 
     private fun updateStatPercentBonusList(currentConstruction: IConstruction, localBuildingUniques: Sequence<Unique>) {
-        val newStatPercentBonusList = LinkedHashMap<String, Stats>()
+        val newStatPercentBonusList = StatMap()
+
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
         newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
         newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, localBuildingUniques)
@@ -458,6 +468,9 @@ class CityStats(val cityInfo: CityInfo) {
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
         newStatPercentBonusList["Religion"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.religion.getUniques())
         newStatPercentBonusList["Unit Supply"] = getStatPercentBonusesFromUnitSupply()
+
+        for((source, stats) in getStatsPercentBonusesFromUniquesBySource())
+            newStatPercentBonusList.add(source, stats)
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()
