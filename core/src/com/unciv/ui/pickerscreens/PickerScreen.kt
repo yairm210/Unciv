@@ -94,7 +94,7 @@ open class PickerScreen(disableScroll: Boolean = false) : BaseScreen() {
         /** Icon size used in [getPickerOptionButton]. */
         const val pickerOptionIconSize = 30f
         /** Return a button for picker screens that display a list of big buttons with icons and labels. */
-        fun <I: Actor?> getPickerOptionButton(icon: I, label: String): Button {
+        fun getPickerOptionButton(icon: Actor, label: String): Button {
             return IconTextButton(label, icon).apply {
                 iconCell!!.size(pickerOptionIconSize).pad(10f)
                 labelCell.pad(10f)
