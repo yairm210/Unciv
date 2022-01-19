@@ -487,7 +487,7 @@ open class TileInfo {
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
             // Terrain blocks BUILDING improvements - removing things (such as fallout) is fine
-            !improvement.name.startsWith("Remove ") &&
+            !improvement.name.startsWith(Constants.remove) &&
                 getAllTerrains().any { it.getMatchingUniques(UniqueType.RestrictedBuildableImprovements)
                 .any { unique -> !improvement.matchesFilter(unique.params[0]) } } -> false
 

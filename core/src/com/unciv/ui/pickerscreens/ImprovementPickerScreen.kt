@@ -84,7 +84,9 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.improvement == improvement.name
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()
             val removeImprovement = (improvement.name != RoadStatus.Road.name
-                    && improvement.name != RoadStatus.Railroad.name && !improvement.name.startsWith("Remove") && improvement.name != Constants.cancelImprovementOrder)
+                    && improvement.name != RoadStatus.Railroad.name
+                    && !improvement.name.startsWith(Constants.remove)
+                    && improvement.name != Constants.cancelImprovementOrder)
             if (tileInfo.improvement != null && removeImprovement) labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
 
             val pickNow = if (tileInfo.improvementInProgress != improvement.name)
