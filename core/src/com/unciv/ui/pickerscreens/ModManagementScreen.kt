@@ -230,7 +230,7 @@ class ModManagementScreen(
             if (installedMod != null) {
 
                 if (isUpdatedVersionOfInstalledMod) {
-                    installedModInfo[repo.name]!!.state.isUpdated = true
+                    installedModInfo[repo.name]!!.state.hasUpdate = true
                 }
 
                 if (installedMod.modOptions.author.isEmpty()) {
@@ -293,12 +293,12 @@ class ModManagementScreen(
             lastSyncMarkedButton?.color = Color.WHITE
         lastSyncMarkedButton = null
         // look for sync-able same mod in other list
-        val pos = modNameToData[modName] ?: return
+        val modUIDataInOtherList = modNameToData[modName] ?: return
         // scroll into view
-        scroll.scrollY = (pos.y + (pos.height - scroll.height) / 2).coerceIn(0f, scroll.maxY)
+        scroll.scrollY = (modUIDataInOtherList.y + (modUIDataInOtherList.height - scroll.height) / 2).coerceIn(0f, scroll.maxY)
         // and color it so it's easier to find. ROYAL and SLATE too dark.
-        pos.button.color = Color.valueOf("7499ab")  // about halfway between royal and sky
-        lastSyncMarkedButton = pos.button
+        modUIDataInOtherList.button.color = Color.valueOf("7499ab")  // about halfway between royal and sky
+        lastSyncMarkedButton = modUIDataInOtherList.button
     }
 
     /** Recreate the information part of the right-hand column
@@ -367,7 +367,7 @@ class ModManagementScreen(
         showModDescription(repo.name)
         removeRightSideClickListeners()
         rightSideButton.enable()
-        val label = if (installedModInfo[repo.name]?.state?.isUpdated == true)
+        val label = if (installedModInfo[repo.name]?.state?.hasUpdate == true)
             "Update [${repo.name}]"
         else "Download [${repo.name}]"
         rightSideButton.setText(label.tr())
@@ -432,9 +432,9 @@ class ModManagementScreen(
      *  (called under postRunnable posted by background thread)
      */
     private fun unMarkUpdatedMod(name: String) {
-        installedModInfo[name]?.state?.isUpdated = false
-        onlineModInfo[name]?.state?.isUpdated = false
-        val button = (onlineModInfo[name]?.button as? TextButton)
+        installedModInfo[name]?.state?.hasUpdate = false
+        onlineModInfo[name]?.state?.hasUpdate = false
+        val button = onlineModInfo[name]?.button
         button?.setText(name)
         if (optionsManager.sortInstalled == SortType.Status)
             refreshInstalledModTable()
@@ -588,12 +588,6 @@ class ModManagementScreen(
         val modsToHideAsUrl by lazy {
             val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
             JsonParser().getFromJson(Array<String>::class.java, blockedModsFile)
-        }
-        val modsToHideNames by lazy {
-            val regex = Regex(""".*/([^/]+)/?$""")
-            modsToHideAsUrl.map { url ->
-                regex.replace(url) { it.groups[1]!!.value }.replace('-', ' ')
-            }
         }
     }
 }
