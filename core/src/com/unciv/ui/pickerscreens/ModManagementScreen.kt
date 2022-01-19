@@ -55,8 +55,6 @@ class ModManagementScreen(
     private var installedExpanderTab: ExpanderTab? = null
     private var onlineExpanderTab: ExpanderTab? = null
 
-    // keep running count of mods fetched from online search for comparison to total count as reported by GitHub
-    private var downloadModCount = 0
 
     // Enable re-sorting and syncing entries in 'installed' and 'repo search' ScrollPanes
     private val installedModInfo = previousInstalledMods ?: HashMap(10) // HashMap<String, ModUIData> inferred
@@ -199,85 +197,85 @@ class ModManagementScreen(
                 return@crashHandlingThread
             }
 
-            postCrashHandlingRunnable {
-                // clear and remove last cell if it is the "..." indicator
-                val lastCell = downloadTable.cells.lastOrNull()
-                if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
-                    lastCell.setActor<Actor>(null)
-                    downloadTable.cells.removeValue(lastCell, true)
-                }
-
-                for (repo in repoSearch.items) {
-                    if (stopBackgroundTasks) return@postCrashHandlingRunnable
-                    repo.name = repo.name.replace('-', ' ')
-
-                    if (onlineModInfo.containsKey(repo.name))
-                        continue // we already got this mod in a previous download, since one has been added in between
-
-                    downloadModCount++ // this should appear BEFORE the 'hide' since we use this to compare to the total amount of mods downloaded
-
-                    // Mods we have manually decided to remove for instability are removed here
-                    // If at some later point these mods are updated, we should definitely remove
-                    // this piece of code. This is a band-aid, not a full solution.
-                    if (repo.html_url in modsToHideAsUrl) continue
-
-                    val installedMod = RulesetCache.values.firstOrNull { it.name == repo.name }
-                    val isUpdatedVersionOfInstalledMod = installedMod?.modOptions?.let {
-                        it.lastUpdated != "" && it.lastUpdated != repo.updated_at
-                    } == true
-
-                    if (installedMod != null) {
-
-                        if (isUpdatedVersionOfInstalledMod) {
-                            installedModInfo[repo.name]!!.state.isUpdated = true
-                        }
-
-                        if (installedMod.modOptions.author.isEmpty()) {
-                            rewriteModOptions(repo, Gdx.files.local("mods").child(repo.name))
-                            installedMod.modOptions.author = repo.owner.login
-                            installedMod.modOptions.modSize = repo.size
-                        }
-                    }
-
-                    val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
-                    onlineModInfo[repo.name] = mod
-                    mod.button.onClick { onlineButtonAction(repo, mod.button) }
-
-                    val cell = downloadTable.add(mod.button)
-                    downloadTable.row()
-                    if (onlineScrollCurrentY < 0f) onlineScrollCurrentY = cell.padTop
-                    mod.y = onlineScrollCurrentY
-                    mod.height = cell.prefHeight
-                    onlineScrollCurrentY += cell.padBottom + cell.prefHeight + cell.padTop
-                }
-
-                // Now the tasks after the 'page' of search results has been fully processed
-                // The search has reached the last page!
-                if (repoSearch.items.size < amountPerPage) {
-                    // Check: It is also not impossible we missed a mod - just inform user
-                    if (repoSearch.total_count > downloadModCount || repoSearch.incomplete_results) {
-                        val retryLabel = "Online query result is incomplete".toLabel(Color.RED)
-                        retryLabel.touchable = Touchable.enabled
-                        retryLabel.onClick { reloadOnlineMods() }
-                        downloadTable.add(retryLabel)
-                    }
-                } else {
-                    // the page was full so there may be more pages.
-                    // indicate that search will be continued
-                    downloadTable.add("...".toLabel()).row()
-                }
-
-                downloadTable.pack()
-                // Shouldn't actor.parent.actor = actor be a no-op? No, it has side effects we need.
-                // See [commit for #3317](https://github.com/yairm210/Unciv/commit/315a55f972b8defe22e76d4a2d811c6e6b607e57)
-                (downloadTable.parent as ScrollPane).actor = downloadTable
-
-                // continue search unless last page was reached
-                if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
-                    tryDownloadPage(pageNum + 1)
-            }
+            postCrashHandlingRunnable { addModInfoFromRepoSearch(repoSearch, pageNum) }
             runningSearchThread = null
         }
+    }
+
+    private fun addModInfoFromRepoSearch(repoSearch: Github.RepoSearch, pageNum: Int){
+        // clear and remove last cell if it is the "..." indicator
+        val lastCell = downloadTable.cells.lastOrNull()
+        if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
+            lastCell.setActor<Actor>(null)
+            downloadTable.cells.removeValue(lastCell, true)
+        }
+
+        for (repo in repoSearch.items) {
+            if (stopBackgroundTasks) return
+            repo.name = repo.name.replace('-', ' ')
+
+            if (onlineModInfo.containsKey(repo.name))
+                continue // we already got this mod in a previous download, since one has been added in between
+
+            // Mods we have manually decided to remove for instability are removed here
+            // If at some later point these mods are updated, we should definitely remove
+            // this piece of code. This is a band-aid, not a full solution.
+            if (repo.html_url in modsToHideAsUrl) continue
+
+            val installedMod = RulesetCache.values.firstOrNull { it.name == repo.name }
+            val isUpdatedVersionOfInstalledMod = installedMod?.modOptions?.let {
+                it.lastUpdated != "" && it.lastUpdated != repo.updated_at
+            } == true
+
+            if (installedMod != null) {
+
+                if (isUpdatedVersionOfInstalledMod) {
+                    installedModInfo[repo.name]!!.state.isUpdated = true
+                }
+
+                if (installedMod.modOptions.author.isEmpty()) {
+                    rewriteModOptions(repo, Gdx.files.local("mods").child(repo.name))
+                    installedMod.modOptions.author = repo.owner.login
+                    installedMod.modOptions.modSize = repo.size
+                }
+            }
+
+            val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
+            onlineModInfo[repo.name] = mod
+            mod.button.onClick { onlineButtonAction(repo, mod.button) }
+
+            val cell = downloadTable.add(mod.button)
+            downloadTable.row()
+            if (onlineScrollCurrentY < 0f) onlineScrollCurrentY = cell.padTop
+            mod.y = onlineScrollCurrentY
+            mod.height = cell.prefHeight
+            onlineScrollCurrentY += cell.padBottom + cell.prefHeight + cell.padTop
+        }
+
+        // Now the tasks after the 'page' of search results has been fully processed
+        // The search has reached the last page!
+        if (repoSearch.items.size < amountPerPage) {
+            // Check: It is also not impossible we missed a mod - just inform user
+            if (repoSearch.incomplete_results) {
+                val retryLabel = "Online query result is incomplete".toLabel(Color.RED)
+                retryLabel.touchable = Touchable.enabled
+                retryLabel.onClick { reloadOnlineMods() }
+                downloadTable.add(retryLabel)
+            }
+        } else {
+            // the page was full so there may be more pages.
+            // indicate that search will be continued
+            downloadTable.add("...".toLabel()).row()
+        }
+
+        downloadTable.pack()
+        // Shouldn't actor.parent.actor = actor be a no-op? No, it has side effects we need.
+        // See [commit for #3317](https://github.com/yairm210/Unciv/commit/315a55f972b8defe22e76d4a2d811c6e6b607e57)
+        (downloadTable.parent as ScrollPane).actor = downloadTable
+
+        // continue search unless last page was reached
+        if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
+            tryDownloadPage(pageNum + 1)
     }
 
     private fun syncOnlineSelected(modName: String, button: Button) {
