@@ -1,3 +1,15 @@
+## 3.18.19
+
+Worker AI improvements for modded improvements and terrains
+
+Performance improvements
+
+Minor UI improvements
+
+By will-ca:
+- Unified icon button UI
+- Added missing translation terms
+
 ## 3.18.18
 
 "Cannot be built with" unique catches building equivalents as well
