@@ -171,7 +171,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return Table that displays decision buttons for the bottom of the screen. */
     private fun makeActionButtonsTable(): Table {
-        val copyButton = "Copy".toButton()
+        val copyButton = IconTextButton("Copy", fontSize = 24)
             .onClick {
                 Gdx.app.clipboard.contents = text
                 copied = true
@@ -180,7 +180,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                     this@CrashScreen
                 )
             }
-        val reportButton = "Open Issue Tracker".toButton(icon = "OtherIcons/Link")
+        val reportButton = IconTextButton("Open Issue Tracker", ImageGetter.getImage("OtherIcons/Link"), 24)
             .onClick {
                 if (copied) {
                     Gdx.net.openURI("https://github.com/yairm210/Unciv/issues")
@@ -191,7 +191,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                     )
                 }
             }
-        val closeButton = "Close Unciv".toButton()
+        val closeButton = IconTextButton("Close Unciv", fontSize = 24)
             .onClick { Gdx.app.exit() }
 
         val buttonsTable = Table()
