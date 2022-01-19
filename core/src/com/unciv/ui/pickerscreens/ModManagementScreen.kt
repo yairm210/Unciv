@@ -48,8 +48,6 @@ class ModManagementScreen(
     private var selectedModName = ""
     private var selectedAuthor = ""
 
-    private val deprecationLabel: WrappableLabel
-    private val deprecationCell: Cell<WrappableLabel>
     private val modDescriptionLabel: WrappableLabel
 
     private var installedHeaderLabel: Label? = null
@@ -91,8 +89,6 @@ class ModManagementScreen(
         onBackButtonClicked(closeAction)
 
         val labelWidth = max(stage.width / 2f - 60f,60f)
-        deprecationLabel = WrappableLabel(deprecationText, labelWidth, Color.FIREBRICK)
-        deprecationLabel.wrap = true
         modDescriptionLabel = WrappableLabel("", labelWidth)
         modDescriptionLabel.wrap = true
 
@@ -101,8 +97,6 @@ class ModManagementScreen(
         labelWrapper.defaults().top().left().growX()
         val labelScroll = descriptionLabel.parent as ScrollPane
         descriptionLabel.remove()
-        deprecationCell = labelWrapper.add(deprecationLabel).padBottom(10f)
-        deprecationLabel.remove()
         labelWrapper.row()
         labelWrapper.add(modDescriptionLabel).row()
         labelScroll.actor = labelWrapper
@@ -582,7 +576,6 @@ class ModManagementScreen(
         val onlineModDescription = onlineModInfo[modName]?.description ?: "" // shows github info
         val installedModDescription = installedModInfo[modName]?.description ?: "" // shows ruleset info
         val separator = if (onlineModDescription.isEmpty() || installedModDescription.isEmpty()) "" else "\n"
-        deprecationCell.setActor(if (modName in modsToHideNames) deprecationLabel else null)
         modDescriptionLabel.setText(onlineModDescription + separator + installedModDescription)
     }
 
@@ -604,6 +597,5 @@ class ModManagementScreen(
                 regex.replace(url) { it.groups[1]!!.value }.replace('-', ' ')
             }
         }
-        const val deprecationText = "Deprecated until update conforms to current requirements"
     }
 }
