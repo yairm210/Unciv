@@ -630,8 +630,8 @@ class MapUnit {
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
 
         when {
-            tile.improvementInProgress!!.startsWith("Remove ") -> {
-                val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
+            tile.improvementInProgress!!.startsWith(Constants.remove) -> {
+                val removedFeatureName = tile.improvementInProgress!!.removePrefix(Constants.remove)
                 val tileImprovement = tile.getTileImprovement()
                 if (tileImprovement != null
                     && tile.terrainFeatures.any { 

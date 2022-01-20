@@ -54,12 +54,8 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 game.settings.addCompletedTutorialTask("See your stats breakdown")
             game.settings.lastOverviewPage = name
         }
-        val button = Button(skin)
-        if (iconAndKey.icon != "") {
-            val image = ImageGetter.getImage(iconAndKey.icon)
-            button.add(image).size(20f).pad(5f)
-        }
-        button.add(name.toLabel(Color.WHITE)).pad(5f)
+        val icon = if (iconAndKey.icon != "") ImageGetter.getImage(iconAndKey.icon) else null
+        val button = IconTextButton(name, icon)
         if (!disabled && keyboardAvailable && iconAndKey.key != Char.MIN_VALUE) {
             button.addTooltip(iconAndKey.key)
             keyPressDispatcher[iconAndKey.key] = setCategoryAction

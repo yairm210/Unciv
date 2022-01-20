@@ -2,8 +2,6 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -16,7 +14,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import kotlin.math.round
 import kotlin.math.roundToInt
 
 class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccept: ()->Unit) : PickerScreen() {
@@ -62,11 +59,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
             if (!unit.canBuildImprovement(improvement)) continue
 
-            val improvementButtonTable = Table()
-
             val image = ImageGetter.getImprovementIcon(improvement.name, 30f)
-
-            improvementButtonTable.add(image).size(30f).pad(10f)
 
             // allow multiple key mappings to technologically supersede each other
             var shortcutKey = improvement.shortcutKey
@@ -91,17 +84,10 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.improvement == improvement.name
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()
             val removeImprovement = (improvement.name != RoadStatus.Road.name
-                    && improvement.name != RoadStatus.Railroad.name && !improvement.name.startsWith("Remove") && improvement.name != Constants.cancelImprovementOrder)
+                    && improvement.name != RoadStatus.Railroad.name
+                    && !improvement.name.startsWith(Constants.remove)
+                    && improvement.name != Constants.cancelImprovementOrder)
             if (tileInfo.improvement != null && removeImprovement) labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
-
-            improvementButtonTable.add(labelText.toLabel()).pad(10f)
-
-            improvementButtonTable.touchable = Touchable.enabled
-            improvementButtonTable.onClick {
-                selectedImprovement = improvement
-                pick(improvement.name.tr())
-                descriptionLabel.setText(improvement.getDescription(ruleSet))
-            }
 
             val pickNow = if (tileInfo.improvementInProgress != improvement.name)
                 "Pick now!".toLabel().onClick { accept(improvement) }
@@ -124,8 +110,13 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
 
             regularImprovements.add(statIcons).align(Align.right)
 
-            val improvementButton = Button(skin)
-            improvementButton.add(improvementButtonTable).pad(5f).fillY()
+            val improvementButton = getPickerOptionButton(image, labelText)
+            improvementButton.onClick {
+                selectedImprovement = improvement
+                pick(improvement.name.tr())
+                descriptionLabel.setText(improvement.getDescription(ruleSet))
+            }
+
             if (improvement.name == tileInfo.improvementInProgress) improvementButton.color = Color.GREEN
             regularImprovements.add(improvementButton)
 

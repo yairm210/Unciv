@@ -46,14 +46,25 @@ class TabbedPager(
 ) : Table() {
 
     private class PageState(
+        caption: String,
         var content: Actor,
         var disabled: Boolean = false,
-        val onActivation: ((Int, String)->Unit)? = null
+        val onActivation: ((Int, String)->Unit)? = null,
+        icon: Actor? = null,
+        iconSize: Float = 0f,
+        pager: TabbedPager
     ) {
+
         var scrollX = 0f
         var scrollY = 0f
 
-        var button: Button = Button(BaseScreen.skin)
+        val button = IconTextButton(caption, icon, pager.headerFontSize, pager.headerFontColor).apply {
+            if (icon != null) {
+                if (iconSize != 0f)
+                    iconCell!!.size(iconSize)
+                iconCell!!.padRight(pager.headerPadding * 0.5f)
+            }
+        }
         var buttonX = 0f
         var buttonW = 0f
     }
@@ -233,18 +244,17 @@ class TabbedPager(
         onActivation: ((Int, String)->Unit)? = null
     ): Int {
         // Build page descriptor and header button
-        val page = PageState(content ?: Group(), disabled, onActivation)
+        val page = PageState(
+                caption = caption,
+                content = content ?: Group(),
+                disabled = disabled,
+                onActivation = onActivation,
+                icon = icon,
+                iconSize = iconSize,
+                pager = this
+        )
         page.button.apply {
             name = caption  // enable finding pages by untranslated caption without needing our own field
-            if (icon != null) {
-                if (iconSize != 0f) {
-                    add(icon.sizeWrapped(iconSize, iconSize))
-                        .padRight(headerPadding * 0.5f)
-                } else {
-                    add(icon)
-                }
-            }
-            add(caption.toLabel(headerFontColor, headerFontSize))
             isEnabled = !disabled
             onClick {
                 selectPage(page)

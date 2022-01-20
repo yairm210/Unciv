@@ -88,15 +88,6 @@ class CityConstructions {
         val stats = Stats()
         for (building in getBuiltBuildings())
             stats.add(building.getStats(cityInfo))
-
-        
-        // Deprecated since 3.17.11
-            for (unique in cityInfo.getLocalMatchingUniques(UniqueType.StatsWithTech)) {
-                if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
-                    stats.add(unique.stats)
-            }
-        //
-        
         return stats
     }
 
@@ -139,10 +130,9 @@ class CityConstructions {
     
     fun addFreeBuildings() {
         // "Gain a free [buildingName] [cityFilter]"
-        val uniqueList = cityInfo.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo)).toMutableList()
-        // Deprecated - "Provides a free [buildingName] [cityFilter]"
-        uniqueList.addAll(cityInfo.getLocalMatchingUniques(UniqueType.ProvidesFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo)))
-        for (unique in uniqueList) {
+        val freeBuildingUniques = cityInfo.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo))
+
+        for (unique in freeBuildingUniques) {
             val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
             val citiesThatApply = when (unique.params[1]) {
                 "in this city" -> listOf(cityInfo)

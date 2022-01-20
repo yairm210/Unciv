@@ -131,7 +131,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
         }).row()
 
         for (improvement in ruleset.tileImprovements.values) {
-            if (improvement.name.startsWith("Remove")) continue
+            if (improvement.name.startsWith(Constants.remove)) continue
             if (improvement.name == Constants.cancelImprovementOrder) continue
             val improvementImage = getHex(ImageGetter.getImprovementIcon(improvement.name, 40f))
             improvementImage.onClick {

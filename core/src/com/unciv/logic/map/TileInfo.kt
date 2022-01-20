@@ -385,26 +385,16 @@ open class TileInfo {
         if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name)
             stats.add(tileResource.improvementStats!!.clone()) // resource-specific improvement
 
-        // Deprecated since 3.17.10
-            for (unique in improvement.getMatchingUniques(UniqueType.StatsWithTech)) {
-                if (observingCiv.tech.isResearched(unique.params[1]))
-                    stats.add(unique.stats)
-            }
-        //
-        
-        for (unique in improvement.getMatchingUniques(UniqueType.Stats, StateForConditionals(civInfo = observingCiv, cityInfo = city))) {
+        val conditionalState = StateForConditionals(civInfo = observingCiv, cityInfo = city)
+        for (unique in improvement.getMatchingUniques(UniqueType.Stats, conditionalState)) {
             stats.add(unique.stats)
         }
 
         if (city != null) {
-            val tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals(civInfo = observingCiv, cityInfo = city))
+            val tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, conditionalState)
                 .filter { city.matchesFilter(it.params[2]) }
-            val improvementUniques = 
-                // Deprecated since 3.17.10
-                    improvement.getMatchingUniques(UniqueType.StatsOnTileWithTech)
-                        .filter { observingCiv.tech.isResearched(it.params[2]) } +
-                //
-                improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, StateForConditionals(civInfo = observingCiv, cityInfo = city))
+            val improvementUniques =
+                improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)
             
             for (unique in tileUniques + improvementUniques) {
                 if (improvement.matchesFilter(unique.params[1])
@@ -495,7 +485,7 @@ open class TileInfo {
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
             // Terrain blocks BUILDING improvements - removing things (such as fallout) is fine
-            !improvement.name.startsWith("Remove ") &&
+            !improvement.name.startsWith(Constants.remove) &&
                 getAllTerrains().any { it.getMatchingUniques(UniqueType.RestrictedBuildableImprovements)
                 .any { unique -> !improvement.matchesFilter(unique.params[0]) } } -> false
 
