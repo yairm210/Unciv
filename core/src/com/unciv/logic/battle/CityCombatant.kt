@@ -7,6 +7,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.utils.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -65,7 +66,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
                 buildingsStrength *= 1.25f
         //
         for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, stateForConditionals))
-            buildingsStrength *= unique.params[0].toInt()
+            buildingsStrength *= unique.params[0].toPercent()
         strength += buildingsStrength
 
         return strength.roundToInt()
