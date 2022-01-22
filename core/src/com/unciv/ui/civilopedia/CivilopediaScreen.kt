@@ -204,7 +204,7 @@ class CivilopediaScreen(
 
         for (loopCategory in CivilopediaCategories.values()) {
             if (loopCategory.hide) continue
-            if (religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
+            if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
                 getCategoryIterator(loopCategory)
                     .filter { (it as? IHasUniques)?.let { obj -> shouldBeDisplayed(obj) } ?: true }
