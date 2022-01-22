@@ -3,6 +3,7 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.UncivSound
@@ -65,7 +66,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         val icon = ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f)
         val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
-        val buildingNameAndIconTable = ExpanderTab(displayName, 18, icon, false, 5f) {
+        val buildingNameAndIconTable = ExpanderTab(displayName, Constants.defaultFontSize, icon, false, 5f) {
             val detailsString = building.getDescription(cityScreen.city, cityScreen.city.getRuleset())
             it.add(detailsString.toLabel().apply { wrap = true })
                 .width(cityScreen.stage.width / 4 - 2 * pad).row() // when you set wrap, then you need to manually set the size of the label

@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Array
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
@@ -134,11 +135,11 @@ class NewGameScreen(
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)
 
-        topTable.add("Game Options".toLabel(fontSize = 24)).pad(20f, 0f)
+        topTable.add("Game Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f, 0f)
         topTable.addSeparatorVertical(Color.BLACK, 1f)
-        topTable.add("Map Options".toLabel(fontSize = 24)).pad(20f,0f)
+        topTable.add("Map Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
         topTable.addSeparatorVertical(Color.BLACK, 1f)
-        topTable.add("Civilizations".toLabel(fontSize = 24)).pad(20f,0f)
+        topTable.add("Civilizations".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
         topTable.addSeparator(Color.CLEAR, height = 1f)
 
         topTable.add(ScrollPane(newGameOptionsTable)

@@ -215,7 +215,7 @@ class ReligiousBeliefsPickerScreen (
     private fun convertBeliefToButton(belief: Belief): Button {
         val contentsTable = Table()
         contentsTable.add(belief.type.name.toLabel(fontColor = Color.valueOf(belief.type.color))).row()
-        contentsTable.add(belief.name.toLabel(fontSize = 24)).row()
+        contentsTable.add(belief.name.toLabel(fontSize = Constants.headingFontSize)).row()
         contentsTable.add(belief.uniques.joinToString("\n") { it.tr() }.toLabel())
         return Button(contentsTable, skin)
     }

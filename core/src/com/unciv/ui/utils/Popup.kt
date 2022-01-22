@@ -78,11 +78,11 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
 
     /**
      * Adds a [caption][text] label: A label with word wrap enabled over half the stage width.
-     * Will be larger than normal text if the [size] parameter is set to >18.
+     * Will be larger than normal text if the [size] parameter is set to > [Constants.defaultFontSize].
      * @param text The caption text.
      * @param size The font size for the label.
      */
-    fun addGoodSizedLabel(text: String, size:Int=18): Cell<Label> {
+    fun addGoodSizedLabel(text: String, size:Int=Constants.defaultFontSize): Cell<Label> {
         val label = text.toLabel(fontSize = size)
         label.wrap = true
         label.setAlignment(Align.center)

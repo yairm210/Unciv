@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.Constants
 import com.unciv.UncivGame
 import kotlin.math.min
 
@@ -37,7 +38,7 @@ class TabbedPager(
     private var maximumWidth: Float = Float.MAX_VALUE,
     private val minimumHeight: Float = 0f,
     private var maximumHeight: Float = Float.MAX_VALUE,
-    private val headerFontSize: Int = 18,
+    private val headerFontSize: Int = Constants.defaultFontSize,
     private val headerFontColor: Color = Color.WHITE,
     private val highlightColor: Color = Color.BLUE,
     backgroundColor: Color = ImageGetter.getBlue().lerp(Color.BLACK, 0.5f),

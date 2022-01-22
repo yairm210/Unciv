@@ -2,6 +2,7 @@ package com.unciv.ui.trade
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -28,7 +29,7 @@ class LeaderIntroTable (
         defaults().align(Align.center)
         val nation = civInfo.nation
         val leaderPortraitFile = "LeaderIcons/" + nation.leaderName
-        val leaderLabel = civInfo.getLeaderDisplayName().toLabel(fontSize = 24)
+        val leaderLabel = civInfo.getLeaderDisplayName().toLabel(fontSize = Constants.headingFontSize)
         val nationIndicator = ImageGetter.getNationIndicator(nation, 24f)
         if (nation.leaderName.isNotEmpty() && ImageGetter.imageExists(leaderPortraitFile)) {
             val nameTable = Table()
