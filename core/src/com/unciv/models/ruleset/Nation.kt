@@ -195,7 +195,11 @@ class Nation : RulesetObject() {
 
     private fun addUniqueBuildingsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values) {
-            if (building.uniqueTo != name || building.hasUnique(UniqueType.HiddenFromCivilopedia)) continue
+            when {
+                building.uniqueTo != name -> continue
+                building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
+                UncivGame.Current.isGameInfoInitialized() && !UncivGame.Current.gameInfo.isReligionEnabled() && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue // This seems consistent with existing behaviour of CivilopediaScreen's init.<locals>.shouldBeDisplayed(), and Technology().getEnabledUnits(). Otherwise there are broken links in the Civilopedia (E.G. to "Pyramid" and "Shrine", from "The Maya").
+            }
             textList += FormattedLine("{${building.name}} -", link=building.makeLink())
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
