@@ -96,11 +96,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     /**
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
-    private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings(filterUniques=filterUniques)
-        .filterNot {
-            it.startsWith("Hidden ") && it.endsWith(" disabled") ||
-            it == UniqueType.Unbuildable.text ||
-            it == Constants.hideFromCivilopediaUnique
+    private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings {
+            !it.hasFlag(UniqueFlag.HiddenToUsers)
+            && filterUniques?.invoke(it) ?: true
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */

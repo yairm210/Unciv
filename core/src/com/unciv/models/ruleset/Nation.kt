@@ -195,7 +195,7 @@ class Nation : RulesetObject() {
 
     private fun addUniqueBuildingsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values) {
-            if (building.uniqueTo != name || Constants.hideFromCivilopediaUnique in building.uniques) continue
+            if (building.uniqueTo != name || building.hasUnique(UniqueType.HiddenFromCivilopedia)) continue
             textList += FormattedLine("{${building.name}} -", link=building.makeLink())
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
@@ -226,7 +226,7 @@ class Nation : RulesetObject() {
 
     private fun addUniqueUnitsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
         for (unit in ruleset.units.values) {
-            if (unit.uniqueTo != name || Constants.hideFromCivilopediaUnique in unit.uniques) continue
+            if (unit.uniqueTo != name || unit.hasUnique(UniqueType.HiddenFromCivilopedia)) continue
             textList += FormattedLine("{${unit.name}} -", link="Unit/${unit.name}")
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
                 val originalUnit = ruleset.units[unit.replaces!!]!!

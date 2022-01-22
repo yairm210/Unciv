@@ -85,7 +85,7 @@ class WonderOverviewTable(
     }
 
     private fun shouldBeDisplayed(wonder: Building, wonderEra: Int) = when {
-        Constants.hideFromCivilopediaUnique in wonder.uniques -> false
+        wonder.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
         wonder.hasUnique(UniqueType.HiddenWithoutReligion) && hideReligionItems -> false
         wonder.name in startingObsolete -> false
         wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
