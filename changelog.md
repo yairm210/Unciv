@@ -1,3 +1,13 @@
+## 3.19.0
+
+Vastly improved worker AI for mods, and AI utilization of workers
+
+Added button to update an installed mod from its action menu
+
+Converted all stat percent uniques to be iterated on efficiently once!
+
+Fixed a conversion error in "% city strength from defensive buildings" unique - By xlenstra
+
 ## 3.18.19
 
 Worker AI improvements for modded improvements and terrains
