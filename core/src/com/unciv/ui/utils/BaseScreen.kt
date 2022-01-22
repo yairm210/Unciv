@@ -93,14 +93,20 @@ open class BaseScreen : Screen {
                 add("Checkbox-pressed", ImageGetter.getCheckBoxPressed(), Drawable::class.java)
                 load(Gdx.files.internal("Skin.json"))
             }
-            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
-            skin.get(CheckBox.CheckBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
-            skin.get(CheckBox.CheckBoxStyle::class.java).fontColor = Color.WHITE
-            skin.get(Label.LabelStyle::class.java).font = Fonts.font.apply { data.setScale(18 / Fonts.ORIGINAL_FONT_SIZE) }
-            skin.get(Label.LabelStyle::class.java).fontColor = Color.WHITE
-            skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font.apply { data.setScale(18 / Fonts.ORIGINAL_FONT_SIZE) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20 / Fonts.ORIGINAL_FONT_SIZE) }
+            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font
+            skin.get(CheckBox.CheckBoxStyle::class.java).apply {
+                font = Fonts.font
+                fontColor = Color.WHITE
+            }
+            skin.get(Label.LabelStyle::class.java).apply {
+                font = Fonts.font
+                fontColor = Color.WHITE
+            }
+            skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font
+            skin.get(SelectBox.SelectBoxStyle::class.java).apply {
+                font = Fonts.font
+                listStyle.font = Fonts.font
+            }
         }
         /** Colour to use for empty sections of the screen. */
         val clearColor = Color(0f, 0f, 0.2f, 1f)

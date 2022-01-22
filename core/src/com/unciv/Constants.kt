@@ -66,4 +66,6 @@ object Constants {
     const val remove = "Remove "
     
     const val minimumMovementEpsilon = 0.05
+    const val defaultFontSize = 18
+    const val headingFontSize = 24
 }
