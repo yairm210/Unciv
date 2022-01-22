@@ -1,5 +1,6 @@
 package com.unciv.app.desktop
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameStarter
@@ -79,7 +80,7 @@ internal object ConsoleLauncher {
                 })
                 add(Player().apply {
                     playerType = PlayerType.Human
-                    chosenCiv = "Spectator"
+                    chosenCiv = Constants.spectator
                 })
             }
         }
