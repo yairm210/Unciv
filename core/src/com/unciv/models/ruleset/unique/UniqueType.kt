@@ -569,13 +569,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     //endregion
 
     ///////////////////////////////////////////// META /////////////////////////////////////////////
-    
-    
+
+    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
     HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = listOf(UniqueFlag.HiddenToUsers)),
     HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins, flags = listOf(UniqueFlag.HiddenToUsers)),
     HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins, flags = listOf(UniqueFlag.HiddenToUsers)),
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins, flags = listOf(UniqueFlag.HiddenToUsers)),
-    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins, flags = listOf(UniqueFlag.HiddenToUsers)),
     HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = listOf(UniqueFlag.HiddenToUsers)),
     HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.values(), flags = listOf(UniqueFlag.HiddenToUsers)),
     
