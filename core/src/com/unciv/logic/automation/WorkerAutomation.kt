@@ -333,15 +333,21 @@ class WorkerAutomation(
     private fun chooseImprovement(unit: MapUnit, tile: TileInfo): TileImprovement? {
 
         // turnsToBuild is what defines them as buildable
-        val tileImprovements = ruleSet.tileImprovements.filter {
-            it.value.turnsToBuild != 0 && tile.canImprovementBeBuiltHere(it.value, tile.hasViewableResource(civInfo)) }
-        val uniqueImprovement = tileImprovements.values
-            .firstOrNull { it.uniqueTo == civInfo.civName }
+        val potentialTileImprovements = ruleSet.tileImprovements.filter {
+            unit.canBuildImprovement(it.value, tile)
+                    && tile.canImprovementBeBuiltHere(it.value, tile.hasViewableResource(civInfo))
+                    && (it.value.uniqueTo == null || it.value.uniqueTo == unit.civInfo.civName)
+        }
+        if (potentialTileImprovements.isEmpty()) return null
 
-        val currentlyBuildableImprovements = tileImprovements.values.filter { tile.canBuildImprovement(it, civInfo) }
-        val bestBuildableImprovement = currentlyBuildableImprovements.map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
-                .filter { it.second > 0f }
-                .maxByOrNull { it.second }?.first
+        val uniqueImprovement = potentialTileImprovements.values.asSequence()
+            .filter { it.uniqueTo == civInfo.civName }
+            .maxByOrNull { Automation.rankStatsValue(it, unit.civInfo) }
+
+        val bestBuildableImprovement = potentialTileImprovements.values.asSequence()
+            .map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
+            .filter { it.second > 0f }
+            .maxByOrNull { it.second }?.first
 
         val lastTerrain = tile.getLastTerrain()
 
@@ -358,7 +364,12 @@ class WorkerAutomation(
 
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress!!
-            improvementStringForResource != null && tileImprovements.containsKey(improvementStringForResource) -> improvementStringForResource
+            improvementStringForResource != null -> {
+                if (potentialTileImprovements.containsKey(improvementStringForResource))
+                    improvementStringForResource
+                // if this is a resource that HAS an improvement, but this unit can't build it, don't waste your time
+                else return null
+            }
             tile.containsGreatImprovement() -> return null
             tile.containsUnfinishedGreatImprovement() -> return null
 
@@ -367,20 +378,12 @@ class WorkerAutomation(
             !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile, civInfo,false) -> Constants.fort
             // I think we can assume that the unique improvement is better
             uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo)
-                    && unit.canBuildImprovement(uniqueImprovement, tile) ->
-                uniqueImprovement.name
+                -> uniqueImprovement.name
 
             lastTerrain.let {
                 isUnbuildableAndRemovable(it) &&
                         (Automation.rankStatsValue(it, civInfo) < 0 || it.hasUnique(UniqueType.NullifyYields) )
             } -> Constants.remove + lastTerrain.name
-            tile.terrainFeatures.contains(Constants.jungle) -> Constants.tradingPost
-            tile.terrainFeatures.contains("Oasis") -> return null
-            tile.terrainFeatures.contains(Constants.forest) && tileImprovements.containsKey("Lumber mill") -> "Lumber mill"
-            tile.isHill() && tileImprovements.containsKey("Mine") -> "Mine"
-            tile.baseTerrain in listOf(Constants.grassland, Constants.desert, Constants.plains)
-                    && tileImprovements.containsKey("Farm") -> "Farm"
-            tile.isAdjacentToFreshwater && tileImprovements.containsKey("Farm") -> "Farm"
 
             bestBuildableImprovement != null -> bestBuildableImprovement.name
             else -> return null
