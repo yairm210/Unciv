@@ -23,9 +23,6 @@ object Constants {
     const val forest = "Forest"
     const val jungle = "Jungle"
 
-    const val marsh = "Marsh"
-    const val oasis = "Oasis"
-    const val atoll = "Atoll"
     const val ice = "Ice"
     const val floodPlains = "Flood plains"
     val vegetation = arrayOf(forest, jungle)
@@ -40,7 +37,6 @@ object Constants {
 
     const val fort = "Fort"
     const val citadel = "Citadel"
-    const val tradingPost = "Trading post"
 
     const val futureTech = "Future Tech"
     // Easter egg name. Hopefully is to hopefully avoid conflicts when later players can name their own religions.
@@ -54,8 +50,6 @@ object Constants {
     const val close = "Close"
     const val yes = "Yes"
     const val no = "No"
-    const val enabled = "enabled"
-    const val disabled = "disabled"
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
