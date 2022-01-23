@@ -33,8 +33,8 @@ class UniqueDocsWriter {
                 .replace("[tileFilter]", "[Farm]")
                 .replace("[baseTerrain]", "[Grassland]")
                 .replace("[regionType]", "[Hybrid]")
-                .replace("[terrainQuality","[Undesirable]")
-                .replace("[promotion","[Shock I]")
+                .replace("[terrainQuality]","[Undesirable]")
+                .replace("[promotion]","[Shock I]")
                 .replace("[era]", "[Ancient era]")
                 .replace("[improvementName]", "[Trading Post]")
                 .replace("[resource]", "[Iron]")
@@ -56,8 +56,7 @@ class UniqueDocsWriter {
         lines += " - [Deprecated uniques](#deprecated-uniques)"
         lines += ""
 
-
-
+        
         val deprecatedUniques = ArrayList<UniqueType>()
         for (targetType in targetTypesToUniques) {
             lines += "## " + targetType.key.name + " uniques"

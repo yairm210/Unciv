@@ -539,12 +539,12 @@ Applicable to: Global
 Applicable to: Global
 
 #### This Unit gains the [promotion] promotion
-Example: "This Unit gains the [Shock I]] promotion"
+Example: "This Unit gains the [Shock I] promotion"
 
 Applicable to: Global
 
 #### [mapUnitFilter] units gain the [promotion] promotion
-Example: "[Wounded] units gain the [Shock I]] promotion"
+Example: "[Wounded] units gain the [Shock I] promotion"
 
 Applicable to: Global
 
@@ -903,7 +903,7 @@ Example: "Units ending their turn on this terrain take [20] damage"
 Applicable to: Terrain
 
 #### Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game
-Example: "Grants [Shock I]] ([comment]) to adjacent [Wounded] units for the rest of the game"
+Example: "Grants [Shock I] ([comment]) to adjacent [Wounded] units for the rest of the game"
 
 Applicable to: Terrain
 
@@ -971,7 +971,7 @@ Applicable to: Terrain
 Applicable to: Terrain
 
 #### Considered [terrainQuality] when determining start locations
-Example: "Considered [Undesirable]] when determining start locations"
+Example: "Considered [Undesirable] when determining start locations"
 
 Applicable to: Terrain
 
