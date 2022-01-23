@@ -184,7 +184,7 @@ For units, the UnitFilter is called. For Buildings, the following options are im
 - building name
 - The name of the building it replaces (so for example uniques for libraries will apply to paper makers as well)
 - an exact unique the building has (e.g.: "spaceship part")
-- if the building is "stat-related" for some stat. Stat-related buildings are defined as one of the following:
+- "Culture", "Gold", etc. if the building is "stat-related" for that stat. Stat-related buildings are defined as one of the following:
   - Provides that stat directly (e.g. +1 Culture)
   - Provides a percentage bonus for that stat (e.g. +10% Production)
   - Provides that stat as a bonus for resources (e.g. +1 Food for Wheat)
