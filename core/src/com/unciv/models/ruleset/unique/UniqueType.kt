@@ -78,7 +78,6 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     StatsFromBuildings("[stats] from all [buildingFilter] buildings", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.19.1", ReplaceWith("[stats] from every [Wonder]"))
     StatsFromWondersDeprecated("[stats] from every Wonder", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    StatsWithResource("[stats] with [resource]", UniqueTarget.Building),
     StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
     StatsFromTiles("[stats] from [tileFilter] tiles [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromTilesWithout("[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -281,6 +280,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
 
+    StatsWithResource("[stats] with [resource]", UniqueTarget.Building),
     
 
     MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
