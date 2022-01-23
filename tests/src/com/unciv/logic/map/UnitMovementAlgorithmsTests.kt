@@ -28,7 +28,7 @@ class UnitMovementAlgorithmsTests {
     @Before
     fun initTheWorld() {
         RulesetCache.loadRulesets()
-        ruleSet = RulesetCache.getBaseRuleset()
+        ruleSet = RulesetCache.getVanillaRuleset()
         tile.ruleset = ruleSet
         tile.baseTerrain = Constants.grassland
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)

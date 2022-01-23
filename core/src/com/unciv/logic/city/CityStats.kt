@@ -573,7 +573,7 @@ class CityStats(val cityInfo: CityInfo) {
             for (growthBonus in growthBonuses) {
                 newFinalStatList.add("${growthBonus.key} (Growth)", growthBonus.value)
             }
-            if (cityInfo.isWeLoveTheKingDay() && cityInfo.civInfo.getHappiness() >= 0) {
+            if (cityInfo.isWeLoveTheKingDayActive() && cityInfo.civInfo.getHappiness() >= 0) {
                 // We Love The King Day +25%, only if not unhappy
                 val weLoveTheKingFood = Stats(food = totalFood / 4)
                 newFinalStatList.add("We Love The King Day", weLoveTheKingFood)

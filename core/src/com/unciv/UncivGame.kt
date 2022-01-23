@@ -120,7 +120,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             Gdx.app.postRunnable {
                 musicController.chooseTrack(suffix = MusicMood.Menu)
 
-                ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
+                ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
                 if (settings.isFreshlyCreated) {
                     setScreen(LanguagePickerScreen())

@@ -66,13 +66,13 @@ class MainMenuScreen: BaseScreen() {
 
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
-        ImageGetter.ruleset = RulesetCache.getBaseRuleset()
+        ImageGetter.ruleset = RulesetCache.getVanillaRuleset()
 
         thread(name = "ShowMapBackground") {
-            val newMap = MapGenerator(RulesetCache.getBaseRuleset())
+            val newMap = MapGenerator(RulesetCache.getVanillaRuleset())
                     .generateMap(MapParameters().apply { mapSize = MapSizeNew(MapSize.Small); type = MapType.default })
             Gdx.app.postRunnable { // for GL context
-                ImageGetter.setNewRuleset(RulesetCache.getBaseRuleset())
+                ImageGetter.setNewRuleset(RulesetCache.getVanillaRuleset())
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
                 backgroundTable.addAction(Actions.sequence(
                         Actions.fadeOut(0f),

@@ -238,7 +238,7 @@ object TranslationFileWriter {
 
     private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
         // build maps identifying parameters as certain types of filters - unitFilter etc
-        val ruleset = RulesetCache.getBaseRuleset()
+        val ruleset = RulesetCache.getVanillaRuleset()
         val tileFilterMap = ruleset.terrains.keys.toMutableSet().apply { addAll(sequenceOf(
             "Friendly Land",
             "Foreign Land",

@@ -11,7 +11,6 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import java.util.*
 import kotlin.collections.HashMap
@@ -39,7 +38,7 @@ object GameStarter {
             gameSetupInfo.gameParameters.baseRuleset = baseRulesetInMods
 
         if (!RulesetCache.containsKey(gameSetupInfo.gameParameters.baseRuleset))
-            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getBaseRuleset().name
+            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getVanillaRuleset().name
         
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)
