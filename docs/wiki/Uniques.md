@@ -6,6 +6,7 @@
     * [tileFilter](#tilefilter)
     * [unitFilter](#unitfilter)
     * [cityFilter](#cityfilter)
+    * [buildingFilter](#constructionfilter)
   - [Conditionals](#conditionals)
 - [General uniques](#general-uniques)
   * [Stat uniques](#stat-uniques)
@@ -172,7 +173,7 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - "in all cities in which the majority religion is a major religion"
 - "in all cities in which the majority religion is a enhanced religion"
 
-### ConstructionFilter
+### constructionFilter
 
 ConstructionFilters allow us to activate uniques while constructing certain buildings or units.
 For units, the UnitFilter is called. For Buildings, the following options are implemented:
