@@ -31,6 +31,7 @@ class UniqueDocsWriter {
                 .replace("[constructionFilter]", "[Spaceship Part]")
                 .replace("[terrainFilter]", "[Forest]")
                 .replace("[tileFilter]", "[Farm]")
+                .replace("[simpleTerrain]", "[Elevated]")
                 .replace("[baseTerrain]", "[Grassland]")
                 .replace("[regionType]", "[Hybrid]")
                 .replace("[terrainQuality]","[Undesirable]")

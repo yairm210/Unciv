@@ -855,12 +855,12 @@ Applicable to: Promotion
 
 ## Terrain uniques
 #### Must be adjacent to [amount] [simpleTerrain] tiles
-Example: "Must be adjacent to [20] [simpleTerrain] tiles"
+Example: "Must be adjacent to [20] [Elevated] tiles"
 
 Applicable to: Terrain
 
 #### Must be adjacent to [amount] to [amount] [simpleTerrain] tiles
-Example: "Must be adjacent to [20] to [20] [simpleTerrain] tiles"
+Example: "Must be adjacent to [20] to [20] [Elevated] tiles"
 
 Applicable to: Terrain
 
@@ -945,17 +945,17 @@ Example: "[20] to Fertility for Map Generation"
 Applicable to: Terrain
 
 #### A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]
-Example: "A Region is formed with at least [20]% [simpleTerrain] tiles, with priority [20]"
+Example: "A Region is formed with at least [20]% [Elevated] tiles, with priority [20]"
 
 Applicable to: Terrain
 
 #### A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]
-Example: "A Region is formed with at least [20]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [20]"
+Example: "A Region is formed with at least [20]% [Elevated] tiles and [Elevated] tiles, with priority [20]"
 
 Applicable to: Terrain
 
 #### A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles
-Example: "A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles"
+Example: "A Region can not contain more [Elevated] tiles than [Elevated] tiles"
 
 Applicable to: Terrain
 
