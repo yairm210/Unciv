@@ -2,7 +2,7 @@
 	{
 		"name": "Tradition",
 		"era": "Ancient era",
-		"uniques": ["[+3 Culture] [in capital]", "-[25]% Culture cost of acquiring tiles [in all cities]"],
+		"uniques": ["[+3 Culture] [in capital]", "[-25]% Culture cost of natural border growth [in all cities]"],
 		"policies": [
 			{
 				"name": "Aristocracy",
@@ -18,7 +18,7 @@
 			},
 			{
 				"name": "Oligarchy",
-				"uniques": ["Units in cities cost no Maintenance", "+[50]% attacking strength for cities with garrisoned units"],
+				"uniques": ["Units in cities cost no Maintenance", "[+50]% Strength for garrisoned cities <when attacking>"],
 				"row": 1,
 				"column": 5
 			},

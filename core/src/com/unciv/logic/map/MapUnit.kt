@@ -277,9 +277,12 @@ class MapUnit {
         return tempUniques.any { it.placeholderText == unique }
     }
 
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals
-            = StateForConditionals(civInfo, unit=this)): Boolean {
-        return getMatchingUniques(uniqueType, stateForConditionals).any()
+    fun hasUnique(
+        uniqueType: UniqueType, 
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this), 
+        checkCivInfoUniques: Boolean = false
+    ): Boolean {
+        return getMatchingUniques(uniqueType, stateForConditionals, checkCivInfoUniques).any()
     }
 
     fun updateUniques(ruleset: Ruleset) {
@@ -458,7 +461,7 @@ class MapUnit {
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
         var range = baseUnit().range
-        range += getMatchingUniques(UniqueType.Range).sumOf { it.params[0].toInt() }
+        range += getMatchingUniques(UniqueType.Range, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
         return range
     }
 
@@ -686,7 +689,11 @@ class MapUnit {
         if (civInfo.hasUnique("Can only heal by pillaging")) return
 
         var amountToHealBy = rankTileForHealing(getTile())
-        if (amountToHealBy == 0 && !(hasUnique(UniqueType.HealsOutsideFriendlyTerritory) && !getTile().isFriendlyTerritory(civInfo))) return
+        if (amountToHealBy == 0 
+            && !(hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true) 
+                && !getTile().isFriendlyTerritory(civInfo)
+            )
+        ) return
 
         amountToHealBy += getMatchingUniques("[] HP when healing").sumOf { it.params[0].toInt() }
 
@@ -699,7 +706,7 @@ class MapUnit {
     }
 
     fun healBy(amount: Int) {
-        health += if (hasUnique(UniqueType.HealingEffectsDoubled))
+        health += if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true))
                 amount * 2
             else
                 amount

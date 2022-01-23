@@ -147,7 +147,7 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech)
 
             // generic start with technology unique
-            for (unique in civInfo.getMatchingUniques("Starts with []")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithTech)) {
                 // get the parameter from the unique
                 val techName = unique.params[0]
 

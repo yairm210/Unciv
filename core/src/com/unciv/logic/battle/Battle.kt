@@ -76,7 +76,7 @@ object Battle {
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
-            val withdraw = defender.unit.getMatchingUniques("May withdraw before melee ([]%)")
+            val withdraw = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
                 .maxByOrNull{ it.params[0] }  // If a mod allows multiple withdraw properties, ensure the best is used
             if (withdraw != null && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
         }
@@ -196,7 +196,9 @@ object Battle {
         // https://forums.civfanatics.com/threads/prize-ships-for-land-units.650196/
         // https://civilization.fandom.com/wiki/Module:Data/Civ5/GK/Defines
 
-        if (attacker.unit.getMatchingUniques("May capture killed [] units").none { defender.matchesCategory(it.params[0]) }) return false
+        if (attacker.unit.getMatchingUniques(UniqueType.KillUnitCapture)
+            .none { defender.matchesCategory(it.params[0]) }
+        ) return false
 
         val captureChance = min(0.8f, 0.1f + attacker.getAttackingStrength().toFloat() / defender.getDefendingStrength().toFloat() * 0.4f)
         if (Random().nextFloat() > captureChance) return false
@@ -247,9 +249,6 @@ object Battle {
         plunderFromDamage(attacker, defender, defenderHealthBefore - defender.getHealth())
     }
 
-    private object PlunderableStats {
-        val stats = setOf (Stat.Gold, Stat.Science, Stat.Culture, Stat.Faith)
-    }
     private fun plunderFromDamage(
         plunderingUnit: ICombatant,
         plunderedUnit: ICombatant,
@@ -259,16 +258,10 @@ object Battle {
         if (plunderingUnit !is MapUnitCombatant) return
         val plunderedGoods = Stats()
 
-        for (unique in plunderingUnit.unit.getMatchingUniques("Earn []% of the damage done to [] units as []")) {
+        for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunder, checkCivInfoUniques = true)) {
             if (plunderedUnit.matchesCategory(unique.params[1])) {
-                // silently ignore bad mods here - or test in checkModLinks
-                val stat = Stat.values().firstOrNull { it.name == unique.params[2] }
-                    ?: continue  // stat badly defined in unique
-                if (stat !in PlunderableStats.stats)
-                    continue     // stat known but not valid
-                val percentage = unique.params[0].toFloatOrNull()
-                    ?: continue  // percentage parameter invalid
-                plunderedGoods.add(stat, percentage / 100f * damageDealt)
+                val percentage = unique.params[0].toFloat()
+                plunderedGoods.add(Stat.valueOf(unique.params[2]), percentage / 100f * damageDealt)
             }
         }
 
@@ -327,7 +320,7 @@ object Battle {
 
     private fun tryHealAfterKilling(attacker: ICombatant) {
         if (attacker is MapUnitCombatant)
-            for (unique in attacker.unit.getMatchingUniques(UniqueType.HealsAfterKilling)) {
+            for (unique in attacker.unit.getMatchingUniques(UniqueType.HealsAfterKilling, checkCivInfoUniques = true)) {
                 val amountToHeal = unique.params[0].toInt()
                 attacker.unit.healBy(amountToHeal)
             }

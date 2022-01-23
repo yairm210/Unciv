@@ -84,6 +84,16 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
     },
+    PlunderableStatName("plunderableStat") {
+        private val knownValues = setOf(Stat.Gold.name, Stat.Science.name, Stat.Culture.name, Stat.Faith.name)
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        }
+    },
     CityFilter("cityFilter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
