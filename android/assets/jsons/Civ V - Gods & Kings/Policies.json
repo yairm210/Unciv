@@ -166,7 +166,7 @@
 			},
 			{
 				"name": "Free Religion",
-				"uniques": ["[-10]% Culture cost of adopting new policies"],
+				"uniques": ["[-10]% Culture cost of adopting new Policies"],
 				"requires": ["Mandate Of Heaven", "Reformation"],
 				"row": 3,
 				"column": 4
