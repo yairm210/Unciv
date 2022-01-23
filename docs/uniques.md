@@ -369,11 +369,6 @@ Example: "[20]% Strength for cities"
 
 Applicable to: Global, FollowerBelief
 
-#### [amount]% Strength for garrisoned cities
-Example: "[20]% Strength for garrisoned cities"
-
-Applicable to: Global, FollowerBelief
-
 #### New [baseUnitFilter] units start with [amount] Experience [cityFilter]
 Example: "New [Melee] units start with [20] Experience [in all cities]"
 
@@ -1230,18 +1225,21 @@ Example: "<before discovering [Agriculture]>"
 Applicable to: Conditional
 
 #### <after adopting [policy]>
-Example: "<after adopting [Olichargy]>"
+Example: "<after adopting [Oligarchy]>"
 
 Applicable to: Conditional
 
 #### <before adopting [policy]>
-Example: "<before adopting [Olichargy]>"
+Example: "<before adopting [Oligarchy]>"
 
 Applicable to: Conditional
 
 #### <if this city has at least [amount] specialists>
 Example: "<if this city has at least [20] specialists>"
 
+Applicable to: Conditional
+
+#### <with a garrison>
 Applicable to: Conditional
 
 #### <for [mapUnitFilter] units>
@@ -1351,7 +1349,7 @@ Applicable to: Conditional
  - "Golden Age length increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% Golden Age length"
  - "+[amount]% Defensive Strength for cities" - Deprecated As of 3.18.17, replace with "[+amount]% Strength for cities <when defending>"
  - "[amount]% Attacking Strength for cities" - Deprecated As of 3.18.17, replace with "[amount]% Strength for cities <when attacking>"
- - "+[amount]% attacking strength for cities with garrisoned units" - Deprecated As of 3.19.1, replace with "[amount]% Strength for garrisoned cities <when attacking>"
+ - "+[amount]% attacking strength for cities with garrisoned units" - Deprecated As of 3.19.1, replace with "[amount]% Strength for cities <with a garrison> <when attacking>"
  - "Melee units pay no movement cost to pillage" - Deprecated As of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"

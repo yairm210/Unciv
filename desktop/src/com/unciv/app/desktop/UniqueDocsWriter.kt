@@ -45,7 +45,7 @@ class UniqueDocsWriter {
                 .replace("[foundingOrEnhancing]", "[founding]")
                 .replace("[tech]", "[Agriculture]")
                 .replace("[specialist]","[Merchant]")
-                .replace("[policy]", "[Olichargy]")
+                .replace("[policy]", "[Oligarchy]")
                 .replace("[victoryType]", "[Domination]")
                 .replace("[costOrStrength]", "[Cost]")
         }

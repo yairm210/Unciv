@@ -241,12 +241,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     GoldenAgeLengthIncreased("Golden Age length increased by [amount]%", UniqueTarget.Global),
     
     StrengthForCities("[amount]% Strength for cities", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    StrengthForGarrisonedCities("[amount]% Strength for garrisoned cities", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% Strength for cities <when defending>"))
     StrengthForCitiesDefending("+[amount]% Defensive Strength for cities", UniqueTarget.Global),
     @Deprecated("As of 3.18.17", ReplaceWith("[amount]% Strength for cities <when attacking>"))
     StrengthForCitiesAttacking("[amount]% Attacking Strength for cities", UniqueTarget.Global),
-    @Deprecated("As of 3.19.1", ReplaceWith("[amount]% Strength for garrisoned cities <when attacking>"))
+    @Deprecated("As of 3.19.1", ReplaceWith("[amount]% Strength for cities <with a garrison> <when attacking>"))
     StrengthForGarrisonedCitiesAttacking("+[amount]% attacking strength for cities with garrisoned units", UniqueTarget.Global),
     
     UnitStartingExperience("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -520,6 +519,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     /////// city conditionals
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
+    ConditionalWhenGarrisoned("with a garrison", UniqueTarget.Conditional),
 
     /////// unit conditionals
     ConditionalOurUnit("for [mapUnitFilter] units", UniqueTarget.Conditional),

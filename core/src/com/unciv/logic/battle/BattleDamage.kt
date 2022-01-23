@@ -35,12 +35,13 @@ object BattleDamage {
         val attackedTile =
             if (combatAction == CombatAction.Attack) enemy.getTile()
             else combatant.getTile()
-        
-        val conditionalState = StateForConditionals(civInfo, ourCombatant = combatant, theirCombatant = enemy,
+
+        val conditionalState = StateForConditionals(civInfo, cityInfo = (combatant as? CityCombatant)?.city, ourCombatant = combatant, theirCombatant = enemy,
             attackedTile = attackedTile, combatAction = combatAction)
         
+        
         if (combatant is MapUnitCombatant) {
-
+            
             for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
@@ -121,9 +122,6 @@ object BattleDamage {
             for (unique in combatant.city.getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
-            if (combatant.city.getCenterTile().militaryUnit != null && combatant.city.getCenterTile().militaryUnit!!.canGarrison())
-                for (unique in combatant.city.getMatchingUniques(UniqueType.StrengthForGarrisonedCities, conditionalState))
-                    modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
         }
 
         if (enemy.getCivInfo().isBarbarian()) {

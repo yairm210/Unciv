@@ -18,7 +18,7 @@
 			},
 			{
 				"name": "Oligarchy",
-				"uniques": ["Units in cities cost no Maintenance", "[+50]% Strength for garrisoned cities <when attacking>"],
+				"uniques": ["Units in cities cost no Maintenance", "[+50]% Strength for cities <with a garrison> <when attacking>"],
 				"row": 1,
 				"column": 5
 			},
