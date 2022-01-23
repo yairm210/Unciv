@@ -12,6 +12,8 @@ import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -436,13 +438,20 @@ object GameStarter {
         var preferredTiles = freeTiles.toList()
         for (startBias in civ.nation.startBias) {
             preferredTiles = when {
-                startBias.startsWith("Avoid [") -> {
-                    val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
-                    preferredTiles.filter { !it.matchesTerrainFilter(tileToAvoid) }
+                startBias.equalsPlaceholderText("Avoid []") -> {
+                    val tileToAvoid = startBias.getPlaceholderParameters()[0]
+                    preferredTiles.filter { tile ->
+                        !tile.getTilesInDistance(1).any {
+                            it.matchesTerrainFilter(tileToAvoid)
+                        }
+                    }
                 }
-                startBias == Constants.coast -> preferredTiles.filter { it.isCoastalTile() }
                 startBias in tileMap.naturalWonders -> preferredTiles  // passthrough: already failed
-                else -> preferredTiles.filter { it.matchesTerrainFilter(startBias) }
+                else -> preferredTiles.filter { tile ->
+                    tile.getTilesInDistance(1).any {
+                        it.matchesTerrainFilter(startBias)
+                    }
+                }
             }
         }
         return preferredTiles.lastOrNull() ?: freeTiles.last()
