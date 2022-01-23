@@ -66,7 +66,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                 addActor(closeImage)
             })
 
-        for (improvement in ruleset.tileImprovements.values
+        for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter {
                 it.techRequired == techName 
                 || it.uniqueObjects.any { u -> u.allParams.contains(techName) }
@@ -92,8 +92,8 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
     fun addOrderIndicator(number:Int){
         orderIndicator = number.toString().toLabel(fontSize = 18)
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(25f, color = ImageGetter.getBlue())
-            .surroundWithCircle(27f,false)
+            .surroundWithCircle(28f, color = ImageGetter.getBlue())
+            .surroundWithCircle(30f,false)
         orderIndicator!!.setPosition(0f, height, Align.topLeft)
         addActor(orderIndicator)
     }
