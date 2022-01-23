@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Disposable
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.stats.Stat
 
@@ -133,6 +134,7 @@ object Fonts {
         val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
         font = BitmapFont(fontData, fontData.regions, false)
         font.setOwnsTexture(true)
+        font.data.setScale(Constants.defaultFontSize / ORIGINAL_FONT_SIZE)
     }
 
     /**

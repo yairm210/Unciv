@@ -2,6 +2,7 @@ package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.unciv.Constants
 import com.unciv.models.translations.tr
 import kotlin.math.min
 
@@ -15,15 +16,15 @@ class WrappableLabel(
     text: String,
     private val expectedWidth: Float,
     fontColor: Color = Color.WHITE,
-    fontSize: Int = 18
+    fontSize: Int = Constants.defaultFontSize
 ) : Label(text.tr(), BaseScreen.skin) {
     private var _measuredWidth = 0f
 
     init {
-        if (fontColor != Color.WHITE || fontSize!=18) {
+        if (fontColor != Color.WHITE || fontSize!=Constants.defaultFontSize) {
             val style = LabelStyle(this.style)
             style.fontColor = fontColor
-            if (fontSize != 18) {
+            if (fontSize != Constants.defaultFontSize) {
                 style.font = Fonts.font
                 setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE)
             }

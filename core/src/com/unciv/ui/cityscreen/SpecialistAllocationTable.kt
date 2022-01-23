@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.utils.*
 
@@ -46,7 +47,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
     private fun getAssignButton(assignedSpecialists: Int, maxSpecialists: Int, specialistName: String):Actor {
 
         if (assignedSpecialists >= maxSpecialists || cityInfo.isPuppet) return Table()
-        val assignButton = "+".toLabel(Color.BLACK,24)
+        val assignButton = "+".toLabel(Color.BLACK, Constants.headingFontSize)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(30f).apply { circle.color= Color.GREEN.cpy().lerp(Color.BLACK,0.2f) }
         assignButton.onClick {
@@ -60,7 +61,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
     }
 
     private fun getUnassignButton(assignedSpecialists: Int, specialistName: String):Actor {
-        val unassignButton = "-".toLabel(Color.BLACK,24)
+        val unassignButton = "-".toLabel(Color.BLACK,Constants.headingFontSize)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(30f).apply { circle.color= Color.RED.cpy().lerp(Color.BLACK,0.1f) }
         unassignButton.onClick {

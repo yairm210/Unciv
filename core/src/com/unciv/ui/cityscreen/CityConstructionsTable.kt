@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.city.*
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
@@ -580,7 +581,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     private fun getHeader(title: String): Table {
         return Table()
                 .background(ImageGetter.getBackground(ImageGetter.getBlue()))
-                .addCell(title.toLabel(fontSize = 24))
+                .addCell(title.toLabel(fontSize = Constants.headingFontSize))
                 .pad(4f)
     }
 
