@@ -134,7 +134,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             } else {
                 civGroup.add(ImageGetter.getRandomNationIndicator(30f))
                 backgroundColor = Color.DARK_GRAY
-                labelText = "???"
+                labelText = Constants.unknownNationName
             }
 
             civGroup.background = ImageGetter.getRoundedEdgeRectangle(backgroundColor)

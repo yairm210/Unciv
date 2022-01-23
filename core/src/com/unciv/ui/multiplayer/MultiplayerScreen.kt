@@ -40,7 +40,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
 
         //Help Button Setup
         val tab = Table()
-        val helpButton = "?".toTextButton()
+        val helpButton = "Help".toTextButton()
         helpButton.onClick {
             val helpPopup = Popup(this)
             helpPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()

@@ -37,6 +37,7 @@ object Constants {
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
     const val random = "Random"
+    const val unknownNationName = "???"
 
     const val fort = "Fort"
     const val citadel = "Citadel"
