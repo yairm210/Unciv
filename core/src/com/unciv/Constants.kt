@@ -37,6 +37,7 @@ object Constants {
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
     const val random = "Random"
+    const val unknownNationName = "???"
 
     const val fort = "Fort"
     const val citadel = "Citadel"
@@ -63,6 +64,7 @@ object Constants {
 
     const val rising = "Rising"
     const val lowering = "Lowering"
+    const val remove = "Remove "
     
     const val minimumMovementEpsilon = 0.05
 }

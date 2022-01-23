@@ -170,7 +170,11 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         if (!civInfo.isCityState()) {
             var resourceBonusPercentage = 1f
-            for (unique in civInfo.getMatchingUniques("Quantity of Resources gifted by City-States increased by []%"))
+            for (unique in 
+            // Deprecated since 3.18.17 
+                civInfo.getMatchingUniques(UniqueType.CityStateResourcesDeprecated) + 
+            //        
+            civInfo.getMatchingUniques(UniqueType.CityStateResources))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (city in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }
                 .flatMap { it.cities }) {

@@ -83,7 +83,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
         rightSideButton.onClick {
             val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
             if (message != null) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
                     with (mapParameters.mapSize) {
                         mapParametersTable.customMapSizeRadius.text = radius.toString()
@@ -96,12 +96,12 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             rightButtonSetEnabled(false)
 
-            thread(name = "MapGenerator") {
+            crashHandlingThread(name = "MapGenerator") {
                 try {
                     // Map generation can take a while and we don't want ANRs
                     generatedMap = MapGenerator(ruleset).generateMap(mapParameters)
 
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         saveDefaultParameters(mapParameters)
                         val mapEditorScreen = MapEditorScreen(generatedMap!!)
                         mapEditorScreen.ruleset = ruleset
@@ -110,7 +110,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
 
                 } catch (exception: Exception) {
                     println("Map generator exception: ${exception.message}")
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         rightButtonSetEnabled(true)
                         val cantMakeThatMapPopup = Popup(this)
                         cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr())

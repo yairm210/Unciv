@@ -1,11 +1,12 @@
 package com.unciv.models.simulation
 
+import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.ui.utils.crashHandlingThread
 import kotlin.time.Duration
-import kotlin.concurrent.thread
 import kotlin.math.max
 import kotlin.time.ExperimentalTime
 
@@ -17,7 +18,7 @@ class Simulation(
     private val maxTurns: Int = 1000
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
-    val civilizations = newGameInfo.civilizations.filter { it.civName != "Spectator" }.map { it.civName }
+    val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
     private var startTime: Long = 0
     private var endTime: Long = 0
     var steps = ArrayList<SimulationStep>()
@@ -44,7 +45,7 @@ class Simulation(
         startTime = System.currentTimeMillis()
         val threads: ArrayList<Thread> = ArrayList()
         for (threadId in 1..threadsNumber) {
-            threads.add(thread {
+            threads.add(crashHandlingThread {
                 for (i in 1..simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
                     gameInfo.simulateMaxTurns = maxTurns

@@ -164,7 +164,7 @@ object Sounds {
         val initialDelay = if (isFresh && Gdx.app.type == Application.ApplicationType.Android) 40 else 0
 
         if (initialDelay > 0 || resource.play(volume) == -1L) {
-            thread (name = "DelayedSound") {
+            crashHandlingThread(name = "DelayedSound") {
                 Thread.sleep(initialDelay.toLong())
                 while (resource.play(volume) == -1L) {
                     Thread.sleep(20L)

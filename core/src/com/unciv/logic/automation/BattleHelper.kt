@@ -103,8 +103,8 @@ object BattleHelper {
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
         if (combatant is MapUnitCombatant && 
-            combatant.unit.hasUnique("Can only attack [] units") &&
-            combatant.unit.getMatchingUniques("Can only attack [] units").none { tileCombatant.matchesCategory(it.params[0]) }
+            combatant.unit.hasUnique(UniqueType.CanOnlyAttackUnits) &&
+            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits).none { tileCombatant.matchesCategory(it.params[0]) }
         )
             return false
 

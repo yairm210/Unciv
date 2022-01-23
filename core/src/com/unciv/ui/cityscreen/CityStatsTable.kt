@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityFlags
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -70,7 +71,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                     cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population"
                     cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population"
                     cityInfo.getRuleset().units[cityInfo.cityConstructions.currentConstructionFromQueue]
-                            .let { it != null && it.uniques.contains("Excess Food converted to Production when under construction") }
+                            .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
                     -> "Food converts to production"
                     else -> "Stopped population growth"
                 }.tr()

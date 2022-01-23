@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit

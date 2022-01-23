@@ -11,7 +11,9 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.unique.UniqueType
 
 private object WorkerAutomationConst {
     /** Controls detailed logging of decisions to the console -Turn off for release builds! */
@@ -329,44 +331,61 @@ class WorkerAutomation(
      * Determine the improvement appropriate to a given tile and worker
      */
     private fun chooseImprovement(unit: MapUnit, tile: TileInfo): TileImprovement? {
+
+        // turnsToBuild is what defines them as buildable
+        val potentialTileImprovements = ruleSet.tileImprovements.filter {
+            unit.canBuildImprovement(it.value, tile)
+                    && tile.canImprovementBeBuiltHere(it.value, tile.hasViewableResource(civInfo))
+                    && (it.value.uniqueTo == null || it.value.uniqueTo == unit.civInfo.civName)
+        }
+        if (potentialTileImprovements.isEmpty()) return null
+
+        val uniqueImprovement = potentialTileImprovements.values.asSequence()
+            .filter { it.uniqueTo == civInfo.civName }
+            .maxByOrNull { Automation.rankStatsValue(it, unit.civInfo) }
+
+        val bestBuildableImprovement = potentialTileImprovements.values.asSequence()
+            .map { Pair(it, Automation.rankStatsValue(it, civInfo)) }
+            .filter { it.second > 0f }
+            .maxByOrNull { it.second }?.first
+
+        val lastTerrain = tile.getLastTerrain()
+
+        fun isUnbuildableAndRemovable(terrain: Terrain): Boolean = terrain.unbuildable
+                && ruleSet.tileImprovements.containsKey(Constants.remove + terrain.name)
+
         val improvementStringForResource: String? = when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
-            tile.terrainFeatures.contains(Constants.marsh) && !isImprovementOnFeatureAllowed(tile) -> "Remove Marsh"
-            tile.terrainFeatures.contains("Fallout") && !isImprovementOnFeatureAllowed(tile) -> "Remove Fallout"    // for really mad modders
-            tile.terrainFeatures.contains(Constants.jungle) && !isImprovementOnFeatureAllowed(tile) -> "Remove Jungle"
-            tile.terrainFeatures.contains(Constants.forest) && !isImprovementOnFeatureAllowed(tile) -> "Remove Forest"
+            tile.terrainFeatures.isNotEmpty()
+                    && isUnbuildableAndRemovable(lastTerrain)
+                    && !isResourceImprovementAllowedOnFeature(tile) -> Constants.remove + lastTerrain.name
             else -> tile.tileResource.improvement
         }
 
-        // turnsToBuild is what defines them as buildable
-        val tileImprovements = ruleSet.tileImprovements.filter { it.value.turnsToBuild != 0 }
-        val uniqueImprovement = tileImprovements.values
-            .firstOrNull { it.uniqueTo == civInfo.civName }
-
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress!!
-            improvementStringForResource != null && tileImprovements.containsKey(improvementStringForResource)
-                    && tileImprovements[improvementStringForResource]!!.turnsToBuild != 0 -> improvementStringForResource
+            improvementStringForResource != null -> {
+                if (potentialTileImprovements.containsKey(improvementStringForResource))
+                    improvementStringForResource
+                // if this is a resource that HAS an improvement, but this unit can't build it, don't waste your time
+                else return null
+            }
             tile.containsGreatImprovement() -> return null
             tile.containsUnfinishedGreatImprovement() -> return null
 
             // Defence is more important that civilian improvements
             // While AI sucks in strategical placement of forts, allow a human does it manually
-            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile, civInfo, false) -> Constants.fort
+            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile, civInfo,false) -> Constants.fort
             // I think we can assume that the unique improvement is better
             uniqueImprovement != null && tile.canBuildImprovement(uniqueImprovement, civInfo)
-                    && unit.canBuildImprovement(uniqueImprovement, tile) ->
-                uniqueImprovement.name
+                -> uniqueImprovement.name
 
-            tile.terrainFeatures.contains("Fallout") -> "Remove Fallout"
-            tile.terrainFeatures.contains(Constants.marsh) -> "Remove Marsh"
-            tile.terrainFeatures.contains(Constants.jungle) -> Constants.tradingPost
-            tile.terrainFeatures.contains("Oasis") -> return null
-            tile.terrainFeatures.contains(Constants.forest) -> "Lumber mill"
-            tile.isHill() -> "Mine"
-            tile.baseTerrain in listOf(Constants.grassland, Constants.desert, Constants.plains) -> "Farm"
-            tile.isAdjacentToFreshwater -> "Farm"
-            tile.baseTerrain in listOf(Constants.tundra, Constants.snow) -> Constants.tradingPost
+            lastTerrain.let {
+                isUnbuildableAndRemovable(it) &&
+                        (Automation.rankStatsValue(it, civInfo) < 0 || it.hasUnique(UniqueType.NullifyYields) )
+            } -> Constants.remove + lastTerrain.name
+
+            bestBuildableImprovement != null -> bestBuildableImprovement.name
             else -> return null
         }
         return ruleSet.tileImprovements[improvementString] // For mods, the tile improvement may not exist, so don't assume.
@@ -377,7 +396,7 @@ class WorkerAutomation(
      *
      * Assumes the caller ensured that terrainFeature and resource are both present!
      */
-    private fun isImprovementOnFeatureAllowed(tile: TileInfo): Boolean {
+    private fun isResourceImprovementAllowedOnFeature(tile: TileInfo): Boolean {
         val resourceImprovementName = tile.tileResource.improvement
             ?: return false
         val resourceImprovement = ruleSet.tileImprovements[resourceImprovementName]

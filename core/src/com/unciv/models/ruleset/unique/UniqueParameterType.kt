@@ -102,11 +102,12 @@ enum class UniqueParameterType(val parameterName:String) {
         }
     },
     BuildingFilter("buildingFilter") {
+        private val knownValues = setOf("All","Building","Buildings","Wonder","Wonders","National Wonder","World Wonder")
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
-            if (parameterText == "All") return null
+            if (parameterText in knownValues) return null
             if (Stat.values().any { it.name == parameterText }) return null
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
@@ -200,6 +201,13 @@ enum class UniqueParameterType(val parameterName:String) {
                 in ruleset.eras -> null
                 else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
             }
+    },
+    ImprovementName("improvementName"){
+        override fun getErrorSeverity(parameterText: String,ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (ruleset.tileImprovements.containsKey(parameterText)) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
     },
     /** should mirror TileImprovement.matchesFilter exactly */
     ImprovementFilter("improvementFilter") {

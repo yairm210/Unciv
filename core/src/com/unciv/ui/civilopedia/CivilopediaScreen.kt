@@ -107,7 +107,9 @@ class CivilopediaScreen(
             // Alphabetical order of localized names, using system default locale
             entries = entries.sortedWith(
                 compareBy<CivilopediaEntry>{ it.sortBy }
-                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), { it.name.tr() })
+                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), {
+                        // In order for the extra icons on Happiness and Faith to not affect sort order
+                        it.name.tr().replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
             )
 
         var currentY = -1f
@@ -221,10 +223,8 @@ class CivilopediaScreen(
 
         var currentX = 10f  // = padLeft
         for (categoryKey in categoryToEntries.keys) {
-            val button = Button(skin)
-            if (categoryKey.headerIcon.isNotEmpty())
-                button.add(ImageGetter.getImage(categoryKey.headerIcon)).size(20f).padRight(5f)
-            button.add(categoryKey.label.toLabel())
+            val icon = if (categoryKey.headerIcon.isNotEmpty()) ImageGetter.getImage(categoryKey.headerIcon) else null
+            val button = IconTextButton(categoryKey.label, icon)
             button.addTooltip(categoryKey.key)
 //            button.style = ImageButton.ImageButtonStyle(button.style)
             button.onClick { selectCategory(categoryKey) }

@@ -30,6 +30,7 @@ import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -386,7 +387,7 @@ class CivilizationInfo {
         
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null, cityToIgnore: CityInfo? = null) = sequence {
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
         yieldAll(nation.uniqueObjects.asSequence().filter { it.isOfType(uniqueType) })
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }

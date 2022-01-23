@@ -5,8 +5,10 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.ui.utils.toPercent
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -83,10 +85,14 @@ class PolicyManager {
         }
         var cityModifier = worldSizeModifier * (civInfo.cities.count { !it.isPuppet } - 1)
 
-        for (unique in civInfo.getMatchingUniques("Each city founded increases culture cost of policies []% less than normal"))
+        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities))
             cityModifier *= 1 - unique.params[0].toFloat() / 100
-        for (unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by []%"))
-            policyCultureCost *= 1 - unique.params[0].toFloat() / 100
+        // Deprecated since 3.18.17
+            for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostDeprecated))
+                policyCultureCost *= 1 - unique.params[0].toFloat() / 100
+        //
+        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost))
+            policyCultureCost *= unique.params[0].toPercent()
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
         policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
@@ -110,7 +116,7 @@ class PolicyManager {
         if (policy.policyBranchType == PolicyBranchType.BranchComplete) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleSet.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
-        if (policy.uniqueObjects.any { it.placeholderText == "Incompatible with []" && adoptedPolicies.contains(it.params[0]) }) return false
+        if (policy.getMatchingUniques(UniqueType.IncompatibleWith).any { adoptedPolicies.contains(it.params[0]) }) return false
         return true
     }
 

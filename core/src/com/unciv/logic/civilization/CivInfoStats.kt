@@ -67,7 +67,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
     }
 
     private fun getTransportationUpkeep(): Int {
-        var transportationUpkeep = 0
+        var transportationUpkeep = 0f
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
@@ -85,11 +85,14 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 transportationUpkeep += tile.roadStatus.upkeep
             }
         }
-        for (unique in civInfo.getMatchingUniques("Maintenance on roads & railroads reduced by []%"))
-            transportationUpkeep =
-                (transportationUpkeep * (100f - unique.params[0].toInt()) / 100).toInt()
+        // Deprecated since 3.18.17
+            for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedRoadMaintenanceDeprecated))
+                transportationUpkeep *= (100f - unique.params[0].toInt()) / 100
+        //
+        for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
+            transportationUpkeep *= unique.params[0].toPercent()
 
-        return transportationUpkeep
+        return transportationUpkeep.toInt()
     }
 
     fun getUnitSupply(): Int {
@@ -151,7 +154,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
 
             if (otherCiv.isCityState())
-                for (unique in civInfo.getMatchingUniques("Allied City-States provide [] equal to []% of what they produce for themselves")) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
                     if (otherCiv.getDiplomacyManager(civInfo.civName)
                             .relationshipLevel() != RelationshipLevel.Ally
                     ) continue
@@ -199,8 +202,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         
         if (civInfo.getHappiness() > 0) {
             val excessHappinessConversion = Stats()
-            for (unique in civInfo.getMatchingUniques("[]% of excess happiness converted to []")) {
-                
+            for (unique in civInfo.getMatchingUniques(UniqueType.ExcessHappinessToGlobalStat)) {
                 excessHappinessConversion.add(Stat.valueOf(unique.params[1]), (unique.params[0].toFloat() / 100f * civInfo.getHappiness()))
             }
             statMap.add("Policies", excessHappinessConversion)
@@ -228,7 +230,11 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for (unique in civInfo.getMatchingUniques("+[] happiness from each type of luxury resource"))
+        for (unique in 
+            // Deprecated since 3.18.17
+                civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxuryDeprecated) +
+            //
+            civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxury))
             happinessPerUniqueLuxury += unique.params[0].toInt()
 
         val ownedLuxuries = civInfo.getCivResources().map { it.resource }
@@ -239,8 +245,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 
         val happinessBonusForCityStateProvidedLuxuries =
-            civInfo.getMatchingUniques("Happiness from Luxury Resources gifted by City-States increased by []%")
-                .sumOf { it.params[0].toInt() } / 100f
+            (
+                // Deprecated since 3.18.17
+                    civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappinessDeprecated) + 
+                //        
+                civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappiness)
+            ).sumOf { it.params[0].toInt() } / 100f
 
         val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
             .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }

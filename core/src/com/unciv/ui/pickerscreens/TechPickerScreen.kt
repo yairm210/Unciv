@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -264,8 +265,8 @@ class TechPickerScreen(
 
         val pathToTech = civTech.getRequiredTechsToDestination(tech)
         for (requiredTech in pathToTech)
-            for (unique in requiredTech.uniqueObjects)
-                if (unique.placeholderText == "Incompatible with []" && civTech.isResearched(unique.params[0])) {
+            for (unique in requiredTech.getMatchingUniques(UniqueType.IncompatibleWith))
+                if (civTech.isResearched(unique.params[0])) {
                     rightSideButton.setText(unique.text.tr())
                     rightSideButton.disable()
                     return
@@ -288,7 +289,7 @@ class TechPickerScreen(
     }
 
     private fun centerOnTechnology(tech: Technology) {
-        Gdx.app.postRunnable {
+        postCrashHandlingRunnable {
             techNameToButton[tech.name]?.let {
                 scrollPane.scrollTo(it.x, it.y, it.width, it.height, true, true)
                 scrollPane.updateVisualScroll()

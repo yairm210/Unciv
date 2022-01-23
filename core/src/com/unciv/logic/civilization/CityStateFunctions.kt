@@ -24,7 +24,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
             ?: return false
 
-        val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
+        val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
         for (tech in startingTechs)
             civInfo.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
 
@@ -522,7 +522,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         // Set a diplomatic flag so we remember for future quests (and not to give them any)
         civInfo.getDiplomacyManager(bully).setFlag(DiplomacyFlags.Bullied, 20)
 
-        // Notify all city states that we were bullied (for quests)
+        // Notify all City-States that we were bullied (for quests)
         civInfo.gameInfo.getAliveCityStates()
             .forEach { it.questManager.cityStateBullied(civInfo, bully) }
     }
@@ -627,7 +627,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 NotificationIcon.Death, civInfo.civName)
         }
 
-        // Notify all city states that we were killed (for quest completion)
+        // Notify all City-States that we were killed (for quest completion)
         civInfo.gameInfo.getAliveCityStates()
             .forEach { it.questManager.cityStateConquered(civInfo, attacker) }
     }

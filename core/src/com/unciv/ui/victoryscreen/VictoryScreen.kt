@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.VictoryType
@@ -158,7 +159,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             if (civ.isCurrentPlayer() || !civ.isMajorCiv()) continue
             val civName =
                     if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
-                    else "???"
+                    else Constants.unknownNationName
             table.add(getMilestone("Destroy [$civName]", civ.isDefeated())).row()
         }
         return table

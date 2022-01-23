@@ -1,6 +1,6 @@
 [
 
-	// Info according to Civilization Wiki and https://www.civfanatics.com/civ5/info/units/
+	// Info according to Civilization Wiki and https://www.civfanatics.com/civ5/info/units/gods-and-kings/
 
 	/* Ancient Era */
 	{
@@ -103,7 +103,7 @@
 		"rangedStrength": 9,
 		"cost": 40,
 		"requiredTech": "Archery",
-		"obsoleteTech": "Machinery",
+		"obsoleteTech": "Construction",
 		"replaces": "Archer",
 		"uniqueTo": "Babylon",
 		"upgradesTo": "Composite Bowman",
@@ -119,7 +119,7 @@
 		"rangedStrength": 7,
 		"cost": 40,
 		"requiredTech": "Archery",
-		"obsoleteTech": "Machinery",
+		"obsoleteTech": "Construction",
 		"upgradesTo": "Composite Bowman",
 		"promotions": ["Slinger Withdraw"],
 		"attackSound": "arrow"
@@ -132,7 +132,7 @@
 		"rangedStrength": 7,
 		"cost": 36,
 		"requiredTech": "Agriculture",
-		"obsoleteTech": "Machinery",
+		"obsoleteTech": "Construction",
 		"replaces": "Archer",
 		"uniqueTo": "The Maya",
 		"upgradesTo": "Composite Bowman",
@@ -148,7 +148,7 @@
 		"rangedStrength": 7,
 		"cost": 40,
 		"requiredTech": "Archery",
-		"obsoleteTech": "Machinery",
+		"obsoleteTech": "Construction",
 		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
 	},

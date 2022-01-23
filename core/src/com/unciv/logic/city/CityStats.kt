@@ -118,21 +118,6 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
-    private fun getStatPercentBonusesFromNationUnique(currentConstruction: IConstruction): Stats {
-        val stats = Stats()
-
-        stats.add(getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.nation.uniqueObjects.asSequence()))
-
-        if (currentConstruction is Building
-            && cityInfo.civInfo.cities.isNotEmpty()
-            && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
-            && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital")
-        ) {
-            stats.production += 25f
-        }
-
-        return stats
-    }
 
     private fun getStatPercentBonusesFromPuppetCity(): Stats {
         val stats = Stats()
@@ -182,34 +167,33 @@ class CityStats(val cityInfo: CityInfo) {
 
     private fun getStatsFromUniquesBySource():StatMap {
         val sourceToStats = StatMap()
-        val cityConditionals = StateForConditionals(cityInfo.civInfo, cityInfo)
         fun addUniqueStats(unique:Unique) =
             sourceToStats.add(unique.sourceObjectType?.name ?: "", unique.stats)
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.Stats, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.Stats))
             addUniqueStats(unique)
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerCity, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerCity))
             if (cityInfo.matchesFilter(unique.params[1]))
                 addUniqueStats(unique)
 
         // "[stats] per [amount] population [cityFilter]"
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerPopulation, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerPopulation))
             if (cityInfo.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 sourceToStats.add(unique.sourceObjectType?.name ?: "", unique.stats.times(amountOfEffects))
             }
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromXPopulation, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromXPopulation))
             if (cityInfo.population.population >= unique.params[1].toInt())
                 addUniqueStats(unique)
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesOnSpecificTiles, cityConditionals))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesOnSpecificTiles))
             if (cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 addUniqueStats(unique)
 
         // Deprecated since 3.18.14
-            for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesBefore, cityConditionals))
+            for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesBefore))
                 if (!cityInfo.civInfo.hasTechOrPolicy(unique.params[1]))
                     addUniqueStats(unique)
         //
@@ -240,73 +224,59 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
-    private fun getStatPercentBonusesFromUniques(currentConstruction: IConstruction, uniqueSequence: Sequence<Unique>): Stats {
 
-        val stats = Stats()
-        val uniqueMap = UniqueMapTyped()
-        for (unique in uniqueSequence) uniqueMap.addUnique(unique)
-          // Since this is sometimes run from a different thread (getConstructionButtonDTOs),
-          // this helps mitigate concurrency problems.
+    private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction):StatMap {
+        val sourceToStats = StatMap()
+        fun addUniqueStats(unique: Unique, stat:Stat, amount:Float) =
+            sourceToStats.add(unique.sourceObjectType?.name ?: "",
+                Stats().add(stat, amount))
 
-        for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonus)) {
-            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
-            stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentBonus)) {
+            addUniqueStats(unique, Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
-        // Deprecated since 3.17.0
-            // For instance "+[50]% [Production]
-            for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecated2))
-                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-        //
 
-        // Deprecated since 3.17.10
-            // Params: "+[amount]% [Stat] [cityFilter]", pretty crazy amirite
-            // For instance "+[50]% [Production] [in all cities]
-            for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecated))
-                if (cityInfo.matchesFilter(unique.params[2]))
-                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-        //
-
-        for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCities)) {
-            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentBonusCities)) {
             if (cityInfo.matchesFilter(unique.params[2]))
-                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
+                addUniqueStats(unique, Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
+
 
         val uniquesToCheck =
             if (currentConstruction is Building && currentConstruction.isAnyWonder()) {
-                uniqueMap.getUniques(UniqueType.PercentProductionWonders)
+                cityInfo.getMatchingUniques(UniqueType.PercentProductionWonders)
             } else if (currentConstruction is Building && !currentConstruction.isAnyWonder()) {
-                uniqueMap.getUniques(UniqueType.PercentProductionBuildings)
+                cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildings)
             } else if (currentConstruction is BaseUnit) {
-                uniqueMap.getUniques(UniqueType.PercentProductionUnits)
+                cityInfo.getMatchingUniques(UniqueType.PercentProductionUnits)
             } else { // Science/Gold production
                 sequenceOf()
             }
+
         for (unique in uniquesToCheck) {
-            if (!unique.conditionalsApply(cityInfo.civInfo, cityInfo)) continue
-            if (constructionMatchesFilter(currentConstruction, unique.params[1]) && cityInfo.matchesFilter(unique.params[2]))
-                stats.production += unique.params[0].toInt()
+            if (constructionMatchesFilter(currentConstruction, unique.params[1])
+                && cityInfo.matchesFilter(unique.params[2])
+            )
+                addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
         }
 
 
-        // Deprecated since 3.17.1
-            if (cityInfo.civInfo.getHappiness() >= 0) {
-                for (unique in uniqueMap.getUniques(UniqueType.StatPercentBonusCitiesDeprecatedWhileEmpireHappy))
-                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-            }
-        //
-
-        for (unique in uniqueMap.getUniques(UniqueType.StatPercentFromReligionFollowers))
-            stats.add(
-                Stat.valueOf(unique.params[1]),
+        for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentFromReligionFollowers))
+            addUniqueStats(unique, Stat.valueOf(unique.params[1]),
                 min(
                     unique.params[0].toFloat() * cityInfo.religion.getFollowersOfMajorityReligion(),
                     unique.params[2].toFloat()
-                )
-            )
+                ))
 
-        return stats
+        if (currentConstruction is Building
+            && cityInfo.civInfo.cities.isNotEmpty()
+            && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name))
+            for(unique in cityInfo.getMatchingUniques("+25% Production towards any buildings that already exist in the Capital"))
+            addUniqueStats(unique, Stat.Production, 25f)
+
+        renameStatmapKeys(sourceToStats)
+
+        return sourceToStats
     }
 
     private fun getStatPercentBonusesFromUnitSupply(): Stats {
@@ -343,8 +313,13 @@ class CityStats(val cityInfo: CityInfo) {
         }
 
         // e.g. "-[50]% maintenance costs for buildings [in this city]"
-        for (unique in cityInfo.getMatchingUniques("-[]% maintenance cost for buildings []", citySpecificUniques)) {
-            buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
+        // Deprecated since 3.18.17
+            for (unique in cityInfo.getMatchingUniques(UniqueType.DecrasedBuildingMaintenanceDeprecated, localUniques=citySpecificUniques)) {
+                buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
+            }
+        //
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuildingMaintenance, localUniques = citySpecificUniques)) {
+            buildingsMaintenance *= unique.params[0].toPercent()
         }
 
         return buildingsMaintenance
@@ -387,11 +362,11 @@ class CityStats(val cityInfo: CityInfo) {
         var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
 
         // Deprecated since 3.16.11
-        for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
-            unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
+            for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
+                unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
         //
 
-        for (unique in cityInfo.getMatchingUniques("[]% unhappiness from specialists []")) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromSpecialistsPercentageChange)) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 unhappinessFromSpecialists *= unique.params[0].toPercent()
         }
@@ -457,18 +432,12 @@ class CityStats(val cityInfo: CityInfo) {
 
 
     private fun updateStatPercentBonusList(currentConstruction: IConstruction, localBuildingUniques: Sequence<Unique>) {
-        val newStatPercentBonusList = LinkedHashMap<String, Stats>()
+        val newStatPercentBonusList = StatMap()
+
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.policies.policyUniques.getAllUniques())
-        newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromUniques(currentConstruction, localBuildingUniques)
                 .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
-        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.civInfo.getCivWideBuildingUniques(cityInfo))
         newStatPercentBonusList["Railroads"] = getStatPercentBonusesFromRailroad()  // Name chosen same as tech, for translation, but theoretically independent
-        val resourceUniques = cityInfo.civInfo.getCivResources().asSequence().flatMap { it.resource.uniqueObjects }
-        newStatPercentBonusList["Resources"] = getStatPercentBonusesFromUniques(currentConstruction, resourceUniques)
-        newStatPercentBonusList["National ability"] = getStatPercentBonusesFromNationUnique(currentConstruction)
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
-        newStatPercentBonusList["Religion"] = getStatPercentBonusesFromUniques(currentConstruction, cityInfo.religion.getUniques())
         newStatPercentBonusList["Unit Supply"] = getStatPercentBonusesFromUnitSupply()
         if (cityInfo.civInfo.happinessForNextTurn < 0) 
             newStatPercentBonusList["Unhappiness"] = getStatPercentBonusesFromUniques(currentConstruction,
@@ -477,6 +446,9 @@ class CityStats(val cityInfo: CityInfo) {
                     .minByOrNull { it.key }?.value
                     ?.uniqueObjects?.asSequence() ?: sequenceOf()
             )
+
+        for ((source, stats) in getStatsPercentBonusesFromUniquesBySource(currentConstruction))
+            newStatPercentBonusList.add(source, stats)
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()
@@ -586,7 +558,10 @@ class CityStats(val cityInfo: CityInfo) {
         val buildingsMaintenance = getBuildingMaintenanceCosts(citySpecificUniques) // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
-        if (totalFood > 0 && constructionMatchesFilter(currentConstruction, "Excess Food converted to Production when under construction")) {
+        if (totalFood > 0 
+            && currentConstruction is INonPerpetualConstruction 
+            && currentConstruction.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed)
+        ) {
             newFinalStatList["Excess food to production"] = Stats(production = totalFood, food = -totalFood)
         }
 

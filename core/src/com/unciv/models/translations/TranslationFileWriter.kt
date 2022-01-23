@@ -253,6 +253,8 @@ object TranslationFileWriter {
         val buildingMap = ruleset.buildings.keys.toMutableSet().apply { addAll(sequenceOf(
             "Wonders",
             "Wonder",
+            "National Wonder",
+            "World Wonder",
             "Buildings",
             "Building"
         )) }
@@ -283,7 +285,7 @@ object TranslationFileWriter {
 
             fun submitString(string: String) {
                 val unique = Unique(string)
-                if(unique.type?.flags?.contains(UniqueFlag.HiddenToUsers)==true)
+                if (unique.hasFlag(UniqueFlag.HiddenToUsers))
                     return // We don't need to translate this at all, not user-visible
                 var stringToTranslate = string.removeConditionals()
 

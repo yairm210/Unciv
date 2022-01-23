@@ -10,7 +10,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
-import kotlin.concurrent.thread
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
@@ -29,10 +28,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         // If peripheral keyboard not detected, hotkeys will not be displayed
         val key = if (keyboardAvailable) unitAction.type.key else KeyCharAndCode.UNKNOWN
 
-        val actionButton = Button(BaseScreen.skin)
-        actionButton.add(icon).size(20f).pad(5f)
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
-        actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
+        val actionButton = IconTextButton(unitAction.title, icon, fontColor = fontColor)
         actionButton.addTooltip(key)
         actionButton.pack()
         val action = {
@@ -44,7 +41,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             actionButton.onClick(unitAction.uncivSound, action)
             if (key != KeyCharAndCode.UNKNOWN)
                 worldScreen.keyPressDispatcher[key] = {
-                    thread(name = "Sound") { Sounds.play(unitAction.uncivSound) }
+                    crashHandlingThread(name = "Sound") { Sounds.play(unitAction.uncivSound) }
                     action()
                     worldScreen.mapHolder.removeUnitActionOverlay()
                 }
