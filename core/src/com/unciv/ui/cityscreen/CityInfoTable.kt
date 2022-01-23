@@ -157,7 +157,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         val cityStats = cityScreen.city.cityStats
 
         for (stat in Stat.values()) {
-            val statValuesTable = Table().apply { defaults().pad(2f) }
+            val statValuesTable = Table()
             statValuesTable.touchable = Touchable.enabled
             addCategory(stat.name, statValuesTable)
 
@@ -172,7 +172,15 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         showDetails:Boolean = false
     ) {
         statValuesTable.clear()
-        statValuesTable.onClick { updateStatValuesTable(stat, cityStats, statValuesTable, !showDetails) }
+        statValuesTable.defaults().pad(2f)
+        statValuesTable.onClick {
+            updateStatValuesTable(
+                stat,
+                cityStats,
+                statValuesTable,
+                !showDetails
+            )
+        }
 
         val relevantBaseStats = LinkedHashMap<String, Float>()
 
@@ -229,6 +237,14 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
             statValuesTable.add("Total".toLabel())
             statValuesTable.add(finalTotal.toOneDecimalLabel()).row()
         }
+
+        statValuesTable.pack()
+        val toggleButtonChar = if (showDetails) "-" else "+"
+        val toggleButton = toggleButtonChar.toLabel().apply { setAlignment(Align.center) }
+            .surroundWithCircle(25f, color = ImageGetter.getBlue())
+            .surroundWithCircle(27f, false)
+        statValuesTable.addActor(toggleButton)
+        toggleButton.setPosition(0f, statValuesTable.height, Align.topLeft)
 
         statValuesTable.padBottom(4f)
     }
