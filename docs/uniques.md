@@ -71,6 +71,11 @@ Example: "[20]% [Culture]"
 
 Applicable to: Global, FollowerBelief
 
+#### [amount]% [stat] [cityFilter]
+Example: "[20]% [Culture] [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
 #### [amount]% [stat] from every [tileFilter/specialist/buildingName]
 Example: "[20]% [Culture] from every [tileFilter/specialist/buildingName]"
 
@@ -86,10 +91,10 @@ Example: "[20]% [Culture] from City-States"
 
 Applicable to: Global
 
-#### [amount]% [stat] [cityFilter]
-Example: "[20]% [Culture] [in all cities]"
+#### Nullifies [stat] [cityFilter]
+Example: "Nullifies [Culture] [in all cities]"
 
-Applicable to: Global, FollowerBelief
+Applicable to: Global
 
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
@@ -1151,10 +1156,20 @@ Applicable to: Conditional
 #### <when not at war>
 Applicable to: Conditional
 
+#### <during a Golden Age>
+Applicable to: Conditional
+
 #### <while the empire is happy>
 Applicable to: Conditional
 
-#### <during a Golden Age>
+#### <when between [amount] and [amount] Happiness>
+Example: "<when between [20] and [20] Happiness>"
+
+Applicable to: Conditional
+
+#### <when below [amount] Happiness>
+Example: "<when below [20] Happiness>"
+
 Applicable to: Conditional
 
 #### <during the [era]>

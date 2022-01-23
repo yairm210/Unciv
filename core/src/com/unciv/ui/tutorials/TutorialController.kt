@@ -76,13 +76,6 @@ class TutorialController(screen: BaseScreen) {
             Tutorial.findByName(it.key)!!.isCivilopedia
         }.map { tutorial ->
             val lines = tutorial.value
-                
-            if (tutorial.key == "Unhappiness") {
-                for (unhappinessEffect in ruleset.unhappinessEffects.values.sortedByDescending { it.unhappiness }) {
-                    lines.add("\n${unhappinessEffect.toCivilopediaLines()}")
-                }
-            }
-            
             CivilopediaTutorial(tutorial.key, lines)
         }
         return civilopediaTutorials

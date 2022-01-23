@@ -19,7 +19,6 @@ enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
     Era(Global),
     Tech(Global),
     Policy(Global),
-    Unhappiness(Global),
     FounderBelief(Global),
     /** These apply only to cities where the religion is the majority religion */
     FollowerBelief,
@@ -85,6 +84,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     StatsFromObject("[stats] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     StatPercentBonus("[amount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatPercentBonusCities("[amount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromObject("[amount]% [stat] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.18.17", ReplaceWith("[amount]% [stat] from every [tileFilter/specialist/buildingName]"))
     StatPercentSignedFromObject("+[amount]% [stat] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -93,7 +93,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     AllStatsSignedPercentFromObject("+[amount]% yield from every [tileFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromReligionFollowers("[amount]% [stat] from every follower, up to [amount]%", UniqueTarget.FollowerBelief),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
-    StatPercentBonusCities("[amount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    NullifiesStat("Nullifies [stat] [cityFilter]", UniqueTarget.Global),
 
     PercentProductionWonders("[amount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.Resource, UniqueTarget.FollowerBelief),
     PercentProductionBuildings("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -487,8 +487,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
-    ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
+
+    ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
+    ConditionalBetweenHappiness("when between [amount] and [amount] Happiness", UniqueTarget.Conditional),
+    ConditionalBelowHappiness("when below [amount] Happiness", UniqueTarget.Conditional),
     
     ConditionalDuringEra("during the [era]", UniqueTarget.Conditional),
     ConditionalBeforeEra("before the [era]", UniqueTarget.Conditional),

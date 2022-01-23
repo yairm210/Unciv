@@ -382,7 +382,8 @@ class CivilizationInfo {
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = getMatchingUniques(uniqueType, stateForConditionals).any()
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = 
+        StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
         
     // Does not return local uniques, only global ones.
@@ -403,15 +404,8 @@ class CivilizationInfo {
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
         
-        if (happinessForNextTurn < 0) {
-            val matchingUniques =
-                gameInfo.ruleSet.unhappinessEffects
-                    .filter { it.key > happinessForNextTurn }
-                    .minByOrNull { it.key }?.value
-                    ?.getMatchingUniques(uniqueType, stateForConditionals)
-            if (matchingUniques != null)
-                yieldAll(matchingUniques)
-        }
+        yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
+        
     }.filter {
         it.conditionalsApply(stateForConditionals)
     }
@@ -435,15 +429,7 @@ class CivilizationInfo {
                 .filter { it.placeholderText == uniqueTemplate }
             )
         
-        if (happinessForNextTurn < 0) {
-            val matchingUniques = 
-                gameInfo.ruleSet.unhappinessEffects
-                    .filter { it.key > happinessForNextTurn }
-                    .minByOrNull { it.key }?.value
-                    ?.getMatchingUniques(uniqueTemplate)
-            if (matchingUniques != null)
-                yieldAll(matchingUniques)
-        }
+        yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueTemplate))
     }
  
     //region Units
@@ -1001,7 +987,7 @@ class CivilizationInfo {
     fun shouldCheckForDiplomaticVictory() =
         shouldShowDiplomaticVotingResults()
 
-    fun updateRevolts() {
+    private fun updateRevolts() {
         if (!hasUnique(UniqueType.SpawnRebels)) {
             removeFlag(CivFlags.RevoltSpawning.name)
             return
@@ -1033,6 +1019,9 @@ class CivilizationInfo {
             )
         }
         
+        // Will be automatically added again as long as unhappiness is still low enough
+        removeFlag(CivFlags.RevoltSpawning.name) 
+        
         addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, unitToSpawn.name, "StatIcons/Malcontent")
     }
     
@@ -1052,8 +1041,10 @@ class CivilizationInfo {
         return score
     }
     
-    private fun getTurnsBeforeRevolt() =
-        ((4 + Random().nextInt(3)) * min(gameInfo.gameParameters.gameSpeed.modifier, 1f)).toInt()
+    private fun getTurnsBeforeRevolt(): Int {
+        val score = ((4 + Random().nextInt(3)) * max(gameInfo.gameParameters.gameSpeed.modifier, 1f)).toInt()
+        return score
+    }
     
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)

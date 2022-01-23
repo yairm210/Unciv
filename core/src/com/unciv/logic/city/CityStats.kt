@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -134,7 +135,13 @@ class CityStats(val cityInfo: CityInfo) {
         // "[amount]% growth [cityFilter]"
         for (unique in cityInfo.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals = stateForConditionals)) {
             if (!cityInfo.matchesFilter(unique.params[1])) continue
-            growthSources.add("${unique.sourceObjectType}", Stats(food = unique.params[0].toFloat()/100f * totalFood))
+
+            val uniqueSource =
+                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
+                    GlobalUniques.getUniqueSourceDescription(unique)
+                else unique.sourceObjectType?.name ?: ""
+            
+            growthSources.add(uniqueSource, Stats(food = unique.params[0].toFloat()/100f * totalFood))
         }
         return growthSources
     }
@@ -167,8 +174,14 @@ class CityStats(val cityInfo: CityInfo) {
 
     private fun getStatsFromUniquesBySource():StatMap {
         val sourceToStats = StatMap()
-        fun addUniqueStats(unique:Unique) =
-            sourceToStats.add(unique.sourceObjectType?.name ?: "", unique.stats)
+        fun addUniqueStats(unique:Unique) {
+            val uniqueSource =
+                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
+                    GlobalUniques.getUniqueSourceDescription(unique)
+                else unique.sourceObjectType?.name ?: ""
+            
+            sourceToStats.add(uniqueSource, unique.stats)
+        }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.Stats))
             addUniqueStats(unique)
@@ -227,9 +240,14 @@ class CityStats(val cityInfo: CityInfo) {
 
     private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction):StatMap {
         val sourceToStats = StatMap()
-        fun addUniqueStats(unique: Unique, stat:Stat, amount:Float) =
-            sourceToStats.add(unique.sourceObjectType?.name ?: "",
-                Stats().add(stat, amount))
+        fun addUniqueStats(unique: Unique, stat:Stat, amount:Float) {
+            val uniqueSource = 
+                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
+                    GlobalUniques.getUniqueSourceDescription(unique)
+                else unique.sourceObjectType?.name ?: ""
+            
+            sourceToStats.add(uniqueSource, Stats().add(stat, amount))
+        }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentBonus)) {
             addUniqueStats(unique, Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
@@ -243,14 +261,14 @@ class CityStats(val cityInfo: CityInfo) {
 
 
         val uniquesToCheck =
-            if (currentConstruction is Building && currentConstruction.isAnyWonder()) {
-                cityInfo.getMatchingUniques(UniqueType.PercentProductionWonders)
-            } else if (currentConstruction is Building && !currentConstruction.isAnyWonder()) {
-                cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildings)
-            } else if (currentConstruction is BaseUnit) {
-                cityInfo.getMatchingUniques(UniqueType.PercentProductionUnits)
-            } else { // Science/Gold production
-                sequenceOf()
+            when {
+                currentConstruction is BaseUnit ->
+                    cityInfo.getMatchingUniques(UniqueType.PercentProductionUnits)
+                currentConstruction is Building && currentConstruction.isAnyWonder() ->
+                    cityInfo.getMatchingUniques(UniqueType.PercentProductionWonders)
+                currentConstruction is Building && !currentConstruction.isAnyWonder() ->
+                    cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildings)
+                else -> sequenceOf() // Science/Gold production
             }
 
         for (unique in uniquesToCheck) {
@@ -270,9 +288,11 @@ class CityStats(val cityInfo: CityInfo) {
 
         if (currentConstruction is Building
             && cityInfo.civInfo.cities.isNotEmpty()
-            && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name))
-            for(unique in cityInfo.getMatchingUniques("+25% Production towards any buildings that already exist in the Capital"))
-            addUniqueStats(unique, Stat.Production, 25f)
+            && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
+        ) {
+            for (unique in cityInfo.getMatchingUniques("+25% Production towards any buildings that already exist in the Capital"))
+                addUniqueStats(unique, Stat.Production, 25f)
+        }
 
         renameStatmapKeys(sourceToStats)
 
@@ -439,13 +459,6 @@ class CityStats(val cityInfo: CityInfo) {
         newStatPercentBonusList["Railroads"] = getStatPercentBonusesFromRailroad()  // Name chosen same as tech, for translation, but theoretically independent
         newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
         newStatPercentBonusList["Unit Supply"] = getStatPercentBonusesFromUnitSupply()
-        if (cityInfo.civInfo.happinessForNextTurn < 0) 
-            newStatPercentBonusList["Unhappiness"] = getStatPercentBonusesFromUniques(currentConstruction,
-                cityInfo.civInfo.gameInfo.ruleSet.unhappinessEffects
-                    .filter { it.key > cityInfo.civInfo.happinessForNextTurn }
-                    .minByOrNull { it.key }?.value
-                    ?.uniqueObjects?.asSequence() ?: sequenceOf()
-            )
 
         for ((source, stats) in getStatsPercentBonusesFromUniquesBySource(currentConstruction))
             newStatPercentBonusList.add(source, stats)
@@ -565,9 +578,23 @@ class CityStats(val cityInfo: CityInfo) {
             newFinalStatList["Excess food to production"] = Stats(production = totalFood, food = -totalFood)
         }
 
+        for ((unique, statToBeRemoved) in cityInfo.getMatchingUniques(UniqueType.NullifiesStat)
+            .map { it to Stat.valueOf(it.params[0]) }
+            .distinct()
+        ) {
+            val removedAmount = newFinalStatList.values.sumOf { it[statToBeRemoved].toDouble() }
+            
+            val uniqueSource =
+                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
+                    GlobalUniques.getUniqueSourceDescription(unique)
+                else unique.sourceObjectType?.name ?: ""
+            
+            newFinalStatList.add(uniqueSource, Stats().apply { this[statToBeRemoved] = -removedAmount.toFloat() })
+        }
+
         if (cityInfo.isInResistance())
             newFinalStatList.clear()  // NOPE
-
+        
         if (newFinalStatList.values.map { it.production }.sum() < 1)  // Minimum production for things to progress
             newFinalStatList["Production"] = Stats(production = 1f)
         finalStatList = newFinalStatList

@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -17,10 +18,10 @@ import kotlin.math.roundToInt
 object BattleDamage {
     
     private fun getModifierStringFromUnique(unique: Unique): String {
-        val source =  when (unique.sourceObjectType) {
+        val source = when (unique.sourceObjectType) {
             UniqueTarget.Unit -> "Unit ability"
             UniqueTarget.Nation -> "National ability"
-            UniqueTarget.Unhappiness -> unique.sourceObjectName!!
+            UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
             else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
         }
         if (unique.conditionals.isEmpty()) return source

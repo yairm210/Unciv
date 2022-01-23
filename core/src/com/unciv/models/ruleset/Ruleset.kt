@@ -64,12 +64,12 @@ class Ruleset {
 
     private val jsonParser = JsonParser()
 
-
     var name = ""
     val beliefs = LinkedHashMap<String, Belief>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
+    var globalUniques = GlobalUniques()
     val nations = LinkedHashMap<String, Nation>()
     val policies = LinkedHashMap<String, Policy>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
@@ -81,7 +81,6 @@ class Ruleset {
     val terrains = LinkedHashMap<String, Terrain>()
     val tileImprovements = LinkedHashMap<String, TileImprovement>()
     val tileResources = LinkedHashMap<String, TileResource>()
-    val unhappinessEffects = LinkedHashMap<Int, UnhappinessEffect>()
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val unitTypes = LinkedHashMap<String, UnitType>()
@@ -108,6 +107,7 @@ class Ruleset {
         for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
+        globalUniques = GlobalUniques().apply { uniques.addAll(globalUniques.uniques); uniques.addAll(ruleset.globalUniques.uniques) }
         nations.putAll(ruleset.nations)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         policyBranches.putAll(ruleset.policyBranches)
@@ -121,7 +121,6 @@ class Ruleset {
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
-        unhappinessEffects.putAll(ruleset.unhappinessEffects)
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
@@ -134,6 +133,7 @@ class Ruleset {
         buildings.clear()
         difficulties.clear()
         eras.clear()
+        globalUniques = GlobalUniques()
         mods.clear()
         nations.clear()
         policies.clear()
@@ -146,7 +146,6 @@ class Ruleset {
         terrains.clear()
         tileImprovements.clear()
         tileResources.clear()
-        unhappinessEffects.clear()
         unitPromotions.clear()
         units.clear()
         unitTypes.clear()
@@ -256,13 +255,10 @@ class Ruleset {
         if (difficultiesFile.exists()) 
             difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
 
-        val unhappinessEffectsFile = folderHandle.child("Unhappiness.json")
-        if (unhappinessEffectsFile.exists()) {
-            val effects = jsonParser.getFromJson(Array<UnhappinessEffect>::class.java, unhappinessEffectsFile)
-            for (effect in effects) {
-                unhappinessEffects[effect.unhappiness] = effect
-            }
-        } 
+        val globalUniquesFile = folderHandle.child("GlobalUniques.json")
+        if (globalUniquesFile.exists()) {
+            globalUniques = jsonParser.getFromJson(GlobalUniques::class.java, globalUniquesFile)
+        }
         
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
@@ -736,8 +732,8 @@ object RulesetCache : HashMap<String,Ruleset>() {
         if (newRuleset.ruinRewards.isEmpty()) {
             newRuleset.ruinRewards.putAll(getVanillaRuleset().ruinRewards)
         }
-        if (newRuleset.unhappinessEffects.isEmpty()) {
-            newRuleset.unhappinessEffects.putAll(getBaseRuleset().unhappinessEffects)
+        if (newRuleset.globalUniques.uniques.isEmpty()) {
+            newRuleset.globalUniques = getVanillaRuleset().globalUniques
         }
 
         return newRuleset
