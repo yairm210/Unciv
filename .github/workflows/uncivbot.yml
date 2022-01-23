@@ -109,8 +109,8 @@ jobs:
           git commit --allow-empty -m "@${PR_AUTHOR}: ${PR_TITLE} (#${PR_NUMBER})" -m "${PR_URL}"
 
           ghStatus "Pushing changes."
-          git push -f # Since we just cloned the wiki repo anyway, the -f usually shouldn't change anything.
-          #git push -f --set-upstream "$WIKI_URL" master # Should be the same since we cloned from the URL, just more explicit.
+          git push # Since we just cloned the wiki repo anyway, it should also be safe to use -f.
+          #git push --set-upstream "$WIKI_URL" master # Should be the same since we cloned from the URL, just more explicit.
 
           ghStatus "Done."
       - name: Report Wiki update status.
