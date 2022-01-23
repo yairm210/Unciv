@@ -922,7 +922,7 @@ Applicable to: Terrain, Improvement
 Applicable to: Terrain
 
 #### Only [improvementFilter] improvements may be built on this tile
-Example: "Only [improvementFilter] improvements may be built on this tile"
+Example: "Only [All Road] improvements may be built on this tile"
 
 Applicable to: Terrain
 

@@ -38,6 +38,7 @@ class UniqueDocsWriter {
                 .replace("[promotion]","[Shock I]")
                 .replace("[era]", "[Ancient era]")
                 .replace("[improvementName]", "[Trading Post]")
+                .replace("[improvementFilter]", "[All Road]")
                 .replace("[resource]", "[Iron]")
                 .replace("[beliefType]", "[Follower]")
                 .replace("[belief]","[God of War]")
