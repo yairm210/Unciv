@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.StatTreeNode
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stat
@@ -142,16 +143,21 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
     }
 
+    private fun addStatsToHashmap(statTreeNode: StatTreeNode, hashMap: HashMap<String, Float>, stat:Stat, indentation:Int=0) {
+        for ((name, child) in statTreeNode.children) {
+            hashMap["-".repeat(indentation) + name] = child.totalStats[stat]
+            addStatsToHashmap(child, hashMap, stat, indentation + 1)
+        }
+    }
+
     private fun Table.addStatInfo() {
         val cityStats = cityScreen.city.cityStats
-
 
         for (stat in Stat.values()) {
             val relevantBaseStats = LinkedHashMap<String, Float>()
 
             if (stat != Stat.Happiness)
-                for ((key, value) in cityStats.baseStatList)
-                    relevantBaseStats[key] = value[stat]
+                addStatsToHashmap(cityStats.baseStatTree, relevantBaseStats, stat)
             else relevantBaseStats.putAll(cityStats.happinessList)
             for (key in relevantBaseStats.keys.toList())
                 if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)

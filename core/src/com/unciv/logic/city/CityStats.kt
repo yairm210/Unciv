@@ -7,9 +7,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -19,6 +17,29 @@ import com.unciv.ui.utils.toPercent
 import kotlin.math.min
 
 
+class StatTreeNode {
+    val children = LinkedHashMap<String, StatTreeNode>()
+    private var innerStats: Stats? = null
+
+    fun addStats(newStats: Stats, vararg hierarchyList: String) {
+        if (hierarchyList.isEmpty()) {
+            innerStats = newStats
+            return
+        }
+        val childName = hierarchyList.first()
+        if (!children.containsKey(childName))
+            children[childName] = StatTreeNode()
+        children[childName]!!.addStats(newStats, *hierarchyList.drop(1).toTypedArray())
+    }
+
+    val totalStats:Stats by lazy {
+        val toReturn = Stats()
+        if (innerStats != null) toReturn.add(innerStats!!)
+        for (child in children.values) toReturn.add(child.totalStats)
+        toReturn
+    }
+}
+
 /** Holds and calculates [Stats] for a city.
  * 
  * No field needs to be saved, all are calculated on the fly,
@@ -26,6 +47,8 @@ import kotlin.math.min
  */
 class CityStats(val cityInfo: CityInfo) {
     //region Fields, Transient 
+
+    var baseStatTree = StatTreeNode()
 
     var baseStatList = LinkedHashMap<String, Stats>()
 
@@ -430,7 +453,9 @@ class CityStats(val cityInfo: CityInfo) {
         for ((source, stats) in statMap)
             newBaseStatList.add(source, stats)
 
-        baseStatList = newBaseStatList
+        baseStatTree = StatTreeNode()
+        for ((source, stats) in newBaseStatList)
+            baseStatTree.addStats(stats, source)
     }
 
 
@@ -490,8 +515,8 @@ class CityStats(val cityInfo: CityInfo) {
     private fun updateFinalStatList(currentConstruction: IConstruction, citySpecificUniques: Sequence<Unique>) {
         val newFinalStatList = StatMap() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
-        for (entry in baseStatList)
-            newFinalStatList[entry.key] = entry.value.clone()
+        for ((key, value) in baseStatTree.children)
+            newFinalStatList[key] = value.totalStats.clone()
 
         val statPercentBonusesSum = Stats()
         for (bonus in statPercentBonusList.values) statPercentBonusesSum.add(bonus)
@@ -499,9 +524,15 @@ class CityStats(val cityInfo: CityInfo) {
         for (entry in newFinalStatList.values)
             entry.production *= statPercentBonusesSum.production.toPercent()
 
+        // We only add the 'extra stats from production' AFTER we calculate the production INCLUDING BONUSES
         val statsFromProduction = getStatsFromProduction(newFinalStatList.values.map { it.production }.sum())
-        baseStatList = LinkedHashMap(baseStatList).apply { put("Construction", statsFromProduction) } // concurrency-safe addition
-        newFinalStatList["Construction"] = statsFromProduction
+        if (!statsFromProduction.isEmpty()) {
+            baseStatTree = StatTreeNode().apply {
+                children.putAll(baseStatTree.children)
+                addStats(statsFromProduction, "Production")
+            } // concurrency-safe addition
+            newFinalStatList["Construction"] = statsFromProduction
+        }
 
         for (entry in newFinalStatList.values) {
             entry.gold *= statPercentBonusesSum.gold.toPercent()
