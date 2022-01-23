@@ -18,7 +18,7 @@ The process has two major parts, one is "Getting your code in the main repositor
 
 When I'm ready to release a new version I:
 * Comment "merge translations" in one of the open PRs tagged as 'mergeable translation' to trigger the translation branch creation, add a "summary" comment to trigger summary generation, merge the PR and delete the branch (so next version translation branch starts fresh)
-* From my workstation - pull the latest changes and run the [translation generation](https://github.com/yairm210/Unciv/wiki/Translating#translation-generation---for-developers)
+* From my workstation - pull the latest changes and run the [translation generation](./Translating#translation-generation---for-developers)
 * Change the versionCode and versionName in the Android build.gradle so that Google Play and F-droid can recognize that it's a different release
 * Add an entry in the changelog.md done, WITHOUT hashtags, and less than 500 characters (that's the limit for Google play entries). The formatting needs to be exact or the text sent to Discord, the Github release etc. won't be complete.
 * Add a tag to the commit of the version. When the [Github action](https://github.com/yairm210/Unciv/actions/workflows/buildAndDeploy.yml) sees that we've added a tag, it will run a build, and this time (because of the configuration we put in the [yml file](/.github/workflows/buildAndDeploy.yml) file), it will:
