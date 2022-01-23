@@ -180,18 +180,18 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 stats.add(unique.stats)
 
         @Suppress("RemoveRedundantQualifierName")  // make it clearer Building inherits Stats
-        for (unique in uniqueObjects)
-            if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1])
+        for (unique in getMatchingUniques(UniqueType.StatsWithResource))
+            if (civInfo.hasResource(unique.params[1])
                     && Stats.isStats(unique.params[0]))
                 stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in city.getMatchingUniques("[] from all [] buildings")) {
+            for (unique in city.getMatchingUniques(UniqueType.StatsFromBuildings)) {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
         else
-            for (unique in city.getMatchingUniques("[] from every Wonder"))
+            for (unique in city.getMatchingUniques(UniqueType.StatsFromWondersDeprecated))
                 stats.add(unique.stats)
         return stats
     }
