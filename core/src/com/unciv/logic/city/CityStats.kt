@@ -21,9 +21,14 @@ class StatTreeNode {
     val children = LinkedHashMap<String, StatTreeNode>()
     private var innerStats: Stats? = null
 
+    private fun addInnerStats(stats: Stats) {
+        if (innerStats == null) innerStats = stats
+        else innerStats!!.add(stats) // What happens if we add 2 stats to the same leaf?
+    }
+
     fun addStats(newStats: Stats, vararg hierarchyList: String) {
         if (hierarchyList.isEmpty()) {
-            innerStats = newStats
+            addInnerStats(newStats)
             return
         }
         val childName = hierarchyList.first()
@@ -32,14 +37,15 @@ class StatTreeNode {
         children[childName]!!.addStats(newStats, *hierarchyList.drop(1).toTypedArray())
     }
 
-    fun add(otherTree: StatTreeNode){
+    fun add(otherTree: StatTreeNode) {
+        if (otherTree.innerStats != null) addInnerStats(otherTree.innerStats!!)
         for ((key, value) in otherTree.children) {
             if (!children.containsKey(key)) children[key] = value
             else children[key]!!.add(value)
         }
     }
 
-    val totalStats:Stats by lazy {
+    val totalStats: Stats by lazy {
         val toReturn = Stats()
         if (innerStats != null) toReturn.add(innerStats!!)
         for (child in children.values) toReturn.add(child.totalStats)
