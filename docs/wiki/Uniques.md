@@ -65,10 +65,10 @@ Most uniques are *ongoing* - they describe something continuous. Some, however, 
 
 Parameters come in various types, and will be addressed as such inside the [square brackets].
 
-- amount - This indicates a whole, (usually) positive number, like "2" or "13".
+- amount - This indicates a whole number, possibly with a + or - sign, such as "2", "+13", or "-3".
 - unitName, buildingName, improvementName etc - Rather self explanatory. Examples: "Warrior", "Library", and "Mine", accordingly.
 - stat - This is one of the 7 major stats in the game - "Gold", "Science", "Production", "Food", "Happiness", "Culture" and "Faith". Note that the stat names need to be capitalized!
-- stats, tileFilter, unitFilter, cityFilter, constructionFilter - these are more complex and are addressed individually
+- stats, tileFilter, unitFilter, cityFilter, constructionFilter/buildingFilter - these are more complex and are addressed individually
 
 #### stats
 
