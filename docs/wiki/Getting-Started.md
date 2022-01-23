@@ -18,6 +18,7 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
   * Click "+" to add a new configuration
   * Choose "Application"
   * Set the module to `Unciv.desktop`, main class to `com.unciv.app.desktop.DesktopLauncher` and `<repo_folder>\android\assets\` as the Working directory, OK to close the window
+    * If you get a `../../docs/uniques.md (No such file or directory)` error that means you forgot to set the working directory!
 * Select the Desktop configuration and click the green arrow button to run!
 
 Unciv uses Gradle to specify dependencies and how to run. In the background, the Gradle gnomes will be off fetching the packages (a one-time effort) and, once that's done, will build the project!
