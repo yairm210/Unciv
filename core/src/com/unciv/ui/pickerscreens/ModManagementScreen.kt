@@ -529,6 +529,7 @@ class ModManagementScreen(
                 question = "Are you SURE you want to delete this mod?",
                 action = {
                     deleteMod(mod.name)
+                    modActionTable.clear()
                     rightSideButton.setText("[${mod.name}] was deleted.".tr())
                 },
                 screen = this,
