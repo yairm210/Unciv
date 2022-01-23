@@ -311,7 +311,7 @@ class Ruleset {
                 val similarUniques = UniqueType.values().filter { getRelativeTextDistance(it.placeholderText, unique.placeholderText) <= uniqueMisspellingThreshold }
                 val equalUniques = similarUniques.filter { it.placeholderText == unique.placeholderText }
                 if (equalUniques.isNotEmpty()) {
-                    lines.add(
+                    lines.add( // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.
                         "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
                         RulesetErrorSeverity.OK
                     )
