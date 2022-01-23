@@ -203,8 +203,10 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     BonusHappinessFromLuxuryDeprecated("+[amount] happiness from each type of luxury resource", UniqueTarget.Global),
     LessPolicyCostFromCities("Each city founded increases culture cost of policies [amount]% less than normal", UniqueTarget.Global),
     LessPolicyCost("[amount]% Culture cost of adopting new Policies", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[amount]% Culture cost of adopting new policies"))
+    @Deprecated("As of 3.18.17", ReplaceWith("[amount]% Culture cost of adopting new Policies"))
     LessPolicyCostDeprecated("Culture cost of adopting new Policies reduced by [amount]%", UniqueTarget.Global),
+    @Deprecated("As of 3.19.1", ReplaceWith("[amount]% Culture cost of adopting new Policies"))
+    LessPolicyCostDeprecated2("[amount]% Culture cost of adopting new policies", UniqueTarget.Global),
 
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
