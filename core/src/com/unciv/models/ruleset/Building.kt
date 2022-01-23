@@ -96,11 +96,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     /**
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
-    private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings(filterUniques=filterUniques)
-        .filterNot {
-            it.startsWith("Hidden ") && it.endsWith(" disabled") ||
-            it == UniqueType.Unbuildable.text ||
-            it == Constants.hideFromCivilopediaUnique
+    private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings {
+            !it.hasFlag(UniqueFlag.HiddenToUsers)
+            && filterUniques?.invoke(it) ?: true
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
@@ -474,7 +472,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         for (unique in uniqueObjects) {
-            when (unique.placeholderText) {
+            when (unique.placeholderText) { // TODO: Lots of typification…
                 // Deprecated since 3.16.11, replace with "Not displayed [...] construction without []"
                     UniqueType.NotDisplayedUnlessOtherBuildingBuilt.placeholderText ->
                         if (!cityConstructions.containsBuildingOrEquivalent(unique.params[0]))

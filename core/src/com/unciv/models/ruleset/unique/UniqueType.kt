@@ -8,7 +8,7 @@ import kotlin.collections.HashSet
 
 /** inheritsFrom means that all such uniques are acceptable as well.
  * For example, all Global uniques are acceptable for Nations, Eras, etc. */
-enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
+enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
 
     /** Buildings, units, nations, policies, religions, techs etc.
      * Basically anything caught by CivInfo.getMatchingUniques. */
@@ -59,7 +59,7 @@ enum class UniqueFlag {
     HiddenToUsers,
 }
 
-enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
+enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
 
     //////////////////////////////////////// region GLOBAL UNIQUES ////////////////////////////////////////
 
@@ -573,14 +573,14 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     //endregion
 
     ///////////////////////////////////////////// META /////////////////////////////////////////////
-    
-    
-    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins),
+
+    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
+    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = listOf(UniqueFlag.HiddenToUsers)),
     HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
-    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
-    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit),
+    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = listOf(UniqueFlag.HiddenToUsers)),
+    HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.values(), flags = listOf(UniqueFlag.HiddenToUsers)),
     
 
     // region DEPRECATED AND REMOVED
