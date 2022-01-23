@@ -145,7 +145,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
 
     private fun addStatsToHashmap(statTreeNode: StatTreeNode, hashMap: HashMap<String, Float>, stat:Stat, indentation:Int=0) {
         for ((name, child) in statTreeNode.children) {
-            hashMap["-".repeat(indentation) + name] = child.totalStats[stat]
+            hashMap["- ".repeat(indentation) + name] = child.totalStats[stat]
             addStatsToHashmap(child, hashMap, stat, indentation + 1)
         }
     }
@@ -172,7 +172,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
             for (entry in relevantBaseStats) {
                 val specificStatValue = entry.value
                 sumOfAllBaseValues += specificStatValue
-                statValuesTable.add(entry.key.toLabel())
+                statValuesTable.add(entry.key.toLabel()).left()
                 statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
             }
             statValuesTable.addSeparator()
