@@ -2,6 +2,7 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
@@ -9,6 +10,7 @@ import com.unciv.ui.utils.*
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
     val text = "".toLabel().apply { setAlignment(Align.center) }
+    var orderIndicator: IconCircleGroup? = null
 
     init {
         touchable = Touchable.enabled
@@ -85,5 +87,14 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         if (isWorldScreen) rightSide.add(techEnabledIcons)
         else rightSide.add(techEnabledIcons)
                 .minWidth(225f)
+    }
+
+    fun addOrderIndicator(number:Int){
+        orderIndicator = number.toString().toLabel(fontSize = 18)
+            .apply { setAlignment(Align.center) }
+            .surroundWithCircle(25f, color = ImageGetter.getBlue())
+            .surroundWithCircle(27f,false)
+        orderIndicator!!.setPosition(0f, height, Align.topLeft)
+        addActor(orderIndicator)
     }
 }
