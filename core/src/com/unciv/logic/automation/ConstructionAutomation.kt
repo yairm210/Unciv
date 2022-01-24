@@ -9,11 +9,11 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.sqrt
 
 class ConstructionAutomation(val cityConstructions: CityConstructions){
@@ -325,10 +325,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addFoodBuildingChoice() {
+        val conditionalState = StateForConditionals(civInfo, cityInfo)
         val foodBuilding = buildableNotWonders.asSequence()
             .filter { 
-                (it.isStatRelated(Stat.Food) || it.hasUnique(UniqueType.CarryOverFood)) 
-                && Automation.allowSpendingResource(civInfo, it) 
+                (it.isStatRelated(Stat.Food) 
+                    || it.hasUnique(UniqueType.CarryOverFoodDeprecated, conditionalState)
+                    || it.hasUnique(UniqueType.CarryOverFoodAlsoDeprecated, conditionalState)
+                    || it.hasUnique(UniqueType.CarryOverFood, conditionalState)
+                ) && Automation.allowSpendingResource(civInfo, it) 
             }.minByOrNull { it.cost }
         if (foodBuilding != null) {
             var modifier = 1f

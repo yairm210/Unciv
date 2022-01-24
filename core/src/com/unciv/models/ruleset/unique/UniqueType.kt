@@ -147,7 +147,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ProvidesResources("Provides [amount] [resource]", UniqueTarget.Improvement, UniqueTarget.Building),
 
     GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    CarryOverFood("[amount]% of food is carried over after population increases", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    CarryOverFood("[amount]% Food is carried over after population increases [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.2", ReplaceWith("[amount]% Food is carried over after population increases [cityFilter]"))
+    CarryOverFoodDeprecated("[amount]% of food is carried over after population increases", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.2", ReplaceWith("[amount]% Food is carried over after population increases [cityFilter]"))
+    CarryOverFoodAlsoDeprecated("[amount]% of food is carried over [cityFilter] after population increases", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
 

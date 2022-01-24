@@ -182,8 +182,8 @@ Example: "[20]% growth [in all cities]"
 
 Applicable to: Global, FollowerBelief
 
-#### [amount]% of food is carried over after population increases
-Example: "[20]% of food is carried over after population increases"
+#### [amount]% Food is carried over after population increases [cityFilter]
+Example: "[20]% Food is carried over after population increases [in all cities]"
 
 Applicable to: Global, FollowerBelief
 
@@ -1369,6 +1369,8 @@ Applicable to: Conditional
  - "City-State Influence degrades [amount]% slower" - Deprecated As of 3.18.17, replace with "[-amount]% City-State Influence degradation"
  - "Quantity of Resources gifted by City-States increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% resources gifted by City-States"
  - "Happiness from Luxury Resources gifted by City-States increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% Happiness from luxury resources gifted by City-States"
+ - "[amount]% of food is carried over after population increases" - Deprecated As of 3.19.2, replace with "[amount]% Food is carried over after population increases [cityFilter]"
+ - "[amount]% of food is carried over [cityFilter] after population increases" - Deprecated As of 3.19.2, replace with "[amount]% Food is carried over after population increases [cityFilter]"
  - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated As of 3.18.2, replace with "[-amount]% Food consumption by specialists [cityFilter]"
  - "50% of excess happiness added to culture towards policies" - Deprecated As of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
  - "-[amount]% Culture cost of acquiring tiles [cityFilter]" - Deprecated As of 3.19.1, replace with "[-amount] Culture cost of natural border growth [cityFilter]"

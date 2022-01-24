@@ -351,7 +351,7 @@
 		"name": "Aqueduct",
 		"maintenance": 1,
 		"hurryCostModifier": 0,
-		"uniques": ["[40]% of food is carried over [in this city] after population increases"],
+		"uniques": ["[40]% Food is carried over after population increases [in this city]"],
 		"requiredTech": "Engineering"
 	},
 	{
@@ -867,7 +867,7 @@
 		"requiredBuilding": "Hospital",
 		"maintenance": 3,
 		"requiredTech": "Pharmaceuticals",
-		"uniques": ["[25]% of food is carried over [in this city] after population increases"]
+		"uniques": ["[25]% Food is carried over after population increases [in this city]"]
 	},
 	{
 		"name": "Hydro Plant",
