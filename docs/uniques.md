@@ -222,8 +222,8 @@ Example: "[20]% of excess happiness converted to [Culture]"
 
 Applicable to: Global
 
-#### [amount] Culture cost of natural border growth [cityFilter]
-Example: "[20] Culture cost of natural border growth [in all cities]"
+#### [amount]% Culture cost of natural border growth [cityFilter]
+Example: "[20]% Culture cost of natural border growth [in all cities]"
 
 Applicable to: Global, FollowerBelief
 
@@ -1373,8 +1373,9 @@ Applicable to: Conditional
  - "[amount]% of food is carried over [cityFilter] after population increases" - Deprecated As of 3.19.2, replace with "[amount]% Food is carried over after population increases [cityFilter]"
  - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated As of 3.18.2, replace with "[-amount]% Food consumption by specialists [cityFilter]"
  - "50% of excess happiness added to culture towards policies" - Deprecated As of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
- - "-[amount]% Culture cost of acquiring tiles [cityFilter]" - Deprecated As of 3.19.1, replace with "[-amount] Culture cost of natural border growth [cityFilter]"
- - "[amount]% cost of natural border growth" - Deprecated As of 3.19.1, replace with "[amount] Culture cost of natural border growth [cityFilter]"
+ - "[amount]% Culture cost of natural border growth [cityFilter]" - Deprecated As of 3.19.2, replace with "[amount]% Culture cost of natural border growth [cityFilter]"
+ - "-[amount]% Culture cost of acquiring tiles [cityFilter]" - Deprecated As of 3.19.1, replace with "[-amount]% Culture cost of natural border growth [cityFilter]"
+ - "[amount]% cost of natural border growth" - Deprecated As of 3.19.1, replace with "[amount]% Culture cost of natural border growth [cityFilter]"
  - "-[amount]% Gold cost of acquiring tiles [cityFilter]" - Deprecated As of 3.19.1, replace with "[-amount]% Gold cost of acquiring tiles [cityFilter]"
  - "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])" - Deprecated As of 3.17.9, replace with "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"
  - "Maintenance on roads & railroads reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[-amount]% maintenance on road & railroads"
