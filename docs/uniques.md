@@ -47,7 +47,7 @@ Example: "[+1 Gold, +2 Production] in cities on [Forest] tiles"
 Applicable to: Global, FollowerBelief
 
 #### [stats] from all [buildingFilter] buildings
-Example: "[+1 Gold, +2 Production] from all [buildingFilter] buildings"
+Example: "[+1 Gold, +2 Production] from all [Culture] buildings"
 
 Applicable to: Global, FollowerBelief
 
@@ -66,8 +66,8 @@ Example: "[+1 Gold, +2 Production] from [Farm] tiles without [Farm] [in all citi
 
 Applicable to: Global, FollowerBelief
 
-#### [stats] from every [tileFilter/specialist/buildingName]
-Example: "[+1 Gold, +2 Production] from every [tileFilter/specialist/buildingName]"
+#### [stats] from every [tileFilter/specialist/buildingFilter]
+Example: "[+1 Gold, +2 Production] from every [tileFilter/specialist/buildingFilter]"
 
 Applicable to: Global, FollowerBelief
 
@@ -322,8 +322,8 @@ Example: "Each city founded increases culture cost of policies [20]% less than n
 
 Applicable to: Global
 
-#### [amount]% Culture cost of adopting new policies
-Example: "[20]% Culture cost of adopting new policies"
+#### [amount]% Culture cost of adopting new Policies
+Example: "[20]% Culture cost of adopting new Policies"
 
 Applicable to: Global
 
@@ -568,6 +568,9 @@ Example: "Provides a [Library] in your first [20] cities for free"
 
 Applicable to: Global
 
+#### Will not be displayed in Civilopedia
+Applicable to: Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
+
 ## Nation uniques
 #### Will not be chosen for new games
 Applicable to: Nation
@@ -664,6 +667,11 @@ Applicable to: Building
 
 #### Requires a [buildingName] in all cities
 Example: "Requires a [Library] in all cities"
+
+Applicable to: Building
+
+#### [stats] with [resource]
+Example: "[+1 Gold, +2 Production] with [Iron]"
 
 Applicable to: Building
 
@@ -1153,6 +1161,11 @@ Applicable to: Ruins
 #### This Unit upgrades for free including special upgrades
 Applicable to: Ruins
 
+#### Only available after [amount] turns
+Example: "Only available after [20] turns"
+
+Applicable to: Ruins
+
 #### Hidden before founding a Pantheon
 Applicable to: Ruins
 
@@ -1160,11 +1173,6 @@ Applicable to: Ruins
 Applicable to: Ruins
 
 #### Hidden after generating a Great Prophet
-Applicable to: Ruins
-
-#### Only available after [amount] turns
-Example: "Only available after [20] turns"
-
 Applicable to: Ruins
 
 ## CityState uniques
@@ -1332,6 +1340,7 @@ Applicable to: Conditional
 
 ## Deprecated uniques
  - "[stats] per turn from cities before [tech/policy]" - Deprecated As of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
+ - "[stats] from every Wonder" - Deprecated As of 3.19.1, replace with "[stats] from every [Wonder]"
  - "+[amount]% [stat] from every [tileFilter/specialist/buildingName]" - Deprecated As of 3.18.17, replace with "[amount]% [stat] from every [tileFilter/specialist/buildingName]"
  - "+[amount]% yield from every [tileFilter]" - Deprecated As of 3.18.17, replace with "[+amount]% Yield from every [tileFilter]"
  - "City-State Influence degrades [amount]% slower" - Deprecated As of 3.18.17, replace with "[-amount]% City-State Influence degradation"
@@ -1346,7 +1355,8 @@ Applicable to: Conditional
  - "Maintenance on roads & railroads reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[-amount]% maintenance on road & railroads"
  - "-[amount]% maintenance cost for buildings [cityFilter]" - Deprecated As of 3.18.17, replace with "[-amount]% maintenace cost for buildings [cityFilter]"
  - "+[amount] happiness from each type of luxury resource" - Deprecated As of 3.18.17, replace with "[+amount] Happiness from each type of luxury resource"
- - "Culture cost of adopting new Policies reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[amount]% Culture cost of adopting new policies"
+ - "Culture cost of adopting new Policies reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[amount]% Culture cost of adopting new Policies"
+ - "[amount]% Culture cost of adopting new policies" - Deprecated As of 3.19.1, replace with "[amount]% Culture cost of adopting new Policies"
  - "Defensive buildings in all cities are 25% more effective" - Deprecated As of 3.18.17, replace with "[+25]% City Strength from defensive buildings"
  - "[amount]% Strength for [mapUnitFilter] units which have another [mapUnitFilter] unit in an adjacent tile" - Deprecated As of 3.18.17, replace with "[amount]% Strength <for [mapUnitFilter] units> <when adjacent to a [mapUnitFilter] unit>"
  - "Gold cost of upgrading [baseUnitFilter] units reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[-amount]% Gold cost of upgrading <for [baseUnitFilter] units>"
