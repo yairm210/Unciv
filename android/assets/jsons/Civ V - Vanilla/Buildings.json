@@ -777,7 +777,8 @@
 		"cityHealth": 25,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Castle",
-		"requiredTech": "Rifling"
+		"requiredTech": "Rifling",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	// Column 10
 	{
