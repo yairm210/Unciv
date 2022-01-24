@@ -84,7 +84,7 @@ jobs:
               # Convert AS/GH code browser inter-page links to GH Wiki links by stripping `.md` extensions.
               sed -ie 's|\(](\./[^)]*\)\.md|\1|g' "$f"
               # Convert AS/GH code browser repo file links to GH Wiki links by prepending repo browser to absolute links.
-              sed -ie 's|](/|](https://github.com/${GITHUB_REPOSITORY}/tree/master/|g' "$f"
+              sed -ie 's|](/|](https://github.com/'"${GITHUB_REPOSITORY}"'/tree/master/|g' "$f"
             else # When glob produces no matches, you just get the glob pattern instead.
               ghStatus "Skipping non-existent file $f."
             fi

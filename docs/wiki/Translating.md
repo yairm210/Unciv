@@ -1,6 +1,6 @@
 ## Starting out
 
-The translation files are at https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/translations
+The translation files are at [/android/assets/jsons/translations](/android/assets/jsons/translations)
 
 If you're adding a new language, you'll need to create a new file ('Create a new file' to the right of the folder name in the UI), and copy into it the contents of template.properties
 
