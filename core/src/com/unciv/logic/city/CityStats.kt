@@ -174,12 +174,10 @@ class CityStats(val cityInfo: CityInfo) {
         for (unique in cityInfo.getMatchingUniques(UniqueType.GrowthPercentBonus, stateForConditionals = stateForConditionals)) {
             if (!cityInfo.matchesFilter(unique.params[1])) continue
 
-            val uniqueSource =
-                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
-                    GlobalUniques.getUniqueSourceDescription(unique)
-                else unique.sourceObjectType?.name ?: ""
-            
-            growthSources.add(uniqueSource, Stats(food = unique.params[0].toFloat()/100f * totalFood))
+            growthSources.add(
+                getSourceNameForUnique(unique),
+                Stats(food = unique.params[0].toFloat() / 100f * totalFood)
+            )
         }
         return growthSources
     }
@@ -213,11 +211,7 @@ class CityStats(val cityInfo: CityInfo) {
     private fun getStatsFromUniquesBySource(): StatTreeNode {
         val sourceToStats = StatTreeNode()
         fun addUniqueStats(unique:Unique) {
-            val uniqueSource =
-                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
-                    GlobalUniques.getUniqueSourceDescription(unique)
-                else unique.sourceObjectType?.name ?: ""
-            sourceToStats.addStats(unique.stats, uniqueSource, unique.sourceObjectName ?: "")
+            sourceToStats.addStats(unique.stats, getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
         }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.Stats))
@@ -231,7 +225,7 @@ class CityStats(val cityInfo: CityInfo) {
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerPopulation))
             if (cityInfo.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
-                sourceToStats.addStats(unique.stats.times(amountOfEffects), unique.sourceObjectType?.name ?: "", unique.sourceObjectName ?: "")
+                sourceToStats.addStats(unique.stats.times(amountOfEffects), getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
             }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromXPopulation))
@@ -248,34 +242,19 @@ class CityStats(val cityInfo: CityInfo) {
                     addUniqueStats(unique)
         //
 
-        renameStatmapKeys(sourceToStats.children)
-
         return sourceToStats
     }
 
-    private fun renameStatmapKeys(statMap: StatMap){
-        fun rename(source: String, displayedSource: String) {
-            if (!statMap.containsKey(source)) return
-            statMap.add(displayedSource, statMap[source]!!)
-            statMap.remove(source)
+    private fun getSourceNameForUnique(unique: Unique): String {
+        return when (unique.sourceObjectType) {
+            null -> ""
+            UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
+            UniqueTarget.Wonder -> "Wonders"
+            UniqueTarget.Building -> "Buildings"
+            UniqueTarget.Policy -> "Policies"
+            else -> unique.sourceObjectType.name
         }
-        rename("Wonder", "Wonders")
-        rename("Building", "Buildings")
-        rename("Policy", "Policies")
     }
-
-
-    private fun<T> renameStatmapKeys(statMap: LinkedHashMap<String, T>){
-        fun rename(source: String, displayedSource: String) {
-            if (!statMap.containsKey(source)) return
-            statMap.put(displayedSource, statMap[source]!!)
-            statMap.remove(source)
-        }
-        rename("Wonder", "Wonders")
-        rename("Building", "Buildings")
-        rename("Policy", "Policies")
-    }
-
 
     private fun getStatPercentBonusesFromGoldenAge(isGoldenAge: Boolean): Stats {
         val stats = Stats()
@@ -286,16 +265,10 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
-
     private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction):StatMap {
         val sourceToStats = StatMap()
         fun addUniqueStats(unique: Unique, stat:Stat, amount:Float) {
-            val uniqueSource = 
-                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
-                    GlobalUniques.getUniqueSourceDescription(unique)
-                else unique.sourceObjectType?.name ?: ""
-            
-            sourceToStats.add(uniqueSource, Stats().add(stat, amount))
+            sourceToStats.add(getSourceNameForUnique(unique), Stats().add(stat, amount))
         }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentBonus)) {
@@ -307,7 +280,6 @@ class CityStats(val cityInfo: CityInfo) {
             if (cityInfo.matchesFilter(unique.params[2]))
                 addUniqueStats(unique, Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
-
 
         val uniquesToCheck =
             when {
@@ -342,8 +314,6 @@ class CityStats(val cityInfo: CityInfo) {
             for (unique in cityInfo.getMatchingUniques("+25% Production towards any buildings that already exist in the Capital"))
                 addUniqueStats(unique, Stat.Production, 25f)
         }
-
-        renameStatmapKeys(sourceToStats)
 
         return sourceToStats
     }
@@ -600,12 +570,10 @@ class CityStats(val cityInfo: CityInfo) {
         ) {
             val removedAmount = newFinalStatList.values.sumOf { it[statToBeRemoved].toDouble() }
 
-            val uniqueSource =
-                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
-                    GlobalUniques.getUniqueSourceDescription(unique)
-                else unique.sourceObjectType?.name ?: ""
-
-            newFinalStatList.add(uniqueSource, Stats().apply { this[statToBeRemoved] = -removedAmount.toFloat() })
+            newFinalStatList.add(
+                getSourceNameForUnique(unique),
+                Stats().apply { this[statToBeRemoved] = -removedAmount.toFloat() }
+            )
         }
 
         /* Okay, food calculation is complicated.
@@ -625,9 +593,8 @@ class CityStats(val cityInfo: CityInfo) {
             // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
             // All bonuses except We Love The King do apply even when unhappy
             val growthBonuses = getGrowthBonus(totalFood)
-            renameStatmapKeys(growthBonuses)
             for (growthBonus in growthBonuses) {
-                newFinalStatList.add("${growthBonus.key} (Growth)", growthBonus.value)
+                newFinalStatList.add("[${growthBonus.key}] ([Growth])", growthBonus.value)
             }
             if (cityInfo.isWeLoveTheKingDayActive() && cityInfo.civInfo.getHappiness() >= 0) {
                 // We Love The King Day +25%, only if not unhappy
@@ -649,14 +616,11 @@ class CityStats(val cityInfo: CityInfo) {
             newFinalStatList["Excess food to production"] = Stats(production = totalFood, food = -totalFood)
         }
         
-        val growthNullifyingUnique = cityInfo.getMatchingUniques(UniqueType.NullifiesGrwoth).firstOrNull()
+        val growthNullifyingUnique = cityInfo.getMatchingUniques(UniqueType.NullifiesGrowth).firstOrNull()
         if (growthNullifyingUnique != null) {
-            val uniqueSource =
-                if (growthNullifyingUnique.sourceObjectType == UniqueTarget.Global && growthNullifyingUnique.conditionals.any())
-                    GlobalUniques.getUniqueSourceDescription(growthNullifyingUnique)
-                else growthNullifyingUnique.sourceObjectType?.name ?: ""
             val amountToRemove = -newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
-            newFinalStatList[uniqueSource] = Stats().apply { this[Stat.Food] = amountToRemove.toFloat() }
+            newFinalStatList[getSourceNameForUnique(growthNullifyingUnique)] =
+                Stats().apply { this[Stat.Food] = amountToRemove.toFloat() }
         }
 
         if (cityInfo.isInResistance())
