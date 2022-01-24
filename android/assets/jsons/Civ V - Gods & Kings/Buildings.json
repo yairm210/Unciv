@@ -824,7 +824,8 @@
 		"cityHealth": 25,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Castle",
-		"requiredTech": "Metallurgy"
+		"requiredTech": "Metallurgy",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	{
 		"name": "Kremlin",
