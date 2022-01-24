@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 
 /**
@@ -24,7 +25,7 @@ import com.unciv.UncivGame
  */
 class ExpanderTab(
     title: String,
-    fontSize: Int = 24,
+    fontSize: Int = Constants.headingFontSize,
     icon: Actor? = null,
     startsOutOpened: Boolean = true,
     defaultPad: Float = 10f,

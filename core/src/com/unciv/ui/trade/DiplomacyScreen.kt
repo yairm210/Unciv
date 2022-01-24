@@ -52,7 +52,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
         val closeButton = Constants.close.toTextButton()
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
-        closeButton.label.setFontSize(24)
+        closeButton.label.setFontSize(Constants.headingFontSize)
         closeButton.labelCell.pad(10f)
         closeButton.pack()
         closeButton.y = stage.height - closeButton.height - 10
@@ -227,7 +227,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (otherCiv.cityStateUniqueUnit != null) {
             val unitName = otherCiv.cityStateUniqueUnit
             val techName = viewingCiv.gameInfo.ruleSet.units[otherCiv.cityStateUniqueUnit]!!.requiredTech
-            diplomacyTable.add("[${otherCiv.civName}] is able to provide [${unitName}] once [${techName}] is researched.".toLabel(fontSize = 18)).row()
+            diplomacyTable.add("[${otherCiv.civName}] is able to provide [${unitName}] once [${techName}] is researched.".toLabel(fontSize = Constants.defaultFontSize)).row()
         }
 
         return diplomacyTable
@@ -556,7 +556,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             quest.name
         val description = assignedQuest.getDescription()
 
-        questTable.add(title.toLabel(fontSize = 24)).row()
+        questTable.add(title.toLabel(fontSize = Constants.headingFontSize)).row()
         questTable.add(description.toLabel().apply { wrap = true; setAlignment(Align.center) })
             .width(stage.width / 2).row()
         if (quest.duration > 0)
@@ -582,7 +582,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         val progress = if (viewingCiv.knows(target)) "Currently you have killed [${otherCiv.questManager.unitsKilledSoFar(target, viewingCiv)}] of their military units."
             else "You need to find them first!"
 
-        warTable.add(title.toLabel(fontSize = 24)).row()
+        warTable.add(title.toLabel(fontSize = Constants.headingFontSize)).row()
         warTable.add(description.toLabel().apply { wrap = true; setAlignment(Align.center) })
             .width(stage.width / 2).row()
         warTable.add(progress.toLabel().apply { wrap = true; setAlignment(Align.center) })

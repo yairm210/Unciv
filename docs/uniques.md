@@ -46,6 +46,11 @@ Example: "[+1 Gold, +2 Production] in cities on [Forest] tiles"
 
 Applicable to: Global, FollowerBelief
 
+#### [stats] from all [buildingFilter] buildings
+Example: "[+1 Gold, +2 Production] from all [buildingFilter] buildings"
+
+Applicable to: Global, FollowerBelief
+
 #### [stats] whenever a Great Person is expended
 Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
 

@@ -323,7 +323,7 @@
 		"policies": [
 			{
 				"name": "Constitution",
-				"uniques": ["[+2 Culture] from every Wonder"],
+				"uniques": ["[+2 Culture] from every [Wonder]"],
 				"row": 1,
 				"column": 1
 			},

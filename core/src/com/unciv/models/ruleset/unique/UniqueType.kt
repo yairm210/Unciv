@@ -8,7 +8,7 @@ import kotlin.collections.HashSet
 
 /** inheritsFrom means that all such uniques are acceptable as well.
  * For example, all Global uniques are acceptable for Nations, Eras, etc. */
-enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
+enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
 
     /** Buildings, units, nations, policies, religions, techs etc.
      * Basically anything caught by CivInfo.getMatchingUniques. */
@@ -58,7 +58,8 @@ enum class UniqueTarget(val inheritsFrom:UniqueTarget?=null) {
 enum class UniqueFlag {
     HiddenToUsers,
 }
-enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
+
+enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
 
     //////////////////////////////////////// region GLOBAL UNIQUES ////////////////////////////////////////
 
@@ -74,14 +75,17 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.18.14", ReplaceWith("[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"))
     StatsFromCitiesBefore("[stats] per turn from cities before [tech/policy]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-
-
+    StatsFromBuildings("[stats] from all [buildingFilter] buildings", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.1", ReplaceWith("[stats] from every [Wonder]"))
+    StatsFromWondersDeprecated("[stats] from every Wonder", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
     StatsFromTiles("[stats] from [tileFilter] tiles [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromTilesWithout("[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // This is a doozy
-    StatsFromObject("[stats] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatsFromObject("[stats] from every [tileFilter/specialist/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
+
+    // Stat percentage boosts
     StatPercentBonus("[amount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromObject("[amount]% [stat] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.18.17", ReplaceWith("[amount]% [stat] from every [tileFilter/specialist/buildingName]"))
@@ -209,9 +213,11 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     @Deprecated("As of 3.18.17", ReplaceWith("[+amount] Happiness from each type of luxury resource"))
     BonusHappinessFromLuxuryDeprecated("+[amount] happiness from each type of luxury resource", UniqueTarget.Global),
     LessPolicyCostFromCities("Each city founded increases culture cost of policies [amount]% less than normal", UniqueTarget.Global),
-    LessPolicyCost("[amount]% Culture cost of adopting new policies", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[amount]% Culture cost of adopting new policies"))
+    LessPolicyCost("[amount]% Culture cost of adopting new Policies", UniqueTarget.Global),
+    @Deprecated("As of 3.18.17", ReplaceWith("[amount]% Culture cost of adopting new Policies"))
     LessPolicyCostDeprecated("Culture cost of adopting new Policies reduced by [amount]%", UniqueTarget.Global),
+    @Deprecated("As of 3.19.1", ReplaceWith("[amount]% Culture cost of adopting new Policies"))
+    LessPolicyCostDeprecated2("[amount]% Culture cost of adopting new policies", UniqueTarget.Global),
 
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
@@ -289,6 +295,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
 
+    StatsWithResource("[stats] with [resource]", UniqueTarget.Building),
     
 
     MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
@@ -590,16 +597,16 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
 
     //endregion
 
-    ////////////////////////////////////// region META /////////////////////////////////////////////
-    
-    
-    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins),
+    ///////////////////////////////////////////// region META /////////////////////////////////////////////
+
+    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
+    HiddenWithoutReligion("Hidden when religion is disabled", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Ruins, flags = listOf(UniqueFlag.HiddenToUsers)),
     HiddenBeforePantheon("Hidden before founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterPantheon("Hidden after founding a Pantheon", UniqueTarget.Ruins),
     HiddenAfterGreatProphet("Hidden after generating a Great Prophet", UniqueTarget.Ruins),
-    AvailableAfterCertainTurns("Only available after [amount] turns", UniqueTarget.Ruins),
-    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit),
-
+    HiddenWithoutVictoryType("Hidden when [victoryType] Victory is disabled", UniqueTarget.Building, UniqueTarget.Unit, flags = listOf(UniqueFlag.HiddenToUsers)),
+    HiddenFromCivilopedia("Will not be displayed in Civilopedia", *UniqueTarget.values(), flags = listOf(UniqueFlag.HiddenToUsers)),
+    
     // endregion    
 
     // region DEPRECATED AND REMOVED

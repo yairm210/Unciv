@@ -173,16 +173,15 @@ class CivilopediaScreen(
         val imageSize = 50f
         onBackButtonClicked { game.setScreen(previousScreen) }
 
-        val hideReligionItems = !game.gameInfo.isReligionEnabled()
+        val religionEnabled = game.gameInfo.isReligionEnabled()
 
-        fun shouldBeDisplayed(uniqueObjects: List<Unique>): Boolean {
-            val uniques = uniqueObjects.map { it.placeholderText }
-
-            return Constants.hideFromCivilopediaUnique !in uniques
-                    && !(hideReligionItems && uniqueObjects.any { it.isOfType(UniqueType.HiddenWithoutReligion) } )
-                    && !(uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
-                    unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
-            })
+        fun shouldBeDisplayed(obj: IHasUniques): Boolean {
+            return when {
+                obj.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
+                (!religionEnabled && obj.hasUnique(UniqueType.HiddenWithoutReligion)) -> false
+                obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(it.params[0] )) } -> false
+                else -> true
+            }
         }
 
         fun getCategoryIterator(category: CivilopediaCategories): Collection<ICivilopediaText> =
@@ -205,10 +204,10 @@ class CivilopediaScreen(
 
         for (loopCategory in CivilopediaCategories.values()) {
             if (loopCategory.hide) continue
-            if (hideReligionItems && loopCategory == CivilopediaCategories.Belief) continue
+            if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
                 getCategoryIterator(loopCategory)
-                    .filter { (it as? IHasUniques)?.let { obj -> shouldBeDisplayed(obj.uniqueObjects) } ?: true }
+                    .filter { (it as? IHasUniques)?.let { obj -> shouldBeDisplayed(obj) } ?: true }
                     .map { CivilopediaEntry(
                         (it as INamed).name,
                         loopCategory.getImage?.invoke(it.getIconName(), imageSize),

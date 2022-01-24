@@ -143,7 +143,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return Label for title at top of screen. */
     private fun makeTitleLabel() =
-        "An unrecoverable error has occurred in Unciv:".toLabel(fontSize = 24)
+        "An unrecoverable error has occurred in Unciv:".toLabel(fontSize = Constants.headingFontSize)
             .apply {
                 wrap = true
                 setAlignment(Align.center)
@@ -171,7 +171,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return Table that displays decision buttons for the bottom of the screen. */
     private fun makeActionButtonsTable(): Table {
-        val copyButton = IconTextButton("Copy", fontSize = 24)
+        val copyButton = IconTextButton("Copy", fontSize = Constants.headingFontSize)
             .onClick {
                 Gdx.app.clipboard.contents = text
                 copied = true
@@ -180,7 +180,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                     this@CrashScreen
                 )
             }
-        val reportButton = IconTextButton("Open Issue Tracker", ImageGetter.getImage("OtherIcons/Link"), 24)
+        val reportButton = IconTextButton("Open Issue Tracker", ImageGetter.getImage("OtherIcons/Link"), Constants.headingFontSize)
             .onClick {
                 if (copied) {
                     Gdx.net.openURI("https://github.com/yairm210/Unciv/issues")
@@ -191,7 +191,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                     )
                 }
             }
-        val closeButton = IconTextButton("Close Unciv", fontSize = 24)
+        val closeButton = IconTextButton("Close Unciv", fontSize = Constants.headingFontSize)
             .onClick { Gdx.app.exit() }
 
         val buttonsTable = Table()

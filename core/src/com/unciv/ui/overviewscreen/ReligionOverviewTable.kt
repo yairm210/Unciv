@@ -139,7 +139,7 @@ class ReligionOverviewTable(
     private fun createBeliefDescription(belief: Belief) =
         MarkupRenderer.render(
             belief.run { sequence {
-                yield(FormattedLine(name, size = 24, centered = true))
+                yield(FormattedLine(name, size = Constants.headingFontSize, centered = true))
                 yield(FormattedLine())
                 yieldAll(getCivilopediaTextLines(gameInfo.ruleSet, true))
             } }.toList()

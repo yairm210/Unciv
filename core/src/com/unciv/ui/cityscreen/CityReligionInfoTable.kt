@@ -2,6 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.city.CityInfoReligionManager
 import com.unciv.models.Religion
 import com.unciv.ui.utils.*
@@ -65,7 +66,7 @@ class CityReligionInfoTable(
         val (icon, label) = getIconAndLabel(religionManager.getMajorityReligion())
         return ExpanderTab(
                 title = "Majority Religion: [$label]",
-                fontSize = 18,
+                fontSize = Constants.defaultFontSize,
                 icon = ImageGetter.getCircledReligionIcon(icon, 30f),
                 defaultPad = 0f,
                 persistenceID = "CityStatsTable.Religion",
