@@ -12,11 +12,6 @@ In addition, each civ has flavor text when declaring war, intoduction etc.
 
 All of these need to be filled in in [Nations.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Nations.json)
 
-Adding your Civ and leader names in the [Nations translation file](/android/assets/jsons/Translations/Diplomacy%2CTrade%2CNations.json)
-will notify translators that they should translate them =)
-
-[comment]: <> (TODO: Broken link. Obsolete?)
-
 ## Get your Civ icon
 
 Each civ has an icon, like the wreath for Rome, for instant identification.
@@ -41,19 +36,11 @@ The icon must be 200x200 pixels, white on transparent background - see [icon con
 
 Remember that these are unique units, so search for an existing unique unit to see how they replace their regular counterparts!
 
-Again, [translation file](/android/assets/jsons/Translations/Units%2CPromotions.json) for bonus points!
-
-[comment]: <> (TODO: Broken link. Obsolete? AFAIK translation's only via `template.properties` &#40;and automatic stuff from JSONs&#41; nowadays.)
-
 ## Adding unique buildings
 
 Same as the units - info is in the [Buildings.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) file 
 and icons in the [BuildingIcons](/android/Images.Construction/BuildingIcons) folder, 
 same rules for the icons apply (200x200 pixels, icon considerations)
-
-Again, [translation file](/android/assets/jsons/Translations/Buildings.json) for bonus points!
-
-[comment]: <> (TODO: Broken link. Obsolete? AFAIK translation's only via `template.properties` &#40;and automatic stuff from JSONs&#41; nowadays.)
 
 ## Civ Unique
 
