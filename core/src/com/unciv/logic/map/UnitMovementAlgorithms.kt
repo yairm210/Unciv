@@ -553,7 +553,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return if (unit.isCivilian())
             tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else
-            tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner)
+            // can skip checking for airUnit since not a city
+            tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
     }
 
     private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {
@@ -618,8 +619,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 
         val firstUnit = tile.getFirstUnit()
-        if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
-            return false
+        if (firstUnit != null) {
+            // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
+            if (tile.getUnguardedCivilian() != null && unit.civInfo != firstUnit.civInfo && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
+                return true
+            // Cannot enter hostile tile with any unit in there
+            if (firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
+                return false
+        }
 
         return true
     }

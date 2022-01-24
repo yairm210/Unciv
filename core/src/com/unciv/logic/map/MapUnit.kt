@@ -5,6 +5,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
@@ -876,6 +878,10 @@ class MapUnit {
         }
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
+        // Capture Enemy Civilian Unit if you move on top of it
+        if (tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
+            Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
+        }
 
         val promotionUniques = tile.neighbors
             .flatMap { it.getAllTerrains() }
