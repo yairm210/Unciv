@@ -537,6 +537,20 @@ class CityStats(val cityInfo: CityInfo) {
             entry.science *= statPercentBonusesSum.science.toPercent()
         }
 
+        for ((unique, statToBeRemoved) in cityInfo.getMatchingUniques(UniqueType.NullifiesStat)
+            .map { it to Stat.valueOf(it.params[0]) }
+            .distinct()
+        ) {
+            val removedAmount = newFinalStatList.values.sumOf { it[statToBeRemoved].toDouble() }
+
+            val uniqueSource =
+                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
+                    GlobalUniques.getUniqueSourceDescription(unique)
+                else unique.sourceObjectType?.name ?: ""
+
+            newFinalStatList.add(uniqueSource, Stats().apply { this[statToBeRemoved] = -removedAmount.toFloat() })
+        }
+
         /* Okay, food calculation is complicated.
         First we see how much food we generate. Then we apply production bonuses to it.
         Up till here, business as usual.
@@ -577,19 +591,15 @@ class CityStats(val cityInfo: CityInfo) {
         ) {
             newFinalStatList["Excess food to production"] = Stats(production = totalFood, food = -totalFood)
         }
-
-        for ((unique, statToBeRemoved) in cityInfo.getMatchingUniques(UniqueType.NullifiesStat)
-            .map { it to Stat.valueOf(it.params[0]) }
-            .distinct()
-        ) {
-            val removedAmount = newFinalStatList.values.sumOf { it[statToBeRemoved].toDouble() }
-            
+        
+        val growthNullifyingUnique = cityInfo.getMatchingUniques(UniqueType.NullifiesGrwoth).firstOrNull()
+        if (growthNullifyingUnique != null) {
             val uniqueSource =
-                if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
-                    GlobalUniques.getUniqueSourceDescription(unique)
-                else unique.sourceObjectType?.name ?: ""
-            
-            newFinalStatList.add(uniqueSource, Stats().apply { this[statToBeRemoved] = -removedAmount.toFloat() })
+                if (growthNullifyingUnique.sourceObjectType == UniqueTarget.Global && growthNullifyingUnique.conditionals.any())
+                    GlobalUniques.getUniqueSourceDescription(growthNullifyingUnique)
+                else growthNullifyingUnique.sourceObjectType?.name ?: ""
+            val amountToRemove = -newFinalStatList.values.sumOf { it[Stat.Food].toDouble() }
+            newFinalStatList[uniqueSource] = Stats().apply { this[Stat.Food] = amountToRemove.toFloat() }
         }
 
         if (cityInfo.isInResistance())

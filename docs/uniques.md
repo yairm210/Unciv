@@ -96,6 +96,11 @@ Example: "Nullifies [Culture] [in all cities]"
 
 Applicable to: Global
 
+#### Nullifies Growth [in all cities]
+Example: "Nullifies Growth [in all cities]"
+
+Applicable to: Global
+
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [buildingFilter] wonders [in all cities]"
 

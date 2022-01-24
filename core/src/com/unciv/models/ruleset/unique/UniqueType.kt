@@ -94,6 +94,7 @@ enum class UniqueType(val text:String, vararg targets: UniqueTarget, val flags: 
     StatPercentFromReligionFollowers("[amount]% [stat] from every follower, up to [amount]%", UniqueTarget.FollowerBelief),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
     NullifiesStat("Nullifies [stat] [cityFilter]", UniqueTarget.Global),
+    NullifiesGrwoth("Nullifies Growth [in all cities]", UniqueTarget.Global),
 
     PercentProductionWonders("[amount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.Resource, UniqueTarget.FollowerBelief),
     PercentProductionBuildings("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
