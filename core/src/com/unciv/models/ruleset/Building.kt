@@ -96,11 +96,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     /**
      * @param filterUniques If provided, include only uniques for which this function returns true.
      */
-    private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings(filterUniques=filterUniques)
-        .filterNot {
-            it.startsWith("Hidden ") && it.endsWith(" disabled") ||
-            it == UniqueType.Unbuildable.text ||
-            it == Constants.hideFromCivilopediaUnique
+    private fun getUniquesStringsWithoutDisablers(filterUniques: ((Unique) -> Boolean)? = null) = getUniquesStrings {
+            !it.hasFlag(UniqueFlag.HiddenToUsers)
+            && filterUniques?.invoke(it) ?: true
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
@@ -180,18 +178,18 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 stats.add(unique.stats)
 
         @Suppress("RemoveRedundantQualifierName")  // make it clearer Building inherits Stats
-        for (unique in uniqueObjects)
-            if (unique.placeholderText == "[] with []" && civInfo.hasResource(unique.params[1])
+        for (unique in getMatchingUniques(UniqueType.StatsWithResource))
+            if (civInfo.hasResource(unique.params[1])
                     && Stats.isStats(unique.params[0]))
                 stats.add(unique.stats)
 
         if (!isWonder)
-            for (unique in city.getMatchingUniques("[] from all [] buildings")) {
+            for (unique in city.getMatchingUniques(UniqueType.StatsFromBuildings)) {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
         else
-            for (unique in city.getMatchingUniques("[] from every Wonder"))
+            for (unique in city.getMatchingUniques(UniqueType.StatsFromWondersDeprecated))
                 stats.add(unique.stats)
         return stats
     }
@@ -474,7 +472,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         for (unique in uniqueObjects) {
-            when (unique.placeholderText) {
+            when (unique.placeholderText) { // TODO: Lots of typification…
                 // Deprecated since 3.16.11, replace with "Not displayed [...] construction without []"
                     UniqueType.NotDisplayedUnlessOtherBuildingBuilt.placeholderText ->
                         if (!cityConstructions.containsBuildingOrEquivalent(unique.params[0]))
@@ -757,8 +755,9 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null)[stat] > 0) return true
-        if (uniqueObjects.any { it.isOfType(UniqueType.StatsPerPopulation) && it.stats[stat] > 0 }) return true
-        if (uniqueObjects.any { it.isOfType(UniqueType.StatsFromTiles) && it.stats[stat] > 0 }) return true
+        if (getMatchingUniques(UniqueType.Stats).any { it.stats[stat] > 0 }) return true
+        if (getMatchingUniques(UniqueType.StatsFromTiles).any { it.stats[stat] > 0 }) return true
+        if (getMatchingUniques(UniqueType.StatsPerPopulation).any { it.stats[stat] > 0 }) return true
         return false
     }
 

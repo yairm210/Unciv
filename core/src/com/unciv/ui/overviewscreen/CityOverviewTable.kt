@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.Stat
@@ -54,7 +55,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
         cityInfoTableIcons.defaults()
             .pad(paddingVert, paddingHorz)
             .align(Align.center)
-        cityInfoTableIcons.add("Cities".toLabel(fontSize = 24)).colspan(numHeaderCells).align(Align.center).row()
+        cityInfoTableIcons.add("Cities".toLabel(fontSize = Constants.headingFontSize)).colspan(numHeaderCells).align(Align.center).row()
         val citySortIcon: IconCircleGroup = ImageGetter.getUnitIcon("Settler").surroundWithCircle(iconSize)
         addSortIcon("City", citySortIcon)
         val headerFillerCell = cityInfoTableIcons.add(Table())  // will push the first icon to left-align

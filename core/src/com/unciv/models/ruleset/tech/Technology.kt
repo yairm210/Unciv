@@ -120,7 +120,7 @@ class Technology: RulesetObject() {
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentBuilding(it) == it)
                 && (nuclearWeaponsEnabled || "Enables nuclear weapon" !in it.uniques)
                 && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
-                && Constants.hideFromCivilopediaUnique !in it.uniques
+                && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
             }
     }
 
@@ -128,7 +128,7 @@ class Technology: RulesetObject() {
      * Returns a Sequence of [BaseUnit]s enabled by this Technology, filtered for [civInfo]'s uniques,
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
-    // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
+    // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia"/HiddenFromCivilopedia unique this needs refactoring
     fun getEnabledUnits(civInfo: CivilizationInfo): Sequence<BaseUnit> {
         val nuclearWeaponsEnabled = civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
         val religionEnabled = civInfo.gameInfo.isReligionEnabled()
@@ -139,7 +139,7 @@ class Technology: RulesetObject() {
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentUnit(it) == it)
                 && (nuclearWeaponsEnabled || it.uniqueObjects.none { unique -> unique.placeholderText == "Nuclear weapon of Strength []" })
                 && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
-                && Constants.hideFromCivilopediaUnique !in it.uniques
+                && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
             }
     }
 

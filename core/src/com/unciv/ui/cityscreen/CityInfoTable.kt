@@ -1,10 +1,14 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.CityStats
+import com.unciv.logic.city.StatTreeNode
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stat
@@ -65,7 +69,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         val icon = ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f)
         val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
-        val buildingNameAndIconTable = ExpanderTab(displayName, 18, icon, false, 5f) {
+        val buildingNameAndIconTable = ExpanderTab(displayName, Constants.defaultFontSize, icon, false, 5f) {
             val detailsString = building.getDescription(cityScreen.city, cityScreen.city.getRuleset())
             it.add(detailsString.toLabel().apply { wrap = true })
                 .width(cityScreen.stage.width / 4 - 2 * pad).row() // when you set wrap, then you need to manually set the size of the label
@@ -142,69 +146,108 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
     }
 
+    private fun addStatsToHashmap(statTreeNode: StatTreeNode, hashMap: HashMap<String, Float>, stat:Stat,
+                                  showDetails:Boolean, indentation:Int=0) {
+        for ((name, child) in statTreeNode.children) {
+            hashMap["- ".repeat(indentation) + name] = child.totalStats[stat]
+            if (showDetails) addStatsToHashmap(child, hashMap, stat, showDetails, indentation + 1)
+        }
+    }
+
     private fun Table.addStatInfo() {
         val cityStats = cityScreen.city.cityStats
 
-
         for (stat in Stat.values()) {
-            val relevantBaseStats = LinkedHashMap<String, Float>()
-
-            if (stat != Stat.Happiness)
-                for ((key, value) in cityStats.baseStatList)
-                    relevantBaseStats[key] = value[stat]
-            else relevantBaseStats.putAll(cityStats.happinessList)
-            for (key in relevantBaseStats.keys.toList())
-                if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)
-
-            if (relevantBaseStats.isEmpty()) continue
-
-            val statValuesTable = Table().apply { defaults().pad(2f) }
+            val statValuesTable = Table()
+            statValuesTable.touchable = Touchable.enabled
             addCategory(stat.name, statValuesTable)
 
-            statValuesTable.add("Base values".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).pad(4f).colspan(2).row()
-            var sumOfAllBaseValues = 0f
-            for (entry in relevantBaseStats) {
-                val specificStatValue = entry.value
+            updateStatValuesTable(stat, cityStats, statValuesTable)
+        }
+    }
+
+    private fun updateStatValuesTable(
+        stat: Stat,
+        cityStats: CityStats,
+        statValuesTable: Table,
+        showDetails:Boolean = false
+    ) {
+        statValuesTable.clear()
+        statValuesTable.defaults().pad(2f)
+        statValuesTable.onClick {
+            updateStatValuesTable(
+                stat,
+                cityStats,
+                statValuesTable,
+                !showDetails
+            )
+        }
+
+        val relevantBaseStats = LinkedHashMap<String, Float>()
+
+        if (stat != Stat.Happiness)
+            addStatsToHashmap(cityStats.baseStatTree, relevantBaseStats, stat, showDetails)
+        else relevantBaseStats.putAll(cityStats.happinessList)
+        for (key in relevantBaseStats.keys.toList())
+            if (relevantBaseStats[key] == 0f) relevantBaseStats.remove(key)
+
+        if (relevantBaseStats.isEmpty()) return
+
+        statValuesTable.add("Base values".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).pad(4f)
+            .colspan(2).row()
+        var sumOfAllBaseValues = 0f
+        for (entry in relevantBaseStats) {
+            val specificStatValue = entry.value
+            if (!entry.key.startsWith('-'))
                 sumOfAllBaseValues += specificStatValue
+            statValuesTable.add(entry.key.toLabel()).left()
+            statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
+        }
+        statValuesTable.addSeparator()
+        statValuesTable.add("Total".toLabel())
+        statValuesTable.add(sumOfAllBaseValues.toOneDecimalLabel()).row()
+
+        val relevantBonuses = cityStats.statPercentBonusList.filter { it.value[stat] != 0f }
+        if (relevantBonuses.isNotEmpty()) {
+            statValuesTable.add("Bonuses".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2)
+                .padTop(20f).row()
+            var sumOfBonuses = 0f
+            for (entry in relevantBonuses) {
+                val specificStatValue = entry.value[stat]
+                sumOfBonuses += specificStatValue
+                statValuesTable.add(entry.key.toLabel())
+                statValuesTable.add(specificStatValue.toPercentLabel()).row() // negative bonus
+            }
+            statValuesTable.addSeparator()
+            statValuesTable.add("Total".toLabel())
+            statValuesTable.add(sumOfBonuses.toPercentLabel()).row() // negative bonus
+        }
+
+        if (stat != Stat.Happiness) {
+            statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2)
+                .padTop(20f).row()
+            var finalTotal = 0f
+            for (entry in cityStats.finalStatList) {
+                val specificStatValue = entry.value[stat]
+                finalTotal += specificStatValue
+                if (specificStatValue == 0f) continue
                 statValuesTable.add(entry.key.toLabel())
                 statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
             }
             statValuesTable.addSeparator()
             statValuesTable.add("Total".toLabel())
-            statValuesTable.add(sumOfAllBaseValues.toOneDecimalLabel()).row()
-
-            val relevantBonuses = cityStats.statPercentBonusList.filter { it.value[stat] != 0f }
-            if (relevantBonuses.isNotEmpty()) {
-                statValuesTable.add("Bonuses".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
-                var sumOfBonuses = 0f
-                for (entry in relevantBonuses) {
-                    val specificStatValue = entry.value[stat]
-                    sumOfBonuses += specificStatValue
-                    statValuesTable.add(entry.key.toLabel())
-                    statValuesTable.add(specificStatValue.toPercentLabel()).row() // negative bonus
-                }
-                statValuesTable.addSeparator()
-                statValuesTable.add("Total".toLabel())
-                statValuesTable.add(sumOfBonuses.toPercentLabel()).row() // negative bonus
-            }
-
-            if (stat != Stat.Happiness) {
-                statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
-                var finalTotal = 0f
-                for (entry in cityStats.finalStatList) {
-                    val specificStatValue = entry.value[stat]
-                    finalTotal += specificStatValue
-                    if (specificStatValue == 0f) continue
-                    statValuesTable.add(entry.key.toLabel())
-                    statValuesTable.add(specificStatValue.toOneDecimalLabel()).row()
-                }
-                statValuesTable.addSeparator()
-                statValuesTable.add("Total".toLabel())
-                statValuesTable.add(finalTotal.toOneDecimalLabel()).row()
-            }
-
-            statValuesTable.padBottom(4f)
+            statValuesTable.add(finalTotal.toOneDecimalLabel()).row()
         }
+
+        statValuesTable.pack()
+        val toggleButtonChar = if (showDetails) "-" else "+"
+        val toggleButton = toggleButtonChar.toLabel().apply { setAlignment(Align.center) }
+            .surroundWithCircle(25f, color = ImageGetter.getBlue())
+            .surroundWithCircle(27f, false)
+        statValuesTable.addActor(toggleButton)
+        toggleButton.setPosition(0f, statValuesTable.height, Align.topLeft)
+
+        statValuesTable.padBottom(4f)
     }
 
     private fun Table.addGreatPersonPointInfo(cityInfo: CityInfo) {

@@ -84,10 +84,10 @@ class CityConstructions {
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
-    fun getStats(): Stats {
-        val stats = Stats()
+    fun getStats(): StatTreeNode {
+        val stats = StatTreeNode()
         for (building in getBuiltBuildings())
-            stats.add(building.getStats(cityInfo))
+            stats.addStats(building.getStats(cityInfo), building.name)
         return stats
     }
 

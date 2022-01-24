@@ -33,7 +33,7 @@
       "This means that it is very difficult to expand quickly in Unciv.\nIt isn’t impossible, but as a new player you probably shouldn't do it.\nSo what should you do? Chill out, scout, and improve the land that you do have by building Workers.\nOnly build new cities once you have found a spot that you believe is appropriate."    
   ],
   Unhappiness: [    
-      "It seems that your citizens are unhappy!\nWhile unhappy, your civilization will suffer many detrimental effects,\n  which can be found in the civilopedia",
+      "It seems that your citizens are unhappy!\nWhile unhappy, your civilization will suffer many detrimental effects, increasing in severity as unhappiness gets higher.",
       "Unhappiness has two main causes: Population and cities.\n  Each city causes 3 unhappiness, and each population, 1",
       "There are 2 main ways to combat unhappiness:\n  by building happiness buildings for your population\n  or by having improved luxury resources within your borders."  
   ],

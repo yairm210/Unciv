@@ -163,12 +163,13 @@ class TechPickerScreen(
 
             var text = techName.tr()
 
-            if (techName == selectedTech?.name) {
+            if (techName == selectedTech?.name && techButton.color != currentTechColor) {
                 techButton.color = techButton.color.cpy().lerp(Color.BLACK, 0.5f)
             }
 
+            techButton.orderIndicator?.remove()
             if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
-                text += " (" + tempTechsToResearch.indexOf(techName) + ")"
+                techButton.addOrderIndicator(tempTechsToResearch.indexOf(techName) + 1)
             }
 
             if (!civTech.isResearched(techName) || techName == Constants.futureTech)

@@ -25,6 +25,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.getRelativeTextDistance
 import kotlin.collections.set
 
 object ModOptionsConstants {
@@ -300,13 +301,39 @@ class Ruleset {
         return stringList.joinToString { it.tr() }
     }
 
+    /** Similarity below which an untyped unique can be considered a potential misspelling.
+     * Roughly corresponds to the fraction of the Unique placeholder text that can be different/misspelled, but with some extra room for [getRelativeTextDistance] idiosyncrasies. */
+    private val uniqueMisspellingThreshold = 0.15 // Tweak as needed. Simple misspellings seem to be around 0.025, so would mostly be caught by 0.05. IMO 0.1 would be good, but raising to 0.15 also seemed to catch what may be an outdated Unique.
 
     fun checkUniques(uniqueContainer:IHasUniques, lines:RulesetErrorList,
                      severityToReport: UniqueType.UniqueComplianceErrorSeverity) {
         val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
 
         for (unique in uniqueContainer.uniqueObjects) {
-            if (unique.type == null) continue
+            if (unique.type == null) {
+                val similarUniques = UniqueType.values().filter { getRelativeTextDistance(it.placeholderText, unique.placeholderText) <= uniqueMisspellingThreshold }
+                val equalUniques = similarUniques.filter { it.placeholderText == unique.placeholderText }
+                if (equalUniques.isNotEmpty()) {
+                    lines.add( // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.
+                        "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
+                        RulesetErrorSeverity.OK
+                    )
+                } else if (similarUniques.isNotEmpty()) {
+                    lines.add("$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
+                        similarUniques.joinToString("\n") { uniqueType ->
+                            val deprecationAnnotation = UniqueType::class.java.getField(uniqueType.name)
+                                    .getAnnotation(Deprecated::class.java)
+                            if (deprecationAnnotation == null)
+                                "\"${uniqueType.text}\""
+                            else
+                                "\"${uniqueType.text}\" (Deprecated)"
+                        }.prependIndent("\t"),
+                        RulesetErrorSeverity.OK
+                    )
+
+                }
+                continue
+            }
             val complianceErrors = unique.type.getComplianceErrors(unique, this)
             for (complianceError in complianceErrors) {
                 if (complianceError.errorSeverity == severityToReport)

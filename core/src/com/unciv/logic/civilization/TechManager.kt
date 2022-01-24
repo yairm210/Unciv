@@ -167,7 +167,7 @@ class TechManager {
         // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City-States.
         var allCitiesScience = 0f
         civInfo.cities.forEach { it ->
-            val totalBaseScience = it.cityStats.baseStatList.values.map { it.science }.sum()
+            val totalBaseScience = it.cityStats.baseStatTree.totalStats.science
             val totalBonusPercents = it.cityStats.statPercentBonusList.filter { it.key != "Policies" }.values.map { it.science }.sum()
             allCitiesScience += totalBaseScience * totalBonusPercents.toPercent()
         }

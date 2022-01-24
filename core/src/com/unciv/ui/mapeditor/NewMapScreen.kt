@@ -2,6 +2,7 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapParameters
@@ -51,7 +52,7 @@ class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : 
         mapParametersTable = MapParametersTable(mapParameters, isEmptyMapAllowed = true)
         val newMapScreenOptionsTable = Table(skin).apply {
             pad(10f)
-            add("Map Options".toLabel(fontSize = 24)).row()
+            add("Map Options".toLabel(fontSize = Constants.headingFontSize)).row()
             
             // Add the selector for the base ruleset
             val baseRulesetBox = getBaseRulesetSelectBox()

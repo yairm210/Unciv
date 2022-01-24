@@ -1,3 +1,21 @@
+## 3.19.1
+
+Better drilldown to stat sources in city screen
+
+Start bias includes neighboring tiles for better effect
+
+Cleaner tech order display
+
+Better unique documentation - By xlenstra
+
+By will-ca:
+- Check rulesets for potential typos.
+- Avoid potential crashes when deleting mods.
+- Fix uneven fonts, unify font sizes.
+- Make "Help" button clearer and translatable, random nation indicators and labels translatable.
+
+Destroy Arsenal when city is captured  - By SpacedOutChicken
+
 ## 3.19.0
 
 Vastly improved worker AI for mods, and AI utilization of workers

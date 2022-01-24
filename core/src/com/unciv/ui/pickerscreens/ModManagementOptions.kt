@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
@@ -101,7 +102,7 @@ class ModManagementOptions(private val modManagementScreen: ModManagementScreen)
 
         expander = ExpanderTab(
             "Sort and Filter",
-            fontSize = 18,
+            fontSize = Constants.defaultFontSize,
             startsOutOpened = false,
             defaultPad = 2.5f,
             headerPad = 5f,

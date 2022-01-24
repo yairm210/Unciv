@@ -17,6 +17,42 @@ import com.unciv.ui.utils.toPercent
 import kotlin.math.min
 
 
+class StatTreeNode {
+    val children = LinkedHashMap<String, StatTreeNode>()
+    private var innerStats: Stats? = null
+
+    private fun addInnerStats(stats: Stats) {
+        if (innerStats == null) innerStats = stats
+        else innerStats!!.add(stats) // What happens if we add 2 stats to the same leaf?
+    }
+
+    fun addStats(newStats: Stats, vararg hierarchyList: String) {
+        if (hierarchyList.isEmpty()) {
+            addInnerStats(newStats)
+            return
+        }
+        val childName = hierarchyList.first()
+        if (!children.containsKey(childName))
+            children[childName] = StatTreeNode()
+        children[childName]!!.addStats(newStats, *hierarchyList.drop(1).toTypedArray())
+    }
+
+    fun add(otherTree: StatTreeNode) {
+        if (otherTree.innerStats != null) addInnerStats(otherTree.innerStats!!)
+        for ((key, value) in otherTree.children) {
+            if (!children.containsKey(key)) children[key] = value
+            else children[key]!!.add(value)
+        }
+    }
+
+    val totalStats: Stats by lazy {
+        val toReturn = Stats()
+        if (innerStats != null) toReturn.add(innerStats!!)
+        for (child in children.values) toReturn.add(child.totalStats)
+        toReturn
+    }
+}
+
 /** Holds and calculates [Stats] for a city.
  * 
  * No field needs to be saved, all are calculated on the fly,
@@ -24,6 +60,8 @@ import kotlin.math.min
  */
 class CityStats(val cityInfo: CityInfo) {
     //region Fields, Transient 
+
+    var baseStatTree = StatTreeNode()
 
     var baseStatList = LinkedHashMap<String, Stats>()
 
@@ -172,15 +210,14 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
 
-    private fun getStatsFromUniquesBySource():StatMap {
-        val sourceToStats = StatMap()
+    private fun getStatsFromUniquesBySource(): StatTreeNode {
+        val sourceToStats = StatTreeNode()
         fun addUniqueStats(unique:Unique) {
             val uniqueSource =
                 if (unique.sourceObjectType == UniqueTarget.Global && unique.conditionals.any())
                     GlobalUniques.getUniqueSourceDescription(unique)
                 else unique.sourceObjectType?.name ?: ""
-            
-            sourceToStats.add(uniqueSource, unique.stats)
+            sourceToStats.addStats(unique.stats, uniqueSource, unique.sourceObjectName ?: "")
         }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.Stats))
@@ -194,7 +231,7 @@ class CityStats(val cityInfo: CityInfo) {
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsPerPopulation))
             if (cityInfo.matchesFilter(unique.params[2])) {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
-                sourceToStats.add(unique.sourceObjectType?.name ?: "", unique.stats.times(amountOfEffects))
+                sourceToStats.addStats(unique.stats.times(amountOfEffects), unique.sourceObjectType?.name ?: "", unique.sourceObjectName ?: "")
             }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromXPopulation))
@@ -211,7 +248,7 @@ class CityStats(val cityInfo: CityInfo) {
                     addUniqueStats(unique)
         //
 
-        renameStatmapKeys(sourceToStats)
+        renameStatmapKeys(sourceToStats.children)
 
         return sourceToStats
     }
@@ -220,6 +257,18 @@ class CityStats(val cityInfo: CityInfo) {
         fun rename(source: String, displayedSource: String) {
             if (!statMap.containsKey(source)) return
             statMap.add(displayedSource, statMap[source]!!)
+            statMap.remove(source)
+        }
+        rename("Wonder", "Wonders")
+        rename("Building", "Buildings")
+        rename("Policy", "Policies")
+    }
+
+
+    private fun<T> renameStatmapKeys(statMap: LinkedHashMap<String, T>){
+        fun rename(source: String, displayedSource: String) {
+            if (!statMap.containsKey(source)) return
+            statMap.put(displayedSource, statMap[source]!!)
             statMap.remove(source)
         }
         rename("Wonder", "Wonders")
@@ -365,7 +414,7 @@ class CityStats(val cityInfo: CityInfo) {
 
     // needs to be a separate function because we need to know the global happiness state
     // in order to determine how much food is produced in a city!
-    fun updateCityHappiness(statsFromBuildings: Stats) {
+    fun updateCityHappiness(statsFromBuildings: StatTreeNode) {
         val civInfo = cityInfo.civInfo
         val newHappinessList = LinkedHashMap<String, Float>()
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
@@ -412,15 +461,15 @@ class CityStats(val cityInfo: CityInfo) {
                 .toFloat()
         if (happinessFromSpecialists > 0) newHappinessList["Specialists"] = happinessFromSpecialists
 
-        newHappinessList["Buildings"] = statsFromBuildings.happiness.toInt().toFloat()
+        newHappinessList["Buildings"] = statsFromBuildings.totalStats.happiness.toInt().toFloat()
 
         newHappinessList["Tile yields"] = statsFromTiles.happiness
 
         val happinessBySource = getStatsFromUniquesBySource()
-        for ((source, stats) in happinessBySource)
-            if (stats.happiness != 0f) {
+        for ((source, stats) in happinessBySource.children)
+            if (stats.totalStats.happiness != 0f) {
                 if (!newHappinessList.containsKey(source)) newHappinessList[source] = 0f
-                newHappinessList[source] = newHappinessList[source]!! + stats.happiness
+                newHappinessList[source] = newHappinessList[source]!! + stats.totalStats.happiness
             }
 
         // we don't want to modify the existing happiness list because that leads
@@ -428,26 +477,28 @@ class CityStats(val cityInfo: CityInfo) {
         happinessList = newHappinessList
     }
 
-    private fun updateBaseStatList(statsFromBuildings: Stats) {
+    private fun updateBaseStatList(statsFromBuildings: StatTreeNode) {
+        val newBaseStatTree = StatTreeNode()
+
         // We don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
         val newBaseStatList = StatMap() 
 
-        newBaseStatList["Population"] = Stats(
+        newBaseStatTree.addStats(Stats(
             science = cityInfo.population.population.toFloat(),
             production = cityInfo.population.getFreePopulation().toFloat()
-        )
+        ), "Population")
         newBaseStatList["Tile yields"] = statsFromTiles
         newBaseStatList["Specialists"] =
             getStatsFromSpecialists(cityInfo.population.getNewSpecialists())
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
-        newBaseStatList["Buildings"] = statsFromBuildings
+        newBaseStatTree.children["Buildings"] = statsFromBuildings
         newBaseStatList["City-States"] = getStatsFromCityStates()
 
-        val statMap = getStatsFromUniquesBySource()
-        for ((source, stats) in statMap)
-            newBaseStatList.add(source, stats)
+        for ((source, stats) in newBaseStatList)
+            newBaseStatTree.addStats(stats, source)
 
-        baseStatList = newBaseStatList
+        newBaseStatTree.add(getStatsFromUniquesBySource())
+        baseStatTree = newBaseStatTree
     }
 
 
@@ -507,8 +558,8 @@ class CityStats(val cityInfo: CityInfo) {
     private fun updateFinalStatList(currentConstruction: IConstruction, citySpecificUniques: Sequence<Unique>) {
         val newFinalStatList = StatMap() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
-        for (entry in baseStatList)
-            newFinalStatList[entry.key] = entry.value.clone()
+        for ((key, value) in baseStatTree.children)
+            newFinalStatList[key] = value.totalStats.clone()
 
         val statPercentBonusesSum = Stats()
         for (bonus in statPercentBonusList.values) statPercentBonusesSum.add(bonus)
@@ -516,9 +567,15 @@ class CityStats(val cityInfo: CityInfo) {
         for (entry in newFinalStatList.values)
             entry.production *= statPercentBonusesSum.production.toPercent()
 
+        // We only add the 'extra stats from production' AFTER we calculate the production INCLUDING BONUSES
         val statsFromProduction = getStatsFromProduction(newFinalStatList.values.map { it.production }.sum())
-        baseStatList = LinkedHashMap(baseStatList).apply { put("Construction", statsFromProduction) } // concurrency-safe addition
-        newFinalStatList["Construction"] = statsFromProduction
+        if (!statsFromProduction.isEmpty()) {
+            baseStatTree = StatTreeNode().apply {
+                children.putAll(baseStatTree.children)
+                addStats(statsFromProduction, "Production")
+            } // concurrency-safe addition
+            newFinalStatList["Construction"] = statsFromProduction
+        }
 
         for (entry in newFinalStatList.values) {
             entry.gold *= statPercentBonusesSum.gold.toPercent()

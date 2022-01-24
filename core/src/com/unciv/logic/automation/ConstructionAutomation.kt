@@ -325,10 +325,11 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addFoodBuildingChoice() {
-        val foodBuilding = buildableNotWonders.asSequence().filter { (it.isStatRelated(Stat.Food)
-                || it.uniqueObjects.any { it.placeholderText=="[]% of food is carried over after population increases" })
-                && Automation.allowSpendingResource(civInfo, it) }
-            .minByOrNull { it.cost }
+        val foodBuilding = buildableNotWonders.asSequence()
+            .filter { 
+                (it.isStatRelated(Stat.Food) || it.hasUnique(UniqueType.CarryOverFood)) 
+                && Automation.allowSpendingResource(civInfo, it) 
+            }.minByOrNull { it.cost }
         if (foodBuilding != null) {
             var modifier = 1f
             if (cityInfo.population.population < 5) modifier = 1.3f

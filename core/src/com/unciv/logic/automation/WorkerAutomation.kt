@@ -332,7 +332,6 @@ class WorkerAutomation(
      */
     private fun chooseImprovement(unit: MapUnit, tile: TileInfo): TileImprovement? {
 
-        // turnsToBuild is what defines them as buildable
         val potentialTileImprovements = ruleSet.tileImprovements.filter {
             unit.canBuildImprovement(it.value, tile)
                     && tile.canImprovementBeBuiltHere(it.value, tile.hasViewableResource(civInfo))
