@@ -1036,7 +1036,7 @@
 		"isWonder": true,
 		"culture": 3,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"uniques": ["[-33]% Gold cost of upgrading [Military] units"],
+		"uniques": ["[-33]% Gold cost of upgrading <for [Military] units>"],
 		"requiredTech": "Combined Arms",
 		"quote": "'In preparing for battle I have always found that plans are useless, but planning is indispensable.' - Dwight D. Eisenhower"
 	},
@@ -1206,5 +1206,5 @@
 		"faith": 2,
 		"happiness": 2,
 		"uniques": ["Unbuildable", "Hidden when religion is disabled"]
-	},
+	}
 ]

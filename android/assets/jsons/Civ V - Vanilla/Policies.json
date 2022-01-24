@@ -121,7 +121,7 @@
 			},
 			{
 				"name": "Professional Army",
-				"uniques": ["[-33]% Gold cost of upgrading [Military] units", "[+1 Happiness] from every [Walls]",
+				"uniques": ["[-33]% Gold cost of upgrading <for [Military] units>", "[+1 Happiness] from every [Walls]",
 					"[+1 Happiness] from every [Castle]", "[+1 Happiness] from every [Arsenal]", "[+1 Happiness] from every [Military Base]"
 				],
 				"requires": ["Military Caste"],
@@ -239,7 +239,7 @@
 			},
 			{
 				"name": "Trade Unions",
-				"uniques": ["[-33]% maintenance on roads & railroads", "[+1 Gold] from every [Harbor]", "[+1 Gold] from every [Seaport]"],
+				"uniques": ["[-33]% maintenance on road & railroads", "[+1 Gold] from every [Harbor]", "[+1 Gold] from every [Seaport]"],
 				"row": 1,
 				"column": 4
 			},
@@ -260,7 +260,7 @@
 			},
 			{
 				"name": "Protectionism",
-				"uniques": ["[+1] happiness from each type of luxury resource"],
+				"uniques": ["[+1] Happiness from each type of luxury resource"],
 				"requires": ["Mercantilism"],
 				"row": 3,
 				"column": 4
@@ -335,7 +335,7 @@
 			},
 			{
 				"name": "Civil Society",
-				"uniques": ["[-50]% food consumption by specialists [in all cities]"],
+				"uniques": ["[-50]% Food consumption by specialists [in all cities]"],
 				"row": 1,
 				"column": 5
 			},
