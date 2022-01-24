@@ -196,7 +196,7 @@ class CivilopediaScreen(
                 CivilopediaCategories.Technology -> ruleset.technologies.values
                 CivilopediaCategories.Promotion -> ruleset.unitPromotions.values
                 CivilopediaCategories.Policy -> ruleset.policies.values
-                CivilopediaCategories.Tutorial -> tutorialController.getCivilopediaTutorials()
+                CivilopediaCategories.Tutorial -> tutorialController.getCivilopediaTutorials(ruleset)
                 CivilopediaCategories.Difficulty -> ruleset.difficulties.values
                 CivilopediaCategories.Belief -> (ruleset.beliefs.values.asSequence() +
                         Belief.getCivilopediaReligionEntry(ruleset)).toList()

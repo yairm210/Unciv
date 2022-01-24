@@ -58,6 +58,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
+            UniqueType.ConditionalBetweenHappiness ->
+                state.civInfo != null
+                && condition.params[0].toInt() <= state.civInfo.happinessForNextTurn
+                && state.civInfo.happinessForNextTurn < condition.params[1].toInt()
+            UniqueType.ConditionalBelowHappiness -> 
+                state.civInfo != null && state.civInfo.happinessForNextTurn < condition.params[0].toInt() 
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
             UniqueType.ConditionalBeforeEra ->

@@ -41,7 +41,7 @@ class GlobalUniquesTests {
         
         // Create a new ruleset we can easily edit, and set the important variables of gameInfo
         RulesetCache.loadRulesets()
-        ruleSet = RulesetCache.getBaseRuleset()
+        ruleSet = RulesetCache.getVanillaRuleset()
         gameInfo.ruleSet = ruleSet
         gameInfo.difficultyObject = ruleSet.difficulties["Prince"]!!
 

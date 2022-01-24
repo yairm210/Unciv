@@ -31,7 +31,7 @@ class TileImprovementConstructionTests {
     @Before
     fun initTheWorld() {
         RulesetCache.loadRulesets()
-        ruleSet = RulesetCache.getBaseRuleset()
+        ruleSet = RulesetCache.getVanillaRuleset()
         civInfo.tech.researchedTechnologies.addAll(ruleSet.technologies.values)
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
         city.civInfo = civInfo

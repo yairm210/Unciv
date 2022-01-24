@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -17,9 +18,10 @@ import kotlin.math.roundToInt
 object BattleDamage {
     
     private fun getModifierStringFromUnique(unique: Unique): String {
-        val source =  when (unique.sourceObjectType) {
+        val source = when (unique.sourceObjectType) {
             UniqueTarget.Unit -> "Unit ability"
             UniqueTarget.Nation -> "National ability"
+            UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
             else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
         }
         if (unique.conditionals.isEmpty()) return source
@@ -58,19 +60,6 @@ object BattleDamage {
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-            val civHappiness = if (civInfo.isCityState() && civInfo.getAllyCiv() != null)
-            // If we are a city state with an ally we are vulnerable to their unhappiness.
-                min(
-                    civInfo.gameInfo.getCivilization(civInfo.getAllyCiv()!!).getHappiness(),
-                    civInfo.getHappiness()
-                )
-            else civInfo.getHappiness()
-            if (civHappiness < 0)
-                modifiers["Unhappiness"] = max(
-                    2 * civHappiness,
-                    -90
-                ) // otherwise it could exceed -100% and start healing enemy units...
-
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
 
             // Deprecated since 3.18.17

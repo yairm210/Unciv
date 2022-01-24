@@ -23,7 +23,7 @@ import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 /** New map generation screen */
 class NewMapScreen(val mapParameters: MapParameters = getDefaultParameters()) : PickerScreen() {
 
-    private val ruleset = RulesetCache.getBaseRuleset()
+    private val ruleset = RulesetCache.getVanillaRuleset()
     private var generatedMap: TileMap? = null
     private val mapParametersTable: MapParametersTable
     private val modCheckBoxes: ModCheckboxTable

@@ -65,13 +65,12 @@ class Ruleset {
 
     private val jsonParser = JsonParser()
 
-    var modWithReligionLoaded = false
-
     var name = ""
     val beliefs = LinkedHashMap<String, Belief>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
+    var globalUniques = GlobalUniques()
     val nations = LinkedHashMap<String, Nation>()
     val policies = LinkedHashMap<String, Policy>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
@@ -104,15 +103,16 @@ class Ruleset {
     }
 
     fun add(ruleset: Ruleset) {
+        beliefs.putAll(ruleset.beliefs)
         buildings.putAll(ruleset.buildings)
         for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
+        globalUniques = GlobalUniques().apply { uniques.addAll(globalUniques.uniques); uniques.addAll(ruleset.globalUniques.uniques) }
         nations.putAll(ruleset.nations)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
-        beliefs.putAll(ruleset.beliefs)
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
         ruinRewards.putAll(ruleset.ruinRewards)
@@ -127,7 +127,6 @@ class Ruleset {
         unitTypes.putAll(ruleset.unitTypes)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         mods += ruleset.mods
-        modWithReligionLoaded = modWithReligionLoaded || ruleset.modWithReligionLoaded
     }
 
     fun clear() {
@@ -135,14 +134,15 @@ class Ruleset {
         buildings.clear()
         difficulties.clear()
         eras.clear()
-        policyBranches.clear()
-        specialists.clear()
+        globalUniques = GlobalUniques()
         mods.clear()
         nations.clear()
         policies.clear()
+        policyBranches.clear()
+        quests.clear()
         religions.clear()
         ruinRewards.clear()
-        quests.clear()
+        specialists.clear()
         technologies.clear()
         terrains.clear()
         tileImprovements.clear()
@@ -150,7 +150,6 @@ class Ruleset {
         unitPromotions.clear()
         units.clear()
         unitTypes.clear()
-        modWithReligionLoaded = false
     }
 
 
@@ -201,7 +200,7 @@ class Ruleset {
         if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
         // While `eras.values.toList()` might seem more logical, eras.values is a MutableCollection and
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
-        // Using a map sidesteps this problem
+        // Using map{} sidesteps this problem
         eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
         
         val unitTypesFile = folderHandle.child("UnitTypes.json")
@@ -254,8 +253,14 @@ class Ruleset {
         }
 
         val difficultiesFile = folderHandle.child("Difficulties.json")
-        if (difficultiesFile.exists()) difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
+        if (difficultiesFile.exists()) 
+            difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
 
+        val globalUniquesFile = folderHandle.child("GlobalUniques.json")
+        if (globalUniquesFile.exists()) {
+            globalUniques = jsonParser.getFromJson(GlobalUniques::class.java, globalUniquesFile)
+        }
+        
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
     }
@@ -274,9 +279,7 @@ class Ruleset {
             }
         }
     }
-
-    fun hasReligion() = beliefs.any() && modWithReligionLoaded
-
+    
     /** Used for displaying a RuleSet's name */
     override fun toString() = when {
         name.isNotEmpty() -> name
@@ -476,7 +479,7 @@ class Ruleset {
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return lines
 
-        val baseRuleset = RulesetCache.getBaseRuleset()  // for UnitTypes fallback
+        val baseRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
 
         for (unit in units.values) {
             if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
@@ -697,7 +700,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
     }
 
 
-    fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
+    fun getVanillaRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
     fun getSortedBaseRulesets(): List<String> {
         val baseRulesets = values
@@ -729,7 +732,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
         
         val baseRuleset =
             if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
-            else getBaseRuleset()
+            else getVanillaRuleset()
         
         
         val loadedMods = mods
@@ -744,20 +747,20 @@ object RulesetCache : HashMap<String,Ruleset>() {
             if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
             }
-            if (mod.beliefs.any()) {
-                newRuleset.modWithReligionLoaded = true
-            }
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
         // This one should be temporary
         if (newRuleset.unitTypes.isEmpty()) {
-            newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
+            newRuleset.unitTypes.putAll(getVanillaRuleset().unitTypes)
         }
 
-        // This one should be permanent
+        // These should be permanent
         if (newRuleset.ruinRewards.isEmpty()) {
-            newRuleset.ruinRewards.putAll(getBaseRuleset().ruinRewards)
+            newRuleset.ruinRewards.putAll(getVanillaRuleset().ruinRewards)
+        }
+        if (newRuleset.globalUniques.uniques.isEmpty()) {
+            newRuleset.globalUniques = getVanillaRuleset().globalUniques
         }
 
         return newRuleset

@@ -40,7 +40,7 @@ object GameStarter {
             gameSetupInfo.gameParameters.baseRuleset = baseRulesetInMods
 
         if (!RulesetCache.containsKey(gameSetupInfo.gameParameters.baseRuleset))
-            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getBaseRuleset().name
+            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getVanillaRuleset().name
         
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)

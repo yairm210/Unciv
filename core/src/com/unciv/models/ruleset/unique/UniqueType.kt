@@ -87,6 +87,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // Stat percentage boosts
     StatPercentBonus("[amount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    StatPercentBonusCities("[amount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromObject("[amount]% [stat] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("As of 3.18.17", ReplaceWith("[amount]% [stat] from every [tileFilter/specialist/buildingName]"))
     StatPercentSignedFromObject("+[amount]% [stat] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -95,7 +96,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     AllStatsSignedPercentFromObject("+[amount]% yield from every [tileFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromReligionFollowers("[amount]% [stat] from every follower, up to [amount]%", UniqueTarget.FollowerBelief),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
-    StatPercentBonusCities("[amount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    NullifiesStat("Nullifies [stat] [cityFilter]", UniqueTarget.Global),
+    NullifiesGrwoth("Nullifies Growth [cityFilter]", UniqueTarget.Global),
 
     PercentProductionWonders("[amount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.Resource, UniqueTarget.FollowerBelief),
     PercentProductionBuildings("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -266,6 +268,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
     ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Global),
 
+    SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
+    
     //endregion
     
     //endregion Global uniques
@@ -514,8 +518,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     /////// civ conditionals
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
-    ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
+
+    ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
+    ConditionalBetweenHappiness("when between [amount] and [amount] Happiness", UniqueTarget.Conditional),
+    ConditionalBelowHappiness("when below [amount] Happiness", UniqueTarget.Conditional),
     
     ConditionalDuringEra("during the [era]", UniqueTarget.Conditional),
     ConditionalBeforeEra("before the [era]", UniqueTarget.Conditional),

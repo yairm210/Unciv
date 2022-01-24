@@ -282,7 +282,7 @@ class CityInfo {
     fun hasFlag(flag: CityFlags) = flagsCountdown.containsKey(flag.name)
     fun getFlag(flag: CityFlags) = flagsCountdown[flag.name]!!
 
-    fun isWeLoveTheKingDay() = hasFlag(CityFlags.WeLoveTheKing)
+    fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     fun isInResistance() = hasFlag(CityFlags.Resistance)
 
     /** @return the number of tiles 4 out from this city that could hold a city, ie how lonely this city is */
