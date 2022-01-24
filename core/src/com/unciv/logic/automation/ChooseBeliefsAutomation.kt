@@ -73,7 +73,7 @@ object ChooseBeliefsAutomation {
             // If obsoleted, continue
             score += modifier * when (unique.placeholderText) {
                 UniqueType.GrowthPercentBonus.placeholderText -> unique.params[0].toFloat() / 3f
-                "[]% cost of natural border growth" -> -unique.params[0].toFloat() * 2f / 10f
+                UniqueType.BorderGrowthPercentage.placeholderText -> -unique.params[0].toFloat() * 2f / 10f
                 "[]% Strength for cities" -> unique.params[0].toFloat() / 10f // Modified by personality
                 "[] Units adjacent to this city heal [] HP per turn when healing" -> unique.params[1].toFloat() / 10f
                 "+[]% Production when constructing []" -> unique.params[0].toFloat() / 3f
