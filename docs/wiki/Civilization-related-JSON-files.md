@@ -1,11 +1,13 @@
-* [Beliefs.json](#beliefsjson)
-* [Buildings.json](#buildingsjson)
-* [Nations.json](#nationsjson)
-* [Policies.json](#policiesjson)
-* [Quests.json](#questsjson)
-* [Religions.json](#religionsjson)
-* [Specialists.json](#specialistsjson)
-* [Techs.json](#techsjson)
+- [Beliefs.json](#beliefsjson)
+- [Buildings.json](#buildingsjson)
+- [Nations.json](#nationsjson)
+- [Policies.json](#policiesjson)
+- [Quests.json](#questsjson)
+- [Religions.json](#religionsjson)
+- [Specialists.json](#specialistsjson)
+- [Techs.json](#techsjson)
+		- [Column structure](#column-structure)
+		- [Tech structure](#tech-structure)
 
 
 ## Beliefs.json
@@ -17,7 +19,7 @@ Each belief can have the following attributes:
 | attribute | Type | Optional or not | notes |
 | --------- | ---- | --------------- | ----- |
 | name | String | Required | Name of the belief |
-| type | String | Required | The type of the belief. Valid values are: "Pantheon" and "Follower". Later "Founder" will be added, but this has not been implemented yet |
+| type | String | Required | The type of the belief. Valid values are: "Pantheon", "Follower", "Founder" and "Enhancer". |
 | uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](./Uniques.md#buildings-only), as well as the general uniques on that page |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](./Miscellaneous-JSON-files.md#civilopedia-text) |
 
@@ -43,7 +45,6 @@ Each building can have the following attributes:
 | isWonder | Boolean | defaults to false | Whether this building is a global wonder |
 | isNationalWonder | Boolean | defaults to false | Whether this building is a national wonder |
 | requiredBuilding | String | defaults to none | A building that has to be built before this building can be built. Must be in [Buildings.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
-| requiredBuildingInAllCities | String | defaults to none | A building that has to be built in all cities before this building can be built. Must be in [Buildings.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
 | cannotBeBuiltWith | String | defaults to none | The building [cannotBeBuiltWith] and this building cannot exist in the same city together. Should be in [Buildings.json](/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
 | providesFreeBuilding | String | defaults to none | When the building is built, [providesFreeBuilding] is also automatically added to the city |
 | requiredTech | String | defaults to none | The tech that should be researched before this building may be built. Must be in [Techs.json](#techsjson) |

@@ -17,10 +17,10 @@ The process has two major parts, one is "Getting your code in the main repositor
 ## Deploying versions
 
 When I'm ready to release a new version I:
+* Comment "merge translations" in one of the open PRs tagged as 'mergeable translation' to trigger the translation branch creation, add a "summary" comment to trigger summary generation, merge the PR and delete the branch (so next version translation branch starts fresh)
+* From my workstation - pull the latest changes and run the [translation generation](./Translating#translation-generation---for-developers)
 * Change the versionCode and versionName in the Android build.gradle so that Google Play and F-droid can recognize that it's a different release
-* Run the [translation generation](./Translating.md#translation-generation---for-developers)
-* Upload the new version to Google Play - we start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.
-   * If there were problems, we halt the current rollout, fix the problems, and release a patch version, which starts at 10% again.
+* Add an entry in the changelog.md done, WITHOUT hashtags, and less than 500 characters (that's the limit for Google play entries). The formatting needs to be exact or the text sent to Discord, the Github release etc. won't be complete.
 * Add a tag to the commit of the version. When the [Github action](https://github.com/yairm210/Unciv/actions/workflows/buildAndDeploy.yml) sees that we've added a tag, it will run a build, and this time (because of the configuration we put in the [yml file](/.github/workflows/buildAndDeploy.yml) file), it will:
    * Pack a .jar file, which will work for every operating system with Java
    * Use Linux and Windows JDKs to create standalone zips for 32 and 64 bit systems, because we can't rely on the fact that users will have a JRE
@@ -34,6 +34,10 @@ When I'm ready to release a new version I:
 
 ## About Google Play publishing
 
-Dear future me - this was extremely annoying guesswork to set up, so the facts you need to know are:
++We start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.
++
++If there were problems, we halt the current rollout, fix the problems, and release a patch version, which starts at 10% again.
++
++Dear future me - the automation was extremely annoying guesswork to set up, so the facts you need to know are:
 - There is a user at the [Google Cloud Platform Account Manager](https://console.cloud.google.com/iam-admin/iam) called  Unciv_Upload_Account. There is an access key to this account, in json, stored as the Github secret GOOGLE_PLAY_SERVICE_ACCOUNT_JSON.
 - This user was granted ADMIN permissions to the Google Play (after much trial and error since nothing else seemed to work) under User > Users and Permissions. Under Manage > Account permissions, you can see that it has Admin.
