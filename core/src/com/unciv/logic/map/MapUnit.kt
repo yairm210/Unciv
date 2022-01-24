@@ -1121,8 +1121,9 @@ class MapUnit {
             && improvement.name != Constants.cancelImprovementOrder 
             && tile.improvementInProgress != improvement.name
         ) return false
-        val matchingUniques = getMatchingUniques(UniqueType.BuildImprovements)
-        return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
+
+        return getMatchingUniques(UniqueType.BuildImprovements)
+            .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
     fun getReligionDisplayName(): String? {

@@ -35,7 +35,7 @@ class NationTable(val nation: Nation, width: Float, minHeight: Float, ruleset: R
         val titleText = if (ruleset == null || nation.name == Constants.random || nation.name == Constants.spectator)
             nation.name else nation.getLeaderDisplayName()
         val leaderDisplayNameMaxWidth = internalWidth - 70f // for the nation indicator with padding
-        val leaderDisplayLabel = WrappableLabel(titleText, leaderDisplayNameMaxWidth, innerColor, 24)
+        val leaderDisplayLabel = WrappableLabel(titleText, leaderDisplayNameMaxWidth, innerColor, Constants.headingFontSize)
         if (leaderDisplayLabel.prefWidth > leaderDisplayNameMaxWidth - 2f) {
             leaderDisplayLabel.wrap = true
             titleTable.add(leaderDisplayLabel).width(leaderDisplayNameMaxWidth)

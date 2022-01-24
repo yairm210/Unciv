@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.*
@@ -13,7 +14,7 @@ class PlayerReadyScreen(gameInfo: GameInfo, currentPlayerCiv: CivilizationInfo) 
         table.touchable= Touchable.enabled
         table.background= ImageGetter.getBackground(currentPlayerCiv.nation.getOuterColor())
 
-        table.add("[$currentPlayerCiv] ready?".toLabel(currentPlayerCiv.nation.getInnerColor(),24))
+        table.add("[$currentPlayerCiv] ready?".toLabel(currentPlayerCiv.nation.getInnerColor(),  Constants.headingFontSize))
 
         table.onClick {
             postCrashHandlingRunnable { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms

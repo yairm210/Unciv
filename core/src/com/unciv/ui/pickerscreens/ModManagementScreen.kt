@@ -400,13 +400,13 @@ class ModManagementScreen(
                     refreshInstalledModTable()
                     showModDescription(repo.name)
                     unMarkUpdatedMod(repo.name)
+                    postAction()
                 }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
                     ToastPopup("Could not download [${repo.name}]", this)
+                    postAction()
                 }
-            } finally {
-                postAction()
             }
         }
     }
@@ -452,11 +452,10 @@ class ModManagementScreen(
 
         // offer 'permanent visual mod' toggle
         val visualMods = game.settings.visualMods
-        val isVisual = visualMods.contains(mod.name)
-        installedModInfo[mod.name]?.state?.isVisual = isVisual
+        val isVisualMod = visualMods.contains(mod.name)
+        installedModInfo[mod.name]!!.state.isVisual = isVisualMod
 
-        val visualCheckBox = "Permanent audiovisual mod".toCheckBox(isVisual) {
-            checked ->
+        val visualCheckBox = "Permanent audiovisual mod".toCheckBox(isVisualMod) { checked ->
             if (checked)
                 visualMods.add(mod.name)
             else
@@ -468,11 +467,17 @@ class ModManagementScreen(
                 refreshInstalledModTable()
         }
         modActionTable.add(visualCheckBox).row()
+
+        if (installedModInfo[mod.name]!!.state.hasUpdate) {
+            val updateModTextbutton = "Update [${mod.name}]".toTextButton()
+            updateModTextbutton.onClick {
+                updateModTextbutton.setText("Downloading...".tr())
+                val repo = onlineModInfo[mod.name]!!.repo!!
+                downloadMod(repo) { refreshInstalledModActions(mod) }
+            }
+            modActionTable.add(updateModTextbutton)
+        }
     }
-
-    /*
-
-     */
 
     /** Rebuild the left-hand column containing all installed mods */
     internal fun refreshInstalledModTable() {
@@ -524,6 +529,7 @@ class ModManagementScreen(
                 question = "Are you SURE you want to delete this mod?",
                 action = {
                     deleteMod(mod.name)
+                    modActionTable.clear()
                     rightSideButton.setText("[${mod.name}] was deleted.".tr())
                 },
                 screen = this,

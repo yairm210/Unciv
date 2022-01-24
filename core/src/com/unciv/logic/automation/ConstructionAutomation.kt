@@ -168,12 +168,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
                 && it.isBuildable(cityConstructions)
                 && Automation.allowSpendingResource(civInfo, it) }
         if (workerEquivalents.isEmpty()) return // for mods with no worker units
-        if (civInfo.getIdleUnits().any { it.isAutomated() && it.hasUniqueToBuildImprovements })
-            return // If we have automated workers who have no work to do then it's silly to construct new workers.
 
-        val citiesCountedTowardsWorkers = min(5, cities) // above 5 cities, extra cities won't make us want more workers
-        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { it.hasUniqueToBuildImprovements && it.isIdle() }) {
-            var modifier = citiesCountedTowardsWorkers / (workers + 0.1f)
+        if (workers < cities) {
+            var modifier = cities / (workers + 0.1f) // The worse our worker to city ratio is, the more desperate we are
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
             addChoice(relativeCostEffectiveness, workerEquivalents.minByOrNull { it.cost }!!.name, modifier)
         }

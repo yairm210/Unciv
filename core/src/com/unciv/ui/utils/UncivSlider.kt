@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
+import com.unciv.Constants
 import com.unciv.models.UncivSound
 
 /**
@@ -41,7 +42,7 @@ class UncivSlider (
 ): Table(BaseScreen.skin) {
     // constants for geometry tuning
     companion object {
-        const val plusMinusFontSize = 18
+        const val plusMinusFontSize = Constants.defaultFontSize
         const val plusMinusCircleSize = 20f
         const val padding = 5f                  // padding around the Slider, doubled between it and +/- buttons
         const val hideDelay = 3f                // delay in s to hide tooltip

@@ -2,6 +2,7 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
@@ -111,7 +112,7 @@ class ReligionOverviewTable(
         val foundingCivName =
             if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName) 
                 religion.foundingCivName
-            else "???"
+            else Constants.unknownNationName
         statsTable.add(foundingCivName.toLabel()).right().pad(5f).row()
         if (religion.isMajorReligion()) {
             val holyCity = gameInfo.getCities().firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion.name }
@@ -120,7 +121,7 @@ class ReligionOverviewTable(
                 val cityName = 
                     if (viewingPlayer.exploredTiles.contains(holyCity.getCenterTile().position))
                         holyCity.name
-                    else "???"
+                    else Constants.unknownNationName
                 statsTable.add(cityName.toLabel()).right().pad(5f).row()
             }
         }
@@ -138,7 +139,7 @@ class ReligionOverviewTable(
     private fun createBeliefDescription(belief: Belief) =
         MarkupRenderer.render(
             belief.run { sequence {
-                yield(FormattedLine(name, size = 24, centered = true))
+                yield(FormattedLine(name, size = Constants.headingFontSize, centered = true))
                 yield(FormattedLine())
                 yieldAll(getCivilopediaTextLines(gameInfo.ruleSet, true))
             } }.toList()

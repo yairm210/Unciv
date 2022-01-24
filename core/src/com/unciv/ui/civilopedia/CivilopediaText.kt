@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
@@ -48,7 +49,7 @@ class FormattedLine (
     val extraImage: String = "",
     /** Width of the [extraImage], height is calculated preserving aspect ratio. Defaults to available width. */
     val imageSize: Float = Float.NaN,
-    /** Text size, defaults to 18. Use [size] or [header] but not both. */
+    /** Text size, defaults to [Constants.defaultFontSize]. Use [size] or [header] but not both. */
     val size: Int = Int.MIN_VALUE,
     /** Header level. 1 means double text size and decreases from there. */
     val header: Int = 0,
@@ -126,10 +127,8 @@ class FormattedLine (
 
     /** Constants used by [FormattedLine] */
     companion object {
-        /** Mirrors default [text] size as used by [toLabel] */
-        const val defaultSize = 18
         /** Array of text sizes to translate the [header] attribute */
-        val headerSizes = arrayOf(defaultSize,36,32,27,24,21,15,12,9)    // pretty arbitrary, yes
+        val headerSizes = arrayOf(Constants.defaultFontSize,36,32,27,24,21,15,12,9)    // pretty arbitrary, yes
         /** Default color for [text] _and_ icons */
         val defaultColor: Color = Color.WHITE
         /** Internal path to the [Link][link] image */
@@ -255,7 +254,7 @@ class FormattedLine (
 
         val fontSize = when {
             header in 1 until headerSizes.size -> headerSizes[header]
-            size == Int.MIN_VALUE -> defaultSize
+            size == Int.MIN_VALUE -> Constants.defaultFontSize
             else -> size
         }
         val labelColor = if(starred) defaultColor else displayColor
@@ -285,7 +284,7 @@ class FormattedLine (
                 else -> (indent-1) * indentPad +
                         indentOneAtNumIcons * (minIconSize + iconPad) + iconPad - usedWidth
             }
-            val label = if (fontSize == defaultSize && labelColor == defaultColor) textToDisplay.toLabel()
+            val label = if (fontSize == Constants.defaultFontSize && labelColor == defaultColor) textToDisplay.toLabel()
             else textToDisplay.toLabel(labelColor,fontSize)
             label.wrap = !centered && labelWidth > 0f
             label.setAlignment(align)

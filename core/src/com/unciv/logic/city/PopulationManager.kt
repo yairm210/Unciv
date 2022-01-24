@@ -92,7 +92,7 @@ class PopulationManager {
             cityInfo.religion.updatePressureOnPopulationChange(changedAmount)
     }
 
-    internal fun setPopulation(count: Int) {
+    fun setPopulation(count: Int) {
         addPopulation(-population + count)
     }
 
