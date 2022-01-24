@@ -48,11 +48,11 @@ class CityExpansionManager {
                     cultureToNextTile /= unique.params[0].toPercent()
             }
             
-            for (unique in cityInfo.getMatchingUniques(UniqueType.CostOfNaturalBorderGrowth))
+            for (unique in cityInfo.getMatchingUniques(UniqueType.CostOfNaturalBorderGrowth) + cityInfo.getMatchingUniques(UniqueType.BorderGrowthPercentageWithoutPercentageSign))
                 cultureToNextTile *= unique.params[0].toPercent()
         //
         
-        for (unique in cityInfo.getMatchingUniquesWithNonLocalEffects(UniqueType.BorderGrowthPercentage))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BorderGrowthPercentage))
             if (cityInfo.matchesFilter(unique.params[1]))
                 cultureToNextTile *= unique.params[0].toPercent()
 
