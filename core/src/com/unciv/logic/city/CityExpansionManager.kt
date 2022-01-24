@@ -43,7 +43,7 @@ class CityExpansionManager {
             cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
 
         // Deprecated since 3.19.1
-            for (unique in cityInfo.getMatchingUniques(UniqueType.DecreasedAcquiringTilesCost)) {
+            for (unique in cityInfo.getMatchingUniques(UniqueType.DecreasedAcquiringTilesCost)  + cityInfo.getMatchingUniques(UniqueType.BorderGrowthPercentageWithoutPercentageSign)) {
                 if (cityInfo.matchesFilter(unique.params[1]))
                     cultureToNextTile /= unique.params[0].toPercent()
             }
@@ -52,7 +52,7 @@ class CityExpansionManager {
                 cultureToNextTile *= unique.params[0].toPercent()
         //
         
-        for (unique in cityInfo.getMatchingUniquesWithNonLocalEffects(UniqueType.BorderGrowthPercentage))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BorderGrowthPercentage))
             if (cityInfo.matchesFilter(unique.params[1]))
                 cultureToNextTile *= unique.params[0].toPercent()
 
