@@ -16,7 +16,7 @@ abstract class RulesetObject: IRulesetObject {
         uniques.map { Unique(it, getUniqueTarget(), name) }
     }
     override var civilopediaText = listOf<FormattedLine>()
-    override fun toString() = name
+    override fun toString() = if (::name.isInitialized) name else "?"
 }
 
 // Same, but inherits from NamedStats - I couldn't find a way to unify the declarations but this is fine

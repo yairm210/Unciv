@@ -440,7 +440,7 @@ class MapUnit {
     }
 
     // debug helper (please update comment if you see some "$unit" using this)
-    override fun toString() = "$name - $owner"
+    override fun toString() = "${if (::name.isInitialized) name else "?"} - ${if (::owner.isInitialized) owner else "?"}"
 
 
     fun isIdle(): Boolean {
