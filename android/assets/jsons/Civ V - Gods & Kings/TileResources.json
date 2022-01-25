@@ -40,7 +40,7 @@
 		"terrainsCanBeFoundOn": ["Jungle"],
 		"food": 1,
 		"improvement": "Plantation",
-		"improvementStats": {"food": 2,"production": -1},
+		"improvementStats": {"food": 2,"production": -1,"gold": -1},
 		"uniques": ["Generated on every [14] tiles <in [Jungle] tiles>",
 					"Generated on every [16] tiles <in [Jungle] tiles> <in [Hill] Regions>"]
 	},
