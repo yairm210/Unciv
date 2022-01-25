@@ -26,7 +26,7 @@ A common suggestion that we get (by people with little familiarity with the proj
 
 5. **Mass changes**. If we're changing the source of the translation but want to keep the various destinations (say, we change "Gold from trade routes +[amount]%" to "+[amount]% Gold from trade routes"), if all the translation files are in Git we can do that in 1 minute. If it's external, this varies greatly. 
 
-Here are some ways that we managed to go wrong:
+Here are some ways that we managed to go wrong in the past:
 
 - Putting all languages into the same file ("one big translation dictionary") - when multiple people edit this file for different languages, they can conflict with each other. Separate to different files for simpler management.
 
