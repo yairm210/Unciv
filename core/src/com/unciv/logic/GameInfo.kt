@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
@@ -452,6 +453,8 @@ class GameInfo {
             .flatMap { it.getResourceRequirements().keys } )
         
         barbarians.setTransients(this)
+
+        guaranteeUnitPromotions()
     }
 
     //endregion
