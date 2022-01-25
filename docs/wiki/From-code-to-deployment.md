@@ -52,7 +52,7 @@ The process to edit the wiki is as follows:
 2. Once the pull request is merged, an account with commit privileges on the Unciv repository leaves a comment saying "`update wiki`".
 3. This comment triggers a bot to copy all the wiki files from the main repository into the Github wiki, with a link back to the PR in its commit message for credit.
 
-Doing things this has several distinct advantages over using the Github Wiki web interface directly:
+Doing things this way has several distinct advantages over using the Github Wiki web interface directly:
 
 * Changes can be proposed via PR and proofread or fact-checked.
 * A proper MarkDown editor or IDE can be used to write the wiki, bringing faster editing, clickable links while editing, better live HTML preview, and automatic detection of problems like broken links.
