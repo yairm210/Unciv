@@ -41,3 +41,31 @@ When I'm ready to release a new version I:
 +Dear future me - the automation was extremely annoying guesswork to set up, so the facts you need to know are:
 - There is a user at the [Google Cloud Platform Account Manager](https://console.cloud.google.com/iam-admin/iam) called  Unciv_Upload_Account. There is an access key to this account, in json, stored as the Github secret GOOGLE_PLAY_SERVICE_ACCOUNT_JSON.
 - This user was granted ADMIN permissions to the Google Play (after much trial and error since nothing else seemed to work) under User > Users and Permissions. Under Manage > Account permissions, you can see that it has Admin.
+
+## Updating the wiki
+
+Pages for the [Unciv Github Wiki](https://github.com/yairm210/Unciv/wiki/) are kept in the main repository under [/docs/wiki](/docs/wiki).
+
+The process to edit the wiki is as follows:
+
+1. Open a pull request in the main Unciv repository that changes files under [/docs/wiki](/docs/wiki).
+2. Once the pull request is merged, an account with commit privileges on the Unciv repository leaves a comment saying "`update wiki`".
+3. This comment triggers a bot to copy all the wiki files from the main repository into the Github wiki, with a link back to the PR in its commit message for credit.
+
+Doing things this has several distinct advantages over using the Github Wiki web interface directly:
+
+* Changes can be proposed via PR and proofread or fact-checked.
+* A proper MarkDown editor or IDE can be used to write the wiki, bringing faster editing, clickable links while editing, better live HTML preview, and automatic detection of problems like broken links.
+* The wiki files can also be browsed at https://github.com/yairm210/Unciv/tree/master/docs/wiki.
+* Auto-generated documentation made by the build process can be placed directly in the wiki.
+
+However, it also imposes a couple of conventions about how links should best be formatted:
+
+|Link type|Format|Example|
+|---|---|---|
+|Inter-wiki|Should begin with "./", and include ".md".|[`./Mods.md#other`](./Mods.md#other)|
+|Code or asset file|Should begin with "/", and be relative to the project root.|[`/android/assets/game.png`](/android/assets/game.png)|
+
+These formats will allow IDEs like Android studio to resolve these links and check for broken links, while also working on the [Github code browser](https://github.com/yairm210/Unciv/tree/master/docs/wiki).
+
+The bot that updates the wiki from the main repository automatically translates them into formats that are compatible with Github Wikis, which have somewhat non-standard requirements.
