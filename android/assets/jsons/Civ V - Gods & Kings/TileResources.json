@@ -81,7 +81,7 @@
 		"terrainsCanBeFoundOn": ["Plains","Grassland"],
 		"food": 1,
 		"improvement": "Camp",
-		"improvementStats": {"food": 1}
+		"improvementStats": {"production": 1}
 	},
 	*/
 	
@@ -456,8 +456,7 @@
 		"terrainsCanBeFoundOn": ["Jungle","Forest"], // Forest only if flat, non-tundra
 		"food": 1,
 		"gold": 1,
-		"improvement": "Plantation",
-		"improvementStats": {"food": 1}
+		"improvement": "Plantation"
 	},
 	*/
 	{
