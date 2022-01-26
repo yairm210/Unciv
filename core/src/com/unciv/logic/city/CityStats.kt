@@ -344,7 +344,7 @@ class CityStats(val cityInfo: CityInfo) {
             else cityInfo.isConnectedToCapital()
     }
 
-    private fun getBuildingMaintenanceCosts(citySpecificUniques: Sequence<Unique>): Float {
+    private fun getBuildingMaintenanceCosts(): Float {
         // Same here - will have a different UI display.
         var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
         if (!cityInfo.civInfo.isPlayerCivilization()) {
@@ -353,11 +353,11 @@ class CityStats(val cityInfo: CityInfo) {
 
         // e.g. "-[50]% maintenance costs for buildings [in this city]"
         // Deprecated since 3.18.17
-            for (unique in cityInfo.getMatchingUniques(UniqueType.DecrasedBuildingMaintenanceDeprecated, localUniques=citySpecificUniques)) {
+            for (unique in cityInfo.getMatchingUniques(UniqueType.DecrasedBuildingMaintenanceDeprecated)) {
                 buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
             }
         //
-        for (unique in cityInfo.getMatchingUniques(UniqueType.BuildingMaintenance, localUniques = citySpecificUniques)) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuildingMaintenance)) {
             buildingsMaintenance *= unique.params[0].toPercent()
         }
 
@@ -501,13 +501,7 @@ class CityStats(val cityInfo: CityInfo) {
         // We calculate this here for concurrency reasons
         // If something needs this, we pass this through as a parameter
         val localBuildingUniques = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
-        
-        // Is This line really necessary? There is only a single unique that actually uses this, 
-        // and it is passed to functions at least 3 times for that
-        // It's the only reason `cityInfo.getMatchingUniques` has a localUniques parameter,
-        // which clutters readability, and also the only reason `CityInfo.getAllLocalUniques()`
-        // exists in the first place, though that could be useful for the previous line too.
-        val citySpecificUniques = cityInfo.getAllLocalUniques()
+
 
         // We need to compute Tile yields before happiness
 
@@ -516,7 +510,7 @@ class CityStats(val cityInfo: CityInfo) {
         updateCityHappiness(statsFromBuildings)
         updateStatPercentBonusList(currentConstruction, localBuildingUniques)
 
-        updateFinalStatList(currentConstruction, citySpecificUniques) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
+        updateFinalStatList(currentConstruction) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         val newCurrentCityStats = Stats()
         for (stat in finalStatList.values) newCurrentCityStats.add(stat)
@@ -525,7 +519,7 @@ class CityStats(val cityInfo: CityInfo) {
         cityInfo.civInfo.updateStatsForNextTurn()
     }
 
-    private fun updateFinalStatList(currentConstruction: IConstruction, citySpecificUniques: Sequence<Unique>) {
+    private fun updateFinalStatList(currentConstruction: IConstruction) {
         val newFinalStatList = StatMap() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         for ((key, value) in baseStatTree.children)
@@ -606,7 +600,7 @@ class CityStats(val cityInfo: CityInfo) {
             totalFood = newFinalStatList.values.map { it.food }.sum()
         }
 
-        val buildingsMaintenance = getBuildingMaintenanceCosts(citySpecificUniques) // this is AFTER the bonus calculation!
+        val buildingsMaintenance = getBuildingMaintenanceCosts() // this is AFTER the bonus calculation!
         newFinalStatList["Maintenance"] = Stats(gold = -buildingsMaintenance.toInt().toFloat())
 
         if (totalFood > 0 
