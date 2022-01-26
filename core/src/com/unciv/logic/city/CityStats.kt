@@ -480,13 +480,10 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
 
-    private fun updateStatPercentBonusList(currentConstruction: IConstruction, localBuildingUniques: Sequence<Unique>) {
-
+    private fun updateStatPercentBonusList(currentConstruction: IConstruction) {
         val newStatsBonusTree = StatTreeNode()
 
-
         newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge()),"Golden Age")
-        // todo change function to show which building gives which bonus
         addStatPercentBonusesFromBuildings(newStatsBonusTree)
         newStatsBonusTree.addStats(getStatPercentBonusesFromRailroad(), "Railroad")
         newStatsBonusTree.addStats(getStatPercentBonusesFromPuppetCity(), "Puppet City")
@@ -508,10 +505,6 @@ class CityStats(val cityInfo: CityInfo) {
                updateTileStats:Boolean = true) {
         if (updateTileStats) updateTileStats()
 
-        // We calculate this here for concurrency reasons
-        // If something needs this, we pass this through as a parameter
-        val localBuildingUniques = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
-        
         // Is This line really necessary? There is only a single unique that actually uses this, 
         // and it is passed to functions at least 3 times for that
         // It's the only reason `cityInfo.getMatchingUniques` has a localUniques parameter,
@@ -524,7 +517,7 @@ class CityStats(val cityInfo: CityInfo) {
         val statsFromBuildings = cityInfo.cityConstructions.getStats() // this is performance heavy, so calculate once
         updateBaseStatList(statsFromBuildings)
         updateCityHappiness(statsFromBuildings)
-        updateStatPercentBonusList(currentConstruction, localBuildingUniques)
+        updateStatPercentBonusList(currentConstruction)
 
         updateFinalStatList(currentConstruction, citySpecificUniques) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
