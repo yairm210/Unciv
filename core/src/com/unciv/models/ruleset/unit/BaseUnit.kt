@@ -252,15 +252,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (cityInfo == null) return super.canBePurchasedWithStat(cityInfo, stat)
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
         
-        return (
-            cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
-                .any {
-                    it.params[2] == stat.name
-                    && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                    && matchesFilter(it.params[0])
-                    && cityInfo.matchesFilter(it.params[3])
-                }
-            || cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
+        return (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .any {
                     it.params[2] == stat.name
                     && matchesFilter(it.params[0])
@@ -292,22 +284,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             val baseCost = super.getBaseBuyCost(cityInfo, stat)
             if (baseCost != null)
                 yield(baseCost)
-            // Deprecated since 3.17.9
-                yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
-                    .filter {
-                        it.params[2] == stat.name
-                        && matchesFilter(it.params[0])
-                        && cityInfo.matchesFilter(it.params[3])
-                        && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                    }.map {
-                        getCostForConstructionsIncreasingInPrice(
-                            it.params[1].toInt(),
-                            it.params[5].toInt(),
-                            cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
-                        )
-                    }
-                )
-            //
             yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .filter {
                     it.params[2] == stat.name

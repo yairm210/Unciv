@@ -157,7 +157,7 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     }
 
     fun getUniques(placeholderText: String): Sequence<Unique> {
-        return this[placeholderText]?.asSequence() ?: sequenceOf()
+        return this[placeholderText]?.asSequence() ?: emptySequence()
     }
 
     fun getUniques(uniqueType: UniqueType) = getUniques(uniqueType.placeholderText)
