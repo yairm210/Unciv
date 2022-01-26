@@ -217,7 +217,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
             statValuesTable.add("Bonuses".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2)
                 .padTop(20f).row()
             for ((source, bonusAmount) in relevantBonuses) {
-                statValuesTable.add(source.toLabel())
+                statValuesTable.add(source.toLabel()).left()
                 statValuesTable.add(bonusAmount.toPercentLabel()).row() // negative bonus
             }
             statValuesTable.addSeparator()

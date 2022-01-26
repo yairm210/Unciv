@@ -125,6 +125,12 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
+    private fun addStatPercentBonusesFromBuildings(statPercentBonusTree: StatTreeNode) {
+        for (building in cityInfo.cityConstructions.getBuiltBuildings())
+            statPercentBonusTree.addStats(building.getStatPercentageBonuses(cityInfo), "Buildings", building.name)
+    }
+
+
 
     private fun getStatsFromCityStates(): Stats {
         val stats = Stats()
@@ -480,7 +486,7 @@ class CityStats(val cityInfo: CityInfo) {
 
         newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge()),"Golden Age")
         // todo change function to show which building gives which bonus
-        newStatsBonusTree.addStats(cityInfo.cityConstructions.getStatPercentBonuses(),"Buildings")
+        addStatPercentBonusesFromBuildings(newStatsBonusTree)
         newStatsBonusTree.addStats(getStatPercentBonusesFromRailroad(), "Railroad")
         newStatsBonusTree.addStats(getStatPercentBonusesFromPuppetCity(), "Puppet City")
         newStatsBonusTree.addStats(getStatPercentBonusesFromUnitSupply(), "Unit Supply")
