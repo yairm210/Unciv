@@ -402,7 +402,7 @@ class MapUnit {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles() {
+    fun updateVisibleTiles(updateCivViewableTiles:Boolean = true) {
         if (baseUnit.isAirUnit()) {
             viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
                 getTile().getTilesInDistance(6).toList()  // it's that simple
@@ -411,7 +411,7 @@ class MapUnit {
             return
         }
         viewableTiles = getTile().getViewableTilesList(getVisibilityRange())
-        civInfo.updateViewableTiles() // for the civ
+        if (updateCivViewableTiles) civInfo.updateViewableTiles() // for the civ
     }
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true

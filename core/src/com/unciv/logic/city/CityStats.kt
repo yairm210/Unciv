@@ -500,7 +500,6 @@ class CityStats(val cityInfo: CityInfo) {
         statPercentBonusTree = newStatsBonusTree
     }
 
-    /** Does not update tile stats - instead, updating tile stats updates this */
     fun update(currentConstruction: IConstruction = cityInfo.cityConstructions.getCurrentConstruction(),
                updateTileStats:Boolean = true) {
         if (updateTileStats) updateTileStats()
