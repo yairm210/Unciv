@@ -9,11 +9,15 @@ import com.unciv.ui.civilopedia.ICivilopediaText
 interface IRulesetObject:INamed, IHasUniques, ICivilopediaText
 
 abstract class RulesetObject: IRulesetObject {
-    override lateinit var name: String
+    override var name = ""
     override var uniques = ArrayList<String>() // Can not be a hashset as that would remove doubles
     @delegate:Transient
     override val uniqueObjects: List<Unique> by lazy {
         uniques.map { Unique(it, getUniqueTarget(), name) }
+    }
+    @delegate:Transient
+    override val uniqueMap: Map<String, List<Unique>> by lazy {
+        uniqueObjects.groupBy { it.placeholderText }
     }
     override var civilopediaText = listOf<FormattedLine>()
     override fun toString() = name
@@ -25,6 +29,10 @@ abstract class RulesetStatsObject: NamedStats(), IRulesetObject {
     @delegate:Transient
     override val uniqueObjects: List<Unique> by lazy {
         uniques.map { Unique(it, getUniqueTarget(), name) }
+    }
+    @delegate:Transient
+    override val uniqueMap: Map<String, List<Unique>> by lazy {
+        uniqueObjects.groupBy { it.placeholderText }
     }
     override var civilopediaText = listOf<FormattedLine>()
 }
