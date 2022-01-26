@@ -149,7 +149,9 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
     private fun addStatsToHashmap(statTreeNode: StatTreeNode, hashMap: HashMap<String, Float>, stat:Stat,
                                   showDetails:Boolean, indentation:Int=0) {
         for ((name, child) in statTreeNode.children) {
-            hashMap["- ".repeat(indentation) + name] = child.totalStats[stat]
+            val statAmount = child.totalStats[stat]
+            if (statAmount == 0f) continue
+            hashMap["- ".repeat(indentation) + name] = statAmount
             if (showDetails) addStatsToHashmap(child, hashMap, stat, showDetails, indentation + 1)
         }
     }
@@ -207,23 +209,22 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         statValuesTable.add("Total".toLabel())
         statValuesTable.add(sumOfAllBaseValues.toOneDecimalLabel()).row()
 
-        val relevantBonuses = cityStats.statPercentBonusList.filter { it.value[stat] != 0f }
-        if (relevantBonuses.isNotEmpty()) {
+        val relevantBonuses = HashMap<String, Float>()
+        addStatsToHashmap(cityStats.statPercentBonusTree, relevantBonuses, stat, showDetails)
+
+        val totalBonusStats = cityStats.statPercentBonusTree.totalStats
+        if (totalBonusStats[stat] != 0f) {
             statValuesTable.add("Bonuses".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2)
                 .padTop(20f).row()
-            var sumOfBonuses = 0f
-            for (entry in relevantBonuses) {
-                val specificStatValue = entry.value[stat]
-                sumOfBonuses += specificStatValue
-                statValuesTable.add(entry.key.toLabel())
-                statValuesTable.add(specificStatValue.toPercentLabel()).row() // negative bonus
+            for ((source, bonusAmount) in relevantBonuses) {
+                statValuesTable.add(source.toLabel())
+                statValuesTable.add(bonusAmount.toPercentLabel()).row() // negative bonus
             }
             statValuesTable.addSeparator()
             statValuesTable.add("Total".toLabel())
-            statValuesTable.add(sumOfBonuses.toPercentLabel()).row() // negative bonus
-        }
+            statValuesTable.add(totalBonusStats[stat].toPercentLabel()).row() // negative bonus
 
-        if (stat != Stat.Happiness) {
+
             statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2)
                 .padTop(20f).row()
             var finalTotal = 0f

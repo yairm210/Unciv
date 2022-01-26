@@ -45,12 +45,13 @@ class StatTreeNode {
         }
     }
 
-    val totalStats: Stats by lazy {
-        val toReturn = Stats()
-        if (innerStats != null) toReturn.add(innerStats!!)
-        for (child in children.values) toReturn.add(child.totalStats)
-        toReturn
-    }
+    val totalStats: Stats
+        get() {
+            val toReturn = Stats()
+            if (innerStats != null) toReturn.add(innerStats!!)
+            for (child in children.values) toReturn.add(child.totalStats)
+            return toReturn
+        }
 }
 
 /** Holds and calculates [Stats] for a city.
@@ -63,9 +64,9 @@ class CityStats(val cityInfo: CityInfo) {
 
     var baseStatTree = StatTreeNode()
 
-    var baseStatList = LinkedHashMap<String, Stats>()
-
     var statPercentBonusList = LinkedHashMap<String, Stats>()
+
+    var statPercentBonusTree = StatTreeNode()
 
     // Computed from baseStatList and statPercentBonusList - this is so the players can see a breakdown
     var finalStatList = LinkedHashMap<String, Stats>()
@@ -490,7 +491,10 @@ class CityStats(val cityInfo: CityInfo) {
             newStatPercentBonusList["Supercharged"] = stats
         }
 
-        statPercentBonusList = newStatPercentBonusList
+        val newStatsBonusTree = StatTreeNode()
+        for ((source, stats) in newStatPercentBonusList)
+            newStatsBonusTree.addStats(stats, source)
+        statPercentBonusTree = newStatsBonusTree
     }
 
     /** Does not update tile stats - instead, updating tile stats updates this */
@@ -531,8 +535,7 @@ class CityStats(val cityInfo: CityInfo) {
         for ((key, value) in baseStatTree.children)
             newFinalStatList[key] = value.totalStats.clone()
 
-        val statPercentBonusesSum = Stats()
-        for (bonus in statPercentBonusList.values) statPercentBonusesSum.add(bonus)
+        val statPercentBonusesSum = statPercentBonusTree.totalStats
 
         for (entry in newFinalStatList.values)
             entry.production *= statPercentBonusesSum.production.toPercent()
