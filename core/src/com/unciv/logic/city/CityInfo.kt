@@ -839,11 +839,6 @@ class CityInfo {
         }
     }
 
-    // Get all uniques that originate from this city
-    fun getAllLocalUniques(): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getAllUniques() + religion.getUniques()
-    }
-
     // Get all matching uniques that don't apply to only this city
     fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
