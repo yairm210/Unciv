@@ -272,10 +272,11 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
-    private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction):StatMap {
-        val sourceToStats = StatMap()
-        fun addUniqueStats(unique: Unique, stat:Stat, amount:Float) {
-            sourceToStats.add(getSourceNameForUnique(unique), Stats().add(stat, amount))
+    private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction): StatTreeNode {
+        val sourceToStats = StatTreeNode()
+
+        fun addUniqueStats(unique:Unique, stat:Stat, amount:Float) {
+            sourceToStats.addStats(Stats().add(stat, amount), getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
         }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentBonus)) {
@@ -491,8 +492,7 @@ class CityStats(val cityInfo: CityInfo) {
         newStatsBonusTree.addStats(getStatPercentBonusesFromPuppetCity(), "Puppet City")
         newStatsBonusTree.addStats(getStatPercentBonusesFromUnitSupply(), "Unit Supply")
 
-        for ((source, stats) in getStatsPercentBonusesFromUniquesBySource(currentConstruction))
-            newStatsBonusTree.addStats(stats, source)
+        newStatsBonusTree.add(getStatsPercentBonusesFromUniquesBySource(currentConstruction))
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()

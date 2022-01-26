@@ -209,7 +209,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         statValuesTable.add("Total".toLabel())
         statValuesTable.add(sumOfAllBaseValues.toOneDecimalLabel()).row()
 
-        val relevantBonuses = HashMap<String, Float>()
+        val relevantBonuses = LinkedHashMap<String, Float>()
         addStatsToHashmap(cityStats.statPercentBonusTree, relevantBonuses, stat, showDetails)
 
         val totalBonusStats = cityStats.statPercentBonusTree.totalStats
