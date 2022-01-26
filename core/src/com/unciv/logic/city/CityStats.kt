@@ -45,12 +45,13 @@ class StatTreeNode {
         }
     }
 
-    val totalStats: Stats by lazy {
-        val toReturn = Stats()
-        if (innerStats != null) toReturn.add(innerStats!!)
-        for (child in children.values) toReturn.add(child.totalStats)
-        toReturn
-    }
+    val totalStats: Stats
+        get() {
+            val toReturn = Stats()
+            if (innerStats != null) toReturn.add(innerStats!!)
+            for (child in children.values) toReturn.add(child.totalStats)
+            return toReturn
+        }
 }
 
 /** Holds and calculates [Stats] for a city.
@@ -63,9 +64,9 @@ class CityStats(val cityInfo: CityInfo) {
 
     var baseStatTree = StatTreeNode()
 
-    var baseStatList = LinkedHashMap<String, Stats>()
-
     var statPercentBonusList = LinkedHashMap<String, Stats>()
+
+    var statPercentBonusTree = StatTreeNode()
 
     // Computed from baseStatList and statPercentBonusList - this is so the players can see a breakdown
     var finalStatList = LinkedHashMap<String, Stats>()
@@ -123,6 +124,12 @@ class CityStats(val cityInfo: CityInfo) {
             stats.production += 25f
         return stats
     }
+
+    private fun addStatPercentBonusesFromBuildings(statPercentBonusTree: StatTreeNode) {
+        for (building in cityInfo.cityConstructions.getBuiltBuildings())
+            statPercentBonusTree.addStats(building.getStatPercentageBonuses(cityInfo), "Buildings", building.name)
+    }
+
 
 
     private fun getStatsFromCityStates(): Stats {
@@ -265,10 +272,11 @@ class CityStats(val cityInfo: CityInfo) {
         return stats
     }
 
-    private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction):StatMap {
-        val sourceToStats = StatMap()
-        fun addUniqueStats(unique: Unique, stat:Stat, amount:Float) {
-            sourceToStats.add(getSourceNameForUnique(unique), Stats().add(stat, amount))
+    private fun getStatsPercentBonusesFromUniquesBySource(currentConstruction: IConstruction): StatTreeNode {
+        val sourceToStats = StatTreeNode()
+
+        fun addUniqueStats(unique:Unique, stat:Stat, amount:Float) {
+            sourceToStats.addStats(Stats().add(stat, amount), getSourceNameForUnique(unique), unique.sourceObjectName ?: "")
         }
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentBonus)) {
@@ -472,25 +480,24 @@ class CityStats(val cityInfo: CityInfo) {
     }
 
 
-    private fun updateStatPercentBonusList(currentConstruction: IConstruction, localBuildingUniques: Sequence<Unique>) {
-        val newStatPercentBonusList = StatMap()
+    private fun updateStatPercentBonusList(currentConstruction: IConstruction) {
+        val newStatsBonusTree = StatTreeNode()
 
-        newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-                .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
-        newStatPercentBonusList["Railroads"] = getStatPercentBonusesFromRailroad()  // Name chosen same as tech, for translation, but theoretically independent
-        newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
-        newStatPercentBonusList["Unit Supply"] = getStatPercentBonusesFromUnitSupply()
+        newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge()),"Golden Age")
+        addStatPercentBonusesFromBuildings(newStatsBonusTree)
+        newStatsBonusTree.addStats(getStatPercentBonusesFromRailroad(), "Railroad")
+        newStatsBonusTree.addStats(getStatPercentBonusesFromPuppetCity(), "Puppet City")
+        newStatsBonusTree.addStats(getStatPercentBonusesFromUnitSupply(), "Unit Supply")
 
-        for ((source, stats) in getStatsPercentBonusesFromUniquesBySource(currentConstruction))
-            newStatPercentBonusList.add(source, stats)
+        newStatsBonusTree.add(getStatsPercentBonusesFromUniquesBySource(currentConstruction))
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()
             for (stat in Stat.values()) stats[stat] = 10000f
-            newStatPercentBonusList["Supercharged"] = stats
+            newStatsBonusTree.addStats(stats, "Supercharged")
         }
 
-        statPercentBonusList = newStatPercentBonusList
+        statPercentBonusTree = newStatsBonusTree
     }
 
     /** Does not update tile stats - instead, updating tile stats updates this */
@@ -498,17 +505,12 @@ class CityStats(val cityInfo: CityInfo) {
                updateTileStats:Boolean = true) {
         if (updateTileStats) updateTileStats()
 
-        // We calculate this here for concurrency reasons
-        // If something needs this, we pass this through as a parameter
-        val localBuildingUniques = cityInfo.cityConstructions.builtBuildingUniqueMap.getAllUniques()
-
-
         // We need to compute Tile yields before happiness
 
         val statsFromBuildings = cityInfo.cityConstructions.getStats() // this is performance heavy, so calculate once
         updateBaseStatList(statsFromBuildings)
         updateCityHappiness(statsFromBuildings)
-        updateStatPercentBonusList(currentConstruction, localBuildingUniques)
+        updateStatPercentBonusList(currentConstruction)
 
         updateFinalStatList(currentConstruction) // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
@@ -525,8 +527,7 @@ class CityStats(val cityInfo: CityInfo) {
         for ((key, value) in baseStatTree.children)
             newFinalStatList[key] = value.totalStats.clone()
 
-        val statPercentBonusesSum = Stats()
-        for (bonus in statPercentBonusList.values) statPercentBonusesSum.add(bonus)
+        val statPercentBonusesSum = statPercentBonusTree.totalStats
 
         for (entry in newFinalStatList.values)
             entry.production *= statPercentBonusesSum.production.toPercent()

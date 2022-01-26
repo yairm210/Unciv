@@ -107,16 +107,6 @@ class CityConstructions {
         return maintenanceCost
     }
 
-    /**
-     * @return Bonus (%) [Stats] provided by all built buildings in city
-     */
-    fun getStatPercentBonuses(): Stats {
-        val stats = Stats()
-        for (building in getBuiltBuildings())
-            stats.add(building.getStatPercentageBonuses(cityInfo))
-        return stats
-    }
-
     fun getCityProductionTextForCityButton(): String {
         val currentConstructionSnapshot = currentConstructionFromQueue // See below
         var result = currentConstructionSnapshot.tr()

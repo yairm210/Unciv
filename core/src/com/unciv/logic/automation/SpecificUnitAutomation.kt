@@ -253,9 +253,7 @@ object SpecificUnitAutomation {
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 
         val citiesByStatBoost = unit.civInfo.cities.sortedByDescending {
-            val stats = Stats()
-            for (bonus in it.cityStats.statPercentBonusList.values) stats.add(bonus)
-            stats[relatedStat]
+            it.cityStats.statPercentBonusTree.totalStats[relatedStat]
         }
 
 

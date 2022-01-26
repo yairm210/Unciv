@@ -168,7 +168,8 @@ class TechManager {
         var allCitiesScience = 0f
         civInfo.cities.forEach { it ->
             val totalBaseScience = it.cityStats.baseStatTree.totalStats.science
-            val totalBonusPercents = it.cityStats.statPercentBonusList.filter { it.key != "Policies" }.values.map { it.science }.sum()
+            val totalBonusPercents = it.cityStats.statPercentBonusTree.children.asSequence()
+                .filter { it.key != "Policies" }.map { it.value.totalStats.science }.sum()
             allCitiesScience += totalBaseScience * totalBonusPercents.toPercent()
         }
         scienceOfLast8Turns[civInfo.gameInfo.turns % 8] = allCitiesScience.toInt()
