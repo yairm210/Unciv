@@ -1,3 +1,22 @@
+## 3.19.2
+
+Stat bonus drilldown in cities
+
+Performance improvements
+
+By will-ca:
+- Try to fix potential typos in stock rulesets.
+- Wiki improvements!
+- Make sure units always have starting promotions.
+
+By xlenstra:
+- Fixed the problems with the food carry-over unique
+- Made unhappiness effects moddable by adding a global uniques json
+  added revolts when < -20 happiness
+- Fixed a missing percentage sign in uniques
+
+Ranged capture  - By itanasi
+
 ## 3.19.1
 
 Better drilldown to stat sources in city screen
