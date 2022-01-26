@@ -690,7 +690,7 @@
 	},
 	{
 		"name": "Kremlin",
-		"cost": 500
+		"cost": 500,
 		"culture": 3,
 		"cityStrength": 12,
 		"isWonder": true,
@@ -905,7 +905,7 @@
 		"isWonder": true,
 		"culture": 3,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"uniques": ["[-33]% Gold cost of upgrading [Military] units"],
+		"uniques": ["[-33]% Gold cost of upgrading <for [Military] units>"],
 		"requiredTech": "Radar",
 		"quote": "'In preparing for battle I have always found that plans are useless, but planning is indispensable.' - Dwight D. Eisenhower"
 	},
@@ -995,6 +995,6 @@
 		"isNationalWonder": true,
 		"uniques": ["Hidden until [5] social policy branches have been completed", "Triggers a global alert upon build start",
 			"Triggers a Cultural Victory upon completion", "Hidden when [Cultural] Victory is disabled"]
-	},
+	}
 	
 ]
