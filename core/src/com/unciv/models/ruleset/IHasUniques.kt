@@ -19,7 +19,7 @@ interface IHasUniques {
      * But making this a function is relevant for future "unify Unciv object" plans ;)
      * */
     fun getUniqueTarget(): UniqueTarget
-    
+  
     fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
         val matchingUniques = uniqueMap[uniqueTemplate] ?: return sequenceOf()
         return matchingUniques.asSequence().filter { it.conditionalsApply(stateForConditionals) }
