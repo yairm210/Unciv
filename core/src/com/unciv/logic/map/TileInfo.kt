@@ -382,7 +382,9 @@ open class TileInfo {
 
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
         val stats = improvement.cloneStats()
-        if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name)
+        if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name
+            && tileResource.improvementStats != null
+        )
             stats.add(tileResource.improvementStats!!.clone()) // resource-specific improvement
 
         val conditionalState = StateForConditionals(civInfo = observingCiv, cityInfo = city)
@@ -395,14 +397,15 @@ open class TileInfo {
                 .filter { city.matchesFilter(it.params[2]) }
             val improvementUniques =
                 improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)
-            
+
             for (unique in tileUniques + improvementUniques) {
                 if (improvement.matchesFilter(unique.params[1])
                     // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an endless feedback.
                     // If you're attempting that, check that it works!
                     || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
-                    || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
-                        stats.add(unique.stats)
+                    || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater
+                )
+                    stats.add(unique.stats)
             }
 
             for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
@@ -416,13 +419,13 @@ open class TileInfo {
             val adjacent = unique.params[1]
             val numberOfBonuses = neighbors.count {
                 it.matchesFilter(adjacent, observingCiv)
-                || it.roadStatus.name == adjacent
+                        || it.roadStatus.name == adjacent
             }
             stats.add(unique.stats.times(numberOfBonuses.toFloat()))
         }
 
-        for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject) + 
-            observingCiv.getMatchingUniques(UniqueType.AllStatsSignedPercentFromObject)
+        for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject) +
+                observingCiv.getMatchingUniques(UniqueType.AllStatsSignedPercentFromObject)
         )
             if (improvement.matchesFilter(unique.params[1]))
                 stats.timesInPlace(unique.params[0].toPercent())

@@ -55,6 +55,7 @@ class ModOptions : IHasUniques {
     override var uniques = ArrayList<String>()
     // If this is delegated with "by lazy", the mod download process crashes and burns
     override var uniqueObjects: List<Unique> = listOf()
+    override var uniqueMap: Map<String, List<Unique>> = mapOf()
     override fun getUniqueTarget() = UniqueTarget.ModOptions
 
     val constants = ModConstants()
@@ -164,6 +165,7 @@ class Ruleset {
                     modOptions.constants.maxXPfromBarbarians = modOptions.constants.maxXPfromBarbarians
             } catch (ex: Exception) {}
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
+            modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }
         }
 
         val techFile = folderHandle.child("Techs.json")
