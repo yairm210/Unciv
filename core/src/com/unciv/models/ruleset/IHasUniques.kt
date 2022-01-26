@@ -20,8 +20,10 @@ interface IHasUniques {
      * */
     fun getUniqueTarget(): UniqueTarget
     
-    fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null) = 
-        uniqueMap[uniqueTemplate]?.asSequence() ?: sequenceOf()
+    fun getMatchingUniques(uniqueTemplate: String, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
+        val matchingUniques = uniqueMap[uniqueTemplate] ?: return sequenceOf()
+        return matchingUniques.asSequence().filter { it.conditionalsApply(stateForConditionals) }
+    }
 
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) =
         getMatchingUniques(uniqueType.placeholderText, stateForConditionals)
