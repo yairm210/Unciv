@@ -474,26 +474,26 @@ class CityStats(val cityInfo: CityInfo) {
 
 
     private fun updateStatPercentBonusList(currentConstruction: IConstruction, localBuildingUniques: Sequence<Unique>) {
-        val newStatPercentBonusList = StatMap()
 
-        newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-                .plus(cityInfo.cityConstructions.getStatPercentBonuses()) // This function is to be deprecated but it'll take a while.
-        newStatPercentBonusList["Railroads"] = getStatPercentBonusesFromRailroad()  // Name chosen same as tech, for translation, but theoretically independent
-        newStatPercentBonusList["Puppet City"] = getStatPercentBonusesFromPuppetCity()
-        newStatPercentBonusList["Unit Supply"] = getStatPercentBonusesFromUnitSupply()
+        val newStatsBonusTree = StatTreeNode()
+
+
+        newStatsBonusTree.addStats(getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge()),"Golden Age")
+        // todo change function to show which building gives which bonus
+        newStatsBonusTree.addStats(cityInfo.cityConstructions.getStatPercentBonuses(),"Buildings")
+        newStatsBonusTree.addStats(getStatPercentBonusesFromRailroad(), "Railroad")
+        newStatsBonusTree.addStats(getStatPercentBonusesFromPuppetCity(), "Puppet City")
+        newStatsBonusTree.addStats(getStatPercentBonusesFromUnitSupply(), "Unit Supply")
 
         for ((source, stats) in getStatsPercentBonusesFromUniquesBySource(currentConstruction))
-            newStatPercentBonusList.add(source, stats)
+            newStatsBonusTree.addStats(stats, source)
 
         if (UncivGame.Current.superchargedForDebug) {
             val stats = Stats()
             for (stat in Stat.values()) stats[stat] = 10000f
-            newStatPercentBonusList["Supercharged"] = stats
+            newStatsBonusTree.addStats(stats, "Supercharged")
         }
 
-        val newStatsBonusTree = StatTreeNode()
-        for ((source, stats) in newStatPercentBonusList)
-            newStatsBonusTree.addStats(stats, source)
         statPercentBonusTree = newStatsBonusTree
     }
 
