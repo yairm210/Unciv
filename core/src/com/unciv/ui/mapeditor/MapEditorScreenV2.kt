@@ -16,14 +16,14 @@ import com.unciv.ui.utils.*
 //todo work in Simon's changes to continent/landmass
 //todo work in Simon's regions - check whether generate and store or discard is the way
 //todo Regions: If relevant, view and possibly work in Simon's colored visualization
-//todo adapt to new BaseRuleset way of things
+//todo adapt to new BaseRuleset way of things - currently generate will use G&K / edit will use Vanilla
 //todo normalize properly
 //todo check completeness of translation templates
 
 //todo Loading a map should set the mod checkboxes from the file
 //todo height of the resources+improvement scroller wrong
 //todo width of the tabs sometimes derails (brush line getting longer than initial width)
-//todo drag painting
+//todo drag painting - migrate from old editor
 //todo Nat Wonder step generator: *New* wonders?
 //todo functional Tab for Units
 //todo allow loading maps from mods (but not saving)
@@ -41,7 +41,7 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
     /** Flag indicating the map should be saved */
     var isDirty = false
     /** RuleSet corresponding to [tileMap]'s mod list */
-    var ruleset = RulesetCache.getBaseRuleset()
+    var ruleset = RulesetCache.getVanillaRuleset()
 
     /** The parameters to use for new maps, and the UI-shown mod list (which can be applied to the active map) */
     var newMapParameters = getDefaultParameters()
