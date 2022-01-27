@@ -23,13 +23,12 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, p
             if (_duration == null) {
                 // Do *not* access UncivGame.Current.gameInfo in the default constructor!
                 val gameSpeed = UncivGame.Current.gameInfo.gameParameters.gameSpeed
-                val correctDuration = when {
+                _duration = when {
                     type.isImmediate -> -1 // -1 for offers that are immediate (e.g. gold transfer)
                     name == Constants.peaceTreaty -> 10
                     gameSpeed == GameSpeed.Quick -> 25
                     else -> (30 * gameSpeed.modifier).toInt()
                 }
-                _duration = correctDuration
             }
             return _duration!!
         }
