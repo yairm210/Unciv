@@ -30,7 +30,6 @@ import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -389,7 +388,7 @@ class CivilizationInfo {
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
-        yieldAll(nation.uniqueObjects.asSequence().filter { it.isOfType(uniqueType) })
+        yieldAll(nation.getMatchingUniques(uniqueType,stateForConditionals))
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
             .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType) }
@@ -576,22 +575,23 @@ class CivilizationInfo {
     fun getEra(): Era {
         if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty())
             return Era()
-        val maxEraName = tech.researchedTechnologies
+        val maxEraOfResearchedTechs = tech.researchedTechnologies
             .asSequence()
             .map { it.column!! }
             .maxByOrNull { it.columnNumber }!!
             .era
-        val maxEra = gameInfo.ruleSet.eras[maxEraName]!!
+        val maxEra = gameInfo.ruleSet.eras[maxEraOfResearchedTechs]!!
 
-        val minEraName = gameInfo.ruleSet.technologies.values
+        val researchedTechsHashset = tech.researchedTechnologies.toHashSet()
+        val minEraOfNonResearchedTechs = gameInfo.ruleSet.technologies.values
             .asSequence()
-            .filter { it !in tech.researchedTechnologies }
+            .filter { it !in researchedTechsHashset }
             .map { it.column!! }
             .minByOrNull { it.columnNumber }
             ?.era
             ?: return maxEra
         
-        val minEra = gameInfo.ruleSet.eras[minEraName]!!
+        val minEra = gameInfo.ruleSet.eras[minEraOfNonResearchedTechs]!!
 
         return if (minEra.eraNumber > maxEra.eraNumber) minEra
             else maxEra
@@ -781,9 +781,9 @@ class CivilizationInfo {
             .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
         // Cache the last era each resource is used for buildings or units respectively for AI building evaluation
-        for (resource in gameInfo.ruleSet.tileResources.values.filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
-            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { getEquivalentBuilding(it) == it && it.requiresResource(resource) }
-            val applicableUnits = gameInfo.ruleSet.units.values.filter { getEquivalentUnit(it) == it && it.requiresResource(resource) }
+        for (resource in gameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
+            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { it.requiresResource(resource) && getEquivalentBuilding(it) == it }
+            val applicableUnits = gameInfo.ruleSet.units.values.filter { it.requiresResource(resource) && getEquivalentUnit(it) == it }
 
             val lastEraForBuilding = applicableBuildings.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
             val lastEraForUnit = applicableUnits.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
