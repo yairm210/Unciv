@@ -572,30 +572,7 @@ class CivilizationInfo {
         else -> getCivUnits().none()
     }
 
-    fun getEra(): Era {
-        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty())
-            return Era()
-        val maxEraOfResearchedTechs = tech.researchedTechnologies
-            .asSequence()
-            .map { it.column!! }
-            .maxByOrNull { it.columnNumber }!!
-            .era
-        val maxEra = gameInfo.ruleSet.eras[maxEraOfResearchedTechs]!!
-
-        val researchedTechsHashset = tech.researchedTechnologies.toHashSet()
-        val minEraOfNonResearchedTechs = gameInfo.ruleSet.technologies.values
-            .asSequence()
-            .filter { it !in researchedTechsHashset }
-            .map { it.column!! }
-            .minByOrNull { it.columnNumber }
-            ?.era
-            ?: return maxEra
-        
-        val minEra = gameInfo.ruleSet.eras[minEraOfNonResearchedTechs]!!
-
-        return if (minEra.eraNumber > maxEra.eraNumber) minEra
-            else maxEra
-    }
+    fun getEra(): Era = tech.era
 
     fun getEraNumber(): Int = getEra().eraNumber
 
