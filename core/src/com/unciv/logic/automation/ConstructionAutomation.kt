@@ -344,29 +344,32 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addReligousUnit(){
 
-        var modifier = 0f
-
-        val missionary = cityInfo.getRuleset().units.values.asSequence()
-            .firstOrNull { it -> it.canBePurchasedWithStat(cityInfo, Stat.Faith)
-                    && it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion"} }
-
-
-        val inquisitor = cityInfo.getRuleset().units.values.asSequence()
-            .firstOrNull { it.canBePurchasedWithStat(cityInfo, Stat.Faith)
-                    && it.hasUnique("Prevents spreading of religion to the city it is next to") }
-
-
 
         // these 4 if conditions are used to determine if an AI should buy units to spread religion, or spend faith to buy things like new military units or new buildings.
         // currently this AI can only buy inquisitors and missionaries with faith
         // this system will have to be reengineered to support buying other stuff with faith
         if (preferredVictoryType == VictoryType.Domination) return
         if (civInfo.religionManager.religion?.name == null) return
-        if (preferredVictoryType == VictoryType.Cultural) modifier += 1
-        if (isAtWar) modifier -= 0.5f
         if (cityInfo.religion.getMajorityReligion()?.name != civInfo.religionManager.religion?.name)
             return // you don't want to build units of opposing religions.
 
+
+        var modifier = 0f
+
+        // The performance of the regular getMatchingUniques is better, since it only tries to find one unique,
+        //  while the canBePurchasedWithStat tries (at time of writing) *6* different uniques.
+        val missionary = cityInfo.getRuleset().units.values
+            .firstOrNull { it -> it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion"}
+                    && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
+
+
+        val inquisitor = cityInfo.getRuleset().units.values
+            .firstOrNull { it.hasUnique("Prevents spreading of religion to the city it is next to")
+                    && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
+
+
+        if (preferredVictoryType == VictoryType.Cultural) modifier += 1
+        if (isAtWar) modifier -= 0.5f
 
         val citiesNotFollowingOurReligion = civInfo.cities.asSequence()
             .filterNot { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion!!.name }
@@ -382,8 +385,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         if (buildMissionary > buildInqusitor && missionary != null) faithConstruction.add(missionary)
         else if(inquisitor != null) faithConstruction.add(inquisitor)
-
-
     }
 
 }
