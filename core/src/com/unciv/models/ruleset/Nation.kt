@@ -138,9 +138,9 @@ class Nation : RulesetObject() {
             }
             textList += FormattedLine()
         }
-        addUniqueBuildingsText(textList, ruleset)
-        addUniqueUnitsText(textList, ruleset)
-        addUniqueImprovementsText(textList, ruleset)
+        textList += getUniqueBuildingsText(ruleset)
+        textList += getUniqueUnitsText(ruleset)
+        textList += getUniqueImprovementsText(ruleset)
 
         return textList
     }
@@ -193,102 +193,106 @@ class Nation : RulesetObject() {
         return textList
     }
 
-    private fun addUniqueBuildingsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
+    private fun getUniqueBuildingsText(ruleset: Ruleset) = sequence {
         for (building in ruleset.buildings.values) {
-            if (building.uniqueTo != name || Constants.hideFromCivilopediaUnique in building.uniques) continue
-            textList += FormattedLine("{${building.name}} -", link=building.makeLink())
+            when {
+                building.uniqueTo != name -> continue
+                building.hasUnique(UniqueType.HiddenFromCivilopedia) -> continue
+                UncivGame.Current.isGameInfoInitialized() && !UncivGame.Current.gameInfo.isReligionEnabled() && building.hasUnique(UniqueType.HiddenWithoutReligion) -> continue // This seems consistent with existing behaviour of CivilopediaScreen's init.<locals>.shouldBeDisplayed(), and Technology().getEnabledUnits(). Otherwise there are broken links in the Civilopedia (E.G. to "Pyramid" and "Shrine", from "The Maya").
+            }
+            yield(FormattedLine("{${building.name}} -", link=building.makeLink()))
             if (building.replaces != null && ruleset.buildings.containsKey(building.replaces!!)) {
                 val originalBuilding = ruleset.buildings[building.replaces!!]!!
-                textList += FormattedLine("Replaces [${originalBuilding.name}]", link=originalBuilding.makeLink(), indent=1)
+                yield(FormattedLine("Replaces [${originalBuilding.name}]", link=originalBuilding.makeLink(), indent=1))
 
                 for ((key, value) in building)
                     if (value != originalBuilding[key])
-                        textList += FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1)
+                        yield(FormattedLine( key.name.tr() + " " +"[${value.toInt()}] vs [${originalBuilding[key].toInt()}]".tr(), indent=1))
 
                 for (unique in building.uniques.filter { it !in originalBuilding.uniques })
-                    textList += FormattedLine(unique, indent=1)
+                    yield(FormattedLine(unique, indent=1))
                 if (building.maintenance != originalBuilding.maintenance)
-                    textList += FormattedLine("{Maintenance} ".tr() + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1)
+                    yield(FormattedLine("{Maintenance} ".tr() + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr(), indent=1))
                 if (building.cost != originalBuilding.cost)
-                    textList += FormattedLine("{Cost} ".tr() + "[${building.cost}] vs [${originalBuilding.cost}]".tr(), indent=1)
+                    yield(FormattedLine("{Cost} ".tr() + "[${building.cost}] vs [${originalBuilding.cost}]".tr(), indent=1))
                 if (building.cityStrength != originalBuilding.cityStrength)
-                    textList += FormattedLine("{City strength} ".tr() + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr(), indent=1)
+                    yield(FormattedLine("{City strength} ".tr() + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr(), indent=1))
                 if (building.cityHealth != originalBuilding.cityHealth)
-                    textList += FormattedLine("{City health} ".tr() + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr(), indent=1)
-                textList += FormattedLine()
+                    yield(FormattedLine("{City health} ".tr() + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr(), indent=1))
+                yield(FormattedLine())
             } else if (building.replaces != null) {
-                textList += FormattedLine("Replaces [${building.replaces}], which is not found in the ruleset!", indent=1)
+                yield(FormattedLine("Replaces [${building.replaces}], which is not found in the ruleset!", indent=1))
             } else {
-                textList += FormattedLine(building.getShortDescription(ruleset), indent=1)
+                yield(FormattedLine(building.getShortDescription(ruleset), indent=1))
             }
         }
     }
 
-    private fun addUniqueUnitsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
+    private fun getUniqueUnitsText(ruleset: Ruleset) = sequence {
         for (unit in ruleset.units.values) {
-            if (unit.uniqueTo != name || Constants.hideFromCivilopediaUnique in unit.uniques) continue
-            textList += FormattedLine("{${unit.name}} -", link="Unit/${unit.name}")
+            if (unit.uniqueTo != name || unit.hasUnique(UniqueType.HiddenFromCivilopedia)) continue
+            yield(FormattedLine("{${unit.name}} -", link="Unit/${unit.name}"))
             if (unit.replaces != null && ruleset.units.containsKey(unit.replaces!!)) {
                 val originalUnit = ruleset.units[unit.replaces!!]!!
-                textList += FormattedLine("Replaces [${originalUnit.name}]", link="Unit/${originalUnit.name}", indent=1)
+                yield(FormattedLine("Replaces [${originalUnit.name}]", link="Unit/${originalUnit.name}", indent=1))
                 if (unit.cost != originalUnit.cost)
-                    textList += FormattedLine("{Cost} ".tr() + "[${unit.cost}] vs [${originalUnit.cost}]".tr(), indent=1)
+                    yield(FormattedLine("{Cost} ".tr() + "[${unit.cost}] vs [${originalUnit.cost}]".tr(), indent=1))
                 if (unit.strength != originalUnit.strength)
-                    textList += FormattedLine("${Fonts.strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr(), indent=1)
+                    yield(FormattedLine("${Fonts.strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr(), indent=1))
                 if (unit.rangedStrength != originalUnit.rangedStrength)
-                    textList += FormattedLine("${Fonts.rangedStrength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr(), indent=1)
+                    yield(FormattedLine("${Fonts.rangedStrength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr(), indent=1))
                 if (unit.range != originalUnit.range)
-                    textList += FormattedLine("${Fonts.range} " + "[${unit.range}] vs [${originalUnit.range}]".tr(), indent=1)
+                    yield(FormattedLine("${Fonts.range} " + "[${unit.range}] vs [${originalUnit.range}]".tr(), indent=1))
                 if (unit.movement != originalUnit.movement)
-                    textList += FormattedLine("${Fonts.movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr(), indent=1)
+                    yield(FormattedLine("${Fonts.movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr(), indent=1))
                 for (resource in originalUnit.getResourceRequirements().keys)
                     if (!unit.getResourceRequirements().containsKey(resource)) {
-                        textList += FormattedLine("[$resource] not required", link="Resource/$resource", indent=1)
+                        yield(FormattedLine("[$resource] not required", link="Resource/$resource", indent=1))
                     }
                 // This does not use the auto-linking FormattedLine(Unique) for two reasons:
                 // would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
                 // No .copy() factory on FormattedLine and no FormattedLine(Unique, all other val's) constructor either
                 for (unique in unit.uniqueObjects.filterNot { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
 
-                    textList += FormattedLine(unique.text.tr(), indent = 1)
+                    yield(FormattedLine(unique.text.tr(), indent = 1))
                 }
                 for (unique in originalUnit.uniqueObjects.filterNot { it.text in unit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
-                    textList += FormattedLine("Lost ability".tr() + " (" + "vs [${originalUnit.name}]".tr() + "): " +
-                            unique.text.tr(), indent = 1)
+                    yield(FormattedLine("Lost ability".tr() + " (" + "vs [${originalUnit.name}]".tr() + "): " +
+                            unique.text.tr(), indent = 1))
                 }
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions }) {
                     val effect = ruleset.unitPromotions[promotion]!!.uniques
                     // "{$promotion} ({$effect})" won't work as effect may contain [] and tr() does not support that kind of nesting
-                    textList += FormattedLine(
+                    yield(FormattedLine(
                         "${promotion.tr()} (${effect.joinToString(",") { it.tr() }})",
-                        link = "Promotion/$promotion", indent = 1 )
+                        link = "Promotion/$promotion", indent = 1 ))
                 }
             } else if (unit.replaces != null) {
-                textList += FormattedLine("Replaces [${unit.replaces}], which is not found in the ruleset!", indent = 1)
+                yield(FormattedLine("Replaces [${unit.replaces}], which is not found in the ruleset!", indent = 1))
             } else {
-                textList += unit.getCivilopediaTextLines(ruleset).map {
+                yieldAll(unit.getCivilopediaTextLines(ruleset).map {
                     FormattedLine(it.text, link = it.link, indent = it.indent + 1, color = it.color)
-                }
+                })
             }
 
-            textList += FormattedLine()
+            yield(FormattedLine())
         }
     }
 
-    private fun addUniqueImprovementsText(textList: ArrayList<FormattedLine>, ruleset: Ruleset) {
+    private fun getUniqueImprovementsText(ruleset: Ruleset) = sequence {
         for (improvement in ruleset.tileImprovements.values) {
             if (improvement.uniqueTo != name) continue
 
-            textList += FormattedLine(improvement.name, link = "Improvement/${improvement.name}")
-            textList += FormattedLine(improvement.cloneStats().toString(), indent = 1)   // = (improvement as Stats).toString minus import plus copy overhead
+            yield(FormattedLine(improvement.name, link = "Improvement/${improvement.name}"))
+            yield(FormattedLine(improvement.cloneStats().toString(), indent = 1))   // = (improvement as Stats).toString minus import plus copy overhead
             if (improvement.terrainsCanBeBuiltOn.isNotEmpty()) {
                 improvement.terrainsCanBeBuiltOn.withIndex().forEach {
-                    textList += FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
-                        link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2)
+                    yield(FormattedLine(if (it.index == 0) "{Can be built on} {${it.value}}" else "or [${it.value}]",
+                        link = "Terrain/${it.value}", indent = if (it.index == 0) 1 else 2))
                 }
             }
             for (unique in improvement.uniques)
-                textList += FormattedLine(unique, indent = 1)
+                yield(FormattedLine(unique, indent = 1))
         }
     }
 

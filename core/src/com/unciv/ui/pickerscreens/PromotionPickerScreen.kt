@@ -1,7 +1,6 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -77,9 +76,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             val isPromotionAvailable = promotion in unitAvailablePromotions
             val unitHasPromotion = unit.promotions.promotions.contains(promotion.name)
 
-            val selectPromotionButton = Button(skin)
-            selectPromotionButton.add(ImageGetter.getPromotionIcon(promotion.name)).size(30f).pad(10f)
-            selectPromotionButton.add(promotion.name.toLabel()).pad(10f).padRight(20f)
+            val selectPromotionButton = getPickerOptionButton(ImageGetter.getPromotionIcon(promotion.name), promotion.name)
             selectPromotionButton.isEnabled = true
             selectPromotionButton.onClick {
                 val enable = canBePromoted && isPromotionAvailable && !unitHasPromotion && canChangeState

@@ -41,7 +41,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             val loadingPopup = Popup( this)
             loadingPopup.addGoodSizedLabel("Loading...")
             loadingPopup.open()
-            crashHandlingThread {
+            crashHandlingThread(name = "Load Game") {
                 try {
                     // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                     val loadedGame = GameSaver.loadGameByName(selectedSave)

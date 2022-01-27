@@ -1,3 +1,62 @@
+## 3.19.2
+
+Stat bonus drilldown in cities
+
+Performance improvements
+
+By will-ca:
+- Try to fix potential typos in stock rulesets.
+- Wiki improvements!
+- Make sure units always have starting promotions.
+
+By xlenstra:
+- Fixed the problems with the food carry-over unique
+- Made unhappiness effects moddable by adding a global uniques json
+  added revolts when < -20 happiness
+- Fixed a missing percentage sign in uniques
+
+Ranged capture  - By itanasi
+
+## 3.19.1
+
+Better drilldown to stat sources in city screen
+
+Start bias includes neighboring tiles for better effect
+
+Cleaner tech order display
+
+Better unique documentation - By xlenstra
+
+By will-ca:
+- Check rulesets for potential typos.
+- Avoid potential crashes when deleting mods.
+- Fix uneven fonts, unify font sizes.
+- Make "Help" button clearer and translatable, random nation indicators and labels translatable.
+
+Destroy Arsenal when city is captured  - By SpacedOutChicken
+
+## 3.19.0
+
+Vastly improved worker AI for mods, and AI utilization of workers
+
+Added button to update an installed mod from its action menu
+
+Converted all stat percent uniques to be iterated on efficiently once!
+
+Fixed a conversion error in "% city strength from defensive buildings" unique - By xlenstra
+
+## 3.18.19
+
+Worker AI improvements for modded improvements and terrains
+
+Performance improvements
+
+Minor UI improvements
+
+By will-ca:
+- Unified icon button UI
+- Added missing translation terms
+
 ## 3.18.18
 
 "Cannot be built with" unique catches building equivalents as well

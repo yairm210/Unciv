@@ -58,6 +58,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
+            UniqueType.ConditionalBetweenHappiness ->
+                state.civInfo != null
+                && condition.params[0].toInt() <= state.civInfo.happinessForNextTurn
+                && state.civInfo.happinessForNextTurn < condition.params[1].toInt()
+            UniqueType.ConditionalBelowHappiness -> 
+                state.civInfo != null && state.civInfo.happinessForNextTurn < condition.params[0].toInt() 
             UniqueType.ConditionalGoldenAge ->
                 state.civInfo != null && state.civInfo.goldenAges.isGoldenAge()
             UniqueType.ConditionalBeforeEra ->
@@ -77,6 +83,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
             UniqueType.ConditionalSpecialistCount ->
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
+            UniqueType.ConditionalWhenGarrisoned ->
+                state.cityInfo != null && state.cityInfo.getCenterTile().militaryUnit != null && state.cityInfo.getCenterTile().militaryUnit!!.canGarrison()
 
             UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesCategory("City") == true
             UniqueType.ConditionalVsUnits -> state.theirCombatant?.matchesCategory(condition.params[0]) == true
@@ -149,7 +157,7 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
     }
 
     fun getUniques(placeholderText: String): Sequence<Unique> {
-        return this[placeholderText]?.asSequence() ?: sequenceOf()
+        return this[placeholderText]?.asSequence() ?: emptySequence()
     }
 
     fun getUniques(uniqueType: UniqueType) = getUniques(uniqueType.placeholderText)

@@ -27,7 +27,16 @@ open class TileInfo {
     lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
 
     @Transient
+    private var isCityCenterInternal = false
+
+    @Transient
     var owningCity: CityInfo? = null
+        private set
+
+    fun setOwningCity(city:CityInfo?){
+        owningCity = city
+        isCityCenterInternal = getCity()?.location == position
+    }
 
     @Transient
     private lateinit var baseTerrainObject: Terrain
@@ -128,6 +137,14 @@ open class TileInfo {
         return null
     }
 
+    /** Return null if military/air units on tile, or no civilian */
+    fun getUnguardedCivilian(): MapUnit? {
+        if (militaryUnit != null) return null
+        if (airUnits.isNotEmpty()) return null
+        if (civilianUnit != null) return civilianUnit!!
+        return null
+    }
+
     fun getCity(): CityInfo? = owningCity
 
     fun getLastTerrain(): Terrain = when {
@@ -148,7 +165,7 @@ open class TileInfo {
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
-    fun isCityCenter(): Boolean = getCity()?.location == position
+    fun isCityCenter(): Boolean = isCityCenterInternal
     fun isNaturalWonder(): Boolean = naturalWonder != null
     fun isImpassible() = getLastTerrain().impassable
 
@@ -374,37 +391,30 @@ open class TileInfo {
 
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
         val stats = improvement.cloneStats()
-        if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name)
+        if (hasViewableResource(observingCiv) && tileResource.improvement == improvement.name
+            && tileResource.improvementStats != null
+        )
             stats.add(tileResource.improvementStats!!.clone()) // resource-specific improvement
 
-        // Deprecated since 3.17.10
-            for (unique in improvement.getMatchingUniques(UniqueType.StatsWithTech)) {
-                if (observingCiv.tech.isResearched(unique.params[1]))
-                    stats.add(unique.stats)
-            }
-        //
-        
-        for (unique in improvement.getMatchingUniques(UniqueType.Stats, StateForConditionals(civInfo = observingCiv, cityInfo = city))) {
+        val conditionalState = StateForConditionals(civInfo = observingCiv, cityInfo = city)
+        for (unique in improvement.getMatchingUniques(UniqueType.Stats, conditionalState)) {
             stats.add(unique.stats)
         }
 
         if (city != null) {
-            val tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, StateForConditionals(civInfo = observingCiv, cityInfo = city))
+            val tileUniques = city.getMatchingUniques(UniqueType.StatsFromTiles, conditionalState)
                 .filter { city.matchesFilter(it.params[2]) }
-            val improvementUniques = 
-                // Deprecated since 3.17.10
-                    improvement.getMatchingUniques(UniqueType.StatsOnTileWithTech)
-                        .filter { observingCiv.tech.isResearched(it.params[2]) } +
-                //
-                improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, StateForConditionals(civInfo = observingCiv, cityInfo = city))
-            
+            val improvementUniques =
+                improvement.getMatchingUniques(UniqueType.ImprovementStatsOnTile, conditionalState)
+
             for (unique in tileUniques + improvementUniques) {
                 if (improvement.matchesFilter(unique.params[1])
                     // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an endless feedback.
                     // If you're attempting that, check that it works!
                     || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
-                    || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
-                        stats.add(unique.stats)
+                    || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater
+                )
+                    stats.add(unique.stats)
             }
 
             for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
@@ -418,13 +428,13 @@ open class TileInfo {
             val adjacent = unique.params[1]
             val numberOfBonuses = neighbors.count {
                 it.matchesFilter(adjacent, observingCiv)
-                || it.roadStatus.name == adjacent
+                        || it.roadStatus.name == adjacent
             }
             stats.add(unique.stats.times(numberOfBonuses.toFloat()))
         }
 
-        for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject) + 
-            observingCiv.getMatchingUniques(UniqueType.AllStatsSignedPercentFromObject)
+        for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject) +
+                observingCiv.getMatchingUniques(UniqueType.AllStatsSignedPercentFromObject)
         )
             if (improvement.matchesFilter(unique.params[1]))
                 stats.timesInPlace(unique.params[0].toPercent())
@@ -472,7 +482,7 @@ open class TileInfo {
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
-    private fun canImprovementBeBuiltHere(improvement: TileImprovement, resourceIsVisible: Boolean = resource != null): Boolean {
+    fun canImprovementBeBuiltHere(improvement: TileImprovement, resourceIsVisible: Boolean = resource != null): Boolean {
         val topTerrain = getLastTerrain()
 
         return when {
@@ -487,7 +497,7 @@ open class TileInfo {
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
 
             // Terrain blocks BUILDING improvements - removing things (such as fallout) is fine
-            !improvement.name.startsWith("Remove ") &&
+            !improvement.name.startsWith(Constants.remove) &&
                 getAllTerrains().any { it.getMatchingUniques(UniqueType.RestrictedBuildableImprovements)
                 .any { unique -> !improvement.matchesFilter(unique.params[0]) } } -> false
 

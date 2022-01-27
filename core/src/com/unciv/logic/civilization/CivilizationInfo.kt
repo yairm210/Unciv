@@ -381,13 +381,14 @@ class CivilizationInfo {
                 else city.getAllUniquesWithNonLocalEffects()
         }
 
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null) = getMatchingUniques(uniqueType, stateForConditionals).any()
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = 
+        StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
         
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
     fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
-        yieldAll(nation.uniqueObjects.asSequence().filter { it.isOfType(uniqueType) })
+        yieldAll(nation.getMatchingUniques(uniqueType,stateForConditionals))
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
             .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType) }
@@ -401,6 +402,9 @@ class CivilizationInfo {
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
+        
+        yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
+        
     }.filter {
         it.conditionalsApply(stateForConditionals)
     }
@@ -423,8 +427,10 @@ class CivilizationInfo {
                 .asSequence()
                 .filter { it.placeholderText == uniqueTemplate }
             )
+        
+        yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueTemplate))
     }
-
+ 
     //region Units
     fun getCivUnitsSize(): Int = units.size
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
@@ -566,29 +572,7 @@ class CivilizationInfo {
         else -> getCivUnits().none()
     }
 
-    fun getEra(): Era {
-        if (gameInfo.ruleSet.technologies.isEmpty() || tech.researchedTechnologies.isEmpty())
-            return Era()
-        val maxEraName = tech.researchedTechnologies
-            .asSequence()
-            .map { it.column!! }
-            .maxByOrNull { it.columnNumber }!!
-            .era
-        val maxEra = gameInfo.ruleSet.eras[maxEraName]!!
-
-        val minEraName = gameInfo.ruleSet.technologies.values
-            .asSequence()
-            .filter { it !in tech.researchedTechnologies }
-            .map { it.column!! }
-            .minByOrNull { it.columnNumber }
-            ?.era
-            ?: return maxEra
-        
-        val minEra = gameInfo.ruleSet.eras[minEraName]!!
-
-        return if (minEra.eraNumber > maxEra.eraNumber) minEra
-            else maxEra
-    }
+    fun getEra(): Era = tech.era
 
     fun getEraNumber(): Int = getEra().eraNumber
 
@@ -774,9 +758,9 @@ class CivilizationInfo {
             .any { gameInfo.ruleSet.terrains[it.params[0]]!!.damagePerTurn != it.params[1].toInt() }
 
         // Cache the last era each resource is used for buildings or units respectively for AI building evaluation
-        for (resource in gameInfo.ruleSet.tileResources.values.filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
-            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { getEquivalentBuilding(it) == it && it.requiresResource(resource) }
-            val applicableUnits = gameInfo.ruleSet.units.values.filter { getEquivalentUnit(it) == it && it.requiresResource(resource) }
+        for (resource in gameInfo.ruleSet.tileResources.values.asSequence().filter { it.resourceType == ResourceType.Strategic }.map { it.name }) {
+            val applicableBuildings = gameInfo.ruleSet.buildings.values.filter { it.requiresResource(resource) && getEquivalentBuilding(it) == it }
+            val applicableUnits = gameInfo.ruleSet.units.values.filter { it.requiresResource(resource) && getEquivalentUnit(it) == it }
 
             val lastEraForBuilding = applicableBuildings.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
             val lastEraForUnit = applicableUnits.map { gameInfo.ruleSet.eras[gameInfo.ruleSet.technologies[it.requiredTech]?.era()]?.eraNumber ?: 0 }.maxOrNull()
@@ -826,6 +810,7 @@ class CivilizationInfo {
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         transients().updateCitiesConnectedToCapital()
         startTurnFlags()
+        updateRevolts()
         for (city in cities) city.startTurn()  // Most expensive part of startTurn
 
         for (unit in getCivUnits()) unit.startTurn()
@@ -920,6 +905,11 @@ class CivilizationInfo {
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             
+            if (flagsCountdown[flag] != 0) continue
+            
+            when (flag) {
+                CivFlags.RevoltSpawning.name -> doRevoltSpawn()
+            }
         }
         handleDiplomaticVictoryFlags()
     }
@@ -946,8 +936,8 @@ class CivilizationInfo {
     }
 
     fun addFlag(flag: String, count: Int) = flagsCountdown.set(flag, count)
-    
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)
+    fun hasFlag(flag: String) = flagsCountdown.contains(flag)
 
     fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
 
@@ -974,6 +964,65 @@ class CivilizationInfo {
     fun shouldCheckForDiplomaticVictory() =
         shouldShowDiplomaticVotingResults()
 
+    private fun updateRevolts() {
+        if (!hasUnique(UniqueType.SpawnRebels)) {
+            removeFlag(CivFlags.RevoltSpawning.name)
+            return
+        }
+        
+        if (!hasFlag(CivFlags.RevoltSpawning.name)) {
+            addFlag(CivFlags.RevoltSpawning.name, max(getTurnsBeforeRevolt(),1))
+            return
+        }
+    }
+    
+    private fun doRevoltSpawn() {
+        val random = Random()
+        val rebelCount = 1 + random.nextInt(100 + 20 * (cities.size - 1)) / 100
+        val spawnCity = cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
+        val spawnTile = spawnCity.getTiles().maxByOrNull { rateTileForRevoltSpawn(it) } ?: return
+        val unitToSpawn = gameInfo.ruleSet.units.values.asSequence().filter {
+            it.uniqueTo == null && it.isMelee() && it.isLandUnit() 
+            && !it.hasUnique(UniqueType.CannotAttack) && it.isBuildable(this)
+        }.maxByOrNull {
+            random.nextInt(1000)
+        } ?: return
+        
+        repeat(rebelCount) {
+            gameInfo.tileMap.placeUnitNearTile(
+                spawnTile.position,
+                unitToSpawn.name,
+                gameInfo.getBarbarianCivilization()
+            )
+        }
+        
+        // Will be automatically added again as long as unhappiness is still low enough
+        removeFlag(CivFlags.RevoltSpawning.name) 
+        
+        addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, unitToSpawn.name, "StatIcons/Malcontent")
+    }
+    
+    // Higher is better
+    private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
+        if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible()) 
+            return -1;
+        var score = 10
+        if (tile.improvement == null) {
+            score += 4
+            if (tile.resource != null) {
+                score += 3
+            }
+        }
+        if (tile.getDefensiveBonus() > 0)
+            score += 4
+        return score
+    }
+    
+    private fun getTurnsBeforeRevolt(): Int {
+        val score = ((4 + Random().nextInt(3)) * max(gameInfo.gameParameters.gameSpeed.modifier, 1f)).toInt()
+        return score
+    }
+    
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
      */
@@ -1197,7 +1246,7 @@ class CivilizationInfo {
 
         return proximity
     }
-
+    
     //////////////////////// City State wrapper functions ////////////////////////
 
     /** Gain a random great person from the city state */
@@ -1251,4 +1300,5 @@ enum class CivFlags {
     ShouldResetDiplomaticVotes,
     RecentlyBullied,
     TurnsTillCallForBarbHelp,
+    RevoltSpawning,
 }

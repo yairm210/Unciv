@@ -282,7 +282,7 @@ class CityInfo {
     fun hasFlag(flag: CityFlags) = flagsCountdown.containsKey(flag.name)
     fun getFlag(flag: CityFlags) = flagsCountdown[flag.name]!!
 
-    fun isWeLoveTheKingDay() = hasFlag(CityFlags.WeLoveTheKing)
+    fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     fun isInResistance() = hasFlag(CityFlags.Resistance)
 
     /** @return the number of tiles 4 out from this city that could hold a city, ie how lonely this city is */
@@ -815,7 +815,7 @@ class CityInfo {
     // Finds matching uniques provided from both local and non-local sources.
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals? = null,
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, this),
         localUniques: Sequence<Unique> = getLocalMatchingUniques(uniqueType, stateForConditionals),
     ): Sequence<Unique> {
         return civInfo.getMatchingUniques(uniqueType, stateForConditionals, this) +
@@ -837,11 +837,6 @@ class CityInfo {
         ).filter {
             it.conditionalsApply(stateForConditionals)
         }
-    }
-
-    // Get all uniques that originate from this city
-    fun getAllLocalUniques(): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getAllUniques() + religion.getUniques()
     }
 
     // Get all matching uniques that don't apply to only this city

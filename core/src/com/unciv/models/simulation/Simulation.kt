@@ -1,5 +1,6 @@
 package com.unciv.models.simulation
 
+import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.ruleset.VictoryType
@@ -17,7 +18,7 @@ class Simulation(
     private val maxTurns: Int = 1000
 ) {
     private val maxSimulations = threadsNumber * simulationsPerThread
-    val civilizations = newGameInfo.civilizations.filter { it.civName != "Spectator" }.map { it.civName }
+    val civilizations = newGameInfo.civilizations.filter { it.civName != Constants.spectator }.map { it.civName }
     private var startTime: Long = 0
     private var endTime: Long = 0
     var steps = ArrayList<SimulationStep>()

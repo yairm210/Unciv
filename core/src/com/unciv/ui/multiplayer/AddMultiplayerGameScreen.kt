@@ -7,17 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.ToastPopup
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 import java.util.*
 
 class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
     init {
         val gameNameTextField = TextField("", skin)
         val gameIDTextField = TextField("", skin)
-        val pasteGameIDButton = TextButton("Paste gameID from clipboard", skin)
+        val pasteGameIDButton = "Paste gameID from clipboard".toTextButton()
         pasteGameIDButton.onClick {
             gameIDTextField.text = Gdx.app.clipboard.contents
         }

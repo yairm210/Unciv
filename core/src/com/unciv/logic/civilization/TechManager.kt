@@ -4,6 +4,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.tech.Technology
@@ -20,6 +21,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 class TechManager {
+    @Transient
+    var era: Era = Era()
+
     @Transient
     lateinit var civInfo: CivilizationInfo
     /** This is the Transient list of Technologies */
@@ -167,8 +171,9 @@ class TechManager {
         // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City-States.
         var allCitiesScience = 0f
         civInfo.cities.forEach { it ->
-            val totalBaseScience = it.cityStats.baseStatList.values.map { it.science }.sum()
-            val totalBonusPercents = it.cityStats.statPercentBonusList.filter { it.key != "Policies" }.values.map { it.science }.sum()
+            val totalBaseScience = it.cityStats.baseStatTree.totalStats.science
+            val totalBonusPercents = it.cityStats.statPercentBonusTree.children.asSequence()
+                .filter { it.key != "Policies" }.map { it.value.totalStats.science }.sum()
             allCitiesScience += totalBaseScience * totalBonusPercents.toPercent()
         }
         scienceOfLast8Turns[civInfo.gameInfo.turns % 8] = allCitiesScience.toInt()
@@ -325,6 +330,37 @@ class TechManager {
             if (unique.params[1] != techName) continue
             civInfo.addNotification("You have unlocked [The Long Count]!", MayaLongCountAction(), MayaCalendar.notificationIcon)
         }
+
+        updateEra()
+    }
+
+    fun updateEra() {
+        val ruleset = civInfo.gameInfo.ruleSet
+        if (ruleset.technologies.isEmpty() || researchedTechnologies.isEmpty())
+            return
+
+        val maxEraOfResearchedTechs = researchedTechnologies
+            .asSequence()
+            .map { it.column!! }
+            .maxByOrNull { it.columnNumber }!!
+            .era
+        val maxEra = ruleset.eras[maxEraOfResearchedTechs]!!
+
+        val minEraOfNonResearchedTechs = ruleset.technologies.values
+            .asSequence()
+            .filter { it !in researchedTechnologies }
+            .map { it.column!! }
+            .minByOrNull { it.columnNumber }
+            ?.era
+        if (minEraOfNonResearchedTechs == null) {
+            era = maxEra
+            return
+        }
+
+        val minEra = ruleset.eras[minEraOfNonResearchedTechs]!!
+
+        era = if (minEra.eraNumber <= maxEra.eraNumber) maxEra
+        else minEra
     }
 
     fun addTechToTransients(tech: Technology) {
@@ -336,6 +372,7 @@ class TechManager {
         researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
         researchedTechnologies.forEach { addTechToTransients(it) }
         updateTransientBooleans()
+        updateEra()
     }
 
     private fun updateTransientBooleans() {

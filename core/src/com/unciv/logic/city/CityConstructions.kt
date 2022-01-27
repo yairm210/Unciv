@@ -84,19 +84,10 @@ class CityConstructions {
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
-    fun getStats(): Stats {
-        val stats = Stats()
+    fun getStats(): StatTreeNode {
+        val stats = StatTreeNode()
         for (building in getBuiltBuildings())
-            stats.add(building.getStats(cityInfo))
-
-        
-        // Deprecated since 3.17.11
-            for (unique in cityInfo.getLocalMatchingUniques(UniqueType.StatsWithTech)) {
-                if (cityInfo.civInfo.tech.isResearched(unique.params[1]))
-                    stats.add(unique.stats)
-            }
-        //
-        
+            stats.addStats(building.getStats(cityInfo), building.name)
         return stats
     }
 
@@ -116,16 +107,6 @@ class CityConstructions {
         return maintenanceCost
     }
 
-    /**
-     * @return Bonus (%) [Stats] provided by all built buildings in city
-     */
-    fun getStatPercentBonuses(): Stats {
-        val stats = Stats()
-        for (building in getBuiltBuildings())
-            stats.add(building.getStatPercentageBonuses(cityInfo))
-        return stats
-    }
-
     fun getCityProductionTextForCityButton(): String {
         val currentConstructionSnapshot = currentConstructionFromQueue // See below
         var result = currentConstructionSnapshot.tr()
@@ -139,10 +120,9 @@ class CityConstructions {
     
     fun addFreeBuildings() {
         // "Gain a free [buildingName] [cityFilter]"
-        val uniqueList = cityInfo.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo)).toMutableList()
-        // Deprecated - "Provides a free [buildingName] [cityFilter]"
-        uniqueList.addAll(cityInfo.getLocalMatchingUniques(UniqueType.ProvidesFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo)))
-        for (unique in uniqueList) {
+        val freeBuildingUniques = cityInfo.getLocalMatchingUniques(UniqueType.GainFreeBuildings, StateForConditionals(cityInfo.civInfo, cityInfo))
+
+        for (unique in freeBuildingUniques) {
             val freeBuildingName = cityInfo.civInfo.getEquivalentBuilding(unique.params[0]).name
             val citiesThatApply = when (unique.params[1]) {
                 "in this city" -> listOf(cityInfo)

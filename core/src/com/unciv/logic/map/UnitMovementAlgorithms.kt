@@ -150,18 +150,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             val updatedTiles = ArrayList<TileInfo>()
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
-                    var totalDistanceToTile: Float = if (unit.civInfo.exploredTiles.contains(neighbor.position)) {
-                        if (!canPassThrough(neighbor))
-                            unitMovement // Can't go here.
+                    var totalDistanceToTile: Float = when {
+                        !unit.civInfo.exploredTiles.contains(neighbor.position) ->
+                            distanceToTiles[tileToCheck]!!.totalDistance + 1f  // If we don't know then we just guess it to be 1.
+                        !canPassThrough(neighbor) -> unitMovement // Can't go here.
                         // The reason that we don't just "return" is so that when calculating how to reach an enemy,
                         // You need to assume his tile is reachable, otherwise all movement algorithms on reaching enemy
                         // cities and units goes kaput.
-
-                        else {
+                        else -> {
                             val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civInfo, considerZoneOfControl)
                             distanceToTiles[tileToCheck]!!.totalDistance + distanceBetweenTiles
                         }
-                    } else distanceToTiles[tileToCheck]!!.totalDistance + 1f // If we don't know then we just guess it to be 1.
+                    }
 
                     if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
                         if (totalDistanceToTile < unitMovement)  // We can still keep moving from here!
@@ -553,7 +553,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return if (unit.isCivilian())
             tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else
-            tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner)
+            // can skip checking for airUnit since not a city
+            tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner || unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
     }
 
     private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {
@@ -591,15 +592,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
-            if (!(tile.terrainFeatures.contains(Constants.ice) && unit.canEnterIceTiles) && !unit.canPassThroughImpassableTiles
+            if (!unit.canPassThroughImpassableTiles && !(unit.canEnterIceTiles && tile.terrainFeatures.contains(Constants.ice))
                 // carthage-like uniques sometimes allow passage through impassible tiles
                 && !(unit.civInfo.passThroughImpassableUnlocked && unit.civInfo.passableImpassables.contains(tile.getLastTerrain().name)))
                 return false
         }
         if (tile.isLand
                 && unit.baseUnit.isWaterUnit()
-                // Check that the tile is not a coastal city's center
-                && !(tile.isCityCenter() && tile.isCoastalTile()))
+                && !tile.isCityCenter())
             return false
 
 
@@ -619,8 +619,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 
         val firstUnit = tile.getFirstUnit()
-        if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
-            return false
+        if (firstUnit != null) {
+            // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
+            if (tile.getUnguardedCivilian() != null && unit.civInfo != firstUnit.civInfo && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
+                return true
+            // Cannot enter hostile tile with any unit in there
+            if (firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
+                return false
+        }
 
         return true
     }

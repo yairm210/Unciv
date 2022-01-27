@@ -28,7 +28,7 @@ class UnitMovementAlgorithmsTests {
     @Before
     fun initTheWorld() {
         RulesetCache.loadRulesets()
-        ruleSet = RulesetCache.getBaseRuleset()
+        ruleSet = RulesetCache.getVanillaRuleset()
         tile.ruleset = ruleSet
         tile.baseTerrain = Constants.grassland
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
@@ -82,7 +82,7 @@ class UnitMovementAlgorithmsTests {
         val city = CityInfo()
         city.location = cityTile.position
         city.civInfo = civInfo
-        cityTile.owningCity = city
+        cityTile.setOwningCity(city)
 
         for (type in ruleSet.unitTypes)
         {
@@ -215,6 +215,18 @@ class UnitMovementAlgorithmsTests {
         otherCiv.nation = Nation().apply { name = Constants.barbarians }
         val otherUnit = MapUnit()
         otherUnit.civInfo = otherCiv
+        otherUnit.baseUnit = BaseUnit()
+        // melee check
+        otherUnit.baseUnit.strength = 1
+        tile.militaryUnit = otherUnit
+
+        for (type in ruleSet.unitTypes) {
+            unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
+
+            Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
+        }
+        // ranged check
+        otherUnit.baseUnit.rangedStrength = 1 // make non-Civilian ranged
         tile.militaryUnit = otherUnit
 
         for (type in ruleSet.unitTypes) {
@@ -236,7 +248,7 @@ class UnitMovementAlgorithmsTests {
         val city = CityInfo()
         city.location = tile.position.cpy().add(1f,1f)
         city.civInfo = otherCiv
-        tile.owningCity = city
+        tile.setOwningCity(city)
 
         unit.baseUnit = BaseUnit().apply { unitType = ruleSet.unitTypes.keys.first(); ruleset = ruleSet }
         unit.owner = civInfo.civName

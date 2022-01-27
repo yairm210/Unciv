@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.MapShape
@@ -21,7 +22,7 @@ import com.unciv.ui.utils.*
 class MapEditorScreen(): BaseScreen() {
     var mapName = ""
     var tileMap = TileMap()
-    var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) }
+    var ruleset = Ruleset().apply { add(RulesetCache.getVanillaRuleset()) }
 
     var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
@@ -75,7 +76,7 @@ class MapEditorScreen(): BaseScreen() {
         val optionsMenuButton = "Menu".toTextButton()
         optionsMenuButton.onClick(openOptionsMenu)
         keyPressDispatcher[KeyCharAndCode.BACK] = openOptionsMenu
-        optionsMenuButton.label.setFontSize(24)
+        optionsMenuButton.label.setFontSize(Constants.headingFontSize)
         optionsMenuButton.labelCell.pad(20f)
         optionsMenuButton.pack()
         optionsMenuButton.x = 30f

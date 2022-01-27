@@ -109,8 +109,8 @@ object BattleHelper {
             return false
 
         if (combatant is MapUnitCombatant &&
-            combatant.unit.hasUnique("Can only attack [] tiles") &&
-            combatant.unit.getMatchingUniques("Can only attack [] tiles").none { tile.matchesFilter(it.params[0]) }
+            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles)
+                .let { unique -> unique.any() && unique.none { tile.matchesFilter(it.params[0]) } }
         )
             return false
 

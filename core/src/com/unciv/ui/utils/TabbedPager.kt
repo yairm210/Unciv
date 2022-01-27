@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.EventListener
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.min
@@ -42,7 +43,7 @@ open class TabbedPager(
     private var maximumWidth: Float = Float.MAX_VALUE,
     private val minimumHeight: Float = 0f,
     private var maximumHeight: Float = Float.MAX_VALUE,
-    private val headerFontSize: Int = 18,
+    private val headerFontSize: Int = Constants.defaultFontSize,
     private val headerFontColor: Color = Color.WHITE,
     private val highlightColor: Color = Color.BLUE,
     backgroundColor: Color = ImageGetter.getBlue().lerp(Color.BLACK, 0.5f),
@@ -59,14 +60,25 @@ open class TabbedPager(
     }
 
     private class PageState(
+        caption: String,
         var content: Actor,
         var disabled: Boolean = false,
-        val onActivation: ((Int, String)->Unit)? = null
+        val onActivation: ((Int, String)->Unit)? = null,
+        icon: Actor? = null,
+        iconSize: Float = 0f,
+        pager: TabbedPager
     ) {
+
         var scrollX = 0f
         var scrollY = 0f
 
-        var button: Button = Button(BaseScreen.skin)
+        val button = IconTextButton(caption, icon, pager.headerFontSize, pager.headerFontColor).apply {
+            if (icon != null) {
+                if (iconSize != 0f)
+                    iconCell!!.size(iconSize)
+                iconCell!!.padRight(pager.headerPadding * 0.5f)
+            }
+        }
         var buttonX = 0f
         var buttonW = 0f
     }
@@ -252,18 +264,17 @@ open class TabbedPager(
         onActivation: ((Int, String)->Unit)? = null
     ): Int {
         // Build page descriptor and header button
-        val page = PageState(content ?: Group(), disabled, onActivation)
+        val page = PageState(
+                caption = caption,
+                content = content ?: Group(),
+                disabled = disabled,
+                onActivation = onActivation,
+                icon = icon,
+                iconSize = iconSize,
+                pager = this
+        )
         page.button.apply {
             name = caption  // enable finding pages by untranslated caption without needing our own field
-            if (icon != null) {
-                if (iconSize != 0f) {
-                    add(icon.sizeWrapped(iconSize, iconSize))
-                        .padRight(headerPadding * 0.5f)
-                } else {
-                    add(icon)
-                }
-            }
-            add(caption.toLabel(headerFontColor, headerFontSize))
             isEnabled = !disabled
             val selectAction: ()->Unit = { selectPage(page) }
             onClick(selectAction)

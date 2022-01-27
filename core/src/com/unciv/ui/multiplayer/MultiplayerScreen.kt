@@ -23,24 +23,24 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     private val rightSideTable = Table()
     private val leftSideTable = Table()
 
-    private val editButtonText = "Game settings".tr()
-    private val addGameText = "Add multiplayer game".tr()
-    private val copyGameIdText = "Copy game ID".tr()
-    private val copyUserIdText = "Copy user ID".tr()
-    private val refreshText = "Refresh list".tr()
+    private val editButtonText = "Game settings"
+    private val addGameText = "Add multiplayer game"
+    private val copyGameIdText = "Copy game ID"
+    private val copyUserIdText = "Copy user ID"
+    private val refreshText = "Refresh list"
 
-    private val editButton = TextButton(editButtonText, skin).apply { disable() }
-    private val addGameButton = TextButton(addGameText, skin)
-    private val copyGameIdButton = TextButton(copyGameIdText, skin).apply { disable() }
-    private val copyUserIdButton = TextButton(copyUserIdText, skin)
-    private val refreshButton = TextButton(refreshText, skin)
+    private val editButton = editButtonText.toTextButton().apply { disable() }
+    private val addGameButton = addGameText.toTextButton()
+    private val copyGameIdButton = copyGameIdText.toTextButton().apply { disable() }
+    private val copyUserIdButton = copyUserIdText.toTextButton()
+    private val refreshButton = refreshText.toTextButton()
 
     init {
         setDefaultCloseAction(previousScreen)
 
         //Help Button Setup
         val tab = Table()
-        val helpButton = TextButton("?", skin)
+        val helpButton = "Help".toTextButton()
         helpButton.onClick {
             val helpPopup = Popup(this)
             helpPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
@@ -181,7 +181,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 }
             }
             postCrashHandlingRunnable {
-                addGameButton.setText(addGameText)
+                addGameButton.setText(addGameText.tr())
                 addGameButton.enable()
             }
         }
@@ -364,7 +364,7 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
             //Reset UI
             postCrashHandlingRunnable {
                 addGameButton.enable()
-                refreshButton.setText(refreshText)
+                refreshButton.setText(refreshText.tr())
                 refreshButton.enable()
                 unselectGame()
                 reloadGameListUI()

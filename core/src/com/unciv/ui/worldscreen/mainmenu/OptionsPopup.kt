@@ -295,9 +295,12 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 if (modLinks.isNotOK()) noProblem = false
                 lines += FormattedLine()
             }
-            if (noProblem) lines += FormattedLine("{No problems found}.",)
+            if (noProblem) lines += FormattedLine("No problems found.".tr())
 
             postCrashHandlingRunnable {
+                // When the options popup is already closed before this postRunnable is run,
+                // Don't add the labels, as otherwise the game will crash
+                if (stage == null) return@postCrashHandlingRunnable
                 // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
                 // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
                 // Instead, some manual work needs to be put in.

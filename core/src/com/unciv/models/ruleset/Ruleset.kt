@@ -25,6 +25,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.getRelativeTextDistance
 import kotlin.collections.set
 
 object ModOptionsConstants {
@@ -54,6 +55,7 @@ class ModOptions : IHasUniques {
     override var uniques = ArrayList<String>()
     // If this is delegated with "by lazy", the mod download process crashes and burns
     override var uniqueObjects: List<Unique> = listOf()
+    override var uniqueMap: Map<String, List<Unique>> = mapOf()
     override fun getUniqueTarget() = UniqueTarget.ModOptions
 
     val constants = ModConstants()
@@ -64,13 +66,12 @@ class Ruleset {
 
     private val jsonParser = JsonParser()
 
-    var modWithReligionLoaded = false
-
     var name = ""
     val beliefs = LinkedHashMap<String, Belief>()
     val buildings = LinkedHashMap<String, Building>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val eras = LinkedHashMap<String, Era>()
+    var globalUniques = GlobalUniques()
     val nations = LinkedHashMap<String, Nation>()
     val policies = LinkedHashMap<String, Policy>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
@@ -103,15 +104,16 @@ class Ruleset {
     }
 
     fun add(ruleset: Ruleset) {
+        beliefs.putAll(ruleset.beliefs)
         buildings.putAll(ruleset.buildings)
         for (buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         eras.putAll(ruleset.eras)
+        globalUniques = GlobalUniques().apply { uniques.addAll(globalUniques.uniques); uniques.addAll(ruleset.globalUniques.uniques) }
         nations.putAll(ruleset.nations)
         for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         policyBranches.putAll(ruleset.policyBranches)
         policies.putAll(ruleset.policies)
-        beliefs.putAll(ruleset.beliefs)
         quests.putAll(ruleset.quests)
         religions.addAll(ruleset.religions)
         ruinRewards.putAll(ruleset.ruinRewards)
@@ -126,7 +128,6 @@ class Ruleset {
         unitTypes.putAll(ruleset.unitTypes)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         mods += ruleset.mods
-        modWithReligionLoaded = modWithReligionLoaded || ruleset.modWithReligionLoaded
     }
 
     fun clear() {
@@ -134,14 +135,15 @@ class Ruleset {
         buildings.clear()
         difficulties.clear()
         eras.clear()
-        policyBranches.clear()
-        specialists.clear()
+        globalUniques = GlobalUniques()
         mods.clear()
         nations.clear()
         policies.clear()
+        policyBranches.clear()
+        quests.clear()
         religions.clear()
         ruinRewards.clear()
-        quests.clear()
+        specialists.clear()
         technologies.clear()
         terrains.clear()
         tileImprovements.clear()
@@ -149,7 +151,6 @@ class Ruleset {
         unitPromotions.clear()
         units.clear()
         unitTypes.clear()
-        modWithReligionLoaded = false
     }
 
 
@@ -164,6 +165,7 @@ class Ruleset {
                     modOptions.constants.maxXPfromBarbarians = modOptions.constants.maxXPfromBarbarians
             } catch (ex: Exception) {}
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
+            modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }
         }
 
         val techFile = folderHandle.child("Techs.json")
@@ -200,7 +202,7 @@ class Ruleset {
         if (erasFile.exists()) eras += createHashmap(jsonParser.getFromJson(Array<Era>::class.java, erasFile))
         // While `eras.values.toList()` might seem more logical, eras.values is a MutableCollection and
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
-        // Using a map sidesteps this problem
+        // Using map{} sidesteps this problem
         eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
         
         val unitTypesFile = folderHandle.child("UnitTypes.json")
@@ -253,8 +255,14 @@ class Ruleset {
         }
 
         val difficultiesFile = folderHandle.child("Difficulties.json")
-        if (difficultiesFile.exists()) difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
+        if (difficultiesFile.exists()) 
+            difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
 
+        val globalUniquesFile = folderHandle.child("GlobalUniques.json")
+        if (globalUniquesFile.exists()) {
+            globalUniques = jsonParser.getFromJson(GlobalUniques::class.java, globalUniquesFile)
+        }
+        
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
     }
@@ -273,9 +281,7 @@ class Ruleset {
             }
         }
     }
-
-    fun hasReligion() = beliefs.any() && modWithReligionLoaded
-
+    
     /** Used for displaying a RuleSet's name */
     override fun toString() = when {
         name.isNotEmpty() -> name
@@ -297,13 +303,39 @@ class Ruleset {
         return stringList.joinToString { it.tr() }
     }
 
+    /** Similarity below which an untyped unique can be considered a potential misspelling.
+     * Roughly corresponds to the fraction of the Unique placeholder text that can be different/misspelled, but with some extra room for [getRelativeTextDistance] idiosyncrasies. */
+    private val uniqueMisspellingThreshold = 0.15 // Tweak as needed. Simple misspellings seem to be around 0.025, so would mostly be caught by 0.05. IMO 0.1 would be good, but raising to 0.15 also seemed to catch what may be an outdated Unique.
 
     fun checkUniques(uniqueContainer:IHasUniques, lines:RulesetErrorList,
                      severityToReport: UniqueType.UniqueComplianceErrorSeverity) {
         val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
 
         for (unique in uniqueContainer.uniqueObjects) {
-            if (unique.type == null) continue
+            if (unique.type == null) {
+                val similarUniques = UniqueType.values().filter { getRelativeTextDistance(it.placeholderText, unique.placeholderText) <= uniqueMisspellingThreshold }
+                val equalUniques = similarUniques.filter { it.placeholderText == unique.placeholderText }
+                if (equalUniques.isNotEmpty()) {
+                    lines.add( // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.
+                        "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
+                        RulesetErrorSeverity.OK
+                    )
+                } else if (similarUniques.isNotEmpty()) {
+                    lines.add("$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
+                        similarUniques.joinToString("\n") { uniqueType ->
+                            val deprecationAnnotation = UniqueType::class.java.getField(uniqueType.name)
+                                    .getAnnotation(Deprecated::class.java)
+                            if (deprecationAnnotation == null)
+                                "\"${uniqueType.text}\""
+                            else
+                                "\"${uniqueType.text}\" (Deprecated)"
+                        }.prependIndent("\t"),
+                        RulesetErrorSeverity.OK
+                    )
+
+                }
+                continue
+            }
             val complianceErrors = unique.type.getComplianceErrors(unique, this)
             for (complianceError in complianceErrors) {
                 if (complianceError.errorSeverity == severityToReport)
@@ -449,7 +481,7 @@ class Ruleset {
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return lines
 
-        val baseRuleset = RulesetCache.getBaseRuleset()  // for UnitTypes fallback
+        val baseRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
 
         for (unit in units.values) {
             if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
@@ -670,7 +702,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
     }
 
 
-    fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
+    fun getVanillaRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!.clone() // safeguard, so no-one edits the base ruleset by mistake
 
     fun getSortedBaseRulesets(): List<String> {
         val baseRulesets = values
@@ -702,7 +734,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
         
         val baseRuleset =
             if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
-            else getBaseRuleset()
+            else getVanillaRuleset()
         
         
         val loadedMods = mods
@@ -717,20 +749,20 @@ object RulesetCache : HashMap<String,Ruleset>() {
             if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
             }
-            if (mod.beliefs.any()) {
-                newRuleset.modWithReligionLoaded = true
-            }
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
         // This one should be temporary
         if (newRuleset.unitTypes.isEmpty()) {
-            newRuleset.unitTypes.putAll(getBaseRuleset().unitTypes)
+            newRuleset.unitTypes.putAll(getVanillaRuleset().unitTypes)
         }
 
-        // This one should be permanent
+        // These should be permanent
         if (newRuleset.ruinRewards.isEmpty()) {
-            newRuleset.ruinRewards.putAll(getBaseRuleset().ruinRewards)
+            newRuleset.ruinRewards.putAll(getVanillaRuleset().ruinRewards)
+        }
+        if (newRuleset.globalUniques.uniques.isEmpty()) {
+            newRuleset.globalUniques = getVanillaRuleset().globalUniques
         }
 
         return newRuleset

@@ -28,7 +28,7 @@ class BasicTests {
     @Before
     fun loadTranslations() {
         RulesetCache.loadRulesets()
-        ruleset = RulesetCache.getBaseRuleset()
+        ruleset = RulesetCache.getVanillaRuleset()
     }
 
     @Test

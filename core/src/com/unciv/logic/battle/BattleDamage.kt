@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.GlobalUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -17,9 +18,10 @@ import kotlin.math.roundToInt
 object BattleDamage {
     
     private fun getModifierStringFromUnique(unique: Unique): String {
-        val source =  when (unique.sourceObjectType) {
+        val source = when (unique.sourceObjectType) {
             UniqueTarget.Unit -> "Unit ability"
             UniqueTarget.Nation -> "National ability"
+            UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
             else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
         }
         if (unique.conditionals.isEmpty()) return source
@@ -35,12 +37,13 @@ object BattleDamage {
         val attackedTile =
             if (combatAction == CombatAction.Attack) enemy.getTile()
             else combatant.getTile()
-        
-        val conditionalState = StateForConditionals(civInfo, ourCombatant = combatant, theirCombatant = enemy,
+
+        val conditionalState = StateForConditionals(civInfo, cityInfo = (combatant as? CityCombatant)?.city, ourCombatant = combatant, theirCombatant = enemy,
             attackedTile = attackedTile, combatAction = combatAction)
         
+        
         if (combatant is MapUnitCombatant) {
-
+            
             for (unique in combatant.getMatchingUniques(UniqueType.Strength, conditionalState, true)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
@@ -57,19 +60,6 @@ object BattleDamage {
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-            val civHappiness = if (civInfo.isCityState() && civInfo.getAllyCiv() != null)
-            // If we are a city state with an ally we are vulnerable to their unhappiness.
-                min(
-                    civInfo.gameInfo.getCivilization(civInfo.getAllyCiv()!!).getHappiness(),
-                    civInfo.getHappiness()
-                )
-            else civInfo.getHappiness()
-            if (civHappiness < 0)
-                modifiers["Unhappiness"] = max(
-                    2 * civHappiness,
-                    -90
-                ) // otherwise it could exceed -100% and start healing enemy units...
-
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
 
             // Deprecated since 3.18.17
@@ -118,7 +108,7 @@ object BattleDamage {
             )
                 modifiers["vs [City-States]"] = 30
         } else if (combatant is CityCombatant) {
-            for (unique in combatant.getCivInfo().getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
+            for (unique in combatant.city.getMatchingUniques(UniqueType.StrengthForCities, conditionalState)) {
                 modifiers.add(getModifierStringFromUnique(unique), unique.params[0].toInt())
             }
         }
@@ -153,7 +143,7 @@ object BattleDamage {
                 }
                 if (numberOfAttackersSurroundingDefender > 1) {
                     var flankingBonus = 10f //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-                    for (unique in attacker.unit.getMatchingUniques("[]% to Flank Attack bonuses"))
+                    for (unique in attacker.unit.getMatchingUniques(UniqueType.FlankAttackBonus, checkCivInfoUniques = true))
                         flankingBonus *= unique.params[0].toPercent()
                     modifiers["Flanking"] =
                         (flankingBonus * (numberOfAttackersSurroundingDefender - 1)).toInt()
@@ -180,15 +170,17 @@ object BattleDamage {
             }
 
         } else if (attacker is CityCombatant) {
-            if (attacker.city.getCenterTile().militaryUnit != null) {
-                val garrisonBonus = attacker.city.getMatchingUniques("+[]% attacking strength for cities with garrisoned units")
-                    .sumOf { it.params[0].toInt() }
-                if (garrisonBonus != 0)
-                    modifiers["Garrisoned unit"] = garrisonBonus
-            }
-            for (unique in attacker.city.getMatchingUniques(UniqueType.StrengthForCitiesAttacking)) {
-                modifiers.add("Attacking Bonus", unique.params[0].toInt())
-            }
+            // Deprecated since 3.19.1
+                if (attacker.city.getCenterTile().militaryUnit != null) {
+                    val garrisonBonus = attacker.city.getMatchingUniques(UniqueType.StrengthForGarrisonedCitiesAttacking)
+                        .sumOf { it.params[0].toInt() }
+                    if (garrisonBonus != 0)
+                        modifiers["Garrisoned unit"] = garrisonBonus
+                }
+                for (unique in attacker.city.getMatchingUniques(UniqueType.StrengthForCitiesAttacking)) {
+                    modifiers.add("Attacking Bonus", unique.params[0].toInt())
+                }
+            //
         }
 
         return modifiers
@@ -202,7 +194,7 @@ object BattleDamage {
 
             if (defender.unit.isEmbarked()) {
                 // embarked units get no defensive modifiers apart from this unique
-                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked) ||
+                if (defender.unit.hasUnique(UniqueType.DefenceBonusWhenEmbarked, checkCivInfoUniques = true) ||
                     defender.getCivInfo().hasUnique(UniqueType.DefenceBonusWhenEmbarkedCivwide)
                 )
                     modifiers["Embarked"] = 100
@@ -213,8 +205,8 @@ object BattleDamage {
             modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
             val tileDefenceBonus = tile.getDefensiveBonus()
-            if (!defender.unit.hasUnique(UniqueType.NoDefensiveTerrainBonus) && tileDefenceBonus > 0
-                || !defender.unit.hasUnique(UniqueType.NoDefensiveTerrainPenalty) && tileDefenceBonus < 0
+            if (!defender.unit.hasUnique(UniqueType.NoDefensiveTerrainBonus, checkCivInfoUniques = true) && tileDefenceBonus > 0
+                || !defender.unit.hasUnique(UniqueType.NoDefensiveTerrainPenalty, checkCivInfoUniques = true) && tileDefenceBonus < 0
             )
                 modifiers["Tile"] = (tileDefenceBonus * 100).toInt()
 

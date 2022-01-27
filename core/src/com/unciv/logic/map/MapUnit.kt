@@ -5,6 +5,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.RejectionReason
 import com.unciv.logic.civilization.CivilizationInfo
@@ -277,9 +279,12 @@ class MapUnit {
         return tempUniques.any { it.placeholderText == unique }
     }
 
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals
-            = StateForConditionals(civInfo, unit=this)): Boolean {
-        return getMatchingUniques(uniqueType, stateForConditionals).any()
+    fun hasUnique(
+        uniqueType: UniqueType, 
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this), 
+        checkCivInfoUniques: Boolean = false
+    ): Boolean {
+        return getMatchingUniques(uniqueType, stateForConditionals, checkCivInfoUniques).any()
     }
 
     fun updateUniques(ruleset: Ruleset) {
@@ -397,7 +402,7 @@ class MapUnit {
     /**
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
-    fun updateVisibleTiles() {
+    fun updateVisibleTiles(updateCivViewableTiles:Boolean = true) {
         if (baseUnit.isAirUnit()) {
             viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
                 getTile().getTilesInDistance(6).toList()  // it's that simple
@@ -406,7 +411,7 @@ class MapUnit {
             return
         }
         viewableTiles = getTile().getViewableTilesList(getVisibilityRange())
-        civInfo.updateViewableTiles() // for the civ
+        if (updateCivViewableTiles) civInfo.updateViewableTiles() // for the civ
     }
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
@@ -458,7 +463,7 @@ class MapUnit {
     fun getRange(): Int {
         if (baseUnit.isMelee()) return 1
         var range = baseUnit().range
-        range += getMatchingUniques(UniqueType.Range).sumOf { it.params[0].toInt() }
+        range += getMatchingUniques(UniqueType.Range, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
         return range
     }
 
@@ -628,8 +633,8 @@ class MapUnit {
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
 
         when {
-            tile.improvementInProgress!!.startsWith("Remove ") -> {
-                val removedFeatureName = tile.improvementInProgress!!.removePrefix("Remove ")
+            tile.improvementInProgress!!.startsWith(Constants.remove) -> {
+                val removedFeatureName = tile.improvementInProgress!!.removePrefix(Constants.remove)
                 val tileImprovement = tile.getTileImprovement()
                 if (tileImprovement != null
                     && tile.terrainFeatures.any { 
@@ -686,7 +691,11 @@ class MapUnit {
         if (civInfo.hasUnique("Can only heal by pillaging")) return
 
         var amountToHealBy = rankTileForHealing(getTile())
-        if (amountToHealBy == 0 && !(hasUnique(UniqueType.HealsOutsideFriendlyTerritory) && !getTile().isFriendlyTerritory(civInfo))) return
+        if (amountToHealBy == 0 
+            && !(hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true) 
+                && !getTile().isFriendlyTerritory(civInfo)
+            )
+        ) return
 
         amountToHealBy += getMatchingUniques("[] HP when healing").sumOf { it.params[0].toInt() }
 
@@ -699,7 +708,7 @@ class MapUnit {
     }
 
     fun healBy(amount: Int) {
-        health += if (hasUnique(UniqueType.HealingEffectsDoubled))
+        health += if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true))
                 amount * 2
             else
                 amount
@@ -869,6 +878,10 @@ class MapUnit {
         }
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
+        // Capture Enemy Civilian Unit if you move on top of it
+        if (tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
+            Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
+        }
 
         val promotionUniques = tile.neighbors
             .flatMap { it.getAllTerrains() }
@@ -1115,8 +1128,9 @@ class MapUnit {
             && improvement.name != Constants.cancelImprovementOrder 
             && tile.improvementInProgress != improvement.name
         ) return false
-        val matchingUniques = getMatchingUniques(UniqueType.BuildImprovements)
-        return matchingUniques.any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
+
+        return getMatchingUniques(UniqueType.BuildImprovements)
+            .any { improvement.matchesFilter(it.params[0]) || tile.matchesTerrainFilter(it.params[0]) }
     }
 
     fun getReligionDisplayName(): String? {
