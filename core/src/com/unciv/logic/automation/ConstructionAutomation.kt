@@ -21,9 +21,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val cityInfo = cityConstructions.cityInfo
     val civInfo = cityInfo.civInfo
 
-    val buildableNotWonders = cityConstructions.getBuildableBuildings()
+    val buildableBuildings = cityConstructions.getBuildableBuildings().toList()
+    val buildableNotWonders = buildableBuildings
             .filterNot { it.isAnyWonder() }
-    private val buildableWonders = cityConstructions.getBuildableBuildings()
+    private val buildableWonders = buildableBuildings
             .filter { it.isAnyWonder() }
 
     val civUnits = civInfo.getCivUnits()
