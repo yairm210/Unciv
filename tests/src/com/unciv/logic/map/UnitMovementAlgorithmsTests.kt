@@ -82,7 +82,7 @@ class UnitMovementAlgorithmsTests {
         val city = CityInfo()
         city.location = cityTile.position
         city.civInfo = civInfo
-        cityTile.owningCity = city
+        cityTile.setOwningCity(city)
 
         for (type in ruleSet.unitTypes)
         {
@@ -248,7 +248,7 @@ class UnitMovementAlgorithmsTests {
         val city = CityInfo()
         city.location = tile.position.cpy().add(1f,1f)
         city.civInfo = otherCiv
-        tile.owningCity = city
+        tile.setOwningCity(city)
 
         unit.baseUnit = BaseUnit().apply { unitType = ruleSet.unitTypes.keys.first(); ruleset = ruleSet }
         unit.owner = civInfo.civName

@@ -27,7 +27,16 @@ open class TileInfo {
     lateinit var ruleset: Ruleset  // a tile can be a tile with a ruleset, even without a map.
 
     @Transient
+    private var isCityCenterInternal = false
+
+    @Transient
     var owningCity: CityInfo? = null
+        private set
+
+    fun setOwningCity(city:CityInfo?){
+        owningCity = city
+        isCityCenterInternal = getCity()?.location == position
+    }
 
     @Transient
     private lateinit var baseTerrainObject: Terrain
@@ -156,7 +165,7 @@ open class TileInfo {
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
 
-    fun isCityCenter(): Boolean = getCity()?.location == position
+    fun isCityCenter(): Boolean = isCityCenterInternal
     fun isNaturalWonder(): Boolean = naturalWonder != null
     fun isImpassible() = getLastTerrain().impassable
 

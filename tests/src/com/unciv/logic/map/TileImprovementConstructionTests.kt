@@ -23,8 +23,8 @@ class TileImprovementConstructionTests {
     private fun getTile() = TileInfo().apply {
         baseTerrain = "Plains"
         ruleset = ruleSet
-        owningCity = city
         position = Vector2(1f, 1f) // so that it's not on the same position as the city
+        setOwningCity(city)
         this@apply.tileMap = this@TileImprovementConstructionTests.tileMap
     }
 

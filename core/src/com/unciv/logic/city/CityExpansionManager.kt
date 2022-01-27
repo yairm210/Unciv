@@ -144,7 +144,7 @@ class CityExpansionManager {
                 city.lockedTiles.remove(tileInfo.position)
         }
 
-        tileInfo.owningCity = null
+        tileInfo.setOwningCity(null)
 
         cityInfo.civInfo.updateDetailedCivResources()
         cityInfo.cityStats.update()
@@ -164,7 +164,7 @@ class CityExpansionManager {
             tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
 
         cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)
-        tileInfo.owningCity = cityInfo
+        tileInfo.setOwningCity(cityInfo)
         cityInfo.population.autoAssignPopulation()
         cityInfo.civInfo.updateDetailedCivResources()
         cityInfo.cityStats.update()
@@ -190,7 +190,7 @@ class CityExpansionManager {
     fun setTransients() {
         val tiles = cityInfo.getTiles()
         for (tile in tiles)
-            tile.owningCity = cityInfo
+            tile.setOwningCity(cityInfo)
     }
     //endregion
 }
