@@ -619,12 +619,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
 
         val firstUnit = tile.getFirstUnit()
-        if (firstUnit != null) {
+        // Moving to non-empty tile
+        if (firstUnit != null && unit.civInfo != firstUnit.civInfo) {
             // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
-            if (tile.getUnguardedCivilian() != null && unit.civInfo != firstUnit.civInfo && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
+            if (tile.getUnguardedCivilian() != null && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
                 return true
             // Cannot enter hostile tile with any unit in there
-            if (firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
+            if (unit.civInfo.isAtWarWith(firstUnit.civInfo))
                 return false
         }
 
