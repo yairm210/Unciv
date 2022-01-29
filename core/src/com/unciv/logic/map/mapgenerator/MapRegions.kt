@@ -154,8 +154,11 @@ class MapRegions (val ruleset: Ruleset){
         var bestSplitPoint = 1 // will be the size of the split-off region
         var closestFertility = 0
         var cumulativeFertility = 0
-        val pointsToTry = if (widerThanTall) 1..regionToSplit.rect.width.toInt()
-        else 1..regionToSplit.rect.height.toInt()
+
+        val highestPointToTry = if (widerThanTall) regionToSplit.rect.width.toInt()
+        else regionToSplit.rect.height.toInt()
+        val pointsToTry = 1..highestPointToTry
+        val halfwayPoint = highestPointToTry/2
 
         for (splitPoint in pointsToTry) {
             val nextRect = if (widerThanTall)
@@ -175,7 +178,11 @@ class MapRegions (val ruleset: Ruleset){
                 nextRect.sumOf { if (it.getContinent() == splitOffRegion.continentID) it.getTileFertility(true) else 0 }
 
             // Better than last try?
-            if (abs(cumulativeFertility - targetFertility) <= abs(closestFertility - targetFertility)) {
+            val bestSplitPointFertilityDeltaFromTarget = abs(closestFertility - targetFertility)
+            val currentSplitPointFertilityDeltaFromTarget = abs(cumulativeFertility - targetFertility)
+            if (currentSplitPointFertilityDeltaFromTarget < bestSplitPointFertilityDeltaFromTarget
+                || (currentSplitPointFertilityDeltaFromTarget == bestSplitPointFertilityDeltaFromTarget // same fertility split but better 'amount of tiles' split
+                        && abs(halfwayPoint- splitPoint) < abs(halfwayPoint- bestSplitPoint) )) { // current split point is closer to the halfway point
                 bestSplitPoint = splitPoint
                 closestFertility = cumulativeFertility
             }
@@ -1137,7 +1144,7 @@ class MapRegions (val ruleset: Ruleset){
                 targetLuxuries++
             }
 
-            val luxuryToPlace = ruleset.tileResources[region.luxury]!!
+            val luxuryToPlace = ruleset.tileResources[region.luxury] ?: continue
             // First check 2 inner rings
             val firstPass = tileMap[region.startPosition!!].getTilesInDistanceRange(1..2)
                     .shuffled().sortedBy { it.getTileFertility(false) } // Check bad tiles first
@@ -1184,7 +1191,7 @@ class MapRegions (val ruleset: Ruleset){
         }
         regionTargetNumber = max(1, regionTargetNumber)
         for (region in regions) {
-            val resource = ruleset.tileResources[region.luxury]!!
+            val resource = ruleset.tileResources[region.luxury] ?: continue
             if (isWaterOnlyResource(resource))
                 tryAddingResourceToTiles(resource, regionTargetNumber,
                         tileMap.getTilesInRectangle(region.rect).filter { it.isWater && it.neighbors.any { neighbor -> neighbor.getContinent() == region.continentID } }.shuffled(),

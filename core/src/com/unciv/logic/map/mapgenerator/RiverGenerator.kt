@@ -16,17 +16,21 @@ class RiverGenerator(
     }
 
     fun spawnRivers() {
+        if (tileMap.values.none { it.isWater }) return
         val numberOfRivers = tileMap.values.count { it.isLand } / MAP_TILES_PER_RIVER
 
         var optionalTiles = tileMap.values.asSequence()
-                .filter { it.baseTerrain == Constants.mountain && it.isFarEnoughFromWater() }.toMutableList()
+            .filter { it.baseTerrain == Constants.mountain && it.isFarEnoughFromWater() }
+            .toMutableList()
         if (optionalTiles.size < numberOfRivers)
             optionalTiles.addAll(tileMap.values.filter { it.isHill() && it.isFarEnoughFromWater() })
         if (optionalTiles.size < numberOfRivers)
-            optionalTiles = tileMap.values.filter { it.isLand && it.isFarEnoughFromWater() }.toMutableList()
+            optionalTiles =
+                tileMap.values.filter { it.isLand && it.isFarEnoughFromWater() }.toMutableList()
 
         val mapRadius = tileMap.mapParameters.mapSize.radius
-        val riverStarts = randomness.chooseSpreadOutLocations(numberOfRivers, optionalTiles, mapRadius)
+        val riverStarts =
+            randomness.chooseSpreadOutLocations(numberOfRivers, optionalTiles, mapRadius)
         for (tile in riverStarts) spawnRiver(tile)
 
         for (tile in tileMap.values) {

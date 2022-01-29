@@ -400,15 +400,16 @@ class MapGenerator(val ruleset: Ruleset) {
 
             // Old, static map generation rules - necessary for existing base ruleset mods to continue to function
             if (noTerrainUniques) {
-                tile.baseTerrain = when {
-                    temperature < -0.4 -> if (humidity < 0.5) Constants.snow   else Constants.tundra
-                    temperature < 0.8  -> if (humidity < 0.5) Constants.plains else Constants.grassland
+                val autoTerrain = when {
+                    temperature < -0.4 -> if (humidity < 0.5) Constants.snow else Constants.tundra
+                    temperature < 0.8 -> if (humidity < 0.5) Constants.plains else Constants.grassland
                     temperature <= 1.0 -> if (humidity < 0.7) Constants.desert else Constants.plains
                     else -> {
                         println("applyHumidityAndTemperature: Invalid temperature $temperature")
                         Constants.grassland
                     }
                 }
+                if (ruleset.terrains.containsKey(autoTerrain)) tile.baseTerrain = autoTerrain
                 tile.setTerrainTransients()
                 continue
             }
@@ -432,7 +433,7 @@ class MapGenerator(val ruleset: Ruleset) {
      */
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationSeed = randomness.RNG.nextInt().toDouble()
-        val candidateTerrains = Constants.vegetation.flatMap{ ruleset.terrains[it]!!.occursOn }
+        val candidateTerrains = Constants.vegetation.mapNotNull { ruleset.terrains[it] }.flatMap{ it.occursOn }
         //Checking it.baseTerrain in candidateTerrains to make sure forest does not spawn on desert hill
         for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains
                 && it.getLastTerrain().name in candidateTerrains }) {
