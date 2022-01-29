@@ -7,6 +7,7 @@ import com.unciv.models.Religion
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.utils.toPercent
 
 class CityInfoReligionManager {
     @Transient
@@ -255,10 +256,14 @@ class CityInfoReligionManager {
 
     private fun getSpreadRange(): Int {
         var spreadRange = 10
-        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.ReligionSpreadDistance) +
-            getMajorityReligion()!!.getFounder().getMatchingUniques(UniqueType.ReligionSpreadDistance)   
-        ) {
+        
+        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.ReligionSpreadDistance)) {
             spreadRange += unique.params[0].toInt()
+        }
+        
+        if (getMajorityReligion() != null) {
+            for (unique in getMajorityReligion()!!.getFounder().getMatchingUniques(UniqueType.ReligionSpreadDistance))
+                spreadRange += unique.params[0].toInt()
         }
         
         return spreadRange
@@ -294,21 +299,27 @@ class CityInfoReligionManager {
     
     private fun pressureAmountToAdjacentCities(pressuredCity: CityInfo): Int {
         var pressure = pressureFromAdjacentCities.toFloat()
-        
-        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrength) + // Follower beliefs of this religion
-            getMajorityReligion()!!.getFounder().getMatchingUniques(UniqueType.NaturalReligionSpreadStrength) // Founder beliefs of this religion
-        ) { 
+
+        // Follower beliefs of this religion
+        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrength)) { 
             if (pressuredCity.matchesFilter(unique.params[1]))
-                pressure *= 1f + unique.params[0].toFloat() / 100f
+                pressure *= unique.params[0].toPercent()
         }
-        
-        // Deprecated since 3.19.3
+
+        // Founder beliefs of this religion
+        if (getMajorityReligion() != null)
+            for (unique in getMajorityReligion()!!.getFounder().getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
+                if (pressuredCity.matchesFilter(unique.params[1]))
+                    pressure *= unique.params[0].toPercent()
+
+            // Deprecated since 3.19.3
             for (unique in cityInfo.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrengthWith))
-                if (pressuredCity.matchesFilter(unique.params[1]) 
+                if (pressuredCity.matchesFilter(unique.params[1])
                     && cityInfo.civInfo.hasTechOrPolicy(unique.params[2])
-                ) pressure *= 1f + unique.params[0].toFloat() / 100f
-        //
-        
-        return pressure.toInt()
+                ) pressure *= unique.params[0].toPercent()
+            //
+
+            return pressure.toInt()
+        }
     }
 }
