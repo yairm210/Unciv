@@ -91,4 +91,6 @@ class Religion() : INamed {
     fun isMajorReligion() = getBeliefs(BeliefType.Founder).any()
     
     fun isEnhancedReligion() = getBeliefs(BeliefType.Enhancer).any()
+    
+    fun getFounder() = gameInfo.civilizations.first { it.civName == foundingCivName }
 }

@@ -739,10 +739,10 @@ class MapUnit {
         }
 
         val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
-            it.isCityCenter() && it.getCity()!!.getMatchingUniques("[] Units adjacent to this city heal [] HP per turn when healing").any()
+            it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.CityHealingUnits).any()
         }?.getCity()
         if (healingCity != null) {
-            for (unique in healingCity.getMatchingUniques("[] Units adjacent to this city heal [] HP per turn when healing")) {
+            for (unique in healingCity.getMatchingUniques(UniqueType.CityHealingUnits)) {
                 if (!matchesFilter(unique.params[0])) continue
                 healing += unique.params[1].toInt()
             }
@@ -1160,7 +1160,7 @@ class MapUnit {
             val baseAmount = getBaseMaxActionUses(action)
             val additional =
                 if (buildCity == null) 0
-                else buildCity.getMatchingUniques("[] units built [] can [] [] extra times")
+                else buildCity.getMatchingUniques(UniqueType.UnitStartingActions)
                     .filter { matchesFilter(it.params[0]) && buildCity.matchesFilter(it.params[1]) && it.params[2] == action }
                     .sumOf { it.params[3].toInt() }
 
