@@ -114,7 +114,7 @@ Applicable to: Global
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [Culture] wonders [in all cities]"
 
-Applicable to: Global, FollowerBelief, Resource
+Applicable to: Global, FollowerBelief
 
 #### [amount]% Production when constructing [buildingFilter] buildings [cityFilter]
 Example: "[20]% Production when constructing [Culture] buildings [in all cities]"
