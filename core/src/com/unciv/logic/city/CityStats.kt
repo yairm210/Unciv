@@ -88,7 +88,7 @@ class CityStats(val cityInfo: CityInfo) {
         if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
             stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            for (unique in cityInfo.getMatchingUniques("[] from each Trade Route"))
+            for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromTradeRoute))
                 stats.add(unique.stats)
             if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Picchu speciality
         }
@@ -314,13 +314,17 @@ class CityStats(val cityInfo: CityInfo) {
                     unique.params[0].toFloat() * cityInfo.religion.getFollowersOfMajorityReligion(),
                     unique.params[2].toFloat()
                 ))
-
+        
         if (currentConstruction is Building
             && cityInfo.civInfo.cities.isNotEmpty()
             && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
         ) {
-            for (unique in cityInfo.getMatchingUniques("+25% Production towards any buildings that already exist in the Capital"))
-                addUniqueStats(unique, Stat.Production, 25f)
+            // Deprecated since 3.19.3
+                for (unique in cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapitalDeprecated))
+                    addUniqueStats(unique, Stat.Production, 25f)
+            //
+            for (unique in cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
+                addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
         }
 
         return sourceToStats
@@ -361,7 +365,7 @@ class CityStats(val cityInfo: CityInfo) {
 
         // e.g. "-[50]% maintenance costs for buildings [in this city]"
         // Deprecated since 3.18.17
-            for (unique in cityInfo.getMatchingUniques(UniqueType.DecrasedBuildingMaintenanceDeprecated)) {
+            for (unique in cityInfo.getMatchingUniques(UniqueType.DecreasedBuildingMaintenanceDeprecated)) {
                 buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
             }
         //

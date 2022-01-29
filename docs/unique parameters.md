@@ -6,6 +6,12 @@ These are split into two categories:
 Note that all of these are case-sensitive!
 
 
+## action
+An action that a unit can preform. Currently, there are only two actions part of this:
+- `Spread Religion`
+- `Remove Foreign religions from your own cities`
+
+
 ## amount
 This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`.
 
