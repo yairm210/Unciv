@@ -403,6 +403,11 @@ class CivilizationInfo {
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
         
+        yieldAll(getCivResources().asSequence()
+            .filter { it.amount > 0 }
+            .flatMap { it.resource.getMatchingUniques(uniqueType, stateForConditionals) }
+        )
+        
         yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
         
     }.filter {
