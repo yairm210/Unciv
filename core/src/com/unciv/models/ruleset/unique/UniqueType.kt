@@ -32,6 +32,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     // These are a bit of a lie. There's no "Promotion only" or "UnitType only" uniques,
     //  they're all just Unit uniques in different places.
     //  So there should be no uniqueType that has a Promotion or UnitType target.
+    //  Except meta-level uniques, such as 'incompatible with [promotion]', of course
     Unit,
     UnitType(Unit),
     Promotion(Unit),
@@ -39,7 +40,7 @@ enum class UniqueTarget(val inheritsFrom: UniqueTarget? = null) {
     // Tile-specific
     Terrain,
     Improvement,
-    Resource,
+    Resource(Global),
     Ruins,
 
     // Other
@@ -99,7 +100,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     NullifiesStat("Nullifies [stat] [cityFilter]", UniqueTarget.Global),
     NullifiesGrowth("Nullifies Growth [cityFilter]", UniqueTarget.Global),
 
-    PercentProductionWonders("[amount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.Resource, UniqueTarget.FollowerBelief),
+    PercentProductionWonders("[amount]% Production when constructing [buildingFilter] wonders [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionBuildings("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionUnits("[amount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
