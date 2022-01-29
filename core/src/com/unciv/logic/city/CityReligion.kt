@@ -307,19 +307,19 @@ class CityInfoReligionManager {
         }
 
         // Founder beliefs of this religion
-        if (getMajorityReligion() != null)
+        if (getMajorityReligion() != null) {
             for (unique in getMajorityReligion()!!.getFounder().getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
                 if (pressuredCity.matchesFilter(unique.params[1]))
                     pressure *= unique.params[0].toPercent()
+        }
 
-            // Deprecated since 3.19.3
+        // Deprecated since 3.19.3
             for (unique in cityInfo.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrengthWith))
                 if (pressuredCity.matchesFilter(unique.params[1])
                     && cityInfo.civInfo.hasTechOrPolicy(unique.params[2])
                 ) pressure *= unique.params[0].toPercent()
-            //
+        //
 
-            return pressure.toInt()
-        }
+        return pressure.toInt()
     }
 }
