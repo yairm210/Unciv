@@ -395,10 +395,10 @@ class DiplomacyManager() {
     private fun remakePeaceTreaty(durationLeft: Int) {
         val treaty = Trade()
         treaty.ourOffers.add(
-            TradeOffer(Constants.peaceTreaty, TradeType.Treaty, _duration = durationLeft)
+            TradeOffer(Constants.peaceTreaty, TradeType.Treaty, duration = durationLeft)
         )
         treaty.theirOffers.add(
-            TradeOffer(Constants.peaceTreaty, TradeType.Treaty, _duration = durationLeft)
+            TradeOffer(Constants.peaceTreaty, TradeType.Treaty, duration = durationLeft)
         )
         trades.add(treaty)
         otherCiv().getDiplomacyManager(civInfo).trades.add(treaty)
