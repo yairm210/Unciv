@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -965,6 +966,11 @@ class CivilizationInfo {
         shouldShowDiplomaticVotingResults()
 
     private fun updateRevolts() {
+        if (gameInfo.civilizations.none { it.civName == Constants.barbarians }) {
+            // Can't spawn revolts without barbarians ¯\_(ツ)_/¯
+            return
+        }
+        
         if (!hasUnique(UniqueType.SpawnRebels)) {
             removeFlag(CivFlags.RevoltSpawning.name)
             return
