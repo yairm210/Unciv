@@ -379,10 +379,11 @@ class Ruleset {
                 //  so we cheat the conditional detector by removing the '<'
                 for (parameter in replacementUniqueText.replace('<',' ').getPlaceholderParameters()) {
                     val parameterNumberInDeprecatedUnique =
-                        deprecatedUniquePlaceholders.indexOf(parameter.removePrefix("+"))
+                        deprecatedUniquePlaceholders.indexOf(parameter.removePrefix("+").removePrefix("-"))
                     if (parameterNumberInDeprecatedUnique == -1) continue
                     var replacementText = unique.params[parameterNumberInDeprecatedUnique]
                     if (parameter.startsWith('+')) replacementText = "+$replacementText"
+                    else if(parameter.startsWith('-')) replacementText = "-$replacementText"
                     replacementUniqueText =
                         replacementUniqueText.replace("[$parameter]", "[$replacementText]")
                 }
