@@ -288,8 +288,8 @@ Example: "[Culture] cost of purchasing [Culture] buildings [20]%"
 
 Applicable to: Global, FollowerBelief
 
-#### [stat] cost of purchasing [baseUnitFilter] units in cities [amount]%
-Example: "[Culture] cost of purchasing [Melee] units in cities [20]%"
+#### [stat] cost of purchasing [baseUnitFilter] units [amount]%
+Example: "[Culture] cost of purchasing [Melee] units [20]%"
 
 Applicable to: Global, FollowerBelief
 
@@ -1377,6 +1377,7 @@ Applicable to: Conditional
  - "-[amount]% Culture cost of acquiring tiles [cityFilter]" - Deprecated As of 3.19.1, replace with "[-amount]% Culture cost of natural border growth [cityFilter]"
  - "[amount]% cost of natural border growth" - Deprecated As of 3.19.1, replace with "[amount]% Culture cost of natural border growth [cityFilter]"
  - "-[amount]% Gold cost of acquiring tiles [cityFilter]" - Deprecated As of 3.19.1, replace with "[-amount]% Gold cost of acquiring tiles [cityFilter]"
+ - "[stat] cost of purchasing [baseUnitFilter] units in cities [amount]%" - Deprecated As of 3.19.3, replace with "[stat] cost of purchasing [baseUnitFilter] units [amount]%"
  - "Maintenance on roads & railroads reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[-amount]% maintenance on road & railroads"
  - "-[amount]% maintenance cost for buildings [cityFilter]" - Deprecated As of 3.18.17, replace with "[-amount]% maintenace cost for buildings [cityFilter]"
  - "+[amount] happiness from each type of luxury resource" - Deprecated As of 3.18.17, replace with "[+amount] Happiness from each type of luxury resource"
