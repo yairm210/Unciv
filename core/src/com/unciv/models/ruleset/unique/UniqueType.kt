@@ -226,7 +226,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     MayanCalendarDisplay("Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.", UniqueTarget.Global),
 
     RetainHappinessFromLuxury("Retain [amount]% of the happiness from a luxury after the last copy has been traded away", UniqueTarget.Global),
-    BonusHappinessFromLuxury("[+amount] Happiness from each type of luxury resource", UniqueTarget.Global),
+    BonusHappinessFromLuxury("[amount] Happiness from each type of luxury resource", UniqueTarget.Global),
     @Deprecated("As of 3.18.17", ReplaceWith("[+amount] Happiness from each type of luxury resource"))
     BonusHappinessFromLuxuryDeprecated("+[amount] happiness from each type of luxury resource", UniqueTarget.Global),
     LessPolicyCostFromCities("Each city founded increases culture cost of policies [amount]% less than normal", UniqueTarget.Global),
