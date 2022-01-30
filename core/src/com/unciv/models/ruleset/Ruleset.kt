@@ -20,9 +20,9 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import com.unciv.ui.utils.getRelativeTextDistance
@@ -372,9 +372,24 @@ class Ruleset {
             val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
                 .getAnnotation(Deprecated::class.java)
             if (deprecationAnnotation != null) {
+                var replacementUniqueText = deprecationAnnotation.replaceWith.expression
+                val deprecatedUniquePlaceholders = unique.type.text.getPlaceholderParameters()
+
+                // Here, for once, we DO want the conditional placeholder parameters together with the regular ones,
+                //  so we cheat the conditional detector by removing the '<'
+                for (parameter in replacementUniqueText.replace('<',' ').getPlaceholderParameters()) {
+                    val parameterNumberInDeprecatedUnique =
+                        deprecatedUniquePlaceholders.indexOf(parameter.removePrefix("+"))
+                    if (parameterNumberInDeprecatedUnique == -1) continue
+                    var replacementText = unique.params[parameterNumberInDeprecatedUnique]
+                    if (parameter.startsWith('+')) replacementText = "+$replacementText"
+                    replacementUniqueText =
+                        replacementUniqueText.replace("[$parameter]", "[$replacementText]")
+                }
+
                 val deprecationText =
                     "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                            if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${deprecationAnnotation.replaceWith.expression}\"" else ""
+                            if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
                 val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
                     RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
                 else RulesetErrorSeverity.Warning // User visible

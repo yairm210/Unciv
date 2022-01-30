@@ -673,7 +673,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <when attacking>"), DeprecationLevel.ERROR)
     StrengthAttacking("+[amount]% Strength when attacking", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <shen defending>"), DeprecationLevel.ERROR)
+    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <when defending>"), DeprecationLevel.ERROR)
     StrengthDefending("+[amount]% Strength when defending", UniqueTarget.Unit),
     @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <when defending> <vs [mapUnitFilter] units>"), DeprecationLevel.ERROR)
     StrengthDefendingUnitFilter("[amount]% Strength when defending vs [mapUnitFilter] units", UniqueTarget.Unit),
