@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.abs
 
@@ -94,8 +95,10 @@ class TileMap {
     /** creates a hexagonal map of given radius (filled with grassland) */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
         startingLocations.clear()
+        val firstAvailableLandTerrain = ruleset.terrains.values.firstOrNull { it.type==TerrainType.Land }
+            ?: throw Exception("Cannot create map - no land terrains found!")
         for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
-            tileList.add(TileInfo().apply { position = vector; baseTerrain = Constants.grassland })
+            tileList.add(TileInfo().apply { position = vector; baseTerrain = firstAvailableLandTerrain.name })
         setTransients(ruleset)
     }
 
@@ -205,8 +208,11 @@ class TileMap {
     /** @return all tiles within [rectangle], respecting world edges and wrap.
      *  If using even Q coordinates the rectangle will be "straight" ie parallel with rectangular map edges. */
     fun getTilesInRectangle(rectangle: Rectangle, evenQ: Boolean = false): Sequence<TileInfo> =
-            if (rectangle.width <= 0 || rectangle.height <= 0)
-                sequenceOf(get(rectangle.x.toInt(), rectangle.y.toInt()))
+            if (rectangle.width <= 0 || rectangle.height <= 0) {
+                val tile = getIfTileExistsOrNull(rectangle.x.toInt(), rectangle.y.toInt())
+                if (tile == null) sequenceOf()
+                else sequenceOf(tile)
+            }
             else
                 sequence {
                     for (x in 0 until rectangle.width.toInt()) {

@@ -794,7 +794,7 @@ open class TileInfo {
         // Uninitialized tilemap - when you're displaying a tile in the civilopedia or map editor
         if (::tileMap.isInitialized) convertHillToTerrainFeature()
         if (!ruleset.terrains.containsKey(baseTerrain))
-            throw Exception()
+            throw Exception("Terrain $baseTerrain does not exist in ruleset!")
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land

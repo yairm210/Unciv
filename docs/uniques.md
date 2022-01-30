@@ -71,6 +71,11 @@ Example: "[+1 Gold, +2 Production] from every [tileFilter/specialist/buildingFil
 
 Applicable to: Global, FollowerBelief
 
+#### [stats] from each Trade Route
+Example: "[+1 Gold, +2 Production] from each Trade Route"
+
+Applicable to: Global, FollowerBelief
+
 #### [amount]% [stat]
 Example: "[20]% [Culture]"
 
@@ -109,7 +114,7 @@ Applicable to: Global
 #### [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
 Example: "[20]% Production when constructing [Culture] wonders [in all cities]"
 
-Applicable to: Global, FollowerBelief, Resource
+Applicable to: Global, FollowerBelief
 
 #### [amount]% Production when constructing [buildingFilter] buildings [cityFilter]
 Example: "[20]% Production when constructing [Culture] buildings [in all cities]"
@@ -118,6 +123,11 @@ Applicable to: Global, FollowerBelief
 
 #### [amount]% Production when constructing [baseUnitFilter] units [cityFilter]
 Example: "[20]% Production when constructing [Melee] units [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
+#### [amount]% Production towards any buildings that already exist in the Capital
+Example: "[20]% Production towards any buildings that already exist in the Capital"
 
 Applicable to: Global, FollowerBelief
 
@@ -177,6 +187,11 @@ Example: "[20] units cost no maintenance"
 
 Applicable to: Global
 
+#### Cannot build [baseUnitFilter] units
+Example: "Cannot build [Melee] units"
+
+Applicable to: Global
+
 #### [amount]% growth [cityFilter]
 Example: "[20]% growth [in all cities]"
 
@@ -191,6 +206,16 @@ Applicable to: Global, FollowerBelief
 Example: "Gain a free [Library] [in all cities]"
 
 Applicable to: Global
+
+#### [amount]% Great Person generation [cityFilter]
+Example: "[20]% Great Person generation [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
+#### [amount]% great person generation [cityFilter]
+Example: "[20]% great person generation [in all cities]"
+
+Applicable to: Global, FollowerBelief
 
 #### May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion
 Example: "May choose [20] additional [Follower] beliefs when [founding] a religion"
@@ -354,11 +379,6 @@ Applicable to: Global
 #### Triggers a Cultural Victory upon completion
 Applicable to: Global
 
-#### Cannot build [baseUnitFilter] units
-Example: "Cannot build [Melee] units"
-
-Applicable to: Global
-
 #### [amount]% City Strength from defensive buildings
 Example: "[20]% City Strength from defensive buildings"
 
@@ -373,6 +393,11 @@ Applicable to: Global
 Example: "[20]% Gold from Great Merchant trade missions"
 
 Applicable to: Global
+
+#### [mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing
+Example: "[Wounded] Units adjacent to this city heal [20] HP per turn when healing"
+
+Applicable to: Global, FollowerBelief
 
 #### [amount]% Golden Age length
 Example: "[20]% Golden Age length"
@@ -389,11 +414,36 @@ Example: "New [Melee] units start with [20] Experience [in all cities]"
 
 Applicable to: Global, FollowerBelief
 
+#### All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion
+Example: "All newly-trained [Melee] units [in all cities] receive the [Shock I] promotion"
+
+Applicable to: Global, FollowerBelief
+
+#### [baseUnitFilter] units built [cityFilter] can [action] [amount] extra times
+Example: "[Melee] units built [in all cities] can [action] [20] extra times"
+
+Applicable to: Global, FollowerBelief
+
 #### Enables embarkation for land units
 Applicable to: Global
 
 #### Enables embarked units to enter ocean tiles
 Applicable to: Global
+
+#### Population loss from nuclear attacks [amount]% [cityFilter]
+Example: "Population loss from nuclear attacks [20]% [in all cities]"
+
+Applicable to: Global
+
+#### [amount]% Natural religion spread [cityFilter]
+Example: "[20]% Natural religion spread [in all cities]"
+
+Applicable to: Global, FollowerBelief
+
+#### Religion naturally spreads to cities [amount] tiles away
+Example: "Religion naturally spreads to cities [20] tiles away"
+
+Applicable to: Global, FollowerBelief
 
 #### Can be continually researched
 Applicable to: Global
@@ -1275,6 +1325,11 @@ Example: "<if this city has at least [20] specialists>"
 
 Applicable to: Conditional
 
+#### <in cities where this religion has at least [amount] followers>
+Example: "<in cities where this religion has at least [20] followers>"
+
+Applicable to: Conditional
+
 #### <with a garrison>
 Applicable to: Conditional
 
@@ -1364,8 +1419,10 @@ Applicable to: Conditional
 ## Deprecated uniques
  - "[stats] per turn from cities before [tech/policy]" - Deprecated As of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
  - "[stats] from every Wonder" - Deprecated As of 3.19.1, replace with "[stats] from every [Wonder]"
+ - "[stats] from every [buildingFilter] in cities where this religion has at least [amount] followers" - Deprecated As of 3.19.3, replace with "[stats] from every [buildingFilter] <in cities where this religion has at least [amount] followers>"
  - "+[amount]% [stat] from every [tileFilter/specialist/buildingName]" - Deprecated As of 3.18.17, replace with "[amount]% [stat] from every [tileFilter/specialist/buildingName]"
  - "+[amount]% yield from every [tileFilter]" - Deprecated As of 3.18.17, replace with "[+amount]% Yield from every [tileFilter]"
+ - "+25% Production towards any buildings that already exist in the Capital" - Deprecated As of 3.19.3, replace with "[amount]% Production towards any buildings that already exist in the Capital"
  - "City-State Influence degrades [amount]% slower" - Deprecated As of 3.18.17, replace with "[-amount]% City-State Influence degradation"
  - "Quantity of Resources gifted by City-States increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% resources gifted by City-States"
  - "Happiness from Luxury Resources gifted by City-States increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% Happiness from luxury resources gifted by City-States"
@@ -1390,6 +1447,8 @@ Applicable to: Conditional
  - "+[amount]% Defensive Strength for cities" - Deprecated As of 3.18.17, replace with "[+amount]% Strength for cities <when defending>"
  - "[amount]% Attacking Strength for cities" - Deprecated As of 3.18.17, replace with "[amount]% Strength for cities <when attacking>"
  - "+[amount]% attacking strength for cities with garrisoned units" - Deprecated As of 3.19.1, replace with "[amount]% Strength for cities <with a garrison> <when attacking>"
+ - "Population loss from nuclear attacks -[amount]%" - Deprecated As of 3.19.2, replace with "Population loss from nuclear attacks [-amount]% [in this city]"
+ - "[amount]% Natural religion spread [cityFilter] with [tech/policy]" - Deprecated As of 3.19.3, replace with "[amount]% Natural religion spread [cityFilter] <after discovering [tech]> OR [amount]% natural religion spread [cityFilter] <after adopting [policy]>"
  - "Melee units pay no movement cost to pillage" - Deprecated As of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"

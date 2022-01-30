@@ -1,3 +1,17 @@
+## 3.19.3
+
+Huge performance improvements to "next turn" 
+
+Removed mod dependency on specific terrains and resources
+
+By xlenstra:
+- Resources can now again provide uniques applying to the entire civ
+- Fixed a few rare mod-specific crashes
+
+New caravel image - By touhidurrr
+
+Minor logic cleanup  - By itanasi
+
 ## 3.19.2
 
 Stat bonus drilldown in cities

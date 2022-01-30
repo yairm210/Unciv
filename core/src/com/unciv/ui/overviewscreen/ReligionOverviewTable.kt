@@ -74,7 +74,7 @@ class ReligionOverviewTable(
             val button: Button
             if (religion.isPantheon()) {
                 val image = if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName)
-                    ImageGetter.getNationIndicator(gameInfo.getCivilization(religion.foundingCivName).nation, 60f)
+                    ImageGetter.getNationIndicator(religion.getFounder().nation, 60f)
                 else
                     ImageGetter.getRandomNationIndicator(60f)
                 button = Button(image, BaseScreen.skin)
@@ -126,7 +126,7 @@ class ReligionOverviewTable(
             }
         }
         statsTable.add("Cities following this religion:".toLabel()).left()
-        statsTable.add(gameInfo.getCivilization(religion.foundingCivName).religionManager.numberOfCitiesFollowingThisReligion().toString()).right().pad(5f).row()
+        statsTable.add(religion.getFounder().religionManager.numberOfCitiesFollowingThisReligion().toString()).right().pad(5f).row()
         
         val minWidth = max(statsTable.minWidth, beliefsTable.minWidth) + 5
         

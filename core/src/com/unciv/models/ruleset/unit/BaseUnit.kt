@@ -482,7 +482,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         unit.promotions.XP = XP        
 
-        for (unique in cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
+        for (unique in cityConstructions.cityInfo.getMatchingUniques(UniqueType.UnitStartingPromotions)
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) }) {
             val filter = unique.params[0]
             val promotion = unique.params.last()

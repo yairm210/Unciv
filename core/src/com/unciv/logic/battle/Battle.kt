@@ -734,11 +734,11 @@ object Battle {
                 else -> 1f
             }
         // Deprecated since 3.16.11
-            for (unique in targetedCity.getLocalMatchingUniques("Population loss from nuclear attacks -[]%")) {
+            for (unique in targetedCity.getLocalMatchingUniques(UniqueType.PopulationLossFromNukesDeprecated)) {
                 populationLoss *= 1 - unique.params[0].toFloat() / 100f
             }
         //
-        for (unique in targetedCity.getMatchingUniques("Population loss from nuclear attacks []% []")) {
+        for (unique in targetedCity.getMatchingUniques(UniqueType.PopulationLossFromNukes)) {
             if (!targetedCity.matchesFilter(unique.params[1])) continue
             populationLoss *= unique.params[0].toPercent()
         }

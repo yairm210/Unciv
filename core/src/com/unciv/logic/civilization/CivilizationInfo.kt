@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -402,6 +403,11 @@ class CivilizationInfo {
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
             yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
+        
+        yieldAll(getCivResources().asSequence()
+            .filter { it.amount > 0 }
+            .flatMap { it.resource.getMatchingUniques(uniqueType, stateForConditionals) }
+        )
         
         yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
         
@@ -965,6 +971,11 @@ class CivilizationInfo {
         shouldShowDiplomaticVotingResults()
 
     private fun updateRevolts() {
+        if (gameInfo.civilizations.none { it.civName == Constants.barbarians }) {
+            // Can't spawn revolts without barbarians ¯\_(ツ)_/¯
+            return
+        }
+        
         if (!hasUnique(UniqueType.SpawnRebels)) {
             removeFlag(CivFlags.RevoltSpawning.name)
             return

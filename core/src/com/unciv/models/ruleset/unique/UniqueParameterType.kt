@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.Constants
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.VictoryType
@@ -294,6 +295,16 @@ enum class UniqueParameterType(val parameterName:String) {
     },
     CostOrStrength("costOrStrength") {
         private val knownValues = setOf("Cost", "Strength")
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            return if (parameterText in knownValues) null
+            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        }
+    },
+    Action("action") {
+        private val knownValues = setOf(Constants.spreadReligionAbilityCount, Constants.removeHeresyAbilityCount)
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset

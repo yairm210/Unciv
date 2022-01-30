@@ -67,7 +67,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addCultureBuildingChoice()
         addSpaceshipPartChoice()
         addOtherBuildingChoice()
-        addReligousUnit()
+        addReligiousUnit()
 
         if (!cityInfo.isPuppet) {
             addWondersChoice()
@@ -342,9 +342,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         }
     }
 
-    private fun addReligousUnit(){
-
-
+    private fun addReligiousUnit() {
         // these 4 if conditions are used to determine if an AI should buy units to spread religion, or spend faith to buy things like new military units or new buildings.
         // currently this AI can only buy inquisitors and missionaries with faith
         // this system will have to be reengineered to support buying other stuff with faith

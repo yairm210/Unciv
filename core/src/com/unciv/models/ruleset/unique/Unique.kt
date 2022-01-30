@@ -83,6 +83,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
             UniqueType.ConditionalSpecialistCount ->
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
+            UniqueType.ConditionalFollowerCount ->
+                state.cityInfo != null && state.cityInfo.religion.getFollowersOfMajorityReligion() >= condition.params[0].toInt()
             UniqueType.ConditionalWhenGarrisoned ->
                 state.cityInfo != null && state.cityInfo.getCenterTile().militaryUnit != null && state.cityInfo.getCenterTile().militaryUnit!!.canGarrison()
 
