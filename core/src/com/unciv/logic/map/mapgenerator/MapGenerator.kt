@@ -23,6 +23,7 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     private var randomness = MapGenerationRandomness()
+    private val firstLandTerrain = ruleset.terrains.values.first { it.type==TerrainType.Land }
 
     fun generateMap(mapParameters: MapParameters, civilizations: List<CivilizationInfo> = emptyList()): TileMap {
         val mapSize = mapParameters.mapSize
@@ -406,7 +407,7 @@ class MapGenerator(val ruleset: Ruleset) {
                     temperature <= 1.0 -> if (humidity < 0.7) Constants.desert else Constants.plains
                     else -> {
                         println("applyHumidityAndTemperature: Invalid temperature $temperature")
-                        Constants.grassland
+                        firstLandTerrain.name
                     }
                 }
                 if (ruleset.terrains.containsKey(autoTerrain)) tile.baseTerrain = autoTerrain
@@ -421,7 +422,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
             if (matchingTerrain != null) tile.baseTerrain = matchingTerrain.terrain.name
             else {
-                tile.baseTerrain = ruleset.terrains.values.firstOrNull { it.type == TerrainType.Land }?.name ?: Constants.grassland
+                tile.baseTerrain = firstLandTerrain.name
                 println("applyHumidityAndTemperature: No terrain found for temperature: $temperature, humidity: $humidity")
             }
             tile.setTerrainTransients()
