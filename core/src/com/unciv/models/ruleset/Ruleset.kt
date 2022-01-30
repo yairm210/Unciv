@@ -611,7 +611,7 @@ class Ruleset {
             for (building in era.settlerBuildings)
                 if (building !in buildings)
                     lines += "Nonexistent building $building built by settlers when starting in ${era.name}"
-            if (era.startingMilitaryUnitCount != 0 && era.startingMilitaryUnit !in units)
+            if (era.startingMilitaryUnitCount != 0 && era.startingMilitaryUnit != Constants.eraSpecificUnit && era.startingMilitaryUnit !in units)
                 lines += "Nonexistent unit ${era.startingMilitaryUnit} marked as starting unit when starting in ${era.name}"
             if (era.researchAgreementCost < 0 || era.startingSettlerCount < 0 || era.startingWorkerCount < 0 || era.startingMilitaryUnitCount < 0 || era.startingGold < 0 || era.startingCulture < 0)
                 lines += "Unexpected negative number found while parsing era ${era.name}"
