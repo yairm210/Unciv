@@ -1449,7 +1449,12 @@ class MapRegions (val ruleset: Ruleset){
             val resourceUnique = ruleset.terrains[terrain]!!.getMatchingUniques(UniqueType.RegionExtraResource).firstOrNull()
             // If this region has an explicit "this is the bonus" unique go with that, else random appropriate
             val resource = if (resourceUnique != null) ruleset.tileResources[resourceUnique.params[0]]!!
-                else ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && terrain in it.terrainsCanBeFoundOn }.random()
+                else {
+                val possibleResources =
+                    ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && terrain in it.terrainsCanBeFoundOn }
+                if (possibleResources.isEmpty()) continue
+                possibleResources.random()
+            }
             val candidateTiles = tileMap[region.startPosition!!].getTilesAtDistance(3).shuffled()
             val amount = if (resourceUnique != null) 2 else 1 // Place an extra if the region type requests it
             if (tryAddingResourceToTiles(resource, amount, candidateTiles) == 0) {
@@ -1728,10 +1733,9 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
         for (tile in tileMap.getTilesInRectangle(rect, evenQ = true).filter {
             continentID == -1 || it.getContinent() == continentID } ) {
             val fertility = tile.getTileFertility(continentID != -1)
-            if (fertility != 0) { // If fertility is 0 this is candidate for trimming
-                tiles.add(tile)
-                totalFertility += fertility
-            }
+            tiles.add(tile)
+            totalFertility += fertility
+
 
             if (affectedByWorldWrap)
                 columnHasTile.add(HexMath.hex2EvenQCoords(tile.position).x.toInt())

@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.Counter
@@ -10,6 +11,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
@@ -20,7 +22,6 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -481,7 +482,11 @@ class Ruleset {
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return lines
 
-        val baseRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
+        val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
+
+
+        if (units.values.none { it.uniques.contains(UniqueType.FoundCity.text) })
+           lines += "No city-founding units in ruleset!"
 
         for (unit in units.values) {
             if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
@@ -498,7 +503,7 @@ class Ruleset {
             for (promotion in unit.promotions)
                 if (!unitPromotions.containsKey(promotion))
                     lines += "${unit.name} contains promotion $promotion which does not exist!"
-            if (!unitTypes.containsKey(unit.unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unit.unitType)))
+            if (!unitTypes.containsKey(unit.unitType) && (unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unit.unitType)))
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
             for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)) {
                 val improvementName = unique.params[0]
@@ -557,6 +562,8 @@ class Ruleset {
             checkUniques(improvement, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
+        if (terrains.values.none { it.type==TerrainType.Land && !it.impassable })
+            lines += "No passable land terrains exist!"
         for (terrain in terrains.values) {
             for (baseTerrain in terrain.occursOn)
                 if (!terrains.containsKey(baseTerrain))
@@ -604,7 +611,7 @@ class Ruleset {
             for (building in era.settlerBuildings)
                 if (building !in buildings)
                     lines += "Nonexistent building $building built by settlers when starting in ${era.name}"
-            if (era.startingMilitaryUnit !in units)
+            if (era.startingMilitaryUnitCount != 0 && era.startingMilitaryUnit !in units)
                 lines += "Nonexistent unit ${era.startingMilitaryUnit} marked as starting unit when starting in ${era.name}"
             if (era.researchAgreementCost < 0 || era.startingSettlerCount < 0 || era.startingWorkerCount < 0 || era.startingMilitaryUnitCount < 0 || era.startingGold < 0 || era.startingCulture < 0)
                 lines += "Unexpected negative number found while parsing era ${era.name}"
@@ -621,7 +628,7 @@ class Ruleset {
             if (nation.favoredReligion != null && nation.favoredReligion !in religions)
                 lines += "${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!"
         }
-        
+
         for (policy in policies.values) {
             if (policy.requires != null)
                 for (prereq in policy.requires!!)
@@ -641,14 +648,19 @@ class Ruleset {
                 if (!unitPromotions.containsKey(prereq))
                     lines.add("${promotion.name} requires promotion $prereq which does not exist!", RulesetErrorSeverity.Warning)
             for (unitType in promotion.unitTypes)
-                if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unitType)))
+                if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unitType)))
                     lines.add("${promotion.name} references unit type $unitType, which does not exist!", RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
         for (unitType in unitTypes.values) {
             checkUniques(unitType, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
-        
+
+        for (difficulty in difficulties.values)
+            for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
+                if (unitName!=Constants.eraSpecificUnit && !units.containsKey(unitName))
+                    lines += "Difficulty ${difficulty.name} contains starting unit $unitName which does not exist!"
+
         if (modOptions.maxXPfromBarbarians != 30) {
             lines.add("maxXPfromBarbarians is moved to the constants object, instead use: \nconstants: {\n    maxXPfromBarbarians: ${modOptions.maxXPfromBarbarians},\n}", RulesetErrorSeverity.Warning)
         }

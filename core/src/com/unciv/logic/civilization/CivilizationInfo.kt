@@ -266,7 +266,10 @@ class CivilizationInfo {
     //region pure functions
     fun getDifficulty(): Difficulty {
         if (isPlayerCivilization()) return gameInfo.getDifficulty()
-        return gameInfo.ruleSet.difficulties["Chieftain"]!!
+        // TODO We should be able to mark a difficulty as 'default AI difficulty' somehow
+        val chieftainDifficulty = gameInfo.ruleSet.difficulties["Chieftain"]
+        if (chieftainDifficulty != null) return chieftainDifficulty
+        return gameInfo.ruleSet.difficulties.values.first()
     }
 
     fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
