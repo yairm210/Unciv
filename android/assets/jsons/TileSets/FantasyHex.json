@@ -35,11 +35,11 @@
         "Plains+Jungle+Ancient ruins": ["Plains","Ancient ruins-Jungle","PlainsJungle"],
 	    
 	// Farms on hills
-	"Grassland+Hill+Farm": ["Grassland","Farm","Hill"],
+	"Grassland+Hill+Farm": ["Grassland+Farm","Hill"],
         "Plains+Hill+Farm": ["Plains+Farm","Hill"],
         "Desert+Hill+Farm": ["Desert+Farm","Hill"],
-        "Tundra+Hill+Farm": ["Tundra","Farm","Hill"],
-        "Snow+Hill+Farm": ["Snow","Farm","Hill"],
+        "Tundra+Hill+Farm": ["Tundra+Farm","Hill"],
+        "Snow+Hill+Farm": ["Snow+Farm","Hill"],
 
         //resources behind forest and jungle
             //TODO all the resources...
