@@ -604,6 +604,13 @@ class Ruleset {
             lines += "Eras file is empty! This will likely lead to crashes. Ask the mod maker to update this mod!"
         }
 
+        val allDifficultiesStartingUnits = hashSetOf<String>()
+        for (difficulty in difficulties.values){
+            allDifficultiesStartingUnits.addAll(difficulty.aiCityStateBonusStartingUnits)
+            allDifficultiesStartingUnits.addAll(difficulty.aiMajorCivBonusStartingUnits)
+            allDifficultiesStartingUnits.addAll(difficulty.playerBonusStartingUnits)
+        }
+
         for (era in eras.values) {
             for (wonder in era.startingObsoleteWonders)
                 if (wonder !in buildings)
@@ -611,7 +618,13 @@ class Ruleset {
             for (building in era.settlerBuildings)
                 if (building !in buildings)
                     lines += "Nonexistent building $building built by settlers when starting in ${era.name}"
-            if (era.startingMilitaryUnitCount != 0 && era.startingMilitaryUnit != Constants.eraSpecificUnit && era.startingMilitaryUnit !in units)
+            // todo the whole 'starting unit' thing needs to be redone, there's no reason we can't have a single list containing all the starting units.
+            if (era.startingSettlerUnit !in units && (era.startingSettlerUnit!=Constants.settler || units.values.none { it.hasUnique(UniqueType.FoundCity) }))
+                lines += "Nonexistent unit ${era.startingSettlerUnit} marked as starting unit when starting in ${era.name}"
+            if (era.startingWorkerCount!=0 && era.startingWorkerUnit !in units)
+                lines += "Nonexistent unit ${era.startingWorkerUnit} marked as starting unit when starting in ${era.name}"
+
+            if ((era.startingMilitaryUnitCount !=0 || allDifficultiesStartingUnits.contains(Constants.eraSpecificUnit)) && era.startingMilitaryUnit !in units)
                 lines += "Nonexistent unit ${era.startingMilitaryUnit} marked as starting unit when starting in ${era.name}"
             if (era.researchAgreementCost < 0 || era.startingSettlerCount < 0 || era.startingWorkerCount < 0 || era.startingMilitaryUnitCount < 0 || era.startingGold < 0 || era.startingCulture < 0)
                 lines += "Unexpected negative number found while parsing era ${era.name}"
