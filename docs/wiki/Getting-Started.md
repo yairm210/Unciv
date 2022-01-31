@@ -12,7 +12,7 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
   * A new install may not be able to do the initial sync - this comes in the form of `Unable to find method ''void org.apache.commons.compress.archivers.zip.ZipFile.<init>(java.nio.channels.SeekableByteChannel)''` errors when you try to sync. If you have this problem go into File > Settings > Appearance & Behavior > System Settings > Android SDK
     * Click "SDK Tools"
     * Select "Show Package Details" in the bottom right
-    * Choose version 30.0.2 under "Android SDK Build-Tools 31"
+    * Choose version 30.0.3 under "Android SDK Build-Tools <whatever version you have>"
     * Click "Apply"
 * In Android Studio, Run > Edit configurations.
   * Click "+" to add a new configuration
