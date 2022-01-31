@@ -114,10 +114,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             }
             UniqueType.ConditionalForeignContinent ->
                 state.civInfo != null && state.unit != null
-                        && (state.civInfo.cities.isEmpty()
+                    && (state.civInfo.cities.isEmpty()
                         || state.civInfo.getCapital().getCenterTile().getContinent()
                             != state.unit.getTile().getContinent()
-                        )
+                    )
             UniqueType.ConditionalAdjacentUnit ->
                 state.civInfo != null && relevantUnitTile!!.neighbors.any {
                     it.militaryUnit != null
@@ -132,9 +132,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                         } in (condition.params[0].toInt())..(condition.params[1].toInt())
             UniqueType.ConditionalNeighborTilesAnd ->
                 state.cityInfo != null
-                        && state.cityInfo.getCenterTile().neighbors.count {
-                    it.matchesFilter(condition.params[2], state.civInfo) &&
-                            it.matchesFilter(condition.params[3], state.civInfo)
+                && state.cityInfo.getCenterTile().neighbors.count {
+                    it.matchesFilter(condition.params[2], state.civInfo) 
+                    && it.matchesFilter(condition.params[3], state.civInfo)
                 } in (condition.params[0].toInt())..(condition.params[1].toInt())
 
             UniqueType.ConditionalOnWaterMaps -> state.region?.continentID == -1

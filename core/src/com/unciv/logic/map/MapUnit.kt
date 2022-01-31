@@ -560,7 +560,7 @@ class MapUnit {
     }
 
     private fun adjacentHealingBonus(): Int {
-        return getMatchingUniques("All adjacent units heal [] HP when healing").sumOf { it.params[0].toInt() }
+        return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() } + 15 * getMatchingUniques(UniqueType.HealAdjacentUnitsDeprecated).count()
     }
 
     // Only military land units can truly "garrison"
@@ -685,33 +685,22 @@ class MapUnit {
             )
         }
     }
-
+    
     private fun heal() {
         if (isEmbarked()) return // embarked units can't heal
-        if (civInfo.hasUnique("Can only heal by pillaging")) return
+        if (health >= 100) return // No need to heal if at max health
+        if (hasUnique(UniqueType.HealOnlyByPillaging, checkCivInfoUniques = true)) return
 
-        var amountToHealBy = rankTileForHealing(getTile())
-        if (amountToHealBy == 0 
-            && !(hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true) 
-                && !getTile().isFriendlyTerritory(civInfo)
-            )
-        ) return
-
-        amountToHealBy += getMatchingUniques("[] HP when healing").sumOf { it.params[0].toInt() }
-
-        val maxAdjacentHealingBonus = currentTile.neighbors
-            .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
-        if (maxAdjacentHealingBonus != null)
-            amountToHealBy += maxAdjacentHealingBonus
+        val amountToHealBy = rankTileForHealing(getTile())
+        if (amountToHealBy == 0) return
 
         healBy(amountToHealBy)
     }
 
     fun healBy(amount: Int) {
-        health += if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true))
-                amount * 2
-            else
-                amount
+        health += amount * 
+            if (hasUnique(UniqueType.HealingEffectsDoubled, checkCivInfoUniques = true)) 2
+            else 1
         if (health > 100) health = 100
     }
 
@@ -723,20 +712,22 @@ class MapUnit {
             tileInfo.isCityCenter() -> 20
             tileInfo.isWater && isFriendlyTerritory && (baseUnit.isWaterUnit() || isTransported) -> 15 // Water unit on friendly water
             tileInfo.isWater -> 0 // All other water cases
-            tileInfo.getOwner() == null -> 10 // Neutral territory
             isFriendlyTerritory -> 15 // Allied territory
+            tileInfo.getOwner() == null -> 10 // Neutral territory
             else -> 5 // Enemy territory
         }
 
-        val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory))
+        val mayHeal = healing > 0 || (tileInfo.isWater && hasUnique(UniqueType.HealsOutsideFriendlyTerritory, checkCivInfoUniques = true))
         if (!mayHeal) return healing
 
-
-        for (unique in getMatchingUniques("[] HP when healing in [] tiles")) {
-            if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
-                healing += unique.params[0].toInt()
+        healing += getMatchingUniques(UniqueType.Heal, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
+        // Deprecated as of 3.19.4
+            for (unique in getMatchingUniques(UniqueType.HealInTiles, checkCivInfoUniques = true)) {
+                if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
+                    healing += unique.params[0].toInt()
+                }
             }
-        }
+        //
 
         val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
             it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.CityHealingUnits).any()
@@ -748,12 +739,17 @@ class MapUnit {
             }
         }
 
+        val maxAdjacentHealingBonus = currentTile.neighbors
+            .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.maxOrNull()
+        if (maxAdjacentHealingBonus != null)
+            healing += maxAdjacentHealingBonus
+
         return healing
     }
 
     fun endTurn() {
-        if (currentMovement > 0 &&
-            getTile().improvementInProgress != null
+        if (currentMovement > 0
+            && getTile().improvementInProgress != null
             && canBuildImprovement(getTile().getTileImprovementInProgress()!!)
         ) workOnImprovement()
         if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
@@ -765,8 +761,6 @@ class MapUnit {
                     true
                 )
         }
-        if (hasUnique("Heal adjacent units for an additional 15 HP per turn"))
-            currentTile.neighbors.flatMap { it.getUnits() }.forEach { it.healBy(15) }
 
         if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
             || hasUnique(UniqueType.HealsEvenAfterAction)

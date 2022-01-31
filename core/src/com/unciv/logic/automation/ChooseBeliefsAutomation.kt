@@ -75,7 +75,7 @@ object ChooseBeliefsAutomation {
                 UniqueType.GrowthPercentBonus.placeholderText -> unique.params[0].toFloat() / 3f
                 UniqueType.BorderGrowthPercentage.placeholderText -> -unique.params[0].toFloat() * 2f / 10f
                 "[]% Strength for cities" -> unique.params[0].toFloat() / 10f // Modified by personality
-                "[] Units adjacent to this city heal [] HP per turn when healing" -> unique.params[1].toFloat() / 10f
+                UniqueType.CityHealingUnits -> unique.params[1].toFloat() / 10f
                 "+[]% Production when constructing []" -> unique.params[0].toFloat() / 3f
                 UniqueType.StatsFromCitiesOnSpecificTiles.placeholderText ->
                     if (city.getCenterTile().matchesFilter(unique.params[1])) 

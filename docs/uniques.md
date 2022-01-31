@@ -481,6 +481,11 @@ Example: "[20] Range"
 
 Applicable to: Global, Unit
 
+#### [amount] HP when healing
+Example: "[20] HP when healing"
+
+Applicable to: Global, Unit
+
 #### [amount]% Spread Religion Strength
 Example: "[20]% Spread Religion Strength"
 
@@ -504,6 +509,9 @@ Applicable to: Global, Unit
 #### Heals [amount] damage if it kills a unit
 Example: "Heals [20] damage if it kills a unit"
 
+Applicable to: Global, Unit
+
+#### Can only heal by pillaging
 Applicable to: Global, Unit
 
 #### Normal vision when embarked
@@ -837,6 +845,11 @@ Applicable to: Unit
 Applicable to: Unit
 
 #### Unit will heal every turn, even if it performs an action
+Applicable to: Unit
+
+#### All adjacent units heal [amount] HP when healing
+Example: "All adjacent units heal [20] HP when healing"
+
 Applicable to: Unit
 
 #### 6 tiles in every direction always visible
@@ -1449,6 +1462,7 @@ Applicable to: Conditional
  - "+[amount]% attacking strength for cities with garrisoned units" - Deprecated As of 3.19.1, replace with "[amount]% Strength for cities <with a garrison> <when attacking>"
  - "Population loss from nuclear attacks -[amount]%" - Deprecated As of 3.19.2, replace with "Population loss from nuclear attacks [-amount]% [in this city]"
  - "[amount]% Natural religion spread [cityFilter] with [tech/policy]" - Deprecated As of 3.19.3, replace with "[amount]% Natural religion spread [cityFilter] <after discovering [tech]> OR [amount]% natural religion spread [cityFilter] <after adopting [policy]>"
+ - "[amount] HP when healing in [tileFilter] tiles" - Deprecated As of 3.19.4, replace with "[amount] HP when healing <in [tileFilter] tiles>"
  - "Melee units pay no movement cost to pillage" - Deprecated As of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
