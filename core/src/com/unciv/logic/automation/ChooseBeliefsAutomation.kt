@@ -130,12 +130,12 @@ object ChooseBeliefsAutomation {
                 if (unique.conditionals.any { it.type == UniqueType.ConditionalOurUnit && it.params[0] == civInfo.religionManager.getGreatProphetEquivalent() }) 1/2f
                 else 1f
             // Some city-filters are modified by personality (non-enemy foreign cities)
-            score += modifier * when (unique.placeholderText) {
-                "Earn []% of [] unit's [] as [] when killed within 4 tiles of a city following this religion" ->
+            score += modifier * when (unique.type) {
+                UniqueType.KillUnitPlunderNearCity ->
                     unique.params[0].toFloat() * 4f *
                         if (civInfo.victoryType() == VictoryType.Domination) 2f
                         else 1f
-                "May buy [] buildings for [] [] []", "May buy [] units for [] [] []" ->
+                UniqueType.BuyBuildingsForAmountStat, UniqueType.BuyUnitsForAmountStat ->
                     if (civInfo.religionManager.religion != null 
                         && civInfo.religionManager.religion!!.getFollowerUniques()
                             .any { it.placeholderText == unique.placeholderText } 

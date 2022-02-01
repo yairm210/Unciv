@@ -141,12 +141,12 @@ object UniqueTriggerActivation {
                     val preferredVictoryType = civInfo.victoryType()
                     if (preferredVictoryType == VictoryType.Cultural) {
                         val culturalGP =
-                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }
+                            greatPeople.firstOrNull { unit -> unit.getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == Stat.Culture.name } }
                         if (culturalGP != null) greatPerson = culturalGP
                     }
                     if (preferredVictoryType == VictoryType.Scientific) {
                         val scientificGP =
-                            greatPeople.firstOrNull { it.uniques.contains("Great Person - [Science]") }
+                            greatPeople.firstOrNull { unit -> unit.getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == Stat.Science.name } }
                         if (scientificGP != null) greatPerson = scientificGP
                     }
 

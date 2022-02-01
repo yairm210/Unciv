@@ -66,8 +66,20 @@ enum class UniqueParameterType(val parameterName:String) {
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
-            return if (parameterText in ruleset.units && ruleset.units[parameterText]!!.hasUnique("Great Person - []")) null
+            return if (parameterText in ruleset.units && ruleset.units[parameterText]!!.isGreatPerson()) null
             else UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
+    GreatPersonType("greatPersonType") {
+        private val knownValues = setOf("War", Stat.Science.name, Stat.Culture.name, Stat.Gold.name, Stat.Production.name, Stat.Faith.name) // "Naval" eventually, I guess?
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            return when (parameterText) {
+                in knownValues -> null
+                else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+            }
         }
     },
     Stats("stats") {

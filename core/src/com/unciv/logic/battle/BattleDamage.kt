@@ -87,7 +87,7 @@ object BattleDamage {
 
             val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
                 .flatMap { it.getUnits() }.filter { it.civInfo == combatant.unit.civInfo }
-            if (nearbyCivUnits.any { it.hasUnique("Bonus for units in 2 tile radius 15%") }) {
+            if (nearbyCivUnits.any { it.hasUnique(UniqueType.GreatGeneralBonus) }) {
                 val greatGeneralModifier =
                     if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 30 else 15
 

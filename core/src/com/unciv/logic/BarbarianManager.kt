@@ -111,7 +111,7 @@ class BarbarianManager {
         val viableTiles = fogTiles.filter {
             !it.isImpassible()
                     && it.resource == null
-                    && it.terrainFeatures.none { feature -> gameInfo.ruleSet.terrains[feature]!!.hasUnique("Only [] improvements may be built on this tile") }
+                    && it.terrainFeatures.none { feature -> gameInfo.ruleSet.terrains[feature]!!.hasUnique(UniqueType.RestrictedBuildableImprovements)}
                     && it.neighbors.any { neighbor -> neighbor.isLand }
                     && it !in tooCloseToCapitals
                     && it !in tooCloseToCamps

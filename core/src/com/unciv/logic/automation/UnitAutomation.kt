@@ -153,16 +153,16 @@ object UnitAutomation {
             if (unit.hasUnique(UniqueType.CreateWaterImprovements))
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
-            if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
+            if (unit.hasUnique(UniqueType.GreatGeneralBonus))
                 return SpecificUnitAutomation.automateGreatGeneral(unit)
 
             if (unit.hasUnique(UniqueType.ConstructImprovementConsumingUnit))
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
-            if (unit.getMatchingUniques("Can [] [] times").any{ it.params[0] == "Spread Religion" })
+            if (unit.getMatchingUniques(UniqueType.CanDoActionTimes).any{ it.params[0] == "Spread Religion" })
                 return SpecificUnitAutomation.automateMissionary(unit)
 
-            if (unit.hasUnique("Prevents spreading of religion to the city it is next to"))
+            if (unit.hasUnique(UniqueType.PreventsSpreadingReligion))
                 return SpecificUnitAutomation.automateInquisitor(unit)
 
 

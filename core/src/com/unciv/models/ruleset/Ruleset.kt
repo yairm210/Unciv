@@ -527,7 +527,7 @@ class Ruleset {
                 if (tileImprovements[improvementName]==null) continue // this will be caught in the checkUniques
                 if ((tileImprovements[improvementName] as Stats).none() &&
                         unit.isCivilian() &&
-                        !unit.hasUnique("Bonus for units in 2 tile radius 15%")) {
+                        !unit.hasUnique(UniqueType.GreatGeneralBonus)) {
                     lines.add("${unit.name} can place improvement $improvementName which has no stats, preventing unit automation!",
                         RulesetErrorSeverity.Warning)
                 }

@@ -445,7 +445,7 @@ object Battle {
                 val unitName = unique.params[0]
                 // From the unique we know this unit exists
                 val unit = thisCombatant.getCivInfo().gameInfo.ruleSet.units[unitName]!!
-                if (unit.uniques.contains("Great Person - [War]"))
+                if (unit.getMatchingUniques(UniqueType.GreatPerson).any { it.params[0] == "War" })
                     greatGeneralPointsModifier += unique.params[1].toFloat() / 100
             }
 

@@ -21,7 +21,8 @@ class UniqueDocsWriter {
                 .replace("[combatantFilter]", "[City]")
                 .replace("[mapUnitFilter]", "[Wounded]")
                 .replace("[baseUnitFilter]", "[Melee]")
-                .replace("[great person]", "[Great Scientist]")
+                .replace("[greatPerson]", "[Great Scientist]")
+                .replace("[greatPersonType]", "[War]")
                 .replace("[stats]", "[+1 Gold, +2 Production]")
                 .replace("[stat]", "[Culture]")
                 .replace("[plunderableStat]", "[Gold]")
@@ -48,6 +49,7 @@ class UniqueDocsWriter {
                 .replace("[policy]", "[Oligarchy]")
                 .replace("[victoryType]", "[Domination]")
                 .replace("[costOrStrength]", "[Cost]")
+                .replace("[action]", "[Spread Religion]")
         }
 
         lines += "## Table of Contents\n"

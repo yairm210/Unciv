@@ -357,12 +357,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         // The performance of the regular getMatchingUniques is better, since it only tries to find one unique,
         //  while the canBePurchasedWithStat tries (at time of writing) *6* different uniques.
         val missionary = cityInfo.getRuleset().units.values
-            .firstOrNull { it -> it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion"}
+            .firstOrNull { it -> it.getMatchingUniques(UniqueType.CanDoActionTimes).any { it.params[0] == "Spread Religion"}
                     && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
 
 
         val inquisitor = cityInfo.getRuleset().units.values
-            .firstOrNull { it.hasUnique("Prevents spreading of religion to the city it is next to")
+            .firstOrNull { it.hasUnique(UniqueType.PreventsSpreadingReligion)
                     && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
 
 

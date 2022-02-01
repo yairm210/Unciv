@@ -549,7 +549,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+    fun isGreatPerson() = hasUnique(UniqueType.GreatPerson)
 
     fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear weapon of Strength []" }
 

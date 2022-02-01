@@ -37,9 +37,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
             // Possibly remove other buildings
             for (building in cityConstructions.getBuiltBuildings()) {
                 when {
-                    building.hasUnique("Never destroyed when the city is captured") || building.isWonder -> continue
-                    building.hasUnique("Indicates the capital city") -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
-                    building.hasUnique("Destroyed when the city is captured") ->
+                    building.hasUnique(UniqueType.NeverDestroyedByConquest) || building.isWonder -> continue
+                    building.hasUnique(UniqueType.IndicatesCapital) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
+                    building.hasUnique(UniqueType.DestroyedByConquest) ->
                         cityConstructions.removeBuilding(building.name)
                     else -> {
                         if (tileBasedRandom.nextInt(100) < 34) {
@@ -70,7 +70,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             for (building in cityConstructions.getBuiltBuildings()) {
                 // Remove national wonders
-                if (building.isNationalWonder && !building.hasUnique("Never destroyed when the city is captured"))
+                if (building.isNationalWonder && !building.hasUnique(UniqueType.NeverDestroyedByConquest))
                     cityConstructions.removeBuilding(building.name)
 
                 // Check if we exceed MaxNumberBuildable for any buildings

@@ -568,7 +568,7 @@ object UnitActions {
                 .getTilesInDistance(1)
                 .flatMap { it.getUnits() }
                 .any {
-                    it.hasUnique("Prevents spreading of religion to the city it is next to")
+                    it.hasUnique(UniqueType.PreventsSpreadingReligion)
                     && it.religion != unit.religion
                 }
         actionList += UnitAction(UnitActionType.SpreadReligion,

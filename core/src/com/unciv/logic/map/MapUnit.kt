@@ -1131,18 +1131,18 @@ class MapUnit {
     }
 
     fun religiousActionsUnitCanDo(): Sequence<String> {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingUniques(UniqueType.CanDoActionTimes)
             .map { it.params[0] }
     }
 
     fun canDoReligiousAction(action: String): Boolean {
-        return getMatchingUniques("Can [] [] times").any { it.params[0] == action }
+        return getMatchingUniques(UniqueType.CanDoActionTimes).any { it.params[0] == action }
     }
 
     /** For the actual value, check the member variable [maxAbilityUses]
      */
     fun getBaseMaxActionUses(action: String): Int {
-        return getMatchingUniques("Can [] [] times")
+        return getMatchingUniques(UniqueType.CanDoActionTimes)
             .filter { it.params[0] == action }
             .sumOf { it.params[1].toInt() }
     }

@@ -62,6 +62,22 @@ enum class UniqueFlag {
 
 enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
 
+    EraDisablesReligion("Starting in this era disables religion", UniqueTarget.Era),
+    PreventsSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
+
+    CanDoActionTimes("Can [action] [amount] times", UniqueTarget.Unit),
+
+
+    NeverDestroyedByConquest("Never destroyed when the city is captured", UniqueTarget.Building),
+    IndicatesCapital("Indicates the capital city", UniqueTarget.Building),
+    DestroyedByConquest("Destroyed when the city is captured", UniqueTarget.Building),
+
+    GreatGeneralBonus("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
+
+    GreatPerson("Great Person - [greatPersonType]", UniqueTarget.Unit),
+
+    Irremovable("Irremovable", UniqueTarget.Improvement),
+
     //////////////////////////////////////// region GLOBAL UNIQUES ////////////////////////////////////////
 
     // region Stat providing uniques
