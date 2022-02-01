@@ -52,7 +52,7 @@ class MapUnit {
     //  and we need to go over ALL the units, that's a lot of time spent on updating information we should already know!
     // About 10% of total NextTurn performance time, at the time of this change!
     @Transient
-    var viewableTiles = listOf<TileInfo>()
+    var viewableTiles = HashSet<TileInfo>()
 
     // These are for performance improvements to getMovementCostBetweenAdjacentTiles,
     // a major component of getDistanceToTilesWithinTurn,
@@ -397,15 +397,19 @@ class MapUnit {
      * Update this unit's cache of viewable tiles and its civ's as well.
      */
     fun updateVisibleTiles(updateCivViewableTiles:Boolean = true) {
+        val oldViewableTiles = viewableTiles
+
         if (baseUnit.isAirUnit()) {
             viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
-                getTile().getTilesInDistance(6).toList()  // it's that simple
-            else listOf() // bomber units don't do recon
-            civInfo.updateViewableTiles() // for the civ
+                getTile().getTilesInDistance(6).toHashSet()  // it's that simple
+            else HashSet(0) // bomber units don't do recon
             return
+        } else {
+            viewableTiles = getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
         }
-        viewableTiles = getTile().getViewableTilesList(getVisibilityRange())
-        if (updateCivViewableTiles) civInfo.updateViewableTiles() // for the civ
+        // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
+        if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
+            civInfo.updateViewableTiles() // for the civ
     }
 
     fun isActionUntilHealed() = action?.endsWith("until healed") == true
