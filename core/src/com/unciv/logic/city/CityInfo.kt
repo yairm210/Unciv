@@ -824,11 +824,10 @@ class CityInfo {
     // Finds matching uniques provided from both local and non-local sources.
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, this),
-        localUniques: Sequence<Unique> = getLocalMatchingUniques(uniqueType, stateForConditionals),
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, this)
     ): Sequence<Unique> {
         return civInfo.getMatchingUniques(uniqueType, stateForConditionals, this) +
-            localUniques.filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
+                getLocalMatchingUniques(uniqueType, stateForConditionals)
     }
 
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
