@@ -50,6 +50,7 @@ class Era : RulesetObject(), IHasUniques {
         }
     }
 
+    /** Since 3.19.5 we have a warning for mods without bonuses, eventually we should treat such mods as providing no bonus */
     fun undefinedCityStateBonuses(): Boolean {
         return friendBonus.isEmpty() || allyBonus.isEmpty()
     }

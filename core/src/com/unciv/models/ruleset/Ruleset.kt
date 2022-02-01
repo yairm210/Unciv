@@ -628,6 +628,7 @@ class Ruleset {
             allDifficultiesStartingUnits.addAll(difficulty.playerBonusStartingUnits)
         }
 
+        val rulesetHasCityStates = nations.values.any { it.isCityState() }
         for (era in eras.values) {
             for (wonder in era.startingObsoleteWonders)
                 if (wonder !in buildings)
@@ -647,6 +648,13 @@ class Ruleset {
                 lines += "Unexpected negative number found while parsing era ${era.name}"
             if (era.settlerPopulation <= 0)
                 lines += "Population in cities from settlers must be strictly positive! Found value ${era.settlerPopulation} for era ${era.name}"
+
+            if (era.allyBonus.isEmpty() && rulesetHasCityStates)
+                lines.add("No ally bonus defined for era ${era.name}", RulesetErrorSeverity.Warning)
+            if (era.friendBonus.isEmpty() && rulesetHasCityStates)
+                lines.add("No friend bonus defined for era ${era.name}", RulesetErrorSeverity.Warning)
+
+
             checkUniques(era, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
 
