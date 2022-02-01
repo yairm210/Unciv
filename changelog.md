@@ -1,3 +1,15 @@
+## 3.19.4
+
+Caught more mod failure conditions, removed certain assumptions from map creation
+
+Unique replacement warnings show the correct replacement with filled parameters
+
+By xlenstra:
+- Fixed a bug where unit discounts would not work
+- Fixed a crash when opening and closing the options menu in quick succession
+
+Fix art for farms on hills  - By SpacedOutChicken
+
 ## 3.19.3
 
 Huge performance improvements to "next turn" 
