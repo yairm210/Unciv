@@ -282,7 +282,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
                 val modLinks =
                     if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
-                    else mod.checkModLinks()
+                    else mod.checkModLinks(forOptionsPopup = true)
                 for (error in modLinks.sortedByDescending { it.errorSeverityToReport }) {
                     val color = when (error.errorSeverityToReport) {
                         Ruleset.RulesetErrorSeverity.OK -> "#00FF00"

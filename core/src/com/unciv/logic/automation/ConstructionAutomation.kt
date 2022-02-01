@@ -115,8 +115,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
-        if ((!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < max(5, cities * 2))
-                || (isAtWar && civInfo.gold > -50)) {
+        if (!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < max(5, cities * 2)
+                || isAtWar && civInfo.gold > -50
+        ) {
             val militaryUnit = Automation.chooseMilitaryUnit(cityInfo) ?: return
             val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
             // most buildings and civ units contribute the the civ's growth, military units are anti-growth
