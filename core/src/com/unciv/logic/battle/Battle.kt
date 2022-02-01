@@ -98,7 +98,7 @@ object Battle {
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities")) {
+                && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotConquer)) {
             // Barbarians can't capture cities
             if (attacker.unit.civInfo.isBarbarian()) {
                 defender.takeDamage(-1) // Back to 2 HP
@@ -334,7 +334,7 @@ object Battle {
 
             // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
             if (defender.isDefeated()
-                    && attacker.getCivInfo().hasUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
+                    && attacker.getCivInfo().hasUnique(UniqueType.MayRecruitBarbarian)
                     && Random().nextDouble() < 0.67) {
                 attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
                 attacker.getCivInfo().addGold(25)
@@ -343,7 +343,7 @@ object Battle {
         }
 
         // Similarly, Ottoman unique
-        if (attacker.getCivInfo().hasUnique("50% chance of capturing defeated Barbarian naval units and earning 25 Gold")
+        if (attacker.getCivInfo().hasUnique(UniqueType.MayCaptureBarbarianShip)
                 && defender.isDefeated()
                 && defender is MapUnitCombatant
                 && defender.unit.baseUnit.isWaterUnit()
@@ -747,7 +747,7 @@ object Battle {
     }
 
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile:TileInfo, interceptingCiv:CivilizationInfo) {
-        if (attacker.unit.hasUnique("Cannot be intercepted")) return
+        if (attacker.unit.hasUnique(UniqueType.Uninterceptible)) return
         for (interceptor in interceptingCiv.getCivUnits()
             .filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > interceptor.interceptChance() / 100f) continue

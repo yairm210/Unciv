@@ -181,8 +181,8 @@ class TradeEvaluation {
             }
             TradeType.Strategic_Resource -> {
                 if (civInfo.gameInfo.spaceResources.contains(offer.name) &&
-                    (civInfo.hasUnique("Enables construction of Spaceship parts") ||
-                            tradePartner.hasUnique("Enables construction of Spaceship parts"))
+                    (civInfo.hasUnique(UniqueType.EnablesSpaceship) ||
+                            tradePartner.hasUnique(UniqueType.EnablesSpaceship))
                 )
                     return 10000 // We'd rather win the game, thanks
 

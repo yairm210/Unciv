@@ -322,7 +322,7 @@ class TechManager {
             }
         }
 
-        for (unique in civInfo.getMatchingUniques("Receive free [] when you discover []")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.FreeUnitOnTech)) {
             if (unique.params[1] != techName) continue
             civInfo.addUnit(unique.params[0])
         }
@@ -376,7 +376,7 @@ class TechManager {
     }
 
     private fun updateTransientBooleans() {
-        wayfinding = civInfo.hasUnique("Can embark and move over Coasts and Oceans immediately")
+        wayfinding = civInfo.hasUnique(UniqueType.CanAlwaysCrossOcean)
         unitsCanEmbark = wayfinding || civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
 
         embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)

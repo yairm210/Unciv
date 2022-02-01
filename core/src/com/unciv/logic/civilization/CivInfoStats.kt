@@ -27,7 +27,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         }
 
         var unitsToPayFor = civInfo.getCivUnits()
-        if (civInfo.hasUnique("Units in cities cost no Maintenance"))
+        if (civInfo.hasUnique(UniqueType.FreeGarrisons))
             unitsToPayFor = unitsToPayFor.filterNot {
                 it.getTile().isCityCenter() && it.canGarrison()
             }
@@ -79,7 +79,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
         val ignoredTileTypes =
-            civInfo.getMatchingUniques("No Maintenance costs for improvements in [] tiles")
+            civInfo.getMatchingUniques(UniqueType.MaintenanceFreeTiles)
                 .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
 
@@ -153,7 +153,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     }
                 }
 
-                for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
                     cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
 
@@ -285,7 +285,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
         }
 
-        if (civInfo.hasUnique("Provides 1 happiness per 2 additional social policies adopted")) {
+        if (civInfo.hasUnique(UniqueType.HappinessPerTwoPolicies)) {
             if (!statMap.containsKey("Policies")) statMap["Policies"] = 0f
             statMap["Policies"] = statMap["Policies"]!! +
                     civInfo.policies.getAdoptedPolicies()
@@ -293,7 +293,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         }
 
         var happinessPerNaturalWonder = 1f
-        if (civInfo.hasUnique("Double Happiness from Natural Wonders"))
+        if (civInfo.hasUnique(UniqueType.DoubleNaturalWonderHappinesss))
             happinessPerNaturalWonder *= 2
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
@@ -339,7 +339,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         // Just in case
         if (cityStatesHappiness > 0) {
-            for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
                 if (unique.params[1] == Stat.Happiness.name)
                     cityStatesHappiness *= unique.params[0].toPercent()
             }

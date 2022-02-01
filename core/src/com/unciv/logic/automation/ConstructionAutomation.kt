@@ -209,7 +209,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun getWonderPriority(wonder: Building): Float {
-        if (wonder.uniques.contains("Enables construction of Spaceship parts"))
+        if (wonder.hasUnique(UniqueType.EnablesSpaceship))
             return 2f
         if (preferredVictoryType == VictoryType.Cultural
                 && wonder.name in listOf("Sistine Chapel", "Eiffel Tower", "Cristo Redentor", "Neuschwanstein", "Sydney Opera House"))

@@ -181,7 +181,7 @@ class CityInfo {
         val cityName = nationCities[cityNameIndex]
 
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
-        if (cityNameRounds > 0 && civInfo.hasUnique("\"Borrows\" city names from other civilizations in the game")) {
+        if (cityNameRounds > 0 && civInfo.hasUnique(UniqueType.BorrowsCityNames)) {
             name = borrowCityName()
             return
         }
@@ -372,7 +372,7 @@ class CityInfo {
             var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
                 else 1
             if (resource.resourceType == ResourceType.Luxury
-                && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City")
+                && containsBuildingUnique(UniqueType.CopiesNearbyLuxuries)
             )
                 amountToAdd += 1
 
@@ -445,9 +445,9 @@ class CityInfo {
                 if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 
                     continue
 
-                for (ourUnique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (ourUnique in civInfo.getMatchingUniques(UniqueType.GreatPersonFriendship))
                     allGppPercentageBonus += ourUnique.params[0].toInt()
-                for (theirUnique in otherCiv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonFriendship))
                     allGppPercentageBonus += theirUnique.params[0].toInt()
             }
 
@@ -613,7 +613,7 @@ class CityInfo {
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
             val removedPopulation =
-                1 + civInfo.getMatchingUniques("Cities are razed [] times as fast")
+                1 + civInfo.getMatchingUniques(UniqueType.FasterRaze)
                     .sumOf { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) {

@@ -157,7 +157,7 @@ class BarbarianManager {
      */
     private fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
         gameInfo.civilizations.filter {
-            it.hasUnique("Notified of new Barbarian encampments")
+            it.hasUnique(UniqueType.NotifyBarbCamps)
                     && it.exploredTiles.contains(tile.position)
         }
             .forEach {

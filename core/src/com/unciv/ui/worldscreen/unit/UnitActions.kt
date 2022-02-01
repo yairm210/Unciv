@@ -579,7 +579,7 @@ object UnitActions {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())
-                if (unit.hasUnique("Removes other religions when spreading religion"))
+                if (unit.hasUnique(UniqueType.ReligionPurgesOnSpread))
                     city.religion.removeAllPressuresExceptFor(unit.religion!!)
                 unit.currentMovement = 0f
                 useActionWithLimitedUses(unit, Constants.spreadReligionAbilityCount)
@@ -607,7 +607,7 @@ object UnitActions {
         val finalActions = ArrayList<UnitAction>()
         var uniquesToCheck = unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)
         if (unit.religiousActionsUnitCanDo().all { unit.abilityUsesLeft[it] == unit.maxAbilityUses[it] })
-            uniquesToCheck += unit.getMatchingUniques("Can construct [] if it hasn't used other actions yet")
+            uniquesToCheck += unit.getMatchingUniques(UniqueType.CanConstructWhenFresh)
         val civResources = unit.civInfo.getCivResourcesByName()
 
         for (unique in uniquesToCheck) {
@@ -699,10 +699,10 @@ object UnitActions {
         val civInfo = unit.civInfo
 
         val gainedStats = Stats()
-        for (unique in civInfo.getMatchingUniques("Provides a sum of gold each time you spend a Great Person")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.GreatPersonGold)) {
             gainedStats.gold += (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
         }
-        for (unique in civInfo.getMatchingUniques("[] whenever a Great Person is expended")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.GreatPersonStats)) {
             gainedStats.add(unique.stats)
         }
 
@@ -780,7 +780,7 @@ object UnitActions {
         // City States only take military units (and units specifically allowed by uniques)
         if (recipient.isCityState()) {
             if (!unit.matchesFilter("Military")
-                && unit.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")
+                && unit.getMatchingUniques(UniqueType.CityStateGiftInfluence)
                     .none { unit.matchesFilter(it.params[1]) }
             ) return null
         }
@@ -792,7 +792,7 @@ object UnitActions {
 
         val giftAction = {
             if (recipient.isCityState()) {
-                for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
+                for (unique in unit.civInfo.getMatchingUniques(UniqueType.CityStateGiftInfluence)) {
                     if (unit.matchesFilter(unique.params[1])) {
                         recipient.getDiplomacyManager(unit.civInfo)
                             .addInfluence(unique.params[0].toFloat() - 5f)

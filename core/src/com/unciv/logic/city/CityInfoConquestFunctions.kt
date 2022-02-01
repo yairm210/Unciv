@@ -25,8 +25,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
     private fun getGoldForCapturingCity(conqueringCiv: CivilizationInfo): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civInfo.gameInfo.turns - city.turnAcquired)) / 50f
-        val cityModifier = if (city.containsBuildingUnique("Doubles Gold given to enemy if city is captured")) 2f else 1f
-        val conqueringCivModifier = if (conqueringCiv.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities")) 3f else 1f
+        val cityModifier = if (city.containsBuildingUnique(UniqueType.DoubleEnemyConquestGold)) 2f else 1f
+        val conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleSettlementPillageGold)) 3f else 1f
 
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()

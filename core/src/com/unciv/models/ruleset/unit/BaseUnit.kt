@@ -453,7 +453,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         // If this unit has special abilities that need to be kept track of, start doing so here
         if (unit.hasUnique(UniqueType.ReligiousUnit) && civInfo.gameInfo.isReligionEnabled()) {
             unit.religion =  
-                if (unit.hasUnique("Takes your religion over the one in their birth city"))
+                if (unit.hasUnique(UniqueType.ReligionLoyalUnit))
                     civInfo.religionManager.religion?.name
                 else cityConstructions.cityInfo.religion.getMajorityReligionName()
             

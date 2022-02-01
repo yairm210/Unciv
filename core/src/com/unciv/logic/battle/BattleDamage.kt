@@ -73,7 +73,7 @@ object BattleDamage {
             //
 
             for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
-                .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
+                .flatMap { it.getMatchingUniques(UniqueType.AdjacentEnemyStrength) })
                 if (combatant.matchesCategory(unique.params[1]) && combatant.getTile()
                         .matchesFilter(unique.params[2])
                 )
@@ -89,12 +89,12 @@ object BattleDamage {
                 .flatMap { it.getUnits() }.filter { it.civInfo == combatant.unit.civInfo }
             if (nearbyCivUnits.any { it.hasUnique(UniqueType.GreatGeneralBonus) }) {
                 val greatGeneralModifier =
-                    if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 30 else 15
+                    if (combatant.unit.civInfo.hasUnique(UniqueType.DoubleGreatGeneralBonus)) 30 else 15
 
                 modifiers["Great General"] = greatGeneralModifier
             }
 
-            for (unique in combatant.unit.getMatchingUniques("[]% Strength when stacked with []")) {
+            for (unique in combatant.unit.getMatchingUniques(UniqueType.StackedUnitStrength)) {
                 var stackedUnitsBonus = 0
                 if (combatant.unit.getTile().getUnits().any { it.matchesFilter(unique.params[1]) })
                     stackedUnitsBonus += unique.params[0].toInt()
@@ -104,7 +104,7 @@ object BattleDamage {
             }
 
             if (enemy.getCivInfo().isCityState()
-                && civInfo.hasUnique("+30% Strength when fighting City-State units and cities")
+                && civInfo.hasUnique(UniqueType.BonusAgainstCityStates)
             )
                 modifiers["vs [City-States]"] = 30
         } else if (combatant is CityCombatant) {
@@ -131,7 +131,7 @@ object BattleDamage {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
 
-            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Eliminates combat penalty for attacking from the sea"))
+            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique(UniqueType.NoLandingPenalty))
                 modifiers["Landing"] = -50
 
 
@@ -151,7 +151,7 @@ object BattleDamage {
                 if (attacker.getTile()
                         .aerialDistanceTo(defender.getTile()) == 1 && attacker.getTile()
                         .isConnectedByRiver(defender.getTile())
-                    && !attacker.unit.hasUnique("Eliminates combat penalty for attacking over a river")
+                    && !attacker.unit.hasUnique(UniqueType.NoRiverPenalty)
                 ) {
                     if (!attacker.getTile()
                             .hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
@@ -226,7 +226,7 @@ object BattleDamage {
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
-        for (unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
+        for (unique in unit.getCivInfo().getMatchingUniques(UniqueType.StrengthNearTile)) {
             if (tile.getTilesInDistance(unique.params[1].toInt())
                     .any { it.matchesFilter(unique.params[2]) }
             )
@@ -244,7 +244,7 @@ object BattleDamage {
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if (combatant !is MapUnitCombatant // is city
-            || (combatant.getCivInfo().hasUnique("Units fight as though they were at full strength even when damaged")
+            || (combatant.getCivInfo().hasUnique(UniqueType.NoWoundedPenalty)
                 && !combatant.unit.baseUnit.movesLikeAirUnits()
             )
         ) {

@@ -414,7 +414,7 @@ object NextTurnAutomation {
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: CivilizationInfo) {
         // Can't build spaceships
-        if (!civInfo.hasUnique("Enables construction of Spaceship parts"))
+        if (!civInfo.hasUnique(UniqueType.EnablesSpaceship))
             return
 
         for (resource in civInfo.gameInfo.spaceResources) {

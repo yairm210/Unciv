@@ -121,7 +121,7 @@ class ReligionManager {
         if (getGreatProphetEquivalent() == null) return false
         if (storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv()) return false
-        if (civInfo.hasUnique("May not generate great prophet equivalents naturally")) return false
+        if (civInfo.hasUnique(UniqueType.NoGreatProphets)) return false
         return true
     }
     
@@ -255,7 +255,7 @@ class ReligionManager {
         shouldChoosePantheonBelief = false
 
         for (unit in civInfo.getCivUnits()) 
-            if (unit.hasUnique(UniqueType.ReligiousUnit) && unit.hasUnique("Takes your religion over the one in their birth city"))
+            if (unit.hasUnique(UniqueType.ReligiousUnit) && unit.hasUnique(UniqueType.ReligionLoyalUnit))
                 unit.religion = newReligion.name
     }
 

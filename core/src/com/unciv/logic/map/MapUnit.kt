@@ -809,7 +809,7 @@ class MapUnit {
                 if (unit == this)
                     continue
 
-                if (unit.getMatchingUniques("Transfer Movement to []").any { matchesFilter(it.params[0]) } )
+                if (unit.getMatchingUniques(UniqueType.TranferMovement).any { matchesFilter(it.params[0]) } )
                     currentMovement = maxOf(getMaxMovement().toFloat(), unit.getMaxMovement().toFloat())
             }
         }
@@ -910,7 +910,7 @@ class MapUnit {
 
         var goldGained =
             civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        if (civInfo.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities"))
+        if (civInfo.hasUnique(UniqueType.TripleSettlementPillageGold))
             goldGained *= 3f
 
         civInfo.addGold(goldGained.toInt())
@@ -982,13 +982,13 @@ class MapUnit {
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
         val maxAttacksPerTurn = 1 +
-            getMatchingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
+            getMatchingUniques(UniqueType.ExtraInterception).sumOf { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
         return true
     }
 
     fun interceptChance(): Int {
-        return getMatchingUniques("[]% chance to intercept air attacks").sumOf { it.params[0].toInt() }
+        return getMatchingUniques(UniqueType.InterceptChance).sumOf { it.params[0].toInt() }
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
@@ -1013,13 +1013,13 @@ class MapUnit {
     }
 
     fun interceptDamagePercentBonus(): Int {
-        return getMatchingUniques("[]% Damage when intercepting")
+        return getMatchingUniques(UniqueType.InterceptDamage)
             .sumOf { it.params[0].toInt() }
     }
 
     fun receivedInterceptDamageFactor(): Float {
         var damageFactor = 1f
-        for (unique in getMatchingUniques("Damage taken from interception reduced by []%"))
+        for (unique in getMatchingUniques(UniqueType.InterceptResistance))
             damageFactor *= 1f - unique.params[0].toFloat() / 100f
         return damageFactor
     }

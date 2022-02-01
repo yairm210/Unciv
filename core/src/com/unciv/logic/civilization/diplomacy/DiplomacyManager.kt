@@ -273,7 +273,7 @@ class DiplomacyManager() {
             modifierPercent -= 25f  // 25% slower degrade when sharing a religion
 
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
-            for (unique in civ.getMatchingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
+            for (unique in civ.getMatchingUniques(UniqueType.ForeignCityStateDegradation)) {
                 modifierPercent += unique.params[0].toFloat()
             }
         }
@@ -289,7 +289,7 @@ class DiplomacyManager() {
 
         var modifierPercent = 0f
 
-        if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate"))
+        if (otherCiv().hasUnique(UniqueType.DoubleCityStateForgiveness))
             modifierPercent += 100f
 
         val religion = if (civInfo.cities.isEmpty()) null
@@ -355,7 +355,7 @@ class DiplomacyManager() {
      */
     fun isConsideredFriendlyTerritory(): Boolean {
         if (civInfo.isCityState() &&
-            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique("City-State territory always counts as friendly territory")))
+            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique(UniqueType.FriendlyCityStates)))
             return true
         return hasOpenBorders
     }

@@ -89,7 +89,7 @@ class CityStats(val cityInfo: CityInfo) {
             stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromTradeRoute))
                 stats.add(unique.stats)
-            if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Picchu speciality
+            if (civInfo.hasUnique(UniqueType.StrongerTradeRoutes)) stats.gold *= 1.25f // Machu Picchu speciality
         }
         return stats
     }
@@ -106,7 +106,7 @@ class CityStats(val cityInfo: CityInfo) {
 
     fun getScienceConversionRate(): Float {
         var conversionRate = 1 / 4f
-        if (cityInfo.civInfo.hasUnique("Production to science conversion in cities increased by 33%"))
+        if (cityInfo.civInfo.hasUnique(UniqueType.StrongerScienceFocus))
             conversionRate *= 1.33f
         return conversionRate
     }
@@ -403,7 +403,7 @@ class CityStats(val cityInfo: CityInfo) {
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f // -3 happiness per city
-        if (civInfo.hasUnique("Unhappiness from number of Cities doubled"))
+        if (civInfo.hasUnique(UniqueType.DoubleCityUnhappiness))
             unhappinessFromCity *= 2f //doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
@@ -412,7 +412,7 @@ class CityStats(val cityInfo: CityInfo) {
         var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
 
         // Deprecated since 3.16.11
-            for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
+            for (unique in civInfo.getMatchingUniques(UniqueType.HappierSpecialists))
                 unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
         //
 

@@ -360,7 +360,7 @@ class CivilizationInfo {
 
     fun getResourceModifier(resource: TileResource): Int {
         var resourceModifier = 1f
-        for (unique in getMatchingUniques("Double quantity of [] produced"))
+        for (unique in getMatchingUniques(UniqueType.DoubleResource))
             if (unique.params[0] == resource.name)
                 resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
@@ -1118,7 +1118,7 @@ class CivilizationInfo {
         if (placedUnit.hasUnique(UniqueType.ReligiousUnit) && gameInfo.isReligionEnabled()) {
             placedUnit.religion = 
                 when {
-                    placedUnit.hasUnique("Takes your religion over the one in their birth city")
+                    placedUnit.hasUnique(UniqueType.ReligionLoyalUnit)
                     && religionManager.religion?.isMajorReligion() == true ->
                         religionManager.religion!!.name
                     city != null -> city.cityConstructions.cityInfo.religion.getMajorityReligionName()
@@ -1127,7 +1127,7 @@ class CivilizationInfo {
             placedUnit.setupAbilityUses(cityToAddTo)
         }
 
-        for (unique in getMatchingUniques("Land units may cross [] tiles after the first [] is earned")) {
+        for (unique in getMatchingUniques(UniqueType.LandUnitsMayCrossAfter)) {
             if (unit.matchesFilter(unique.params[1])) {
                 passThroughImpassableUnlocked = true    // Update the cached Boolean
                 passableImpassables.add(unique.params[0])   // Add to list of passable impassables

@@ -72,6 +72,43 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     EraDisablesReligion("Starting in this era disables religion", UniqueTarget.Era),
     PreventsSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
 
+    StrengthNearTile("+[amount]% Strength if within [amount] tiles of a [tileFilter]", UniqueTarget.Global), // "+" should be in param.
+    FasterRaze("Cities are razed [amount] times as fast", UniqueTarget.Global),
+    GreatPersonFriendship("When declaring friendship, both parties gain a [amount]% boost to great person generation", UniqueTarget.Global),
+    LandUnitsMayCrossAfter("Land units may cross [terrainFilter] tiles after the first [baseUnitFilter] is earned", UniqueTarget.Global), // Doesn't actually use terrainFilter, only last terrain.
+    DoubleResource("Double quantity of [resource] produced", UniqueTarget.Global),
+    MaintenanceFreeTiles("No Maintenance costs for improvements in [tileFilter] tiles", UniqueTarget.Global),
+    FreeUnitOnTech("Receive free [baseUnitFilter] when you discover [tech]", UniqueTarget.Global), // Should be only specific unit, not baseUnitFilter.
+    ForeignCityStateDegradation("Influence of all other civilizations with all city-states degrades [amount]% faster", UniqueTarget.Global),
+    GreatPersonGold("Provides a sum of gold each time you spend a Great Person", UniqueTarget.Global),
+    GreatPersonStats("[stats] whenever a Great Person is expended", UniqueTarget.Global),
+    CityStateGiftInfluence("Gain [amount] Influence with a [baseUnitFilter] gift to a City-State", UniqueTarget.Global),
+    NotifyBarbCamps("Notified of new Barbarian encampments", UniqueTarget.Global),
+    EnablesNukes("Enables nuclear weapon", UniqueTarget.Global), // Should pluralize
+    EnablesSpaceship("Enables construction of Spaceship parts", UniqueTarget.Global),
+    MayRecruitBarbarian("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment", UniqueTarget.Global),
+    MayCaptureBarbarianShip("50% chance of capturing defeated Barbarian naval units and earning 25 Gold", UniqueTarget.Global),
+    DoubleGreatGeneralBonus("Great General provides double combat bonus", UniqueTarget.Global),
+    BonusAgainstCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
+    NoWoundedPenalty("Units fight as though they were at full strength even when damaged", UniqueTarget.Global),
+    BorrowsCityNames("\"Borrows\" city names from other civilizations in the game", UniqueTarget.Global),
+    TripleSettlementPillageGold("Receive triple Gold from Barbarian encampments and pillaging Cities", UniqueTarget.Global),
+    HappinessPerTwoPolicies("Provides 1 happiness per 2 additional social policies adopted", UniqueTarget.Global),
+    DoubleNaturalWonderHappinesss("Double Happiness from Natural Wonders", UniqueTarget.Global),
+    FreeGarrisons("Units in cities cost no Maintenance", UniqueTarget.Global),
+    NaturalWonderDiscoveryBonus("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)", UniqueTarget.Global),
+    SlowerEnemiesInTerritory("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)", UniqueTarget.Global),
+    NoGreatProphets("May not generate great prophet equivalents naturally", UniqueTarget.Global),
+    CanAlwaysCrossOcean("Can embark and move over Coasts and Oceans immediately", UniqueTarget.Global),
+    DoubleCityStateForgiveness("City-State Influence recovers at twice the normal rate", UniqueTarget.Global),
+    FriendlyCityStates("City-State territory always counts as friendly territory", UniqueTarget.Global),
+    DoubleNaturalWonderYields("Tile yields from Natural Wonders doubled", UniqueTarget.Global),
+    TechBoostOnCapitalScience("Receive a tech boost when scientific buildings/wonders are built in capital", UniqueTarget.Global),
+    StrongerScienceFocus("Production to science conversion in cities increased by 33%", UniqueTarget.Global),
+    StrongerTradeRoutes("Gold from all trade routes +25%", UniqueTarget.Global),
+    DoubleCityUnhappiness("Unhappiness from number of Cities doubled", UniqueTarget.Global),
+
+
     CanDoActionTimes("Can [action] [amount] times", UniqueTarget.Unit),
     GreatGeneralBonus("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
 
@@ -85,6 +122,21 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CanHurryWonder("Can speed up the construction of a wonder", UniqueTarget.Unit),
     CanHurryBuilding("Can speed up construction of a building", UniqueTarget.Unit),
     CanDoTradeMission("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
+    AdjacentEnemyStrength("[amount]% Strength for enemy [baseUnitFilter] units in adjacent [tileFilter] tiles", UniqueTarget.Unit),
+    StackedUnitStrength("[amount]% Strength when stacked with [baseUnitFilter]", UniqueTarget.Unit),
+    ExtraInterception("[amount] extra interceptions may be made per turn", UniqueTarget.Unit),
+    InterceptChance("[amount]% chance to intercept air attacks", UniqueTarget.Unit),
+    InterceptDamage("[amount]% Damage when intercepting", UniqueTarget.Unit),
+    InterceptResistance("Damage taken from interception reduced by [amount]%", UniqueTarget.Unit),
+    TranferMovement("Transfer Movement to [baseUnitFilter]", UniqueTarget.Unit),
+    CanConstructWhenFresh("Can construct [improvementName] if it hasn't used other actions yet", UniqueTarget.Unit),
+    IndirectRangedAttack("Ranged attacks may be performed over obstacles", UniqueTarget.Unit),
+    CannotConquer("Unable to capture cities", UniqueTarget.Unit),
+    Uninterceptible("Cannot be intercepted", UniqueTarget.Unit),
+    NoLandingPenalty("Eliminates combat penalty for attacking from the sea", UniqueTarget.Unit),
+    NoRiverPenalty("Eliminates combat penalty for attacking over a river", UniqueTarget.Unit),
+    ReligionLoyalUnit("Takes your religion over the one in their birth city", UniqueTarget.Unit),
+    ReligionPurgesOnSpread("Removes other religions when spreading religion", UniqueTarget.Unit),
 
 
     ObsoleteWith("Obsolete with [tech]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
@@ -96,11 +148,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     DestroyedByConquest("Destroyed when the city is captured", UniqueTarget.Building),
     CanOnlyBeBuiltOn("Can only be built on [terrainFilter] tiles", UniqueTarget.Improvement),
     CreateImprovementOnTile("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building),
-    EnablesNukes("Enables nuclear weapon", UniqueTarget.Building), // Should pluralize
     RequiresTileInDistance("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
     CanOnlyBeBuilt("Can only be built [cityFilter]", UniqueTarget.Building),
-    @Deprecated("As of 3.16.11 - warning since 3.19.5", ReplaceWith("Can only be built [in annexed cities]"), DeprecationLevel.WARNING) // This was never typified, so presumably continued to work without warnings.
+    @Deprecated("As of 3.16.11 - warning since 3.19.5", ReplaceWith("Can only be built [in annexed cities]"), DeprecationLevel.WARNING) // This was never typified, so presumably continued to work without warnings until 3.19.5.
     RequiresAnnexedCity("Can only be built in annexed cities", UniqueTarget.Building),
+    DoubleEnemyConquestGold("Doubles Gold given to enemy if city is captured", UniqueTarget.Building),
+    CopiesNearbyLuxuries("Provides 1 extra copy of each improved luxury resource near this City", UniqueTarget.Building),
 
 
 
@@ -227,6 +280,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     UnhappinessFromPopulationPercentageChange("[amount]% unhappiness from population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     UnhappinessFromSpecialistsPercentageChange("[amount]% unhappiness from specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.16.11 - warning since 3.19.5", ReplaceWith("[signedAmount]% unhappiness from specialists [cityFilter]"), DeprecationLevel.WARNING) // This was never typified, so presumably continued to work without warnings.
+    HappierSpecialists("Specialists only produce [amount]% of normal unhappiness", UniqueTarget.Global),
     FoodConsumptionBySpecialists("[amount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     ExcessHappinessToGlobalStat("[amount]% of excess happiness converted to [stat]", UniqueTarget.Global),

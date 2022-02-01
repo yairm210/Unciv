@@ -238,7 +238,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         val bonusStrings = ArrayList<String>()
         for (bonus in bonuses) {
             var improved = false
-            for (unique in viewingCiv.getMatchingUniques("[]% [] from City-States")) {
+            for (unique in viewingCiv.getMatchingUniques(UniqueType.BonusStatsFromCityStates)) {
                 val boostAmount = unique.params[0].toPercent()
                 val boostedStat = Stat.valueOf(unique.params[1])
                 when (bonus.type) {
