@@ -862,12 +862,5 @@ class CityInfo {
         // Note that we don't query religion here, as those only have local effects
     }
 
-    // Get all uniques that don't apply to only this city
-    fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getAllUniques()
-            .filter { !it.isLocalEffect }
-        // Note that we don't query religion here, as those only have local effects
-    }
-    
     //endregion
 }

@@ -181,8 +181,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         @Suppress("RemoveRedundantQualifierName")  // make it clearer Building inherits Stats
         for (unique in getMatchingUniques(UniqueType.StatsWithResource))
-            if (civInfo.hasResource(unique.params[1])
-                    && Stats.isStats(unique.params[0]))
+            if (civInfo.hasResource(unique.params[1]))
                 stats.add(unique.stats)
 
         if (!isWonder)
