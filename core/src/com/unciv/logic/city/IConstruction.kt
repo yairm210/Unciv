@@ -1,7 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.ruleset.IHasUniques
+import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed

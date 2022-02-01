@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -20,7 +21,6 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -86,6 +86,7 @@ class Ruleset {
     val units = LinkedHashMap<String, BaseUnit>()
     val unitPromotions = LinkedHashMap<String, Promotion>()
     val unitTypes = LinkedHashMap<String, UnitType>()
+    var victories = LinkedHashMap<String, Victory>()
 
     val mods = LinkedHashSet<String>()
     var modOptions = ModOptions()
@@ -263,6 +264,11 @@ class Ruleset {
             globalUniques = jsonParser.getFromJson(GlobalUniques::class.java, globalUniquesFile)
         }
         
+        val victoryTypesFiles = folderHandle.child("VictoryData.json")
+        if (victoryTypesFiles.exists()) {
+            victories += createHashmap(jsonParser.getFromJson(Array<Victory>::class.java, victoryTypesFiles))
+        }        
+        
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
     }
@@ -307,10 +313,10 @@ class Ruleset {
      * Roughly corresponds to the fraction of the Unique placeholder text that can be different/misspelled, but with some extra room for [getRelativeTextDistance] idiosyncrasies. */
     private val uniqueMisspellingThreshold = 0.15 // Tweak as needed. Simple misspellings seem to be around 0.025, so would mostly be caught by 0.05. IMO 0.1 would be good, but raising to 0.15 also seemed to catch what may be an outdated Unique.
 
-    fun checkUniques(uniqueContainer:IHasUniques, lines:RulesetErrorList,
+    fun checkUniques(uniqueContainer: IHasUniques, lines:RulesetErrorList,
                      severityToReport: UniqueType.UniqueComplianceErrorSeverity) {
         val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
-
+        
         for (unique in uniqueContainer.uniqueObjects) {
             if (unique.type == null) {
                 val similarUniques = UniqueType.values().filter { getRelativeTextDistance(it.placeholderText, unique.placeholderText) <= uniqueMisspellingThreshold }
@@ -736,7 +742,6 @@ object RulesetCache : HashMap<String,Ruleset>() {
             if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
             else getVanillaRuleset()
         
-        
         val loadedMods = mods
             .filter { containsKey(it) }
             .map { this[it]!! }
@@ -764,7 +769,12 @@ object RulesetCache : HashMap<String,Ruleset>() {
         if (newRuleset.globalUniques.uniques.isEmpty()) {
             newRuleset.globalUniques = getVanillaRuleset().globalUniques
         }
+        if (newRuleset.victories.isEmpty()) {
+            newRuleset.victories.putAll(getVanillaRuleset().victories)
+        }
 
+        println(newRuleset.victories)
+        
         return newRuleset
     }
 

@@ -1,10 +1,7 @@
 package com.unciv.models.ruleset.unit
 
-import com.unciv.models.ruleset.IHasUniques
 import com.unciv.models.ruleset.RulesetObject
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
-import com.unciv.models.stats.INamed
 
 
 enum class UnitLayer { // The layer in which the unit moves
