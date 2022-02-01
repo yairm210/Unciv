@@ -98,6 +98,9 @@ class CivilizationInfo {
     var detailedCivResources = ResourceSupplyList()
 
     @Transient
+    var summarizedCivResources = ResourceSupplyList()
+
+    @Transient
     val cityStateFunctions = CityStateFunctions(this)
 
     @Transient
@@ -324,13 +327,7 @@ class CivilizationInfo {
     fun getHappiness() = happinessForNextTurn
 
 
-    fun getCivResources(): ResourceSupplyList {
-        val newResourceSupplyList = ResourceSupplyList()
-        for (resourceSupply in detailedCivResources) {
-            newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "All")
-        }
-        return newResourceSupplyList
-    }
+    fun getCivResources(): ResourceSupplyList = summarizedCivResources
 
     // Preserves some origins for resources so we can separate them for trades
     fun getCivResourcesWithOriginsForTrade(): ResourceSupplyList {
@@ -799,7 +796,7 @@ class CivilizationInfo {
     fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
     fun updateViewableTiles() = transients().updateViewableTiles()
-    fun updateDetailedCivResources() = transients().updateDetailedCivResources()
+    fun updateDetailedCivResources() = transients().updateCivResources()
 
     fun startTurn() {
         civConstructions.startTurn()
