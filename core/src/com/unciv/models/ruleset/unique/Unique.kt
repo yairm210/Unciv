@@ -165,6 +165,9 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     fun getUniques(uniqueType: UniqueType) = getUniques(uniqueType.placeholderText)
 
+    fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
+        .filter { it.conditionalsApply(state) }
+
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
 

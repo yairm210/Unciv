@@ -373,27 +373,28 @@ class CivilizationInfo {
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? =
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals =
         StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
         
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
-        yieldAll(nation.getMatchingUniques(uniqueType,stateForConditionals))
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
+        yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
-            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType) }
+            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType, stateForConditionals) }
         )
-        yieldAll(policies.policyUniques.getUniques(uniqueType))
-        yieldAll(tech.techUniques.getUniques(uniqueType))
+        yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
+        yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(temporaryUniques.asSequence()
             .map { it.uniqueObject }
-            .filter { it.isOfType(uniqueType) }
+            .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
         )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
+            yieldAll(religionManager.religion!!.getFounderUniques()
+                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })
         
         yieldAll(getCivResources().asSequence()
             .filter { it.amount > 0 }
@@ -401,9 +402,6 @@ class CivilizationInfo {
         )
         
         yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        
-    }.filter {
-        it.conditionalsApply(stateForConditionals)
     }
     
     fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null) = sequence {
