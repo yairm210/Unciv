@@ -67,7 +67,7 @@ class UnitPromotions {
         val promotion = ruleset.unitPromotions[promotionName]!!
         doDirectPromotionEffects(promotion)
 
-        if (promotion.uniqueObjects.none { it.placeholderText == "Doing so will consume this opportunity to choose a Promotion" })
+        if (!promotion.hasUnique(UniqueType.PromotionFake))
             promotions.add(promotionName)
 
         unit.updateUniques(ruleset)

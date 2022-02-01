@@ -109,7 +109,7 @@ class ReligionManager {
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) * 
             civInfo.gameInfo.gameParameters.gameSpeed.modifier
 
-        for (unique in civInfo.getMatchingUniques("[]% Faith cost of generating Great Prophet equivalents"))
+        for (unique in civInfo.getMatchingUniques(UniqueType.ReligionCheaperProphets))
             faithCost *= unique.params[0].toPercent()
 
         return faithCost.toInt()

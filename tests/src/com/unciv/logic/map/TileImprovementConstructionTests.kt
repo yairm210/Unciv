@@ -6,6 +6,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.testing.GdxTestRunner
 import org.junit.Assert
 import org.junit.Before
@@ -79,7 +80,7 @@ class TileImprovementConstructionTests {
         map.tileMatrix.add(arrayListOf(tile, otherTile))
 
         for (improvement in ruleSet.tileImprovements.values) {
-            if (!improvement.uniques.contains("Can only be built on [Coastal] tiles")) continue
+            if (!improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOn).any { it.params[0] == "Coastal" } ) continue
             civInfo.civName = improvement.uniqueTo ?: "OtherCiv"
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertTrue(improvement.name, canBeBuilt)
@@ -92,7 +93,7 @@ class TileImprovementConstructionTests {
         tile.setTransients()
 
         for (improvement in ruleSet.tileImprovements.values) {
-            if (!improvement.uniques.contains("Can only be built on [Coastal] tiles")) continue
+            if (!improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOn).any { it.params[0] == "Coastal" } ) continue
             civInfo.civName = improvement.uniqueTo ?: "OtherCiv"
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertFalse(improvement.name, canBeBuilt)

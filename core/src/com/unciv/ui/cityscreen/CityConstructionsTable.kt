@@ -12,6 +12,7 @@ import com.unciv.Constants
 import com.unciv.logic.city.*
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
@@ -401,7 +402,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         // Some evil person decided to double tap real fast - #4977
         if (cannotAddConstructionToQueue(construction, cityScreen.city, cityScreen.city.cityConstructions))
             return
-        if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Creates a [] improvement on a specific tile" }) {
+        if (construction is Building && construction.hasUnique(UniqueType.CreateImprovementOnTile)) {
             cityScreen.selectedTile
             improvementBuildingToConstruct = construction
             return

@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.ruleset.ModOptionsConstants
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
 
@@ -56,7 +56,7 @@ class StatsOverviewTable (
         goldTable.add("Total".toLabel())
         goldTable.add(total.roundToInt().toString()).right()
 
-        if (viewingPlayer.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience)) {
+        if (viewingPlayer.gameInfo.ruleSet.modOptions.hasUnique(UniqueType.ConvertGoldToScience)) {
             goldTable.addSeparator()
             val sliderTable = Table()
             sliderTable.add("Convert gold to science".toLabel()).row()

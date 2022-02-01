@@ -388,7 +388,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
         for (unique in uniqueObjects) {
-            if (unique.placeholderText != "Unlocked with []" && unique.placeholderText != "Requires []") continue
+            if (!unique.isOfType(UniqueType.UnlockedWith) && !unique.isOfType(UniqueType.Requires)) continue
             val filter = unique.params[0]
             when {
                 ruleSet.technologies.contains(filter) -> 
@@ -551,7 +551,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     fun isGreatPerson() = hasUnique(UniqueType.GreatPerson)
 
-    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear weapon of Strength []" }
+    fun isNuclearWeapon() = hasUnique(UniqueType.IsNuke)
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
@@ -620,7 +620,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (hasUnique(UniqueType.SelfDestructs))
             power /= 2
-        if (uniqueObjects.any { it.placeholderText =="Nuclear weapon of Strength []" } )
+        if (isNuclearWeapon())
             power += 4000
 
         // Uniques
@@ -647,11 +647,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 unique.isOfType(UniqueType.StrengthNearCapital) && unique.params[0].toInt() > 0 ->
                     power *= (unique.params[0].toInt() / 4f).toPercent()  // Bonus decreasing with distance from capital - not worth much most of the map???
 
-                unique.placeholderText == "May Paradrop up to [] tiles from inside friendly territory" // Paradrop - 25% bonus
+                unique.isOfType(UniqueType.MayParadrop) // Paradrop - 25% bonus
                     -> power += power / 4
                 unique.isOfType(UniqueType.MustSetUp) // Must set up - 20 % penalty
                     -> power -= power / 5
-                unique.placeholderText == "[] additional attacks per turn" // Extra attacks - 20% bonus per extra attack
+                unique.isOfType(UniqueType.AdditionalAttacksPerTurn) // Extra attacks - 20% bonus per extra attack
                     -> power += (power * unique.params[0].toInt()) / 5
             }
         }

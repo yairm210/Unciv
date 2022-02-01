@@ -107,7 +107,7 @@ class Technology: RulesetObject() {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
     fun getObsoletedBuildings(civInfo: CivilizationInfo) = getFilteredBuildings(civInfo)
-        { it.uniqueObjects.any { unique -> unique.placeholderText == "Obsolete with []" && unique.params[0] == name } }
+        { it.uniqueObjects.any { unique -> unique.isOfType(UniqueType.ObsoleteWith) && unique.params[0] == name } }
 
     // Helper: common filtering for both getEnabledBuildings and getObsoletedBuildings, difference via predicate parameter
     private fun getFilteredBuildings(civInfo: CivilizationInfo, predicate: (Building)->Boolean): Sequence<Building> {
@@ -118,7 +118,7 @@ class Technology: RulesetObject() {
             .filter {
                 predicate(it)   // expected to be the most selective, thus tested first
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentBuilding(it) == it)
-                && (nuclearWeaponsEnabled || "Enables nuclear weapon" !in it.uniques)
+                && (nuclearWeaponsEnabled || !it.hasUnique(UniqueType.EnablesNukes))
                 && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
                 && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
             }
@@ -137,7 +137,7 @@ class Technology: RulesetObject() {
             .filter {
                 it.requiredTech == name
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentUnit(it) == it)
-                && (nuclearWeaponsEnabled || it.uniqueObjects.none { unique -> unique.placeholderText == "Nuclear weapon of Strength []" })
+                && (nuclearWeaponsEnabled || it.isNuclearWeapon())
                 && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
                 && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
             }
@@ -210,7 +210,7 @@ class Technology: RulesetObject() {
                     if (requiredTech != name) continue
                     lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}]",
                         link = improvement.makeLink())
-                } else if (unique.placeholderText == "[] on [] tiles") {
+                } else if (unique.isOfType(UniqueType.ImprovementStatsOnTile)) {
                     val requiredTech = unique.conditionals.firstOrNull { it.isOfType(UniqueType.ConditionalTech) }?.params?.get(0)
                     if (requiredTech != name) continue
                     lineList += FormattedLine("[${unique.params[0]}] from every [${improvement.name}] on [${unique.params[1]}] tiles",

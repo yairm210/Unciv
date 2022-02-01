@@ -442,7 +442,7 @@ class WorkerAutomation(
             if (closeTile.isCityCenter()) return false
             // don't build forts too close to other forts
             if (closeTile.improvement != null
-                && closeTile.getTileImprovement()!!.uniqueObjects.any { it.placeholderText == "Gives a defensive bonus of []%" }
+                && closeTile.getTileImprovement()!!.uniqueObjects.any { it.isOfType(UniqueType.DefensiveBonus) }
                 || closeTile.improvementInProgress != Constants.fort) return false
             // there is another better tile for the fort
             if (!tile.isHill() && closeTile.isHill() &&

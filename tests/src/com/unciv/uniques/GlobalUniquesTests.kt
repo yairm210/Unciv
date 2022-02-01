@@ -89,7 +89,7 @@ class GlobalUniquesTests {
         
         if (replacePalace && civInfo.cities.size == 1) {
             // Add a capital indicator without any other stats
-            val palaceWithoutStats = createBuildingWithUnique(UniqueType.IndicatesCapital)
+            val palaceWithoutStats = createBuildingWithUnique(UniqueType.IndicatesCapital.text)
             cityInfo.cityConstructions.removeBuilding("Palace")
             cityInfo.cityConstructions.addBuilding(palaceWithoutStats.name)
         }

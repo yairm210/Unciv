@@ -43,10 +43,10 @@ object ChooseBeliefsAutomation {
     private fun beliefBonusForTile(belief: Belief, tile: TileInfo, city: CityInfo): Float {
         var bonusYield = 0f
         for (unique in belief.uniqueObjects) {
-            when (unique.placeholderText) {
-                UniqueType.StatsFromObject.placeholderText -> if (tile.matchesFilter(unique.params[1]))
+            when (unique.type) {
+                UniqueType.StatsFromObject -> if (tile.matchesFilter(unique.params[1]))
                     bonusYield += unique.stats.values.sum()
-                "[] from [] tiles without [] []" -> 
+                UniqueType.StatsFromTilesWithout ->
                     if (city.matchesFilter(unique.params[3])
                         && tile.matchesFilter(unique.params[1])
                         && !tile.matchesFilter(unique.params[2])
@@ -143,7 +143,7 @@ object ChooseBeliefsAutomation {
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
                     else civInfo.statsForNextTurn[Stat.valueOf(unique.params[2])] * 5f / unique.params[1].toFloat()
-                "May buy [] buildings with []", "May buy [] units with []" ->
+                UniqueType.BuyBuildingsWithStat, UniqueType.BuyUnitsWithStat ->
                     if (civInfo.religionManager.religion != null
                         && civInfo.religionManager.religion!!.getFollowerUniques()
                             .any { it.placeholderText == unique.placeholderText }
@@ -151,34 +151,31 @@ object ChooseBeliefsAutomation {
                     // This is something completely different from the original, but I have no idea
                     // what happens over there
                     else civInfo.statsForNextTurn[Stat.valueOf(unique.params[1])] * 10f / civInfo.getEra().baseUnitBuyCost
-                UniqueType.BuyUnitsByProductionCost.placeholderText ->
+                UniqueType.BuyUnitsByProductionCost ->
                     15f * if (civInfo.victoryType() == VictoryType.Domination) 2f else 1f
-                "when a city adopts this religion for the first time (modified by game speed)" -> // Modified by personality
-                    unique.stats.values.sum() * 10f
-                "When spreading religion to a city, gain [] times the amount of followers of other religions as []" ->
+//                "when a city adopts this religion for the first time (modified by game speed)" -> // Modified by personality
+//                    unique.stats.values.sum() * 10f
+                    // What is this?? It doesn't show up in the stock rulesets, it has no stats, and it's uncapitalized, yet it seems different from ReligionAdoptStatsSpeeded?
+                UniqueType.ReligionSpreadStatGain ->
                     unique.params[0].toInt() / 5f
-                "[] when a city adopts this religion for the first time (modified by game speed)" ->
+                UniqueType.ReligionAdoptionStatsSpeeded ->
                     unique.stats.values.sum() / 50f
-                "Resting point for influence with City-States following this religion []" ->
+                UniqueType.ReligionCityStateRestingPoint ->
                     unique.params[0].toInt() / 7f
-                "[] for each global city following this religion" ->
+                UniqueType.ReligionGlobalFollowingCityStats ->
                     50f / unique.stats.values.sum()
-                UniqueType.StatsSpendingGreatPeople.placeholderText ->
+                UniqueType.StatsSpendingGreatPeople ->
                     unique.stats.values.sum() / 2f
-                "[]% Natural religion spread to []" ->
-                    unique.params[0].toFloat() / 4f
-                UniqueType.Strength.placeholderText ->
+                UniqueType.Strength ->
                     unique.params[0].toInt() / 4f
-                "Religion naturally spreads to cities [] tiles away" ->
+                UniqueType.ReligionSpreadDistance ->
                     (10 + unique.params[0].toInt()) / goodEarlyModifier
-                "[]% Natural religion spread []", "[]% Natural religion spread [] with []" ->
+                UniqueType.NaturalReligionSpreadStrength, UniqueType.NaturalReligionSpreadStrengthWith ->
                     (10 + unique.params[0].toInt()) / goodEarlyModifier
-                UniqueType.SpreadReligionStrength.placeholderText ->
+                UniqueType.SpreadReligionStrength ->
                     unique.params[0].toInt() / goodLateModifier
-                "[]% Faith cost of generating Great Prophet equivalents" ->
-                    unique.params[0].toInt() / goodLateModifier / 2f    
-                "[] cost for [] units []%" ->
-                    unique.params[2].toInt() / goodLateModifier
+                UniqueType.ReligionCheaperProphets ->
+                    unique.params[0].toInt() / goodLateModifier / 2f
                 else -> 0f
             }
         }

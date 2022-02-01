@@ -242,7 +242,7 @@ object UnitActions {
 
     private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
         val paradropUniques =
-            unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
+            unit.getMatchingUniques(UniqueType.MayParadrop)
         if (!paradropUniques.any() || unit.isEmbarked()) return
         unit.paradropRange = paradropUniques.maxOfOrNull { it.params[0] }!!.toInt()
         actionList += UnitAction(UnitActionType.Paradrop,
@@ -409,8 +409,8 @@ object UnitActions {
 
     private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
 
-        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.placeholderText) {
-            "Can hurry technology research" -> {
+        if (unit.currentMovement > 0) for (unique in unit.getUniques()) when (unique.type) {
+            UniqueType.CanHurryTech -> {
                 actionList += UnitAction(UnitActionType.HurryResearch,
                     action = {
                         unit.civInfo.tech.addScience(unit.civInfo.tech.getScienceFromGreatScientist())
@@ -419,7 +419,7 @@ object UnitActions {
                     }.takeIf { unit.civInfo.tech.currentTechnologyName() != null }
                 )
             }
-            "Can start an []-turn golden age" -> {
+            UniqueType.CanStartGoldenAge -> {
                 val turnsToGoldenAge = unique.params[0].toInt()
                 actionList += UnitAction(UnitActionType.StartGoldenAge,
                     action = {
@@ -429,7 +429,7 @@ object UnitActions {
                     }.takeIf { unit.currentTile.getOwner() != null && unit.currentTile.getOwner() == unit.civInfo }
                 )
             }
-            "Can speed up the construction of a wonder" -> {
+            UniqueType.CanHurryWonder -> {
                 val canHurryWonder =
                     if (!tile.isCityCenter()) false
                     else tile.getCity()!!.cityConstructions.isBuildingWonder()
@@ -449,7 +449,7 @@ object UnitActions {
                 )
             }
 
-            "Can speed up construction of a building" -> {
+            UniqueType.CanHurryBuilding -> {
                 if (!tile.isCityCenter()) {
                     actionList += UnitAction(UnitActionType.HurryBuilding, action = null)
                     continue
@@ -478,7 +478,7 @@ object UnitActions {
                     }.takeIf { canHurryConstruction }
                 )
             }
-            "Can undertake a trade mission with City-State, giving a large sum of gold and [] Influence" -> {
+            UniqueType.CanDoTradeMission -> {
                 val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
                         && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
                 val influenceEarned = unique.params[0].toFloat()
@@ -575,7 +575,7 @@ object UnitActions {
             title = "Spread [${unit.getReligionDisplayName()!!}]",
             action = {
                 val followersOfOtherReligions = city.religion.getFollowersOfOtherReligionsThan(unit.religion!!)
-                for (unique in unit.getMatchingUniques("When spreading religion to a city, gain [] times the amount of followers of other religions as []")) {
+                for (unique in unit.getMatchingUniques(UniqueType.ReligionSpreadStatGain)) {
                     unit.civInfo.addStat(Stat.valueOf(unique.params[1]), followersOfOtherReligions * unique.params[0].toInt())
                 }
                 city.religion.addPressure(unit.religion!!, unit.getPressureAddedFromSpread())

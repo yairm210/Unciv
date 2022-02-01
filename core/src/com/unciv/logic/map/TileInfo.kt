@@ -455,7 +455,7 @@ open class TileInfo {
                     )
                 ) -> false
             improvement.uniqueObjects.any {
-                it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
+                it.isOfType(UniqueType.ObsoleteWith) && civInfo.tech.isResearched(it.params[0])
             } -> return false
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, StateForConditionals(civInfo=civInfo)).any {
                 matchesTerrainFilter(it.params[0], civInfo)
@@ -512,7 +512,7 @@ open class TileInfo {
             improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater) && isAdjacentToFreshwater -> true
 
             // If an unique of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful).
-            improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.let {
+            improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOn).let {
                 it.any() && it.all { unique -> matchesTerrainFilter(unique.params[0]) }
             } -> true
 

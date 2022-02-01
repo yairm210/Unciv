@@ -8,7 +8,6 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.UniqueType
@@ -327,7 +326,7 @@ object GameStarter {
             }
 
             // City states should only spawn with one settler regardless of difficulty, but this may be disabled in mods 
-            if (civ.isCityState() && !ruleSet.modOptions.uniques.contains(ModOptionsConstants.allowCityStatesSpawnUnits)) {
+            if (civ.isCityState() && !ruleSet.modOptions.hasUnique(UniqueType.AllowCityStatesSpawnUnits)) {
                 val startingSettlers = startingUnits.filter { settlerLikeUnits.contains(it) }
 
                 startingUnits.clear()

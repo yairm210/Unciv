@@ -181,7 +181,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         if (civInfo.religionManager.religion != null) {
             for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
                 .flatMap { it.uniqueObjects }) {
-                if (unique.placeholderText == "[] for each global city following this religion") {
+                if (unique.isOfType(UniqueType.ReligionGlobalFollowingCityStats)) {
                     statMap.add(
                         "Religion",
                         unique.stats.times(civInfo.religionManager.numberOfCitiesFollowingThisReligion())
@@ -189,7 +189,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 }
             }
             for (unique in civInfo.religionManager.religion!!.getFounderUniques())
-                if (unique.placeholderText == "[] for every [] global followers []")
+                if (unique.isOfType(UniqueType.ReligionStatsForGlobalFollowers))
                     statMap.add(
                         "Religion",
                         unique.stats *
@@ -302,12 +302,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             var religionHappiness = 0f
             for (unique in civInfo.religionManager.religion!!.getBeliefs(BeliefType.Founder)
                 .flatMap { it.uniqueObjects }) {
-                if (unique.placeholderText == "[] for each global city following this religion") {
+                if (unique.isOfType(UniqueType.ReligionGlobalFollowingCityStats)) {
                     val followingCities =
                         civInfo.religionManager.numberOfCitiesFollowingThisReligion()
                     religionHappiness += unique.stats.happiness * followingCities
                 }
-                if (unique.placeholderText == "[] for every [] global followers []") {
+                if (unique.isOfType(UniqueType.ReligionStatsForGlobalFollowers)) {
                     val followers =
                         civInfo.religionManager.numberOfFollowersFollowingThisReligion(unique.params[2])
                     religionHappiness +=

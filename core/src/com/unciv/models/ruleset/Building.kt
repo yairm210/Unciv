@@ -468,8 +468,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         for (unique in uniqueObjects) {
-            when (unique.placeholderText) { // TODO: Lots of typification…
-                UniqueType.NotDisplayedWithout.placeholderText ->
+            when (unique.type) {
+                UniqueType.NotDisplayedWithout ->
                     if (unique.params[0] in ruleSet.tileResources && !civInfo.hasResource(unique.params[0])
                         || unique.params[0] in ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(unique.params[0])
                         || unique.params[0] in ruleSet.technologies && !civInfo.tech.isResearched(unique.params[0])
@@ -477,36 +477,36 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-                "Enables nuclear weapon" -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
+                UniqueType.EnablesNukes -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-                UniqueType.MustBeOn.placeholderText ->
+                UniqueType.MustBeOn ->
                     if (!cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
                         rejectionReasons.add(RejectionReason.MustBeOnTile.apply { errorMessage = unique.text })
 
-                UniqueType.MustNotBeOn.placeholderText ->
+                UniqueType.MustNotBeOn ->
                     if (cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
                         rejectionReasons.add(RejectionReason.MustNotBeOnTile.apply { errorMessage = unique.text })
 
-                UniqueType.MustBeNextTo.placeholderText ->
+                UniqueType.MustBeNextTo ->
                     if (// Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
                         !(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver())
                         && cityCenter.getTilesInDistance(1).none { it.matchesFilter(unique.params[0], civInfo) }
                     )
                         rejectionReasons.add(RejectionReason.MustBeNextToTile.apply { errorMessage = unique.text })
 
-                UniqueType.MustNotBeNextTo.placeholderText ->
+                UniqueType.MustNotBeNextTo ->
                     if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) })
                         rejectionReasons.add(RejectionReason.MustNotBeNextToTile.apply { errorMessage = unique.text })
 
-                "Must have an owned [] within [] tiles" ->
+                UniqueType.RequiresTileInDistance ->
                     if (cityCenter.getTilesInDistance(unique.params[1].toInt())
                         .none { it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == cityConstructions.cityInfo.civInfo }
                     )
                         rejectionReasons.add(RejectionReason.MustOwnTile.apply { errorMessage = unique.text })
 
                 // Deprecated since 3.16.11
-                    "Can only be built in annexed cities" ->
+                    UniqueType.RequiresAnnexedCity ->
                         if (
                             cityConstructions.cityInfo.isPuppet
                             || cityConstructions.cityInfo.civInfo.civName == cityConstructions.cityInfo.foundingCiv
@@ -514,19 +514,19 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                             rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
                 //
 
-                "Can only be built []" ->
+                UniqueType.CanOnlyBeBuilt ->
                     if (!cityConstructions.cityInfo.matchesFilter(unique.params[0]))
                         rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
 
-                "Obsolete with []" ->
+                UniqueType.ObsoleteWith ->
                     if (civInfo.tech.isResearched(unique.params[0]))
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
 
-                UniqueType.HiddenWithoutReligion.text ->
+                UniqueType.HiddenWithoutReligion ->
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-                UniqueType.MaxNumberBuildable.placeholderText ->
+                UniqueType.MaxNumberBuildable ->
                     if (civInfo.cities.count {
                                 it.cityConstructions.containsBuildingOrEquivalent(name) ||
                                         it.cityConstructions.isBeingConstructedOrEnqueued(name)
@@ -547,7 +547,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.RequiresTech.apply { "$requiredTech not researched!"})
 
         for (unique in uniqueObjects) {
-            if (unique.placeholderText != "Unlocked with []" && unique.placeholderText != "Requires []") continue
+            if (!unique.isOfType(UniqueType.UnlockedWith) && !unique.isOfType(UniqueType.Requires)) continue
             val filter = unique.params[0]
             when {
                 ruleSet.technologies.contains(filter) ->
@@ -752,8 +752,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     fun getImprovement(ruleset: Ruleset): TileImprovement? {
-        val improvementUnique = uniqueObjects
-            .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
+        val improvementUnique = getMatchingUniques(UniqueType.CreateImprovementOnTile).firstOrNull()
             ?: return null
         return ruleset.tileImprovements[improvementUnique.params[0]]
     }

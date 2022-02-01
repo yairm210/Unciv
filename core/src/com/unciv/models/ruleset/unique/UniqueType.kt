@@ -62,21 +62,61 @@ enum class UniqueFlag {
 
 enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags: List<UniqueFlag> = emptyList()) {
 
+
+    DiplomaticRelationshipsCannotChange("Diplomatic relationships cannot change", UniqueTarget.Global),
+    ConvertGoldToScience("Can convert gold to science with sliders", UniqueTarget.Global),
+    AllowCityStatesSpawnUnits("Allow City States to spawn with additional units", UniqueTarget.Global),
+    TradeCivIntroductions("Can trade civilization introductions for [amount] Gold", UniqueTarget.Global),
+    DisableReligion("Disable religion", UniqueTarget.Global),
+
     EraDisablesReligion("Starting in this era disables religion", UniqueTarget.Era),
     PreventsSpreadingReligion("Prevents spreading of religion to the city it is next to", UniqueTarget.Unit),
 
     CanDoActionTimes("Can [action] [amount] times", UniqueTarget.Unit),
+    GreatGeneralBonus("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
 
+    GreatPerson("Great Person - [greatPersonType]", UniqueTarget.Unit),
+    PromotionFake("Doing so will consume this opportunity to choose a Promotion", UniqueTarget.Promotion),
+    IsNuke("Nuclear weapon of Strength [amount]", UniqueTarget.Unit),
+    MayParadrop("May Paradrop up to [amount] tiles from inside friendly territory", UniqueTarget.Unit),
+    AdditionalAttacksPerTurn("[amount] additional attacks per turn", UniqueTarget.Unit),
+    CanHurryTech("Can hurry technology research", UniqueTarget.Unit),
+    CanStartGoldenAge("Can start an [amount]-turn golden age", UniqueTarget.Unit),
+    CanHurryWonder("Can speed up the construction of a wonder", UniqueTarget.Unit),
+    CanHurryBuilding("Can speed up construction of a building", UniqueTarget.Unit),
+    CanDoTradeMission("Can undertake a trade mission with City-State, giving a large sum of gold and [amount] Influence", UniqueTarget.Unit),
+
+
+    ObsoleteWith("Obsolete with [tech]", UniqueTarget.Improvement, UniqueTarget.Building, UniqueTarget.Unit),
+    UnlockedWith("Unlocked with [comment]", UniqueTarget.Building, UniqueTarget.Unit), // Is this worth a new UniqueParameterType for "Tech or Policy Or Era Or Building"?
+    Requires("Requires [comment]", UniqueTarget.Building, UniqueTarget.Unit),
 
     NeverDestroyedByConquest("Never destroyed when the city is captured", UniqueTarget.Building),
     IndicatesCapital("Indicates the capital city", UniqueTarget.Building),
     DestroyedByConquest("Destroyed when the city is captured", UniqueTarget.Building),
+    CanOnlyBeBuiltOn("Can only be built on [terrainFilter] tiles", UniqueTarget.Improvement),
+    CreateImprovementOnTile("Creates a [improvementName] improvement on a specific tile", UniqueTarget.Building),
+    EnablesNukes("Enables nuclear weapon", UniqueTarget.Building), // Should pluralize
+    RequiresTileInDistance("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
+    CanOnlyBeBuilt("Can only be built [cityFilter]", UniqueTarget.Building),
+    @Deprecated("As of 3.16.11 - warning since 3.19.5", ReplaceWith("Can only be built [in annexed cities]"), DeprecationLevel.WARNING) // This was never typified, so presumably continued to work without warnings.
+    RequiresAnnexedCity("Can only be built in annexed cities", UniqueTarget.Building),
 
-    GreatGeneralBonus("Bonus for units in 2 tile radius 15%", UniqueTarget.Unit),
 
-    GreatPerson("Great Person - [greatPersonType]", UniqueTarget.Unit),
 
     Irremovable("Irremovable", UniqueTarget.Improvement),
+
+
+    ReligionAdoptionStats("[stats] when a city adopts this religion for the first time", UniqueTarget.FounderBelief),
+    ReligionAdoptionStatsSpeeded("[stats] when a city adopts this religion for the first time (modified by game speed)", UniqueTarget.FounderBelief), // I think AI code may work with follower beliefs too, but not effect code?
+    ReligionSpreadStatGain("When spreading religion to a city, gain [amount] times the amount of followers of other religions as [stat]", UniqueTarget.FounderBelief, UniqueTarget.FollowerBelief),
+    ReligionCityStateRestingPoint("Resting point for Influence with City-States following this religion [amount]", UniqueTarget.FounderBelief),
+    ReligionGlobalFollowingCityStats("[stats] for each global city following this religion", UniqueTarget.FounderBelief),
+    ReligionCheaperProphets("[amount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.FounderBelief, UniqueTarget.FollowerBelief),
+    ReligionStatsForGlobalFollowers("[stats] for every [amount] global followers [cityFilter]", UniqueTarget.FounderBelief),
+
+    TriggersGlobalAlertOnStart("Triggers a global alert upon build start", UniqueTarget.Building, UniqueTarget.Unit),
+    TriggersGlobalAlertOnComplete("Triggers a global alert upon completion", UniqueTarget.Building, UniqueTarget.Unit),
 
     //////////////////////////////////////// region GLOBAL UNIQUES ////////////////////////////////////////
 
@@ -739,6 +779,21 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PercentProductionBuildingName("+[amount]% Production when constructing a [buildingName]", UniqueTarget.Global),
     @Deprecated("As of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
     PercentProductionConstructionsCities("+[amount]% Production when constructing [constructionFilter] [cityFilter]", UniqueTarget.Global),
+
+    // These were never typified, but seemed already to be dead code when found.
+    @Deprecated("As of 3.19.5 - already broken/unused", ReplaceWith("May buy [buildingFilter] buildings with [stat] [cityFilter]"), DeprecationLevel.ERROR)
+    BuyBuildingsWithStatDeprecated("May buy [buildingFilter] buildings with [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.5 - already broken/unused", ReplaceWith("May buy [baseUnitFilter] units with [stat] [cityFilter]"), DeprecationLevel.ERROR)
+    BuyUnitsWithStatDeprecated("May buy [baseUnitFilter] units with [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.5 - already broken/unused", ReplaceWith("Resting point for Influence with City-States following this religion [amount]"), DeprecationLevel.ERROR)
+    ReligionCityStateRestingPointUncapitalized("Resting point for influence with City-States following this religion [amount]", UniqueTarget.FounderBelief, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.5 - already broken/unused", ReplaceWith("[amount]% Natural religion spread [cityFilter]"), DeprecationLevel.ERROR)
+    ReligionNaturalSpreadBroken("[amount]% Natural religion spread to [cityFilter]", UniqueTarget.FounderBelief),
+    @Deprecated("As of 3.19.5 - already broken/unused", ReplaceWith("[amount]% Faith cost of generating Great Prophet equivalents"), DeprecationLevel.ERROR)
+    ReligionCheaperUnits("[stat] cost for [baseUnitFilter] units [amount]%", UniqueTarget.FounderBelief), // This was used *only* for religion AI, and has no effects?
+    @Deprecated("As of 3.19.5 - already broken/unused", ReplaceWith("[stats] from [tileFilter] tiles"), DeprecationLevel.ERROR)
+    StatsOnTiles("[stats] on [tileFilter]", UniqueTarget.Improvement)
+
 
     // endregion
 

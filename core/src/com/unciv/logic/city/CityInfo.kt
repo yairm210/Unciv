@@ -265,7 +265,7 @@ class CityInfo {
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values
             .asSequence()
-            .filter { it.uniques.contains(UniqueType.IndicatesCapital) }
+            .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
         return civSpecificBuilding?.name ?: indicatorBuildings.first().name

@@ -13,7 +13,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
@@ -328,7 +327,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (isNotPlayersTurn()) demandTributeButton.disable()
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
-        if (!viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+        if (!viewingCiv.gameInfo.ruleSet.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)) {
             if (viewingCiv.isAtWarWith(otherCiv)) {
                 val peaceButton = "Negotiate Peace".toTextButton()
                 peaceButton.onClick {
@@ -605,7 +604,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         diplomacyTable.addSeparator()
 
         val diplomaticRelationshipsCanChange =
-            !viewingCiv.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)
+            !viewingCiv.gameInfo.ruleSet.modOptions.hasUnique(UniqueType.DiplomaticRelationshipsCannotChange)
 
         if (!viewingCiv.isAtWarWith(otherCiv)) {
             val tradeButton = "Trade".toTextButton()

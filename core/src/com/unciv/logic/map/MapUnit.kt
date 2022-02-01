@@ -450,7 +450,7 @@ class MapUnit {
     }
 
     fun maxAttacksPerTurn(): Int {
-        return 1 + getMatchingUniques("[] additional attacks per turn").sumOf { it.params[0].toInt() }
+        return 1 + getMatchingUniques(UniqueType.AdditionalAttacksPerTurn).sumOf { it.params[0].toInt() }
     }
 
     fun canAttack(): Boolean {

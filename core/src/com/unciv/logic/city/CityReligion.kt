@@ -117,10 +117,10 @@ class CityInfoReligionManager {
         
         val religionOwningCiv = newMajorityReligionObject.getFounder()
         for (unique in newMajorityReligionObject.getFounderUniques()) {
-            val statsGranted = when (unique.placeholderText) {
-                "[] when a city adopts this religion for the first time (modified by game speed)" ->
+            val statsGranted = when (unique.type) {
+                UniqueType.ReligionAdoptionStatsSpeeded ->
                     unique.stats.times(cityInfo.civInfo.gameInfo.gameParameters.gameSpeed.modifier)
-                "[] when a city adopts this religion for the first time" -> unique.stats
+                UniqueType.ReligionAdoptionStats -> unique.stats
                 else -> continue
             }
             for ((key, value) in statsGranted)

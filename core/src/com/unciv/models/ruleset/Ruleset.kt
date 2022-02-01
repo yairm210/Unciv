@@ -30,14 +30,6 @@ import com.unciv.ui.utils.colorFromRGB
 import com.unciv.ui.utils.getRelativeTextDistance
 import kotlin.collections.set
 
-object ModOptionsConstants {
-    const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
-    const val convertGoldToScience = "Can convert gold to science with sliders"
-    const val allowCityStatesSpawnUnits = "Allow City States to spawn with additional units"
-    const val tradeCivIntroductions = "Can trade civilization introductions for [] Gold"
-    const val disableReligion = "Disable religion"
-}
-
 class ModOptions : IHasUniques {
     var isBaseRuleset = false
     var techsToRemove = HashSet<String>()
@@ -554,7 +546,7 @@ class Ruleset {
                 lines.add("${building.name} contains 'requiredBuildingInAllCities' - please convert to a \"" +
                         UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!)+"\" unique", RulesetErrorSeverity.Warning)
             for (unique in building.uniqueObjects)
-                if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
+                if (unique.isOfType(UniqueType.CreateImprovementOnTile) && !tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
             checkUniques(building, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
         }
