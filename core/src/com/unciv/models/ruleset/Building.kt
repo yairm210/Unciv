@@ -475,12 +475,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for (unique in uniqueObjects) {
             when (unique.placeholderText) { // TODO: Lots of typification…
-                // Deprecated since 3.16.11, replace with "Not displayed [...] construction without []"
-                    UniqueType.NotDisplayedUnlessOtherBuildingBuilt.placeholderText ->
-                        if (!cityConstructions.containsBuildingOrEquivalent(unique.params[0]))
-                            rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
-                //
-
                 UniqueType.NotDisplayedWithout.placeholderText ->
                     if (unique.params[0] in ruleSet.tileResources && !civInfo.hasResource(unique.params[0])
                         || unique.params[0] in ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(unique.params[0])

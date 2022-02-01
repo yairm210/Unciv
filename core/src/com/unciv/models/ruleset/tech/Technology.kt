@@ -150,11 +150,6 @@ class Technology: RulesetObject() {
         ruleset.tileImprovements.values
             .asSequence()
             .filter { improvement ->
-                // Deprecated since 3.18.6
-                    improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
-                        it.params[1] == name
-                    } ||
-                //
                 improvement.uniqueObjects.any { 
                     unique -> unique.conditionals.any { 
                         (it.isOfType(UniqueType.ConditionalTech) || it.isOfType(UniqueType.ConditionalNoTech)) 

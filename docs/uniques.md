@@ -347,8 +347,8 @@ Example: "Retain [20]% of the happiness from a luxury after the last copy has be
 
 Applicable to: Global
 
-#### [+amount] Happiness from each type of luxury resource
-Example: "[+amount] Happiness from each type of luxury resource"
+#### [amount] Happiness from each type of luxury resource
+Example: "[20] Happiness from each type of luxury resource"
 
 Applicable to: Global
 
@@ -1441,8 +1441,6 @@ Applicable to: Conditional
  - "Happiness from Luxury Resources gifted by City-States increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% Happiness from luxury resources gifted by City-States"
  - "[amount]% of food is carried over after population increases" - Deprecated As of 3.19.2, replace with "[amount]% Food is carried over after population increases [cityFilter]"
  - "[amount]% of food is carried over [cityFilter] after population increases" - Deprecated As of 3.19.2, replace with "[amount]% Food is carried over after population increases [cityFilter]"
- - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated As of 3.18.2, replace with "[-amount]% Food consumption by specialists [cityFilter]"
- - "50% of excess happiness added to culture towards policies" - Deprecated As of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
  - "[amount]% Culture cost of natural border growth [cityFilter]" - Deprecated As of 3.19.2, replace with "[amount]% Culture cost of natural border growth [cityFilter]"
  - "-[amount]% Culture cost of acquiring tiles [cityFilter]" - Deprecated As of 3.19.1, replace with "[-amount]% Culture cost of natural border growth [cityFilter]"
  - "[amount]% cost of natural border growth" - Deprecated As of 3.19.1, replace with "[amount]% Culture cost of natural border growth [cityFilter]"
@@ -1465,8 +1463,11 @@ Applicable to: Conditional
  - "[amount]% Natural religion spread [cityFilter] with [tech/policy]" - Deprecated As of 3.19.3, replace with "[amount]% Natural religion spread [cityFilter] <after discovering [tech]> OR [amount]% natural religion spread [cityFilter] <after adopting [policy]>"
  - "[amount] HP when healing in [tileFilter] tiles" - Deprecated As of 3.19.4, replace with "[amount] HP when healing <in [tileFilter] tiles>"
  - "Melee units pay no movement cost to pillage" - Deprecated As of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
+ - "Heal adjacent units for an additional 15 HP per turn" - Deprecated As of 3.19.3, replace with "All adjacent units heal [+15] HP when healing"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
+ - "50% of excess happiness added to culture towards policies" - Deprecated As of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
+ - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated As of 3.18.2, replace with "[-amount]% Food consumption by specialists [cityFilter]"
  - "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])" - Deprecated As of 3.17.9, removed as of 3.19.3, replace with "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"
  - "Provides a free [buildingName] [cityFilter]" - Deprecated As of 3.17.7 - removed 3.18.19, replace with "Gain a free [buildingName] [cityFilter]"
  - "+[amount]% [stat] [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.18, replace with "[+amount]% [stat] [cityFilter]"
@@ -1489,8 +1490,8 @@ Applicable to: Conditional
  - "+[amount]% Production when constructing [constructionFilter] [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10 - removed 3.18.19, replace with "[stats] <after discovering [tech]>"
- - "Cannot enter ocean tiles until Astronomy" - Deprecated As of 3.18.6, replace with "Cannot enter ocean tiles <before discovering [Astronomy]>"
  - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
+ - "Cannot enter ocean tiles until Astronomy" - Deprecated As of 3.18.6, replace with "Cannot enter ocean tiles <before discovering [Astronomy]>"
  - "+[amount]% Strength when attacking" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[+amount]% Strength <when attacking>"
  - "+[amount]% Strength when defending" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[+amount]% Strength <when defending>"
  - "[amount]% Strength when defending vs [mapUnitFilter] units" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when defending> <vs [mapUnitFilter] units>"
@@ -1498,7 +1499,7 @@ Applicable to: Conditional
  - "+[amount]% Strength in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
  - "[amount] Visibility Range" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
  - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
- - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated As of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before discovering [tech]>"
  - "Deal [amount] damage to adjacent enemy units" - Deprecated As of 3.18.17, replace with "Adjacent enemy units ending their turn take [amount] damage"
+ - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated As of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before discovering [tech]>"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10 - removed 3.18.19, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10 - removed 3.18.19, replace with "Adjacent enemy units ending their turn take [30] damage"

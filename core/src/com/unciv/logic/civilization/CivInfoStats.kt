@@ -193,13 +193,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     )
         }
 
-        // Deprecated since 3.16.15
-            if (civInfo.hasUnique(UniqueType.ExcessHappinessToCultureDeprecated)) {
-                val happiness = civInfo.getHappiness()
-                if (happiness > 0) statMap.add("Policies", Stats(culture = happiness / 2f))
-            }
-        //
-        
         if (civInfo.getHappiness() > 0) {
             val excessHappinessConversion = Stats()
             for (unique in civInfo.getMatchingUniques(UniqueType.ExcessHappinessToGlobalStat)) {
