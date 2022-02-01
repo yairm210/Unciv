@@ -1367,7 +1367,7 @@ class MapRegions (val ruleset: Ruleset){
         // Third add some minor deposits to land tiles
         // Note: In G&K there is a bug where minor deposits are never placed on hills. We're not replicating that.
         val frequency = (baseMinorDepositFrequency * bonusMultiplier).toInt()
-        val minorDepositsToAdd = (landList.count() / frequency) + 1
+        val minorDepositsToAdd = (landList.count() / frequency) + 1 // I sometimes have division by zero errors on this line
         var minorDepositsAdded = 0
         for (tile in landList) {
             if (tile.resource != null || tileData[tile.position]!!.impacts.containsKey(ImpactType.Strategic))
