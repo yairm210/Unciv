@@ -38,7 +38,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     fun conditionalsApply(state: StateForConditionals?): Boolean {
-        if (state == null) return conditionals.isEmpty() 
+        if (state == null) return conditionals.isEmpty()
+        if (state.ignoreConditionals) return true
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
         }

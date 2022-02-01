@@ -31,18 +31,25 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             unitsToPayFor = unitsToPayFor.filterNot {
                 it.getTile().isCityCenter() && it.canGarrison()
             }
-        // Handle unit maintenance discounts
-        // Free Garrison already removed above from sequence
-        // To try and avoid concurrent modifications leading to crashes,
-        // we calculate the costs of one unit at a time.
-        // Each unit starts with 1f aka 100% of cost, and then the discout is addded.
+
+        // Each unit starts with 1f aka 100% of cost, and then the discount is added.
         // Note all discounts are in the form of -X%, such as -25 for 25% reduction
 
         val costsToPay = ArrayList<Float>()
+
+        // We IGNORE the conditionals when we get them civ-wide, so we won't need to do the same thing for EVERY unit in the civ.
+        // This leads to massive memory and CPU time savings when calculating the maintenance!
+        val civwideDiscountUniques = civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscount, StateForConditionals.IgnoreConditionals).toList()
+
         for (unit in unitsToPayFor) {
-            val stateForConditionals = StateForConditionals(civInfo=civInfo, unit=unit)
+            val stateForConditionals = StateForConditionals(civInfo = civInfo, unit = unit)
             var unitMaintenance = 1f
-            for (unique in unit.getMatchingUniques(UniqueType.UnitMaintenanceDiscount, stateForConditionals, true)){
+            val uniquesThatApply = unit.getMatchingUniques(
+                UniqueType.UnitMaintenanceDiscount,
+                stateForConditionals
+            ) + civwideDiscountUniques.asSequence()
+                .filter { it.conditionalsApply(stateForConditionals) }
+            for (unique in uniquesThatApply) {
                 unitMaintenance *= unique.params[0].toPercent()
             }
             costsToPay.add(unitMaintenance)
