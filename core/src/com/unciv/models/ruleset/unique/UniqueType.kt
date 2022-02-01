@@ -324,7 +324,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
     MustNotBeOn("Must not be on [terrainFilter]", UniqueTarget.Building),
-    MustBeNextTo("Must be next to [terrainFilter]", UniqueTarget.Building),
+    MustBeNextTo("Must be next to [terrainFilter]", UniqueTarget.Building, UniqueTarget.Improvement),
     MustNotBeNextTo("Must not be next to [terrainFilter]", UniqueTarget.Building),
 
     Unsellable("Unsellable", UniqueTarget.Building),

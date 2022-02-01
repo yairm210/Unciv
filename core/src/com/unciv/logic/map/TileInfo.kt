@@ -486,6 +486,9 @@ open class TileInfo {
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile).any {
                 unique -> matchesTerrainFilter(unique.params[0])
             } -> false
+            improvement.getMatchingUniques(UniqueType.MustBeNextTo).any { unique ->
+                neighbors.none { it.matchesFilter(unique.params[0]) }
+            } -> false
 
             // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
             RoadStatus.values().none { it.name == improvement.name || it.removeAction == improvement.name }
