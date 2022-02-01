@@ -474,6 +474,12 @@ open class TileInfo {
         }
     }
 
+    fun isAdjacentTo(terrainFilter:String): Boolean {
+        if (terrainFilter == "Fresh water" && isAdjacentToFreshwater) return true
+        return if (terrainFilter == "River") isAdjacentToRiver()
+        else neighbors.any { neighbor -> neighbor.matchesFilter(terrainFilter) }
+    }
+
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
      *  Doubles as a check for the map editor.
      */
@@ -501,9 +507,7 @@ open class TileInfo {
             improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0 && isLand -> true
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.uniqueObjects.filter { it.type == UniqueType.MustBeNextTo }.any {
-                val filter = it.params[0]
-                if (filter == "River") return@any !isAdjacentToRiver()
-                else return@any !neighbors.any { neighbor -> neighbor.matchesFilter(filter) }
+                !isAdjacentTo(it.params[0])
             } -> false
             !isWater && RoadStatus.values().any { it.name == improvement.name && it > roadStatus } -> true
             improvement.name == roadStatus.removeAction -> true

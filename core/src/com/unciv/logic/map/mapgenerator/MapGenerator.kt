@@ -77,8 +77,10 @@ class MapGenerator(val ruleset: Ruleset) {
             map.assignContinents(TileMap.AssignContinentsMode.Assign)
         }
         runAndMeasure("RiverGenerator") {
-            RiverGenerator(map, randomness).spawnRivers()
+            RiverGenerator(map, randomness, ruleset).spawnRivers()
         }
+        convertTerrains(map, ruleset)
+
         // Region based map generation - not used when generating maps in map editor
         if (civilizations.isNotEmpty()) {
             val regions = MapRegions(ruleset)
@@ -106,6 +108,7 @@ class MapGenerator(val ruleset: Ruleset) {
         return map
     }
 
+
     private fun runAndMeasure(text: String, action: ()->Unit) {
         if (!consoleTimings) return action()
         val startNanos = System.nanoTime()
@@ -120,47 +123,65 @@ class MapGenerator(val ruleset: Ruleset) {
         if (consoleOutput) println("RNG seeded with $seed")
     }
 
+    private fun convertTerrains(map: TileMap, ruleset: Ruleset) {
+        for (tile in map.values) {
+            val conversionUnique =
+                tile.getBaseTerrain().getMatchingUniques(UniqueType.ChangesTerrain)
+                    .firstOrNull { tile.isAdjacentTo(it.params[1]) }
+                    ?: continue
+            val terrain = ruleset.terrains[conversionUnique.params[0]] ?: continue
+            if (terrain.type == TerrainType.TerrainFeature) tile.terrainFeatures.add(terrain.name)
+            else tile.baseTerrain = terrain.name
+            tile.setTerrainTransients()
+        }
+    }
+
     private fun spawnLakesAndCoasts(map: TileMap) {
 
-        //define lakes
-        val waterTiles = map.values.filter { it.isWater }.toMutableList()
+        if (ruleset.terrains.containsKey(Constants.lakes)) {
+            //define lakes
+            val waterTiles = map.values.filter { it.isWater }.toMutableList()
 
-        val tilesInArea = ArrayList<TileInfo>()
-        val tilesToCheck = ArrayList<TileInfo>()
+            val tilesInArea = ArrayList<TileInfo>()
+            val tilesToCheck = ArrayList<TileInfo>()
 
-        while (waterTiles.isNotEmpty()) {
-            val initialWaterTile = waterTiles.random(randomness.RNG)
-            tilesInArea += initialWaterTile
-            tilesToCheck += initialWaterTile
-            waterTiles -= initialWaterTile
+            while (waterTiles.isNotEmpty()) {
+                val initialWaterTile = waterTiles.random(randomness.RNG)
+                tilesInArea += initialWaterTile
+                tilesToCheck += initialWaterTile
+                waterTiles -= initialWaterTile
 
-            // Floodfill to cluster water tiles
-            while (tilesToCheck.isNotEmpty()) {
-                val tileWeAreChecking = tilesToCheck.random(randomness.RNG)
-                for (vector in tileWeAreChecking.neighbors
+                // Floodfill to cluster water tiles
+                while (tilesToCheck.isNotEmpty()) {
+                    val tileWeAreChecking = tilesToCheck.random(randomness.RNG)
+                    for (vector in tileWeAreChecking.neighbors
                         .filter { !tilesInArea.contains(it) and waterTiles.contains(it) }) {
-                    tilesInArea += vector
-                    tilesToCheck += vector
-                    waterTiles -= vector
+                        tilesInArea += vector
+                        tilesToCheck += vector
+                        waterTiles -= vector
+                    }
+                    tilesToCheck -= tileWeAreChecking
                 }
-                tilesToCheck -= tileWeAreChecking
-            }
 
-            if (tilesInArea.size <= 10) {
-                for (tile in tilesInArea) {
-                    tile.baseTerrain = Constants.lakes
-                    tile.setTransients()
+                if (tilesInArea.size <= 10) {
+                    for (tile in tilesInArea) {
+                        tile.baseTerrain = Constants.lakes
+                        tile.setTransients()
+                    }
                 }
+                tilesInArea.clear()
             }
-            tilesInArea.clear()
         }
 
         //Coasts
-        for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
-            val coastLength = max(1, randomness.RNG.nextInt(max(1, map.mapParameters.maxCoastExtension)))
-            if (tile.getTilesInDistance(coastLength).any { it.isLand }) {
-                tile.baseTerrain = Constants.coast
-                tile.setTransients()
+        if (ruleset.terrains.containsKey(Constants.coast)) {
+            for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
+                val coastLength =
+                    max(1, randomness.RNG.nextInt(max(1, map.mapParameters.maxCoastExtension)))
+                if (tile.getTilesInDistance(coastLength).any { it.isLand }) {
+                    tile.baseTerrain = Constants.coast
+                    tile.setTransients()
+                }
             }
         }
     }
