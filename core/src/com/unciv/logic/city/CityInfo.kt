@@ -62,8 +62,6 @@ class CityInfo {
     var turnAcquired = 0
     var health = 200
 
-    @Deprecated("As of 3.18.4", ReplaceWith("CityFlags.Resistance"), DeprecationLevel.WARNING)
-    var resistanceCounter = 0
 
     var religion = CityInfoReligionManager()
     var population = PopulationManager()
@@ -526,11 +524,6 @@ class CityInfo {
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)
-
-        if (resistanceCounter > 0) {
-            setFlag(CityFlags.Resistance, resistanceCounter)
-            resistanceCounter = 0
-        }
     }
 
     fun startTurn() {

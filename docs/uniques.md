@@ -759,7 +759,7 @@ Applicable to: Building
 #### Must be next to [terrainFilter]
 Example: "Must be next to [Forest]"
 
-Applicable to: Building
+Applicable to: Building, Improvement
 
 #### Must not be next to [terrainFilter]
 Example: "Must not be next to [Forest]"

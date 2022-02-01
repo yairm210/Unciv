@@ -79,7 +79,7 @@ class CityConstructions {
 
     fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
         .asSequence()
-        .filter { !it.isAnyWonder() && it.replaces == null && it.getStats(null)[stat] > 0f }
+        .filter { !it.isAnyWonder() && it.replaces == null && it[stat] > 0f }
 
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
@@ -390,7 +390,7 @@ class CityConstructions {
     }
 
     private fun constructionBegun(construction: IConstruction) {
-        if (construction !is Building) return;
+        if (construction !is Building) return
         if (construction.uniqueObjects.none { it.placeholderText == "Triggers a global alert upon build start" }) return
         val buildingIcon = "BuildingIcons/${construction.name}"
         for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {

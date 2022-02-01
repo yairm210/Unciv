@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.unciv.Constants
 import com.unciv.logic.city.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
@@ -14,8 +13,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.toPercent
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.pow
 
 
@@ -56,7 +53,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
-        getStats(null).toString().also { if (it.isNotEmpty()) infoList += it }
+        (this as Stats).toString().also { if (it.isNotEmpty()) infoList += it }
         for ((key, value) in getStatPercentageBonuses(null))
             infoList += "+${value.toInt()}% ${key.name.tr()}"
 
@@ -102,16 +99,15 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
-    fun getDescription(cityInfo: CityInfo?, ruleset: Ruleset): String {
+    fun getDescription(cityInfo: CityInfo, ruleset: Ruleset): String {
         val stats = getStats(cityInfo)
         val lines = ArrayList<String>()
-        val isFree = if (cityInfo == null) false
-            else (name in cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id))
+        val isFree = name in cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
         if (uniqueTo != null) lines += if (replaces == null) "Unique to [$uniqueTo]"
             else "Unique to [$uniqueTo], replaces [$replaces]"
         val missingUnique = getMatchingUniques(UniqueType.RequiresBuildingInAllCities).firstOrNull()
         // Inefficient in theory. In practice, buildings seem to have only a small handful of uniques.
-        val missingCities = if (cityInfo != null && missingUnique != null)
+        val missingCities = if (missingUnique != null)
             // TODO: Unify with rejection reasons?
             cityInfo.civInfo.cities.filterNot {
                 it.isPuppet
@@ -155,17 +151,16 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (missingCities.isNotEmpty()) {
             // Could be red. But IMO that should be done by enabling GDX's ColorMarkupLanguage globally instead of adding a separate label.
             lines += "\n" + 
-                "[${cityInfo?.civInfo?.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() + 
+                "[${cityInfo.civInfo.getEquivalentBuilding(missingUnique!!.params[0])}] required:".tr() +
                 " " + missingCities.joinToString(", ") { "{${it.name}}" }
             // Can't nest square bracket placeholders inside curlies, and don't see any way to define wildcard placeholders. So run translation explicitly on base text.
         }
         return lines.joinToString("\n") { it.tr() }.trim()
     }
 
-    fun getStats(city: CityInfo?): Stats {
+    fun getStats(city: CityInfo): Stats {
         // Calls the clone function of the NamedStats this class is derived from, not a clone function of this class
         val stats = cloneStats()
-        if (city == null) return stats
         val civInfo = city.civInfo
 
         for (unique in city.getMatchingUniques(UniqueType.StatsFromObject)) {
