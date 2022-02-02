@@ -134,6 +134,10 @@ class BasicTests {
                 println("${uniqueType.name}'s deprecation text does not match any existing type!'")
                 allOK = false
             }
+            if (replacementTextUnique.getDeprecationAnnotation() != null){
+                println("${uniqueType.name}'s deprecation text references another deprecated unique!'")
+                allOK = false
+            }
             for (conditional in replacementTextUnique.conditionals){
                 if (conditional.type==null){
                     println("${uniqueType.name}'s deprecation text contains conditional \"${conditional.text}\" which does not match any existing type!'")
@@ -141,7 +145,7 @@ class BasicTests {
                 }
             }
         }
-        Assert.assertTrue("This test succeeds only if all UniqueTypes have at least one UniqueTarget", allOK)
+        Assert.assertTrue("This test succeeds only if all deprecated uniques have a replaceWith text that matches an existing type", allOK)
     }
 
     //@Test  // commented so github doesn't run this
