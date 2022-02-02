@@ -24,7 +24,6 @@ import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 import com.unciv.ui.utils.getRelativeTextDistance
@@ -317,86 +316,113 @@ class Ruleset {
         val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
 
         for (unique in uniqueContainer.uniqueObjects) {
-            if (unique.type == null) {
-                if (!forOptionsPopup) continue
-                val similarUniques = UniqueType.values().filter { getRelativeTextDistance(it.placeholderText, unique.placeholderText) <= uniqueMisspellingThreshold }
-                val equalUniques = similarUniques.filter { it.placeholderText == unique.placeholderText }
-                if (equalUniques.isNotEmpty()) {
-                    lines.add( // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.
-                        "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
-                        RulesetErrorSeverity.OK
-                    )
-                } else if (similarUniques.isNotEmpty()) {
-                    lines.add("$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
-                        similarUniques.joinToString("\n") { uniqueType ->
-                            val deprecationAnnotation = UniqueType::class.java.getField(uniqueType.name)
-                                    .getAnnotation(Deprecated::class.java)
-                            if (deprecationAnnotation == null)
-                                "\"${uniqueType.text}\""
-                            else
-                                "\"${uniqueType.text}\" (Deprecated)"
-                        }.prependIndent("\t"),
-                        RulesetErrorSeverity.OK
-                    )
+            val errors = checkUnique(
+                unique,
+                forOptionsPopup,
+                name,
+                severityToReport,
+                uniqueContainer
+            )
+            lines.addAll(errors)
+        }
+    }
 
-                }
-                continue
+    private fun checkUnique(
+        unique: Unique,
+        forOptionsPopup: Boolean,
+        name: String,
+        severityToReport: UniqueType.UniqueComplianceErrorSeverity,
+        uniqueContainer: IHasUniques
+    ): List<RulesetError> {
+        if (unique.type == null) {
+            if (!forOptionsPopup) return emptyList()
+            val similarUniques = UniqueType.values().filter {
+                getRelativeTextDistance(
+                    it.placeholderText,
+                    unique.placeholderText
+                ) <= uniqueMisspellingThreshold
             }
-            val complianceErrors = unique.type.getComplianceErrors(unique, this)
-            for (complianceError in complianceErrors) {
-                if (complianceError.errorSeverity == severityToReport)
-                    lines += "$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
-                            " which does not fit parameter type" +
-                            " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
-            }
+            val equalUniques =
+                similarUniques.filter { it.placeholderText == unique.placeholderText }
+            if (equalUniques.isNotEmpty()) {
+                // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
+                    return listOf(
+                        RulesetError(
+                            "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
+                            RulesetErrorSeverity.OK
+                    ))
+            } else if (similarUniques.isNotEmpty()) {
+                val text =
+                    "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
+                            similarUniques.joinToString("\n") { uniqueType ->
+                                val deprecationAnnotation =
+                                    UniqueType::class.java.getField(uniqueType.name)
+                                        .getAnnotation(Deprecated::class.java)
+                                if (deprecationAnnotation == null)
+                                    "\"${uniqueType.text}\""
+                                else
+                                    "\"${uniqueType.text}\" (Deprecated)"
+                            }.prependIndent("\t")
+                return listOf(RulesetError(text, RulesetErrorSeverity.OK))
+            } else return emptyList()
+        }
 
-            for (conditional in unique.conditionals) {
-                if (conditional.type == null) {
-                    lines.add(
-                        "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
-                                " which is of an unknown type!",
-                        RulesetErrorSeverity.Warning
-                    )
-                } else {
-                    val conditionalComplianceErrors =
-                        conditional.type.getComplianceErrors(conditional, this)
-                    for (complianceError in conditionalComplianceErrors) {
-                        if (complianceError.errorSeverity == severityToReport)
-                            lines += "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
-                                    " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
-                                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
-                    }
-                }
-            }
+        val rulesetErrors = RulesetErrorList()
 
+        val typeComplianceErrors = unique.type.getComplianceErrors(unique, this)
+        for (complianceError in typeComplianceErrors) {
+            if (complianceError.errorSeverity == severityToReport)
+                 rulesetErrors += "$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
+                        " which does not fit parameter type" +
+                        " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+        }
 
-            if (severityToReport != UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
-                // If we don't filter these messages will be listed twice as this function is called twice on most objects
-                // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
-                continue
-
-
-            val deprecationAnnotation = unique.getDeprecationAnnotation()
-            if (deprecationAnnotation != null) {
-                val replacementUniqueText = unique.getReplacementText()
-                val deprecationText =
-                    "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                            if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
-                val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
-                    RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
-                else RulesetErrorSeverity.Warning // User visible
-
-                lines.add(deprecationText, severity)
-            }
-
-            val acceptableUniqueType = uniqueContainer.getUniqueTarget()
-            if (unique.type.targetTypes.none { acceptableUniqueType.canAcceptUniqueTarget(it) })
-                lines.add(
-                    "$name's unique \"${unique.text}\" cannot be put on this type of object!",
+        for (conditional in unique.conditionals) {
+            if (conditional.type == null) {
+                rulesetErrors.add(
+                    "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                            " which is of an unknown type!",
                     RulesetErrorSeverity.Warning
                 )
-
+            } else {
+                val conditionalComplianceErrors =
+                    conditional.type.getComplianceErrors(conditional, this)
+                for (complianceError in conditionalComplianceErrors) {
+                    if (complianceError.errorSeverity == severityToReport)
+                        rulesetErrors += "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                                " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
+                                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+                }
+            }
         }
+
+
+        if (severityToReport != UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        // If we don't filter these messages will be listed twice as this function is called twice on most objects
+        // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
+            return rulesetErrors
+
+
+        val deprecationAnnotation = unique.getDeprecationAnnotation()
+        if (deprecationAnnotation != null) {
+            val replacementUniqueText = unique.getReplacementText()
+            val deprecationText =
+                "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
+                        if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
+            val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
+                RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
+            else RulesetErrorSeverity.Warning // User visible
+
+            rulesetErrors.add(deprecationText, severity)
+        }
+
+        val acceptableUniqueType = uniqueContainer.getUniqueTarget()
+        if (unique.type.targetTypes.none { acceptableUniqueType.canAcceptUniqueTarget(it) })
+            rulesetErrors.add(
+                "$name's unique \"${unique.text}\" cannot be put on this type of object!",
+                RulesetErrorSeverity.Warning
+            )
+        return rulesetErrors
     }
 
 
