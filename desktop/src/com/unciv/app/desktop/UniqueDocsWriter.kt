@@ -64,8 +64,7 @@ class UniqueDocsWriter {
             lines += "## " + targetType.key.name + " uniques"
             for (uniqueType in targetType.value) {
 
-                val deprecationAnnotation = uniqueType.declaringClass.getField(uniqueType.name)
-                    .getAnnotation(Deprecated::class.java)
+                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
                 if (deprecationAnnotation != null) {
                     deprecatedUniques += uniqueType
                     continue
@@ -83,8 +82,7 @@ class UniqueDocsWriter {
         lines += "## Deprecated uniques"
         for (deprecatedUnique in deprecatedUniques) {
             val deprecationAnnotation =
-                deprecatedUnique.declaringClass.getField(deprecatedUnique.name)
-                    .getAnnotation(Deprecated::class.java)
+                deprecatedUnique.getDeprecationAnnotation()!!
 
             val deprecationText = "Deprecated ${deprecationAnnotation.message}," +
                     if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${deprecationAnnotation.replaceWith.expression}\"" else ""

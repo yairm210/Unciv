@@ -375,25 +375,10 @@ class Ruleset {
                 // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
                 continue
 
-            val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
-                .getAnnotation(Deprecated::class.java)
+
+            val deprecationAnnotation = unique.getDeprecationAnnotation()
             if (deprecationAnnotation != null) {
-                var replacementUniqueText = deprecationAnnotation.replaceWith.expression
-                val deprecatedUniquePlaceholders = unique.type.text.getPlaceholderParameters()
-
-                // Here, for once, we DO want the conditional placeholder parameters together with the regular ones,
-                //  so we cheat the conditional detector by removing the '<'
-                for (parameter in replacementUniqueText.replace('<',' ').getPlaceholderParameters()) {
-                    val parameterNumberInDeprecatedUnique =
-                        deprecatedUniquePlaceholders.indexOf(parameter.removePrefix("+").removePrefix("-"))
-                    if (parameterNumberInDeprecatedUnique == -1) continue
-                    var replacementText = unique.params[parameterNumberInDeprecatedUnique]
-                    if (parameter.startsWith('+')) replacementText = "+$replacementText"
-                    else if(parameter.startsWith('-')) replacementText = "-$replacementText"
-                    replacementUniqueText =
-                        replacementUniqueText.replace("[$parameter]", "[$replacementText]")
-                }
-
+                val replacementUniqueText = unique.getReplacementText()
                 val deprecationText =
                     "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
                             if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""

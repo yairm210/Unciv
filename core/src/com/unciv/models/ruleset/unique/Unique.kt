@@ -46,6 +46,28 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return true
     }
 
+    fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
+
+    fun getReplacementText(): String {
+        val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
+        var replacementUniqueText = deprecationAnnotation.replaceWith.expression
+        val deprecatedUniquePlaceholders = type!!.text.getPlaceholderParameters()
+
+        // Here, for once, we DO want the conditional placeholder parameters together with the regular ones,
+        //  so we cheat the conditional detector by removing the '<'
+        for (parameter in replacementUniqueText.replace('<',' ').getPlaceholderParameters()) {
+            val parameterNumberInDeprecatedUnique =
+                deprecatedUniquePlaceholders.indexOf(parameter.removePrefix("+").removePrefix("-"))
+            if (parameterNumberInDeprecatedUnique == -1) continue
+            var replacementText = params[parameterNumberInDeprecatedUnique]
+            if (parameter.startsWith('+')) replacementText = "+$replacementText"
+            else if(parameter.startsWith('-')) replacementText = "-$replacementText"
+            replacementUniqueText =
+                replacementUniqueText.replace("[$parameter]", "[$replacementText]")
+        }
+        return replacementUniqueText
+    }
+
     private fun conditionalApplies(
         condition: Unique,
         state: StateForConditionals

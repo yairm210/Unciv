@@ -777,5 +777,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         }
         return errorList
     }
+
+    fun getDeprecationAnnotation(): Deprecated? = declaringClass.getField(name)
+        .getAnnotation(Deprecated::class.java)
 }
 

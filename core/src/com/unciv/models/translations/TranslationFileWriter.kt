@@ -95,8 +95,7 @@ object TranslationFileWriter {
 
         linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
         for (unique in UniqueType.values()) {
-            val deprecationAnnotation = unique.declaringClass.getField(unique.name)
-                .getAnnotation(Deprecated::class.java)
+            val deprecationAnnotation = unique.getDeprecationAnnotation()
             if (deprecationAnnotation != null) continue
             if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
 
