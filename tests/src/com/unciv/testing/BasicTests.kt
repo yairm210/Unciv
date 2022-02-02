@@ -8,6 +8,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -118,6 +119,26 @@ class BasicTests {
             if (uniqueType.targetTypes.isEmpty()) {
                 println("${uniqueType.name} has no targets.")
                 allOK = false
+            }
+        }
+        Assert.assertTrue("This test succeeds only if all UniqueTypes have at least one UniqueTarget", allOK)
+    }
+
+    @Test
+    fun allDeprecatedUniqueTypesHaveReplacewithThatMatchesOtherType() {
+        var allOK = true
+        for (uniqueType in UniqueType.values()) {
+            val deprecationAnnotation = uniqueType.getDeprecationAnnotation() ?: continue
+            val replacementTextUnique = Unique(deprecationAnnotation.replaceWith.expression)
+            if (replacementTextUnique.type == null && !replacementTextUnique.text.contains(" OR ")) {
+                println("${uniqueType.name}'s deprecation text does not match any existing type!'")
+                allOK = false
+            }
+            for (conditional in replacementTextUnique.conditionals){
+                if (conditional.type==null){
+                    println("${uniqueType.name}'s deprecation text contains conditional \"${conditional.text}\" which does not match any existing type!'")
+                    allOK = false
+                }
             }
         }
         Assert.assertTrue("This test succeeds only if all UniqueTypes have at least one UniqueTarget", allOK)
