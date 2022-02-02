@@ -42,7 +42,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
     private var modCheckCheckBox: CheckBox? = null
-    private var modCheckResultCell: Cell<Actor>? = null
+    private var modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
 
     //endregion
@@ -265,14 +265,16 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             runModChecker(it)
         }
         add(modCheckCheckBox).row()
-        modCheckResultCell = add("Checking mods for errors...".toLabel())
+
+        modCheckResultTable.add("Checking mods for errors...".toLabel())
+        add(modCheckResultTable)
     }
 
     private fun runModChecker(complex: Boolean = false) {
         modCheckFirstRun = false
         if (modCheckCheckBox == null) return
         modCheckCheckBox!!.disable()
-        if (modCheckResultCell == null) return
+
         crashHandlingThread(name="ModChecker") {
             val lines = ArrayList<FormattedLine>()
             var noProblem = true
@@ -306,14 +308,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 // Instead, some manual work needs to be put in.
                 val resultTable = Table().apply { defaults().align(Align.left) }
                 for (line in lines) {
-                    val label = if (line.starred) Label(line.text+"\n", BaseScreen.skin)
+                    val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
                         .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
-                    else Label(line.text+"\n", BaseScreen.skin)
+                    else Label(line.text + "\n", BaseScreen.skin)
                         .apply { if (line.color != "") color = Color.valueOf(line.color) }
                     label.wrap = true
-                    resultTable.add(label).width(stage.width/2).row()
+                    resultTable.add(label).width(stage.width / 2).row()
                 }
-                modCheckResultCell?.setActor(resultTable)
+                modCheckResultTable.clear()
+                modCheckResultTable.add(resultTable)
                 modCheckCheckBox!!.enable()
             }
         }
