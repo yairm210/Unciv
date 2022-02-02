@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -27,7 +26,6 @@ import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
-import kotlin.concurrent.thread
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -279,8 +277,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             for (mod in RulesetCache.values.sortedBy { it.name }) {
                 var noProblem = true
                 val lines = ArrayList<FormattedLine>()
-                // Appending {} is a dirty trick to deactivate the automatic translation which would drop [] from unique messages
-                lines += FormattedLine("$mod", starred = true, header = 3)
 
                 val modLinks =
                     if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
@@ -305,19 +301,22 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
                     // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
                     // Instead, some manual work needs to be put in.
-                    val resultTable = Table().apply { defaults().align(Align.left) }
-                    for (line in lines) {
-                        val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
-                            .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
-                        else Label(line.text + "\n", BaseScreen.skin)
-                            .apply { if (line.color != "") color = Color.valueOf(line.color) }
-                        label.wrap = true
-                        resultTable.add(label).width(stage.width / 2).row()
+
+                    val expanderTab = ExpanderTab(mod.name, startsOutOpened = false){
+                        it.defaults().align(Align.left)
+                        for (line in lines) {
+                            val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
+                                .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
+                            else Label(line.text + "\n", BaseScreen.skin)
+                                .apply { if (line.color != "") color = Color.valueOf(line.color) }
+                            label.wrap = true
+                            it.add(label).width(stage.width / 2).row()
+                        }
                     }
 
                     val loadingLabel = modCheckResultTable.children.last()
                     modCheckResultTable.removeActor(loadingLabel)
-                    modCheckResultTable.add(resultTable).row()
+                    modCheckResultTable.add(expanderTab).row()
                     modCheckResultTable.add(loadingLabel).row()
                     modCheckCheckBox!!.enable()
                 }
