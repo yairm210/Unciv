@@ -1054,6 +1054,11 @@ Applicable to: Terrain
 #### Never receives any resources
 Applicable to: Terrain
 
+#### Becomes [terrainName] when adjacent to [terrainFilter]
+Example: "Becomes [terrainName] when adjacent to [Forest]"
+
+Applicable to: Terrain
+
 #### Considered [terrainQuality] when determining start locations
 Example: "Considered [Undesirable] when determining start locations"
 

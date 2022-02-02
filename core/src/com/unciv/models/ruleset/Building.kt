@@ -489,10 +489,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         rejectionReasons.add(RejectionReason.MustNotBeOnTile.apply { errorMessage = unique.text })
 
                 UniqueType.MustBeNextTo.placeholderText ->
-                    if (// Fresh water is special, in that rivers are not tiles themselves but also fit the filter.
-                        !(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver())
-                        && cityCenter.getTilesInDistance(1).none { it.matchesFilter(unique.params[0], civInfo) }
-                    )
+                    if (!cityCenter.isAdjacentTo(unique.params[0]))
                         rejectionReasons.add(RejectionReason.MustBeNextToTile.apply { errorMessage = unique.text })
 
                 UniqueType.MustNotBeNextTo.placeholderText ->
