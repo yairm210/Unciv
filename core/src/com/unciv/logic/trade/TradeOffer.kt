@@ -12,7 +12,7 @@ data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1
     constructor(
         name: String, 
         type: TradeType, 
-        amount: Int = -1, 
+        amount: Int = 1, 
         gameSpeed: GameSpeed = UncivGame.Current.gameInfo.gameParameters.gameSpeed
     ) : this(name, type, amount, duration = -1) {
         duration = when {
