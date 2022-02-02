@@ -266,7 +266,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
         add(modCheckCheckBox).row()
 
-        modCheckResultTable.add("Checking mods for errors...".toLabel())
+        modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
         add(modCheckResultTable)
     }
 
@@ -276,9 +276,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         modCheckCheckBox!!.disable()
 
         crashHandlingThread(name="ModChecker") {
-            val lines = ArrayList<FormattedLine>()
-            var noProblem = true
             for (mod in RulesetCache.values.sortedBy { it.name }) {
+                var noProblem = true
+                val lines = ArrayList<FormattedLine>()
                 // Appending {} is a dirty trick to deactivate the automatic translation which would drop [] from unique messages
                 lines += FormattedLine("$mod", starred = true, header = 3)
 
@@ -296,28 +296,36 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 }
                 if (modLinks.isNotOK()) noProblem = false
                 lines += FormattedLine()
-            }
-            if (noProblem) lines += FormattedLine("No problems found.".tr())
+                if (noProblem) lines += FormattedLine("No problems found.".tr())
 
-            postCrashHandlingRunnable {
-                // When the options popup is already closed before this postRunnable is run,
-                // Don't add the labels, as otherwise the game will crash
-                if (stage == null) return@postCrashHandlingRunnable
-                // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
-                // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
-                // Instead, some manual work needs to be put in.
-                val resultTable = Table().apply { defaults().align(Align.left) }
-                for (line in lines) {
-                    val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
-                        .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
-                    else Label(line.text + "\n", BaseScreen.skin)
-                        .apply { if (line.color != "") color = Color.valueOf(line.color) }
-                    label.wrap = true
-                    resultTable.add(label).width(stage.width / 2).row()
+                postCrashHandlingRunnable {
+                    // When the options popup is already closed before this postRunnable is run,
+                    // Don't add the labels, as otherwise the game will crash
+                    if (stage == null) return@postCrashHandlingRunnable
+                    // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
+                    // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
+                    // Instead, some manual work needs to be put in.
+                    val resultTable = Table().apply { defaults().align(Align.left) }
+                    for (line in lines) {
+                        val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
+                            .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
+                        else Label(line.text + "\n", BaseScreen.skin)
+                            .apply { if (line.color != "") color = Color.valueOf(line.color) }
+                        label.wrap = true
+                        resultTable.add(label).width(stage.width / 2).row()
+                    }
+
+                    val loadingLabel = modCheckResultTable.children.last()
+                    modCheckResultTable.removeActor(loadingLabel)
+                    modCheckResultTable.add(resultTable).row()
+                    modCheckResultTable.add(loadingLabel).row()
+                    modCheckCheckBox!!.enable()
                 }
-                modCheckResultTable.clear()
-                modCheckResultTable.add(resultTable)
-                modCheckCheckBox!!.enable()
+            }
+
+            // done with all mods!
+            postCrashHandlingRunnable {
+                modCheckResultTable.removeActor(modCheckResultTable.children.last())
             }
         }
     }
