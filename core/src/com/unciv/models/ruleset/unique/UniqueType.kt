@@ -75,17 +75,17 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatsFromXPopulation("[stats] in cities with [amount] or more population", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     
     StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.18.14", ReplaceWith("[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"))
+    @Deprecated("as of 3.18.14", ReplaceWith("[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"))
     StatsFromCitiesBefore("[stats] per turn from cities before [tech/policy]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromBuildings("[stats] from all [buildingFilter] buildings", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.19.1", ReplaceWith("[stats] from every [Wonder]"))
+    @Deprecated("as of 3.19.1", ReplaceWith("[stats] from every [Wonder]"))
     StatsFromWondersDeprecated("[stats] from every Wonder", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsSpendingGreatPeople("[stats] whenever a Great Person is expended", UniqueTarget.Global),
     StatsFromTiles("[stats] from [tileFilter] tiles [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromTilesWithout("[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // This is a doozy
     StatsFromObject("[stats] from every [tileFilter/specialist/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.19.3", ReplaceWith("[stats] from every [buildingFilter] <in cities where this religion has at least [amount] followers>"))
+    @Deprecated("as of 3.19.3", ReplaceWith("[stats] from every [buildingFilter] <in cities where this religion has at least [amount] followers>"))
     StatsForBuildingsWithFollowers("[stats] from every [buildingFilter] in cities where this religion has at least [amount] followers", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsFromTradeRoute("[stats] from each Trade Route", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
@@ -93,10 +93,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatPercentBonus("[amount]% [stat]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentBonusCities("[amount]% [stat] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromObject("[amount]% [stat] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% [stat] from every [tileFilter/specialist/buildingName]"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+amount]% [stat] from every [tileFilter/specialist/buildingName]"))
     StatPercentSignedFromObject("+[amount]% [stat] from every [tileFilter/specialist/buildingName]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     AllStatsPercentFromObject("[amount]% Yield from every [tileFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% Yield from every [tileFilter]"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+amount]% Yield from every [tileFilter]"))
     AllStatsSignedPercentFromObject("+[amount]% yield from every [tileFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatPercentFromReligionFollowers("[amount]% [stat] from every follower, up to [amount]%", UniqueTarget.FollowerBelief),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
@@ -108,7 +108,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PercentProductionBuildings("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionUnits("[amount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     PercentProductionBuildingsInCapital("[amount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.19.3", ReplaceWith("[+25]% Production towards any buildings that already exist in the Capital"))
+    @Deprecated("as of 3.19.3", ReplaceWith("[+25]% Production towards any buildings that already exist in the Capital"))
     PercentProductionBuildingsInCapitalDeprecated("+25% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     //endregion Stat providing uniques
@@ -133,16 +133,16 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CityStateCanGiftGreatPeople("Allied City-States will occasionally gift Great People", UniqueTarget.Global),  // used in Policy
     CityStateDeprecated("Will not be chosen for new games", UniqueTarget.Nation), // implemented for CS only for now
     CityStateInfluenceDegradation("[amount]% City-State Influence degradation", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[-amount]% City-State Influence degradation"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[-amount]% City-State Influence degradation"))
     CityStateInfluenceDegradationDeprecated("City-State Influence degrades [amount]% slower", UniqueTarget.Global),
     CityStateRestingPoint("Resting point for Influence with City-States is increased by [amount]", UniqueTarget.Global),
     
     CityStateStatPercent("Allied City-States provide [stat] equal to [amount]% of what they produce for themselves", UniqueTarget.Global),
     CityStateResources("[amount]% resources gifted by City-States",  UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% resources gifted by City-States"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+amount]% resources gifted by City-States"))
     CityStateResourcesDeprecated("Quantity of Resources gifted by City-States increased by [amount]%", UniqueTarget.Global),
     CityStateLuxuryHappiness("[amount]% Happiness from luxury resources gifted by City-States", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% Happiness from luxury resources gifted by City-States"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+amount]% Happiness from luxury resources gifted by City-States"))
     CityStateLuxuryHappinessDeprecated("Happiness from Luxury Resources gifted by City-States increased by [amount]%", UniqueTarget.Global),
 
     // endregion
@@ -157,9 +157,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     CarryOverFood("[amount]% Food is carried over after population increases [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.19.2", ReplaceWith("[amount]% Food is carried over after population increases [cityFilter]"))
+    @Deprecated("as of 3.19.2", ReplaceWith("[amount]% Food is carried over after population increases [cityFilter]"))
     CarryOverFoodDeprecated("[amount]% of food is carried over after population increases", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.19.2", ReplaceWith("[amount]% Food is carried over after population increases [cityFilter]"))
+    @Deprecated("as of 3.19.2", ReplaceWith("[amount]% Food is carried over after population increases [cityFilter]"))
     CarryOverFoodAlsoDeprecated("[amount]% of food is carried over [cityFilter] after population increases", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
@@ -176,14 +176,14 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ExcessHappinessToGlobalStat("[amount]% of excess happiness converted to [stat]", UniqueTarget.Global),
 
     BorderGrowthPercentage("[amount]% Culture cost of natural border growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.19.2", ReplaceWith("[amount]% Culture cost of natural border growth [cityFilter]"))
+    @Deprecated("as of 3.19.2", ReplaceWith("[amount]% Culture cost of natural border growth [cityFilter]"))
     BorderGrowthPercentageWithoutPercentageSign("[amount]% Culture cost of natural border growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.19.1", ReplaceWith("[-amount]% Culture cost of natural border growth [cityFilter]"))
+    @Deprecated("as of 3.19.1", ReplaceWith("[-amount]% Culture cost of natural border growth [cityFilter]"))
     DecreasedAcquiringTilesCost("-[amount]% Culture cost of acquiring tiles [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.19.1", ReplaceWith("[amount]% Culture cost of natural border growth [cityFilter]"))
+    @Deprecated("as of 3.19.1", ReplaceWith("[amount]% Culture cost of natural border growth [cityFilter]"))
     CostOfNaturalBorderGrowth("[amount]% cost of natural border growth", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     TileCostPercentage("[amount]% Gold cost of acquiring tiles [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
-    @Deprecated("As of 3.19.1", ReplaceWith("[-amount]% Gold cost of acquiring tiles [cityFilter]"))
+    @Deprecated("as of 3.19.1", ReplaceWith("[-amount]% Gold cost of acquiring tiles [cityFilter]"))
     TileCostPercentageDiscount("-[amount]% Gold cost of acquiring tiles [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     // There is potential to merge these
@@ -205,18 +205,18 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     BuyItemsDiscount("[stat] cost of purchasing items in cities [amount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyBuildingsDiscount("[stat] cost of purchasing [buildingFilter] buildings [amount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     BuyUnitsDiscount("[stat] cost of purchasing [baseUnitFilter] units [amount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.19.3", ReplaceWith("[stat] cost of purchasing [baseUnitFilter] units [amount]%"))
+    @Deprecated("as of 3.19.3", ReplaceWith("[stat] cost of purchasing [baseUnitFilter] units [amount]%"))
     BuyUnitsDiscountDeprecated("[stat] cost of purchasing [baseUnitFilter] units in cities [amount]%", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     // Should be replaced with moddable improvements when roads become moddable
     RoadMovementSpeed("Improves movement speed on roads",UniqueTarget.Global),
     RoadsConnectAcrossRivers("Roads connect tiles across rivers", UniqueTarget.Global),
     RoadMaintenance("[amount]% maintenance on road & railroads", UniqueTarget.Global), 
-    @Deprecated("As of 3.18.17", ReplaceWith("[-amount]% maintenance on road & railroads"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[-amount]% maintenance on road & railroads"))
     DecreasedRoadMaintenanceDeprecated("Maintenance on roads & railroads reduced by [amount]%", UniqueTarget.Global),
     
     BuildingMaintenance("[amount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.18.17", ReplaceWith("[-amount]% maintenance cost for buildings [cityFilter]"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[-amount]% maintenance cost for buildings [cityFilter]"))
     DecreasedBuildingMaintenanceDeprecated("-[amount]% maintenance cost for buildings [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     
     // This should probably support conditionals, e.g. <after discovering [tech]>
@@ -225,13 +225,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     RetainHappinessFromLuxury("Retain [amount]% of the happiness from a luxury after the last copy has been traded away", UniqueTarget.Global),
     BonusHappinessFromLuxury("[amount] Happiness from each type of luxury resource", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+amount] Happiness from each type of luxury resource"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+amount] Happiness from each type of luxury resource"))
     BonusHappinessFromLuxuryDeprecated("+[amount] happiness from each type of luxury resource", UniqueTarget.Global),
     LessPolicyCostFromCities("Each city founded increases culture cost of policies [amount]% less than normal", UniqueTarget.Global),
     LessPolicyCost("[amount]% Culture cost of adopting new Policies", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[-amount]% Culture cost of adopting new Policies"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[-amount]% Culture cost of adopting new Policies"))
     LessPolicyCostDeprecated("Culture cost of adopting new Policies reduced by [amount]%", UniqueTarget.Global),
-    @Deprecated("As of 3.19.1", ReplaceWith("[amount]% Culture cost of adopting new Policies"))
+    @Deprecated("as of 3.19.1", ReplaceWith("[amount]% Culture cost of adopting new Policies"))
     LessPolicyCostDeprecated2("[amount]% Culture cost of adopting new policies", UniqueTarget.Global),
 
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
@@ -242,7 +242,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
     
     BetterDefensiveBuildings("[amount]% City Strength from defensive buildings", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+25]% City Strength from defensive buildings"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+25]% City Strength from defensive buildings"))
     DefensiveBuilding25("Defensive buildings in all cities are 25% more effective", UniqueTarget.Global),
     
     TileImprovementTime("[amount]% tile improvement construction time", UniqueTarget.Global),
@@ -250,23 +250,23 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     
-    @Deprecated("As of 3.18.17", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units> <when adjacent to a [mapUnitFilter] unit>"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units> <when adjacent to a [mapUnitFilter] unit>"))
     StrengthFromAdjacentUnits("[amount]% Strength for [mapUnitFilter] units which have another [mapUnitFilter] unit in an adjacent tile", UniqueTarget.Unit, UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[-amount]% Gold cost of upgrading <for [baseUnitFilter] units>"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[-amount]% Gold cost of upgrading <for [baseUnitFilter] units>"))
     ReducedUpgradingGoldCost("Gold cost of upgrading [baseUnitFilter] units reduced by [amount]%", UniqueTarget.Unit, UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+100]% Gold from Great Merchant trade missions"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+100]% Gold from Great Merchant trade missions"))
     DoubleGoldFromTradeMissions("Double gold from Great Merchant trade missions", UniqueTarget.Global),
 
     GoldenAgeLength("[amount]% Golden Age length", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% Golden Age length"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+amount]% Golden Age length"))
     GoldenAgeLengthIncreased("Golden Age length increased by [amount]%", UniqueTarget.Global),
     
     StrengthForCities("[amount]% Strength for cities", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% Strength for cities <when defending>"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+amount]% Strength for cities <when defending>"))
     StrengthForCitiesDefending("+[amount]% Defensive Strength for cities", UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("[+amount]% Strength for cities <when attacking>"))
+    @Deprecated("as of 3.18.17", ReplaceWith("[+amount]% Strength for cities <when attacking>"))
     StrengthForCitiesAttacking("[amount]% Attacking Strength for cities", UniqueTarget.Global),
-    @Deprecated("As of 3.19.1", ReplaceWith("[+amount]% Strength for cities <with a garrison> <when attacking>"))
+    @Deprecated("as of 3.19.1", ReplaceWith("[+amount]% Strength for cities <with a garrison> <when attacking>"))
     StrengthForGarrisonedCitiesAttacking("+[amount]% attacking strength for cities with garrisoned units", UniqueTarget.Global),
     
     UnitStartingExperience("New [baseUnitFilter] units start with [amount] Experience [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -277,11 +277,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     EmbarkedUnitsMayEnterOcean("Enables embarked units to enter ocean tiles", UniqueTarget.Global),
     
     PopulationLossFromNukes("Population loss from nuclear attacks [amount]% [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.19.2", ReplaceWith("Population loss from nuclear attacks [-amount]% [in this city]"))
+    @Deprecated("as of 3.19.2", ReplaceWith("Population loss from nuclear attacks [-amount]% [in this city]"))
     PopulationLossFromNukesDeprecated("Population loss from nuclear attacks -[amount]%", UniqueTarget.Global),
     
     NaturalReligionSpreadStrength("[amount]% Natural religion spread [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
-    @Deprecated("As of 3.19.3", ReplaceWith("[amount]% Natural religion spread [cityFilter] <after discovering [tech]> OR [amount]% natural religion spread [cityFilter] <after adopting [policy]>"))
+    @Deprecated("as of 3.19.3", ReplaceWith("[amount]% Natural religion spread [cityFilter] <after discovering [tech]> OR [amount]% natural religion spread [cityFilter] <after adopting [policy]>"))
     NaturalReligionSpreadStrengthWith("[amount]% Natural religion spread [cityFilter] with [tech/policy]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     
@@ -350,7 +350,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     Range("[amount] Range", UniqueTarget.Unit, UniqueTarget.Global),
     Heal("[amount] HP when healing", UniqueTarget.Unit, UniqueTarget.Global),
     SpreadReligionStrength("[amount]% Spread Religion Strength", UniqueTarget.Unit, UniqueTarget.Global),
-    @Deprecated("As of 3.19.4", ReplaceWith("[amount] HP when healing <in [tileFilter] tiles>"))
+    @Deprecated("as of 3.19.4", ReplaceWith("[amount] HP when healing <in [tileFilter] tiles>"))
     HealInTiles("[amount] HP when healing in [tileFilter] tiles", UniqueTarget.Unit, UniqueTarget.Global),
     
     MayFoundReligion("May found a religion", UniqueTarget.Unit),
@@ -369,7 +369,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     MayWithdraw("May withdraw before melee ([amount]%)", UniqueTarget.Unit),
     
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
-    @Deprecated("As of 3.18.17", ReplaceWith("No movement cost to pillage <for [Melee] units>"), DeprecationLevel.WARNING)
+    @Deprecated("as of 3.18.17", ReplaceWith("No movement cost to pillage <for [Melee] units>"), DeprecationLevel.WARNING)
     NoMovementToPillageMelee("Melee units pay no movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     CanMoveAfterAttacking("Can move after attacking", UniqueTarget.Unit),
     MoveImmediatelyOnceBought("Can move immediately once bought", UniqueTarget.Unit),
@@ -380,7 +380,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     HealOnlyByPillaging("Can only heal by pillaging", UniqueTarget.Unit, UniqueTarget.Global),
     HealsEvenAfterAction("Unit will heal every turn, even if it performs an action", UniqueTarget.Unit),
     HealAdjacentUnits("All adjacent units heal [amount] HP when healing", UniqueTarget.Unit),
-    @Deprecated("As of 3.19.3", ReplaceWith("All adjacent units heal [+15] HP when healing"))
+    @Deprecated("as of 3.19.3", ReplaceWith("All adjacent units heal [+15] HP when healing"))
     HealAdjacentUnitsDeprecated("Heal adjacent units for an additional 15 HP per turn", UniqueTarget.Unit, UniqueTarget.Global),
 
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
@@ -430,12 +430,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     SpaceshipPart("Spaceship part", UniqueTarget.Building, UniqueTarget.Unit),
 
 
-    @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat"), DeprecationLevel.WARNING)
+    @Deprecated("as of 3.18.12", ReplaceWith("[amount]% XP gained from combat"), DeprecationLevel.WARNING)
     BonuxXPGain("[amount]% Bonus XP gain", UniqueTarget.Unit),
-    @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    @Deprecated("as of 3.18.12", ReplaceWith("[amount]% XP gained from combat <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     BonusXPGainForUnits("[mapUnitFilter] units gain [amount]% more Experience from combat", UniqueTarget.Global),
 
-    @Deprecated("As of 3.18.14", ReplaceWith("[amount]% maintenance costs <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
+    @Deprecated("as of 3.18.14", ReplaceWith("[amount]% maintenance costs <for [mapUnitFilter] units>"), DeprecationLevel.WARNING)
     UnitMaintenanceDiscountGlobal("[amount]% maintenance costs for [mapUnitFilter] units", UniqueTarget.Global),
     
     
@@ -521,7 +521,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     DefensiveBonus("Gives a defensive bonus of [amount]%", UniqueTarget.Improvement),
     ImprovementMaintenance("Costs [amount] gold per turn when in your territory", UniqueTarget.Improvement), // Unused
     DamagesAdjacentEnemyUnits("Adjacent enemy units ending their turn take [amount] damage", UniqueTarget.Improvement),
-    @Deprecated("As of 3.18.17", ReplaceWith("Adjacent enemy units ending their turn take [amount] damage"), DeprecationLevel.WARNING)
+    @Deprecated("as of 3.18.17", ReplaceWith("Adjacent enemy units ending their turn take [amount] damage"), DeprecationLevel.WARNING)
     DamagesAdjacentEnemyUnitsOld("Deal [amount] damage to adjacent enemy units", UniqueTarget.Improvement),
     
     GreatImprovement("Great Improvement", UniqueTarget.Improvement),
@@ -640,88 +640,88 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // endregion    
 
     // region DEPRECATED AND REMOVED
-    @Deprecated("As of 3.18.2", ReplaceWith("[50]% of excess happiness converted to [Culture]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.18.2", ReplaceWith("[50]% of excess happiness converted to [Culture]"), DeprecationLevel.ERROR)
     ExcessHappinessToCultureDeprecated("50% of excess happiness added to culture towards policies", UniqueTarget.Global),
-    @Deprecated("As of 3.16.11", ReplaceWith("Not displayed as an available construction without [buildingName]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.16.11", ReplaceWith("Not displayed as an available construction without [buildingName]"), DeprecationLevel.ERROR)
     NotDisplayedUnlessOtherBuildingBuilt("Not displayed as an available construction unless [buildingName] is built", UniqueTarget.Building),
-    @Deprecated("As of 3.18.2", ReplaceWith("[-amount]% Food consumption by specialists [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.18.2", ReplaceWith("[-amount]% Food consumption by specialists [cityFilter]"), DeprecationLevel.ERROR)
     FoodConsumptionBySpecialistsDeprecated("-[amount]% food consumption by specialists [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.18.6", ReplaceWith("Cannot enter ocean tiles <before discovering [Astronomy]>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.18.6", ReplaceWith("Cannot enter ocean tiles <before discovering [Astronomy]>"), DeprecationLevel.ERROR)
     CannotEnterOceanUntilAstronomy("Cannot enter ocean tiles until Astronomy", UniqueTarget.Unit),
-    @Deprecated("As of 3.18.5", ReplaceWith("Cannot be built on [tileFilter] tiles <before discovering [tech]>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.18.5", ReplaceWith("Cannot be built on [tileFilter] tiles <before discovering [tech]>"), DeprecationLevel.ERROR)
     RequiresTechToBuildOnTile("Cannot be built on [tileFilter] tiles until [tech] is discovered", UniqueTarget.Improvement),
 
-    @Deprecated("As of 3.17.9, removed as of 3.19.3", ReplaceWith ("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.9, removed as of 3.19.3", ReplaceWith ("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"), DeprecationLevel.ERROR)
     BuyUnitsIncreasingCostEra("May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])", UniqueTarget.Global),
 
-    @Deprecated("As of 3.17.10 - removed 3.18.19", ReplaceWith("[stats] from [tileFilter] tiles <after discovering [tech]>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.19", ReplaceWith("[stats] from [tileFilter] tiles <after discovering [tech]>"), DeprecationLevel.ERROR)
     StatsOnTileWithTech("[stats] on [tileFilter] tiles once [tech] is discovered", UniqueTarget.Improvement),
-    @Deprecated("As of 3.17.10 - removed 3.18.19", ReplaceWith("[stats] <after discovering [tech]>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.19", ReplaceWith("[stats] <after discovering [tech]>"), DeprecationLevel.ERROR)
     StatsWithTech("[stats] once [tech] is discovered", UniqueTarget.Improvement, UniqueTarget.Building),
-    @Deprecated("As of 3.17.10 - removed 3.18.19", ReplaceWith("Adjacent enemy units ending their turn take [30] damage"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.19", ReplaceWith("Adjacent enemy units ending their turn take [30] damage"), DeprecationLevel.ERROR)
     DamagesAdjacentEnemyUnitsForExactlyThirtyDamage("Deal 30 damage to adjacent enemy units", UniqueTarget.Improvement),
-    @Deprecated("As of 3.17.7 - removed 3.18.19", ReplaceWith("Gain a free [buildingName] [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.7 - removed 3.18.19", ReplaceWith("Gain a free [buildingName] [cityFilter]"), DeprecationLevel.ERROR)
     ProvidesFreeBuildings("Provides a free [buildingName] [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.17.10 - removed 3.18.18", ReplaceWith("[+amount]% [stat] [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.18", ReplaceWith("[+amount]% [stat] [cityFilter]"), DeprecationLevel.ERROR)
     StatPercentBonusCitiesDeprecated("+[amount]% [stat] [cityFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.17.10 - removed 3.18.18", ReplaceWith("[+amount]% [stat] [in all cities]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.18", ReplaceWith("[+amount]% [stat] [in all cities]"), DeprecationLevel.ERROR)
     StatPercentBonusCitiesDeprecated2("+[amount]% [stat] in all cities", UniqueTarget.Global),
     // type added 3.18.5
-    @Deprecated("As of 3.17.1 - removed 3.18.18", ReplaceWith("[amount]% [stat] [in all cities] <while the empire is happy>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.1 - removed 3.18.18", ReplaceWith("[amount]% [stat] [in all cities] <while the empire is happy>"), DeprecationLevel.ERROR)
     StatPercentBonusCitiesDeprecatedWhileEmpireHappy("[amount]% [stat] while the empire is happy", UniqueTarget.Global),
 
-    @Deprecated("As of 3.16.15 - removed 3.18.4", ReplaceWith("Provides the cheapest [stat] building in your first [amount] cities for free"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.16.15 - removed 3.18.4", ReplaceWith("Provides the cheapest [stat] building in your first [amount] cities for free"), DeprecationLevel.ERROR)
     FreeStatBuildingsDeprecated("Immediately creates the cheapest available cultural building in each of your first [amount] cities for free", UniqueTarget.Global),
-    @Deprecated("As of 3.16.15 - removed 3.18.4", ReplaceWith("Provides a [buildingName] in your first [amount] cities for free"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.16.15 - removed 3.18.4", ReplaceWith("Provides a [buildingName] in your first [amount] cities for free"), DeprecationLevel.ERROR)
     FreeSpecificBuildingsDeprecated("Immediately creates a [buildingName] in each of your first [amount] cities for free", UniqueTarget.Global),
 
 
 
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[+amount]% Strength <when attacking>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[+amount]% Strength <when attacking>"), DeprecationLevel.ERROR)
     StrengthAttacking("+[amount]% Strength when attacking", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[+amount]% Strength <when defending>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[+amount]% Strength <when defending>"), DeprecationLevel.ERROR)
     StrengthDefending("+[amount]% Strength when defending", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <when defending> <vs [mapUnitFilter] units>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <when defending> <vs [mapUnitFilter] units>"), DeprecationLevel.ERROR)
     StrengthDefendingUnitFilter("[amount]% Strength when defending vs [mapUnitFilter] units", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[+amount]% Strength <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[+amount]% Strength <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
     DamageForUnits("[mapUnitFilter] units deal +[amount]% damage", UniqueTarget.Global),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[+10]% Strength <for [All] units> <during a Golden Age>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[+10]% Strength <for [All] units> <during a Golden Age>"), DeprecationLevel.ERROR)
     StrengthGoldenAge("+10% Strength for all units during Golden Age", UniqueTarget.Global),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <when fighting in [tileFilter] tiles> <when defending>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <when fighting in [tileFilter] tiles> <when defending>"), DeprecationLevel.ERROR)
     StrengthDefenseTiles("+[amount]% defence in [tileFilter] tiles", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <when fighting in [tileFilter] tiles>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <when fighting in [tileFilter] tiles>"), DeprecationLevel.ERROR)
     StrengthIn("+[amount]% Strength in [tileFilter]", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units> <when fighting in [tileFilter] tiles>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Strength <for [mapUnitFilter] units> <when fighting in [tileFilter] tiles>"), DeprecationLevel.ERROR)
     StrengthUnitsTiles("[amount]% Strength for [mapUnitFilter] units in [tileFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[+15]% Strength <for [All] units> <vs cities> <when attacking>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[+15]% Strength <for [All] units> <vs cities> <when attacking>"), DeprecationLevel.ERROR)
     StrengthVsCities("+15% Combat Strength for all units when attacking Cities", UniqueTarget.Global),
 
 
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[+amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[+amount] Movement <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
     MovementUnits("+[amount] Movement for all [mapUnitFilter] units", UniqueTarget.Global),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[+1] Movement <for [All] units> <during a Golden Age>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[+1] Movement <for [All] units> <during a Golden Age>"), DeprecationLevel.ERROR)
     MovementGoldenAge("+1 Movement for all units during Golden Age", UniqueTarget.Global),
 
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount] Sight <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[amount] Sight <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
     SightUnits("[amount] Sight for all [mapUnitFilter] units", UniqueTarget.Global),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount] Sight"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[amount] Sight"), DeprecationLevel.ERROR)
     VisibilityRange("[amount] Visibility Range", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[-1] Sight"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[-1] Sight"), DeprecationLevel.ERROR)
     LimitedVisibility("Limited Visibility", UniqueTarget.Unit),
 
-    @Deprecated("As of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Spread Religion Strength <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.5 - removed 3.18.5", ReplaceWith("[amount]% Spread Religion Strength <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
     SpreadReligionStrengthUnits("[amount]% Spread Religion Strength for [mapUnitFilter] units", UniqueTarget.Global),
 
-    @Deprecated("As of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [baseUnitFilter] units [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [baseUnitFilter] units [cityFilter]"), DeprecationLevel.ERROR)
     PercentProductionUnitsDeprecated("+[amount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global),
 
-    @Deprecated("As of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
     PercentProductionStatBuildings("+[amount]% Production when constructing [stat] buildings", UniqueTarget.Global),
-    @Deprecated("As of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
     PercentProductionConstructions("+[amount]% Production when constructing [constructionFilter]", UniqueTarget.Global),
-    @Deprecated("As of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
     PercentProductionBuildingName("+[amount]% Production when constructing a [buildingName]", UniqueTarget.Global),
-    @Deprecated("As of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
     PercentProductionConstructionsCities("+[amount]% Production when constructing [constructionFilter] [cityFilter]", UniqueTarget.Global),
 
     // endregion
