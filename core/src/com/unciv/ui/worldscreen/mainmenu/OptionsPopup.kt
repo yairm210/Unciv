@@ -313,7 +313,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     val expanderTab = ExpanderTab(mod.name, startsOutOpened = false){
                         it.defaults().align(Align.left)
                         if (!noProblem && mod.folderLocation != null)
-                            it.add("Autoupdate mod uniques".toTextButton().onClick { autoUpdateUniques(mod) }).row()
+                            it.add("Autoupdate mod uniques".toTextButton()
+                                .onClick { autoUpdateUniques(mod) }).pad(10f).row()
                         for (line in lines) {
                             val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
                                 .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
