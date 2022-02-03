@@ -127,8 +127,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalAdjacentUnit ->
                 state.civInfo != null 
                 && relevantUnit != null
-                && relevantUnit!!.currentTile.neighbors.any {
+                && relevantUnitTile!!.neighbors.any {
                     it.militaryUnit != null
+                    && it.militaryUnit != relevantUnit
                     && it.militaryUnit!!.civInfo == state.civInfo    
                     && it.militaryUnit!!.matchesFilter(condition.params[0])
                 }
