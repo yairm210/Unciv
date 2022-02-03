@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.logic.battle.CombatAction
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
@@ -53,6 +54,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleSet
         val relevantUnitTile by lazy { state.attackedTile ?: state.unit?.getTile() }
+        val relevantUnit by lazy {
+            if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
+            else state.unit
+        }
 
         return when (condition.type) {
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
@@ -120,7 +125,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                             != state.unit.getTile().getContinent()
                     )
             UniqueType.ConditionalAdjacentUnit ->
-                state.civInfo != null && relevantUnitTile!!.neighbors.any {
+                state.civInfo != null 
+                && relevantUnit != null
+                && relevantUnit!!.currentTile.neighbors.any {
                     it.militaryUnit != null
                     && it.militaryUnit!!.civInfo == state.civInfo    
                     && it.militaryUnit!!.matchesFilter(condition.params[0])
