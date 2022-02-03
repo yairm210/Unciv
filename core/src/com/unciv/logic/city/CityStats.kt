@@ -22,7 +22,7 @@ class StatTreeNode {
     private var innerStats: Stats? = null
 
     private fun addInnerStats(stats: Stats) {
-        if (innerStats == null) innerStats = stats
+        if (innerStats == null) innerStats = stats.clone() // Copy the stats instead of referencing them
         else innerStats!!.add(stats) // What happens if we add 2 stats to the same leaf?
     }
 
