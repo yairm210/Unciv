@@ -12,12 +12,10 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
-import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
@@ -312,9 +310,12 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
                     val expanderTab = ExpanderTab(mod.name, startsOutOpened = false){
                         it.defaults().align(Align.left)
-                        if (!noProblem && mod.folderLocation != null)
-                            it.add("Autoupdate mod uniques".toTextButton()
-                                .onClick { autoUpdateUniques(mod) }).pad(10f).row()
+                        if (!noProblem && mod.folderLocation != null) {
+                            val replaceableUniques = getDeprecatedReplaceableUniques(mod)
+                            if (replaceableUniques.isNotEmpty())
+                                it.add("Autoupdate mod uniques".toTextButton()
+                                    .onClick { autoUpdateUniques(mod, replaceableUniques) }).pad(10f).row()
+                        }
                         for (line in lines) {
                             val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
                                 .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
@@ -340,10 +341,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
     }
 
-    private fun autoUpdateUniques(mod:Ruleset) {
-
-        val allDeprecatedUniques = HashSet<String>()
-        val deprecatedUniquesToReplacementText = HashMap<String, String>()
+    private fun getDeprecatedReplaceableUniques(mod:Ruleset): HashMap<String, String> {
 
         val objectsToCheck = sequenceOf(
             mod.units,
@@ -353,17 +351,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             mod.policies,
             mod.nations,
             mod.beliefs,
+            mod.technologies,
         )
-
-        val filesToReplace = listOf(
-            "Units.json",
-            "TileImprovements.json",
-            "UnitPromotions.json",
-            "Buildings.json",
-            "Policies.json",
-            "Nations.json",
-            "Beliefs.json",
-        )
+        val allDeprecatedUniques = HashSet<String>()
+        val deprecatedUniquesToReplacementText = HashMap<String, String>()
 
         val deprecatedUniques = objectsToCheck
             .flatMap { it.values }
@@ -408,20 +399,34 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             deprecatedUniquesToReplacementText[deprecatedUnique.text] = uniqueReplacementText
             println("Replace \"${deprecatedUnique.text}\" with \"$uniqueReplacementText\"")
         }
+        return deprecatedUniquesToReplacementText
+    }
 
+    private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>, ) {
+
+        val filesToReplace = listOf(
+            "Units.json",
+            "TileImprovements.json",
+            "UnitPromotions.json",
+            "Buildings.json",
+            "Policies.json",
+            "Nations.json",
+            "Beliefs.json",
+            "Techs.json",
+        )
 
         val jsonFolder = mod.folderLocation!!.child("jsons")
         for (fileName in filesToReplace) {
             val file = jsonFolder.child(fileName)
             if (!file.exists() || file.isDirectory) continue
             var newFileText = file.readString()
-            for ((original, replacement) in deprecatedUniquesToReplacementText) {
+            for ((original, replacement) in replaceableUniques) {
                 newFileText = newFileText.replace("\"$original\"", "\"$replacement\"")
             }
             file.writeString(newFileText, false)
         }
         val toastText = "Replaced the following uniques:\n" +
-                deprecatedUniquesToReplacementText.map { "\"${it.key}\" to \"${it.value}\"" }
+                replaceableUniques.map { "\"${it.key}\" to \"${it.value}\"" }
                     .joinToString("\n")
         ToastPopup(toastText, screen)
         RulesetCache.loadRulesets()
