@@ -1527,6 +1527,8 @@ Applicable to: Conditional
  - "-[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength <vs [combatantFilter] units> OR <vs cities>"
  - "+[amount]% Combat Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"
  - "+1 Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+1] Sight"
+ - "+[amount] Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+amount] Sight"
+ - "+[amount] Sight for all [mapUnitFilter] units" - Deprecated Extremely old - used for auto-updates only, replace with "[+amount] Sight <for [mapUnitFilter] units>"
  - "+2 Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+2] Sight"
  - "Can build improvements on tiles" - Deprecated Extremely old - used for auto-updates only, replace with "Can build [Land] improvements on tiles"
  - "Science gained from research agreements +50%" - Deprecated Extremely old - used for auto-updates only, replace with "Science gained from research agreements [+50]%"

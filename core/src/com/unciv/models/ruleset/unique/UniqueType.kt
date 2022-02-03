@@ -771,6 +771,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+1] Sight"), DeprecationLevel.ERROR)
     Plus1SightForAutoupdates("+1 Visibility Range", UniqueTarget.Unit),
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+amount] Sight"), DeprecationLevel.ERROR)
+    PlusSightForAutoupdates("+[amount] Visibility Range", UniqueTarget.Unit),
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+amount] Sight <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
+    PlusSightForAutoupdates2("+[amount] Sight for all [mapUnitFilter] units", UniqueTarget.Unit),
     @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+2] Sight"), DeprecationLevel.ERROR)
     Plus2SightForAutoupdates("+2 Visibility Range", UniqueTarget.Unit),
     @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("Can build [Land] improvements on tiles"), DeprecationLevel.ERROR)
