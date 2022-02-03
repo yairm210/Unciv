@@ -761,7 +761,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
     @Deprecated("As of 3.16.16 - removed as of 3.17.11", ReplaceWith("[amount]% maintenance costs <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
     DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UniqueTarget.Global),
-    @Deprecated("As of 3.16.16 - removed 3.17.11", ReplaceWith("[amount]% maintenance costs <for [mapUnitFilter] units>"), DeprecationLevel.ERROR)
+    @Deprecated("As of 3.16.16 - removed 3.17.11", ReplaceWith("[amount]% maintenance costs <for [All] units>"), DeprecationLevel.ERROR)
     DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UniqueTarget.Global),
 
     @Deprecated("As of 3.16.16 - removed 3.17.11", ReplaceWith("[stats] from every specialist [in all cities]"), DeprecationLevel.ERROR)
@@ -769,6 +769,25 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     @Deprecated("As of 3.16.16 - removed 3.17.11", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
     StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
 
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+1] Sight"), DeprecationLevel.ERROR)
+    Plus1SightForAutoupdates("+1 Visibility Range", UniqueTarget.Unit),
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+2] Sight"), DeprecationLevel.ERROR)
+    Plus2SightForAutoupdates("+2 Visibility Range", UniqueTarget.Unit),
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("Can build [Land] improvements on tiles"), DeprecationLevel.ERROR)
+    CanBuildImprovementsOnTiles("Can build improvements on tiles", UniqueTarget.Unit),
+
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+1] Happiness from each type of luxury resource"))
+    BonusHappinessFromLuxuryDeprecated2("+1 happiness from each type of luxury resource", UniqueTarget.Global),
+
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("Science gained from research agreements [+50]%"), DeprecationLevel.ERROR)
+    ScienceGainedResearchAgreementsDeprecated("Science gained from research agreements +50%", UniqueTarget.Unit),
+
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[-33]% maintenance costs <for [All] units>"), DeprecationLevel.ERROR)
+    DecreasedUnitMaintenanceCostsGlobally2("-33% unit upkeep costs", UniqueTarget.Global),
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[-50]% Food consumption by specialists [in all cities]"), DeprecationLevel.ERROR)
+    FoodConsumptionBySpecialistsDeprecated2("-50% food consumption by specialists", UniqueTarget.Global),
+    @Deprecated("Extremely old - used for auto-updates only", ReplaceWith("[+50]% Strength for cities <with a garrison> <when attacking>"))
+    StrengthForGarrisonedCitiesAttackingDeprecated("+50% attacking strength for cities with garrisoned units", UniqueTarget.Global),
 
     // endregion
 
