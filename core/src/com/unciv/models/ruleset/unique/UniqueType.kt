@@ -725,6 +725,51 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [constructionFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
     PercentProductionConstructionsCities("+[amount]% Production when constructing [constructionFilter] [cityFilter]", UniqueTarget.Global),
 
+
+    @Deprecated("As of 3.17.1 - removed 3.17.13", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.ERROR)
+    DoubleMovementCoast("Double movement in coast", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.1 - removed 3.17.13", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.ERROR)
+    DoubleMovementForestJungle("Double movement rate through Forest and Jungle", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.1 - removed 3.17.13", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.ERROR)
+    DoubleMovementSnowTundraHill("Double movement in Snow, Tundra and Hills", UniqueTarget.Unit),
+
+
+    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[amount]% Strength"), DeprecationLevel.ERROR)
+    StrengthPlus("+[amount]% Strength", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[amount]% Strength"), DeprecationLevel.ERROR)
+    StrengthMin("-[amount]% Strength", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"), DeprecationLevel.ERROR)
+    StrengthPlusVs("+[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[amount]% Strength <vs [mapUnitFilter] units>/<vs cities>"), DeprecationLevel.ERROR)
+    StrengthMinVs("-[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
+    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[amount]% Strength"), DeprecationLevel.ERROR)
+    CombatBonus("+[amount]% Combat Strength", UniqueTarget.Unit),
+
+    @Deprecated("As of 3.16.11 - removed 3.17.11", ReplaceWith("[+1] Movement <for [Embarked] units>"), DeprecationLevel.ERROR)
+    EmbarkedUnitMovement1("Increases embarked movement +1", UniqueTarget.Global),
+    @Deprecated("As of 3.16.11 - removed 3.17.11", ReplaceWith("[+1] Movement <for [Embarked] units>"), DeprecationLevel.ERROR)
+    EmbarkedUnitMovement2("+1 Movement for all embarked units", UniqueTarget.Global),
+
+    @Deprecated("As of 3.16.11 - removed 3.17.11", ReplaceWith("[amount]% unhappiness from population [in all cities]"), DeprecationLevel.ERROR)
+    UnhappinessFromPopulationPercentageChangeOld1("Unhappiness from population decreased by [amount]%", UniqueTarget.Global),
+    @Deprecated("As of 3.16.11 - removed 3.17.11", ReplaceWith("[amount]% unhappiness from population [cityFilter]"), DeprecationLevel.ERROR)
+    UnhappinessFromPopulationPercentageChangeOld2("Unhappiness from population decreased by [amount]% [cityFilter]", UniqueTarget.Global),
+
+    @Deprecated("As of 3.16.14 - removed 3.17.11", ReplaceWith("[amount]% growth [cityFilter]"), DeprecationLevel.ERROR)
+    GrowthPercentBonusPositive("+[amount]% growth [cityFilter]", UniqueTarget.Global),
+    @Deprecated("As of 3.16.14 - removed 3.17.11", ReplaceWith("[amount]% growth [cityFilter] <when not at war>"), DeprecationLevel.ERROR)
+    GrowthPercentBonusWhenNotAtWar("+[amount]% growth [cityFilter] when not at war", UniqueTarget.Global),
+    @Deprecated("As of 3.16.16 - removed as of 3.17.11", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.ERROR)
+    DecreasedUnitMaintenanceCostsByFilter("-[amount]% [mapUnitFilter] unit maintenance costs", UniqueTarget.Global),
+    @Deprecated("As of 3.16.16 - removed 3.17.11", ReplaceWith("[amount]% maintenance costs for [mapUnitFilter] units"), DeprecationLevel.ERROR)
+    DecreasedUnitMaintenanceCostsGlobally("-[amount]% unit upkeep costs", UniqueTarget.Global),
+
+    @Deprecated("As of 3.16.16 - removed 3.17.11", ReplaceWith("[stats] from every specialist [in all cities]"), DeprecationLevel.ERROR)
+    StatsFromSpecialistDeprecated("[stats] from every specialist", UniqueTarget.Global),
+    @Deprecated("As of 3.16.16 - removed 3.17.11", ReplaceWith("[stats] <if this city has at least [amount] specialists>"), DeprecationLevel.ERROR)
+    StatBonusForNumberOfSpecialists("[stats] if this city has at least [amount] specialists", UniqueTarget.Global),
+
+
     // endregion
 
     ;
