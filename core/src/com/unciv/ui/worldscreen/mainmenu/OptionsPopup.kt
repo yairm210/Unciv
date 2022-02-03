@@ -318,13 +318,13 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     modCheckResultTable.removeActor(loadingLabel)
                     modCheckResultTable.add(expanderTab).row()
                     modCheckResultTable.add(loadingLabel).row()
-                    modCheckCheckBox!!.enable()
                 }
             }
 
             // done with all mods!
             postCrashHandlingRunnable {
                 modCheckResultTable.removeActor(modCheckResultTable.children.last())
+                modCheckCheckBox!!.enable()
             }
         }
     }
