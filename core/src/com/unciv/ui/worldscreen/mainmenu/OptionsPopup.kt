@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -27,7 +26,6 @@ import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
-import kotlin.concurrent.thread
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -42,7 +40,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
     private var modCheckCheckBox: CheckBox? = null
-    private var modCheckResultCell: Cell<Actor>? = null
+    private var modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
 
     //endregion
@@ -265,20 +263,20 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             runModChecker(it)
         }
         add(modCheckCheckBox).row()
-        modCheckResultCell = add("Checking mods for errors...".toLabel())
+
+        modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
+        add(modCheckResultTable)
     }
 
     private fun runModChecker(complex: Boolean = false) {
         modCheckFirstRun = false
         if (modCheckCheckBox == null) return
         modCheckCheckBox!!.disable()
-        if (modCheckResultCell == null) return
+
         crashHandlingThread(name="ModChecker") {
-            val lines = ArrayList<FormattedLine>()
-            var noProblem = true
             for (mod in RulesetCache.values.sortedBy { it.name }) {
-                // Appending {} is a dirty trick to deactivate the automatic translation which would drop [] from unique messages
-                lines += FormattedLine("$mod", starred = true, header = 3)
+                var noProblem = true
+                val lines = ArrayList<FormattedLine>()
 
                 val modLinks =
                     if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
@@ -294,26 +292,38 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 }
                 if (modLinks.isNotOK()) noProblem = false
                 lines += FormattedLine()
-            }
-            if (noProblem) lines += FormattedLine("No problems found.".tr())
+                if (noProblem) lines += FormattedLine("No problems found.".tr())
 
-            postCrashHandlingRunnable {
-                // When the options popup is already closed before this postRunnable is run,
-                // Don't add the labels, as otherwise the game will crash
-                if (stage == null) return@postCrashHandlingRunnable
-                // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
-                // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
-                // Instead, some manual work needs to be put in.
-                val resultTable = Table().apply { defaults().align(Align.left) }
-                for (line in lines) {
-                    val label = if (line.starred) Label(line.text+"\n", BaseScreen.skin)
-                        .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
-                    else Label(line.text+"\n", BaseScreen.skin)
-                        .apply { if (line.color != "") color = Color.valueOf(line.color) }
-                    label.wrap = true
-                    resultTable.add(label).width(stage.width/2).row()
+                postCrashHandlingRunnable {
+                    // When the options popup is already closed before this postRunnable is run,
+                    // Don't add the labels, as otherwise the game will crash
+                    if (stage == null) return@postCrashHandlingRunnable
+                    // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
+                    // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
+                    // Instead, some manual work needs to be put in.
+
+                    val expanderTab = ExpanderTab(mod.name, startsOutOpened = false){
+                        it.defaults().align(Align.left)
+                        for (line in lines) {
+                            val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
+                                .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
+                            else Label(line.text + "\n", BaseScreen.skin)
+                                .apply { if (line.color != "") color = Color.valueOf(line.color) }
+                            label.wrap = true
+                            it.add(label).width(stage.width / 2).row()
+                        }
+                    }
+
+                    val loadingLabel = modCheckResultTable.children.last()
+                    modCheckResultTable.removeActor(loadingLabel)
+                    modCheckResultTable.add(expanderTab).row()
+                    modCheckResultTable.add(loadingLabel).row()
                 }
-                modCheckResultCell?.setActor(resultTable)
+            }
+
+            // done with all mods!
+            postCrashHandlingRunnable {
+                modCheckResultTable.removeActor(modCheckResultTable.children.last())
                 modCheckCheckBox!!.enable()
             }
         }
