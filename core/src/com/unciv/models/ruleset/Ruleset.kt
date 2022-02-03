@@ -66,6 +66,7 @@ class ModOptions : IHasUniques {
 class Ruleset {
 
     private val jsonParser = JsonParser()
+    var folderLocation:FileHandle?=null
 
     var name = ""
     val beliefs = LinkedHashMap<String, Belief>()
@@ -754,6 +755,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 val modRuleset = Ruleset()
                 modRuleset.load(modFolder.child("jsons"), printOutput)
                 modRuleset.name = modFolder.name()
+                modRuleset.folderLocation = modFolder
                 this[modRuleset.name] = modRuleset
                 if (printOutput) {
                     println("Mod loaded successfully: " + modRuleset.name)

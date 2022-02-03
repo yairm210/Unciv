@@ -234,7 +234,7 @@ class ModManagementScreen(
                 }
 
                 if (installedMod.modOptions.author.isEmpty()) {
-                    rewriteModOptions(repo, Gdx.files.local("mods").child(repo.name))
+                    rewriteModOptions(repo, installedMod.folderLocation!!)
                     installedMod.modOptions.author = repo.owner.login
                     installedMod.modOptions.modSize = repo.size
                 }
@@ -520,7 +520,8 @@ class ModManagementScreen(
         syncInstalledSelected(mod.name, mod.button)
         refreshInstalledModActions(mod.ruleset!!)
         rightSideButton.setText("Delete [${mod.name}]".tr())
-        rightSideButton.isEnabled = true
+        // Don't let the player think he can delete Vanilla and G&K rulesets
+        rightSideButton.isEnabled = mod.ruleset.folderLocation!=null
         showModDescription(mod.name)
         removeRightSideClickListeners()
         rightSideButton.onClick {
@@ -528,7 +529,7 @@ class ModManagementScreen(
             YesNoPopup(
                 question = "Are you SURE you want to delete this mod?",
                 action = {
-                    deleteMod(mod.name)
+                    deleteMod(mod.ruleset)
                     modActionTable.clear()
                     rightSideButton.setText("[${mod.name}] was deleted.".tr())
                 },
@@ -539,12 +540,10 @@ class ModManagementScreen(
     }
 
     /** Delete a Mod, refresh ruleset cache and update installed mod table */
-    private fun deleteMod(modName: String) {
-        val modFileHandle = Gdx.files.local("mods").child(modName)
-        if (modFileHandle.isDirectory) modFileHandle.deleteDirectory()
-        else modFileHandle.delete()     // This should never happen
+    private fun deleteMod(mod: Ruleset) {
+        mod.folderLocation!!.deleteDirectory()
         RulesetCache.loadRulesets()
-        installedModInfo.remove(modName)
+        installedModInfo.remove(mod.name)
         refreshInstalledModTable()
     }
 
