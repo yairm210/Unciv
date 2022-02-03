@@ -157,7 +157,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     GrowthPercentBonus("[amount]% growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     CarryOverFood("[amount]% Food is carried over after population increases [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("as of 3.19.2", ReplaceWith("[amount]% Food is carried over after population increases [cityFilter]"))
+    @Deprecated("as of 3.19.2", ReplaceWith("[amount]% Food is carried over after population increases [in this city]"))
     CarryOverFoodDeprecated("[amount]% of food is carried over after population increases", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.2", ReplaceWith("[amount]% Food is carried over after population increases [cityFilter]"))
     CarryOverFoodAlsoDeprecated("[amount]% of food is carried over [cityFilter] after population increases", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -180,7 +180,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     BorderGrowthPercentageWithoutPercentageSign("[amount]% Culture cost of natural border growth [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.1", ReplaceWith("[-amount]% Culture cost of natural border growth [cityFilter]"))
     DecreasedAcquiringTilesCost("-[amount]% Culture cost of acquiring tiles [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    @Deprecated("as of 3.19.1", ReplaceWith("[amount]% Culture cost of natural border growth [cityFilter]"))
+    @Deprecated("as of 3.19.1", ReplaceWith("[amount]% Culture cost of natural border growth [in all cities]"))
     CostOfNaturalBorderGrowth("[amount]% cost of natural border growth", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     TileCostPercentage("[amount]% Gold cost of acquiring tiles [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     @Deprecated("as of 3.19.1", ReplaceWith("[-amount]% Gold cost of acquiring tiles [cityFilter]"))
@@ -716,13 +716,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [baseUnitFilter] units [cityFilter]"), DeprecationLevel.ERROR)
     PercentProductionUnitsDeprecated("+[amount]% Production when constructing [baseUnitFilter] units [cityFilter]", UniqueTarget.Global),
 
-    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [stat] buildings [in all cities]"), DeprecationLevel.ERROR)
     PercentProductionStatBuildings("+[amount]% Production when constructing [stat] buildings", UniqueTarget.Global),
-    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[+amount]% Production when constructing [constructionFilter] buildings [in all cities]"), DeprecationLevel.ERROR)
     PercentProductionConstructions("+[amount]% Production when constructing [constructionFilter]", UniqueTarget.Global),
-    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [buildingName] buildings [in all cities]"), DeprecationLevel.ERROR)
     PercentProductionBuildingName("+[amount]% Production when constructing a [buildingName]", UniqueTarget.Global),
-    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("as of 3.17.10 - removed 3.18.5", ReplaceWith("[amount]% Production when constructing [constructionFilter] buildings [cityFilter]"), DeprecationLevel.ERROR)
     PercentProductionConstructionsCities("+[amount]% Production when constructing [constructionFilter] [cityFilter]", UniqueTarget.Global),
 
     // endregion
