@@ -130,7 +130,10 @@ class MapGenerator(val ruleset: Ruleset) {
                     .firstOrNull { tile.isAdjacentTo(it.params[1]) }
                     ?: continue
             val terrain = ruleset.terrains[conversionUnique.params[0]] ?: continue
-            if (terrain.type == TerrainType.TerrainFeature) tile.terrainFeatures.add(terrain.name)
+            if (!terrain.occursOn.contains(tile.getLastTerrain().name)) continue
+
+            if (terrain.type == TerrainType.TerrainFeature)
+                tile.terrainFeatures.add(terrain.name)
             else tile.baseTerrain = terrain.name
             tile.setTerrainTransients()
         }

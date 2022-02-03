@@ -1518,7 +1518,7 @@ Applicable to: Conditional
  - "+[amount]% Strength in [tileFilter]" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
  - "[amount] Visibility Range" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
  - "Limited Visibility" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
- - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
+ - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [Coast]"
  - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "+[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"

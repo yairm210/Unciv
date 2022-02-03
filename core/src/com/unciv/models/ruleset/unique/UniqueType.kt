@@ -726,7 +726,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PercentProductionConstructionsCities("+[amount]% Production when constructing [constructionFilter] [cityFilter]", UniqueTarget.Global),
 
 
-    @Deprecated("As of 3.17.1 - removed 3.17.13", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.ERROR)
+    @Deprecated("As of 3.17.1 - removed 3.17.13", ReplaceWith("Double movement in [Coast]"), DeprecationLevel.ERROR)
     DoubleMovementCoast("Double movement in coast", UniqueTarget.Unit),
     @Deprecated("As of 3.17.1 - removed 3.17.13", ReplaceWith("Double movement in [terrainFilter]"), DeprecationLevel.ERROR)
     DoubleMovementForestJungle("Double movement rate through Forest and Jungle", UniqueTarget.Unit),
