@@ -425,10 +425,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
             file.writeString(newFileText, false)
         }
-        val toastText = "Replaced the following uniques:\n" +
-                replaceableUniques.map { "\"${it.key}\" to \"${it.value}\"" }
-                    .joinToString("\n")
-        ToastPopup(toastText, screen)
+        val toastText = "Uniques updated!"
+        ToastPopup(toastText, screen).open(true)
         RulesetCache.loadRulesets()
         runModChecker()
     }
