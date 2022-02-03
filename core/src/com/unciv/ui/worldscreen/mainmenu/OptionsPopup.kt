@@ -12,9 +12,13 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.IRulesetObject
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueTarget
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
@@ -26,6 +30,8 @@ import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -264,13 +270,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
         add(modCheckCheckBox).row()
 
-        modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
         add(modCheckResultTable)
     }
 
     private fun runModChecker(complex: Boolean = false) {
         modCheckFirstRun = false
         if (modCheckCheckBox == null) return
+
+        modCheckResultTable.clear()
+        modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
         modCheckCheckBox!!.disable()
 
         crashHandlingThread(name="ModChecker") {
@@ -304,6 +312,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
                     val expanderTab = ExpanderTab(mod.name, startsOutOpened = false){
                         it.defaults().align(Align.left)
+                        if (!noProblem && mod.folderLocation != null)
+                            it.add("Autoupdate mod uniques".toTextButton().onClick { autoUpdateUniques(mod) }).row()
                         for (line in lines) {
                             val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
                                 .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
@@ -327,6 +337,94 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 modCheckCheckBox!!.enable()
             }
         }
+    }
+
+    private fun autoUpdateUniques(mod:Ruleset) {
+
+        val allDeprecatedUniques = HashSet<String>()
+        val deprecatedUniquesToReplacementText = HashMap<String, String>()
+
+        val objectsToCheck = sequenceOf(
+            mod.units,
+            mod.tileImprovements,
+            mod.unitPromotions,
+            mod.buildings,
+            mod.policies,
+            mod.nations,
+            mod.beliefs,
+        )
+
+        val filesToReplace = listOf(
+            "Units.json",
+            "TileImprovements.json",
+            "UnitPromotions.json",
+            "Buildings.json",
+            "Policies.json",
+            "Nations.json",
+            "Beliefs.json",
+        )
+
+        val deprecatedUniques = objectsToCheck
+            .flatMap { it.values }
+            .flatMap { it.uniqueObjects }
+            .filter { it.getDeprecationAnnotation() != null }
+
+
+        for (deprecatedUnique in deprecatedUniques) {
+            if (allDeprecatedUniques.contains(deprecatedUnique.text)) continue
+            allDeprecatedUniques.add(deprecatedUnique.text)
+
+            // note that this replacement does not contain conditionals attached to the original!
+            var uniqueReplacementText = deprecatedUnique.getReplacementText()
+            for (conditional in deprecatedUnique.conditionals)
+                uniqueReplacementText += " <${conditional.text}>"
+            val replacementUnique = Unique(uniqueReplacementText)
+
+            val modInvariantErrors = mod.checkUnique(
+                replacementUnique,
+                false,
+                "",
+                UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
+                deprecatedUnique.sourceObjectType!!
+            )
+            for (error in modInvariantErrors)
+                println(error.text + " - " + error.errorSeverityToReport)
+            if (modInvariantErrors.isNotEmpty()) continue // errors means no autoreplace
+
+            if (mod.modOptions.isBaseRuleset) {
+                val modSpecificErrors = mod.checkUnique(
+                    replacementUnique,
+                    false,
+                    "",
+                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
+                    deprecatedUnique.sourceObjectType
+                )
+                for (error in modSpecificErrors)
+                    println(error.text + " - " + error.errorSeverityToReport)
+                if (modSpecificErrors.isNotEmpty()) continue
+            }
+
+            deprecatedUniquesToReplacementText[deprecatedUnique.text] = uniqueReplacementText
+            println("Replace \"${deprecatedUnique.text}\" with \"$uniqueReplacementText\"")
+        }
+
+
+        val jsonFolder = mod.folderLocation!!.child("jsons")
+        for (fileName in filesToReplace) {
+            val file = jsonFolder.child(fileName)
+            if (!file.exists() || file.isDirectory) continue
+            var newFileText = file.readString()
+            for ((original, replacement) in deprecatedUniquesToReplacementText) {
+                newFileText = newFileText.replace("\"$original\"", "\"$replacement\"")
+            }
+            file.writeString(newFileText, false)
+        }
+        val toastText = "Replaced the following uniques:\n" +
+                deprecatedUniquesToReplacementText.map { "\"${it.key}\" to \"${it.value}\"" }
+                    .joinToString("\n")
+        ToastPopup(toastText, screen)
+        RulesetCache.loadRulesets()
+        runModChecker()
     }
 
     private fun getDebugTab() = Table(BaseScreen.skin).apply {

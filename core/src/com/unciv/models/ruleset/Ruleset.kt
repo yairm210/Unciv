@@ -322,18 +322,18 @@ class Ruleset {
                 forOptionsPopup,
                 name,
                 severityToReport,
-                uniqueContainer
+                uniqueContainer.getUniqueTarget()
             )
             lines.addAll(errors)
         }
     }
 
-    private fun checkUnique(
+    fun checkUnique(
         unique: Unique,
         forOptionsPopup: Boolean,
         name: String,
         severityToReport: UniqueType.UniqueComplianceErrorSeverity,
-        uniqueContainer: IHasUniques
+        uniqueTarget: UniqueTarget
     ): List<RulesetError> {
         if (unique.type == null) {
             if (!forOptionsPopup) return emptyList()
@@ -417,8 +417,7 @@ class Ruleset {
             rulesetErrors.add(deprecationText, severity)
         }
 
-        val acceptableUniqueType = uniqueContainer.getUniqueTarget()
-        if (unique.type.targetTypes.none { acceptableUniqueType.canAcceptUniqueTarget(it) })
+        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) })
             rulesetErrors.add(
                 "$name's unique \"${unique.text}\" cannot be put on this type of object!",
                 RulesetErrorSeverity.Warning
