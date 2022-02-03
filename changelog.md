@@ -1,3 +1,21 @@
+## 3.19.5
+
+HUGE reduction is memory consumption!
+
+Performance improvements!
+
+Greatly reduced loading times when mods are installed
+
+Better terrain moddability + Added unique to convert terrains if adjacent to something
+
+"Must be next to [terrainFilter]" now applicable on improvements
+
+Added mod warnings for empty ally and friend bonuses
+
+By xlenstra:
+- Fixed a bug where stats from uniques would exponentially grow
+- Fixed a bug where open borders, war declarations and cities could not be traded
+
 ## 3.19.4
 
 Caught more mod failure conditions, removed certain assumptions from map creation
