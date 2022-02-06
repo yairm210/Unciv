@@ -4,6 +4,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
 import com.unciv.ui.saves.Gzip
+import com.unciv.ui.utils.UncivDateFormat.parseDate
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -113,8 +114,13 @@ object DropBox {
         } catch (ex: FileNotFoundException) {
             return false
         }
-
     }
+
+    fun getFileMetaData(fileName: String): InputStream {
+        return dropboxApi("https://api.dropboxapi.com/2/files/get_metadata",
+                "{\"path\":\"$fileName\"}", "application/json")!!
+    }
+
 //
 //    fun createTemplate(): String {
 //        val result =  dropboxApi("https://api.dropboxapi.com/2/file_properties/templates/add_for_user",
@@ -214,8 +220,24 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
 
         // We have to check if the lock file already exists before we try to upload a new
         // lock file to not overuse the dropbox file upload limit else it will return an error
-        if (DropBox.fileExists(fileName)) {
-            return locked
+        try {
+            val stream = DropBox.getFileMetaData(fileName)
+            val reader = BufferedReader(InputStreamReader(stream))
+            val metaData = GameSaver.json().fromJson(DropboxMetaData::class.java, reader.readText())
+
+            val date = metaData?.getServerModified()
+            println(date?.time)
+            println(System.currentTimeMillis())
+            // 30 seconds should be more than sufficient for everything lock related
+            // so we can assume the lock file was forgotten if it is older than 30 sec
+            if (date != null && System.currentTimeMillis() - date.time < 30000) {
+                return locked
+            } else {
+                DropBox.deleteFile(fileName)
+            }
+        } catch (ex: FileNotFoundException) {
+            // Catching this exception means no lock file is present
+            // so we can just continue with locking
         }
 
         try {
@@ -279,6 +301,15 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
      * @return true if lock is active
      */
     fun holdsLock() = locked
+}
+
+class DropboxMetaData {
+    var name = ""
+    private var server_modified = ""
+
+    fun getServerModified(): Date {
+        return server_modified.parseDate()
+    }
 }
 
 class DropBoxFileConflictException: Exception()
