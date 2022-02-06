@@ -62,6 +62,8 @@ object UnitActions {
         addEnhanceReligionAction(unit, actionList)
         actionList += getImprovementConstructionActions(unit, tile)
         addActionsWithLimitedUses(unit, actionList, tile)
+        addExplorationActions(unit, actionList)
+        addAutomateBuildingImprovementsAction(unit, actionList)
 
 
         addToggleActionsAction(unit, actionList, unitTable)
@@ -78,8 +80,6 @@ object UnitActions {
         addFortifyActions(actionList, unit, true)
 
         addSwapAction(unit, actionList, worldScreen)
-        addExplorationActions(unit, actionList)
-        addAutomateBuildingImprovementsAction(unit, actionList)
         addDisbandAction(actionList, unit, worldScreen)
         addGiftAction(unit, actionList, tile)
 
