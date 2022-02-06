@@ -318,6 +318,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
+    RequiresBuildingInSomeCities("Requires a [buildingName] in at least [amount] cities", UniqueTarget.Building),
 
     StatsWithResource("[stats] with [resource]", UniqueTarget.Building),
     
