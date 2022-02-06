@@ -764,7 +764,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 if (printOutput) {
                     println("Exception loading mod '${modFolder.name()}':")
                     println("  ${ex.localizedMessage}")
-                    println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
+                    println("  ${ex.cause?.localizedMessage}")
                 }
             }
         }
