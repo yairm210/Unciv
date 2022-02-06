@@ -113,7 +113,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 it.isPuppet
                 || it.cityConstructions.containsBuildingOrEquivalent(missingUnique.params[0])
             }
-            else listOf<CityInfo>()
+            else listOf()
         if (isWonder) lines += "Wonder"
         if (isNationalWonder) lines += "National Wonder"
         if (!isFree) {
@@ -609,6 +609,26 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         // replace with civ-specific building for user
                         RejectionReason.RequiresBuildingInThisCity.apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(filter)}] in this city" }
                     )
+            }
+
+
+            UniqueType.RequiresBuildingInSomeCities -> {
+                val buildingName = unique.params[0]
+                val numberOfCitiesRequired = unique.params[1].toInt()
+                if (!civInfo.gameInfo.ruleSet.buildings.containsKey(buildingName)) continue
+                val numberOfCitiesWithBuilding = civInfo.cities.count {
+                    it.cityConstructions.containsBuildingOrEquivalent(buildingName)
+                }
+                if (numberOfCitiesWithBuilding < numberOfCitiesRequired) {
+                    val equivalentBuildingName = civInfo.getEquivalentBuilding(buildingName).name
+                    rejectionReasons.add(
+                        // replace with civ-specific building for user
+                        RejectionReason.RequiresBuildingInAllCities.apply {
+                            errorMessage = unique.text.fillPlaceholders(equivalentBuildingName, numberOfCitiesRequired.toString()) +
+                                    " ($numberOfCitiesWithBuilding/$numberOfCitiesRequired)"
+                        }
+                    )
+                }
             }
 
             UniqueType.RequiresBuildingInAllCities -> {
