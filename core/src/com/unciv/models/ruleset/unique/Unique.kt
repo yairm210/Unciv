@@ -75,7 +75,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     ): Boolean {
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleSet
-        val relevantUnitTile by lazy { state.attackedTile ?: state.unit?.getTile() }
+        val relevantTile by lazy { state.attackedTile
+            ?: state.unit?.getTile()
+            ?: state.cityInfo?.getCenterTile()
+        }
         val relevantUnit by lazy {
             if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
             else state.unit
@@ -129,27 +132,27 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             
             UniqueType.ConditionalInTiles ->
-                relevantUnitTile?.matchesFilter(condition.params[0], state.civInfo) == true
+                relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
-                relevantUnitTile!=null && relevantUnitTile!!.matchesFilter(condition.params[0], state.civInfo)
-                        && relevantUnitTile!!.matchesFilter(condition.params[1], state.civInfo)
+                relevantTile!=null && relevantTile!!.matchesFilter(condition.params[0], state.civInfo)
+                        && relevantTile!!.matchesFilter(condition.params[1], state.civInfo)
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
             UniqueType.ConditionalForeignContinent ->
-                state.civInfo != null && state.unit != null
+                state.civInfo != null && relevantTile != null
                     && (state.civInfo.cities.isEmpty()
                         || state.civInfo.getCapital().getCenterTile().getContinent()
-                            != state.unit.getTile().getContinent()
+                            != relevantTile!!.getContinent()
                     )
             UniqueType.ConditionalAdjacentUnit ->
                 state.civInfo != null 
                 && relevantUnit != null
-                && relevantUnitTile!!.neighbors.any {
+                && relevantTile!!.neighbors.any {
                     it.militaryUnit != null
                     && it.militaryUnit != relevantUnit
                     && it.militaryUnit!!.civInfo == state.civInfo    
@@ -157,13 +160,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 }
 
             UniqueType.ConditionalNeighborTiles ->
-                state.cityInfo != null &&
-                        state.cityInfo.getCenterTile().neighbors.count {
+                relevantTile != null &&
+                        relevantTile!!.neighbors.count {
                             it.matchesFilter(condition.params[2], state.civInfo)
                         } in (condition.params[0].toInt())..(condition.params[1].toInt())
             UniqueType.ConditionalNeighborTilesAnd ->
-                state.cityInfo != null
-                && state.cityInfo.getCenterTile().neighbors.count {
+                relevantTile != null
+                && relevantTile!!.neighbors.count {
                     it.matchesFilter(condition.params[2], state.civInfo) 
                     && it.matchesFilter(condition.params[3], state.civInfo)
                 } in (condition.params[0].toInt())..(condition.params[1].toInt())
