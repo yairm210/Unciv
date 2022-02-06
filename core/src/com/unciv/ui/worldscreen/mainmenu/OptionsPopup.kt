@@ -263,6 +263,11 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
     private fun getModCheckTab() = Table(BaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
+        val reloadModsButton = "Reload mods".toTextButton().onClick {
+            RulesetCache.loadRulesets()
+            runModChecker(modCheckCheckBox!!.isChecked)
+        }
+        add(reloadModsButton).row()
         modCheckCheckBox = "Check extension mods based on vanilla".toCheckBox {
             runModChecker(it)
         }

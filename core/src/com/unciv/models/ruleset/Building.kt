@@ -53,7 +53,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
     fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList = mutableListOf<String>()
-        (this as Stats).toString().also { if (it.isNotEmpty()) infoList += it }
+        this.clone().toString().also { if (it.isNotEmpty()) infoList += it }
         for ((key, value) in getStatPercentageBonuses(null))
             infoList += "+${value.toInt()}% ${key.name.tr()}"
 
