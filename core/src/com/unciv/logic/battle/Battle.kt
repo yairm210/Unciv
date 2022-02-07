@@ -214,6 +214,10 @@ object Battle {
             "Your [${attacker.getName()}] captured an enemy [$defenderName]",
             newUnit.getTile().position, attacker.getName(), NotificationIcon.War, defenderName )
 
+        // Also capture any civilians on the same tile
+        if (newUnit.currentTile.civilianUnit != null)
+            captureCivilianUnit(attacker, MapUnitCombatant(newUnit.currentTile.civilianUnit!!))
+
         newUnit.currentMovement = 0f
         newUnit.health = 50
         return true
@@ -339,6 +343,9 @@ object Battle {
                 attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
                 attacker.getCivInfo().addGold(25)
                 attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, defender.getName())
+                // Also capture any civilians on the same tile
+                if (attackedTile.civilianUnit != null)
+                    captureCivilianUnit(attacker, MapUnitCombatant(attackedTile.civilianUnit!!))
             }
         }
 
