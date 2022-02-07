@@ -746,11 +746,6 @@ Example: "Requires a [Library] in at least [20] cities"
 
 Applicable to: Building
 
-#### [stats] with [resource]
-Example: "[+1 Gold, +2 Production] with [Iron]"
-
-Applicable to: Building
-
 #### Must be on [terrainFilter]
 Example: "Must be on [Forest]"
 
@@ -1295,6 +1290,11 @@ Applicable to: Conditional
 #### <during a Golden Age>
 Applicable to: Conditional
 
+#### <with [resource]>
+Example: "<with [Iron]>"
+
+Applicable to: Conditional
+
 #### <while the empire is happy>
 Applicable to: Conditional
 
@@ -1500,11 +1500,11 @@ Applicable to: Conditional
  - "+[amount]% Production when constructing [constructionFilter] [cityFilter]" - Deprecated as of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [constructionFilter] buildings [cityFilter]"
  - "Increases embarked movement +1" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[+1] Movement <for [Embarked] units>"
  - "+1 Movement for all embarked units" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[+1] Movement <for [Embarked] units>"
- - "Unhappiness from population decreased by [amount]%" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[amount]% unhappiness from population [in all cities]"
- - "Unhappiness from population decreased by [amount]% [cityFilter]" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[amount]% unhappiness from population [cityFilter]"
- - "+[amount]% growth [cityFilter]" - Deprecated As of 3.16.14 - removed 3.17.11, replace with "[amount]% growth [cityFilter]"
- - "+[amount]% growth [cityFilter] when not at war" - Deprecated As of 3.16.14 - removed 3.17.11, replace with "[amount]% growth [cityFilter] <when not at war>"
- - "-[amount]% [mapUnitFilter] unit maintenance costs" - Deprecated As of 3.16.16 - removed as of 3.17.11, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
+ - "Unhappiness from population decreased by [amount]%" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[-amount]% unhappiness from population [in all cities]"
+ - "Unhappiness from population decreased by [amount]% [cityFilter]" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[-amount]% unhappiness from population [cityFilter]"
+ - "+[amount]% growth [cityFilter]" - Deprecated As of 3.16.14 - removed 3.17.11, replace with "[+amount]% growth [cityFilter]"
+ - "+[amount]% growth [cityFilter] when not at war" - Deprecated As of 3.16.14 - removed 3.17.11, replace with "[+amount]% growth [cityFilter] <when not at war>"
+ - "-[amount]% [mapUnitFilter] unit maintenance costs" - Deprecated As of 3.16.16 - removed as of 3.17.11, replace with "[-amount]% maintenance costs <for [mapUnitFilter] units>"
  - "-[amount]% unit upkeep costs" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[amount]% maintenance costs <for [All] units>"
  - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
  - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
@@ -1512,6 +1512,7 @@ Applicable to: Conditional
  - "-33% unit upkeep costs" - Deprecated Extremely old - used for auto-updates only, replace with "[-33]% maintenance costs <for [All] units>"
  - "-50% food consumption by specialists" - Deprecated Extremely old - used for auto-updates only, replace with "[-50]% Food consumption by specialists [in all cities]"
  - "+50% attacking strength for cities with garrisoned units" - Deprecated Extremely old - used for auto-updates only, replace with "[+50]% Strength for cities <with a garrison> <when attacking>"
+ - "[stats] with [resource]" - Deprecated as of 3.19.7, replace with "[stats] <with [resource]>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated as of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "[stats] <after discovering [tech]>"
  - "[amount]% Bonus XP gain" - Deprecated as of 3.18.12, replace with "[amount]% XP gained from combat"
@@ -1526,11 +1527,11 @@ Applicable to: Conditional
  - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [Coast]"
  - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
- - "+[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"
- - "-[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"
- - "+[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength <vs [combatantFilter] units> OR <vs cities>"
- - "-[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength <vs [combatantFilter] units> OR <vs cities>"
- - "+[amount]% Combat Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[amount]% Strength"
+ - "+[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength"
+ - "-[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[-amount]% Strength"
+ - "+[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength <vs [combatantFilter] units> OR <vs cities>"
+ - "-[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[-amount]% Strength <vs [combatantFilter] units> OR <vs cities>"
+ - "+[amount]% Combat Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength"
  - "+1 Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+1] Sight"
  - "+[amount] Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+amount] Sight"
  - "+[amount] Sight for all [mapUnitFilter] units" - Deprecated Extremely old - used for auto-updates only, replace with "[+amount] Sight <for [mapUnitFilter] units>"
