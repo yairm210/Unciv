@@ -17,13 +17,14 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     val tileSetLocation = "TileSets/$tileSet/"
     val tileSetConfig = TileSetCache[tileSet] ?: TileSetConfig()
 
-    val hexagon = tileSetLocation + "Hexagon"
+    // These need to be by lazy since the orFallback expects a tileset, which it may not get.
+    val hexagon: String by lazy { orFallback {tileSetLocation + "Hexagon"} }
+    val hexagonList by lazy { listOf(hexagon) }
     val crosshatchHexagon = tileSetLocation + "CrosshatchHexagon"
     val cityOverlay = tileSetLocation + "CityOverlay"
     val roadsMap = RoadStatus.values()
         .filterNot { it == RoadStatus.None }
-        .map { it to tileSetLocation + it.name }
-        .toMap()
+        .associateWith { tileSetLocation + it.name }
     val naturalWonderOverlay = tileSetLocation + "NaturalWonderOverlay"
 
     val tilesLocation = tileSetLocation + "Tiles/"

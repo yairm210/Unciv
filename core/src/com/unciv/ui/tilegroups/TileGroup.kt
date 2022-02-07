@@ -203,8 +203,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         crosshairImage.isVisible = true
     }
 
+
     private fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String> {
-        if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.orFallback { hexagon } )
+        if (viewingCiv == null && !showEntireMap) return tileSetStrings.hexagonList
         if (tileInfo.naturalWonder != null) return listOf(tileSetStrings.orFallback { getTile(tileInfo.naturalWonder!!) })
 
         val shownImprovement = tileInfo.getShownImprovement(viewingCiv)
@@ -213,10 +214,10 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tileInfo.resource != null &&
                 (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
 
-        var resourceAndImprovementSequence = sequenceOf<String?>()
-        if (shouldShowResource) resourceAndImprovementSequence += sequenceOf(tileInfo.resource)
-        if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(shownImprovement)
-        resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
+        val resourceAndImprovementSequence = sequence {
+            if (shouldShowResource)  yield(tileInfo.resource)
+            if (shouldShowImprovement) yield(shownImprovement)
+        }.filterNotNull()
 
         val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()).filterNotNull()
         val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
@@ -296,7 +297,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         }
 
         if (tileBaseImages.isEmpty()) { // Absolutely nothing! This is for the 'default' tileset
-            val image = ImageGetter.getImage(tileSetStrings.orFallback { hexagon })
+            val image = ImageGetter.getImage(tileSetStrings.hexagon)
             tileBaseImages.add(image)
             baseLayerGroup.addActor(image)
             setHexagonImageSize(image)
