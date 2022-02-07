@@ -30,4 +30,6 @@ interface ICombatant {
         return this is CityCombatant
     }
     fun isCivilian() = this is MapUnitCombatant && this.unit.isCivilian()
+
+    fun getXP() = (this as MapUnitCombatant).unit.promotions.totalXpProduced()
 }
