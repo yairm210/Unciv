@@ -320,6 +320,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
     RequiresBuildingInSomeCities("Requires a [buildingName] in at least [amount] cities", UniqueTarget.Building),
 
+    @Deprecated("as of 3.19.7", ReplaceWith("[stats] <with [resource]>"))
     StatsWithResource("[stats] with [resource]", UniqueTarget.Building),
     
 
@@ -541,6 +542,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalWar("when at war", UniqueTarget.Conditional),
     ConditionalNotWar("when not at war", UniqueTarget.Conditional),
     ConditionalGoldenAge("during a Golden Age", UniqueTarget.Conditional),
+    ConditionalWithResource("with [resource]", UniqueTarget.Conditional),
 
     ConditionalHappy("while the empire is happy", UniqueTarget.Conditional),
     ConditionalBetweenHappiness("when between [amount] and [amount] Happiness", UniqueTarget.Conditional),

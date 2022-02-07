@@ -87,6 +87,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         return when (condition.type) {
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
+            UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
