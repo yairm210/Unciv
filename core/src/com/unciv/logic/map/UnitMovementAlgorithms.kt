@@ -589,12 +589,40 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      * because optimization on this function results in massive benefits!
      */
     fun canPassThrough(tile: TileInfo): Boolean {
+        if (!canPassThroughIfEmpty(tile))
+            return false
+
+        val firstUnit = tile.getFirstUnit()
+        // Moving to non-empty tile
+        if (firstUnit != null && unit.civInfo != firstUnit.civInfo) {
+            // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
+            if (tile.getUnguardedCivilian() != null && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
+                return true
+            // Cannot enter hostile tile with any unit in there
+            if (unit.civInfo.isAtWarWith(firstUnit.civInfo))
+                return false
+        }
+
+        return true
+    }
+
+    /**
+     * @returns whether this unit can pass through [tile].
+     * If there were no other units on the tile
+     * Note that sometimes, a tile can be passed through but not entered. Use [canMoveTo] to
+     * determine whether a unit can enter a tile.
+     *
+     * This is the most called function in the entire game,
+     * so multiple callees of this function have been optimized,
+     * because optimization on this function results in massive benefits!
+     */
+    fun canPassThroughIfEmpty(tile: TileInfo): Boolean {
         if (tile.isImpassible()) {
             // special exception - ice tiles are technically impassible, but some units can move through them anyway
             // helicopters can pass through impassable tiles like mountains
             if (!unit.canPassThroughImpassableTiles && !(unit.canEnterIceTiles && tile.terrainFeatures.contains(Constants.ice))
-                // carthage-like uniques sometimes allow passage through impassible tiles
-                && !(unit.civInfo.passThroughImpassableUnlocked && unit.civInfo.passableImpassables.contains(tile.getLastTerrain().name)))
+                    // carthage-like uniques sometimes allow passage through impassible tiles
+                    && !(unit.civInfo.passThroughImpassableUnlocked && unit.civInfo.passableImpassables.contains(tile.getLastTerrain().name)))
                 return false
         }
         if (tile.isLand
@@ -614,17 +642,6 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (tile.naturalWonder != null) return false
 
         if (!unit.canEnterForeignTerrain && !tile.canCivPassThrough(unit.civInfo)) return false
-
-        val firstUnit = tile.getFirstUnit()
-        // Moving to non-empty tile
-        if (firstUnit != null && unit.civInfo != firstUnit.civInfo) {
-            // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
-            if (tile.getUnguardedCivilian() != null && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
-                return true
-            // Cannot enter hostile tile with any unit in there
-            if (unit.civInfo.isAtWarWith(firstUnit.civInfo))
-                return false
-        }
 
         return true
     }
