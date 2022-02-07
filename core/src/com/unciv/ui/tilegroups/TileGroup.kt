@@ -123,9 +123,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         touchable = Touchable.childrenOnly; setOrigin(Align.center) }
 
     val highlightCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
-    val highlightImage = ImageGetter.getImage(tileSetStrings.orFallback { getString(tileSetLocation, "Highlight") }) // for blue and red circles/emphasis on the tile
-    private val crosshairImage = ImageGetter.getImage(tileSetStrings.orFallback { getString(tileSetLocation, "Crosshair") }) // for when a unit is targeted
-    private val fogImage = ImageGetter.getImage(tileSetStrings.orFallback { crosshatchHexagon } )
+    val highlightImage = ImageGetter.getImage(tileSetStrings.highlight) // for blue and red circles/emphasis on the tile
+    private val crosshairImage = ImageGetter.getImage(tileSetStrings.crosshair) // for when a unit is targeted
+    private val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon )
 
     /**
      * Class for representing an arrow to add to the map at this tile.
@@ -730,9 +730,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     private var bottomLeftRiverImage :Image?=null
 
     private fun updateRivers(displayBottomRight:Boolean, displayBottom:Boolean, displayBottomLeft:Boolean){
-        bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight, tileSetStrings.orFallback { bottomRightRiver })
-        bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, tileSetStrings.orFallback { bottomRiver })
-        bottomLeftRiverImage = updateRiver(bottomLeftRiverImage, displayBottomLeft, tileSetStrings.orFallback { bottomLeftRiver })
+        bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight, tileSetStrings.bottomRightRiver)
+        bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, tileSetStrings.bottomRiver)
+        bottomLeftRiverImage = updateRiver(bottomLeftRiverImage, displayBottomLeft, tileSetStrings.bottomLeftRiver)
     }
 
     private fun updateRiver(currentImage:Image?, shouldDisplay:Boolean,imageName:String): Image? {
