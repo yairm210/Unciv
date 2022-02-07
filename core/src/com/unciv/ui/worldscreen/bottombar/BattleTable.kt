@@ -11,7 +11,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.unique.UniqueType
@@ -52,10 +51,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         } else {
             val defender = tryGetDefender()
             if (defender == null) { hide(); return }
-            val selectedTile = worldScreen.mapHolder.selectedTile
-            if (selectedTile == null) { hide(); return } // no selected tile
-            // Melee unit can't move to tile
-            if (attacker.isMelee() && !(attacker as MapUnitCombatant).unit.movement.canPassThroughIfEmpty(selectedTile)) { hide(); return }
             simulateBattle(attacker, defender)
         }
         pack()

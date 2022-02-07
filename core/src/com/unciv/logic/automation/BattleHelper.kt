@@ -98,6 +98,10 @@ object BattleHelper {
             if (combatant.isRanged()) return false
         }
 
+        if (combatant is MapUnitCombatant && combatant.isMelee()
+                && (!combatant.unit.movement.canPassThroughIfEmpty(tile) && !tile.isCityCenter()))
+            return false
+
         val tileCombatant = Battle.getMapCombatantOfTile(tile) ?: return false
         if (tileCombatant.getCivInfo() == combatant.getCivInfo()) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false

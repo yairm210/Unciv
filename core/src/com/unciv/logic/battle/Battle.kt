@@ -46,9 +46,6 @@ object Battle {
                 attacker.unit.action = UnitActionType.SetUp.value
                 attacker.unit.useMovementPoints(1f)
             }
-            // Make sure Melee units can actually move to attacked tile
-            if (attacker.isMelee() && !attacker.unit.movement.canPassThroughIfEmpty(attackableTile.tileToAttack))
-                return
         }
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isNuclearWeapon())
