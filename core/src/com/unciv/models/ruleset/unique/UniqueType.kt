@@ -584,7 +584,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalOnWaterMaps("on water maps", UniqueTarget.Conditional),
     ConditionalInRegionOfType("in [regionType] Regions", UniqueTarget.Conditional),
     ConditionalInRegionExceptOfType("in all except [regionType] Regions", UniqueTarget.Conditional),
-    ConditionalFirstCivToResearch("for the first Civilization to research this", UniqueTarget.Conditional),
+    ConditionalFirstCivToResearch("if no other civilization has researched this", UniqueTarget.Conditional),
 
     //endregion
 
