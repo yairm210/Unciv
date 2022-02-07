@@ -1,3 +1,19 @@
+## 3.19.6
+
+UI improvements across the board
+
+Map performance improvements
+
+Better mod loading error messages, added options button to reload all rulesets
+
+Exploring and automating workers are some of the most common actions, they don't deserve to be behind a 'get additional actions' click
+
+Flood plains no longer generate on desert hills
+
+Also capture Civilian Unit when capturing during battle - By itanasi
+
+Fixed a bug where units requiring nearby units for bonuses could find themselves - By xlenstra
+
 ## 3.19.5
 
 HUGE reduction is memory consumption!
