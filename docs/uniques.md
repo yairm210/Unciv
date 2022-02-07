@@ -741,6 +741,11 @@ Example: "Requires a [Library] in all cities"
 
 Applicable to: Building
 
+#### Requires a [buildingName] in at least [amount] cities
+Example: "Requires a [Library] in at least [20] cities"
+
+Applicable to: Building
+
 #### [stats] with [resource]
 Example: "[+1 Gold, +2 Production] with [Iron]"
 
