@@ -42,7 +42,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         if (state == null) return conditionals.isEmpty()
         if (state.ignoreConditionals) return true
         for (condition in conditionals) {
-            if (!conditionalApplies(condition, state)) return false
+            if (!conditionalApplies(condition, state, this)) return false
         }
         return true
     }
@@ -71,7 +71,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     private fun conditionalApplies(
         condition: Unique,
-        state: StateForConditionals
+        state: StateForConditionals,
+        baseUnique: Unique
     ): Boolean {
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleSet
@@ -174,6 +175,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalOnWaterMaps -> state.region?.continentID == -1
             UniqueType.ConditionalInRegionOfType -> state.region?.type == condition.params[0]
             UniqueType.ConditionalInRegionExceptOfType -> state.region?.type != condition.params[0]
+
+            UniqueType.ConditionalFirstCivToResearch -> baseUnique.sourceObjectType == UniqueTarget.Tech
+                    && state.civInfo != null
+                    && state.civInfo.gameInfo.civilizations.none {
+                it != state.civInfo && it.isMajorCiv() && it.hasTechOrPolicy(baseUnique.sourceObjectName!!)
+            }
 
             else -> false
         }

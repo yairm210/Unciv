@@ -1439,6 +1439,9 @@ Example: "<in all except [Hybrid] Regions>"
 
 Applicable to: Conditional
 
+#### <for the first Civilization to research this>
+Applicable to: Conditional
+
 ## Deprecated uniques
  - "[stats] per turn from cities before [tech/policy]" - Deprecated as of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
  - "[stats] from every Wonder" - Deprecated as of 3.19.1, replace with "[stats] from every [Wonder]"
