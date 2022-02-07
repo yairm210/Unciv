@@ -59,7 +59,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
 
             val (description, link) = when (construction) {
                 is BaseUnit -> construction.getDescription() to construction.makeLink()
-                is Building -> construction.getDescription(city, city.getRuleset()) to construction.makeLink()
+                is Building -> construction.getDescription(city) to construction.makeLink()
                 is PerpetualConstruction -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]") to ""
                 else -> "" to "" // Should never happen
             }

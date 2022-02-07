@@ -51,7 +51,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     private var replacementTextForUniques = ""
 
     /** Used for AlertType.WonderBuilt, and as sub-text in Nation and Tech descriptions */
-    fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
+    fun getShortDescription(): String { // should fit in one line
         val infoList = mutableListOf<String>()
         this.clone().toString().also { if (it.isNotEmpty()) infoList += it }
         for ((key, value) in getStatPercentageBonuses(null))
@@ -99,7 +99,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
     /** used in CityScreen (CityInfoTable and ConstructionInfoTable) */
-    fun getDescription(cityInfo: CityInfo, ruleset: Ruleset): String {
+    fun getDescription(cityInfo: CityInfo): String {
         val stats = getStats(cityInfo)
         val lines = ArrayList<String>()
         val isFree = name in cityInfo.civInfo.civConstructions.getFreeBuildings(cityInfo.id)
