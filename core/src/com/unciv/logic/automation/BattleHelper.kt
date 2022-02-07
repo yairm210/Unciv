@@ -98,6 +98,9 @@ object BattleHelper {
             if (combatant.isRanged()) return false
         }
 
+        // If Melee unit can't move to tile, it can't attack
+        // Exception for City Centers since you can't move to them unless you conquer them
+        // Fortunately Water, Land, and Air units can always attack City Centers
         if (combatant is MapUnitCombatant && combatant.isMelee()
                 && (!combatant.unit.movement.canPassThroughIfEmpty(tile) && !tile.isCityCenter()))
             return false
