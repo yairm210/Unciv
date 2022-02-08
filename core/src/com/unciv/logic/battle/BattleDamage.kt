@@ -132,8 +132,16 @@ object BattleDamage {
 
 
             if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Eliminates combat penalty for attacking from the sea"))
-                modifiers["Landing"] = -50
+                modifiers["Amphibious"] = -50
 
+            // Land Melee Unit attacking to Water
+            if (!attacker.unit.isEmbarked() && attacker.isMelee() && defender.getTile().isWater
+                    && !attacker.unit.hasUnique("Eliminates combat penalty for attacking from the sea"))
+                modifiers["Amphibious"] = -50
+            // Naval Unit Melee attacking to Land
+            if (attacker.unit.type.isWaterUnit() && attacker.isMelee() && !defender.getTile().isWater
+                    && !attacker.unit.hasUnique("Eliminates combat penalty for attacking from the sea"))
+                modifiers["Amphibious"] = -50
 
             if (attacker.isMelee()) {
                 val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
