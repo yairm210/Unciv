@@ -454,15 +454,14 @@ open class TileInfo {
                         && neighbors.any { it.getOwner() == civInfo } && civInfo.cities.isNotEmpty()
                     )
                 ) -> false
-            improvement.uniqueObjects.any {
-                it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
+            improvement.getMatchingUniques(UniqueType.ObsoleteWith).any {
+                civInfo.tech.isResearched(it.params[0])
             } -> return false
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, StateForConditionals(civInfo=civInfo)).any {
                 matchesTerrainFilter(it.params[0], civInfo)
             } -> false
-            improvement.uniqueObjects.any {
-                it.isOfType(UniqueType.ConsumesResources)
-                && civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
+            improvement.getMatchingUniques(UniqueType.ConsumesResources).any {
+                civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
             // Calling this function does double the check for 'cannot be build on tile', but this is unavoidable.
             // Only in this function do we have the civInfo of the civ, so only here we can check whether

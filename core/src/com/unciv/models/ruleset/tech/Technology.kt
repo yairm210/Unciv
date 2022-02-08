@@ -77,6 +77,9 @@ class Technology: RulesetObject() {
         for (building in getObsoletedBuildings(viewingCiv))
             lineList += "[${building.name}] obsoleted"
 
+        for (resource in getObsoletedResurces(ruleset))
+            lineList += "[${resource.name}] obsoleted"
+
         for (resource in ruleset.tileResources.values.asSequence().filter { it.revealedBy == name }
                 .map { it.name })
             lineList += "Reveals [$resource] on the map"
@@ -106,7 +109,10 @@ class Technology: RulesetObject() {
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
     fun getObsoletedBuildings(civInfo: CivilizationInfo) = getFilteredBuildings(civInfo)
-        { it.uniqueObjects.any { unique -> unique.placeholderText == "Obsolete with []" && unique.params[0] == name } }
+        { it.getMatchingUniques(UniqueType.ObsoleteWith).any { it.params[0]  == name } }
+
+    fun getObsoletedResurces(ruleset: Ruleset) = ruleset.tileResources.values.asSequence()
+        .filter { it.getMatchingUniques(UniqueType.ObsoleteWith).any { it.params[0] == name } }
 
     // Helper: common filtering for both getEnabledBuildings and getObsoletedBuildings, difference via predicate parameter
     private fun getFilteredBuildings(civInfo: CivilizationInfo, predicate: (Building)->Boolean): Sequence<Building> {
@@ -245,6 +251,14 @@ class Technology: RulesetObject() {
         if (obsoletedBuildings.any()) {
             lineList += FormattedLine()
             obsoletedBuildings.forEach {
+                lineList += FormattedLine("[${it.name}] obsoleted", link = it.makeLink())
+            }
+        }
+
+        val obsoletedResources = getObsoletedResurces(ruleset)
+        if (obsoletedResources.any()) {
+            lineList += FormattedLine()
+            obsoletedResources.forEach {
                 lineList += FormattedLine("[${it.name}] obsoleted", link = it.makeLink())
             }
         }

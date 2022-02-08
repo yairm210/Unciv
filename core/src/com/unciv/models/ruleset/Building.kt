@@ -515,7 +515,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (!cityConstructions.cityInfo.matchesFilter(unique.params[0]))
                         rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
 
-                "Obsolete with []" ->
+                UniqueType.ObsoleteWith.placeholderText ->
                     if (civInfo.tech.isResearched(unique.params[0]))
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
 

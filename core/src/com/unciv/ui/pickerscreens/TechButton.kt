@@ -66,6 +66,13 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                 addActor(closeImage)
             })
 
+        for (resource in tech.getObsoletedResurces(ruleset))
+            techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, techIconSize).apply {
+                val closeImage = ImageGetter.getRedCross(techIconSize / 2, 1f)
+                closeImage.center(this)
+                addActor(closeImage)
+            })
+
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter {
                 it.techRequired == techName 
