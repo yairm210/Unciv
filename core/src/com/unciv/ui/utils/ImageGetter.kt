@@ -260,7 +260,7 @@ object ImageGetter {
     }
 
 
-    fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
+    fun getImprovementIcon(improvementName: String, size: Float = 20f): Group {
         if (improvementName.startsWith(Constants.remove) || improvementName == Constants.cancelImprovementOrder)
             return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
 
@@ -333,7 +333,7 @@ object ImageGetter {
         return redCross
     }
 
-    fun getResourceImage(resourceName: String, size: Float): Actor {
+    fun getResourceImage(resourceName: String, size: Float): IconCircleGroup {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]
                 ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.

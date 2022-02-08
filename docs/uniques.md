@@ -772,7 +772,7 @@ Applicable to: Building
 #### Obsolete with [tech]
 Example: "Obsolete with [Agriculture]"
 
-Applicable to: Building, Resource
+Applicable to: Building, Improvement, Resource
 
 #### Remove extra unhappiness from annexed cities
 Applicable to: Building

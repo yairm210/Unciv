@@ -68,10 +68,10 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                 obj is TileResource -> ImageGetter.getResourceImage(obj.name, techIconSize)
                 obj is TileImprovement -> ImageGetter.getImprovementIcon(obj.name, techIconSize)
                 else -> continue
-            }.apply {
+            }.also {
                 val closeImage = ImageGetter.getRedCross(techIconSize / 2, 1f)
-                closeImage.center(this)
-                addActor(closeImage)
+                closeImage.center(it)
+                it.addActor(closeImage)
             }
             techEnabledIcons.add(obsoletedIcon)
         }
