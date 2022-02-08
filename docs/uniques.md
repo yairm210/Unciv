@@ -1353,11 +1353,6 @@ Example: "<if this city has at least [20] specialists>"
 
 Applicable to: Conditional
 
-#### <if [buildingName] is built>
-Example: "<if [Library] is built>"
-
-Applicable to: Conditional
-
 #### <in cities where this religion has at least [amount] followers>
 Example: "<in cities where this religion has at least [20] followers>"
 
