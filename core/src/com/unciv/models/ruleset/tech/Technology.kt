@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetObject
+import com.unciv.models.ruleset.RulesetStatsObject
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
@@ -74,11 +75,8 @@ class Technology: RulesetObject() {
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
         }
 
-        for (building in getObsoletedBuildings(viewingCiv))
-            lineList += "[${building.name}] obsoleted"
-
-        for (resource in getObsoletedResurces(ruleset))
-            lineList += "[${resource.name}] obsoleted"
+        for (obj in getObsoletedObjects(viewingCiv))
+            lineList += "[${obj.name}] obsoleted"
 
         for (resource in ruleset.tileResources.values.asSequence().filter { it.revealedBy == name }
                 .map { it.name })
@@ -108,11 +106,13 @@ class Technology: RulesetObject() {
      * nuclear weapons and religion settings, and without those expressly hidden from Civilopedia.
      */
     // Used for Civilopedia, Alert and Picker, so if any of these decide to ignore the "Will not be displayed in Civilopedia" unique this needs refactoring
-    fun getObsoletedBuildings(civInfo: CivilizationInfo) = getFilteredBuildings(civInfo)
-        { it.getMatchingUniques(UniqueType.ObsoleteWith).any { it.params[0]  == name } }
 
-    fun getObsoletedResurces(ruleset: Ruleset) = ruleset.tileResources.values.asSequence()
-        .filter { it.getMatchingUniques(UniqueType.ObsoleteWith).any { it.params[0] == name } }
+    fun getObsoletedObjects(civInfo: CivilizationInfo): Sequence<RulesetStatsObject> =
+        (getFilteredBuildings(civInfo){true}
+                + civInfo.gameInfo.ruleSet.tileResources.values.asSequence()
+                + civInfo.gameInfo.ruleSet.tileImprovements.values.filter {
+                    it.uniqueTo==null || it.uniqueTo == civInfo.civName
+        }).filter { it.getMatchingUniques(UniqueType.ObsoleteWith).any { it.params[0] == name } }
 
     // Helper: common filtering for both getEnabledBuildings and getObsoletedBuildings, difference via predicate parameter
     private fun getFilteredBuildings(civInfo: CivilizationInfo, predicate: (Building)->Boolean): Sequence<Building> {
@@ -247,18 +247,10 @@ class Technology: RulesetObject() {
                 lineList += FormattedLine(building.name.tr() + " (" + building.getShortDescription() + ")", link = building.makeLink())
         }
 
-        val obsoletedBuildings = getObsoletedBuildings(viewingCiv)
-        if (obsoletedBuildings.any()) {
+        val obsoletedObjects = getObsoletedObjects(viewingCiv)
+        if (obsoletedObjects.any()) {
             lineList += FormattedLine()
-            obsoletedBuildings.forEach {
-                lineList += FormattedLine("[${it.name}] obsoleted", link = it.makeLink())
-            }
-        }
-
-        val obsoletedResources = getObsoletedResurces(ruleset)
-        if (obsoletedResources.any()) {
-            lineList += FormattedLine()
-            obsoletedResources.forEach {
+            obsoletedObjects.forEach {
                 lineList += FormattedLine("[${it.name}] obsoleted", link = it.makeLink())
             }
         }
