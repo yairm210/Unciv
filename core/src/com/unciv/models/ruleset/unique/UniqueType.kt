@@ -560,6 +560,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     /////// city conditionals
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
+    ConditionalBuildingBuilt("if [buildingName] is built", UniqueTarget.Conditional),
     ConditionalFollowerCount("in cities where this religion has at least [amount] followers", UniqueTarget.Conditional),
     ConditionalWhenGarrisoned("with a garrison", UniqueTarget.Conditional),
 

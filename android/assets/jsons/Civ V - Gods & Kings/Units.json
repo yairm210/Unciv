@@ -1308,10 +1308,11 @@
 		"unitType": "Gunpowder",
 		"movement": 2,
 		"strength": 65,
-		"cost": 400,
+		"cost": 160,
 		"requiredTech": "Pharmaceuticals",
 		"promotions": ["Amphibious"],
-		"uniques": ["Normal vision when embarked", "Defense bonus when embarked"],
+		"uniques": ["Normal vision when embarked",
+			"[+50]% Strength <vs [Artillery] units>", "[+50]% Strength <vs [Machine Gun] units>"],
 		"attackSound": "shot"
 	},
 	{
