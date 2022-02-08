@@ -47,6 +47,8 @@ object BattleHelper {
                         // DO NOT use "!unit.movement.canPassThrough(it)" since then we won't be able to
                         // capture enemy units since we can't move through them!
                         && !it.canCivPassThrough(unit.civInfo)
+                        // Land Unit can't capture Naval and vice versa
+                        && !(unit.type.isLandUnit() && it.isWater || unit.type.isWaterUnit() && it.isLand)
             }
 
         val rangeOfAttack = unit.getRange()
