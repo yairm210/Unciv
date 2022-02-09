@@ -1323,6 +1323,9 @@ Example: "<starting from the [Ancient era]>"
 
 Applicable to: Conditional
 
+#### <if no other Civilization has researched this>
+Applicable to: Conditional
+
 #### <after discovering [tech]>
 Example: "<after discovering [Agriculture]>"
 
@@ -1437,9 +1440,6 @@ Applicable to: Conditional
 #### <in all except [regionType] Regions>
 Example: "<in all except [Hybrid] Regions>"
 
-Applicable to: Conditional
-
-#### <for the first Civilization to research this>
 Applicable to: Conditional
 
 ## Deprecated uniques
