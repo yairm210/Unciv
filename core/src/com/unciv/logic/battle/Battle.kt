@@ -429,16 +429,6 @@ object Battle {
         for (unique in thisCombatant.getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true))
             baseXP += unique.params[0].toInt()
 
-        var xpModifier = 1f
-        // Deprecated since 3.18.12
-            for (unique in thisCombatant.getCivInfo().getMatchingUniques(UniqueType.BonusXPGainForUnits, stateForConditionals)) {
-                if (thisCombatant.unit.matchesFilter(unique.params[0]))
-                    xpModifier += unique.params[1].toFloat() / 100
-            }
-            for (unique in thisCombatant.getMatchingUniques(UniqueType.BonuxXPGain, stateForConditionals, true))
-                xpModifier += unique.params[0].toFloat() / 100
-        //
-        
         for (unique in thisCombatant.getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true))
             xpModifier += unique.params[0].toFloat() / 100
         
