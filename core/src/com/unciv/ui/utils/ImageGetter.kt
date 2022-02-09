@@ -333,6 +333,15 @@ object ImageGetter {
         return redCross
     }
 
+    fun getArrowImage(align:Int = Align.right): Image {
+        val image = getImage("OtherIcons/ArrowRight")
+        image.setOrigin(Align.center)
+        if (align == Align.left) image.rotation = 180f
+        if (align == Align.bottom) image.rotation = -90f
+        if (align == Align.top) image.rotation = 90f
+        return image
+    }
+
     fun getResourceImage(resourceName: String, size: Float): IconCircleGroup {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]

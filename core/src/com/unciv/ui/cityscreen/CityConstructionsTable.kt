@@ -17,7 +17,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import kotlin.concurrent.thread
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -531,7 +530,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f))
+        tab.add(ImageGetter.getArrowImage(Align.top).apply { color = Color.BLACK }.surroundWithCircle(40f))
         if (cityScreen.canChangeState && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
@@ -548,7 +547,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Down").surroundWithCircle(40f))
+        tab.add(ImageGetter.getArrowImage(Align.bottom).apply { color = Color.BLACK }.surroundWithCircle(40f))
         if (cityScreen.canChangeState && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
