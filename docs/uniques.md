@@ -1328,6 +1328,9 @@ Example: "<starting from the [Ancient era]>"
 
 Applicable to: Conditional
 
+#### <if no other Civilization has researched this>
+Applicable to: Conditional
+
 #### <after discovering [tech]>
 Example: "<after discovering [Agriculture]>"
 

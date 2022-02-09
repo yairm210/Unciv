@@ -29,6 +29,8 @@ object UniqueTriggerActivation {
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
 
+        if (!unique.conditionalsApply(StateForConditionals(civInfo, cityInfo))) return false
+
         @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
         when (unique.type) {
             OneTimeFreeUnit -> {
