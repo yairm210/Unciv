@@ -636,12 +636,13 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             if (consoleLog)
                 println("\nNext turn starting " + Date().formatDate())
             val startTime = System.currentTimeMillis()
-            val gameInfoClone = gameInfo.clone()
+            val originalGameInfo = gameInfo
+            val gameInfoClone = originalGameInfo.clone()
             gameInfoClone.setTransients()  // this can get expensive on large games, not the clone itself
 
             gameInfoClone.nextTurn()
 
-            if (gameInfo.gameParameters.isOnlineMultiplayer) {
+            if (originalGameInfo.gameParameters.isOnlineMultiplayer) {
                 try {
                     OnlineMultiplayer().tryUploadGame(gameInfoClone, withPreview = true)
                 } catch (ex: Exception) {
@@ -657,6 +658,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
             }
 
+            if (game.gameInfo != originalGameInfo) // while this was turning we loaded another game
+                return@crashHandlingThread
+
             game.gameInfo = gameInfoClone
             if (consoleLog)
                 println("Next turn took ${System.currentTimeMillis()-startTime}ms")
@@ -666,7 +670,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             // create a new WorldScreen to show the new stuff we've changed, and switch out the current screen.
             // do this on main thread - it's the only one that has a GL context to create images from
             postCrashHandlingRunnable {
-
 
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
                         && !gameInfoClone.gameParameters.isOnlineMultiplayer)
