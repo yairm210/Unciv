@@ -330,6 +330,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     MustNotBeNextTo("Must not be next to [terrainFilter]", UniqueTarget.Building),
 
     Unsellable("Unsellable", UniqueTarget.Building),
+    ObsoleteWith("Obsolete with [tech]", UniqueTarget.Building, UniqueTarget.Resource, UniqueTarget.Improvement),
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
 
