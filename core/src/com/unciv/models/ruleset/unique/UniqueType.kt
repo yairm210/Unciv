@@ -548,6 +548,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
 
+    ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
+
     /////// city conditionals
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
     ConditionalFollowerCount("in cities where this religion has at least [amount] followers", UniqueTarget.Conditional),
@@ -614,9 +616,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Global),  // Not used in Vanilla
     // todo: remove forced sign
     StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[amount]%", UniqueTarget.Global),  // used in Policy
-    // todo: remove forced sign
-    // todo: convert to "[amount]% Strength <when attacking> <for [baseUnitFilter] units> <for [amount] turns>"
-    TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] units for [amount] turns", UniqueTarget.Global),  // used in Policy
+
+    @Deprecated("as of 3.19.8", ReplaceWith("[+amount]% Strength <when attacking> <for [mapUnitFilter] units> <for [amount2] turns>"))
+    TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] units for [amount2] turns", UniqueTarget.Global),  // used in Policy
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
 
@@ -811,7 +813,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         for (placeholder in text.getPlaceholderParameters()) {
             val matchingParameterTypes = placeholder
                 .split('/')
-                .map { UniqueParameterType.safeValueOf(it) }
+                .map { UniqueParameterType.safeValueOf(it.replace(numberRegex, "")) }
             parameterTypeMap.add(matchingParameterTypes)
         }
         targetTypes.addAll(targets)
@@ -854,5 +856,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     fun getDeprecationAnnotation(): Deprecated? = declaringClass.getField(name)
         .getAnnotation(Deprecated::class.java)
+
 }
+
+// I didn't put this is a companion object because APPARENTLY doing that means you can't use it in the init function.
+val numberRegex = Regex("\\d") // I really doubt we'll get to double-digit numbers of parameters in a single unique.
 

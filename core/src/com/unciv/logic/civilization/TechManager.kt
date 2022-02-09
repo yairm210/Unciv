@@ -365,7 +365,8 @@ class TechManager {
 
     fun addTechToTransients(tech: Technology) {
         for (unique in tech.uniqueObjects)
-            techUniques.addUnique(unique)
+            if (unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique })
+                techUniques.addUnique(unique)
     }
 
     fun setTransients() {

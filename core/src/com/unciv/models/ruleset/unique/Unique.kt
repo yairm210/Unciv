@@ -225,7 +225,7 @@ class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.j
 
 
 // Will probably be allowed to be used as a conditional when I get the motivation to work on that -xlenstra
-class TemporaryUnique() {
+class CivwideUnique() {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
         unique = uniqueObject.text

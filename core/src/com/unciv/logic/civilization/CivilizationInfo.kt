@@ -20,8 +20,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.TemporaryUnique
-import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.CivwideUnique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -150,8 +149,9 @@ class CivilizationInfo {
     
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
+     * This can also contain NON-temporary uniques but I can't be bothered to do the deprecation dance with this one
      */
-    val temporaryUniques = ArrayList<TemporaryUnique>()
+    val temporaryUniques = ArrayList<CivwideUnique>()
     
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -864,9 +864,10 @@ class CivilizationInfo {
 
         // Update turn counter for temporary uniques
         for (unique in temporaryUniques) {
-            unique.turnsLeft -= 1
+            if (unique.turnsLeft >= 0)
+                unique.turnsLeft -= 1
         }
-        temporaryUniques.removeAll { it.turnsLeft <= 0 }
+        temporaryUniques.removeAll { it.turnsLeft == 0 }
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
