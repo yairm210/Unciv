@@ -429,6 +429,8 @@ object Battle {
         for (unique in thisCombatant.getMatchingUniques(UniqueType.FlatXPGain, stateForConditionals, true))
             baseXP += unique.params[0].toInt()
 
+        var xpModifier = 1f
+
         for (unique in thisCombatant.getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true))
             xpModifier += unique.params[0].toFloat() / 100
         
