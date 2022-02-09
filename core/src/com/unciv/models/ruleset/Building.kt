@@ -469,6 +469,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
         for (unique in uniqueObjects) {
             when (unique.placeholderText) { // TODO: Lots of typification…
+                UniqueType.OnlyAvailableWhen.placeholderText->
+                    if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
+                        rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
+
                 UniqueType.NotDisplayedWithout.placeholderText ->
                     if (unique.params[0] in ruleSet.tileResources && !civInfo.hasResource(unique.params[0])
                         || unique.params[0] in ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(unique.params[0])

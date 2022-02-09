@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
@@ -95,7 +96,11 @@ class UnitPromotions {
             .filter {
                 it.getMatchingUniques(UniqueType.IncompatibleWith).all {
                     unique -> !promotions.contains(unique.params[0])
-                }    
+                }
+            }
+            .filter { promotion -> promotion.uniqueObjects
+                .none { it.type == UniqueType.OnlyAvailableWhen
+                        && !it.conditionalsApply(StateForConditionals(unit.civInfo, unit = unit))  }
             }
     }
 

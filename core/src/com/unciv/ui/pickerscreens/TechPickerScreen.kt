@@ -265,13 +265,20 @@ class TechPickerScreen(
         }
 
         val pathToTech = civTech.getRequiredTechsToDestination(tech)
-        for (requiredTech in pathToTech)
+        for (requiredTech in pathToTech) {
             for (unique in requiredTech.getMatchingUniques(UniqueType.IncompatibleWith))
                 if (civTech.isResearched(unique.params[0])) {
                     rightSideButton.setText(unique.text.tr())
                     rightSideButton.disable()
                     return
                 }
+            for (unique in requiredTech.uniqueObjects
+                .filter { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) }) {
+                rightSideButton.setText(unique.text.tr())
+                rightSideButton.disable()
+                return
+            }
+        }
 
         tempTechsToResearch.clear()
         tempTechsToResearch.addAll(pathToTech.map { it.name })

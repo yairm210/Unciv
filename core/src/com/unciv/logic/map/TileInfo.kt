@@ -454,6 +454,8 @@ open class TileInfo {
                         && neighbors.any { it.getOwner() == civInfo } && civInfo.cities.isNotEmpty()
                     )
                 ) -> false
+            improvement.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
+                .any { !it.conditionalsApply(StateForConditionals(civInfo)) } -> false
             improvement.getMatchingUniques(UniqueType.ObsoleteWith).any {
                 civInfo.tech.isResearched(it.params[0])
             } -> return false

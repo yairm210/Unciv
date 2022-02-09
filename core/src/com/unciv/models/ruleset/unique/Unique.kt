@@ -123,8 +123,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesCategory("City") == true
             UniqueType.ConditionalVsUnits -> state.theirCombatant?.matchesCategory(condition.params[0]) == true
             UniqueType.ConditionalOurUnit ->
-                state.ourCombatant?.matchesCategory(condition.params[0]) == true
-                        || state.unit?.matchesFilter(condition.params[0]) == true
+                relevantUnit?.matchesFilter(condition.params[0]) == true
+            UniqueType.ConditionalUnitWithPromotion -> relevantUnit?.promotions?.promotions?.contains(params[0]) == true
+            UniqueType.ConditionalUnitWithoutPromotion -> relevantUnit?.promotions?.promotions?.contains(params[0]) == false
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
             UniqueType.ConditionalAboveHP ->
