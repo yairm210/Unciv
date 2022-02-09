@@ -279,11 +279,11 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PopulationLossFromNukesDeprecated("Population loss from nuclear attacks -[amount]%", UniqueTarget.Global),
     
     NaturalReligionSpreadStrength("[amount]% Natural religion spread [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
-    @Deprecated("as of 3.19.3", ReplaceWith("[amount]% Natural religion spread [cityFilter] <after discovering [tech]> OR [amount]% natural religion spread [cityFilter] <after adopting [policy]>"))
+    @Deprecated("as of 3.19.3", ReplaceWith("[amount]% Natural religion spread [cityFilter] <after discovering [tech/policy]> OR [amount]% natural religion spread [cityFilter] <after adopting [tech/policy]>"))
     NaturalReligionSpreadStrengthWith("[amount]% Natural religion spread [cityFilter] with [tech/policy]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
-    @Deprecated("as of 3.19.8", ReplaceWith("Only available <before adopting [policy]> OR <before discovering [tech]> OR <for units without [promotion]>"))
+    @Deprecated("as of 3.19.8", ReplaceWith("Only available <before adopting [policy/tech/promotion]> OR <before discovering [policy/tech/promotion]> OR <for units without [policy/tech/promotion]>"))
     IncompatibleWith("Incompatible with [policy/tech/promotion]", UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
     StartingTech("Starting tech", UniqueTarget.Tech),
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
@@ -307,7 +307,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>"
     OnlyAvailableWhen("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
-    @Deprecated("as of 3.19.8", ReplaceWith("Only available <after adopting [policy]> OR <with [resource]> OR <after discovering [tech]>"))
+    @Deprecated("as of 3.19.8", ReplaceWith("Only available <after adopting [buildingName/tech/resource/policy]> OR <with [buildingName/tech/resource/policy]> OR <after discovering [buildingName/tech/resource/policy]>"))
     NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
     RequiresPopulation("Requires at least [amount] population", UniqueTarget.Building, UniqueTarget.Unit),
