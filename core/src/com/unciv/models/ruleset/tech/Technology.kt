@@ -86,10 +86,6 @@ class Technology: RulesetObject() {
         if (tileImprovements.isNotEmpty())
             lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
 
-        val seeAlsoObjects = getSeeAlsoObjects(ruleset)
-        if (seeAlsoObjects.any())
-            lineList += "{See also}: " + seeAlsoObjects.joinToString { it.name }
-
         return lineList.joinToString("\n") { it.tr() }
     }
 
