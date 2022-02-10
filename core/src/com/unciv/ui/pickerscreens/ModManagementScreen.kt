@@ -224,7 +224,7 @@ class ModManagementScreen(
 
             val installedMod = RulesetCache.values.firstOrNull { it.name == repo.name }
             val isUpdatedVersionOfInstalledMod = installedMod?.modOptions?.let {
-                it.lastUpdated != "" && it.lastUpdated != repo.updated_at
+                it.lastUpdated != "" && it.lastUpdated != repo.pushed_at
             } == true
 
             if (installedMod != null) {
@@ -305,7 +305,7 @@ class ModManagementScreen(
      * @param repo: the repository instance as received from the GitHub api
      */
     private fun addModInfoToActionTable(repo: Github.Repo) {
-        addModInfoToActionTable(repo.name, repo.html_url, repo.updated_at, repo.owner.login, repo.size)
+        addModInfoToActionTable(repo.name, repo.html_url, repo.pushed_at, repo.owner.login, repo.size)
     }
     /** Recreate the information part of the right-hand column
      * @param modName: The mod name (name from the RuleSet)
@@ -419,7 +419,7 @@ class ModManagementScreen(
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
         val modOptions = if (modOptionsFile.exists()) JsonParser().getFromJson(ModOptions::class.java, modOptionsFile) else ModOptions()
         modOptions.modUrl = repo.html_url
-        modOptions.lastUpdated = repo.updated_at
+        modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
         Json().toJson(modOptions, modOptionsFile)

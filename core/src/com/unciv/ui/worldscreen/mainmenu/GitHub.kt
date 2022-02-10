@@ -259,8 +259,7 @@ object Github {
         var stargazers_count = 0
         var default_branch = ""
         var html_url = ""
-        var updated_at = ""
-        //var pushed_at = ""                // if > updated_at might indicate an update soon?
+        var pushed_at = "" // don't use updated_at - see https://github.com/yairm210/Unciv/issues/6106
         var size = 0
         //var stargazers_url = ""
         //var homepage: String? = null      // might use instead of go to repo?
