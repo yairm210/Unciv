@@ -503,23 +503,23 @@ object Battle {
         val defenderCiv = defender.getCivInfo()
 
         val capturedUnit = defender.unit
-        capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
-                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         val capturedUnitTile = capturedUnit.getTile()
         val originalOwner = if (capturedUnit.originalOwner != null)
             capturedUnit.civInfo.gameInfo.getCivilization(capturedUnit.originalOwner!!)
             else null
 
-
+        var wasDestroyedInstead = false
         when {
             // Uncapturable units are destroyed
             defender.unit.hasUnique(UniqueType.Uncapturable) -> {
                 capturedUnit.destroy()
+                wasDestroyedInstead = true
             }
             // City states can never capture settlers at all
             capturedUnit.hasUnique(UniqueType.FoundCity) && attacker.getCivInfo().isCityState() -> {
                 capturedUnit.destroy()
+                wasDestroyedInstead = true
             }
             // Is it our old unit?
             attacker.getCivInfo() == originalOwner -> {
@@ -550,6 +550,13 @@ object Battle {
             }
             else -> capturedUnit.capturedBy(attacker.getCivInfo())
         }
+
+        if (!wasDestroyedInstead)
+            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
+                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
+        else
+            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
+                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         if (checkDefeat)
             destroyIfDefeated(defenderCiv, attacker.getCivInfo())
