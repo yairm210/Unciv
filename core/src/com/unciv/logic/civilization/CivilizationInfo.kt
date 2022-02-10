@@ -20,7 +20,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
-import com.unciv.models.ruleset.unique.CivwideUnique
+import com.unciv.models.ruleset.unique.TemporaryUnique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -151,7 +151,7 @@ class CivilizationInfo {
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
      * This can also contain NON-temporary uniques but I can't be bothered to do the deprecation dance with this one
      */
-    val temporaryUniques = ArrayList<CivwideUnique>()
+    val temporaryUniques = ArrayList<TemporaryUnique>()
     
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.

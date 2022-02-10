@@ -33,7 +33,7 @@ object UniqueTriggerActivation {
 
         val timingConditional = unique.conditionals.firstOrNull{it.type == ConditionalTimedUnique}
         if (timingConditional!=null) {
-            civInfo.temporaryUniques.add(CivwideUnique(unique, timingConditional.params[0].toInt()))
+            civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
             return true
         }
 
@@ -253,7 +253,7 @@ object UniqueTriggerActivation {
             }
 
             TimedAttackStrength -> {
-                val temporaryUnique = CivwideUnique(unique, unique.params[2].toInt())
+                val temporaryUnique = TemporaryUnique(unique, unique.params[2].toInt())
                 civInfo.temporaryUniques.add(temporaryUnique)
                 if (notification != null) {
                     civInfo.addNotification(notification, NotificationIcon.War)
