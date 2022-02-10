@@ -665,7 +665,9 @@ open class TileInfo {
         }
     }
 
-    fun isAdjacentToRiver() = neighbors.any { isConnectedByRiver(it) }
+    @delegate:Transient
+    private val isAdjacentToRiverLazy by lazy { neighbors.any { isConnectedByRiver(it) } }
+    fun isAdjacentToRiver() = isAdjacentToRiverLazy
 
     /**
      * @returns whether units of [civInfo] can pass through this tile, considering only civ-wide filters.
