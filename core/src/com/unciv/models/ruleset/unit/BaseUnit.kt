@@ -351,7 +351,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         val civInfo = cityConstructions.cityInfo.civInfo
-        for (unique in uniqueObjects.filter { it.type == UniqueType.NotDisplayedWithout }) {
+        for (unique in getMatchingUniques(UniqueType.NotDisplayedWithout)) {
             val filter = unique.params[0]
             if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
                     || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
@@ -387,8 +387,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-        for (unique in uniqueObjects) {
-            if (unique.placeholderText != "Unlocked with []" && unique.placeholderText != "Requires []") continue
+        for (unique in getMatchingUniques("Unlocked with []") + getMatchingUniques("Requires []")) {
             val filter = unique.params[0]
             when {
                 ruleSet.technologies.contains(filter) -> 
@@ -415,8 +414,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 }
         }
 
-        if (hasUnique(UniqueType.FoundCity) &&
-            (civInfo.isCityState() || civInfo.isOneCityChallenger())
+        if ((civInfo.isCityState() || civInfo.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity)
         ) {
             rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
         }
