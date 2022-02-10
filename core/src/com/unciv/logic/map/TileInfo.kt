@@ -663,6 +663,7 @@ open class TileInfo {
         }
     }
 
+    @delegate:Transient
     private val isAdjacentToRiverLazy by lazy { neighbors.any { isConnectedByRiver(it) } }
     fun isAdjacentToRiver() = isAdjacentToRiverLazy
 
