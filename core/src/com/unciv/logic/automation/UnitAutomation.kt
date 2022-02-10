@@ -387,16 +387,16 @@ object UnitAutomation {
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
         if (unit.civInfo.cities.isEmpty()) return false
 
-        var enemyCities = unit.civInfo.gameInfo.civilizations
+        var enemyCities = unit.civInfo.gameInfo.civilizations.asSequence()
                 .filter { unit.civInfo.isAtWarWith(it) }
-                .flatMap { it.cities }.asSequence()
+                .flatMap { it.cities }
                 .filter { it.location in unit.civInfo.exploredTiles }
 
         if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
             enemyCities = enemyCities.filterNot { it.health == 1 }
 
         val closestReachableEnemyCity = enemyCities
-                .asSequence().map { it.getCenterTile() }
+                .map { it.getCenterTile() }
                 .sortedBy { cityCenterTile ->
                     // sort enemy cities by closeness to our cities, and only then choose the first reachable - checking canReach is comparatively very time-intensive!
                     unit.civInfo.cities.asSequence()
