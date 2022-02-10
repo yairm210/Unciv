@@ -577,7 +577,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isMilitary() = isRanged() || isMelee()
     fun isCivilian() = !isMilitary()
 
-    fun isLandUnit() = getType().isLandUnit()
+    val isLandUnitInternal by lazy { getType().isLandUnit() }
+    fun isLandUnit() = isLandUnitInternal
     fun isWaterUnit() = getType().isWaterUnit()
     fun isAirUnit() = getType().isAirUnit()
 

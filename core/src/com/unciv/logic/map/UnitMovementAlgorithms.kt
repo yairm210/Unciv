@@ -40,7 +40,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return RoadStatus.Railroad.movement + extraCost
 
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
-        val areConnectedByRiver = from.isConnectedByRiver(to)
+        val areConnectedByRiver = from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
 
         if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
             return unit.civInfo.tech.movementSpeedOnRoads + extraCost
