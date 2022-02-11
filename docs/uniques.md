@@ -448,6 +448,21 @@ Applicable to: Global, FollowerBelief
 #### Can be continually researched
 Applicable to: Global
 
+#### [+amount] Unit Supply
+Example: "[+amount] Unit Supply"
+
+Applicable to: Global
+
+#### [+amount] Unit Supply per [amount] population
+Example: "[+amount] Unit Supply per [20] population"
+
+Applicable to: Global
+
+#### [+amount] Unit Supply per city
+Example: "[+amount] Unit Supply per city"
+
+Applicable to: Global
+
 #### Rebel units may spawn
 Applicable to: Global
 
