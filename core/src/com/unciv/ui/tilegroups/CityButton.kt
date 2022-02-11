@@ -502,4 +502,8 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         super.draw(batch, parentAlpha)
     }
 
+    override fun act(delta: Float) {
+        return // actions should only be for the CityButtonLayerGroup
+    }
+
 }

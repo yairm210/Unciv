@@ -14,7 +14,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.*
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
@@ -119,14 +118,23 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
     val unitImageLayerGroup = UnitImageLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
 
-    class CityButtonLayerGroupClass:Group() {
-        override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
-        override fun act(delta: Float) = super.act(delta)
-        override fun hit(x: Float, y: Float, touchable: Boolean) = super.hit(x, y, touchable)
+    class CityButtonLayerGroupClass(val tileInfo: TileInfo) :Group() {
+        override fun draw(batch: Batch?, parentAlpha: Float) {
+            if (!tileInfo.isCityCenter()) return
+            super.draw(batch, parentAlpha)
+        }
+        override fun act(delta: Float) {
+            if (!tileInfo.isCityCenter()) return
+            super.act(delta)
+        }
+        override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+            if (!tileInfo.isCityCenter()) return null
+            return super.hit(x, y, touchable)
+        }
     }
 
-    val cityButtonLayerGroup = CityButtonLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize)
-        touchable = Touchable.childrenOnly; setOrigin(Align.center) }
+    val cityButtonLayerGroup = CityButtonLayerGroupClass(tileInfo).apply { isTransform = false; setSize(groupSize, groupSize)
+        touchable = Touchable.childrenOnly; setOrigin(Align.center);  }
 
     val highlightCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
     val highlightImage = ImageGetter.getImage(tileSetStrings.highlight) // for blue and red circles/emphasis on the tile
