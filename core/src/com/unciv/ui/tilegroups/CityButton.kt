@@ -182,7 +182,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         class IconTable: Table() {
             override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
         }
-        val iconTable = IconTable()
+        val iconTable = IconTable().apply { isTransform = false }
         iconTable.touchable = Touchable.enabled
         iconTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor())
 

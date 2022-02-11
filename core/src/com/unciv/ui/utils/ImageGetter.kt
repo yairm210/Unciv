@@ -380,6 +380,7 @@ object ImageGetter {
     class VerticalProgressBar(width: Float, height: Float):Group() {
         init {
             setSize(width, height)
+            isTransform = false
         }
 
         fun addColor(color: Color, percentage: Float): VerticalProgressBar {
