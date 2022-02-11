@@ -82,13 +82,15 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return terrainCost + extraCost // no road or other movement cost reduction
     }
 
-    fun getTilesExertingZoneOfControl(tileInfo: TileInfo, civInfo: CivilizationInfo): Sequence<TileInfo> {
-        return tileInfo.neighbors.filter {
-            it.isCityCenter() && civInfo.isAtWarWith(it.getOwner()!!)
-                    ||
-                    it.militaryUnit != null &&
-                    civInfo.isAtWarWith(it.militaryUnit!!.civInfo) &&
-                    (it.militaryUnit!!.type.isWaterUnit() || (!it.militaryUnit!!.isEmbarked() && unit.type.isLandUnit()))
+    private fun getTilesExertingZoneOfControl(tileInfo: TileInfo, civInfo: CivilizationInfo) = sequence {
+        for (tile in tileInfo.neighbors) {
+            if (tile.isCityCenter() && civInfo.isAtWarWith(tile.getOwner()!!)) {
+                yield(tile)
+            }
+            else if (tile.militaryUnit != null && civInfo.isAtWarWith(tile.militaryUnit!!.civInfo)) {
+                if (tile.militaryUnit!!.type.isWaterUnit() || (unit.type.isLandUnit() && tile.militaryUnit!!.isEmbarked()))
+                    yield(tile)
+            }
         }
     }
 
