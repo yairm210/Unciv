@@ -40,7 +40,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return RoadStatus.Railroad.movement + extraCost
 
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
-        val areConnectedByRiver = from.isConnectedByRiver(to)
+        val areConnectedByRiver = from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
 
         if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
             return unit.civInfo.tech.movementSpeedOnRoads + extraCost
@@ -82,6 +82,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return terrainCost + extraCost // no road or other movement cost reduction
     }
 
+    fun getTilesExertingZoneOfControl(tileInfo: TileInfo, civInfo: CivilizationInfo): Sequence<TileInfo> {
+        return tileInfo.neighbors.filter {
+            it.isCityCenter() && civInfo.isAtWarWith(it.getOwner()!!)
+                    ||
+                    it.militaryUnit != null &&
+                    civInfo.isAtWarWith(it.militaryUnit!!.civInfo) &&
+                    (it.militaryUnit!!.type.isWaterUnit() || (!it.militaryUnit!!.isEmbarked() && unit.type.isLandUnit()))
+        }
+    }
+
     /** Returns whether the movement between the adjacent tiles [from] and [to] is affected by Zone of Control */
     private fun isMovementAffectedByZoneOfControl(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Boolean {
         // Sources:
@@ -100,22 +110,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // these two tiles can perhaps be optimized. Using a hex-math-based "commonAdjacentTiles"
         // function is surprisingly less efficient than the current neighbor-intersection approach.
         // See #4085 for more details.
-        if (from.neighbors.none{
-            (
-                (
-                    it.isCityCenter() &&
-                    civInfo.isAtWarWith(it.getOwner()!!)
-                )
-                ||
-                (
-                    it.militaryUnit != null &&
-                    civInfo.isAtWarWith(it.militaryUnit!!.civInfo) &&
-                    (it.militaryUnit!!.type.isWaterUnit() || (!it.militaryUnit!!.isEmbarked() && unit.type.isLandUnit()))
-                )
-            )
-            &&
-            to.neighbors.contains(it)
-        })
+        val tilesExertingZoneOfControl = getTilesExertingZoneOfControl(from, civInfo)
+        if (tilesExertingZoneOfControl.none { to.neighbors.contains(it)})
             return false
 
         // Even though this is a very fast check, we perform it last. This is because very few units
@@ -203,13 +199,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         var distance = 1
         val newTilesToCheck = ArrayList<TileInfo>()
         val distanceToDestination = HashMap<TileInfo, Float>()
+        var considerZoneOfControl = true // only for first distance!
         while (true) {
-            if (distance == 2) // only set this once after distance > 1
+            if (distance == 2) { // only set this once after distance > 1
                 movementThisTurn = unit.getMaxMovement().toFloat()
+                considerZoneOfControl = false  // by then units would have moved around, we don't need to consider untenable futures when it harms performance!
+            }
             newTilesToCheck.clear()
             distanceToDestination.clear()
             for (tileToCheck in tilesToCheck) {
-                val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn)
+                val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, considerZoneOfControl)
                 for (reachableTile in distanceToTilesThisTurn.keys) {
                     // Avoid damaging terrain on first pass
                     if (avoidDamagingTerrain && unit.getDamageFromTerrain(reachableTile) > 0)

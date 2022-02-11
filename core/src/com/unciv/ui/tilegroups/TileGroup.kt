@@ -209,17 +209,17 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         if (tileInfo.naturalWonder != null) return listOf(tileSetStrings.orFallback { getTile(tileInfo.naturalWonder!!) })
 
         val shownImprovement = tileInfo.getShownImprovement(viewingCiv)
-        val shouldShowImprovement = (shownImprovement != null && UncivGame.Current.settings.showPixelImprovements)
+        val shouldShowImprovement = shownImprovement != null && UncivGame.Current.settings.showPixelImprovements
 
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tileInfo.resource != null &&
                 (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
 
         val resourceAndImprovementSequence = sequence {
-            if (shouldShowResource)  yield(tileInfo.resource)
-            if (shouldShowImprovement) yield(shownImprovement)
-        }.filterNotNull()
+            if (shouldShowResource)  yield(tileInfo.resource!!)
+            if (shouldShowImprovement) yield(shownImprovement!!)
+        }
 
-        val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()).filterNotNull()
+        val terrainImages = sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()
         val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
         val allTogetherLocation = tileSetStrings.getTile(allTogether)
 

@@ -77,8 +77,8 @@ object Battle {
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
             val withdraw = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
-                .maxByOrNull{ it.params[0] }  // If a mod allows multiple withdraw properties, ensure the best is used
-            if (withdraw != null && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
+                .sumOf{ it.params[0].toInt() }  // If a mod allows multiple withdraw properties, ensure the best is used
+            if (withdraw != 0 && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
         }
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
@@ -430,15 +430,7 @@ object Battle {
             baseXP += unique.params[0].toInt()
 
         var xpModifier = 1f
-        // Deprecated since 3.18.12
-            for (unique in thisCombatant.getCivInfo().getMatchingUniques(UniqueType.BonusXPGainForUnits, stateForConditionals)) {
-                if (thisCombatant.unit.matchesFilter(unique.params[0]))
-                    xpModifier += unique.params[1].toFloat() / 100
-            }
-            for (unique in thisCombatant.getMatchingUniques(UniqueType.BonuxXPGain, stateForConditionals, true))
-                xpModifier += unique.params[0].toFloat() / 100
-        //
-        
+
         for (unique in thisCombatant.getMatchingUniques(UniqueType.PercentageXPGain, stateForConditionals, true))
             xpModifier += unique.params[0].toFloat() / 100
         
@@ -511,23 +503,23 @@ object Battle {
         val defenderCiv = defender.getCivInfo()
 
         val capturedUnit = defender.unit
-        capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
-                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         val capturedUnitTile = capturedUnit.getTile()
         val originalOwner = if (capturedUnit.originalOwner != null)
             capturedUnit.civInfo.gameInfo.getCivilization(capturedUnit.originalOwner!!)
             else null
 
-
+        var wasDestroyedInstead = false
         when {
             // Uncapturable units are destroyed
             defender.unit.hasUnique(UniqueType.Uncapturable) -> {
                 capturedUnit.destroy()
+                wasDestroyedInstead = true
             }
             // City states can never capture settlers at all
             capturedUnit.hasUnique(UniqueType.FoundCity) && attacker.getCivInfo().isCityState() -> {
                 capturedUnit.destroy()
+                wasDestroyedInstead = true
             }
             // Is it our old unit?
             attacker.getCivInfo() == originalOwner -> {
@@ -558,6 +550,13 @@ object Battle {
             }
             else -> capturedUnit.capturedBy(attacker.getCivInfo())
         }
+
+        if (!wasDestroyedInstead)
+            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
+                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
+        else
+            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
+                defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         if (checkDefeat)
             destroyIfDefeated(defenderCiv, attacker.getCivInfo())
@@ -811,7 +810,7 @@ object Battle {
         }
     }
 
-    private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, withdrawUnique: Unique): Boolean {
+    private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, baseWithdrawChance: Int): Boolean {
         // Some notes...
         // unit.getUniques() is a union of BaseUnit uniques and Promotion effects.
         // according to some strategy guide the Slinger's withdraw ability is inherited on upgrade,
@@ -830,8 +829,6 @@ object Battle {
                    || defendBaseUnit.isLandUnit() && !tile.isLand // forbid retreat from land to sea - embarked already excluded
                    || tile.isCityCenter() && tile.getOwner() != defender.getCivInfo() // forbid retreat into the city which doesn't belong to the defender
         }
-        // base chance for all units is set to 80%
-        val baseChance = withdrawUnique.params[0].toFloat()
         /* Calculate success chance: Base chance from json, calculation method from https://www.bilibili.com/read/cv2216728
         In general, except attacker's tile, 5 tiles neighbors the defender :
         2 of which are also attacker's neighbors ( we call them 2-Tiles) and the other 3 aren't (we call them 3-Tiles).
@@ -840,7 +837,7 @@ object Battle {
         If 3-Tiles the defender can withdraw to is null, we choose this from 2-Tiles the defender can withdraw to.
         If 2-Tiles the defender can withdraw to is also null, we return false.
         */
-        val percentChance = baseChance - max(0, (attackBaseUnit.movement-2)) * 20 -
+        val percentChance = baseWithdrawChance - max(0, (attackBaseUnit.movement-2)) * 20 -
                 fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }.count { canNotWithdrawTo(it) } * 20
         // Get a random number in [0,100) : if the number <= percentChance, defender will withdraw from melee
         if (Random().nextInt(100) > percentChance) return false

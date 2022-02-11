@@ -176,6 +176,12 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalInRegionOfType -> state.region?.type == condition.params[0]
             UniqueType.ConditionalInRegionExceptOfType -> state.region?.type != condition.params[0]
 
+            UniqueType.ConditionalFirstCivToResearch -> sourceObjectType == UniqueTarget.Tech
+                    && state.civInfo != null
+                    && state.civInfo.gameInfo.civilizations.none {
+                it != state.civInfo && it.isMajorCiv() && it.hasTechOrPolicy(sourceObjectName!!)
+            }
+
             else -> false
         }
     }

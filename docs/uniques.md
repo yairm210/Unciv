@@ -769,6 +769,11 @@ Applicable to: Building
 #### Unsellable
 Applicable to: Building
 
+#### Obsolete with [tech]
+Example: "Obsolete with [Agriculture]"
+
+Applicable to: Building, Improvement, Resource
+
 #### Remove extra unhappiness from annexed cities
 Applicable to: Building
 
@@ -1323,6 +1328,9 @@ Example: "<starting from the [Ancient era]>"
 
 Applicable to: Conditional
 
+#### <if no other Civilization has researched this>
+Applicable to: Conditional
+
 #### <after discovering [tech]>
 Example: "<after discovering [Agriculture]>"
 
@@ -1440,7 +1448,6 @@ Example: "<in all except [Hybrid] Regions>"
 Applicable to: Conditional
 
 ## Deprecated uniques
- - "[stats] per turn from cities before [tech/policy]" - Deprecated as of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
  - "[stats] from every Wonder" - Deprecated as of 3.19.1, replace with "[stats] from every [Wonder]"
  - "[stats] from every [buildingFilter] in cities where this religion has at least [amount] followers" - Deprecated as of 3.19.3, replace with "[stats] from every [buildingFilter] <in cities where this religion has at least [amount] followers>"
  - "+[amount]% [stat] from every [tileFilter/specialist/buildingName]" - Deprecated as of 3.18.17, replace with "[+amount]% [stat] from every [tileFilter/specialist/buildingName]"
@@ -1474,6 +1481,7 @@ Applicable to: Conditional
  - "[amount] HP when healing in [tileFilter] tiles" - Deprecated as of 3.19.4, replace with "[amount] HP when healing <in [tileFilter] tiles>"
  - "Melee units pay no movement cost to pillage" - Deprecated as of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
  - "Heal adjacent units for an additional 15 HP per turn" - Deprecated as of 3.19.3, replace with "All adjacent units heal [+15] HP when healing"
+ - "[stats] per turn from cities before [tech/policy]" - Deprecated as of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated as of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated as of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
  - "50% of excess happiness added to culture towards policies" - Deprecated as of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"

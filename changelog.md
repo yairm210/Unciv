@@ -1,3 +1,13 @@
+## 3.19.7
+
+Better conditionals for modding
+
+Withdraw chances can stack
+
+By itanasi:
+- Sea Unit can't capture Land Civilian (and vice versa)
+- Notify when Barbs don't give more XP
+
 ## 3.19.6
 
 UI improvements across the board

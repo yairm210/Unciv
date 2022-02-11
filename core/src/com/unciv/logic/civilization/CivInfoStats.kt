@@ -240,9 +240,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         val ownedLuxuries = civInfo.getCivResources().map { it.resource }
             .filter { it.resourceType == ResourceType.Luxury }
 
-        statMap["Luxury resources"] = civInfo.getCivResources()
+        val relevantLuxuries = civInfo.getCivResources().asSequence()
             .map { it.resource }
-            .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
+            .count { it.resourceType == ResourceType.Luxury
+                    && it.getMatchingUniques(UniqueType.ObsoleteWith)
+                .none { unique -> civInfo.tech.isResearched(unique.params[0]) } }
+        statMap["Luxury resources"] = relevantLuxuries * happinessPerUniqueLuxury
 
         val happinessBonusForCityStateProvidedLuxuries =
             (
