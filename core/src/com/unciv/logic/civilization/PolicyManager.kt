@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -118,6 +119,8 @@ class PolicyManager {
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleSet.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
         if (policy.getMatchingUniques(UniqueType.IncompatibleWith).any { adoptedPolicies.contains(it.params[0]) }) return false
+        if (policy.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
+                .any { !it.conditionalsApply(civInfo) }) return false
         return true
     }
 

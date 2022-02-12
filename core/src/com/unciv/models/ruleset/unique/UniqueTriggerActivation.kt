@@ -29,7 +29,7 @@ object UniqueTriggerActivation {
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
 
-        if (!unique.conditionalsApply(StateForConditionals(civInfo, cityInfo))) return false
+        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
 
         val timingConditional = unique.conditionals.firstOrNull{it.type == ConditionalTimedUnique}
         if (timingConditional!=null) {

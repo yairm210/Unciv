@@ -647,13 +647,11 @@ Example: "Starts with [Agriculture]"
 Applicable to: Nation
 
 ## Tech uniques
-#### Incompatible with [policy/tech/promotion]
-Example: "Incompatible with [policy/tech/promotion]"
-
-Applicable to: Tech, Policy, Promotion
-
 #### Starting tech
 Applicable to: Tech
+
+#### Only available
+Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement
 
 ## FollowerBelief uniques
 #### [amount]% [stat] from every follower, up to [amount]%
@@ -700,11 +698,6 @@ Applicable to: Building, Unit
 
 #### Hidden until [amount] social policy branches have been completed
 Example: "Hidden until [20] social policy branches have been completed"
-
-Applicable to: Building, Unit
-
-#### Not displayed as an available construction without [buildingName/tech/resource/policy]
-Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
 
 Applicable to: Building, Unit
 
@@ -1369,6 +1362,16 @@ Example: "<for [Wounded] units>"
 
 Applicable to: Conditional
 
+#### <for units with [promotion]>
+Example: "<for units with [Shock I]>"
+
+Applicable to: Conditional
+
+#### <for units without [promotion]>
+Example: "<for units without [Shock I]>"
+
+Applicable to: Conditional
+
 #### <vs cities>
 Applicable to: Conditional
 
@@ -1477,7 +1480,7 @@ Applicable to: Conditional
  - "[amount]% Attacking Strength for cities" - Deprecated as of 3.18.17, replace with "[+amount]% Strength for cities <when attacking>"
  - "+[amount]% attacking strength for cities with garrisoned units" - Deprecated as of 3.19.1, replace with "[+amount]% Strength for cities <with a garrison> <when attacking>"
  - "Population loss from nuclear attacks -[amount]%" - Deprecated as of 3.19.2, replace with "Population loss from nuclear attacks [-amount]% [in this city]"
- - "[amount]% Natural religion spread [cityFilter] with [tech/policy]" - Deprecated as of 3.19.3, replace with "[amount]% Natural religion spread [cityFilter] <after discovering [tech]> OR [amount]% natural religion spread [cityFilter] <after adopting [policy]>"
+ - "[amount]% Natural religion spread [cityFilter] with [tech/policy]" - Deprecated as of 3.19.3, replace with "[amount]% Natural religion spread [cityFilter] <after discovering [tech/policy]> OR [amount]% natural religion spread [cityFilter] <after adopting [tech/policy]>"
  - "[amount] HP when healing in [tileFilter] tiles" - Deprecated as of 3.19.4, replace with "[amount] HP when healing <in [tileFilter] tiles>"
  - "Melee units pay no movement cost to pillage" - Deprecated as of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
  - "Heal adjacent units for an additional 15 HP per turn" - Deprecated as of 3.19.3, replace with "All adjacent units heal [+15] HP when healing"
@@ -1521,6 +1524,8 @@ Applicable to: Conditional
  - "-33% unit upkeep costs" - Deprecated Extremely old - used for auto-updates only, replace with "[-33]% maintenance costs <for [All] units>"
  - "-50% food consumption by specialists" - Deprecated Extremely old - used for auto-updates only, replace with "[-50]% Food consumption by specialists [in all cities]"
  - "+50% attacking strength for cities with garrisoned units" - Deprecated Extremely old - used for auto-updates only, replace with "[+50]% Strength for cities <with a garrison> <when attacking>"
+ - "Incompatible with [policy/tech/promotion]" - Deprecated as of 3.19.8, replace with "Only available <before adopting [policy/tech/promotion]> OR <before discovering [policy/tech/promotion]> OR <for units without [policy/tech/promotion]>"
+ - "Not displayed as an available construction without [buildingName/tech/resource/policy]" - Deprecated as of 3.19.8, replace with "Only available <after adopting [buildingName/tech/resource/policy]> OR <with [buildingName/tech/resource/policy]> OR <after discovering [buildingName/tech/resource/policy]>"
  - "[stats] with [resource]" - Deprecated as of 3.19.7, replace with "[stats] <with [resource]>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated as of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "[stats] <after discovering [tech]>"

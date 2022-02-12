@@ -134,8 +134,8 @@ class BasicTests {
                 println("${uniqueType.name}'s deprecation text does not match any existing type!'")
                 allOK = false
             }
-            if (replacementTextUnique.getDeprecationAnnotation() != null){
-                println("${uniqueType.name}'s deprecation text references another deprecated unique!'")
+            if (replacementTextUnique.type == uniqueType){
+                println("${uniqueType.name}'s deprecation text references itself!'")
                 allOK = false
             }
             for (conditional in replacementTextUnique.conditionals){
