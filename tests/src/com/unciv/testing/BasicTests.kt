@@ -144,6 +144,19 @@ class BasicTests {
                     allOK = false
                 }
             }
+
+            var iteration = 1
+            var replacementUnique = Unique(uniqueType.placeholderText)
+            while (replacementUnique.getDeprecationAnnotation() != null) {
+                if (iteration == 10) {
+                    allOK = false
+                    println("${uniqueType.name}'s deprecation text never references an undeprecated unique!")
+                    break
+                }
+                iteration++
+                replacementUnique = Unique(replacementUnique.getReplacementText())
+            }
+
         }
         Assert.assertTrue("This test succeeds only if all deprecated uniques have a replaceWith text that matches an existing type", allOK)
     }
