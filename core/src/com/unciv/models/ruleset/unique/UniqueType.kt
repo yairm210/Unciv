@@ -387,6 +387,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarkedCivwide("Embarked units can defend themselves", UniqueTarget.Global),
+    @Deprecated("as of 3.19.8", ReplaceWith("Eliminates combat penalty for attacking across a coast"))
+    AttackFromSea("Eliminates combat penalty for attacking from the sea", UniqueTarget.Unit),
+    AttackAcrossCoast("Eliminates combat penalty for attacking across a coast", UniqueTarget.Unit),
 
     SixTilesAlwaysVisible("6 tiles in every direction always visible", UniqueTarget.Unit),
     

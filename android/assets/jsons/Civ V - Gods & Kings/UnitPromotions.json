@@ -227,6 +227,11 @@
 		"uniques": ["[+20]% Strength <vs cities>", "Earn [33]% of the damage done to [City] units as [Gold]"],
 		"unitTypes": ["Melee Water"]
 	},
+	{
+		"name": "Amphibious",
+		"uniques": ["Eliminates combat penalty for attacking across a coast"],
+		"unitTypes": ["Melee Water"]
+	},
 
 	// Water Ranged
 	{
