@@ -265,7 +265,7 @@ object Battle {
         for (unique in plunderingUnit.unit.getMatchingUniques(UniqueType.DamageUnitsPlunder, checkCivInfoUniques = true)) {
             if (plunderedUnit.matchesCategory(unique.params[1])) {
                 val percentage = unique.params[0].toFloat()
-                plunderedGoods.add(Stat.valueOf(unique.params[2]), percentage / 100f * min(damageDealt,100))
+                plunderedGoods.add(Stat.valueOf(unique.params[2]), percentage / 100f * damageDealt)
             }
         }
 
