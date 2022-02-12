@@ -289,7 +289,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Global),
 
     BaseUnitSupply("[amount] Unit Supply", UniqueTarget.Global),
-    UnitSupplyPerPop("[amount] Unit Supply per [amount] population", UniqueTarget.Global), 
+    UnitSupplyPerPop("[amount] Unit Supply per [amount] population [cityFilter]", UniqueTarget.Global), 
     UnitSupplyPerCity("[amount] Unit Supply per city", UniqueTarget.Global),
     
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),

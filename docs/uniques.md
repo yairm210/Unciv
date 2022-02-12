@@ -448,18 +448,18 @@ Applicable to: Global, FollowerBelief
 #### Can be continually researched
 Applicable to: Global
 
-#### [+amount] Unit Supply
-Example: "[+amount] Unit Supply"
+#### [amount] Unit Supply
+Example: "[20] Unit Supply"
 
 Applicable to: Global
 
-#### [+amount] Unit Supply per [amount] population
-Example: "[+amount] Unit Supply per [20] population"
+#### [amount] Unit Supply per [amount] population [cityFilter]
+Example: "[20] Unit Supply per [20] population [in all cities]"
 
 Applicable to: Global
 
-#### [+amount] Unit Supply per city
-Example: "[+amount] Unit Supply per city"
+#### [amount] Unit Supply per city
+Example: "[20] Unit Supply per city"
 
 Applicable to: Global
 

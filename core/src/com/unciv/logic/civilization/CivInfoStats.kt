@@ -121,10 +121,15 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             (civInfo.getDifficulty().unitSupplyPerCity + civInfo.getMatchingUniques(UniqueType.UnitSupplyPerCity).sumOf { it.params[0].toInt() }) 
     } 
     fun getUnitSupplyFromPop(): Int {
-        val totalPop = civInfo.cities.sumOf { it.population.population }
-        val supplyPerPop = civInfo.gameInfo.ruleSet.modOptions.constants.unitSupplyPerPopulation +
-            civInfo.getMatchingUniques(UniqueType.UnitSupplyPerPop).sumOf { it.params[0].toInt() }    
-        return (totalPop * supplyPerPop).toInt()
+        var totalSupply = civInfo.cities.sumOf { it.population.population } * civInfo.gameInfo.ruleSet.modOptions.constants.unitSupplyPerPopulation
+        
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitSupplyPerPop)) {
+            val applicablePopulation = civInfo.cities
+                .filter { it.matchesFilter(unique.params[1]) }
+                .sumOf { it.population.population }
+            totalSupply += unique.params[0].toDouble() * applicablePopulation
+        }
+        return totalSupply.toInt()
     }
     fun getUnitSupplyDeficit(): Int = max(0,civInfo.getCivUnitsSize() - getUnitSupply())
 
