@@ -58,7 +58,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
             if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tileInfo.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)){
-                // if we could remove that terrain
+                // if there is an improvement that could remove that terrain
                 if (ruleSet.tileImprovements.any{it.key == Constants.remove + tileInfo.getLastTerrain().name}){
                     // pop last terrain temporarily
                     val terrain = tileInfo.getLastTerrain().name
@@ -66,8 +66,9 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
                     if(tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) {
                         suggestRemoval = true
                     }
+                    // make sure to add back!
                     tileInfo.terrainFeatures.add(terrain)
-                    if (!suggestRemoval) continue
+                    if (!suggestRemoval) continue  // still can't build it
                 } else {
                     continue
                 }
