@@ -575,7 +575,7 @@ class CivilizationInfo {
         if (otherCiv.civName == civName) return false // never at war with itself
         if (otherCiv.isBarbarian() || isBarbarian()) return true
         val diplomacyManager = diplomacy[otherCiv.civName]
-                ?: return false // not encountered yet
+            ?: return false // not encountered yet
         return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
     }
 

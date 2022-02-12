@@ -112,9 +112,25 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         return supply
     }
 
-    fun getBaseUnitSupply(): Int = civInfo.getDifficulty().unitSupplyBase
-    fun getUnitSupplyFromCities(): Int = civInfo.cities.size * civInfo.getDifficulty().unitSupplyPerCity
-    fun getUnitSupplyFromPop(): Int = civInfo.cities.sumOf { it.population.population } / 2
+    fun getBaseUnitSupply(): Int {
+        return civInfo.getDifficulty().unitSupplyBase + 
+            civInfo.getMatchingUniques(UniqueType.BaseUnitSupply).sumOf { it.params[0].toInt() }
+    }
+    fun getUnitSupplyFromCities(): Int {
+        return civInfo.cities.size * 
+            (civInfo.getDifficulty().unitSupplyPerCity + civInfo.getMatchingUniques(UniqueType.UnitSupplyPerCity).sumOf { it.params[0].toInt() }) 
+    } 
+    fun getUnitSupplyFromPop(): Int {
+        var totalSupply = civInfo.cities.sumOf { it.population.population } * civInfo.gameInfo.ruleSet.modOptions.constants.unitSupplyPerPopulation
+        
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitSupplyPerPop)) {
+            val applicablePopulation = civInfo.cities
+                .filter { it.matchesFilter(unique.params[1]) }
+                .sumOf { it.population.population }
+            totalSupply += unique.params[0].toDouble() * applicablePopulation
+        }
+        return totalSupply.toInt()
+    }
     fun getUnitSupplyDeficit(): Int = max(0,civInfo.getCivUnitsSize() - getUnitSupply())
 
     /** Per each supply missing, a player gets -10% production. Capped at -70%. */
