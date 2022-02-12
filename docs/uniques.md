@@ -1354,8 +1354,8 @@ Example: "<before adopting [Oligarchy]>"
 
 Applicable to: Conditional
 
-#### <for [amount turns>
-Example: "<for [amount turns>"
+#### <for [amount] turns>
+Example: "<for [20] turns>"
 
 Applicable to: Conditional
 

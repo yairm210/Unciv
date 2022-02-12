@@ -1,3 +1,17 @@
+## 3.19.8
+
+Framerate improvements
+
+Performance improvements for wartime AI
+
+Modding: Arbitrary uniques can become timed uniques with a special conditional!
+
+Correctly recognize mod changes of content, not just metadata
+
+Destroyed units on capture provide the correct notification
+
+Loading a new game while nextTurn is running no longer reverts you to that game
+
 ## 3.19.7
 
 Better conditionals for modding
