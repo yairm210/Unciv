@@ -288,9 +288,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
     ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Global),
 
-    BaseUnitSupply("[+amount] Unit Supply", UniqueTarget.Global),
-    UnitSupplyPerPop("[+amount] Unit Supply per [amount] population", UniqueTarget.Global), 
-    UnitSupplyPerCity("[+amount] Unit Supply per city", UniqueTarget.Global),
+    BaseUnitSupply("[amount] Unit Supply", UniqueTarget.Global),
+    UnitSupplyPerPop("[amount] Unit Supply per [amount] population", UniqueTarget.Global), 
+    UnitSupplyPerCity("[amount] Unit Supply per city", UniqueTarget.Global),
     
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
     
