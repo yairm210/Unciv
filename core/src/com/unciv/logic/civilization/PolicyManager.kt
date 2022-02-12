@@ -54,8 +54,9 @@ class PolicyManager {
 
     fun addPolicyToTransients(policy: Policy) {
         for (unique in policy.uniqueObjects) {
-            // Should be replaced with a conditional of the same form later
-            if (!unique.text.contains(turnCountRegex))
+            // Should be deprecated together with TimedAttackStrength so I'm putting this here so the compiler will complain if we don't
+            val rememberToDeprecate = UniqueType.TimedAttackStrength
+            if (!unique.text.contains(turnCountRegex) && unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique })
                 policyUniques.addUnique(unique)
         }
     }

@@ -400,7 +400,7 @@
 			},
 			{
 				"name": "Autocracy Complete",
-				"uniques": ["+[25]% attack strength to all [Military] units for [30] turns"]
+				"uniques": ["[+25]% Strength <when attacking> <for [Military] units> <for [30] turns>"]
 			}
 		]
 	},

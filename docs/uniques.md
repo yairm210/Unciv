@@ -624,11 +624,6 @@ Example: "Quantity of strategic resources produced by the empire +[20]%"
 
 Applicable to: Global
 
-#### +[amount]% attack strength to all [mapUnitFilter] units for [amount] turns
-Example: "+[20]% attack strength to all [Wounded] units for [20] turns"
-
-Applicable to: Global
-
 #### Provides the cheapest [stat] building in your first [amount] cities for free
 Example: "Provides the cheapest [Culture] building in your first [20] cities for free"
 
@@ -1351,6 +1346,11 @@ Example: "<before adopting [Oligarchy]>"
 
 Applicable to: Conditional
 
+#### <for [amount turns>
+Example: "<for [amount turns>"
+
+Applicable to: Conditional
+
 #### <if this city has at least [amount] specialists>
 Example: "<if this city has at least [20] specialists>"
 
@@ -1481,6 +1481,7 @@ Applicable to: Conditional
  - "[amount] HP when healing in [tileFilter] tiles" - Deprecated as of 3.19.4, replace with "[amount] HP when healing <in [tileFilter] tiles>"
  - "Melee units pay no movement cost to pillage" - Deprecated as of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
  - "Heal adjacent units for an additional 15 HP per turn" - Deprecated as of 3.19.3, replace with "All adjacent units heal [+15] HP when healing"
+ - "+[amount]% attack strength to all [mapUnitFilter] units for [amount2] turns" - Deprecated as of 3.19.8, replace with "[+amount]% Strength <when attacking> <for [mapUnitFilter] units> <for [amount2] turns>"
  - "[stats] per turn from cities before [tech/policy]" - Deprecated as of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated as of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated as of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"

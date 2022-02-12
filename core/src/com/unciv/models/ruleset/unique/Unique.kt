@@ -85,6 +85,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
 
         return when (condition.type) {
+            UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
@@ -224,7 +225,6 @@ class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.j
 }
 
 
-// Will probably be allowed to be used as a conditional when I get the motivation to work on that -xlenstra
 class TemporaryUnique() {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {
