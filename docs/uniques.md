@@ -1359,6 +1359,9 @@ Example: "<for [20] turns>"
 
 Applicable to: Conditional
 
+#### <by consuming this unit>
+Applicable to: Conditional
+
 #### <if this city has at least [amount] specialists>
 Example: "<if this city has at least [20] specialists>"
 

@@ -85,7 +85,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
 
         return when (condition.type) {
+            // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
+            UniqueType.ConditionalConsumeUnit -> true
+            
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true

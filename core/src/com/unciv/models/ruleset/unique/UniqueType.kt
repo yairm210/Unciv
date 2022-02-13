@@ -559,6 +559,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
 
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
+    ConditionalConsumeUnit("by consuming this unit", UniqueTarget.Conditional),
 
     /////// city conditionals
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
