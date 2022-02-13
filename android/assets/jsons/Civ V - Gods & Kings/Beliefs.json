@@ -158,7 +158,7 @@
     {
         "name": "Liturgical Drama",
         "type": "Follower",
-        "uniques": ["[+1 Faith] from every [Amphitheatre] <in cities where this religion has at least [3] followers>"]
+        "uniques": ["[+1 Faith] from every [Amphitheater] <in cities where this religion has at least [3] followers>"]
     },
     {
         "name": "Monasteries",
