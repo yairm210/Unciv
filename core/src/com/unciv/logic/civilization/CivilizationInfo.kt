@@ -360,7 +360,7 @@ class CivilizationInfo {
 
     fun getResourceModifier(resource: TileResource): Int {
         var resourceModifier = 1f
-        for (unique in getMatchingUniques("Double quantity of [] produced"))
+        for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
             if (unique.params[0] == resource.name)
                 resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
@@ -678,7 +678,7 @@ class CivilizationInfo {
     fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
     fun calculateScoreBreakdown(): HashMap<String,Double> {
-        val scoreBreakdown = hashMapOf<String,Double>();
+        val scoreBreakdown = hashMapOf<String,Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps
         var mapSizeModifier = 1276 / gameInfo.tileMap.mapParameters.numberOfTiles().toDouble()
@@ -1006,7 +1006,7 @@ class CivilizationInfo {
     // Higher is better
     private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
         if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible()) 
-            return -1;
+            return -1
         var score = 10
         if (tile.improvement == null) {
             score += 4

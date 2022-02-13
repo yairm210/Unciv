@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.HexMath.getDistance
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.models.ruleset.unique.UniqueType
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
 
@@ -426,7 +427,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // As we can not reach our destination in a single turn
             if (unit.canGarrison()
                 && (unit.getTile().isCityCenter() || destination.isCityCenter())
-                && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
+                && unit.civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
             ) unit.civInfo.updateStatsForNextTurn()
             return
         }
@@ -505,7 +506,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // Unit maintenance changed
         if (unit.canGarrison()
             && (origin.isCityCenter() || lastReachableTile.isCityCenter())
-            && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
+            && unit.civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
         ) unit.civInfo.updateStatsForNextTurn()
         if (needToFindNewRoute) moveToTile(destination, considerZoneOfControl)
     }

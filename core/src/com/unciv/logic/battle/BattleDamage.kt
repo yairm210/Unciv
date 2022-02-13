@@ -11,8 +11,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.set
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
 

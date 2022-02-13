@@ -13,7 +13,6 @@ import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.system.measureNanoTime
 
 class BarbarianManager {
     val camps = HashMap<Vector2, Encampment>()

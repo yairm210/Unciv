@@ -108,6 +108,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PercentProductionBuildingsInCapital("[amount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.3", ReplaceWith("[+25]% Production towards any buildings that already exist in the Capital"))
     PercentProductionBuildingsInCapitalDeprecated("+25% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    // todo: maybe should be converted to "[+100]% Yield from every [Natural Wonder]"?
+    DoubleStatsFromNaturalWonders("Tile yields from Natural Wonders doubled", UniqueTarget.Global),
 
     //endregion Stat providing uniques
 
@@ -232,6 +234,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     @Deprecated("as of 3.19.1", ReplaceWith("[amount]% Culture cost of adopting new Policies"))
     LessPolicyCostDeprecated2("[amount]% Culture cost of adopting new policies", UniqueTarget.Global),
 
+    StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[amount]%", UniqueTarget.Global),  // used in Policy
+    DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
+    // Todo: should probably be changed to "[stats] from every known Natural Wonder", and that'll give us the global unique as well
+    DoubleHappinessFromNaturalWonders("Double Happiness from Natural Wonders", UniqueTarget.Global),
+    
+    EnablesConstructionOfSpaceshipParts("Enables construction of Spaceship parts", UniqueTarget.Global),
+    
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
     EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),
@@ -292,6 +301,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     BaseUnitSupply("[amount] Unit Supply", UniqueTarget.Global),
     UnitSupplyPerPop("[amount] Unit Supply per [amount] population [cityFilter]", UniqueTarget.Global), 
     UnitSupplyPerCity("[amount] Unit Supply per city", UniqueTarget.Global),
+    UnitsInCitiesNoMaintenance("Units in cities cost no Maintenance", UniqueTarget.Global),
     
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
     
@@ -373,11 +383,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
     SelfDestructs("Self-destructs when attacking", UniqueTarget.Unit),
     BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
+    IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit),
     
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
     Uncapturable("Uncapturable", UniqueTarget.Unit),
     MayWithdraw("May withdraw before melee ([amount]%)", UniqueTarget.Unit),
+    CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit),
     
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     @Deprecated("as of 3.18.17", ReplaceWith("No movement cost to pillage <for [Melee] units>"), DeprecationLevel.WARNING)
@@ -627,8 +639,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Global),  // Not used in Vanilla
     // todo: remove forced sign
-    StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[amount]%", UniqueTarget.Global),  // used in Policy
-
     @Deprecated("as of 3.19.8", ReplaceWith("[+amount]% Strength <when attacking> <for [mapUnitFilter] units> <for [amount2] turns>"))
     TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] units for [amount2] turns", UniqueTarget.Global),  // used in Policy
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
