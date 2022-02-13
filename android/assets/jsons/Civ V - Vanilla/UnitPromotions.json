@@ -228,7 +228,7 @@
 		"unitTypes": ["Melee Water"]
 	},
 	{
-		"name": "Amphibious",
+		"name": "Landing Party",
 		"uniques": ["Eliminates combat penalty for attacking across a coast"],
 		"unitTypes": ["Melee Water"]
 	},
