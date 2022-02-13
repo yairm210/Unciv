@@ -65,8 +65,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (promotion in promotions)
             infoList += promotion.tr()
         if (replacementTextForUniques != "") infoList += replacementTextForUniques
-        else for (unique in uniques)
-            infoList += unique.tr()
+        else for (unique in uniqueObjects) if(!unique.hasFlag(UniqueFlag.HiddenToUsers))
+            infoList += unique.text.tr()
         return infoList.joinToString()
     }
 
