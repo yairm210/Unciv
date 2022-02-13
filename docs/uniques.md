@@ -1,5 +1,6 @@
 ## Table of Contents
 
+ - [Triggerable uniques](#triggerable-uniques)
  - [Global uniques](#global-uniques)
  - [Nation uniques](#nation-uniques)
  - [Tech uniques](#tech-uniques)
@@ -14,6 +15,73 @@
  - [CityState uniques](#citystate-uniques)
  - [Conditional uniques](#conditional-uniques)
  - [Deprecated uniques](#deprecated-uniques)
+
+## Triggerable uniques
+#### Free [baseUnitFilter] appears
+Example: "Free [Melee] appears"
+
+Applicable to: Triggerable
+
+#### [amount] free [baseUnitFilter] units appear
+Example: "[20] free [Melee] units appear"
+
+Applicable to: Triggerable
+
+#### Free Social Policy
+Applicable to: Triggerable
+
+#### [amount] Free Social Policies
+Example: "[20] Free Social Policies"
+
+Applicable to: Triggerable
+
+#### Empire enters golden age
+Applicable to: Triggerable
+
+#### Free Great Person
+Applicable to: Triggerable
+
+#### [amount] population [cityFilter]
+Example: "[20] population [in all cities]"
+
+Applicable to: Triggerable
+
+#### Free Technology
+Applicable to: Triggerable
+
+#### [amount] Free Technologies
+Example: "[20] Free Technologies"
+
+Applicable to: Triggerable
+
+#### Reveals the entire map
+Applicable to: Triggerable
+
+#### Triggers voting for the Diplomatic Victory
+Applicable to: Triggerable
+
+#### This Unit gains the [promotion] promotion
+Example: "This Unit gains the [Shock I] promotion"
+
+Applicable to: Triggerable
+
+#### [mapUnitFilter] units gain the [promotion] promotion
+Example: "[Wounded] units gain the [Shock I] promotion"
+
+Applicable to: Triggerable
+
+#### Provides the cheapest [stat] building in your first [amount] cities for free
+Example: "Provides the cheapest [Culture] building in your first [20] cities for free"
+
+Applicable to: Triggerable
+
+#### Provides a [buildingName] in your first [amount] cities for free
+Example: "Provides a [Library] in your first [20] cities for free"
+
+Applicable to: Triggerable
+
+#### Will not be displayed in Civilopedia
+Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
 
 ## Global uniques
 #### [stats]
@@ -578,79 +646,13 @@ Example: "[20]% XP gained from combat"
 
 Applicable to: Global, Unit
 
-#### Free [baseUnitFilter] appears
-Example: "Free [Melee] appears"
-
-Applicable to: Global
-
-#### [amount] free [baseUnitFilter] units appear
-Example: "[20] free [Melee] units appear"
-
-Applicable to: Global
-
-#### Free Social Policy
-Applicable to: Global
-
-#### [amount] Free Social Policies
-Example: "[20] Free Social Policies"
-
-Applicable to: Global
-
-#### Empire enters golden age
-Applicable to: Global
-
-#### Free Great Person
-Applicable to: Global
-
-#### [amount] population [cityFilter]
-Example: "[20] population [in all cities]"
-
-Applicable to: Global
-
-#### Free Technology
-Applicable to: Global
-
-#### [amount] Free Technologies
-Example: "[20] Free Technologies"
-
-Applicable to: Global
-
-#### Reveals the entire map
-Applicable to: Global
-
-#### Triggers voting for the Diplomatic Victory
-Applicable to: Global
-
 #### This Unit upgrades for free
-Applicable to: Global
-
-#### This Unit gains the [promotion] promotion
-Example: "This Unit gains the [Shock I] promotion"
-
-Applicable to: Global
-
-#### [mapUnitFilter] units gain the [promotion] promotion
-Example: "[Wounded] units gain the [Shock I] promotion"
-
 Applicable to: Global
 
 #### Quantity of strategic resources produced by the empire +[amount]%
 Example: "Quantity of strategic resources produced by the empire +[20]%"
 
 Applicable to: Global
-
-#### Provides the cheapest [stat] building in your first [amount] cities for free
-Example: "Provides the cheapest [Culture] building in your first [20] cities for free"
-
-Applicable to: Global
-
-#### Provides a [buildingName] in your first [amount] cities for free
-Example: "Provides a [Library] in your first [20] cities for free"
-
-Applicable to: Global
-
-#### Will not be displayed in Civilopedia
-Applicable to: Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
 
 ## Nation uniques
 #### Will not be chosen for new games
