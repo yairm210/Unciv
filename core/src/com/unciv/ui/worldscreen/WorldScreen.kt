@@ -774,7 +774,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
 
             viewingCiv.religionManager.religionState == ReligionState.EnhancingReligion ->
-                NextTurnAction("Enhance Religion", Color.ORANGE) {
+                NextTurnAction("Enhance a Religion", Color.ORANGE) {
                     game.setScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,

@@ -120,6 +120,7 @@ class TileImprovement : RulesetStatsObject() {
 
         var addedLineBeforeResourceBonus = false
         for (resource in ruleset.tileResources.values.filter { it.improvement == name }) {
+            if (resource.improvementStats == null) continue
             if (!addedLineBeforeResourceBonus) {
                 addedLineBeforeResourceBonus = true
                 textList += FormattedLine()
