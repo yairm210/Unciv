@@ -106,11 +106,11 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
             if (tileInfo.improvement != null && removeImprovement) labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
 
             val pickNow = if (suggestRemoval)
-                (Constants.remove + tileInfo.getLastTerrain().name + " first").tr().toLabel()
+                (Constants.remove + "[" + tileInfo.getLastTerrain().name + "] first")toLabel()
             else if (tileInfo.improvementInProgress != improvement.name)
-                "Pick now!".tr().toLabel().onClick { accept(improvement) }
+                "Pick now!".toLabel().onClick { accept(improvement) }
             else
-                "Current construction".tr().toLabel()
+                "Current construction".toLabel()
 
             val statIcons = getStatIconsTable(provideResource, removeImprovement)
 
