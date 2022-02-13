@@ -417,7 +417,11 @@ class Ruleset {
             rulesetErrors.add(deprecationText, severity)
         }
 
-        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) })
+        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) }
+            // the 'consume unit' conditional causes a triggerable unique to become a unit action
+            && !(uniqueTarget==UniqueTarget.Unit
+                    && unique.isTriggerable 
+                    && unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }))
             rulesetErrors.add(
                 "$name's unique \"${unique.text}\" cannot be put on this type of object!",
                 RulesetErrorSeverity.Warning

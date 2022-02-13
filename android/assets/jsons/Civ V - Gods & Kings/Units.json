@@ -7,7 +7,7 @@
 		"name": "Worker",
 		"unitType": "Civilian",
 		"movement": 2,
-		"uniques": ["Can build [Land] improvements on tiles", "Reveals the entire map <by consuming this unit>"],
+		"uniques": ["Can build [Land] improvements on tiles"],
 		"cost": 70
 	},
 	{
