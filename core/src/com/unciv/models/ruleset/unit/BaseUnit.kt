@@ -369,7 +369,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
-                rejectionReasons.add(RejectionReason.PopulationRequirement)
+                rejectionReasons.add(RejectionReason.PopulationRequirement.apply { errorMessage = unique.text })
         return rejectionReasons
     }
 

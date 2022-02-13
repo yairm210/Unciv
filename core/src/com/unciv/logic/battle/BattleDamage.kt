@@ -7,6 +7,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.set
@@ -26,7 +27,7 @@ object BattleDamage {
         }
         if (unique.conditionals.isEmpty()) return source
 
-        val conditionalsText = unique.conditionals.joinToString { it.text }
+        val conditionalsText = unique.conditionals.joinToString { it.text.tr() }
         return "$source - $conditionalsText"
     }
 
