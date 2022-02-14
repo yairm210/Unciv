@@ -333,7 +333,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
+    
+    @Deprecated("as of 3.19.9", ReplaceWith("Only available <in cities without a [buildingName]>"))
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
+    @Deprecated("as of 3.19.9", ReplaceWith("Only available <in cities with a [buildingName]>"))
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
     RequiresBuildingInSomeCities("Requires a [buildingName] in at least [amount] cities", UniqueTarget.Building),
@@ -573,6 +576,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
 
     /////// city conditionals
+    ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
+    ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
     ConditionalFollowerCount("in cities where this religion has at least [amount] followers", UniqueTarget.Conditional),
     ConditionalWhenGarrisoned("with a garrison", UniqueTarget.Conditional),

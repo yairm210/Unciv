@@ -131,6 +131,9 @@ Example: "[20]% Production towards any buildings that already exist in the Capit
 
 Applicable to: Global, FollowerBelief
 
+#### Tile yields from Natural Wonders doubled
+Applicable to: Global
+
 #### Military Units gifted from City-States start with [amount] XP
 Example: "Military Units gifted from City-States start with [20] XP"
 
@@ -362,6 +365,22 @@ Example: "[20]% Culture cost of adopting new Policies"
 
 Applicable to: Global
 
+#### Quantity of strategic resources produced by the empire +[amount]%
+Example: "Quantity of strategic resources produced by the empire +[20]%"
+
+Applicable to: Global
+
+#### Double quantity of [resource] produced
+Example: "Double quantity of [Iron] produced"
+
+Applicable to: Global
+
+#### Double Happiness from Natural Wonders
+Applicable to: Global
+
+#### Enables construction of Spaceship parts
+Applicable to: Global
+
 #### Enables Open Borders agreements
 Applicable to: Global
 
@@ -461,6 +480,9 @@ Applicable to: Global
 #### [amount] Unit Supply per city
 Example: "[20] Unit Supply per city"
 
+Applicable to: Global
+
+#### Units in cities cost no Maintenance
 Applicable to: Global
 
 #### Rebel units may spawn
@@ -634,11 +656,6 @@ Example: "[Wounded] units gain the [Shock I] promotion"
 
 Applicable to: Global
 
-#### Quantity of strategic resources produced by the empire +[amount]%
-Example: "Quantity of strategic resources produced by the empire +[20]%"
-
-Applicable to: Global
-
 #### Provides the cheapest [stat] building in your first [amount] cities for free
 Example: "Provides the cheapest [Culture] building in your first [20] cities for free"
 
@@ -726,16 +743,6 @@ Applicable to: Building, Unit
 
 #### Cost increases by [amount] per owned city
 Example: "Cost increases by [20] per owned city"
-
-Applicable to: Building
-
-#### Cannot be built with [buildingName]
-Example: "Cannot be built with [Library]"
-
-Applicable to: Building
-
-#### Requires a [buildingName] in this city
-Example: "Requires a [Library] in this city"
 
 Applicable to: Building
 
@@ -838,12 +845,18 @@ Example: "Blast radius [20]"
 
 Applicable to: Unit
 
+#### Ranged attacks may be performed over obstacles
+Applicable to: Unit
+
 #### Uncapturable
 Applicable to: Unit
 
 #### May withdraw before melee ([amount]%)
 Example: "May withdraw before melee ([20]%)"
 
+Applicable to: Unit
+
+#### Unable to capture cities
 Applicable to: Unit
 
 #### Can move after attacking
@@ -1359,6 +1372,16 @@ Example: "<for [20] turns>"
 
 Applicable to: Conditional
 
+#### <in cities with a [buildingFilter]>
+Example: "<in cities with a [Culture]>"
+
+Applicable to: Conditional
+
+#### <in cities without a [buildingFilter]>
+Example: "<in cities without a [Culture]>"
+
+Applicable to: Conditional
+
 #### <if this city has at least [amount] specialists>
 Example: "<if this city has at least [20] specialists>"
 
@@ -1541,6 +1564,8 @@ Applicable to: Conditional
  - "+50% attacking strength for cities with garrisoned units" - Deprecated Extremely old - used for auto-updates only, replace with "[+50]% Strength for cities <with a garrison> <when attacking>"
  - "Incompatible with [policy/tech/promotion]" - Deprecated as of 3.19.8, replace with "Only available <before adopting [policy/tech/promotion]> OR <before discovering [policy/tech/promotion]> OR <for units without [policy/tech/promotion]>"
  - "Not displayed as an available construction without [buildingName/tech/resource/policy]" - Deprecated as of 3.19.8, replace with "Only available <after adopting [buildingName/tech/resource/policy]> OR <with [buildingName/tech/resource/policy]> OR <after discovering [buildingName/tech/resource/policy]>"
+ - "Cannot be built with [buildingName]" - Deprecated as of 3.19.9, replace with "Only available <in cities without a [buildingName]>"
+ - "Requires a [buildingName] in this city" - Deprecated as of 3.19.9, replace with "Only available <in cities with a [buildingName]>"
  - "[stats] with [resource]" - Deprecated as of 3.19.7, replace with "[stats] <with [resource]>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated as of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "[stats] <after discovering [tech]>"
