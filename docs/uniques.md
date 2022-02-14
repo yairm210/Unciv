@@ -883,6 +883,9 @@ Example: "All adjacent units heal [20] HP when healing"
 
 Applicable to: Unit
 
+#### Eliminates combat penalty for attacking across a coast
+Applicable to: Unit
+
 #### 6 tiles in every direction always visible
 Applicable to: Unit
 
@@ -1567,6 +1570,7 @@ Applicable to: Conditional
  - "[stats] with [resource]" - Deprecated as of 3.19.7, replace with "[stats] <with [resource]>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated as of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "[stats] <after discovering [tech]>"
+ - "Eliminates combat penalty for attacking from the sea" - Deprecated as of 3.19.8, replace with "Eliminates combat penalty for attacking across a coast"
  - "[amount]% Bonus XP gain" - Deprecated as of 3.18.12, replace with "[amount]% XP gained from combat"
  - "Cannot enter ocean tiles until Astronomy" - Deprecated as of 3.18.6, replace with "Cannot enter ocean tiles <before discovering [Astronomy]>"
  - "+[amount]% Strength when attacking" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[+amount]% Strength <when attacking>"
