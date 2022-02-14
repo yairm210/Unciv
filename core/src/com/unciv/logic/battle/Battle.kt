@@ -552,10 +552,10 @@ object Battle {
         }
 
         if (!wasDestroyedInstead)
-            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
+            defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
         else
-            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
+            defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         if (checkDefeat)
