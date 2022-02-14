@@ -816,9 +816,6 @@ Applicable to: Building, Improvement, Resource
 #### Remove extra unhappiness from annexed cities
 Applicable to: Building
 
-#### Spaceship part
-Applicable to: Building, Unit
-
 #### Hidden when religion is disabled
 Applicable to: Building, Unit, Ruins
 
@@ -982,6 +979,14 @@ Applicable to: Unit
 Applicable to: Unit
 
 #### Religious Unit
+Applicable to: Unit
+
+#### Spaceship part
+Applicable to: Unit
+
+#### Can be added to [comment] in the Capital
+Example: "Can be added to [comment] in the Capital"
+
 Applicable to: Unit
 
 ## Promotion uniques

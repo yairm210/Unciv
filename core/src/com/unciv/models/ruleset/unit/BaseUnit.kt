@@ -425,12 +425,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
         }
         
-        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits, StateForConditionals(civInfo=civInfo))
-            .any { matchesFilter(it.params[0]) }
-        ) {
+        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits).any { matchesFilter(it.params[0]) }) {
             rejectionReasons.add(RejectionReason.CannotBeBuilt)
         }
-            
+        
+        for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)) {
+            if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
+                rejectionReasons.add(RejectionReason.MaxNumberBuildable)
+        }
+        
         return rejectionReasons
     }
 
