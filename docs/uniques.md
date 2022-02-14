@@ -131,6 +131,9 @@ Example: "[20]% Production towards any buildings that already exist in the Capit
 
 Applicable to: Global, FollowerBelief
 
+#### Tile yields from Natural Wonders doubled
+Applicable to: Global
+
 #### Military Units gifted from City-States start with [amount] XP
 Example: "Military Units gifted from City-States start with [20] XP"
 
@@ -362,6 +365,22 @@ Example: "[20]% Culture cost of adopting new Policies"
 
 Applicable to: Global
 
+#### Quantity of strategic resources produced by the empire +[amount]%
+Example: "Quantity of strategic resources produced by the empire +[20]%"
+
+Applicable to: Global
+
+#### Double quantity of [resource] produced
+Example: "Double quantity of [Iron] produced"
+
+Applicable to: Global
+
+#### Double Happiness from Natural Wonders
+Applicable to: Global
+
+#### Enables construction of Spaceship parts
+Applicable to: Global
+
 #### Enables Open Borders agreements
 Applicable to: Global
 
@@ -461,6 +480,9 @@ Applicable to: Global
 #### [amount] Unit Supply per city
 Example: "[20] Unit Supply per city"
 
+Applicable to: Global
+
+#### Units in cities cost no Maintenance
 Applicable to: Global
 
 #### Rebel units may spawn
@@ -631,11 +653,6 @@ Applicable to: Global
 
 #### [mapUnitFilter] units gain the [promotion] promotion
 Example: "[Wounded] units gain the [Shock I] promotion"
-
-Applicable to: Global
-
-#### Quantity of strategic resources produced by the empire +[amount]%
-Example: "Quantity of strategic resources produced by the empire +[20]%"
 
 Applicable to: Global
 
@@ -838,12 +855,18 @@ Example: "Blast radius [20]"
 
 Applicable to: Unit
 
+#### Ranged attacks may be performed over obstacles
+Applicable to: Unit
+
 #### Uncapturable
 Applicable to: Unit
 
 #### May withdraw before melee ([amount]%)
 Example: "May withdraw before melee ([20]%)"
 
+Applicable to: Unit
+
+#### Unable to capture cities
 Applicable to: Unit
 
 #### Can move after attacking

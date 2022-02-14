@@ -103,7 +103,7 @@ object BattleDamage {
             }
 
             if (enemy.getCivInfo().isCityState()
-                && civInfo.hasUnique("+30% Strength when fighting City-State units and cities")
+                && civInfo.hasUnique(UniqueType.StrengthBonusVsCityStates)
             )
                 modifiers["vs [City-States]"] = 30
         } else if (combatant is CityCombatant) {

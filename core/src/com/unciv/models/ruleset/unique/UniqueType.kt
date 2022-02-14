@@ -241,6 +241,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     
     EnablesConstructionOfSpaceshipParts("Enables construction of Spaceship parts", UniqueTarget.Global),
     
+    NotifiedOfBarbarianEncampments("Notified of new Barbarian encampments", UniqueTarget.Global),
+    
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
     EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),
@@ -282,6 +284,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // ToDo: make per unit and use unit filters?
     LandUnitEmbarkation("Enables embarkation for land units", UniqueTarget.Global),
     EmbarkedUnitsMayEnterOcean("Enables embarked units to enter ocean tiles", UniqueTarget.Global),
+    // todo: Should this be deprecated and replaces with the two above uniques? 
+    EmbarkAndEnterOcean("Can embark and move over Coasts and Oceans immediately", UniqueTarget.Global),
     
     PopulationLossFromNukes("Population loss from nuclear attacks [amount]% [cityFilter]", UniqueTarget.Global),
     @Deprecated("as of 3.19.2", ReplaceWith("Population loss from nuclear attacks [-amount]% [in this city]"))
@@ -365,6 +369,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit, UniqueTarget.Global),
     FlankAttackBonus("[amount]% to Flank Attack bonuses", UniqueTarget.Unit, UniqueTarget.Global),
+    // There's currently no conditional that would allow you strength vs city-state *cities* and that's why this isn't deprecated yet
+    StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
 
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
