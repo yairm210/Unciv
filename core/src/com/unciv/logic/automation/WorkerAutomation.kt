@@ -282,29 +282,25 @@ class WorkerAutomation(
      * Tests if tile can be improved by a specific unit, or if no unit is passed, any unit at all
      * (but does not check whether the ruleset contains any unit capable of it)
      */
-    private fun tileCanBeImproved(unit: MapUnit?, tile: TileInfo): Boolean {
+    private fun tileCanBeImproved(unit: MapUnit, tile: TileInfo): Boolean {
         if (!tile.isLand || tile.isImpassible() || tile.isCityCenter())
             return false
         val city = tile.getCity()
         if (city == null || city.civInfo != civInfo)
             return false
         if (tile.improvement != null && !UncivGame.Current.settings.automatedWorkersReplaceImprovements) {
-            if (unit != null) {
-                if (unit.civInfo.isPlayerCivilization())
-                    return false
-            } else if (UncivGame.Current.gameInfo.currentPlayerCiv.isPlayerCivilization())
+            if (unit.civInfo.isPlayerCivilization())
                 return false
         }
 
         if (tile.improvement == null) {
-            if (unit == null) return true
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
             
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
             && tile.tileResource.improvement != tile.improvement
-            && (unit == null || chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
+            && (chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
                 .let { it != null && tile.canBuildImprovement(it, civInfo) && unit.canBuildImprovement(it, tile)}))
             return true
         return false // couldn't find anything to construct here

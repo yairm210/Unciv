@@ -62,8 +62,6 @@ class CityInfo {
     var turnAcquired = 0
     var health = 200
 
-    @Deprecated("As of 3.18.4", ReplaceWith("CityFlags.Resistance"), DeprecationLevel.WARNING)
-    var resistanceCounter = 0
 
     var religion = CityInfoReligionManager()
     var population = PopulationManager()
@@ -526,11 +524,6 @@ class CityInfo {
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)
-
-        if (resistanceCounter > 0) {
-            setFlag(CityFlags.Resistance, resistanceCounter)
-            resistanceCounter = 0
-        }
     }
 
     fun startTurn() {
@@ -831,11 +824,10 @@ class CityInfo {
     // Finds matching uniques provided from both local and non-local sources.
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, this),
-        localUniques: Sequence<Unique> = getLocalMatchingUniques(uniqueType, stateForConditionals),
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, this)
     ): Sequence<Unique> {
         return civInfo.getMatchingUniques(uniqueType, stateForConditionals, this) +
-            localUniques.filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
+                getLocalMatchingUniques(uniqueType, stateForConditionals)
     }
 
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
@@ -856,18 +848,11 @@ class CityInfo {
     }
 
 
-    fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType): Sequence<Unique> {
+    fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { !it.isLocalEffect }
+            .filter { !it.isLocalEffect && it.conditionalsApply(stateForConditionals) }
         // Note that we don't query religion here, as those only have local effects
     }
 
-    // Get all uniques that don't apply to only this city
-    fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getAllUniques()
-            .filter { !it.isLocalEffect }
-        // Note that we don't query religion here, as those only have local effects
-    }
-    
     //endregion
 }

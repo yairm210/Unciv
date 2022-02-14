@@ -22,7 +22,7 @@ class StatTreeNode {
     private var innerStats: Stats? = null
 
     private fun addInnerStats(stats: Stats) {
-        if (innerStats == null) innerStats = stats
+        if (innerStats == null) innerStats = stats.clone() // Copy the stats instead of referencing them
         else innerStats!!.add(stats) // What happens if we add 2 stats to the same leaf?
     }
 
@@ -243,11 +243,6 @@ class CityStats(val cityInfo: CityInfo) {
             if (cityInfo.getCenterTile().matchesTerrainFilter(unique.params[1]))
                 addUniqueStats(unique)
 
-        // Deprecated since 3.18.14
-            for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromCitiesBefore))
-                if (!cityInfo.civInfo.hasTechOrPolicy(unique.params[1]))
-                    addUniqueStats(unique)
-        //
 
         return sourceToStats
     }
@@ -632,11 +627,6 @@ class CityStats(val cityInfo: CityInfo) {
     private fun updateFoodEaten() {
         foodEaten = cityInfo.population.population.toFloat() * 2
         var foodEatenBySpecialists = 2f * cityInfo.population.getNumberOfSpecialists()
-
-        // Deprecated since 3.16.11
-            for (unique in cityInfo.civInfo.getMatchingUniques(UniqueType.FoodConsumptionBySpecialistsDeprecated))
-                foodEatenBySpecialists *= 1f - unique.params[0].toFloat() / 100f
-        //
 
         for (unique in cityInfo.getMatchingUniques(UniqueType.FoodConsumptionBySpecialists))
             if (cityInfo.matchesFilter(unique.params[1]))

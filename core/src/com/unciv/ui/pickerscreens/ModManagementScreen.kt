@@ -224,7 +224,7 @@ class ModManagementScreen(
 
             val installedMod = RulesetCache.values.firstOrNull { it.name == repo.name }
             val isUpdatedVersionOfInstalledMod = installedMod?.modOptions?.let {
-                it.lastUpdated != "" && it.lastUpdated != repo.updated_at
+                it.lastUpdated != "" && it.lastUpdated != repo.pushed_at
             } == true
 
             if (installedMod != null) {
@@ -234,7 +234,7 @@ class ModManagementScreen(
                 }
 
                 if (installedMod.modOptions.author.isEmpty()) {
-                    rewriteModOptions(repo, Gdx.files.local("mods").child(repo.name))
+                    rewriteModOptions(repo, installedMod.folderLocation!!)
                     installedMod.modOptions.author = repo.owner.login
                     installedMod.modOptions.modSize = repo.size
                 }
@@ -305,7 +305,7 @@ class ModManagementScreen(
      * @param repo: the repository instance as received from the GitHub api
      */
     private fun addModInfoToActionTable(repo: Github.Repo) {
-        addModInfoToActionTable(repo.name, repo.html_url, repo.updated_at, repo.owner.login, repo.size)
+        addModInfoToActionTable(repo.name, repo.html_url, repo.pushed_at, repo.owner.login, repo.size)
     }
     /** Recreate the information part of the right-hand column
      * @param modName: The mod name (name from the RuleSet)
@@ -419,7 +419,7 @@ class ModManagementScreen(
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
         val modOptions = if (modOptionsFile.exists()) JsonParser().getFromJson(ModOptions::class.java, modOptionsFile) else ModOptions()
         modOptions.modUrl = repo.html_url
-        modOptions.lastUpdated = repo.updated_at
+        modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
         Json().toJson(modOptions, modOptionsFile)
@@ -520,7 +520,8 @@ class ModManagementScreen(
         syncInstalledSelected(mod.name, mod.button)
         refreshInstalledModActions(mod.ruleset!!)
         rightSideButton.setText("Delete [${mod.name}]".tr())
-        rightSideButton.isEnabled = true
+        // Don't let the player think he can delete Vanilla and G&K rulesets
+        rightSideButton.isEnabled = mod.ruleset.folderLocation!=null
         showModDescription(mod.name)
         removeRightSideClickListeners()
         rightSideButton.onClick {
@@ -528,7 +529,7 @@ class ModManagementScreen(
             YesNoPopup(
                 question = "Are you SURE you want to delete this mod?",
                 action = {
-                    deleteMod(mod.name)
+                    deleteMod(mod.ruleset)
                     modActionTable.clear()
                     rightSideButton.setText("[${mod.name}] was deleted.".tr())
                 },
@@ -539,12 +540,10 @@ class ModManagementScreen(
     }
 
     /** Delete a Mod, refresh ruleset cache and update installed mod table */
-    private fun deleteMod(modName: String) {
-        val modFileHandle = Gdx.files.local("mods").child(modName)
-        if (modFileHandle.isDirectory) modFileHandle.deleteDirectory()
-        else modFileHandle.delete()     // This should never happen
+    private fun deleteMod(mod: Ruleset) {
+        mod.folderLocation!!.deleteDirectory()
         RulesetCache.loadRulesets()
-        installedModInfo.remove(modName)
+        installedModInfo.remove(mod.name)
         refreshInstalledModTable()
     }
 

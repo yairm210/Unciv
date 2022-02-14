@@ -362,22 +362,28 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
     }
 
-    private fun getMoveHereButton(dto: MoveHereButtonDto): Group {
-        val size = 60f
-        val moveHereButton = Group().apply { width = size;height = size; }
-        moveHereButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
-        moveHereButton.addActor(ImageGetter.getStatIcon("Movement")
-                .apply { color = Color.BLACK; width = size / 2; height = size / 2; center(moveHereButton) })
+    val buttonSize = 60f
+    val smallerCircleSizes = 25f
 
-        val numberCircle = ImageGetter.getCircle().apply { width = size / 2; height = size / 2;color = Color.BLUE }
+    private fun getMoveHereButton(dto: MoveHereButtonDto): Group {
+        val moveHereButton = ImageGetter.getStatIcon("Movement")
+            .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2 }
+            .surroundWithCircle(buttonSize-2, false)
+            .surroundWithCircle(buttonSize, false, Color.BLACK)
+
+
+        val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
+            .apply { setAlignment(Align.center) }
+            .surroundWithCircle(smallerCircleSizes-2, color = ImageGetter.getBlue().lerp(Color.BLACK, 0.3f))
+            .surroundWithCircle(smallerCircleSizes,false)
+
         moveHereButton.addActor(numberCircle)
 
-        moveHereButton.addActor(dto.unitToTurnsToDestination.values.maxOrNull()!!.toLabel().apply { center(numberCircle) })
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
-        val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, size / 2)
+        val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, smallerCircleSizes)
         else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civInfo.nation.getInnerColor()).apply { setAlignment(Align.center) }
-                .surroundWithCircle(size / 2).apply { circle.color = firstUnit.civInfo.nation.getOuterColor() }
-        unitIcon.y = size - unitIcon.height
+                .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civInfo.nation.getOuterColor() }
+        unitIcon.y = buttonSize - unitIcon.height
         moveHereButton.addActor(unitIcon)
 
         val unitsThatCanMove = dto.unitToTurnsToDestination.keys.filter { it.currentMovement > 0 }
@@ -394,14 +400,13 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
-        val size = 60f
-        val swapWithButton = Group().apply { width = size;height = size; }
-        swapWithButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
+        val swapWithButton = Group().apply { width = buttonSize;height = buttonSize; }
+        swapWithButton.addActor(ImageGetter.getCircle().apply { width = buttonSize; height = buttonSize })
         swapWithButton.addActor(ImageGetter.getImage("OtherIcons/Swap")
-            .apply { color = Color.BLACK; width = size / 2; height = size / 2; center(swapWithButton) })
+            .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2; center(swapWithButton) })
 
-        val unitIcon = UnitGroup(dto.unit, size / 2)
-        unitIcon.y = size - unitIcon.height
+        val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)
+        unitIcon.y = buttonSize - unitIcon.height
         swapWithButton.addActor(unitIcon)
 
         swapWithButton.onClick(UncivSound.Silent) {

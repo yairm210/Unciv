@@ -8,6 +8,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueParameterType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -121,6 +122,43 @@ class BasicTests {
             }
         }
         Assert.assertTrue("This test succeeds only if all UniqueTypes have at least one UniqueTarget", allOK)
+    }
+
+    @Test
+    fun allDeprecatedUniqueTypesHaveReplacewithThatMatchesOtherType() {
+        var allOK = true
+        for (uniqueType in UniqueType.values()) {
+            val deprecationAnnotation = uniqueType.getDeprecationAnnotation() ?: continue
+            val replacementTextUnique = Unique(deprecationAnnotation.replaceWith.expression)
+            if (replacementTextUnique.type == null && !replacementTextUnique.text.contains(" OR ")) {
+                println("${uniqueType.name}'s deprecation text does not match any existing type!'")
+                allOK = false
+            }
+            if (replacementTextUnique.type == uniqueType){
+                println("${uniqueType.name}'s deprecation text references itself!'")
+                allOK = false
+            }
+            for (conditional in replacementTextUnique.conditionals){
+                if (conditional.type==null){
+                    println("${uniqueType.name}'s deprecation text contains conditional \"${conditional.text}\" which does not match any existing type!'")
+                    allOK = false
+                }
+            }
+
+            var iteration = 1
+            var replacementUnique = Unique(uniqueType.placeholderText)
+            while (replacementUnique.getDeprecationAnnotation() != null) {
+                if (iteration == 10) {
+                    allOK = false
+                    println("${uniqueType.name}'s deprecation text never references an undeprecated unique!")
+                    break
+                }
+                iteration++
+                replacementUnique = Unique(replacementUnique.getReplacementText())
+            }
+
+        }
+        Assert.assertTrue("This test succeeds only if all deprecated uniques have a replaceWith text that matches an existing type", allOK)
     }
 
     //@Test  // commented so github doesn't run this

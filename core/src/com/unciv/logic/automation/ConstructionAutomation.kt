@@ -115,8 +115,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
-        if ((!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < max(5, cities * 2))
-                || (isAtWar && civInfo.gold > -50)) {
+        if (!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < max(5, cities * 2)
+                || isAtWar && civInfo.gold > -50
+        ) {
             val militaryUnit = Automation.chooseMilitaryUnit(cityInfo) ?: return
             val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
             // most buildings and civ units contribute the the civ's growth, military units are anti-growth
@@ -209,13 +210,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun getWonderPriority(wonder: Building): Float {
-        if (wonder.uniques.contains("Enables construction of Spaceship parts"))
+        if (wonder.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
             return 2f
         if (preferredVictoryType == VictoryType.Cultural
                 && wonder.name in listOf("Sistine Chapel", "Eiffel Tower", "Cristo Redentor", "Neuschwanstein", "Sydney Opera House"))
             return 3f
         // Only start building if we are the city that would complete it the soonest
-        if (wonder.uniques.contains("Triggers a Cultural Victory upon completion") && cityInfo == civInfo.cities.minByOrNull {
+        if (wonder.hasUnique(UniqueType.TriggersCulturalVictory) && cityInfo == civInfo.cities.minByOrNull {
                 it.cityConstructions.turnsToConstruction(wonder.name) 
             }!!)
             return 10f

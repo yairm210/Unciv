@@ -139,7 +139,7 @@ class Nation : RulesetObject() {
     private fun getCityStateInfo(ruleset: Ruleset): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
 
-        textList += FormattedLine("Type: [$cityStateType]", header = 4, color = cityStateType!!.color)
+        textList += FormattedLine("{Type}: [$cityStateType]", header = 4, color = cityStateType!!.color)
 
         val era = if (UncivGame.isCurrentInitialized() && UncivGame.Current.isGameInfoInitialized())
             UncivGame.Current.gameInfo.currentPlayerCiv.getEra()
@@ -150,7 +150,7 @@ class Nation : RulesetObject() {
         val friendBonus = era.friendBonus[cityStateType!!.name]
         if (friendBonus != null && friendBonus.isNotEmpty()) {
             textList += FormattedLine()
-            textList += FormattedLine("When Friends: ")
+            textList += FormattedLine("{When Friends}: ")
             friendBonus.forEach {
                 textList += FormattedLine(Unique(it), indent = 1)
                 if (it == "Provides a unique luxury") showResources = true
@@ -160,7 +160,7 @@ class Nation : RulesetObject() {
         val allyBonus = era.allyBonus[cityStateType!!.name]
         if (allyBonus != null && allyBonus.isNotEmpty()) {
             textList += FormattedLine()
-            textList += FormattedLine("When Allies: ")
+            textList += FormattedLine("{When Allies}: ")
             allyBonus.forEach {
                 textList += FormattedLine(Unique(it), indent = 1)
                 if (it == "Provides a unique luxury") showResources = true
@@ -214,7 +214,7 @@ class Nation : RulesetObject() {
             } else if (building.replaces != null) {
                 yield(FormattedLine("Replaces [${building.replaces}], which is not found in the ruleset!", indent=1))
             } else {
-                yield(FormattedLine(building.getShortDescription(ruleset), indent=1))
+                yield(FormattedLine(building.getShortDescription(), indent=1))
             }
         }
     }

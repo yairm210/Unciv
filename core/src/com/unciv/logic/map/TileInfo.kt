@@ -272,7 +272,7 @@ open class TileInfo {
             val wonderStats = getNaturalWonder().cloneStats()
 
             // Spain doubles tile yield
-            if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+            if (city != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)) {
                 wonderStats.timesInPlace(2f)
             }
 
@@ -291,7 +291,7 @@ open class TileInfo {
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)) 
                     stats.add(unique.stats)
-                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)) {
                     stats.add(unique.stats)
                 }
             }
@@ -454,20 +454,16 @@ open class TileInfo {
                         && neighbors.any { it.getOwner() == civInfo } && civInfo.cities.isNotEmpty()
                     )
                 ) -> false
-            improvement.uniqueObjects.any {
-                it.placeholderText == "Obsolete with []" && civInfo.tech.isResearched(it.params[0])
+            improvement.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
+                .any { !it.conditionalsApply(StateForConditionals(civInfo)) } -> false
+            improvement.getMatchingUniques(UniqueType.ObsoleteWith).any {
+                civInfo.tech.isResearched(it.params[0])
             } -> return false
-            // Deprecated since 3.18.5
-                improvement.getMatchingUniques(UniqueType.RequiresTechToBuildOnTile).any {
-                    matchesTerrainFilter(it.params[0], civInfo) && !civInfo.tech.isResearched(it.params[1])
-                } -> false
-            //
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile, StateForConditionals(civInfo=civInfo)).any {
                 matchesTerrainFilter(it.params[0], civInfo)
             } -> false
-            improvement.uniqueObjects.any {
-                it.isOfType(UniqueType.ConsumesResources)
-                && civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
+            improvement.getMatchingUniques(UniqueType.ConsumesResources).any {
+                civInfo.getCivResourcesByName()[it.params[1]]!! < it.params[0].toInt()
             } -> false
             // Calling this function does double the check for 'cannot be build on tile', but this is unavoidable.
             // Only in this function do we have the civInfo of the civ, so only here we can check whether
@@ -477,6 +473,12 @@ open class TileInfo {
             // any state for conditionals. Therefore, duplicating the check is the easiest option.
             else -> canImprovementBeBuiltHere(improvement, hasViewableResource(civInfo))
         }
+    }
+
+    fun isAdjacentTo(terrainFilter:String): Boolean {
+        if (terrainFilter == "Fresh water" && isAdjacentToFreshwater) return true
+        return if (terrainFilter == "River") isAdjacentToRiver()
+        else neighbors.any { neighbor -> neighbor.matchesFilter(terrainFilter) }
     }
 
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
@@ -491,7 +493,6 @@ open class TileInfo {
             improvement.getMatchingUniques(UniqueType.CannotBuildOnTile).any {
                 unique -> matchesTerrainFilter(unique.params[0])
             } -> false
-
             // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
             RoadStatus.values().none { it.name == improvement.name || it.removeAction == improvement.name }
                     && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
@@ -507,9 +508,7 @@ open class TileInfo {
             improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0 && isLand -> true
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.uniqueObjects.filter { it.type == UniqueType.MustBeNextTo }.any {
-                val filter = it.params[0]
-                if (filter == "River") return@any !isAdjacentToRiver()
-                else return@any !neighbors.any { neighbor -> neighbor.matchesFilter(filter) }
+                !isAdjacentTo(it.params[0])
             } -> false
             !isWater && RoadStatus.values().any { it.name == improvement.name && it > roadStatus } -> true
             improvement.name == roadStatus.removeAction -> true
@@ -666,7 +665,9 @@ open class TileInfo {
         }
     }
 
-    fun isAdjacentToRiver() = neighbors.any { isConnectedByRiver(it) }
+    @delegate:Transient
+    private val isAdjacentToRiverLazy by lazy { neighbors.any { isConnectedByRiver(it) } }
+    fun isAdjacentToRiver() = isAdjacentToRiverLazy
 
     /**
      * @returns whether units of [civInfo] can pass through this tile, considering only civ-wide filters.

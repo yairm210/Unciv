@@ -29,6 +29,14 @@ object UniqueTriggerActivation {
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
 
+        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
+
+        val timingConditional = unique.conditionals.firstOrNull{it.type == ConditionalTimedUnique}
+        if (timingConditional!=null) {
+            civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
+            return true
+        }
+
         @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
         when (unique.type) {
             OneTimeFreeUnit -> {

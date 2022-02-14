@@ -63,7 +63,7 @@ open class Policy : RulesetObject() {
         if (policyBranchType != PolicyBranchType.BranchComplete && requires != null && requires!!.isNotEmpty()) {
             lineList += FormattedLine()
             if (requires!!.size == 1)
-                requires!!.first().let { lineList += FormattedLine("Requires: [$it]", link = "Policy/$it") }
+                requires!!.first().let { lineList += FormattedLine("Requires [$it]", link = "Policy/$it") }
             else {
                 lineList += FormattedLine("Requires all of the following:")
                 requires!!.forEach {

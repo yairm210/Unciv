@@ -10,10 +10,7 @@ import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueFlag
-import com.unciv.models.ruleset.unique.UniqueParameterType
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
@@ -95,8 +92,7 @@ object TranslationFileWriter {
 
         linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
         for (unique in UniqueType.values()) {
-            val deprecationAnnotation = unique.declaringClass.getField(unique.name)
-                .getAnnotation(Deprecated::class.java)
+            val deprecationAnnotation = unique.getDeprecationAnnotation()
             if (deprecationAnnotation != null) continue
             if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
 
@@ -115,6 +111,9 @@ object TranslationFileWriter {
             val finalText = unique.text.fillPlaceholders(*newPlaceholders.toTypedArray())
             linesToTranslate.add("$finalText = ")
         }
+
+        for (uniqueTarget in UniqueTarget.values())
+            linesToTranslate.add("$uniqueTarget = ")
 
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()

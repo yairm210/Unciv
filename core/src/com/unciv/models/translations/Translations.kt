@@ -2,6 +2,7 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -93,7 +94,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         }
 
         // try to load the translations from the mods
-        for (modFolder in Gdx.files.local("mods").list()) {
+        for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
             val modTranslationFile = modFolder.child(translationFileName)
             if (modTranslationFile.exists()) {
                 var translationsForMod = modsWithTranslations[modFolder.name()]

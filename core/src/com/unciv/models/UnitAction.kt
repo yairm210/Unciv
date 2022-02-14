@@ -3,6 +3,7 @@ package com.unciv.models
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.utils.Align
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.Constants
@@ -151,7 +152,7 @@ enum class UnitActionType(
         // readability factories
         private fun imageGetStopMove() = ImageGetter.getStatIcon("Movement").apply { color = Color.RED }
         private fun imageGetPromote() = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.GOLD }
-        private fun imageGetShowMore() = ImageGetter.getImage("OtherIcons/ArrowRight").apply { color = Color.BLACK }
-        private fun imageGetHideMore() = ImageGetter.getImage("OtherIcons/ArrowLeft").apply { color = Color.BLACK }
+        private fun imageGetShowMore() = ImageGetter.getArrowImage(Align.right).apply { color = Color.BLACK }
+        private fun imageGetHideMore() = ImageGetter.getArrowImage(Align.left).apply { color = Color.BLACK }
     }
 }

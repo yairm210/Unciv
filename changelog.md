@@ -1,3 +1,73 @@
+## 3.19.8
+
+Framerate improvements
+
+Performance improvements for wartime AI
+
+Modding: Arbitrary uniques can become timed uniques with a special conditional!
+
+Correctly recognize mod changes of content, not just metadata
+
+Destroyed units on capture provide the correct notification
+
+Loading a new game while nextTurn is running no longer reverts you to that game
+
+## 3.19.7
+
+Better conditionals for modding
+
+Withdraw chances can stack
+
+By itanasi:
+- Sea Unit can't capture Land Civilian (and vice versa)
+- Notify when Barbs don't give more XP
+
+## 3.19.6
+
+UI improvements across the board
+
+Map performance improvements
+
+Better mod loading error messages, added options button to reload all rulesets
+
+Exploring and automating workers are some of the most common actions, they don't deserve to be behind a 'get additional actions' click
+
+Flood plains no longer generate on desert hills
+
+Also capture Civilian Unit when capturing during battle - By itanasi
+
+Fixed a bug where units requiring nearby units for bonuses could find themselves - By xlenstra
+
+## 3.19.5
+
+HUGE reduction is memory consumption!
+
+Performance improvements!
+
+Greatly reduced loading times when mods are installed
+
+Better terrain moddability + Added unique to convert terrains if adjacent to something
+
+"Must be next to [terrainFilter]" now applicable on improvements
+
+Added mod warnings for empty ally and friend bonuses
+
+By xlenstra:
+- Fixed a bug where stats from uniques would exponentially grow
+- Fixed a bug where open borders, war declarations and cities could not be traded
+
+## 3.19.4
+
+Caught more mod failure conditions, removed certain assumptions from map creation
+
+Unique replacement warnings show the correct replacement with filled parameters
+
+By xlenstra:
+- Fixed a bug where unit discounts would not work
+- Fixed a crash when opening and closing the options menu in quick succession
+
+Fix art for farms on hills  - By SpacedOutChicken
+
 ## 3.19.3
 
 Huge performance improvements to "next turn" 
