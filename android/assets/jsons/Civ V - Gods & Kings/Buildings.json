@@ -1103,12 +1103,12 @@
 		"requiredTech": "Telecommunications",
 		"uniques": ["Population loss from nuclear attacks [-75]% [in this city]"]
 	},
-	{
-		"name": "SS Cockpit",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Satellites",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
-	},
+//	{
+//		"name": "SS Cockpit",
+//		"requiredResource": "Aluminum",
+//		"requiredTech": "Satellites",
+//		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
+//	},
 	{
 		"name": "Hubble Space Telescope",
 		"isWonder": true,
@@ -1121,12 +1121,12 @@
 		"requiredTech": "Satellites",
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.' - Anatole France"
 	},
-	{
-		"name": "SS Booster",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Advanced Ballistics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
-	},
+//	{
+//		"name": "SS Booster",
+//		"requiredResource": "Aluminum",
+//		"requiredTech": "Advanced Ballistics",
+//		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
+//	},
 	{
 		"name": "Spaceship Factory",
 		"production": 3,
@@ -1148,18 +1148,18 @@
 		"uniques": ["Triggers voting for the Diplomatic Victory", "Hidden when [Diplomatic] Victory is disabled", "Triggers a global alert upon completion"],
 		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.' - Kofi Annan"
 	},
-	{
-		"name": "SS Engine",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Particle Physics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
-	},
-	{
-		"name": "SS Stasis Chamber",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Nanotechnology",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
-	},
+//	{
+//		"name": "SS Engine",
+//		"requiredResource": "Aluminum",
+//		"requiredTech": "Particle Physics",
+//		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
+//	},
+//	{
+//		"name": "SS Stasis Chamber",
+//		"requiredResource": "Aluminum",
+//		"requiredTech": "Nanotechnology",
+//		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
+//	},
 
 	// All Eras
 

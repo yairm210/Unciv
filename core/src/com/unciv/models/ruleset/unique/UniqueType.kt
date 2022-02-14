@@ -429,7 +429,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CannotBeBarbarian("Never appears as a Barbarian unit", UniqueTarget.Unit, flags = listOf(UniqueFlag.HiddenToUsers)),
     
     ReligiousUnit("Religious Unit", UniqueTarget.Unit),
-    SpaceshipPart("Spaceship part", UniqueTarget.Building, UniqueTarget.Unit),
+    SpaceshipPart("Spaceship part", UniqueTarget.Unit),
+    AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),
 
 
     @Deprecated("As of 3.18.12", ReplaceWith("[amount]% XP gained from combat"), DeprecationLevel.WARNING)

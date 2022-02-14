@@ -40,7 +40,8 @@ object UnitActions {
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.isMoving()) actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
+        if (unit.isMoving()) 
+            actionList += UnitAction(UnitActionType.StopMovement) { unit.action = null }
         if (unit.isExploring())
             actionList += UnitAction(UnitActionType.StopExploration) { unit.action = null }
         if (unit.isAutomated())
@@ -62,6 +63,7 @@ object UnitActions {
         addEnhanceReligionAction(unit, actionList)
         actionList += getImprovementConstructionActions(unit, tile)
         addActionsWithLimitedUses(unit, actionList, tile)
+        addAddInCapitalAction(unit, actionList, tile)
 
 
         addToggleActionsAction(unit, actionList, unitTable)
@@ -403,6 +405,18 @@ object UnitActions {
                 unit.action = UnitActionType.Automate.value
                 WorkerAutomation.automateWorkerAction(unit)
             }.takeIf { unit.currentMovement > 0 }
+        )
+    }
+
+    private fun addAddInCapitalAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        if (!unit.hasUnique(UniqueType.AddInCapital)) return
+
+        actionList += UnitAction(UnitActionType.AddInCapital,
+            title = "Add to [${unit.getMatchingUniques(UniqueType.AddInCapital).first().params[0]}]",
+            action = {
+                unit.civInfo.victoryManager.currentsSpaceshipParts.add(unit.name, 1)
+                unit.destroy()
+            }.takeIf { tile.isCityCenter() && tile.getCity()!!.isCapital() && tile.getCity()!!.civInfo == unit.civInfo }
         )
     }
 

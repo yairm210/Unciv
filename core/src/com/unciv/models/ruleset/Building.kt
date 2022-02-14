@@ -448,7 +448,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         if (cityConstructions.isBeingConstructedOrEnqueued(name))
             return false
         for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)){
-            if (cityConstructions.cityInfo.civInfo.cities.count{it.cityConstructions.containsBuildingOrEquivalent(name)}>=unique.params[0].toInt())
+            if (cityConstructions.cityInfo.civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                 return false
         }
 
@@ -489,6 +489,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
+                // Shouldn't this be "Enables nuclear weapon_s_"?
                 "Enables nuclear weapon" -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
@@ -539,13 +540,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
                 UniqueType.MaxNumberBuildable.placeholderText ->
-                    if (civInfo.cities.count {
-                                it.cityConstructions.containsBuildingOrEquivalent(name) ||
-                                        it.cityConstructions.isBeingConstructedOrEnqueued(name)
-                            }
-                            >= unique.params[0].toInt()) {
+                    if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                         rejectionReasons.add(RejectionReason.MaxNumberBuildable)
-                }
             }
         }
 

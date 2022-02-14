@@ -1675,18 +1675,18 @@
 	}
 
 	/* Spaceship Parts */
-	/*
+	
 	// Must be transported to the Capital for launch.
 	// Can be destroyed by any hostile military unit walking in their tile.
 	{
 		"name": "SS Booster",
 		"unitType": "Civilian",
 		"movement": 2,
-		"cost": 500,
+		"cost": 750,
 		"requiredTech": "Advanced Ballistics",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
-		// costs 750 in G&K, 1500 in BNW
+		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [3] per Civilization"]
+		// costs 1500 in BNW
 	},
 	{
 		"name": "SS Cockpit",
@@ -1695,7 +1695,7 @@
 		"cost": 750,
 		"requiredTech": "Satellites",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1705,7 +1705,7 @@
 		"cost": 750,
 		"requiredTech": "Particle Physics",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
 		// costs 1500 in BNW
 	},
 	{
@@ -1715,8 +1715,7 @@
 		"cost": 750,
 		"requiredTech": "Nanotechnology",
 		"requiredResource": "Aluminum",
-		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]"]
+		"uniques": ["Spaceship part", "Cannot be purchased", "Requires [Apollo Program]", "Uncapturable", "Can be added to [The Spaceship] in the Capital", "Limited to [1] per Civilization"]
 		// costs 1500 in BNW
 	}
-	*/
 ]
