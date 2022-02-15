@@ -103,7 +103,7 @@ object BattleDamage {
             }
 
             if (enemy.getCivInfo().isCityState()
-                && civInfo.hasUnique("+30% Strength when fighting City-State units and cities")
+                && civInfo.hasUnique(UniqueType.StrengthBonusVsCityStates)
             )
                 modifiers["vs [City-States]"] = 30
         } else if (combatant is CityCombatant) {
@@ -129,10 +129,20 @@ object BattleDamage {
         if (attacker is MapUnitCombatant) {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
-
-            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Eliminates combat penalty for attacking from the sea"))
+            // Depreciated Version
+            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique(UniqueType.AttackFromSea))
+                modifiers["Landing"] = -50
+            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
                 modifiers["Landing"] = -50
 
+            // Land Melee Unit attacking to Water
+            if (!attacker.unit.isEmbarked() && attacker.isMelee() && defender.getTile().isWater
+                    && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
+                modifiers["Boarding"] = -50
+            // Naval Unit Melee attacking to Land (not City) unit
+            if (attacker.unit.type.isWaterUnit() && attacker.isMelee() && !defender.getTile().isWater
+                    && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast) && !defender.isCity())
+                modifiers["Landing"] = -50
 
             if (attacker.isMelee()) {
                 val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {

@@ -241,6 +241,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     
     EnablesConstructionOfSpaceshipParts("Enables construction of Spaceship parts", UniqueTarget.Global),
     
+    NotifiedOfBarbarianEncampments("Notified of new Barbarian encampments", UniqueTarget.Global),
+    
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
     EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),
@@ -282,17 +284,22 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // ToDo: make per unit and use unit filters?
     LandUnitEmbarkation("Enables embarkation for land units", UniqueTarget.Global),
     EmbarkedUnitsMayEnterOcean("Enables embarked units to enter ocean tiles", UniqueTarget.Global),
+    @Deprecated("as of 3.19.9", ReplaceWith("Enables embarkation for land units <starting from the [Ancient era]>\", \"Enables embarked units to enter ocean tiles <starting from the [Ancient era]>"))
+    EmbarkAndEnterOcean("Can embark and move over Coasts and Oceans immediately", UniqueTarget.Global),
     
     PopulationLossFromNukes("Population loss from nuclear attacks [amount]% [cityFilter]", UniqueTarget.Global),
     @Deprecated("as of 3.19.2", ReplaceWith("Population loss from nuclear attacks [-amount]% [in this city]"))
     PopulationLossFromNukesDeprecated("Population loss from nuclear attacks -[amount]%", UniqueTarget.Global),
     
     NaturalReligionSpreadStrength("[amount]% Natural religion spread [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
-    @Deprecated("as of 3.19.3", ReplaceWith("[amount]% Natural religion spread [cityFilter] <after discovering [tech/policy]> OR [amount]% natural religion spread [cityFilter] <after adopting [tech/policy]>"))
+    @Deprecated("as of 3.19.3", ReplaceWith("[amount]% Natural religion spread [cityFilter] <after discovering [tech/policy]>\"" +
+            " OR \"[amount]% Natural religion spread [cityFilter] <after adopting [tech/policy]>"))
     NaturalReligionSpreadStrengthWith("[amount]% Natural religion spread [cityFilter] with [tech/policy]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
-    @Deprecated("as of 3.19.8", ReplaceWith("Only available <before adopting [policy/tech/promotion]> OR <before discovering [policy/tech/promotion]> OR <for units without [policy/tech/promotion]>"))
+    @Deprecated("as of 3.19.8", ReplaceWith("Only available <before adopting [policy/tech/promotion]>" +
+            "\" OR \"Only available <before discovering [policy/tech/promotion]>" +
+            "\" OR \"Only available <for units without [policy/tech/promotion]>"))
     IncompatibleWith("Incompatible with [policy/tech/promotion]", UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
     StartingTech("Starting tech", UniqueTarget.Tech),
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
@@ -321,7 +328,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>"
     OnlyAvailableWhen("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
-    @Deprecated("as of 3.19.8", ReplaceWith("Only available <after adopting [buildingName/tech/resource/policy]> OR <with [buildingName/tech/resource/policy]> OR <after discovering [buildingName/tech/resource/policy]>"))
+    @Deprecated("as of 3.19.8", ReplaceWith("Only available <after adopting [buildingName/tech/resource/policy]>\"" +
+            " OR \"Only available <with [buildingName/tech/resource/policy]>\"" +
+            " OR \"Only available <after discovering [buildingName/tech/resource/policy]>"))
     NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
     RequiresPopulation("Requires at least [amount] population", UniqueTarget.Building, UniqueTarget.Unit),
@@ -368,6 +377,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit, UniqueTarget.Global),
     FlankAttackBonus("[amount]% to Flank Attack bonuses", UniqueTarget.Unit, UniqueTarget.Global),
+    // There's currently no conditional that would allow you strength vs city-state *cities* and that's why this isn't deprecated yet
+    StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
 
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
@@ -412,6 +423,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarkedCivwide("Embarked units can defend themselves", UniqueTarget.Global),
+    @Deprecated("as of 3.19.8", ReplaceWith("Eliminates combat penalty for attacking across a coast"))
+    AttackFromSea("Eliminates combat penalty for attacking from the sea", UniqueTarget.Unit),
+    AttackAcrossCoast("Eliminates combat penalty for attacking across a coast", UniqueTarget.Unit),
 
     SixTilesAlwaysVisible("6 tiles in every direction always visible", UniqueTarget.Unit),
     
@@ -664,7 +678,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // endregion    
 
     // region DEPRECATED AND REMOVED
-    @Deprecated("as of 3.18.14", ReplaceWith("[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"))
+    @Deprecated("as of 3.18.14", ReplaceWith("[stats] [in all cities] <before discovering [tech]>\" OR \"[stats] [in all cities] <before adopting [policy]>"))
     StatsFromCitiesBefore("[stats] per turn from cities before [tech/policy]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     @Deprecated("as of 3.18.12", ReplaceWith("[amount]% XP gained from combat"), DeprecationLevel.WARNING)
@@ -772,9 +786,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StrengthPlus("+[amount]% Strength", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[-amount]% Strength"), DeprecationLevel.ERROR)
     StrengthMin("-[amount]% Strength", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[+amount]% Strength <vs [combatantFilter] units> OR <vs cities>"), DeprecationLevel.ERROR)
+    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[+amount]% Strength <vs [combatantFilter] units>\" OR \"[+amount]% Strength <vs cities>"), DeprecationLevel.ERROR)
     StrengthPlusVs("+[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[-amount]% Strength <vs [combatantFilter] units> OR <vs cities>"), DeprecationLevel.ERROR)
+    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[-amount]% Strength <vs [combatantFilter] units>\" OR \"[+amount]% Strength <vs cities>"), DeprecationLevel.ERROR)
     StrengthMinVs("-[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[+amount]% Strength"), DeprecationLevel.ERROR)
     CombatBonus("+[amount]% Combat Strength", UniqueTarget.Unit),
