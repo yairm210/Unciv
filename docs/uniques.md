@@ -381,6 +381,9 @@ Applicable to: Global
 #### Enables construction of Spaceship parts
 Applicable to: Global
 
+#### Notified of new Barbarian encampments
+Applicable to: Global
+
 #### Enables Open Borders agreements
 Applicable to: Global
 
@@ -502,6 +505,9 @@ Applicable to: Global, Unit
 Example: "[20]% to Flank Attack bonuses"
 
 Applicable to: Global, Unit
+
+#### +30% Strength when fighting City-State units and cities
+Applicable to: Global
 
 #### [amount] Movement
 Example: "[20] Movement"
@@ -1520,13 +1526,14 @@ Applicable to: Conditional
  - "+[amount]% Defensive Strength for cities" - Deprecated as of 3.18.17, replace with "[+amount]% Strength for cities <when defending>"
  - "[amount]% Attacking Strength for cities" - Deprecated as of 3.18.17, replace with "[+amount]% Strength for cities <when attacking>"
  - "+[amount]% attacking strength for cities with garrisoned units" - Deprecated as of 3.19.1, replace with "[+amount]% Strength for cities <with a garrison> <when attacking>"
+ - "Can embark and move over Coasts and Oceans immediately" - Deprecated as of 3.19.9, replace with "Enables embarkation for land units <starting from the [Ancient era]>", "Enables embarked units to enter ocean tiles <starting from the [Ancient era]>"
  - "Population loss from nuclear attacks -[amount]%" - Deprecated as of 3.19.2, replace with "Population loss from nuclear attacks [-amount]% [in this city]"
- - "[amount]% Natural religion spread [cityFilter] with [tech/policy]" - Deprecated as of 3.19.3, replace with "[amount]% Natural religion spread [cityFilter] <after discovering [tech/policy]> OR [amount]% natural religion spread [cityFilter] <after adopting [tech/policy]>"
+ - "[amount]% Natural religion spread [cityFilter] with [tech/policy]" - Deprecated as of 3.19.3, replace with "[amount]% Natural religion spread [cityFilter] <after discovering [tech/policy]>" OR "[amount]% Natural religion spread [cityFilter] <after adopting [tech/policy]>"
  - "[amount] HP when healing in [tileFilter] tiles" - Deprecated as of 3.19.4, replace with "[amount] HP when healing <in [tileFilter] tiles>"
  - "Melee units pay no movement cost to pillage" - Deprecated as of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
  - "Heal adjacent units for an additional 15 HP per turn" - Deprecated as of 3.19.3, replace with "All adjacent units heal [+15] HP when healing"
  - "+[amount]% attack strength to all [mapUnitFilter] units for [amount2] turns" - Deprecated as of 3.19.8, replace with "[+amount]% Strength <when attacking> <for [mapUnitFilter] units> <for [amount2] turns>"
- - "[stats] per turn from cities before [tech/policy]" - Deprecated as of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
+ - "[stats] per turn from cities before [tech/policy]" - Deprecated as of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]>" OR "[stats] [in all cities] <before adopting [policy]>"
  - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated as of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
  - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated as of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
  - "50% of excess happiness added to culture towards policies" - Deprecated as of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
@@ -1565,8 +1572,8 @@ Applicable to: Conditional
  - "-33% unit upkeep costs" - Deprecated Extremely old - used for auto-updates only, replace with "[-33]% maintenance costs <for [All] units>"
  - "-50% food consumption by specialists" - Deprecated Extremely old - used for auto-updates only, replace with "[-50]% Food consumption by specialists [in all cities]"
  - "+50% attacking strength for cities with garrisoned units" - Deprecated Extremely old - used for auto-updates only, replace with "[+50]% Strength for cities <with a garrison> <when attacking>"
- - "Incompatible with [policy/tech/promotion]" - Deprecated as of 3.19.8, replace with "Only available <before adopting [policy/tech/promotion]> OR <before discovering [policy/tech/promotion]> OR <for units without [policy/tech/promotion]>"
- - "Not displayed as an available construction without [buildingName/tech/resource/policy]" - Deprecated as of 3.19.8, replace with "Only available <after adopting [buildingName/tech/resource/policy]> OR <with [buildingName/tech/resource/policy]> OR <after discovering [buildingName/tech/resource/policy]>"
+ - "Incompatible with [policy/tech/promotion]" - Deprecated as of 3.19.8, replace with "Only available <before adopting [policy/tech/promotion]>" OR "Only available <before discovering [policy/tech/promotion]>" OR "Only available <for units without [policy/tech/promotion]>"
+ - "Not displayed as an available construction without [buildingName/tech/resource/policy]" - Deprecated as of 3.19.8, replace with "Only available <after adopting [buildingName/tech/resource/policy]>" OR "Only available <with [buildingName/tech/resource/policy]>" OR "Only available <after discovering [buildingName/tech/resource/policy]>"
  - "[stats] with [resource]" - Deprecated as of 3.19.7, replace with "[stats] <with [resource]>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated as of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "[stats] <after discovering [tech]>"
@@ -1585,8 +1592,8 @@ Applicable to: Conditional
  - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
  - "+[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength"
  - "-[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[-amount]% Strength"
- - "+[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength <vs [combatantFilter] units> OR <vs cities>"
- - "-[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[-amount]% Strength <vs [combatantFilter] units> OR <vs cities>"
+ - "+[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength <vs [combatantFilter] units>" OR "[+amount]% Strength <vs cities>"
+ - "-[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[-amount]% Strength <vs [combatantFilter] units>" OR "[+amount]% Strength <vs cities>"
  - "+[amount]% Combat Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength"
  - "+1 Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+1] Sight"
  - "+[amount] Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+amount] Sight"
