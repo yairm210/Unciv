@@ -151,7 +151,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         for ((name, child) in statTreeNode.children) {
             val statAmount = child.totalStats[stat]
             if (statAmount == 0f) continue
-            hashMap["- ".repeat(indentation) + name] = statAmount
+            hashMap["- ".repeat(indentation) + name.tr()] = statAmount
             if (showDetails) addStatsToHashmap(child, hashMap, stat, showDetails, indentation + 1)
         }
     }

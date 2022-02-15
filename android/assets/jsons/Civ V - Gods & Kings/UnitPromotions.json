@@ -138,7 +138,7 @@
 	{
 		"name": "Amphibious",
 		"prerequisites": ["Shock I", "Drill I"],
-		"uniques": ["Eliminates combat penalty for attacking over a river", "Eliminates combat penalty for attacking from the sea"],
+		"uniques": ["Eliminates combat penalty for attacking over a river", "Eliminates combat penalty for attacking across a coast"],
 		"unitTypes": ["Sword","Gunpowder"]
 	},
 	{
@@ -225,6 +225,11 @@
 		"name": "Coastal Raider III",
 		"prerequisites": ["Coastal Raider II"],
 		"uniques": ["[+20]% Strength <vs cities>", "Earn [33]% of the damage done to [City] units as [Gold]"],
+		"unitTypes": ["Melee Water"]
+	},
+	{
+		"name": "Landing Party",
+		"uniques": ["Eliminates combat penalty for attacking across a coast"],
 		"unitTypes": ["Melee Water"]
 	},
 

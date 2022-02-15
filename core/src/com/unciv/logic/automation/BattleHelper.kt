@@ -83,7 +83,7 @@ object BattleHelper {
 
         for ((reachableTile, movementLeft) in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
+                if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.getViewableTilesList(rangeOfAttack)
                     .asSequence()

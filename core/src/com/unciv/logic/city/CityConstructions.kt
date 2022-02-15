@@ -462,7 +462,8 @@ class CityConstructions {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             for (unique in building.uniqueObjects)
-                builtBuildingUniqueMap.addUnique(unique)
+                if (unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique })
+                    builtBuildingUniqueMap.addUnique(unique)
     }
 
     /**

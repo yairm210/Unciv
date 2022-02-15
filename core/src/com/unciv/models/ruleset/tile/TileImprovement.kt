@@ -118,27 +118,16 @@ class TileImprovement : RulesetStatsObject() {
             }
         }
 
-        val statsToResourceNames = HashMap<String, ArrayList<String>>()
+        var addedLineBeforeResourceBonus = false
         for (resource in ruleset.tileResources.values.filter { it.improvement == name }) {
-            val statsString = resource.improvementStats.toString()
-            if (statsString !in statsToResourceNames)
-                statsToResourceNames[statsString] = ArrayList()
-            statsToResourceNames[statsString]!!.add(resource.name)
-        }
-        if (statsToResourceNames.isNotEmpty()) {
-            statsToResourceNames.forEach {
+            if (resource.improvementStats == null) continue
+            if (!addedLineBeforeResourceBonus) {
+                addedLineBeforeResourceBonus = true
                 textList += FormattedLine()
-                if (it.value.size == 1) {
-                    with(it.value[0]) {
-                        textList += FormattedLine("${it.key}{ for }{$this}", link="Resource/$this")
-                    }
-                } else {
-                    textList += FormattedLine("${it.key}{ for }:")
-                    it.value.forEach { resource ->
-                        textList += FormattedLine(resource, link="Resource/$resource", indent=1)
-                    }
-                }
             }
+            val statsString = resource.improvementStats.toString()
+
+            textList += FormattedLine("${statsString}{ for }{$name}", link = "Resource/$name")
         }
 
         if (techRequired != null) {

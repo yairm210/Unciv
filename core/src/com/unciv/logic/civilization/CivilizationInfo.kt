@@ -21,7 +21,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.TemporaryUnique
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -150,6 +149,7 @@ class CivilizationInfo {
     
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
+     * This can also contain NON-temporary uniques but I can't be bothered to do the deprecation dance with this one
      */
     val temporaryUniques = ArrayList<TemporaryUnique>()
     
@@ -360,7 +360,7 @@ class CivilizationInfo {
 
     fun getResourceModifier(resource: TileResource): Int {
         var resourceModifier = 1f
-        for (unique in getMatchingUniques("Double quantity of [] produced"))
+        for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
             if (unique.params[0] == resource.name)
                 resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
@@ -575,7 +575,7 @@ class CivilizationInfo {
         if (otherCiv.civName == civName) return false // never at war with itself
         if (otherCiv.isBarbarian() || isBarbarian()) return true
         val diplomacyManager = diplomacy[otherCiv.civName]
-                ?: return false // not encountered yet
+            ?: return false // not encountered yet
         return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
     }
 
@@ -678,7 +678,7 @@ class CivilizationInfo {
     fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
     fun calculateScoreBreakdown(): HashMap<String,Double> {
-        val scoreBreakdown = hashMapOf<String,Double>();
+        val scoreBreakdown = hashMapOf<String,Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps
         var mapSizeModifier = 1276 / gameInfo.tileMap.mapParameters.numberOfTiles().toDouble()
@@ -864,9 +864,10 @@ class CivilizationInfo {
 
         // Update turn counter for temporary uniques
         for (unique in temporaryUniques) {
-            unique.turnsLeft -= 1
+            if (unique.turnsLeft >= 0)
+                unique.turnsLeft -= 1
         }
-        temporaryUniques.removeAll { it.turnsLeft <= 0 }
+        temporaryUniques.removeAll { it.turnsLeft == 0 }
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
@@ -1005,7 +1006,7 @@ class CivilizationInfo {
     // Higher is better
     private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
         if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible()) 
-            return -1;
+            return -1
         var score = 10
         if (tile.improvement == null) {
             score += 4

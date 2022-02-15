@@ -136,7 +136,7 @@
 	},{
 		"name": "Piety",
 		"era": "Classical era",
-		"uniques": ["[+15]% Production when constructing [Culture] buildings [in all cities]", "Incompatible with [Rationalism]"],
+		"uniques": ["[+15]% Production when constructing [Culture] buildings [in all cities]", "Only available <before adopting [Rationalism]>"],
 		"policies": [
 			{
 				"name": "Organized Religion",
@@ -231,8 +231,7 @@
 			{
 				"name": "Naval Tradition",
 				"uniques": ["[+1] Movement <for [{Military} {Water}] units>", "[+1] Sight <for [{Military} {Water}] units>",
-				 "Free [Great General] appears", "[+2] Movement <for [Great Admiral] units>" 
-					// ToDo: Should be "Free [Great Admiral] appears"
+				 "Free [Great General] appears" //, "[+2] Movement <for [Great Admiral] units>", "Free [Great Admiral] appears" - todo
 				],
 				"row": 1,
 				"column": 2
@@ -274,7 +273,7 @@
 	{
 		"name": "Rationalism",
 		"era": "Renaissance era",
-		"uniques": ["Science gained from research agreements [+50]%", "Incompatible with [Piety]"],
+		"uniques": ["Science gained from research agreements [+50]%", "Only available <before adopting [Piety]>"],
 		"policies": [
 			{
 				"name": "Secularism",
@@ -319,7 +318,7 @@
 	{
 		"name": "Freedom",
 		"era": "Renaissance era",
-		"uniques": ["[+25]% great person generation [in all cities]", "Incompatible with [Autocracy]", "Incompatible with [Order]"],
+		"uniques": ["[+25]% great person generation [in all cities]", "Only available <before adopting [Autocracy]>", "Only available <before adopting [Order]>"],
 		"policies": [
 			{
 				"name": "Constitution",
@@ -363,7 +362,7 @@
 		"name": "Autocracy",
 		"era": "Industrial era",
 		"uniques": ["[-33]% maintenance costs <for [All] units>", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
-			"Incompatible with [Order]", "Incompatible with [Freedom]"],
+			"Only available <before adopting [Order]>", "Only available <before adopting [Freedom]>"],
 		"policies": [
 			{
 				"name": "Populism",
@@ -400,14 +399,14 @@
 			},
 			{
 				"name": "Autocracy Complete",
-				"uniques": ["+[25]% attack strength to all [Military] units for [30] turns"]
+				"uniques": ["[+25]% Strength <when attacking> <for [Military] units> <for [30] turns>"]
 			}
 		]
 	},
 	{
     "name": "Order",
     "era": "Industrial era",
-	"uniques": ["[+1 Happiness] [in all cities]", "Incompatible with [Autocracy]", "Incompatible with [Freedom]"],
+	"uniques": ["[+1 Happiness] [in all cities]", "Only available <before adopting [Autocracy]>", "Only available <before adopting [Freedom]>"],
     "policies": [
         {
             "name": "United Front",
