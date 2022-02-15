@@ -378,7 +378,7 @@ class TechManager {
     }
 
     private fun updateTransientBooleans() {
-        wayfinding = civInfo.hasUnique("Can embark and move over Coasts and Oceans immediately")
+        wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
         unitsCanEmbark = wayfinding || civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
 
         embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)

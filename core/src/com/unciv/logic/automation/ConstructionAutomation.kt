@@ -210,13 +210,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun getWonderPriority(wonder: Building): Float {
-        if (wonder.uniques.contains("Enables construction of Spaceship parts"))
+        if (wonder.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
             return 2f
         if (preferredVictoryType == VictoryType.Cultural
                 && wonder.name in listOf("Sistine Chapel", "Eiffel Tower", "Cristo Redentor", "Neuschwanstein", "Sydney Opera House"))
             return 3f
         // Only start building if we are the city that would complete it the soonest
-        if (wonder.uniques.contains("Triggers a Cultural Victory upon completion") && cityInfo == civInfo.cities.minByOrNull {
+        if (wonder.hasUnique(UniqueType.TriggersCulturalVictory) && cityInfo == civInfo.cities.minByOrNull {
                 it.cityConstructions.turnsToConstruction(wonder.name) 
             }!!)
             return 10f

@@ -596,7 +596,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         if (hasUnique(UniqueType.SpaceshipPart)) {
-            if (!civInfo.hasUnique("Enables construction of Spaceship parts"))
+            if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                 rejectionReasons.add(
                     RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" }
                 )

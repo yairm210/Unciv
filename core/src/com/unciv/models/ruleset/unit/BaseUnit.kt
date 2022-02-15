@@ -65,8 +65,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (promotion in promotions)
             infoList += promotion.tr()
         if (replacementTextForUniques != "") infoList += replacementTextForUniques
-        else for (unique in uniques)
-            infoList += unique.tr()
+        else for (unique in uniqueObjects) if(!unique.hasFlag(UniqueFlag.HiddenToUsers))
+            infoList += unique.text.tr()
         return infoList.joinToString()
     }
 
@@ -369,7 +369,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
-                rejectionReasons.add(RejectionReason.PopulationRequirement)
+                rejectionReasons.add(RejectionReason.PopulationRequirement.apply { errorMessage = unique.text })
         return rejectionReasons
     }
 

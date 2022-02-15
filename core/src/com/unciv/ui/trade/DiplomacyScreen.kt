@@ -145,7 +145,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
         if (otherCiv.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }) {
             val resourcesTable = Table()
-            resourcesTable.add("{Resources:}  ".toLabel()).padRight(10f)
+            resourcesTable.add("{Resources}:  ".toLabel()).padRight(10f)
             for (supplyList in otherCiv.detailedCivResources) {
                 if (supplyList.resource.resourceType == ResourceType.Bonus)
                     continue
@@ -196,12 +196,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
         val eraInfo = viewingCiv.getEra()
 
-        var friendBonusText = "{When Friends:} ".tr()
+        var friendBonusText = "{When Friends}: ".tr()
         val friendBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
         val friendBonusStrings = getAdjustedBonuses(friendBonusObjects)
         friendBonusText += friendBonusStrings.joinToString(separator = ", ") { it.tr() }
 
-        var allyBonusText = "{When Allies:} ".tr()
+        var allyBonusText = "{When Allies}: ".tr()
         val allyBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
         val allyBonusStrings = getAdjustedBonuses(allyBonusObjects)
         allyBonusText += allyBonusStrings.joinToString(separator = ", ") { it.tr() }

@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.HexMath.getDistance
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.helpers.UnitMovementMemoryType
+import com.unciv.models.ruleset.unique.UniqueType
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
 
@@ -426,7 +427,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // As we can not reach our destination in a single turn
             if (unit.canGarrison()
                 && (unit.getTile().isCityCenter() || destination.isCityCenter())
-                && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
+                && unit.civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
             ) unit.civInfo.updateStatsForNextTurn()
             return
         }
@@ -484,6 +485,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 break
             }
         }
+        
+        val finalTileReached = lastReachedEnterableTile
 
         // Silly floats which are almost zero
         if (unit.currentMovement < Constants.minimumMovementEpsilon)
@@ -491,21 +494,25 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
 
         if (!unit.isDestroyed)
-            unit.putInTile(lastReachedEnterableTile)
+            unit.putInTile(finalTileReached)
 
         // The .toList() here is because we have a sequence that's running on the units in the tile,
         // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
         for (payload in origin.getUnits().filter { it.isTransported && unit.canTransport(it) }.toList()) {  // bring along the payloads
             payload.removeFromTile()
-            payload.putInTile(lastReachableTile)
+            for (tile in pathToLastReachableTile){
+                payload.moveThroughTile(tile)
+                if (tile == finalTileReached) break // this is the final tile the transport reached
+            }
+            payload.putInTile(finalTileReached)
             payload.isTransported = true // restore the flag to not leave the payload in the cit
             payload.mostRecentMoveType = UnitMovementMemoryType.UnitMoved
         }
 
         // Unit maintenance changed
         if (unit.canGarrison()
-            && (origin.isCityCenter() || lastReachableTile.isCityCenter())
-            && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
+            && (origin.isCityCenter() || finalTileReached.isCityCenter())
+            && unit.civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance)
         ) unit.civInfo.updateStatsForNextTurn()
         if (needToFindNewRoute) moveToTile(destination, considerZoneOfControl)
     }
