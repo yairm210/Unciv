@@ -403,7 +403,6 @@ class MapUnit {
             viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
                 getTile().getTilesInDistance(6).toHashSet()  // it's that simple
             else HashSet(0) // bomber units don't do recon
-            return
         } else {
             viewableTiles = getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
         }
