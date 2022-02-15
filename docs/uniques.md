@@ -381,6 +381,9 @@ Applicable to: Global
 #### Enables construction of Spaceship parts
 Applicable to: Global
 
+#### Notified of new Barbarian encampments
+Applicable to: Global
+
 #### Enables Open Borders agreements
 Applicable to: Global
 
@@ -1569,7 +1572,10 @@ Applicable to: Conditional
  - "-33% unit upkeep costs" - Deprecated Extremely old - used for auto-updates only, replace with "[-33]% maintenance costs <for [All] units>"
  - "-50% food consumption by specialists" - Deprecated Extremely old - used for auto-updates only, replace with "[-50]% Food consumption by specialists [in all cities]"
  - "+50% attacking strength for cities with garrisoned units" - Deprecated Extremely old - used for auto-updates only, replace with "[+50]% Strength for cities <with a garrison> <when attacking>"
-
+ - "Incompatible with [policy/tech/promotion]" - Deprecated as of 3.19.8, replace with "Only available <before adopting [policy/tech/promotion]>" OR "Only available <before discovering [policy/tech/promotion]>" OR "Only available <for units without [policy/tech/promotion]>"
+ - "Not displayed as an available construction without [buildingName/tech/resource/policy]" - Deprecated as of 3.19.8, replace with "Only available <after adopting [buildingName/tech/resource/policy]>" OR "Only available <with [buildingName/tech/resource/policy]>" OR "Only available <after discovering [buildingName/tech/resource/policy]>"
+ - "Cannot be built with [buildingName]" - Deprecated as of 3.19.9, replace with "Only available <in cities without a [buildingName]>"
+ - "Requires a [buildingName] in this city" - Deprecated as of 3.19.9, replace with "Only available <in cities with a [buildingName]>"
  - "[stats] with [resource]" - Deprecated as of 3.19.7, replace with "[stats] <with [resource]>"
  - "Not displayed as an available construction unless [buildingName] is built" - Deprecated as of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
  - "[stats] once [tech] is discovered" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "[stats] <after discovering [tech]>"
