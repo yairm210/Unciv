@@ -287,7 +287,7 @@ object BattleDamage {
         attacker: ICombatant,
         tileToAttackFrom: TileInfo?,
         defender: ICombatant,
-        ignoreRandomNess: Boolean = false
+        ignoreRandomNess: Boolean = false,
     ): Int {
         if (attacker.isRanged()) return 0
         if (defender.isCivilian()) return 0
@@ -303,7 +303,7 @@ object BattleDamage {
         attacker: ICombatant,
         tileToAttackFrom: TileInfo?,
         defender: ICombatant,
-        ignoreRandomNess: Boolean = false
+        ignoreRandomNess: Boolean = false,
     ): Int {
         val ratio =
             getAttackingStrength(attacker, defender) / getDefendingStrength(
@@ -318,7 +318,7 @@ object BattleDamage {
         attackerToDefenderRatio: Float,
         damageToAttacker: Boolean,
         attacker: ICombatant, // for the randomness
-        ignoreRandomNess: Boolean = false
+        ignoreRandomNess: Boolean = false,
     ): Float {
         // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
         val strongerToWeakerRatio =
