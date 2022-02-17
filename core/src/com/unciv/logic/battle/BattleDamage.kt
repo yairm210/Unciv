@@ -287,7 +287,7 @@ object BattleDamage {
         attacker: ICombatant,
         tileToAttackFrom: TileInfo?,
         defender: ICombatant,
-        ignoreRandomNess: Boolean = false,
+        ignoreRandomness: Boolean = false,
     ): Int {
         if (attacker.isRanged()) return 0
         if (defender.isCivilian()) return 0
@@ -296,14 +296,14 @@ object BattleDamage {
                 attacker,
                 defender
             )
-        return (damageModifier(ratio, true, attacker, ignoreRandomNess) * getHealthDependantDamageRatio(defender)).roundToInt()
+        return (damageModifier(ratio, true, attacker, ignoreRandomness) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
     fun calculateDamageToDefender(
         attacker: ICombatant,
         tileToAttackFrom: TileInfo?,
         defender: ICombatant,
-        ignoreRandomNess: Boolean = false,
+        ignoreRandomness: Boolean = false,
     ): Int {
         val ratio =
             getAttackingStrength(attacker, defender) / getDefendingStrength(
@@ -311,14 +311,14 @@ object BattleDamage {
                 defender
             )
         if (defender.isCivilian()) return 40
-        return (damageModifier(ratio, false, attacker, ignoreRandomNess) * getHealthDependantDamageRatio(attacker)).roundToInt()
+        return (damageModifier(ratio, false, attacker, ignoreRandomness) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
     private fun damageModifier(
         attackerToDefenderRatio: Float,
         damageToAttacker: Boolean,
         attacker: ICombatant, // for the randomness
-        ignoreRandomNess: Boolean = false,
+        ignoreRandomness: Boolean = false,
     ): Float {
         // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
         val strongerToWeakerRatio =
@@ -328,7 +328,7 @@ object BattleDamage {
             ratioModifier = ratioModifier.pow(-1)
         val randomSeed = attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode() // so people don't save-scum to get optimal results
         val randomCenteredAround30 = 24 + 
-            if (ignoreRandomNess) 6f
+            if (ignoreRandomness) 6f
             else 12 * Random(randomSeed.toLong()).nextFloat()
         return randomCenteredAround30 * ratioModifier
     }
