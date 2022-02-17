@@ -712,14 +712,14 @@ object Battle {
         }
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
-            if (tile.terrainFeatures.any { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.ResistsNukes) }) {
-                if (Random().nextFloat() < 0.25f) {
-                    tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
-                    tile.terrainFeatures.add("Fallout")
-                }
-            } else if (Random().nextFloat() < 0.5f) {
-                tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
-                tile.terrainFeatures.add("Fallout")
+            val ruleset = tile.ruleset
+            val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
+            else 0.5f
+            if (Random().nextFloat() < destructionChance) {
+                for (terrainFeature in tile.terrainFeatures)
+                    if (ruleset.terrains[terrainFeature]!!.hasUnique(UniqueType.DestroyableByNukes))
+                        tile.removeTerrainFeature(terrainFeature)
+                tile.addTerrainFeature("Fallout")
             }
         }
     }

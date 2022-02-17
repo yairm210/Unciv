@@ -65,7 +65,7 @@ open class TileInfo {
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
-    val terrainFeatures: ArrayList<String> = ArrayList()
+    var terrainFeatures: List<String> = listOf()
 
 
     var naturalWonder: String? = null
@@ -97,7 +97,7 @@ open class TileInfo {
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
-        toReturn.terrainFeatures.addAll(terrainFeatures)
+        toReturn.terrainFeatures = terrainFeatures // immutable lists can be directly passed around
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
         toReturn.resourceAmount = resourceAmount
@@ -227,7 +227,7 @@ open class TileInfo {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    fun getTerrainFeatures(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
+    fun getTerrainFeaturesObjects(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
     fun getAllTerrains(): Sequence<Terrain> = sequence {
         yield(baseTerrainObject)
         if (naturalWonder != null) yield(getNaturalWonder())
@@ -259,7 +259,7 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?): Stats {
         var stats = getBaseTerrain().cloneStats()
 
-        for (terrainFeatureBase in getTerrainFeatures()) {
+        for (terrainFeatureBase in getTerrainFeaturesObjects()) {
             when {
                 terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
                     return terrainFeatureBase.cloneStats()
@@ -355,7 +355,7 @@ open class TileInfo {
     private fun getTileStartYield(isCenter: Boolean): Float {
         var stats = getBaseTerrain().cloneStats()
 
-        for (terrainFeatureBase in getTerrainFeatures()) {
+        for (terrainFeatureBase in getTerrainFeaturesObjects()) {
             if (terrainFeatureBase.overrideStats)
                 stats = terrainFeatureBase.cloneStats()
             else
@@ -847,6 +847,14 @@ open class TileInfo {
             }
         }
     }
+    
+    fun addTerrainFeature(terrainFeature:String) {
+        terrainFeatures = ArrayList(terrainFeatures).apply { add(terrainFeature) }
+    }
+    
+    fun removeTerrainFeature(terrainFeature: String) {
+        terrainFeatures = ArrayList(terrainFeatures).apply { remove(terrainFeature) }
+    }
 
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
@@ -875,7 +883,7 @@ open class TileInfo {
         if (naturalWonder != null) {
             val naturalWonder = ruleset.terrains[naturalWonder]!!
             baseTerrain = naturalWonder.turnsInto!!
-            terrainFeatures.clear()
+            terrainFeatures = listOf()
             resource = null
             improvement = null
         }
@@ -883,12 +891,12 @@ open class TileInfo {
         for (terrainFeature in terrainFeatures.toList()) {
             val terrainFeatureObject = ruleset.terrains[terrainFeature]
             if (terrainFeatureObject == null) {
-                terrainFeatures.remove(terrainFeature)
+                removeTerrainFeature(terrainFeature)
                 continue
             }
 
             if (terrainFeatureObject.occursOn.isNotEmpty() && !terrainFeatureObject.occursOn.contains(baseTerrain))
-                terrainFeatures.remove(terrainFeature)
+                removeTerrainFeature(terrainFeature)
         }
 
 
@@ -928,9 +936,10 @@ open class TileInfo {
             baseTerrain = mostCommonBaseTerrain?.key ?: Constants.grassland
             //We have to add hill as first terrain feature
             val copy = terrainFeatures.toTypedArray()
-            terrainFeatures.clear()
-            terrainFeatures.add(Constants.hill)
-            terrainFeatures.addAll(copy)
+            val newTerrainFeatures = ArrayList<String>()
+            newTerrainFeatures.add(Constants.hill)
+            newTerrainFeatures.addAll(copy)
+            terrainFeatures = newTerrainFeatures
         }
     }
 

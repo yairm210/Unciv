@@ -626,7 +626,7 @@ object UnitActions {
                 action = {
                     val unitTile = unit.getTile()
                     for (terrainFeature in tile.terrainFeatures.filter { unitTile.ruleset.tileImprovements.containsKey("Remove $it") })
-                        unitTile.terrainFeatures.remove(terrainFeature)// remove forest/jungle/marsh
+                        unitTile.removeTerrainFeature(terrainFeature)// remove forest/jungle/marsh
                     unitTile.improvement = improvementName
                     unitTile.improvementInProgress = null
                     unitTile.turnsToImprovement = 0
