@@ -46,20 +46,14 @@ class TileImprovement : RulesetStatsObject() {
             }
             lines += "Can be built on".tr() + terrainsCanBeBuiltOnString.joinToString(", ", " ") //language can be changed when setting changes.
         }
-        val statsToResourceNames = HashMap<String, ArrayList<String>>()
-        for (tr: TileResource in ruleset.tileResources.values.filter { it.improvement == name }) {
-            val statsString = tr.improvementStats.toString()
-            if (!statsToResourceNames.containsKey(statsString))
-                statsToResourceNames[statsString] = ArrayList()
-            statsToResourceNames[statsString]!!.add(tr.name.tr())
+        for (resource: TileResource in ruleset.tileResources.values.filter { it.improvement == name }) {
+            if (resource.improvementStats == null) continue
+            val statsString = resource.improvementStats.toString()
+            lines += "[${statsString}] <in [${resource.name}] tiles>"
         }
-        statsToResourceNames.forEach {
-            lines += "{${it.key}} {for} ".tr() + it.value.joinToString(", ")
-        }
-
         if (techRequired != null) lines += "Required tech: [$techRequired]".tr()
 
-        for(unique in uniques)
+        for (unique in uniques)
             lines += unique.tr()
 
         return lines.joinToString("\n")
