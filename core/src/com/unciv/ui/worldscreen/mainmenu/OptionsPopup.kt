@@ -372,7 +372,12 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             allDeprecatedUniques.add(deprecatedUnique.text)
 
             // note that this replacement does not contain conditionals attached to the original!
+
+
             var uniqueReplacementText = deprecatedUnique.getReplacementText()
+            while (Unique(uniqueReplacementText).getDeprecationAnnotation() != null)
+                uniqueReplacementText = Unique(uniqueReplacementText).getReplacementText()
+
             for (conditional in deprecatedUnique.conditionals)
                 uniqueReplacementText += " <${conditional.text}>"
             val replacementUnique = Unique(uniqueReplacementText)

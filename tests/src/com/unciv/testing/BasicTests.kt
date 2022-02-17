@@ -129,19 +129,38 @@ class BasicTests {
         var allOK = true
         for (uniqueType in UniqueType.values()) {
             val deprecationAnnotation = uniqueType.getDeprecationAnnotation() ?: continue
-            val replacementTextUnique = Unique(deprecationAnnotation.replaceWith.expression)
-            if (replacementTextUnique.type == null && !replacementTextUnique.text.contains(" OR ")) {
-                println("${uniqueType.name}'s deprecation text does not match any existing type!'")
-                allOK = false
-            }
-            if (replacementTextUnique.getDeprecationAnnotation() != null){
-                println("${uniqueType.name}'s deprecation text references another deprecated unique!'")
-                allOK = false
-            }
-            for (conditional in replacementTextUnique.conditionals){
-                if (conditional.type==null){
-                    println("${uniqueType.name}'s deprecation text contains conditional \"${conditional.text}\" which does not match any existing type!'")
+            
+            val uniquesToCheck = deprecationAnnotation.replaceWith.expression.split("\", \"", "\" OR \"")
+            
+            for (uniqueText in uniquesToCheck) {
+                val replacementTextUnique = Unique(uniqueText)
+
+
+                if (replacementTextUnique.type == null) {
+                    println("${uniqueType.name}'s deprecation text \"$uniqueText\" does not match any existing type!")
                     allOK = false
+                }
+                if (replacementTextUnique.type == uniqueType) {
+                    println("${uniqueType.name}'s deprecation text references itself!")
+                    allOK = false
+                }
+                for (conditional in replacementTextUnique.conditionals) {
+                    if (conditional.type == null) {
+                        println("${uniqueType.name}'s deprecation text contains conditional \"${conditional.text}\" which does not match any existing type!")
+                        allOK = false
+                    }
+                }
+
+                var iteration = 1
+                var replacementUnique = Unique(uniqueType.placeholderText)
+                while (replacementUnique.getDeprecationAnnotation() != null) {
+                    if (iteration == 10) {
+                        allOK = false
+                        println("${uniqueType.name}'s deprecation text never references an undeprecated unique!")
+                        break
+                    }
+                    iteration++
+                    replacementUnique = Unique(replacementUnique.getReplacementText())
                 }
             }
         }

@@ -403,7 +403,6 @@ class MapUnit {
             viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
                 getTile().getTilesInDistance(6).toHashSet()  // it's that simple
             else HashSet(0) // bomber units don't do recon
-            return
         } else {
             viewableTiles = getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
         }
@@ -527,7 +526,7 @@ class MapUnit {
                     goldCostOfUpgrade *= (1 - unique.params[1].toFloat() / 100f)
             }
         //
-        for (unique in civInfo.getMatchingUniques(UniqueType.UnitUpgradeCost))
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitUpgradeCost, StateForConditionals(civInfo, unit=this)))
             goldCostOfUpgrade *= unique.params[0].toPercent()
 
         if (goldCostOfUpgrade < 0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold

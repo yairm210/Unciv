@@ -85,6 +85,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
 
         return when (condition.type) {
+            UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
@@ -113,6 +114,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalNoPolicy ->
                 state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
 
+            UniqueType.ConditionalCityWithBuilding -> 
+                state.cityInfo != null && state.cityInfo.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
+            UniqueType.ConditionalCityWithoutBuilding -> 
+                state.cityInfo != null && !state.cityInfo.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
             UniqueType.ConditionalSpecialistCount ->
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
             UniqueType.ConditionalFollowerCount ->
@@ -123,8 +128,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesCategory("City") == true
             UniqueType.ConditionalVsUnits -> state.theirCombatant?.matchesCategory(condition.params[0]) == true
             UniqueType.ConditionalOurUnit ->
-                state.ourCombatant?.matchesCategory(condition.params[0]) == true
-                        || state.unit?.matchesFilter(condition.params[0]) == true
+                relevantUnit?.matchesFilter(condition.params[0]) == true
+            UniqueType.ConditionalUnitWithPromotion -> relevantUnit?.promotions?.promotions?.contains(params[0]) == true
+            UniqueType.ConditionalUnitWithoutPromotion -> relevantUnit?.promotions?.promotions?.contains(params[0]) == false
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
             UniqueType.ConditionalAboveHP ->
@@ -224,7 +230,6 @@ class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.j
 }
 
 
-// Will probably be allowed to be used as a conditional when I get the motivation to work on that -xlenstra
 class TemporaryUnique() {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {

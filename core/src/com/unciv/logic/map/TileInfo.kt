@@ -272,7 +272,7 @@ open class TileInfo {
             val wonderStats = getNaturalWonder().cloneStats()
 
             // Spain doubles tile yield
-            if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+            if (city != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)) {
                 wonderStats.timesInPlace(2f)
             }
 
@@ -291,7 +291,7 @@ open class TileInfo {
                 if (tileType == improvement) continue // This is added to the calculation in getImprovementStats. we don't want to add it twice
                 if (matchesTerrainFilter(tileType, observingCiv)) 
                     stats.add(unique.stats)
-                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
+                if (tileType == "Natural Wonder" && naturalWonder != null && city.civInfo.hasUnique(UniqueType.DoubleStatsFromNaturalWonders)) {
                     stats.add(unique.stats)
                 }
             }
@@ -454,6 +454,8 @@ open class TileInfo {
                         && neighbors.any { it.getOwner() == civInfo } && civInfo.cities.isNotEmpty()
                     )
                 ) -> false
+            improvement.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
+                .any { !it.conditionalsApply(StateForConditionals(civInfo)) } -> false
             improvement.getMatchingUniques(UniqueType.ObsoleteWith).any {
                 civInfo.tech.isResearched(it.params[0])
             } -> return false

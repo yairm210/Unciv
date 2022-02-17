@@ -135,8 +135,8 @@
 	},{
 		"name": "Piety",
 		"era": "Classical era",
-		"uniques": ["[+100]% Production when constructing [Shrine] buildings [in all cities]", "[+100]% Production when constructing [Temple] buildings [in all cities]", 
-			"Incompatible with [Rationalism]"],
+		"uniques": ["[+100]% Production when constructing [Shrine] buildings [in all cities]", "[+100]% Production when constructing [Temple] buildings [in all cities]",
+			"Only available <before adopting [Rationalism]>"],
 		"policies": [
 			{
 				"name": "Organized Religion",
@@ -276,7 +276,7 @@
 	{
 		"name": "Rationalism",
 		"era": "Renaissance era",
-		"uniques": ["[+15]% [Science] <while the empire is happy>", "Incompatible with [Piety]"],
+		"uniques": ["[+15]% [Science] <while the empire is happy>", "Only available <before adopting [Piety]>"],
 		"policies": [
 			{
 				"name": "Secularism",
@@ -323,7 +323,7 @@
 	{
 		"name": "Freedom",
 		"era": "Renaissance era",
-		"uniques": ["[+25]% great person generation [in all cities]", "Incompatible with [Autocracy]", "Incompatible with [Order]"],
+		"uniques": ["[+25]% great person generation [in all cities]", "Only available <before adopting [Autocracy]>", "Only available <before adopting [Order]>"],
 		"policies": [
 			{
 				"name": "Constitution",
@@ -369,7 +369,7 @@
 		"name": "Autocracy",
 		"era": "Industrial era",
 		"uniques": ["[-33]% maintenance costs <for [All] units>", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
-			"Incompatible with [Order]", "Incompatible with [Freedom]"],
+			"Only available <before adopting [Order]>", "Only available <before adopting [Freedom]>"],
 		"policies": [
 			{
 				"name": "Populism",
@@ -407,7 +407,8 @@
 			},
 			{
 				"name": "Autocracy Complete",
-				"uniques": ["+[25]% attack strength to all [Military] units for [50] turns",
+				"uniques": [
+					"[+25]% Strength <when attacking> <for [Military] units> <for [50] turns>",
 					"May buy [Great General] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>",
 					"May buy [Great Admiral] units for [1000] [Faith] [in all cities in which the majority religion is a major religion] at an increasing price ([500]) <starting from the [Industrial era]>"
 				]
@@ -417,7 +418,7 @@
 	{
     "name": "Order",
     "era": "Industrial era",
-	"uniques": ["[+1 Happiness] [in all cities]", "Incompatible with [Autocracy]", "Incompatible with [Freedom]"],
+	"uniques": ["[+1 Happiness] [in all cities]", "Only available <before adopting [Autocracy]>", "Only available <before adopting [Freedom]>"],
     "policies": [
         {
             "name": "United Front",

@@ -132,6 +132,7 @@ class TechManager {
 
     fun canBeResearched(techName: String): Boolean {
         val tech = getRuleset().technologies[techName]!!
+        if (tech.uniqueObjects.any { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) })
         if (tech.getMatchingUniques(UniqueType.IncompatibleWith).any { isResearched(it.params[0]) })
             return false
         if (isResearched(tech.name) && !tech.isContinuallyResearchable())
@@ -365,7 +366,8 @@ class TechManager {
 
     fun addTechToTransients(tech: Technology) {
         for (unique in tech.uniqueObjects)
-            techUniques.addUnique(unique)
+            if (unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique })
+                techUniques.addUnique(unique)
     }
 
     fun setTransients() {
@@ -376,7 +378,7 @@ class TechManager {
     }
 
     private fun updateTransientBooleans() {
-        wayfinding = civInfo.hasUnique("Can embark and move over Coasts and Oceans immediately")
+        wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
         unitsCanEmbark = wayfinding || civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
 
         embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
