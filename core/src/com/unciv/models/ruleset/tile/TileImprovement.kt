@@ -127,7 +127,7 @@ class TileImprovement : RulesetStatsObject() {
             }
             val statsString = resource.improvementStats.toString()
 
-            textList += FormattedLine("${statsString}{ for }{$name}", link = "Resource/$name")
+            textList += FormattedLine("[${statsString}] <in [${resource.name}] tiles>", link = "Resource/${resource.name}")
         }
 
         if (techRequired != null) {
