@@ -264,7 +264,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getModCheckTab() = Table(BaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick {
-            RulesetCache.loadRulesets()
             runModChecker(modCheckCheckBox!!.isChecked)
         }
         add(reloadModsButton).row()
@@ -277,10 +276,20 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     }
 
     private fun runModChecker(complex: Boolean = false) {
+        
         modCheckFirstRun = false
         if (modCheckCheckBox == null) return
 
         modCheckResultTable.clear()
+
+        val rulesetErrors = RulesetCache.loadRulesets()
+        if (rulesetErrors.isNotEmpty()) {
+            val errorTable = Table().apply { defaults().pad(2f) }
+            for (rulesetError in rulesetErrors)
+                errorTable.add(rulesetError.toLabel()).width(stage.width / 2).row()
+            modCheckResultTable.add(errorTable)
+        }
+        
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
         modCheckCheckBox!!.disable()
 
@@ -437,7 +446,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
         val toastText = "Uniques updated!"
         ToastPopup(toastText, screen).open(true)
-        RulesetCache.loadRulesets()
         runModChecker()
     }
 
