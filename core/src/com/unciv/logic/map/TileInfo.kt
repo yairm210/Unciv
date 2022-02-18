@@ -259,7 +259,7 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?): Stats {
         var stats = getBaseTerrain().cloneStats()
         
-        val stateForConditionals = StateForConditionals(civInfo = observingCiv, city = city, tile = this);
+        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this);
 
         for (terrainFeatureBase in getTerrainFeatures()) {
             when {
