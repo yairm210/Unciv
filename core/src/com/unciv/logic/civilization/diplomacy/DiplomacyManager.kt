@@ -289,7 +289,7 @@ class DiplomacyManager() {
 
         var modifierPercent = 0f
 
-        if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate"))
+        if (otherCiv().hasUnique(UniqueType.CityStateInfluenceRecoversTwiceNormalRate))
             modifierPercent += 100f
 
         val religion = if (civInfo.cities.isEmpty()) null
@@ -355,7 +355,7 @@ class DiplomacyManager() {
      */
     fun isConsideredFriendlyTerritory(): Boolean {
         if (civInfo.isCityState() &&
-            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique("City-State territory always counts as friendly territory")))
+            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)))
             return true
         return hasOpenBorders
     }
