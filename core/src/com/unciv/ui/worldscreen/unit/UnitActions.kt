@@ -62,6 +62,8 @@ object UnitActions {
         addEnhanceReligionAction(unit, actionList)
         actionList += getImprovementConstructionActions(unit, tile)
         addActionsWithLimitedUses(unit, actionList, tile)
+        addExplorationActions(unit, actionList)
+        addAutomateBuildingImprovementsAction(unit, actionList)
 
 
         addToggleActionsAction(unit, actionList, unitTable)
@@ -78,8 +80,6 @@ object UnitActions {
         addFortifyActions(actionList, unit, true)
 
         addSwapAction(unit, actionList, worldScreen)
-        addExplorationActions(unit, actionList)
-        addAutomateBuildingImprovementsAction(unit, actionList)
         addDisbandAction(actionList, unit, worldScreen)
         addGiftAction(unit, actionList, tile)
 
@@ -285,10 +285,10 @@ object UnitActions {
                     tile.improvement = null
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
-                    val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage)
-                        || unit.civInfo.hasUnique(UniqueType.NoMovementToPillage)
-                            // Deprecated 3.18.17
-                        || (unit.baseUnit.isMelee() && unit.civInfo.hasUnique(UniqueType.NoMovementToPillageMelee))
+                    val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
+                        // Deprecated 3.18.17
+                            || (unit.baseUnit.isMelee() && unit.civInfo.hasUnique(UniqueType.NoMovementToPillageMelee))
+                        //
                     if (!freePillage) unit.useMovementPoints(1f)
 
                     unit.healBy(25)

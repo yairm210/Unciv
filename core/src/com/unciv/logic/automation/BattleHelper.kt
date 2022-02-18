@@ -47,6 +47,8 @@ object BattleHelper {
                         // DO NOT use "!unit.movement.canPassThrough(it)" since then we won't be able to
                         // capture enemy units since we can't move through them!
                         && !it.canCivPassThrough(unit.civInfo)
+                        // Land Unit can't capture Naval and vice versa
+                        && !(unit.type.isLandUnit() && it.isWater || unit.type.isWaterUnit() && it.isLand)
             }
 
         val rangeOfAttack = unit.getRange()
@@ -81,7 +83,7 @@ object BattleHelper {
 
         for ((reachableTile, movementLeft) in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
+                if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.getViewableTilesList(rangeOfAttack)
                     .asSequence()
@@ -109,8 +111,8 @@ object BattleHelper {
             return false
 
         if (combatant is MapUnitCombatant &&
-            combatant.unit.hasUnique("Can only attack [] tiles") &&
-            combatant.unit.getMatchingUniques("Can only attack [] tiles").none { tile.matchesFilter(it.params[0]) }
+            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles)
+                .let { unique -> unique.any() && unique.none { tile.matchesFilter(it.params[0]) } }
         )
             return false
 

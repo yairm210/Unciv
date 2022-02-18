@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.BackwardCompatibility.guaranteeUnitPromotions
 import com.unciv.logic.BackwardCompatibility.removeMissingModReferences
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.*
@@ -416,7 +417,8 @@ class GameInfo {
 
         for (civInfo in civilizations) {
             for (unit in civInfo.getCivUnits())
-                unit.updateVisibleTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
+                unit.updateVisibleTiles(false) // this needs to be done after all the units are assigned to their civs and all other transients are set
+            civInfo.updateViewableTiles() // only run ONCE and not for each unit - this is a huge performance saver!
 
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.
@@ -452,6 +454,8 @@ class GameInfo {
             .flatMap { it.getResourceRequirements().keys } )
         
         barbarians.setTransients(this)
+
+        guaranteeUnitPromotions()
     }
 
     //endregion

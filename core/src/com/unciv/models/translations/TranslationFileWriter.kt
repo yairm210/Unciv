@@ -10,10 +10,7 @@ import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
-import com.unciv.models.ruleset.unique.Unique
-import com.unciv.models.ruleset.unique.UniqueFlag
-import com.unciv.models.ruleset.unique.UniqueParameterType
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unique.*
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
@@ -95,8 +92,7 @@ object TranslationFileWriter {
 
         linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
         for (unique in UniqueType.values()) {
-            val deprecationAnnotation = unique.declaringClass.getField(unique.name)
-                .getAnnotation(Deprecated::class.java)
+            val deprecationAnnotation = unique.getDeprecationAnnotation()
             if (deprecationAnnotation != null) continue
             if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
 
@@ -115,6 +111,9 @@ object TranslationFileWriter {
             val finalText = unique.text.fillPlaceholders(*newPlaceholders.toTypedArray())
             linesToTranslate.add("$finalText = ")
         }
+
+        for (uniqueTarget in UniqueTarget.values())
+            linesToTranslate.add("$uniqueTarget = ")
 
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()
@@ -238,7 +237,7 @@ object TranslationFileWriter {
 
     private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
         // build maps identifying parameters as certain types of filters - unitFilter etc
-        val ruleset = RulesetCache.getBaseRuleset()
+        val ruleset = RulesetCache.getVanillaRuleset()
         val tileFilterMap = ruleset.terrains.keys.toMutableSet().apply { addAll(sequenceOf(
             "Friendly Land",
             "Foreign Land",
@@ -422,6 +421,7 @@ object TranslationFileWriter {
             "Buildings" -> emptyArray<Building>().javaClass
             "Difficulties" -> emptyArray<Difficulty>().javaClass
             "Eras" -> emptyArray<Era>().javaClass
+            "GlobalUniques" -> GlobalUniques().javaClass
             "Nations" -> emptyArray<Nation>().javaClass
             "Policies" -> emptyArray<PolicyBranch>().javaClass
             "Quests" -> emptyArray<Quest>().javaClass

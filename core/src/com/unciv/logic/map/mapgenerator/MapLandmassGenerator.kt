@@ -11,11 +11,14 @@ import kotlin.math.pow
 
 class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
 
+    private val firstLandTerrain = ruleset.terrains.values.first { it.type==TerrainType.Land }
+    private val firstWaterTerrain = ruleset.terrains.values.firstOrNull { it.type==TerrainType.Water }
+
     fun generateLand(tileMap: TileMap) {
         // This is to accommodate land-only mods
-        if (ruleset.terrains.values.none { it.type == TerrainType.Water }) {
+        if (firstWaterTerrain==null) {
             for (tile in tileMap.values)
-                tile.baseTerrain = ruleset.terrains.keys.first()
+                tile.baseTerrain = firstLandTerrain.name
             return
         }
 
@@ -32,8 +35,8 @@ class MapLandmassGenerator(val ruleset: Ruleset, val randomness: MapGenerationRa
 
     private fun spawnLandOrWater(tile: TileInfo, elevation: Double, threshold: Double) {
         when {
-            elevation < threshold -> tile.baseTerrain = Constants.ocean
-            else -> tile.baseTerrain = Constants.grassland
+            elevation < threshold -> tile.baseTerrain = firstWaterTerrain!!.name
+            else -> tile.baseTerrain = firstLandTerrain.name
         }
     }
 

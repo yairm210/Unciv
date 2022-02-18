@@ -79,15 +79,15 @@ class CityConstructions {
 
     fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
         .asSequence()
-        .filter { !it.isAnyWonder() && it.replaces == null && it.getStats(null)[stat] > 0f }
+        .filter { !it.isAnyWonder() && it.replaces == null && it[stat] > 0f }
 
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
-    fun getStats(): Stats {
-        val stats = Stats()
+    fun getStats(): StatTreeNode {
+        val stats = StatTreeNode()
         for (building in getBuiltBuildings())
-            stats.add(building.getStats(cityInfo))
+            stats.addStats(building.getStats(cityInfo), building.name)
         return stats
     }
 
@@ -105,16 +105,6 @@ class CityConstructions {
         }
         
         return maintenanceCost
-    }
-
-    /**
-     * @return Bonus (%) [Stats] provided by all built buildings in city
-     */
-    fun getStatPercentBonuses(): Stats {
-        val stats = Stats()
-        for (building in getBuiltBuildings())
-            stats.add(building.getStatPercentageBonuses(cityInfo))
-        return stats
     }
 
     fun getCityProductionTextForCityButton(): String {
@@ -400,7 +390,7 @@ class CityConstructions {
     }
 
     private fun constructionBegun(construction: IConstruction) {
-        if (construction !is Building) return;
+        if (construction !is Building) return
         if (construction.uniqueObjects.none { it.placeholderText == "Triggers a global alert upon build start" }) return
         val buildingIcon = "BuildingIcons/${construction.name}"
         for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
@@ -472,7 +462,8 @@ class CityConstructions {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             for (unique in building.uniqueObjects)
-                builtBuildingUniqueMap.addUnique(unique)
+                if (unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique })
+                    builtBuildingUniqueMap.addUnique(unique)
     }
 
     /**

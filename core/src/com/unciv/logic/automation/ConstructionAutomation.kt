@@ -9,11 +9,11 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.sqrt
 
 class ConstructionAutomation(val cityConstructions: CityConstructions){
@@ -21,9 +21,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val cityInfo = cityConstructions.cityInfo
     val civInfo = cityInfo.civInfo
 
-    val buildableNotWonders = cityConstructions.getBuildableBuildings()
+    val buildableBuildings = cityConstructions.getBuildableBuildings().toList()
+    val buildableNotWonders = buildableBuildings
             .filterNot { it.isAnyWonder() }
-    private val buildableWonders = cityConstructions.getBuildableBuildings()
+    private val buildableWonders = buildableBuildings
             .filter { it.isAnyWonder() }
 
     val civUnits = civInfo.getCivUnits()
@@ -66,7 +67,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addCultureBuildingChoice()
         addSpaceshipPartChoice()
         addOtherBuildingChoice()
-        addReligousUnit()
+        addReligiousUnit()
 
         if (!cityInfo.isPuppet) {
             addWondersChoice()
@@ -114,8 +115,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addMilitaryUnitChoice() {
         if (!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
-        if ((!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < max(5, cities * 2))
-                || (isAtWar && civInfo.gold > -50)) {
+        if (!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < max(5, cities * 2)
+                || isAtWar && civInfo.gold > -50
+        ) {
             val militaryUnit = Automation.chooseMilitaryUnit(cityInfo) ?: return
             val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
             // most buildings and civ units contribute the the civ's growth, military units are anti-growth
@@ -208,13 +210,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun getWonderPriority(wonder: Building): Float {
-        if (wonder.uniques.contains("Enables construction of Spaceship parts"))
+        if (wonder.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
             return 2f
         if (preferredVictoryType == VictoryType.Cultural
                 && wonder.name in listOf("Sistine Chapel", "Eiffel Tower", "Cristo Redentor", "Neuschwanstein", "Sydney Opera House"))
             return 3f
         // Only start building if we are the city that would complete it the soonest
-        if (wonder.uniques.contains("Triggers a Cultural Victory upon completion") && cityInfo == civInfo.cities.minByOrNull {
+        if (wonder.hasUnique(UniqueType.TriggersCulturalVictory) && cityInfo == civInfo.cities.minByOrNull {
                 it.cityConstructions.turnsToConstruction(wonder.name) 
             }!!)
             return 10f
@@ -325,10 +327,15 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addFoodBuildingChoice() {
-        val foodBuilding = buildableNotWonders.asSequence().filter { (it.isStatRelated(Stat.Food)
-                || it.uniqueObjects.any { it.placeholderText=="[]% of food is carried over after population increases" })
-                && Automation.allowSpendingResource(civInfo, it) }
-            .minByOrNull { it.cost }
+        val conditionalState = StateForConditionals(civInfo, cityInfo)
+        val foodBuilding = buildableNotWonders.asSequence()
+            .filter { 
+                (it.isStatRelated(Stat.Food) 
+                    || it.hasUnique(UniqueType.CarryOverFoodDeprecated, conditionalState)
+                    || it.hasUnique(UniqueType.CarryOverFoodAlsoDeprecated, conditionalState)
+                    || it.hasUnique(UniqueType.CarryOverFood, conditionalState)
+                ) && Automation.allowSpendingResource(civInfo, it) 
+            }.minByOrNull { it.cost }
         if (foodBuilding != null) {
             var modifier = 1f
             if (cityInfo.population.population < 5) modifier = 1.3f
@@ -336,31 +343,32 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         }
     }
 
-    private fun addReligousUnit(){
-
-        var modifier = 0f
-
-        val missionary = cityInfo.getRuleset().units.values.asSequence()
-            .firstOrNull { it -> it.canBePurchasedWithStat(cityInfo, Stat.Faith)
-                    && it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion"} }
-
-
-        val inquisitor = cityInfo.getRuleset().units.values.asSequence()
-            .firstOrNull { it.canBePurchasedWithStat(cityInfo, Stat.Faith)
-                    && it.hasUnique("Prevents spreading of religion to the city it is next to") }
-
-
-
+    private fun addReligiousUnit() {
         // these 4 if conditions are used to determine if an AI should buy units to spread religion, or spend faith to buy things like new military units or new buildings.
         // currently this AI can only buy inquisitors and missionaries with faith
         // this system will have to be reengineered to support buying other stuff with faith
         if (preferredVictoryType == VictoryType.Domination) return
         if (civInfo.religionManager.religion?.name == null) return
-        if (preferredVictoryType == VictoryType.Cultural) modifier += 1
-        if (isAtWar) modifier -= 0.5f
         if (cityInfo.religion.getMajorityReligion()?.name != civInfo.religionManager.religion?.name)
             return // you don't want to build units of opposing religions.
 
+
+        var modifier = 0f
+
+        // The performance of the regular getMatchingUniques is better, since it only tries to find one unique,
+        //  while the canBePurchasedWithStat tries (at time of writing) *6* different uniques.
+        val missionary = cityInfo.getRuleset().units.values
+            .firstOrNull { it -> it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion"}
+                    && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
+
+
+        val inquisitor = cityInfo.getRuleset().units.values
+            .firstOrNull { it.hasUnique("Prevents spreading of religion to the city it is next to")
+                    && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
+
+
+        if (preferredVictoryType == VictoryType.Cultural) modifier += 1
+        if (isAtWar) modifier -= 0.5f
 
         val citiesNotFollowingOurReligion = civInfo.cities.asSequence()
             .filterNot { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion!!.name }
@@ -376,8 +384,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         if (buildMissionary > buildInqusitor && missionary != null) faithConstruction.add(missionary)
         else if(inquisitor != null) faithConstruction.add(inquisitor)
-
-
     }
 
 }

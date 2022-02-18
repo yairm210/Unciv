@@ -164,7 +164,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums
     }
 
-    fun updateDetailedCivResources() {
+    fun updateCivResources() {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
 
@@ -192,6 +192,13 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             for ((resource, amount) in unit.baseUnit.getResourceRequirements())
                 newDetailedCivResources.add(civInfo.gameInfo.ruleSet.tileResources[resource]!!, -amount, "Units")
         civInfo.detailedCivResources = newDetailedCivResources
+
+        val newSummarizedCivResources = ResourceSupplyList()
+        for (resourceSupply in newDetailedCivResources) {
+            newSummarizedCivResources.add(resourceSupply.resource, resourceSupply.amount, "All")
+        }
+        civInfo.summarizedCivResources = newSummarizedCivResources
+
         civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }
 }

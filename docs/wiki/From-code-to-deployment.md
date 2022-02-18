@@ -17,10 +17,10 @@ The process has two major parts, one is "Getting your code in the main repositor
 ## Deploying versions
 
 When I'm ready to release a new version I:
+* Comment "merge translations" in one of the open PRs tagged as 'mergeable translation' to trigger the translation branch creation, add a "summary" comment to trigger summary generation, merge the PR and delete the branch (so next version translation branch starts fresh)
+* From my workstation - pull the latest changes and run the [translation generation](./Translating.md#translation-generation---for-developers)
 * Change the versionCode and versionName in the Android build.gradle so that Google Play and F-droid can recognize that it's a different release
-* Run the [translation generation](./Translating.md#translation-generation---for-developers)
-* Upload the new version to Google Play - we start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.
-   * If there were problems, we halt the current rollout, fix the problems, and release a patch version, which starts at 10% again.
+* Add an entry in the changelog.md done, WITHOUT hashtags, and less than 500 characters (that's the limit for Google play entries). The formatting needs to be exact or the text sent to Discord, the Github release etc. won't be complete.
 * Add a tag to the commit of the version. When the [Github action](https://github.com/yairm210/Unciv/actions/workflows/buildAndDeploy.yml) sees that we've added a tag, it will run a build, and this time (because of the configuration we put in the [yml file](/.github/workflows/buildAndDeploy.yml) file), it will:
    * Pack a .jar file, which will work for every operating system with Java
    * Use Linux and Windows JDKs to create standalone zips for 32 and 64 bit systems, because we can't rely on the fact that users will have a JRE
@@ -34,6 +34,38 @@ When I'm ready to release a new version I:
 
 ## About Google Play publishing
 
-Dear future me - this was extremely annoying guesswork to set up, so the facts you need to know are:
++We start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.
++
++If there were problems, we halt the current rollout, fix the problems, and release a patch version, which starts at 10% again.
++
++Dear future me - the automation was extremely annoying guesswork to set up, so the facts you need to know are:
 - There is a user at the [Google Cloud Platform Account Manager](https://console.cloud.google.com/iam-admin/iam) called  Unciv_Upload_Account. There is an access key to this account, in json, stored as the Github secret GOOGLE_PLAY_SERVICE_ACCOUNT_JSON.
 - This user was granted ADMIN permissions to the Google Play (after much trial and error since nothing else seemed to work) under User > Users and Permissions. Under Manage > Account permissions, you can see that it has Admin.
+
+## Updating the wiki
+
+Pages for the [Unciv Github Wiki](https://github.com/yairm210/Unciv/wiki/) are kept in the main repository under [/docs/wiki](/docs/wiki).
+
+The process to edit the wiki is as follows:
+
+1. Open a pull request in the main Unciv repository that changes files under [/docs/wiki](/docs/wiki).
+2. Once the pull request is merged, an account with commit privileges on the Unciv repository leaves a comment saying "`update wiki`".
+3. This comment triggers a bot to copy all the wiki files from the main repository into the Github wiki, with a link back to the PR in its commit message for credit.
+
+Doing things this way has several distinct advantages over using the Github Wiki web interface directly:
+
+* Changes can be proposed via PR and proofread or fact-checked.
+* A proper MarkDown editor or IDE can be used to write the wiki, bringing faster editing, clickable links while editing, better live HTML preview, and automatic detection of problems like broken links.
+* The wiki files can also be browsed at https://github.com/yairm210/Unciv/tree/master/docs/wiki.
+* Auto-generated documentation made by the build process can be placed directly in the wiki.
+
+However, it also imposes a couple of conventions about how links should best be formatted:
+
+|Link type|Format|Example|
+|---|---|---|
+|Inter-wiki|Should begin with "./", and include ".md".|[`./Mods.md#other`](./Mods.md#other)|
+|Code or asset file|Should begin with "/", and be relative to the project root.|[`/android/assets/game.png`](/android/assets/game.png)|
+
+These formats will allow IDEs like Android studio to resolve these links and check for broken links, while also working on the [Github code browser](https://github.com/yairm210/Unciv/tree/master/docs/wiki).
+
+The bot that updates the wiki from the main repository automatically translates them into formats that are compatible with Github Wikis, which have somewhat non-standard requirements.

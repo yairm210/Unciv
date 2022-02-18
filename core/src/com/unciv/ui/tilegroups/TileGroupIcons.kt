@@ -162,7 +162,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
         if (tileGroup.resourceImage != null) { // This could happen on any turn, since resources need certain techs to reveal them
             val shouldDisplayResource =
-                    if (tileGroup.showEntireMap) tileGroup.tileInfo.resource != null
+                    if (tileGroup.showEntireMap) showResourcesAndImprovements
                     else showResourcesAndImprovements
                             && tileGroup.tileInfo.hasViewableResource(UncivGame.Current.worldScreen.viewingCiv)
             tileGroup.resourceImage!!.isVisible = shouldDisplayResource

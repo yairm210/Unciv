@@ -87,7 +87,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
             tableWithIcons.add(ImageGetter.getImage("StatIcons/Resistance")).size(20f)
             tableWithIcons.add("In resistance for another [${cityInfo.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
         }
-        if (cityInfo.isWeLoveTheKingDay()) {
+        if (cityInfo.isWeLoveTheKingDayActive()) {
             tableWithIcons.add(ImageGetter.getStatIcon("Food")).size(20f)
             tableWithIcons.add("We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel()).row()
         } else if (cityInfo.demandedResource != "") {

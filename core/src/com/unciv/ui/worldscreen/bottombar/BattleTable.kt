@@ -53,6 +53,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             if (defender == null) { hide(); return }
             simulateBattle(attacker, defender)
         }
+        pack()
+        addBorderAllowOpacity(1f, Color.WHITE)
     }
 
     private fun tryGetAttacker(): ICombatant? {
@@ -118,34 +120,55 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(attacker.getAttackingStrength().toString() + Fonts.strength)
         add(defender.getDefendingStrength().toString() + Fonts.strength).row()
 
+
+        val quarterScreen = worldScreen.stage.width/4
+
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker, defender).map {
                     val description = if (it.key.startsWith("vs "))
                         ("vs [" + it.key.replace("vs ", "") + "]").tr()
                     else it.key.tr()
                     val percentage = (if (it.value > 0) "+" else "") + it.value + "%"
-                    "$description: $percentage"
+
+                    val upOrDownLabel = if (it.value > 0f) "⬆".toLabel(Color.GREEN) else "⬇".toLabel(
+                        Color.RED)
+                    val modifierTable = Table()
+                    modifierTable.add(upOrDownLabel)
+                    val modifierLabel = "$percentage $description".toLabel(fontSize = 14).apply { wrap=true }
+                    modifierTable.add(modifierLabel).width(quarterScreen)
+                    modifierTable
                 }
         val defenderModifiers =
                 if (defender is MapUnitCombatant)
                     BattleDamage.getDefenceModifiers(attacker, defender).map {
                         val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
                         val percentage = (if(it.value>0)"+" else "")+ it.value +"%"
-                        "$description: $percentage"
+                        val upOrDownLabel = if (it.value > 0f) "⬆".toLabel(Color.GREEN) else "⬇".toLabel(
+                            Color.RED)
+                        val modifierTable = Table()
+                        modifierTable.add(upOrDownLabel)
+                        val modifierLabel = "$percentage $description".toLabel(fontSize = 14).apply { wrap=true }
+                        modifierTable.add(modifierLabel).width(quarterScreen)
+                        modifierTable
                     }
                 else listOf()
 
-        val quarterScreen = worldScreen.stage.width/4
         for (i in 0..max(attackerModifiers.size,defenderModifiers.size)) {
             if (attackerModifiers.size > i)
-                add(attackerModifiers[i].toLabel(fontSize = 14)
-                    .apply { wrap = true }).width(quarterScreen)
+                add(attackerModifiers[i])
             else add().width(quarterScreen)
             if (defenderModifiers.size > i)
-                add(defenderModifiers[i].toLabel(fontSize = 14)
-                    .apply { wrap = true }).width(quarterScreen)
+                add(defenderModifiers[i])
             else add().width(quarterScreen)
             row().pad(2f)
+        }
+
+        // from Battle.addXp(), check for can't gain more XP from Barbarians
+        val modConstants = attacker.getCivInfo().gameInfo.ruleSet.modOptions.constants
+        if (attacker is MapUnitCombatant && (attacker as MapUnitCombatant).unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
+                && defender.getCivInfo().isBarbarian()){
+            add("Cannot gain more XP from Barbarians".tr().toLabel(fontSize = 16).apply { wrap=true }).width(quarterScreen)
+            row()
         }
 
         var damageToDefender = BattleDamage.calculateDamageToDefender(attacker,null,defender)

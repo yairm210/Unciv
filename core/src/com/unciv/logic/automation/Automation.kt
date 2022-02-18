@@ -81,12 +81,12 @@ object Automation {
     }
 
     fun chooseMilitaryUnit(city: CityInfo): String? {
-        var militaryUnits =
-            city.cityConstructions.getConstructableUnits().filter { !it.isCivilian() }
-                .filter { allowSpendingResource(city.civInfo, it) }
-        if (militaryUnits.map { it.name }
-                .contains(city.cityConstructions.currentConstructionFromQueue))
-            return city.cityConstructions.currentConstructionFromQueue
+        val currentChoice = city.cityConstructions.getCurrentConstruction()
+        if (currentChoice is BaseUnit && !currentChoice.isCivilian()) return city.cityConstructions.currentConstructionFromQueue
+
+        var militaryUnits = city.getRuleset().units.values.asSequence()
+            .filter { !it.isCivilian() }
+            .filter { allowSpendingResource(city.civInfo, it) }
 
         val findWaterConnectedCitiesAndEnemies =
             BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
@@ -105,6 +105,9 @@ object Automation {
             if (providesUnneededCarryingSlots(unit, city.civInfo))
                 militaryUnits = militaryUnits.filterNot { it == unit }
 
+        // Only now do we filter out the constructable units because that's a heavier check
+        militaryUnits = militaryUnits.filter { it.isBuildable(city.cityConstructions) }.toList().asSequence() // gather once because we have a .any afterwards
+
         val chosenUnit: BaseUnit
         if (!city.civInfo.isAtWar()
             && city.civInfo.cities.any { it.getCenterTile().militaryUnit == null }
@@ -117,14 +120,13 @@ object Automation {
             val availableTypes = militaryUnits
                 .map { it.unitType }
                 .distinct()
-                .toList()
-            if (availableTypes.isEmpty()) return null
+            if (availableTypes.none()) return null
             val bestUnitsForType = availableTypes.map { type -> militaryUnits
                     .filter { unit -> unit.unitType == type }
                     .maxByOrNull { unit -> unit.cost }!! }
             // Check the maximum force evaluation for the shortlist so we can prune useless ones (ie scouts)
             val bestForce = bestUnitsForType.maxOf { it.getForceEvaluation() }
-            chosenUnit = bestUnitsForType.filter { it.uniqueTo != null || it.getForceEvaluation() > bestForce / 3 }.random()
+            chosenUnit = bestUnitsForType.filter { it.uniqueTo != null || it.getForceEvaluation() > bestForce / 3 }.toList().random()
         }
         return chosenUnit.name
     }

@@ -26,8 +26,8 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
 
     private val mapFilesSequence = sequence<FileHandleWrapper> {
         yieldAll(MapSaver.getMaps().asSequence().map { FileHandleWrapper(it) })
-        for (mod in Gdx.files.local("mods").list()) {
-            val mapsFolder = mod.child("maps")
+        for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
+            val mapsFolder = modFolder.child("maps")
             if (mapsFolder.exists())
                 yieldAll(mapsFolder.list().asSequence().map { FileHandleWrapper(it) })
         }

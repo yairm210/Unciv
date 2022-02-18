@@ -22,7 +22,7 @@ class TileMapTests {
     @Before
     fun initTheWorld() {
         RulesetCache.loadRulesets()
-        ruleSet = RulesetCache.getBaseRuleset()
+        ruleSet = RulesetCache.getVanillaRuleset()
         map = TileMap()
 
         tile1.position = Vector2(0f, 0f)

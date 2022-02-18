@@ -52,7 +52,7 @@ class ReligiousBeliefsPickerScreen (
         topTable.addSeparator()
         topTable.add(middlePanes)
         
-        if (pickIconAndName) rightSideButton.label = "Choose a religion".toLabel()
+        if (pickIconAndName) rightSideButton.label = "Choose a Religion".toLabel()
         else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.getReligionDisplayName()}]".toLabel()
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.chooseBeliefs(displayName, religionName, chosenBeliefs.map { it!! })            
@@ -76,7 +76,7 @@ class ReligiousBeliefsPickerScreen (
         fun changeDisplayedReligionName(newReligionName: String) {
             displayName = newReligionName
             rightSideButton.label = "Found [$newReligionName]".toLabel()
-            descriptionLabel.setText(newReligionName)
+            descriptionLabel.setText(newReligionName.tr())
         }
 
         val changeReligionNameButton = Button(

@@ -1,24 +1,18 @@
 ﻿package com.unciv.logic.automation
 
-import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.ReligionManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.TileMap
 import com.unciv.models.UnitAction
-import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.math.max
 import kotlin.math.min
@@ -253,9 +247,7 @@ object SpecificUnitAutomation {
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 
         val citiesByStatBoost = unit.civInfo.cities.sortedByDescending {
-            val stats = Stats()
-            for (bonus in it.cityStats.statPercentBonusList.values) stats.add(bonus)
-            stats[relatedStat]
+            it.cityStats.statPercentBonusTree.totalStats[relatedStat]
         }
 
 

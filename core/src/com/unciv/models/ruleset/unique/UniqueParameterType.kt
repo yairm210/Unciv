@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.Constants
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.VictoryType
@@ -84,6 +85,16 @@ enum class UniqueParameterType(val parameterName:String) {
             return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
     },
+    PlunderableStatName("plunderableStat") {
+        private val knownValues = setOf(Stat.Gold.name, Stat.Science.name, Stat.Culture.name, Stat.Faith.name)
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        }
+    },
     CityFilter("cityFilter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
@@ -129,7 +140,7 @@ enum class UniqueParameterType(val parameterName:String) {
         private val knownValues = setOf("All",
             "Coastal", "River", "Open terrain", "Rough terrain", "Water resource",
             "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
-            "Featureless", "Fresh Water")
+            "Featureless", "Fresh Water", "Natural Wonder")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
@@ -164,6 +175,13 @@ enum class UniqueParameterType(val parameterName:String) {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (ruleset.terrains[parameterText]?.type?.isBaseTerrain == true) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }
+    },
+    TerrainName("terrainName") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (ruleset.terrains.containsKey(parameterText)) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
@@ -284,6 +302,16 @@ enum class UniqueParameterType(val parameterName:String) {
     },
     CostOrStrength("costOrStrength") {
         private val knownValues = setOf("Cost", "Strength")
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            return if (parameterText in knownValues) null
+            else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        }
+    },
+    Action("action") {
+        private val knownValues = setOf(Constants.spreadReligionAbilityCount, Constants.removeHeresyAbilityCount)
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset

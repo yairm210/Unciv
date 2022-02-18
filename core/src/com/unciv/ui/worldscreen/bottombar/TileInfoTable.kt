@@ -6,11 +6,11 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.addBorderAllowOpacity
 import com.unciv.ui.utils.toLabel
 
 class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen.skin) {
@@ -32,6 +32,7 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen
         }
 
         pack()
+        addBorderAllowOpacity(1f, Color.WHITE)
     }
 
     fun getStatsTable(tile: TileInfo): Table {

@@ -178,7 +178,7 @@
 		"uniqueTo": "Russia",
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["-[25]% Culture cost of acquiring tiles [in this city]","-[25]% Gold cost of acquiring tiles [in this city]",
+		"uniques": ["[-25]% Culture cost of natural border growth [in this city]","[-25]% Gold cost of acquiring tiles [in this city]",
 			"New [Military] units start with [15] Experience [in this city]", "Destroyed when the city is captured"],
 		"requiredTech": "Bronze Working"
 	},
@@ -351,7 +351,7 @@
 		"name": "Aqueduct",
 		"maintenance": 1,
 		"hurryCostModifier": 0,
-		"uniques": ["[40]% of food is carried over [in this city] after population increases"],
+		"uniques": ["[40]% Food is carried over after population increases [in this city]"],
 		"requiredTech": "Engineering"
 	},
 	{
@@ -405,7 +405,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"Great Engineer": 1},
 		"isWonder": true,
-		"uniques": ["-[25]% Culture cost of acquiring tiles [in all cities]","-[25]% Gold cost of acquiring tiles [in all cities]"],
+		"uniques": ["[-25]% Culture cost of natural border growth [in all cities]","[-25]% Gold cost of acquiring tiles [in all cities]"],
 		"requiredTech": "Theology",
 		"quote": "'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.' - Antonio da Magdalena"
 	},
@@ -690,7 +690,7 @@
 	},
 	{
 		"name": "Kremlin",
-		"cost": 500
+		"cost": 500,
 		"culture": 3,
 		"cityStrength": 12,
 		"isWonder": true,
@@ -777,7 +777,8 @@
 		"cityHealth": 25,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Castle",
-		"requiredTech": "Rifling"
+		"requiredTech": "Rifling",
+		"uniques": ["Destroyed when the city is captured"]
 	},
 	// Column 10
 	{
@@ -866,7 +867,7 @@
 		"requiredBuilding": "Hospital",
 		"maintenance": 3,
 		"requiredTech": "Pharmaceuticals",
-		"uniques": ["[25]% of food is carried over [in this city] after population increases"]
+		"uniques": ["[25]% Food is carried over after population increases [in this city]"]
 	},
 	{
 		"name": "Hydro Plant",
@@ -904,7 +905,7 @@
 		"isWonder": true,
 		"culture": 3,
 		"greatPersonPoints": {"Great Engineer": 2},
-		"uniques": ["[-33]% Gold cost of upgrading [Military] units"],
+		"uniques": ["[-33]% Gold cost of upgrading <for [Military] units>"],
 		"requiredTech": "Radar",
 		"quote": "'In preparing for battle I have always found that plans are useless, but planning is indispensable.' - Dwight D. Eisenhower"
 	},
@@ -916,7 +917,7 @@
 		"requiredBuilding": "Factory",
 		"maintenance": 3,
 		"requiredTech": "Ecology",
-		"uniques": ["Must be next to [Desert]", "Cannot be built with [Nuclear Plant]"]
+		"uniques": ["Must be next to [Desert]", "Only available <in cities without a [Nuclear Plant]>"]
 	},
 	{
 		"name": "Nuclear Plant",
@@ -926,7 +927,7 @@
 		"maintenance": 3,
 		"requiredResource": "Uranium",
 		"requiredTech": "Nuclear Fission",
-		"uniques": ["Cannot be built with [Solar Plant]"]
+		"uniques": ["Only available <in cities without a [Solar Plant]>"]
 	},
 	{
 		"name": "Apollo Program",
@@ -994,6 +995,6 @@
 		"isNationalWonder": true,
 		"uniques": ["Hidden until [5] social policy branches have been completed", "Triggers a global alert upon build start",
 			"Triggers a Cultural Victory upon completion", "Hidden when [Cultural] Victory is disabled"]
-	},
+	}
 	
 ]

@@ -154,8 +154,11 @@ class MapRegions (val ruleset: Ruleset){
         var bestSplitPoint = 1 // will be the size of the split-off region
         var closestFertility = 0
         var cumulativeFertility = 0
-        val pointsToTry = if (widerThanTall) 1..regionToSplit.rect.width.toInt()
-        else 1..regionToSplit.rect.height.toInt()
+
+        val highestPointToTry = if (widerThanTall) regionToSplit.rect.width.toInt()
+        else regionToSplit.rect.height.toInt()
+        val pointsToTry = 1..highestPointToTry
+        val halfwayPoint = highestPointToTry/2
 
         for (splitPoint in pointsToTry) {
             val nextRect = if (widerThanTall)
@@ -175,7 +178,11 @@ class MapRegions (val ruleset: Ruleset){
                 nextRect.sumOf { if (it.getContinent() == splitOffRegion.continentID) it.getTileFertility(true) else 0 }
 
             // Better than last try?
-            if (abs(cumulativeFertility - targetFertility) <= abs(closestFertility - targetFertility)) {
+            val bestSplitPointFertilityDeltaFromTarget = abs(closestFertility - targetFertility)
+            val currentSplitPointFertilityDeltaFromTarget = abs(cumulativeFertility - targetFertility)
+            if (currentSplitPointFertilityDeltaFromTarget < bestSplitPointFertilityDeltaFromTarget
+                || (currentSplitPointFertilityDeltaFromTarget == bestSplitPointFertilityDeltaFromTarget // same fertility split but better 'amount of tiles' split
+                        && abs(halfwayPoint- splitPoint) < abs(halfwayPoint- bestSplitPoint) )) { // current split point is closer to the halfway point
                 bestSplitPoint = splitPoint
                 closestFertility = cumulativeFertility
             }
@@ -1137,7 +1144,7 @@ class MapRegions (val ruleset: Ruleset){
                 targetLuxuries++
             }
 
-            val luxuryToPlace = ruleset.tileResources[region.luxury]!!
+            val luxuryToPlace = ruleset.tileResources[region.luxury] ?: continue
             // First check 2 inner rings
             val firstPass = tileMap[region.startPosition!!].getTilesInDistanceRange(1..2)
                     .shuffled().sortedBy { it.getTileFertility(false) } // Check bad tiles first
@@ -1184,7 +1191,7 @@ class MapRegions (val ruleset: Ruleset){
         }
         regionTargetNumber = max(1, regionTargetNumber)
         for (region in regions) {
-            val resource = ruleset.tileResources[region.luxury]!!
+            val resource = ruleset.tileResources[region.luxury] ?: continue
             if (isWaterOnlyResource(resource))
                 tryAddingResourceToTiles(resource, regionTargetNumber,
                         tileMap.getTilesInRectangle(region.rect).filter { it.isWater && it.neighbors.any { neighbor -> neighbor.getContinent() == region.continentID } }.shuffled(),
@@ -1360,7 +1367,7 @@ class MapRegions (val ruleset: Ruleset){
         // Third add some minor deposits to land tiles
         // Note: In G&K there is a bug where minor deposits are never placed on hills. We're not replicating that.
         val frequency = (baseMinorDepositFrequency * bonusMultiplier).toInt()
-        val minorDepositsToAdd = (landList.count() / frequency) + 1
+        val minorDepositsToAdd = (landList.count() / frequency) + 1 // I sometimes have division by zero errors on this line
         var minorDepositsAdded = 0
         for (tile in landList) {
             if (tile.resource != null || tileData[tile.position]!!.impacts.containsKey(ImpactType.Strategic))
@@ -1442,7 +1449,12 @@ class MapRegions (val ruleset: Ruleset){
             val resourceUnique = ruleset.terrains[terrain]!!.getMatchingUniques(UniqueType.RegionExtraResource).firstOrNull()
             // If this region has an explicit "this is the bonus" unique go with that, else random appropriate
             val resource = if (resourceUnique != null) ruleset.tileResources[resourceUnique.params[0]]!!
-                else ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && terrain in it.terrainsCanBeFoundOn }.random()
+                else {
+                val possibleResources =
+                    ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && terrain in it.terrainsCanBeFoundOn }
+                if (possibleResources.isEmpty()) continue
+                possibleResources.random()
+            }
             val candidateTiles = tileMap[region.startPosition!!].getTilesAtDistance(3).shuffled()
             val amount = if (resourceUnique != null) 2 else 1 // Place an extra if the region type requests it
             if (tryAddingResourceToTiles(resource, amount, candidateTiles) == 0) {
@@ -1721,10 +1733,9 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
         for (tile in tileMap.getTilesInRectangle(rect, evenQ = true).filter {
             continentID == -1 || it.getContinent() == continentID } ) {
             val fertility = tile.getTileFertility(continentID != -1)
-            if (fertility != 0) { // If fertility is 0 this is candidate for trimming
-                tiles.add(tile)
-                totalFertility += fertility
-            }
+            tiles.add(tile)
+            totalFertility += fertility
+
 
             if (affectedByWorldWrap)
                 columnHasTile.add(HexMath.hex2EvenQCoords(tile.position).x.toInt())

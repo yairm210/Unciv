@@ -19,4 +19,11 @@ data class StateForConditionals(
     val combatAction: CombatAction? = null,
 
     val region: Region? = null,
-)
+
+    val ignoreConditionals:Boolean = false,
+) {
+
+    companion object {
+        val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)
+    }
+}

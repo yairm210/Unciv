@@ -31,7 +31,7 @@ class TranslationTests {
         }))
         translations.readAllLanguagesTranslation()
         RulesetCache.loadRulesets()
-        ruleset = RulesetCache.getBaseRuleset()
+        ruleset = RulesetCache.getVanillaRuleset()
         System.setOut(outputChannel)
     }
 

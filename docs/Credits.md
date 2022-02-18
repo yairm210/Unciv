@@ -86,7 +86,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ### Renaissance Era
 
-* [Sail boat](https://thenounproject.com/term/sail-boat/5292/) By Alessandro Suraci for Caravel
+* [Portuguese Caravel](https://thenounproject.com/icon/portuguese-caravel-1626301/) by Zack McCune for Caravel
 * [Cannon](https://thenounproject.com/search/?q=Cannon&i=1618747) By Orin Zuu
 * [Musket](https://thenounproject.com/search/?q=Musket&i=298302) By Cezary Lopacinski for Musketman
 * [Tarbouche](https://thenounproject.com/search/?q=turkish%20hat&i=245391) By Mohamed Amine for Janissary

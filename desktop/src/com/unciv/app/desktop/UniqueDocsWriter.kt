@@ -16,17 +16,38 @@ class UniqueDocsWriter {
             .toSortedMap()
 
         fun replaceExamples(text:String):String {
-            return text.replace("[amount]", "[20]")
-                .replace("[stat]", "[Culture]")
+            return text
+                .replace("[amount]", "[20]")
+                .replace("[combatantFilter]", "[City]")
+                .replace("[mapUnitFilter]", "[Wounded]")
+                .replace("[baseUnitFilter]", "[Melee]")
+                .replace("[great person]", "[Great Scientist]")
                 .replace("[stats]", "[+1 Gold, +2 Production]")
+                .replace("[stat]", "[Culture]")
+                .replace("[plunderableStat]", "[Gold]")
                 .replace("[cityFilter]", "[in all cities]")
                 .replace("[buildingName]", "[Library]")
+                .replace("[buildingFilter]", "[Culture]")
+                .replace("[constructionFilter]", "[Spaceship Part]")
+                .replace("[terrainFilter]", "[Forest]")
                 .replace("[tileFilter]", "[Farm]")
-                .replace("[terrainFilter]", "[Grassland]")
-                .replace("[baseUnitFilter]", "[Melee]")
-                .replace("[mapUnitFilter]", "[Wounded]")
+                .replace("[simpleTerrain]", "[Elevated]")
+                .replace("[baseTerrain]", "[Grassland]")
+                .replace("[regionType]", "[Hybrid]")
+                .replace("[terrainQuality]","[Undesirable]")
+                .replace("[promotion]","[Shock I]")
+                .replace("[era]", "[Ancient era]")
+                .replace("[improvementName]", "[Trading Post]")
+                .replace("[improvementFilter]", "[All Road]")
                 .replace("[resource]", "[Iron]")
                 .replace("[beliefType]", "[Follower]")
+                .replace("[belief]","[God of War]")
+                .replace("[foundingOrEnhancing]", "[founding]")
+                .replace("[tech]", "[Agriculture]")
+                .replace("[specialist]","[Merchant]")
+                .replace("[policy]", "[Oligarchy]")
+                .replace("[victoryType]", "[Domination]")
+                .replace("[costOrStrength]", "[Cost]")
         }
 
         lines += "## Table of Contents\n"
@@ -37,15 +58,13 @@ class UniqueDocsWriter {
         lines += " - [Deprecated uniques](#deprecated-uniques)"
         lines += ""
 
-
-
+        
         val deprecatedUniques = ArrayList<UniqueType>()
         for (targetType in targetTypesToUniques) {
             lines += "## " + targetType.key.name + " uniques"
             for (uniqueType in targetType.value) {
 
-                val deprecationAnnotation = uniqueType.declaringClass.getField(uniqueType.name)
-                    .getAnnotation(Deprecated::class.java)
+                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
                 if (deprecationAnnotation != null) {
                     deprecatedUniques += uniqueType
                     continue
@@ -63,8 +82,7 @@ class UniqueDocsWriter {
         lines += "## Deprecated uniques"
         for (deprecatedUnique in deprecatedUniques) {
             val deprecationAnnotation =
-                deprecatedUnique.declaringClass.getField(deprecatedUnique.name)
-                    .getAnnotation(Deprecated::class.java)
+                deprecatedUnique.getDeprecationAnnotation()!!
 
             val deprecationText = "Deprecated ${deprecationAnnotation.message}," +
                     if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${deprecationAnnotation.replaceWith.expression}\"" else ""

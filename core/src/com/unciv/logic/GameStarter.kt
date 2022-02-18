@@ -40,7 +40,7 @@ object GameStarter {
             gameSetupInfo.gameParameters.baseRuleset = baseRulesetInMods
 
         if (!RulesetCache.containsKey(gameSetupInfo.gameParameters.baseRuleset))
-            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getBaseRuleset().name
+            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getVanillaRuleset().name
         
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)
@@ -149,7 +149,7 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech)
 
             // generic start with technology unique
-            for (unique in civInfo.getMatchingUniques("Starts with []")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithTech)) {
                 // get the parameter from the unique
                 val techName = unique.params[0]
 
@@ -306,7 +306,7 @@ object GameStarter {
             fun getEquivalentUnit(civ: CivilizationInfo, unitParam: String): String? {
                 var unit = unitParam // We want to change it and this is the easiest way to do so
                 if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
-                if (unit == "Settler" && "Settler" !in ruleSet.units) {
+                if (unit == Constants.settler && Constants.settler !in ruleSet.units) {
                     val buildableSettlerLikeUnits = 
                         settlerLikeUnits.filter {
                             it.value.isBuildable(civ)

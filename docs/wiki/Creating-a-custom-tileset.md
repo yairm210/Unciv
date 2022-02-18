@@ -61,3 +61,19 @@ The ruleVariants are the most powerful part of the tileset config.
 With this, you can define, for a specific tile, which images and in which order these images should be used. 
 
 An example is given in the code above. For the tile "Grassland+Jungle+Dyes+Trading post" we then use the images "Grassland", "JungleForGrasslandBack", "Dyes+Trading post" and "JungleForGrasslandFront" in that order.
+
+## Nation-coloured units
+
+Unciv can colour units according to the civilization that owns them. [[PR3231]](https://github.com/yairm210/Unciv/pull/3231)
+
+This is used by providing multiple images per unit, each representing a coloured layer. The image suffixed with "-1" will be tinted to the civilization's inner colour, and the image suffixed with "-2" will be tinted to the civilization's outer colour. For example:
+
+|Image|Description|Colour|
+|---|---|---|
+|Archer.png|Base image|Untinted|
+|Archer-1.png|Colour layer|Nation inner colour|
+|Arhcer-2.png|Colour layer|Nation outer colour|
+
+The [Civ Army Color Style Sheet](https://github.com/AdityaMH/Civ-Army-Color-Style-Sheet/tree/main/Images/TileSets/FantasyHex/Units) mod by @AdityaMH and the [5Hex Tileset](https://github.com/ravignir/5Hex-Tileset/tree/master/Images/TileSets/5Hex/Units) by @ravignir are very good practical examples of how this can be used.
+
+

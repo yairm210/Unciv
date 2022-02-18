@@ -2,6 +2,7 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -93,7 +94,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         }
 
         // try to load the translations from the mods
-        for (modFolder in Gdx.files.local("mods").list()) {
+        for (modFolder in RulesetCache.values.mapNotNull { it.folderLocation }) {
             val modTranslationFile = modFolder.child(translationFileName)
             if (modTranslationFile.exists()) {
                 var translationsForMod = modsWithTranslations[modFolder.name()]
@@ -214,7 +215,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals   
         const val englishConditionalOrderingString = 
-            "<for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <before the [era]> <starting from the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
+            "<with a garrison> <for [mapUnitFilter] units> <above [amount] HP> <below [amount] HP> <vs cities> <vs [mapUnitFilter] units> <when fighting in [tileFilter] tiles> <when attacking> <when defending> <if this city has at least [amount] specialists> <when at war> <when not at war> <while the empire is happy> <during a Golden Age> <during the [era]> <before the [era]> <starting from the [era]> <with [techOrPolicy]> <without [techOrPolicy]>"
         const val conditionalUniqueOrderString = "ConditionalsPlacement"
         const val shouldCapitalizeString = "StartWithCapitalLetter"
     }
