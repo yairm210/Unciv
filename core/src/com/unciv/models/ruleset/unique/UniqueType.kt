@@ -108,6 +108,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     PercentProductionBuildingsInCapital("[amount]% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     @Deprecated("as of 3.19.3", ReplaceWith("[+25]% Production towards any buildings that already exist in the Capital"))
     PercentProductionBuildingsInCapitalDeprecated("+25% Production towards any buildings that already exist in the Capital", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    // todo: maybe should be converted to "[+100]% Yield from every [Natural Wonder]"?
+    DoubleStatsFromNaturalWonders("Tile yields from Natural Wonders doubled", UniqueTarget.Global),
 
     //endregion Stat providing uniques
 
@@ -232,6 +234,15 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     @Deprecated("as of 3.19.1", ReplaceWith("[amount]% Culture cost of adopting new Policies"))
     LessPolicyCostDeprecated2("[amount]% Culture cost of adopting new policies", UniqueTarget.Global),
 
+    StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[amount]%", UniqueTarget.Global),  // used in Policy
+    DoubleResourceProduced("Double quantity of [resource] produced", UniqueTarget.Global),
+    // Todo: should probably be changed to "[stats] from every known Natural Wonder", and that'll give us the global unique as well
+    DoubleHappinessFromNaturalWonders("Double Happiness from Natural Wonders", UniqueTarget.Global),
+    
+    EnablesConstructionOfSpaceshipParts("Enables construction of Spaceship parts", UniqueTarget.Global),
+    
+    NotifiedOfBarbarianEncampments("Notified of new Barbarian encampments", UniqueTarget.Global),
+    
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
     EnablesResearchAgreements("Enables Research agreements", UniqueTarget.Global),
@@ -273,21 +284,32 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // ToDo: make per unit and use unit filters?
     LandUnitEmbarkation("Enables embarkation for land units", UniqueTarget.Global),
     EmbarkedUnitsMayEnterOcean("Enables embarked units to enter ocean tiles", UniqueTarget.Global),
+    @Deprecated("as of 3.19.9", ReplaceWith("Enables embarkation for land units <starting from the [Ancient era]>\", \"Enables embarked units to enter ocean tiles <starting from the [Ancient era]>"))
+    EmbarkAndEnterOcean("Can embark and move over Coasts and Oceans immediately", UniqueTarget.Global),
     
     PopulationLossFromNukes("Population loss from nuclear attacks [amount]% [cityFilter]", UniqueTarget.Global),
     @Deprecated("as of 3.19.2", ReplaceWith("Population loss from nuclear attacks [-amount]% [in this city]"))
     PopulationLossFromNukesDeprecated("Population loss from nuclear attacks -[amount]%", UniqueTarget.Global),
     
     NaturalReligionSpreadStrength("[amount]% Natural religion spread [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
-    @Deprecated("as of 3.19.3", ReplaceWith("[amount]% Natural religion spread [cityFilter] <after discovering [tech]> OR [amount]% natural religion spread [cityFilter] <after adopting [policy]>"))
+    @Deprecated("as of 3.19.3", ReplaceWith("[amount]% Natural religion spread [cityFilter] <after discovering [tech/policy]>\"" +
+            " OR \"[amount]% Natural religion spread [cityFilter] <after adopting [tech/policy]>"))
     NaturalReligionSpreadStrengthWith("[amount]% Natural religion spread [cityFilter] with [tech/policy]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-    
+
+    @Deprecated("as of 3.19.8", ReplaceWith("Only available <before adopting [policy/tech/promotion]>" +
+            "\" OR \"Only available <before discovering [policy/tech/promotion]>" +
+            "\" OR \"Only available <for units without [policy/tech/promotion]>"))
     IncompatibleWith("Incompatible with [policy/tech/promotion]", UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
     StartingTech("Starting tech", UniqueTarget.Tech),
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
     ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Global),
 
+    BaseUnitSupply("[amount] Unit Supply", UniqueTarget.Global),
+    UnitSupplyPerPop("[amount] Unit Supply per [amount] population [cityFilter]", UniqueTarget.Global), 
+    UnitSupplyPerCity("[amount] Unit Supply per city", UniqueTarget.Global),
+    UnitsInCitiesNoMaintenance("Units in cities cost no Maintenance", UniqueTarget.Global),
+    
     SpawnRebels("Rebel units may spawn", UniqueTarget.Global),
     
     //endregion
@@ -296,12 +318,19 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ///////////////////////////////////////// region CONSTRUCTION UNIQUES /////////////////////////////////////////
 
+
     Unbuildable("Unbuildable", UniqueTarget.Building, UniqueTarget.Unit),
     CannotBePurchased("Cannot be purchased", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedWithStat("Can be purchased with [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     CanBePurchasedForAmountStat("Can be purchased for [amount] [stat] [cityFilter]", UniqueTarget.Building, UniqueTarget.Unit),
     MaxNumberBuildable("Limited to [amount] per Civilization", UniqueTarget.Building, UniqueTarget.Unit),
     HiddenBeforeAmountPolicies("Hidden until [amount] social policy branches have been completed", UniqueTarget.Building, UniqueTarget.Unit),
+    // Meant to be used together with conditionals, like "Only available <after adopting [policy]> <while the empire is happy>"
+    OnlyAvailableWhen("Only available", UniqueTarget.Unit, UniqueTarget.Building, UniqueTarget.Improvement,
+        UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
+    @Deprecated("as of 3.19.8", ReplaceWith("Only available <after adopting [buildingName/tech/resource/policy]>\"" +
+            " OR \"Only available <with [buildingName/tech/resource/policy]>\"" +
+            " OR \"Only available <after discovering [buildingName/tech/resource/policy]>"))
     NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
     RequiresPopulation("Requires at least [amount] population", UniqueTarget.Building, UniqueTarget.Unit),
@@ -313,7 +342,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
 
     CostIncreasesPerCity("Cost increases by [amount] per owned city", UniqueTarget.Building),
+    
+    @Deprecated("as of 3.19.9", ReplaceWith("Only available <in cities without a [buildingName]>"))
     CannotBeBuiltWith("Cannot be built with [buildingName]", UniqueTarget.Building),
+    @Deprecated("as of 3.19.9", ReplaceWith("Only available <in cities with a [buildingName]>"))
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
     RequiresBuildingInSomeCities("Requires a [buildingName] in at least [amount] cities", UniqueTarget.Building),
@@ -345,6 +377,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     Strength("[amount]% Strength", UniqueTarget.Unit, UniqueTarget.Global),
     StrengthNearCapital("[amount]% Strength decreasing with distance from the capital", UniqueTarget.Unit, UniqueTarget.Global),
     FlankAttackBonus("[amount]% to Flank Attack bonuses", UniqueTarget.Unit, UniqueTarget.Global),
+    // There's currently no conditional that would allow you strength vs city-state *cities* and that's why this isn't deprecated yet
+    StrengthBonusVsCityStates("+30% Strength when fighting City-State units and cities", UniqueTarget.Global),
 
     Movement("[amount] Movement", UniqueTarget.Unit, UniqueTarget.Global),
     Sight("[amount] Sight", UniqueTarget.Unit, UniqueTarget.Global, UniqueTarget.Terrain),
@@ -363,11 +397,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     MustSetUp("Must set up to ranged attack", UniqueTarget.Unit),
     SelfDestructs("Self-destructs when attacking", UniqueTarget.Unit),
     BlastRadius("Blast radius [amount]", UniqueTarget.Unit),
+    IndirectFire("Ranged attacks may be performed over obstacles", UniqueTarget.Unit),
     
     NoDefensiveTerrainBonus("No defensive terrain bonus", UniqueTarget.Unit, UniqueTarget.Global),
     NoDefensiveTerrainPenalty("No defensive terrain penalty", UniqueTarget.Unit, UniqueTarget.Global),
     Uncapturable("Uncapturable", UniqueTarget.Unit),
     MayWithdraw("May withdraw before melee ([amount]%)", UniqueTarget.Unit),
+    CannotCaptureCities("Unable to capture cities", UniqueTarget.Unit),
     
     NoMovementToPillage("No movement cost to pillage", UniqueTarget.Unit, UniqueTarget.Global),
     @Deprecated("as of 3.18.17", ReplaceWith("No movement cost to pillage <for [Melee] units>"), DeprecationLevel.WARNING)
@@ -387,6 +423,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     NormalVisionWhenEmbarked("Normal vision when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarked("Defense bonus when embarked", UniqueTarget.Unit, UniqueTarget.Global),
     DefenceBonusWhenEmbarkedCivwide("Embarked units can defend themselves", UniqueTarget.Global),
+    @Deprecated("as of 3.19.8", ReplaceWith("Eliminates combat penalty for attacking across a coast"))
+    AttackFromSea("Eliminates combat penalty for attacking from the sea", UniqueTarget.Unit),
+    AttackAcrossCoast("Eliminates combat penalty for attacking across a coast", UniqueTarget.Unit),
 
     SixTilesAlwaysVisible("6 tiles in every direction always visible", UniqueTarget.Unit),
     
@@ -548,13 +587,19 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
 
+    ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
+
     /////// city conditionals
+    ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
+    ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
     ConditionalFollowerCount("in cities where this religion has at least [amount] followers", UniqueTarget.Conditional),
     ConditionalWhenGarrisoned("with a garrison", UniqueTarget.Conditional),
 
     /////// unit conditionals
     ConditionalOurUnit("for [mapUnitFilter] units", UniqueTarget.Conditional),
+    ConditionalUnitWithPromotion("for units with [promotion]", UniqueTarget.Conditional),
+    ConditionalUnitWithoutPromotion("for units without [promotion]", UniqueTarget.Conditional),
     ConditionalVsCity("vs cities", UniqueTarget.Conditional),
     ConditionalVsUnits("vs [mapUnitFilter] units", UniqueTarget.Conditional),
     ConditionalVsLargerCiv("when fighting units from a Civilization with more Cities than you", UniqueTarget.Conditional),
@@ -613,10 +658,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     UnitsGainPromotion("[mapUnitFilter] units gain the [promotion] promotion", UniqueTarget.Global),  // Not used in Vanilla
     // todo: remove forced sign
-    StrategicResourcesIncrease("Quantity of strategic resources produced by the empire +[amount]%", UniqueTarget.Global),  // used in Policy
-    // todo: remove forced sign
-    // todo: convert to "[amount]% Strength <when attacking> <for [baseUnitFilter] units> <for [amount] turns>"
-    TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] units for [amount] turns", UniqueTarget.Global),  // used in Policy
+    @Deprecated("as of 3.19.8", ReplaceWith("[+amount]% Strength <when attacking> <for [mapUnitFilter] units> <for [amount2] turns>"))
+    TimedAttackStrength("+[amount]% attack strength to all [mapUnitFilter] units for [amount2] turns", UniqueTarget.Global),  // used in Policy
     FreeStatBuildings("Provides the cheapest [stat] building in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
     FreeSpecificBuildings("Provides a [buildingName] in your first [amount] cities for free", UniqueTarget.Global),  // used in Policy
 
@@ -635,7 +678,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // endregion    
 
     // region DEPRECATED AND REMOVED
-    @Deprecated("as of 3.18.14", ReplaceWith("[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"))
+    @Deprecated("as of 3.18.14", ReplaceWith("[stats] [in all cities] <before discovering [tech]>\" OR \"[stats] [in all cities] <before adopting [policy]>"))
     StatsFromCitiesBefore("[stats] per turn from cities before [tech/policy]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     @Deprecated("as of 3.18.12", ReplaceWith("[amount]% XP gained from combat"), DeprecationLevel.WARNING)
@@ -743,9 +786,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StrengthPlus("+[amount]% Strength", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[-amount]% Strength"), DeprecationLevel.ERROR)
     StrengthMin("-[amount]% Strength", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[+amount]% Strength <vs [combatantFilter] units> OR <vs cities>"), DeprecationLevel.ERROR)
+    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[+amount]% Strength <vs [combatantFilter] units>\" OR \"[+amount]% Strength <vs cities>"), DeprecationLevel.ERROR)
     StrengthPlusVs("+[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
-    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[-amount]% Strength <vs [combatantFilter] units> OR <vs cities>"), DeprecationLevel.ERROR)
+    @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[-amount]% Strength <vs [combatantFilter] units>\" OR \"[+amount]% Strength <vs cities>"), DeprecationLevel.ERROR)
     StrengthMinVs("-[amount]% Strength vs [combatantFilter]", UniqueTarget.Unit),
     @Deprecated("As of 3.17.3 - removed 3.17.13", ReplaceWith("[+amount]% Strength"), DeprecationLevel.ERROR)
     CombatBonus("+[amount]% Combat Strength", UniqueTarget.Unit),
@@ -811,7 +854,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         for (placeholder in text.getPlaceholderParameters()) {
             val matchingParameterTypes = placeholder
                 .split('/')
-                .map { UniqueParameterType.safeValueOf(it) }
+                .map { UniqueParameterType.safeValueOf(it.replace(numberRegex, "")) }
             parameterTypeMap.add(matchingParameterTypes)
         }
         targetTypes.addAll(targets)
@@ -854,5 +897,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     fun getDeprecationAnnotation(): Deprecated? = declaringClass.getField(name)
         .getAnnotation(Deprecated::class.java)
+
 }
+
+// I didn't put this is a companion object because APPARENTLY doing that means you can't use it in the init function.
+val numberRegex = Regex("\\d") // I really doubt we'll get to double-digit numbers of parameters in a single unique.
 

@@ -25,7 +25,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
 
     override fun takeDamage(damage: Int) {
         unit.health -= damage
-        if(isDefeated()) unit.destroy()
+        if (unit.health < 0) unit.health = 0
+        if (isDefeated()) unit.destroy()
     }
 
     override fun getAttackingStrength(): Int {

@@ -98,7 +98,7 @@ object Battle {
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities")) {
+                && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities)) {
             // Barbarians can't capture cities
             if (attacker.unit.civInfo.isBarbarian()) {
                 defender.takeDamage(-1) // Back to 2 HP
@@ -552,10 +552,10 @@ object Battle {
         }
 
         if (!wasDestroyedInstead)
-            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
+            defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
         else
-            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
+            defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         if (checkDefeat)

@@ -262,7 +262,7 @@ object ImageGetter {
 
     fun getImprovementIcon(improvementName: String, size: Float = 20f): Group {
         if (improvementName.startsWith(Constants.remove) || improvementName == Constants.cancelImprovementOrder)
-            return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
+            return getImage("OtherIcons/Stop").surroundWithCircle(size)
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
@@ -380,6 +380,7 @@ object ImageGetter {
     class VerticalProgressBar(width: Float, height: Float):Group() {
         init {
             setSize(width, height)
+            isTransform = false
         }
 
         fun addColor(color: Color, percentage: Float): VerticalProgressBar {

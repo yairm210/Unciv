@@ -65,8 +65,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (promotion in promotions)
             infoList += promotion.tr()
         if (replacementTextForUniques != "") infoList += replacementTextForUniques
-        else for (unique in uniques)
-            infoList += unique.tr()
+        else for (unique in uniqueObjects) if(!unique.hasFlag(UniqueFlag.HiddenToUsers))
+            infoList += unique.text.tr()
         return infoList.joinToString()
     }
 
@@ -351,6 +351,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         val civInfo = cityConstructions.cityInfo.civInfo
+
+        for (unique in uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }){
+            if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
+                rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
+        }
+        
         for (unique in getMatchingUniques(UniqueType.NotDisplayedWithout)) {
             val filter = unique.params[0]
             if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
@@ -363,7 +369,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
-                rejectionReasons.add(RejectionReason.PopulationRequirement)
+                rejectionReasons.add(RejectionReason.PopulationRequirement.apply { errorMessage = unique.text })
         return rejectionReasons
     }
 

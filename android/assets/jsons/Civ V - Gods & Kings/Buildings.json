@@ -1048,7 +1048,7 @@
 		"requiredBuilding": "Factory",
 		"maintenance": 3,
 		"requiredTech": "Ecology",
-		"uniques": ["Must be next to [Desert]", "Cannot be built with [Nuclear Plant]"]
+		"uniques": ["Must be next to [Desert]", "Only available <in cities without a [Nuclear Plant]>"]
 	},
 	{
 		"name": "Recycling Center",
@@ -1073,7 +1073,7 @@
 		"maintenance": 3,
 		"requiredResource": "Uranium",
 		"requiredTech": "Nuclear Fission",
-		"uniques": ["Cannot be built with [Solar Plant]"]
+		"uniques": ["Only available <in cities without a [Solar Plant]>"]
 	},
 	{
 		"name": "Apollo Program",
