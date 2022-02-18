@@ -870,7 +870,7 @@ class MapUnit {
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
         // Capture Enemy Civilian Unit if you move on top of it
-        if (tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
+        if (!isCivilian() && tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
             Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 
