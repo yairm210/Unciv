@@ -92,6 +92,14 @@ open class TileInfo {
 
     fun clone(): TileInfo {
         val toReturn = TileInfo()
+        toReturn.tileMap = tileMap
+        toReturn.ruleset = ruleset
+        toReturn.isCityCenterInternal = isCityCenterInternal
+        toReturn.owningCity = owningCity
+        toReturn.baseTerrainObject = baseTerrainObject
+        toReturn.isLand = isLand
+        toReturn.isWater = isWater
+        toReturn.isOcean = isOcean
         if (militaryUnit != null) toReturn.militaryUnit = militaryUnit!!.clone()
         if (civilianUnit != null) toReturn.civilianUnit = civilianUnit!!.clone()
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
