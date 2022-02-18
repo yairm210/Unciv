@@ -19,6 +19,7 @@ data class StateForConditionals(
     val combatAction: CombatAction? = null,
 
     val region: Region? = null,
+    val tile: TileInfo? = null,
 
     val ignoreConditionals:Boolean = false,
 ) {
