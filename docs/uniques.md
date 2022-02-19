@@ -185,6 +185,9 @@ Example: "[20]% Happiness from luxury resources gifted by City-States"
 
 Applicable to: Global
 
+#### City-State Influence recovers at twice the normal rate
+Applicable to: Global
+
 #### [amount] units cost no maintenance
 Example: "[20] units cost no maintenance"
 
@@ -382,6 +385,24 @@ Applicable to: Global
 Applicable to: Global
 
 #### Notified of new Barbarian encampments
+Applicable to: Global
+
+#### "Borrows" city names from other civilizations in the game
+Applicable to: Global
+
+#### Units fight as though they were at full strength even when damaged
+Applicable to: Global
+
+#### 100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)
+Applicable to: Global
+
+#### Unhappiness from number of Cities doubled
+Applicable to: Global
+
+#### Great General provides double combat bonus
+Applicable to: Global
+
+#### Receive a tech boost when scientific buildings/wonders are built in capital
 Applicable to: Global
 
 #### Enables Open Borders agreements

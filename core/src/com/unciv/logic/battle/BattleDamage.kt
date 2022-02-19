@@ -88,7 +88,7 @@ object BattleDamage {
                 .flatMap { it.getUnits() }.filter { it.civInfo == combatant.unit.civInfo }
             if (nearbyCivUnits.any { it.hasUnique("Bonus for units in 2 tile radius 15%") }) {
                 val greatGeneralModifier =
-                    if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 30 else 15
+                    if (combatant.unit.civInfo.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus)) 30 else 15
 
                 modifiers["Great General"] = greatGeneralModifier
             }
@@ -136,7 +136,7 @@ object BattleDamage {
                 modifiers["Landing"] = -50
 
             // Land Melee Unit attacking to Water
-            if (!attacker.unit.isEmbarked() && attacker.isMelee() && defender.getTile().isWater
+            if (attacker.unit.type.isLandUnit() && !attacker.unit.isEmbarked() && attacker.isMelee() && defender.getTile().isWater
                     && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
                 modifiers["Boarding"] = -50
             // Naval Unit Melee attacking to Land (not City) unit
@@ -253,7 +253,7 @@ object BattleDamage {
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if (combatant !is MapUnitCombatant // is city
-            || (combatant.getCivInfo().hasUnique("Units fight as though they were at full strength even when damaged")
+            || (combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
                 && !combatant.unit.baseUnit.movesLikeAirUnits()
             )
         ) {

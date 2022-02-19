@@ -429,6 +429,7 @@ class MapUnit {
     /** For display in Unit Overview */
     fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else action!!
 
+    fun isMilitary() = baseUnit.isMilitary()
     fun isCivilian() = baseUnit.isCivilian()
 
     fun getFortificationTurns(): Int {
@@ -561,7 +562,7 @@ class MapUnit {
     }
 
     // Only military land units can truly "garrison"
-    fun canGarrison() = baseUnit.isMilitary() && baseUnit.isLandUnit()
+    fun canGarrison() = isMilitary() && baseUnit.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
 
@@ -815,7 +816,7 @@ class MapUnit {
 
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
-        if (isSleeping() && (baseUnit.isMilitary() || currentTile.militaryUnit == null) &&
+        if (isSleeping() && (isMilitary() || currentTile.militaryUnit == null) &&
             this.viewableTiles.any {
                 it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
@@ -870,7 +871,7 @@ class MapUnit {
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
         // Capture Enemy Civilian Unit if you move on top of it
-        if (tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
+        if (isMilitary() && tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
             Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 
