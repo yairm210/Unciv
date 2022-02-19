@@ -1,3 +1,22 @@
+## 3.19.10
+
+Show json parsing errors for mods in the options menu
+
+AI only builds work boats for buildable improvements
+
+Trigger uniques by sacrificing units with conditional
+
+By xlenstra:
+- Damage in battle table is now the average damage done
+- Added conditional checking for tiles
+
+By itanasi:
+- Show Improvements that are buildable after Removing TerrainFeature
+- Embarking penalty logic fix
+- Prevent Civilians from capturing Civilians
+
+Fix for music resumes after minimizing on android - By SomeTroglodyte
+
 ## 3.19.9
 
 Transported units reveal tiles as if they passed through the path of the transporting unit
