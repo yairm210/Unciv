@@ -55,8 +55,8 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
         // clone tileInfo without "top" feature if it could be removed
         // Keep this copy around for speed
         val tileInfoNoLast:TileInfo = tileInfo.clone()
-        if (ruleSet.tileImprovements.any{it.key == Constants.remove + tileInfoNoLast.getLastTerrain().name}) {
-            tileInfoNoLast.terrainFeatures.remove(tileInfoNoLast.getLastTerrain().name)
+        if (ruleSet.tileImprovements.any { it.key == Constants.remove + tileInfoNoLast.getLastTerrain().name }) {
+            tileInfoNoLast.removeTerrainFeature(tileInfoNoLast.getLastTerrain().name)
         }
 
         for (improvement in ruleSet.tileImprovements.values) {
@@ -64,9 +64,9 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
             // canBuildImprovement() would allow e.g. great improvements thus we need to exclude them - except cancel
             if (improvement.turnsToBuild == 0 && improvement.name != Constants.cancelImprovementOrder) continue
             if (improvement.name == tileInfo.improvement) continue // also checked by canImprovementBeBuiltHere, but after more expensive tests
-            if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)){
+            if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) {
                 // if there is an improvement that could remove that terrain
-                if(tileInfoNoLast.canBuildImprovement(improvement, currentPlayerCiv)) {
+                if (tileInfoNoLast.canBuildImprovement(improvement, currentPlayerCiv)) {
                     suggestRemoval = true
                 } else {
                     continue
