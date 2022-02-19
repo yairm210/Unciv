@@ -124,7 +124,7 @@ class CityInfo {
                 "Remove $it"
             )
         })
-            tile.terrainFeatures.remove(terrainFeature)
+            tile.removeTerrainFeature(terrainFeature)
 
         tile.improvement = null
         tile.improvementInProgress = null

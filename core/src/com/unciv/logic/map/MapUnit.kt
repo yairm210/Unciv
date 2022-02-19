@@ -651,7 +651,7 @@ class MapUnit {
                     if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
                         tryProvideProductionToClosestCity(removedFeatureName)
                     }
-                    tile.terrainFeatures.remove(removedFeatureName)
+                    tile.removeTerrainFeature(removedFeatureName)
                 }
             }
             tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
