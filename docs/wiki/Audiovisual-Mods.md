@@ -41,4 +41,43 @@ This works like graphics, except no atlas is involved. E.g. you include a sounds
 
 
 ## Supply additional music
-Sound files (mp3 or ogg) in a mod /music folder will be recognized and used when the mod is active. Tracks will play randomly from all available tracks (with a little bias to avoid close repetition of tracks). There is no overriding - a "thatched-villagers.mp3" in a mod will play in addition to and with the same likelihood as the file that the base game offers to download for you. There is no hard technical limit on bitrate or length, but large bandwidth requirements may lead to stuttering (The end of a "next turn", right before the world map is updated, and with very large maps, is the most likely to cause this).
+Sound files (mp3 or ogg) in a mod /music folder will be recognized and used when the mod is active. Except for context-specific music as described in the following paragraphs, tracks will play randomly from all available tracks (with a little bias to avoid close repetition of tracks). There is no overriding - a "thatched-villagers.mp3" in a mod will play in addition to and with the same likelihood as the file that the base game offers to download for you. There is no hard technical limit on bitrate or length, but large bandwidth requirements may lead to stuttering (The end of a "next turn", right before the world map is updated, and with very large maps, is the most likely to cause this).
+
+### Context-sensitive music: Overview
+The Music Controller will generally play one track after another, with a pause (can be changed in options) between. Leave-game confirmation dialog is opened playback will fade out and pause and can resume when it is closed.
+
+There are various 'triggers' in the game code initiating a choice for a new track. The new track will, if necessary, fade out the currently playing track quickly before it starts playing. Track choice involves context provided by the trigger and a random factor, and an attempt is made to not repeat any track until at least eight others have played.
+
+Mods can provide their own music folder, and if they are active its contents will be treated exactly the same as those in the main music folder. Mods should control usage of their tracks by careful choice of file name. Mod developers can watch console output for messages logging track choice with trigger parameters or loading errors.
+
+One track is special: The Thatched Villagers (see also credits.md). The game is able to download it if the music folder is empty, and it is played when the music volume slider is used. It is also a fallback track should certain problems occur (a broken file, however, will shut down the player until another trigger happens).
+
+### Context-sensitive music: List of Triggers
+Triggers indicate context (call it intent, mood, whatever, it doesn't matter) by optionally providing a prefix and/or suffix to match against the file name. There are a few flags as well influencing choice or behaviour - one flag function is to make prefix or suffix mandatory, meaning if no available file matches the track chooser will do nothing. Otherwise, a next track will always be chosen from the available list by sorting and then picking the first entry. Sorting is done by in order of precedence: Prefix match, Suffix match, Recently played, and a random number. Therefore, as currently no triggers have an empty prefix, files matching none of the prefixes will never play unless there are less than eight files matching the requested prefix.
+
+The current list of triggers is as follows:
+
+| Description | Prefix | [M] | Suffix | [M] | Flags |
+| ----------- |:------ |:---:| ----:|:---:|:---:|
+| Automatic next-track, game launch | Ambient | | | | |
+| Every 5th turn | (civ name) | M | Peace or War[1] | | [F] |
+| New game: Select a mod | (mod name) | M | Theme | | [S] |
+| New game: Pick a nation for a player | (nation name) | M | Theme | | [S] |
+| Diplomacy: Select player | (nation name) | M | Peace or War[2] | | [S] |
+| First contact[3] | (civ name) | M | Peace | M | |
+| War declaration | (civ name) | M | War | M | |
+| Civ defeated | (civ name) | M | Defeat | M | |
+| Golden Age | (civ name) | M | Golden | M | |
+| Wonder built | (wonder name) | M | Built | M | |
+| Tech researched | (tech name) | M | Researched | M | |
+| Map editor: Select nation start location | (nation name) | M | Theme | | [S] |
+| Options: Volume slider | | | | | [D] |
+
+Legend:
+[M]: Must Match. If no matching file is found, the trigger will do nothing.
+[S]: Stop after playback. No automatic next choice.
+[F]: Slow fadeout of replaced track.
+[D]: Always plays the default file.
+[1]: Whether the active player is at war with anybody
+[2]: According to your relation to the picked player
+[3]: Including Citystates
