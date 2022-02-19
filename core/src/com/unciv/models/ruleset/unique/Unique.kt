@@ -76,6 +76,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleSet
         val relevantTile by lazy { state.attackedTile
+            ?: state.tile
             ?: state.unit?.getTile()
             ?: state.cityInfo?.getCenterTile()
         }
