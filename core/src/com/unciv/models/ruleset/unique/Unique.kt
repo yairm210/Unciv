@@ -24,6 +24,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         else Stats.parse(firstStatParam)
     }
     val conditionals: List<Unique> = text.getConditionals()
+    val isTriggerable = type != null && type.targetTypes.contains(UniqueTarget.Triggerable)
+            // <for [amount] turns]> in effect makes any unique become a triggerable unique
+            || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
 
     val allParams = params + conditionals.flatMap { it.params }
 
@@ -86,7 +89,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         }
 
         return when (condition.type) {
+            // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
+            UniqueType.ConditionalConsumeUnit -> true
+            
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true

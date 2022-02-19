@@ -124,6 +124,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitIcon("Great Merchant") }, 'g', UncivSound.Chimes),
     FoundReligion("Found a Religion",
         { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
+    TriggerUnique("Trigger unique",
+        { ImageGetter.getImage("OtherIcons/Star") }, 'g', UncivSound.Chimes),
     SpreadReligion("Spread Religion",
         null, 'g', UncivSound.Choir),
     RemoveHeresy("Remove Heresy",

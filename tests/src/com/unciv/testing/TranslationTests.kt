@@ -65,7 +65,7 @@ class TranslationTests {
             val key = if (entry.contains('[')) entry.replace(squareBraceRegex, "[]") else entry
             if (!translations.containsKey(key)) {
                 allStringsHaveTranslation = false
-                println(entry)
+                println("$entry not translated!")
             }
         }
         return allStringsHaveTranslation
