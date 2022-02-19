@@ -594,7 +594,8 @@ open class TileInfo {
             tileMap.getTilesAtDistance(position, distance)
 
     fun getDefensiveBonus(): Float {
-        var bonus = getLastTerrain().defenceBonus
+        var bonus = 0F
+        for (terrain in terrainFeatures){ bonus += ruleset.terrains[terrain]!!.defenceBonus }
         val tileImprovement = getTileImprovement()
         if (tileImprovement != null) {
             for (unique in tileImprovement.getMatchingUniques(UniqueType.DefensiveBonus))
