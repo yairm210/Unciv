@@ -133,7 +133,7 @@ class MapGenerator(val ruleset: Ruleset) {
             if (!terrain.occursOn.contains(tile.getLastTerrain().name)) continue
 
             if (terrain.type == TerrainType.TerrainFeature)
-                tile.terrainFeatures.add(terrain.name)
+                tile.addTerrainFeature(terrain.name)
             else tile.baseTerrain = terrain.name
             tile.setTerrainTransients()
         }
@@ -286,7 +286,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
             when {
                 elevation <= 0.5 -> tile.baseTerrain = flat
-                elevation <= 0.7 && hill != null -> tile.terrainFeatures.add(hill)
+                elevation <= 0.7 && hill != null -> tile.addTerrainFeature(hill)
                 elevation <= 0.7 && hill == null -> tile.baseTerrain = flat // otherwise would be hills become mountains
                 elevation <= 1.0 && mountain != null -> tile.baseTerrain = mountain
             }
@@ -313,29 +313,33 @@ class MapGenerator(val ruleset: Ruleset) {
 
                 if (adjacentMountains == 0 && tile.baseTerrain == mountain) {
                     if (randomness.RNG.nextInt(until = 4) == 0)
-                        tile.terrainFeatures.add(Constants.lowering)
+                        tile.addTerrainFeature(Constants.lowering)
                 } else if (adjacentMountains == 1) {
                     if (randomness.RNG.nextInt(until = 10) == 0)
-                        tile.terrainFeatures.add(Constants.rising)
+                        tile.addTerrainFeature(Constants.rising)
                 } else if (adjacentImpassible == 3) {
                     if (randomness.RNG.nextInt(until = 2) == 0)
-                        tile.terrainFeatures.add(Constants.lowering)
+                        tile.addTerrainFeature(Constants.lowering)
                 } else if (adjacentImpassible > 3) {
-                    tile.terrainFeatures.add(Constants.lowering)
+                    tile.addTerrainFeature(Constants.lowering)
                 }
             }
 
             for (tile in tileMap.values.filter { !it.isWater }) {
-                if (tile.terrainFeatures.remove(Constants.rising) && totalMountains < targetMountains) {
+                if (tile.terrainFeatures.contains(Constants.rising)) {
+                    tile.removeTerrainFeature(Constants.rising)
+                    if (totalMountains >= targetMountains) continue
                     if (hill != null)
-                        tile.terrainFeatures.remove(hill)
+                        tile.removeTerrainFeature(hill)
                     tile.baseTerrain = mountain
                     totalMountains++
                 }
-                if (tile.terrainFeatures.remove(Constants.lowering) && totalMountains > targetMountains * 0.5f) {
+                if (tile.terrainFeatures.contains(Constants.lowering)) {
+                    tile.removeTerrainFeature(Constants.lowering)
+                    if (totalMountains <= targetMountains * 0.5f) continue
                     if (tile.baseTerrain == mountain) {
                         if (hill != null && !tile.terrainFeatures.contains(hill))
-                            tile.terrainFeatures.add(hill)
+                            tile.addTerrainFeature(hill)
                         totalMountains--
                     }
                     tile.baseTerrain = flat
@@ -357,25 +361,31 @@ class MapGenerator(val ruleset: Ruleset) {
                     tile.neighbors.count { it.terrainFeatures.contains(hill) }
 
                 if (adjacentHills <= 1 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
-                    tile.terrainFeatures.add(Constants.lowering)
+                    tile.addTerrainFeature(Constants.lowering)
                 } else if (adjacentHills > 3 && adjacentMountains == 0 && randomness.RNG.nextInt(until = 2) == 0) {
-                    tile.terrainFeatures.add(Constants.lowering)
+                    tile.addTerrainFeature(Constants.lowering)
                 } else if (adjacentHills + adjacentMountains in 2..3 && randomness.RNG.nextInt(until = 2) == 0) {
-                    tile.terrainFeatures.add(Constants.rising)
+                    tile.addTerrainFeature(Constants.rising)
                 }
 
             }
 
             for (tile in tileMap.values.asSequence().filter { !it.isWater && (mountain == null || it.baseTerrain != mountain) }) {
-                if (tile.terrainFeatures.remove(Constants.rising) && (totalHills <= targetHills || i == 1) ) {
+                if (tile.terrainFeatures.contains(Constants.rising)) {
+                    tile.removeTerrainFeature(Constants.rising)
+                    if (totalHills > targetHills && i != 1) continue
                     if (!tile.terrainFeatures.contains(hill)) {
-                        tile.terrainFeatures.add(hill)
+                        tile.addTerrainFeature(hill)
                         totalHills++
                     }
                 }
-                if (tile.terrainFeatures.remove(Constants.lowering) && (totalHills >= targetHills * 0.9f || i == 1)) {
-                    if (tile.terrainFeatures.remove(hill))
+                if (tile.terrainFeatures.contains(Constants.lowering)) {
+                    tile.removeTerrainFeature(Constants.lowering)
+                    if (totalHills >= targetHills * 0.9f || i == 1) {
+                        if (tile.terrainFeatures.contains(hill))
+                            tile.removeTerrainFeature(hill)
                         totalHills--
+                    }
                 }
             }
         }
@@ -464,8 +474,10 @@ class MapGenerator(val ruleset: Ruleset) {
                 && it.getLastTerrain().name in candidateTerrains }) {
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
-            if (vegetation <= tileMap.mapParameters.vegetationRichness)
-                tile.terrainFeatures.add(Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn.contains(tile.getLastTerrain().name) }.random(randomness.RNG))
+            if (vegetation <= tileMap.mapParameters.vegetationRichness) {
+                val randomVegetation = Constants.vegetation.filter { ruleset.terrains[it]!!.occursOn.contains(tile.getLastTerrain().name) }.random(randomness.RNG)
+                tile.addTerrainFeature(randomVegetation)
+            }
         }
     }
     /**
@@ -480,7 +492,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 val possibleFeatures = rareFeatures.filter { it.occursOn.contains(tile.baseTerrain)
                         && (!tile.isHill() || it.occursOn.contains(Constants.hill)) }
                 if (possibleFeatures.any())
-                    tile.terrainFeatures.add(possibleFeatures.random(randomness.RNG).name)
+                    tile.addTerrainFeature(possibleFeatures.random(randomness.RNG).name)
             }
         }
     }
@@ -501,7 +513,7 @@ class MapGenerator(val ruleset: Ruleset) {
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
             if (temperature < -0.8)
-                tile.terrainFeatures.add(Constants.ice)
+                tile.addTerrainFeature(Constants.ice)
         }
     }
 }

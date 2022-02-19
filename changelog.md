@@ -1,3 +1,17 @@
+## 3.19.9
+
+Transported units reveal tiles as if they passed through the path of the transporting unit
+
+Captured unit notifications now sent to the correct civ :)
+
+Modding: Better unique typechecking and autoreplace, added new conditionals
+
+Can see improvement removal icons in Civilopedia
+
+Fixed untranslated texts, mainly in Civilopedia
+
+Add Amphibious penalty to Land attacking into Water and vice versa - By itanasi
+
 ## 3.19.8
 
 Framerate improvements

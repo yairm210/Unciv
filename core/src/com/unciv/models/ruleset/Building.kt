@@ -596,7 +596,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         if (hasUnique(UniqueType.SpaceshipPart)) {
-            if (!civInfo.hasUnique("Enables construction of Spaceship parts"))
+            if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                 rejectionReasons.add(
                     RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" }
                 )
@@ -735,7 +735,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             civInfo.updateHasActiveGreatWall()
 
         // Korean unique - apparently gives the same as the research agreement
-        if (science > 0 && civInfo.hasUnique("Receive a tech boost when scientific buildings/wonders are built in capital"))
+        if (science > 0 && civInfo.hasUnique(UniqueType.TechBoostWhenScientificBuildingsBuiltInCapital))
             civInfo.tech.addScience(civInfo.tech.scienceOfLast8Turns.sum() / 8)
 
         cityConstructions.cityInfo.cityStats.update() // new building, new stats

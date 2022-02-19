@@ -733,7 +733,8 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache : HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) {
+    /** Returns error lines from loading the rulesets, so we can display the errors to users */
+    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) :List<String> {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
@@ -746,11 +747,12 @@ object RulesetCache : HashMap<String,Ruleset>() {
             }
         }
 
-        if (noMods) return
+        if (noMods) return listOf()
 
         val modsHandles = if (consoleMode) FileHandle("mods").list()
         else Gdx.files.local("mods").list()
 
+        val errorLines = ArrayList<String>()
         for (modFolder in modsHandles) {
             if (modFolder.name().startsWith('.')) continue
             if (!modFolder.isDirectory) continue
@@ -765,13 +767,13 @@ object RulesetCache : HashMap<String,Ruleset>() {
                     println(modRuleset.checkModLinks().getErrorText())
                 }
             } catch (ex: Exception) {
-                if (printOutput) {
-                    println("Exception loading mod '${modFolder.name()}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  ${ex.cause?.localizedMessage}")
-                }
+                errorLines += "Exception loading mod '${modFolder.name()}':"
+                errorLines += "  ${ex.localizedMessage}"
+                errorLines += "  ${ex.cause?.localizedMessage}"
             }
         }
+        if (printOutput) for (line in errorLines) println(line)
+        return errorLines
     }
 
 

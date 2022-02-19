@@ -27,7 +27,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         }
 
         var unitsToPayFor = civInfo.getCivUnits()
-        if (civInfo.hasUnique("Units in cities cost no Maintenance"))
+        if (civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance))
             unitsToPayFor = unitsToPayFor.filterNot {
                 it.getTile().isCityCenter() && it.canGarrison()
             }
@@ -312,7 +312,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         }
 
         var happinessPerNaturalWonder = 1f
-        if (civInfo.hasUnique("Double Happiness from Natural Wonders"))
+        if (civInfo.hasUnique(UniqueType.DoubleHappinessFromNaturalWonders))
             happinessPerNaturalWonder *= 2
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size

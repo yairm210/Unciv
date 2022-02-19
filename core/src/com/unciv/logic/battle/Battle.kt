@@ -98,7 +98,7 @@ object Battle {
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
-                && attacker.isMelee() && !attacker.unit.hasUnique("Unable to capture cities")) {
+                && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities)) {
             // Barbarians can't capture cities
             if (attacker.unit.civInfo.isBarbarian()) {
                 defender.takeDamage(-1) // Back to 2 HP
@@ -552,10 +552,10 @@ object Battle {
         }
 
         if (!wasDestroyedInstead)
-            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
+            defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has captured our [" + defender.getName() + "]",
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
         else
-            capturedUnit.civInfo.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
+            defenderCiv.addNotification("An enemy [" + attacker.getName() + "] has destroyed our [" + defender.getName() + "]",
                 defender.getTile().position, attacker.getName(), NotificationIcon.War, defender.getName())
 
         if (checkDefeat)
@@ -712,14 +712,14 @@ object Battle {
         }
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
-            if (tile.terrainFeatures.any { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.ResistsNukes) }) {
-                if (Random().nextFloat() < 0.25f) {
-                    tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
-                    tile.terrainFeatures.add("Fallout")
-                }
-            } else if (Random().nextFloat() < 0.5f) {
-                tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
-                tile.terrainFeatures.add("Fallout")
+            val ruleset = tile.ruleset
+            val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
+            else 0.5f
+            if (Random().nextFloat() < destructionChance) {
+                for (terrainFeature in tile.terrainFeatures)
+                    if (ruleset.terrains[terrainFeature]!!.hasUnique(UniqueType.DestroyableByNukes))
+                        tile.removeTerrainFeature(terrainFeature)
+                tile.addTerrainFeature("Fallout")
             }
         }
     }

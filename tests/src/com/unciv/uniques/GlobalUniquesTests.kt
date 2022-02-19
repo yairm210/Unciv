@@ -54,7 +54,7 @@ class GlobalUniquesTests {
         tile.ruleset = ruleSet
         tile.baseTerrain = terrain
         for (feature in features) {
-            tile.terrainFeatures.add(feature)
+            tile.addTerrainFeature(feature)
         }
         tile.tileMap = tileMap
         tile.position = position
