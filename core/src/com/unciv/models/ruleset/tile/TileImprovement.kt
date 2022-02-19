@@ -49,7 +49,7 @@ class TileImprovement : RulesetStatsObject() {
         for (resource: TileResource in ruleset.tileResources.values.filter { it.improvement == name }) {
             if (resource.improvementStats == null) continue
             val statsString = resource.improvementStats.toString()
-            lines += "[${statsString}] <in [${resource.name}] tiles>"
+            lines += "[${statsString}] <in [${resource.name}] tiles>".tr()
         }
         if (techRequired != null) lines += "Required tech: [$techRequired]".tr()
 
