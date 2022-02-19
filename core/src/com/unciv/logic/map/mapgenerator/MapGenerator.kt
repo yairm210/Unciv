@@ -127,7 +127,10 @@ class MapGenerator(val ruleset: Ruleset) {
             MapGeneratorSteps.Ice -> spawnIce(map)
             MapGeneratorSteps.Continents -> map.assignContinents(TileMap.AssignContinentsMode.Reassign)
             MapGeneratorSteps.NaturalWonders -> NaturalWonderGenerator(ruleset, randomness).spawnNaturalWonders(map)
-            MapGeneratorSteps.Rivers ->  RiverGenerator(map, randomness).spawnRivers()
+            MapGeneratorSteps.Rivers -> {
+                RiverGenerator(map, randomness, ruleset).spawnRivers()
+                convertTerrains(map, ruleset)
+            }
             MapGeneratorSteps.Resources -> spreadResources(map)
             MapGeneratorSteps.AncientRuins -> spreadAncientRuins(map)
         }

@@ -71,7 +71,7 @@ class MapEditorEditFeaturesTab(
         val eraser = FormattedLine("Remove features", icon = eraserIcon, size = 32, iconCrossed = true)
         add(eraser.render(0f).apply { onClick {
             editTab.setBrush("Remove feature", eraserIcon) { tile ->
-                tile.terrainFeatures.clear()
+                tile.removeTerrainFeatures()
             }
         } }).padBottom(0f).row()
         add(MarkupRenderer.render(
@@ -80,7 +80,7 @@ class MapEditorEditFeaturesTab(
         ) {
             editTab.setBrush(it, "Terrain/$it") { tile ->
                 if (it !in tile.terrainFeatures)
-                    tile.terrainFeatures.add(it)
+                    tile.addTerrainFeature(it)
             }
         }).padTop(0f).row()
     }
@@ -110,7 +110,7 @@ class MapEditorEditWondersTab(
             editTab.setBrush(it, "Terrain/$it") { tile ->
                 // Normally the caller would ensure compliance, but here we make an exception - place it no matter what
                 tile.baseTerrain = ruleset.terrains[it]!!.turnsInto!!
-                tile.terrainFeatures.clear()
+                tile.removeTerrainFeatures()
                 tile.naturalWonder = it
             }
         }).row()
@@ -257,7 +257,7 @@ class MapEditorEditStartsTab(
     private fun allowedNations() = ruleset.nations.values.asSequence()
         .filter { it.name !in disallowNations }
     private fun getNations() = allowedNations()
-        .sortedWith(compareBy<Nation>{ it.isCityState() }.thenBy(collator, { it.name.tr() }))
+        .sortedWith(compareBy<Nation>{ it.isCityState() }.thenBy(collator) { it.name.tr() })
         .map { FormattedLine("[${it.name}] starting location", it.name, "Nation/${it.name}", size = 24) }
         .toList()
 
@@ -406,6 +406,7 @@ class MapEditorEditRiversTab(
 
 
 /** Implements the Map editor Edit-Units UI Tab */
+@Suppress("unused")
 class MapEditorEditUnitsTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset

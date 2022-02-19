@@ -33,7 +33,7 @@ import com.unciv.ui.utils.*
 //todo left-align everything so a half-open drawer is more useful
 //todo combined brush
 //todo Load should check isDirty before discarding and replacing the current map
-
+//todo New function `convertTerrains` is auto-run after rivers the right decision for step-wise generation? Will paintRiverFromTo need the same? Will painting manually need the conversion?
 
 class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
     /** The map being edited, with mod list for that map */

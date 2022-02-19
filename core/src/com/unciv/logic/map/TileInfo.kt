@@ -871,12 +871,18 @@ open class TileInfo {
         }
     }
     
-    fun addTerrainFeature(terrainFeature:String) {
+    fun addTerrainFeature(terrainFeature: String) {
         terrainFeatures = ArrayList(terrainFeatures).apply { add(terrainFeature) }
     }
-    
+    fun addTerrainFeatures(addFeatures: List<String>) {
+        terrainFeatures = ArrayList(terrainFeatures).apply { addAll(addFeatures) }
+    }
+
     fun removeTerrainFeature(terrainFeature: String) {
         terrainFeatures = ArrayList(terrainFeatures).apply { remove(terrainFeature) }
+    }
+    fun removeTerrainFeatures() {
+        terrainFeatures = listOf()
     }
 
 

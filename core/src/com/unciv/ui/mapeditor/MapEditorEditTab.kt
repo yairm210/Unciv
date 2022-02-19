@@ -179,7 +179,7 @@ class MapEditorEditTab(
             // Land means river from. Start the river if we have a 'to', choose a 'to' if not.
             riverStartTile = tile
             if (riverEndTile != null) return paintRiverFromTo()
-            val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness)
+            val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness, ruleset)
             riverEndTile = riverGenerator.getClosestWaterTile(tile)
             if (riverEndTile != null) tilesToHighlight += riverEndTile!!
         } else {
@@ -193,7 +193,7 @@ class MapEditorEditTab(
         val resultingTiles = mutableSetOf<TileInfo>()
         randomness.seedRNG(editorScreen.newMapParameters.seed)
         try {
-            val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness)
+            val riverGenerator = RiverGenerator(editorScreen.tileMap, randomness, ruleset)
             riverGenerator.spawnRiver(riverStartTile!!, riverEndTile!!, resultingTiles)
         } catch (ex: Exception) {
             println(ex.message)
@@ -290,8 +290,8 @@ class MapEditorEditTab(
     private fun TileInfo.applyFrom(other: TileInfo) {
         // 90% copy w/o position, improvement times or transients. Add units once Unit paint is in.
         baseTerrain = other.baseTerrain
-        terrainFeatures.clear()
-        terrainFeatures.addAll(other.terrainFeatures)
+        removeTerrainFeatures()
+        addTerrainFeatures(other.terrainFeatures)
         resource = other.resource
         improvement = other.improvement
         naturalWonder = other.naturalWonder
