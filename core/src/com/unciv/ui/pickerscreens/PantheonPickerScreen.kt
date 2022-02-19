@@ -33,7 +33,7 @@ class PantheonPickerScreen(choosingCiv: CivilizationInfo, gameInfo: GameInfo) : 
             }
             beliefTable.pad(10f)
             beliefTable.add(belief.name.toLabel(fontSize = Constants.headingFontSize)).row()
-            beliefTable.add(belief.uniques.joinToString().toLabel())
+            beliefTable.add(belief.uniques.joinToString { it.tr() }.toLabel())
             beliefTable.onClick { 
                 chosenPantheon = belief
                 pick("Follow [${chosenPantheon!!.name}]".tr())

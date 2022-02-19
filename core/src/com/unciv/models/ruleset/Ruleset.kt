@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.Counter
@@ -10,6 +11,7 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.Unique
@@ -20,7 +22,6 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.INamed
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -65,6 +66,7 @@ class ModOptions : IHasUniques {
 class Ruleset {
 
     private val jsonParser = JsonParser()
+    var folderLocation:FileHandle?=null
 
     var name = ""
     val beliefs = LinkedHashMap<String, Belief>()
@@ -307,89 +309,124 @@ class Ruleset {
      * Roughly corresponds to the fraction of the Unique placeholder text that can be different/misspelled, but with some extra room for [getRelativeTextDistance] idiosyncrasies. */
     private val uniqueMisspellingThreshold = 0.15 // Tweak as needed. Simple misspellings seem to be around 0.025, so would mostly be caught by 0.05. IMO 0.1 would be good, but raising to 0.15 also seemed to catch what may be an outdated Unique.
 
-    fun checkUniques(uniqueContainer:IHasUniques, lines:RulesetErrorList,
-                     severityToReport: UniqueType.UniqueComplianceErrorSeverity) {
+    fun checkUniques(
+        uniqueContainer: IHasUniques, lines: RulesetErrorList,
+        severityToReport: UniqueType.UniqueComplianceErrorSeverity,
+        forOptionsPopup: Boolean
+    ) {
         val name = if (uniqueContainer is INamed) uniqueContainer.name else ""
 
         for (unique in uniqueContainer.uniqueObjects) {
-            if (unique.type == null) {
-                val similarUniques = UniqueType.values().filter { getRelativeTextDistance(it.placeholderText, unique.placeholderText) <= uniqueMisspellingThreshold }
-                val equalUniques = similarUniques.filter { it.placeholderText == unique.placeholderText }
-                if (equalUniques.isNotEmpty()) {
-                    lines.add( // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.
-                        "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
-                        RulesetErrorSeverity.OK
-                    )
-                } else if (similarUniques.isNotEmpty()) {
-                    lines.add("$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
-                        similarUniques.joinToString("\n") { uniqueType ->
-                            val deprecationAnnotation = UniqueType::class.java.getField(uniqueType.name)
-                                    .getAnnotation(Deprecated::class.java)
-                            if (deprecationAnnotation == null)
-                                "\"${uniqueType.text}\""
-                            else
-                                "\"${uniqueType.text}\" (Deprecated)"
-                        }.prependIndent("\t"),
-                        RulesetErrorSeverity.OK
-                    )
+            val errors = checkUnique(
+                unique,
+                forOptionsPopup,
+                name,
+                severityToReport,
+                uniqueContainer.getUniqueTarget()
+            )
+            lines.addAll(errors)
+        }
+    }
 
-                }
-                continue
+    fun checkUnique(
+        unique: Unique,
+        forOptionsPopup: Boolean,
+        name: String,
+        severityToReport: UniqueType.UniqueComplianceErrorSeverity,
+        uniqueTarget: UniqueTarget
+    ): List<RulesetError> {
+        if (unique.type == null) {
+            if (!forOptionsPopup) return emptyList()
+            val similarUniques = UniqueType.values().filter {
+                getRelativeTextDistance(
+                    it.placeholderText,
+                    unique.placeholderText
+                ) <= uniqueMisspellingThreshold
             }
-            val complianceErrors = unique.type.getComplianceErrors(unique, this)
-            for (complianceError in complianceErrors) {
-                if (complianceError.errorSeverity == severityToReport)
-                    lines += "$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
-                            " which does not fit parameter type" +
-                            " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
-            }
+            val equalUniques =
+                similarUniques.filter { it.placeholderText == unique.placeholderText }
+            if (equalUniques.isNotEmpty()) {
+                // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
+                    return listOf(
+                        RulesetError(
+                            "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
+                            RulesetErrorSeverity.OK
+                    ))
+            } else if (similarUniques.isNotEmpty()) {
+                val text =
+                    "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
+                            similarUniques.joinToString("\n") { uniqueType ->
+                                val deprecationAnnotation =
+                                    UniqueType::class.java.getField(uniqueType.name)
+                                        .getAnnotation(Deprecated::class.java)
+                                if (deprecationAnnotation == null)
+                                    "\"${uniqueType.text}\""
+                                else
+                                    "\"${uniqueType.text}\" (Deprecated)"
+                            }.prependIndent("\t")
+                return listOf(RulesetError(text, RulesetErrorSeverity.OK))
+            } else return emptyList()
+        }
 
-            for (conditional in unique.conditionals) {
-                if (conditional.type == null) {
-                    lines.add(
-                        "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
-                                " which is of an unknown type!",
-                        RulesetErrorSeverity.Warning
-                    )
-                } else {
-                    val conditionalComplianceErrors =
-                        conditional.type.getComplianceErrors(conditional, this)
-                    for (complianceError in conditionalComplianceErrors) {
-                        if (complianceError.errorSeverity == severityToReport)
-                            lines += "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
-                                    " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
-                                    " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
-                    }
-                }
-            }
+        val rulesetErrors = RulesetErrorList()
 
+        val typeComplianceErrors = unique.type.getComplianceErrors(unique, this)
+        for (complianceError in typeComplianceErrors) {
+            if (complianceError.errorSeverity == severityToReport)
+                 rulesetErrors += "$name's unique \"${unique.text}\" contains parameter ${complianceError.parameterName}," +
+                        " which does not fit parameter type" +
+                        " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+        }
 
-            if (severityToReport != UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
-                // If we don't filter these messages will be listed twice as this function is called twice on most objects
-                // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
-                continue
-
-            val deprecationAnnotation = unique.type.declaringClass.getField(unique.type.name)
-                .getAnnotation(Deprecated::class.java)
-            if (deprecationAnnotation != null) {
-                val deprecationText =
-                    "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
-                            if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${deprecationAnnotation.replaceWith.expression}\"" else ""
-                val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
-                    RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
-                else RulesetErrorSeverity.Warning // User visible
-
-                lines.add(deprecationText, severity)
-            }
-
-            val acceptableUniqueType = uniqueContainer.getUniqueTarget()
-            if (unique.type.targetTypes.none { acceptableUniqueType.canAcceptUniqueTarget(it) })
-                lines.add(
-                    "$name's unique \"${unique.text}\" cannot be put on this type of object!",
+        for (conditional in unique.conditionals) {
+            if (conditional.type == null) {
+                rulesetErrors.add(
+                    "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"," +
+                            " which is of an unknown type!",
                     RulesetErrorSeverity.Warning
                 )
-
+            } else {
+                val conditionalComplianceErrors =
+                    conditional.type.getComplianceErrors(conditional, this)
+                for (complianceError in conditionalComplianceErrors) {
+                    if (complianceError.errorSeverity == severityToReport)
+                        rulesetErrors += "$name's unique \"${unique.text}\" contains the conditional \"${conditional.text}\"." +
+                                " This contains the parameter ${complianceError.parameterName} which does not fit parameter type" +
+                                " ${complianceError.acceptableParameterTypes.joinToString(" or ") { it.parameterName }} !"
+                }
+            }
         }
+
+
+        if (severityToReport != UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+        // If we don't filter these messages will be listed twice as this function is called twice on most objects
+        // The tests are RulesetInvariant in nature, but RulesetSpecific is called for _all_ objects, invariant is not.
+            return rulesetErrors
+
+
+        val deprecationAnnotation = unique.getDeprecationAnnotation()
+        if (deprecationAnnotation != null) {
+            val replacementUniqueText = unique.getReplacementText()
+            val deprecationText =
+                "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
+                        if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
+            val severity = if (deprecationAnnotation.level == DeprecationLevel.WARNING)
+                RulesetErrorSeverity.WarningOptionsOnly // Not user-visible
+            else RulesetErrorSeverity.Warning // User visible
+
+            rulesetErrors.add(deprecationText, severity)
+        }
+
+        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) }
+            // the 'consume unit' conditional causes a triggerable unique to become a unit action
+            && !(uniqueTarget==UniqueTarget.Unit
+                    && unique.isTriggerable 
+                    && unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }))
+            rulesetErrors.add(
+                "$name's unique \"${unique.text}\" cannot be put on this type of object!",
+                RulesetErrorSeverity.Warning
+            )
+        return rulesetErrors
     }
 
 
@@ -428,11 +465,14 @@ class Ruleset {
                 .joinToString("\n") { it.errorSeverityToReport.name + ": " + it.text }
     }
 
-    fun checkModLinks(): RulesetErrorList {
+    fun checkModLinks(forOptionsPopup:Boolean = false): RulesetErrorList {
         val lines = RulesetErrorList()
 
         // Checks for all mods - only those that can succeed without loading a base ruleset
         // When not checking the entire ruleset, we can only really detect ruleset-invariant errors in uniques
+
+        val rulesetInvariant = UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        val rulesetSpecific = UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
 
         for (unit in units.values) {
             if (unit.upgradesTo == unit.name || (unit.upgradesTo != null && unit.upgradesTo == unit.replaces))
@@ -442,7 +482,7 @@ class Ruleset {
             if (unit.isRanged() && unit.rangedStrength == 0 && !unit.hasUnique(UniqueType.CannotAttack))
                 lines += "${unit.name} is a ranged unit but has no assigned rangedStrength!"
 
-            checkUniques(unit, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
+            checkUniques(unit, lines, rulesetInvariant, forOptionsPopup)
         }
 
         for (tech in technologies.values) {
@@ -451,14 +491,14 @@ class Ruleset {
                     lines += "${tech.name} is in the same row as ${otherTech.name}!"
             }
 
-            checkUniques(tech, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
+            checkUniques(tech, lines, rulesetInvariant, forOptionsPopup)
         }
 
         for (building in buildings.values) {
             if (building.requiredTech == null && building.cost == 0 && !building.hasUnique(UniqueType.Unbuildable))
                 lines += "${building.name} is buildable and therefore must either have an explicit cost or reference an existing tech!"
 
-            checkUniques(building, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
+            checkUniques(building, lines, rulesetInvariant, forOptionsPopup)
 
         }
 
@@ -467,21 +507,25 @@ class Ruleset {
                 lines += "${nation.name} can settle cities, but has no city names!"
             }
 
-            checkUniques(nation, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
+            checkUniques(nation, lines, rulesetInvariant, forOptionsPopup)
         }
 
         for (promotion in unitPromotions.values) {
-            checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
+            checkUniques(promotion, lines, rulesetInvariant, forOptionsPopup)
         }
 
         for (resource in tileResources.values) {
-            checkUniques(resource, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant)
+            checkUniques(resource, lines, rulesetInvariant, forOptionsPopup)
         }
 
         // Quit here when no base ruleset is loaded - references cannot be checked
         if (!modOptions.isBaseRuleset) return lines
 
-        val baseRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
+        val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
+
+
+        if (units.values.none { it.uniques.contains(UniqueType.FoundCity.text) })
+           lines += "No city-founding units in ruleset!"
 
         for (unit in units.values) {
             if (unit.requiredTech != null && !technologies.containsKey(unit.requiredTech!!))
@@ -498,7 +542,7 @@ class Ruleset {
             for (promotion in unit.promotions)
                 if (!unitPromotions.containsKey(promotion))
                     lines += "${unit.name} contains promotion $promotion which does not exist!"
-            if (!unitTypes.containsKey(unit.unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unit.unitType)))
+            if (!unitTypes.containsKey(unit.unitType) && (unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unit.unitType)))
                 lines += "${unit.name} is of type ${unit.unitType}, which does not exist!"
             for (unique in unit.getMatchingUniques(UniqueType.ConstructImprovementConsumingUnit)) {
                 val improvementName = unique.params[0]
@@ -511,7 +555,7 @@ class Ruleset {
                 }
             }
 
-            checkUniques(unit, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(unit, lines, rulesetSpecific, forOptionsPopup)
         }
 
         for (building in buildings.values) {
@@ -534,7 +578,7 @@ class Ruleset {
             for (unique in building.uniqueObjects)
                 if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
-            checkUniques(building, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(building, lines, rulesetSpecific, forOptionsPopup)
         }
 
         for (resource in tileResources.values) {
@@ -545,7 +589,7 @@ class Ruleset {
             for (terrain in resource.terrainsCanBeFoundOn)
                 if (!terrains.containsKey(terrain))
                     lines += "${resource.name} can be found on terrain $terrain which does not exist!"
-            checkUniques(resource, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(resource, lines, rulesetSpecific, forOptionsPopup)
         }
 
         for (improvement in tileImprovements.values) {
@@ -554,14 +598,16 @@ class Ruleset {
             for (terrain in improvement.terrainsCanBeBuiltOn)
                 if (!terrains.containsKey(terrain))
                     lines += "${improvement.name} can be built on terrain $terrain which does not exist!"
-            checkUniques(improvement, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(improvement, lines, rulesetSpecific, forOptionsPopup)
         }
 
+        if (terrains.values.none { it.type==TerrainType.Land && !it.impassable })
+            lines += "No passable land terrains exist!"
         for (terrain in terrains.values) {
             for (baseTerrain in terrain.occursOn)
                 if (!terrains.containsKey(baseTerrain))
                     lines += "${terrain.name} occurs on terrain $baseTerrain which does not exist!"
-            checkUniques(terrain, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(terrain, lines, rulesetSpecific, forOptionsPopup)
         }
 
         val prereqsHashMap = HashMap<String,HashSet<String>>()
@@ -590,13 +636,21 @@ class Ruleset {
             }
             if (tech.era() !in eras)
                 lines += "Unknown era ${tech.era()} referenced in column of tech ${tech.name}"
-            checkUniques(tech, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(tech, lines, rulesetSpecific, forOptionsPopup)
         }
 
         if (eras.isEmpty()) {
             lines += "Eras file is empty! This will likely lead to crashes. Ask the mod maker to update this mod!"
         }
 
+        val allDifficultiesStartingUnits = hashSetOf<String>()
+        for (difficulty in difficulties.values){
+            allDifficultiesStartingUnits.addAll(difficulty.aiCityStateBonusStartingUnits)
+            allDifficultiesStartingUnits.addAll(difficulty.aiMajorCivBonusStartingUnits)
+            allDifficultiesStartingUnits.addAll(difficulty.playerBonusStartingUnits)
+        }
+
+        val rulesetHasCityStates = nations.values.any { it.isCityState() }
         for (era in eras.values) {
             for (wonder in era.startingObsoleteWonders)
                 if (wonder !in buildings)
@@ -604,36 +658,49 @@ class Ruleset {
             for (building in era.settlerBuildings)
                 if (building !in buildings)
                     lines += "Nonexistent building $building built by settlers when starting in ${era.name}"
-            if (era.startingMilitaryUnit !in units)
+            // todo the whole 'starting unit' thing needs to be redone, there's no reason we can't have a single list containing all the starting units.
+            if (era.startingSettlerUnit !in units && (era.startingSettlerUnit!=Constants.settler || units.values.none { it.hasUnique(UniqueType.FoundCity) }))
+                lines += "Nonexistent unit ${era.startingSettlerUnit} marked as starting unit when starting in ${era.name}"
+            if (era.startingWorkerCount!=0 && era.startingWorkerUnit !in units)
+                lines += "Nonexistent unit ${era.startingWorkerUnit} marked as starting unit when starting in ${era.name}"
+
+            if ((era.startingMilitaryUnitCount !=0 || allDifficultiesStartingUnits.contains(Constants.eraSpecificUnit)) && era.startingMilitaryUnit !in units)
                 lines += "Nonexistent unit ${era.startingMilitaryUnit} marked as starting unit when starting in ${era.name}"
             if (era.researchAgreementCost < 0 || era.startingSettlerCount < 0 || era.startingWorkerCount < 0 || era.startingMilitaryUnitCount < 0 || era.startingGold < 0 || era.startingCulture < 0)
                 lines += "Unexpected negative number found while parsing era ${era.name}"
             if (era.settlerPopulation <= 0)
                 lines += "Population in cities from settlers must be strictly positive! Found value ${era.settlerPopulation} for era ${era.name}"
-            checkUniques(era, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+
+            if (era.allyBonus.isEmpty() && rulesetHasCityStates)
+                lines.add("No ally bonus defined for era ${era.name}", RulesetErrorSeverity.Warning)
+            if (era.friendBonus.isEmpty() && rulesetHasCityStates)
+                lines.add("No friend bonus defined for era ${era.name}", RulesetErrorSeverity.Warning)
+
+
+            checkUniques(era, lines, rulesetSpecific, forOptionsPopup)
         }
 
         for (belief in beliefs.values) {
-            checkUniques(belief, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(belief, lines, rulesetSpecific, forOptionsPopup)
         }
         for (nation in nations.values) {
-            checkUniques(nation, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(nation, lines, rulesetSpecific, forOptionsPopup)
             if (nation.favoredReligion != null && nation.favoredReligion !in religions)
                 lines += "${nation.name} has ${nation.favoredReligion} as their favored religion, which does not exist!"
         }
-        
+
         for (policy in policies.values) {
             if (policy.requires != null)
                 for (prereq in policy.requires!!)
                     if (!policies.containsKey(prereq))
                         lines += "${policy.name} requires policy $prereq which does not exist!"
-            checkUniques(policy, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(policy, lines, rulesetSpecific, forOptionsPopup)
         }
         for (reward in ruinRewards.values) {
             for (difficulty in reward.excludedDifficulties)
                 if (!difficulties.containsKey(difficulty))
                     lines += "${reward.name} references difficulty ${difficulty}, which does not exist!"
-            checkUniques(reward, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(reward, lines, rulesetSpecific, forOptionsPopup)
         }
         for (promotion in unitPromotions.values) {
             // These are warning as of 3.17.5 to not break existing mods and give them time to correct, should be upgraded to error in the future
@@ -641,14 +708,19 @@ class Ruleset {
                 if (!unitPromotions.containsKey(prereq))
                     lines.add("${promotion.name} requires promotion $prereq which does not exist!", RulesetErrorSeverity.Warning)
             for (unitType in promotion.unitTypes)
-                if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !baseRuleset.unitTypes.containsKey(unitType)))
+                if (!unitTypes.containsKey(unitType) && (unitTypes.isNotEmpty() || !vanillaRuleset.unitTypes.containsKey(unitType)))
                     lines.add("${promotion.name} references unit type $unitType, which does not exist!", RulesetErrorSeverity.Warning)
-            checkUniques(promotion, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(promotion, lines, rulesetSpecific, forOptionsPopup)
         }
         for (unitType in unitTypes.values) {
-            checkUniques(unitType, lines, UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific)
+            checkUniques(unitType, lines, rulesetSpecific, forOptionsPopup)
         }
-        
+
+        for (difficulty in difficulties.values)
+            for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
+                if (unitName!=Constants.eraSpecificUnit && !units.containsKey(unitName))
+                    lines += "Difficulty ${difficulty.name} contains starting unit $unitName which does not exist!"
+
         if (modOptions.maxXPfromBarbarians != 30) {
             lines.add("maxXPfromBarbarians is moved to the constants object, instead use: \nconstants: {\n    maxXPfromBarbarians: ${modOptions.maxXPfromBarbarians},\n}", RulesetErrorSeverity.Warning)
         }
@@ -661,7 +733,8 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache : HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) {
+    /** Returns error lines from loading the rulesets, so we can display the errors to users */
+    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) :List<String> {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
@@ -674,11 +747,12 @@ object RulesetCache : HashMap<String,Ruleset>() {
             }
         }
 
-        if (noMods) return
+        if (noMods) return listOf()
 
         val modsHandles = if (consoleMode) FileHandle("mods").list()
         else Gdx.files.local("mods").list()
 
+        val errorLines = ArrayList<String>()
         for (modFolder in modsHandles) {
             if (modFolder.name().startsWith('.')) continue
             if (!modFolder.isDirectory) continue
@@ -686,19 +760,20 @@ object RulesetCache : HashMap<String,Ruleset>() {
                 val modRuleset = Ruleset()
                 modRuleset.load(modFolder.child("jsons"), printOutput)
                 modRuleset.name = modFolder.name()
+                modRuleset.folderLocation = modFolder
                 this[modRuleset.name] = modRuleset
                 if (printOutput) {
                     println("Mod loaded successfully: " + modRuleset.name)
                     println(modRuleset.checkModLinks().getErrorText())
                 }
             } catch (ex: Exception) {
-                if (printOutput) {
-                    println("Exception loading mod '${modFolder.name()}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
-                }
+                errorLines += "Exception loading mod '${modFolder.name()}':"
+                errorLines += "  ${ex.localizedMessage}"
+                errorLines += "  ${ex.cause?.localizedMessage}"
             }
         }
+        if (printOutput) for (line in errorLines) println(line)
+        return errorLines
     }
 
 

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.utils.ImageGetter
 
 object TileSetCache : HashMap<String, TileSetConfig>() {
@@ -64,8 +65,8 @@ object TileSetCache : HashMap<String, TileSetConfig>() {
 
         //load mod TileSets
         val modsHandles = 
-            if (consoleMode) FileHandle("mods").list()
-            else Gdx.files.local("mods").list()
+            if (consoleMode) FileHandle("mods").list().toList()
+            else RulesetCache.values.mapNotNull { it.folderLocation }
 
         for (modFolder in modsHandles) {
             val modName = modFolder.name()

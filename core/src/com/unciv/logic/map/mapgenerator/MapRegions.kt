@@ -476,7 +476,7 @@ class MapRegions (val ruleset: Ruleset){
         val panicPosition = region.rect.getPosition(Vector2())
         val panicTerrain = ruleset.terrains.values.first { it.type == TerrainType.Land }.name
         region.tileMap[panicPosition].baseTerrain = panicTerrain
-        region.tileMap[panicPosition].terrainFeatures.clear()
+        region.tileMap[panicPosition].terrainFeatures = listOf()
         setRegionStart(region, panicPosition)
     }
 
@@ -487,9 +487,9 @@ class MapRegions (val ruleset: Ruleset){
     private fun normalizeStart(startTile: TileInfo, tileMap: TileMap, minorCiv: Boolean) {
         // Remove ice-like features adjacent to start
         for (tile in startTile.neighbors) {
-            val lastTerrain = tile.getTerrainFeatures().lastOrNull { it.impassable }
+            val lastTerrain = tile.getTerrainFeaturesObjects().lastOrNull { it.impassable }
             if (lastTerrain != null) {
-                tile.terrainFeatures.remove(lastTerrain.name)
+                tile.removeTerrainFeature(lastTerrain.name)
             }
         }
 
@@ -509,7 +509,7 @@ class MapRegions (val ruleset: Ruleset){
             val hillEquivalent = ruleset.terrains.values
                     .firstOrNull { it.type == TerrainType.TerrainFeature && it.production >= 2 && !it.hasUnique(UniqueType.RareFeature) }?.name
             if (hillSpot != null && hillEquivalent != null) {
-                hillSpot.terrainFeatures.add(hillEquivalent)
+                hillSpot.addTerrainFeature(hillEquivalent)
             }
         }
 
@@ -608,7 +608,7 @@ class MapRegions (val ruleset: Ruleset){
 
         // Start with list of candidate plots sorted in ring order 1,2,3
         val candidatePlots = startTile.getTilesInDistanceRange(1..rangeForBonuses)
-                .filter { it.resource == null && oasisEquivalent !in it.getTerrainFeatures() }
+                .filter { it.resource == null && oasisEquivalent !in it.getTerrainFeaturesObjects() }
                 .shuffled().sortedBy { it.aerialDistanceTo(startTile) }.toMutableList()
 
         // Place food bonuses (and oases) as able
@@ -627,7 +627,7 @@ class MapRegions (val ruleset: Ruleset){
 
             if (validBonuses.isNotEmpty() || goodPlotForOasis) {
                 if (goodPlotForOasis) {
-                    plot.terrainFeatures.add(oasisEquivalent!!.name)
+                    plot.addTerrainFeature(oasisEquivalent!!.name)
                     canPlaceOasis = false
                 } else {
                     plot.setTileResource(validBonuses.random())
@@ -1345,10 +1345,7 @@ class MapRegions (val ruleset: Ruleset){
         for (terrain in ruleset.terrains.values.filter { it.type != TerrainType.Water }) {
             // Figure out if we generated a list for this terrain
             val list = ruleLists.filterKeys { it.text == getTerrainRule(terrain).text }.values.firstOrNull()
-            if (list == null) {
-                // If not the terrain can be safely skipped
-                continue
-            }
+                ?: continue // If not the terrain can be safely skipped
             totalPlaced += placeMajorDeposits(list, terrain, fallbackStrategic, 2, 2)
         }
 
@@ -1367,7 +1364,7 @@ class MapRegions (val ruleset: Ruleset){
         // Third add some minor deposits to land tiles
         // Note: In G&K there is a bug where minor deposits are never placed on hills. We're not replicating that.
         val frequency = (baseMinorDepositFrequency * bonusMultiplier).toInt()
-        val minorDepositsToAdd = (landList.count() / frequency) + 1
+        val minorDepositsToAdd = (landList.count() / frequency) + 1 // I sometimes have division by zero errors on this line
         var minorDepositsAdded = 0
         for (tile in landList) {
             if (tile.resource != null || tileData[tile.position]!!.impacts.containsKey(ImpactType.Strategic))
@@ -1399,10 +1396,7 @@ class MapRegions (val ruleset: Ruleset){
         for (terrain in ruleset.terrains.values.filter { it.type == TerrainType.Water }) {
             // Figure out if we generated a list for this terrain
             val list = ruleLists.filterKeys { it.text == getTerrainRule(terrain).text }.values.firstOrNull()
-            if (list == null) {
-                // If not the terrain can be safely skipped
-                continue
-            }
+                ?: continue // If not the terrain can be safely skipped
             totalPlaced += placeMajorDeposits(list, terrain, fallbackStrategic, 4, 3)
         }
 
@@ -1449,7 +1443,12 @@ class MapRegions (val ruleset: Ruleset){
             val resourceUnique = ruleset.terrains[terrain]!!.getMatchingUniques(UniqueType.RegionExtraResource).firstOrNull()
             // If this region has an explicit "this is the bonus" unique go with that, else random appropriate
             val resource = if (resourceUnique != null) ruleset.tileResources[resourceUnique.params[0]]!!
-                else ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && terrain in it.terrainsCanBeFoundOn }.random()
+                else {
+                val possibleResources =
+                    ruleset.tileResources.values.filter { it.resourceType == ResourceType.Bonus && terrain in it.terrainsCanBeFoundOn }
+                if (possibleResources.isEmpty()) continue
+                possibleResources.random()
+            }
             val candidateTiles = tileMap[region.startPosition!!].getTilesAtDistance(3).shuffled()
             val amount = if (resourceUnique != null) 2 else 1 // Place an extra if the region type requests it
             if (tryAddingResourceToTiles(resource, amount, candidateTiles) == 0) {
@@ -1659,8 +1658,8 @@ class MapRegions (val ruleset: Ruleset){
 
             // Check first available out of unbuildable features, then other features, then base terrain
             val terrainToCheck = if (tile.terrainFeatures.isEmpty()) tile.getBaseTerrain()
-            else tile.getTerrainFeatures().firstOrNull { it.unbuildable }
-                    ?: tile.getTerrainFeatures().first()
+            else tile.getTerrainFeaturesObjects().firstOrNull { it.unbuildable }
+                    ?: tile.getTerrainFeaturesObjects().first()
 
             // Add all applicable qualities
             for (unique in terrainToCheck.getMatchingUniques(UniqueType.HasQuality, StateForConditionals(region = region))) {
@@ -1728,10 +1727,9 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
         for (tile in tileMap.getTilesInRectangle(rect, evenQ = true).filter {
             continentID == -1 || it.getContinent() == continentID } ) {
             val fertility = tile.getTileFertility(continentID != -1)
-            if (fertility != 0) { // If fertility is 0 this is candidate for trimming
-                tiles.add(tile)
-                totalFertility += fertility
-            }
+            tiles.add(tile)
+            totalFertility += fertility
+
 
             if (affectedByWorldWrap)
                 columnHasTile.add(HexMath.hex2EvenQCoords(tile.position).x.toInt())
@@ -1767,7 +1765,7 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
         terrainCounts.clear()
         for (tile in tiles) {
             val terrainsToCount = if (tile.getAllTerrains().any { it.hasUnique(UniqueType.IgnoreBaseTerrainForRegion) })
-                tile.getTerrainFeatures().map { it.name }.asSequence()
+                tile.getTerrainFeaturesObjects().map { it.name }.asSequence()
             else
                 tile.getAllTerrains().map { it.name }
             for (terrain in terrainsToCount) {

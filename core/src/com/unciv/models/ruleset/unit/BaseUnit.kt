@@ -65,8 +65,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (promotion in promotions)
             infoList += promotion.tr()
         if (replacementTextForUniques != "") infoList += replacementTextForUniques
-        else for (unique in uniques)
-            infoList += unique.tr()
+        else for (unique in uniqueObjects) if(!unique.hasFlag(UniqueFlag.HiddenToUsers))
+            infoList += unique.text.tr()
         return infoList.joinToString()
     }
 
@@ -324,7 +324,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount) + cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscountDeprecated)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
@@ -351,7 +351,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         val civInfo = cityConstructions.cityInfo.civInfo
-        for (unique in uniqueObjects.filter { it.type == UniqueType.NotDisplayedWithout }) {
+
+        for (unique in uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }){
+            if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
+                rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
+        }
+        
+        for (unique in getMatchingUniques(UniqueType.NotDisplayedWithout)) {
             val filter = unique.params[0]
             if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
                     || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
@@ -363,7 +369,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
-                rejectionReasons.add(RejectionReason.PopulationRequirement)
+                rejectionReasons.add(RejectionReason.PopulationRequirement.apply { errorMessage = unique.text })
         return rejectionReasons
     }
 
@@ -387,8 +393,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-        for (unique in uniqueObjects) {
-            if (unique.placeholderText != "Unlocked with []" && unique.placeholderText != "Requires []") continue
+        for (unique in getMatchingUniques("Unlocked with []") + getMatchingUniques("Requires []")) {
             val filter = unique.params[0]
             when {
                 ruleSet.technologies.contains(filter) -> 
@@ -415,8 +420,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 }
         }
 
-        if (hasUnique(UniqueType.FoundCity) &&
-            (civInfo.isCityState() || civInfo.isOneCityChallenger())
+        if ((civInfo.isCityState() || civInfo.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity)
         ) {
             rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
         }
@@ -579,7 +583,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isMilitary() = isRanged() || isMelee()
     fun isCivilian() = !isMilitary()
 
-    fun isLandUnit() = getType().isLandUnit()
+    val isLandUnitInternal by lazy { getType().isLandUnit() }
+    fun isLandUnit() = isLandUnitInternal
     fun isWaterUnit() = getType().isWaterUnit()
     fun isAirUnit() = getType().isAirUnit()
 

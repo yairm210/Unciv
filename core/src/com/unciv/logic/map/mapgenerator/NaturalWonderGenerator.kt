@@ -167,7 +167,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
     }
 
     private fun clearTile(tile: TileInfo){
-        tile.terrainFeatures.clear()
+        tile.terrainFeatures = listOf()
         tile.resource = null
         tile.improvement = null
         tile.setTerrainTransients()

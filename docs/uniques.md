@@ -1,5 +1,6 @@
 ## Table of Contents
 
+ - [Triggerable uniques](#triggerable-uniques)
  - [Global uniques](#global-uniques)
  - [Nation uniques](#nation-uniques)
  - [Tech uniques](#tech-uniques)
@@ -14,6 +15,73 @@
  - [CityState uniques](#citystate-uniques)
  - [Conditional uniques](#conditional-uniques)
  - [Deprecated uniques](#deprecated-uniques)
+
+## Triggerable uniques
+#### Free [baseUnitFilter] appears
+Example: "Free [Melee] appears"
+
+Applicable to: Triggerable
+
+#### [amount] free [baseUnitFilter] units appear
+Example: "[20] free [Melee] units appear"
+
+Applicable to: Triggerable
+
+#### Free Social Policy
+Applicable to: Triggerable
+
+#### [amount] Free Social Policies
+Example: "[20] Free Social Policies"
+
+Applicable to: Triggerable
+
+#### Empire enters golden age
+Applicable to: Triggerable
+
+#### Free Great Person
+Applicable to: Triggerable
+
+#### [amount] population [cityFilter]
+Example: "[20] population [in all cities]"
+
+Applicable to: Triggerable
+
+#### Free Technology
+Applicable to: Triggerable
+
+#### [amount] Free Technologies
+Example: "[20] Free Technologies"
+
+Applicable to: Triggerable
+
+#### Reveals the entire map
+Applicable to: Triggerable
+
+#### Triggers voting for the Diplomatic Victory
+Applicable to: Triggerable
+
+#### This Unit gains the [promotion] promotion
+Example: "This Unit gains the [Shock I] promotion"
+
+Applicable to: Triggerable
+
+#### [mapUnitFilter] units gain the [promotion] promotion
+Example: "[Wounded] units gain the [Shock I] promotion"
+
+Applicable to: Triggerable
+
+#### Provides the cheapest [stat] building in your first [amount] cities for free
+Example: "Provides the cheapest [Culture] building in your first [20] cities for free"
+
+Applicable to: Triggerable
+
+#### Provides a [buildingName] in your first [amount] cities for free
+Example: "Provides a [Library] in your first [20] cities for free"
+
+Applicable to: Triggerable
+
+#### Will not be displayed in Civilopedia
+Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
 
 ## Global uniques
 #### [stats]
@@ -131,6 +199,9 @@ Example: "[20]% Production towards any buildings that already exist in the Capit
 
 Applicable to: Global, FollowerBelief
 
+#### Tile yields from Natural Wonders doubled
+Applicable to: Global
+
 #### Military Units gifted from City-States start with [amount] XP
 Example: "Military Units gifted from City-States start with [20] XP"
 
@@ -180,6 +251,9 @@ Applicable to: Global
 #### [amount]% Happiness from luxury resources gifted by City-States
 Example: "[20]% Happiness from luxury resources gifted by City-States"
 
+Applicable to: Global
+
+#### City-State Influence recovers at twice the normal rate
 Applicable to: Global
 
 #### [amount] units cost no maintenance
@@ -313,8 +387,8 @@ Example: "[Culture] cost of purchasing [Culture] buildings [20]%"
 
 Applicable to: Global, FollowerBelief
 
-#### [stat] cost of purchasing [baseUnitFilter] units in cities [amount]%
-Example: "[Culture] cost of purchasing [Melee] units in cities [20]%"
+#### [stat] cost of purchasing [baseUnitFilter] units [amount]%
+Example: "[Culture] cost of purchasing [Melee] units [20]%"
 
 Applicable to: Global, FollowerBelief
 
@@ -360,6 +434,43 @@ Applicable to: Global
 #### [amount]% Culture cost of adopting new Policies
 Example: "[20]% Culture cost of adopting new Policies"
 
+Applicable to: Global
+
+#### Quantity of strategic resources produced by the empire +[amount]%
+Example: "Quantity of strategic resources produced by the empire +[20]%"
+
+Applicable to: Global
+
+#### Double quantity of [resource] produced
+Example: "Double quantity of [Iron] produced"
+
+Applicable to: Global
+
+#### Double Happiness from Natural Wonders
+Applicable to: Global
+
+#### Enables construction of Spaceship parts
+Applicable to: Global
+
+#### Notified of new Barbarian encampments
+Applicable to: Global
+
+#### "Borrows" city names from other civilizations in the game
+Applicable to: Global
+
+#### Units fight as though they were at full strength even when damaged
+Applicable to: Global
+
+#### 100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)
+Applicable to: Global
+
+#### Unhappiness from number of Cities doubled
+Applicable to: Global
+
+#### Great General provides double combat bonus
+Applicable to: Global
+
+#### Receive a tech boost when scientific buildings/wonders are built in capital
 Applicable to: Global
 
 #### Enables Open Borders agreements
@@ -448,6 +559,24 @@ Applicable to: Global, FollowerBelief
 #### Can be continually researched
 Applicable to: Global
 
+#### [amount] Unit Supply
+Example: "[20] Unit Supply"
+
+Applicable to: Global
+
+#### [amount] Unit Supply per [amount] population [cityFilter]
+Example: "[20] Unit Supply per [20] population [in all cities]"
+
+Applicable to: Global
+
+#### [amount] Unit Supply per city
+Example: "[20] Unit Supply per city"
+
+Applicable to: Global
+
+#### Units in cities cost no Maintenance
+Applicable to: Global
+
 #### Rebel units may spawn
 Applicable to: Global
 
@@ -466,6 +595,9 @@ Example: "[20]% to Flank Attack bonuses"
 
 Applicable to: Global, Unit
 
+#### +30% Strength when fighting City-State units and cities
+Applicable to: Global
+
 #### [amount] Movement
 Example: "[20] Movement"
 
@@ -478,6 +610,11 @@ Applicable to: Global, Unit, Terrain
 
 #### [amount] Range
 Example: "[20] Range"
+
+Applicable to: Global, Unit
+
+#### [amount] HP when healing
+Example: "[20] HP when healing"
 
 Applicable to: Global, Unit
 
@@ -504,6 +641,9 @@ Applicable to: Global, Unit
 #### Heals [amount] damage if it kills a unit
 Example: "Heals [20] damage if it kills a unit"
 
+Applicable to: Global, Unit
+
+#### Can only heal by pillaging
 Applicable to: Global, Unit
 
 #### Normal vision when embarked
@@ -555,84 +695,8 @@ Example: "[20]% XP gained from combat"
 
 Applicable to: Global, Unit
 
-#### Free [baseUnitFilter] appears
-Example: "Free [Melee] appears"
-
-Applicable to: Global
-
-#### [amount] free [baseUnitFilter] units appear
-Example: "[20] free [Melee] units appear"
-
-Applicable to: Global
-
-#### Free Social Policy
-Applicable to: Global
-
-#### [amount] Free Social Policies
-Example: "[20] Free Social Policies"
-
-Applicable to: Global
-
-#### Empire enters golden age
-Applicable to: Global
-
-#### Free Great Person
-Applicable to: Global
-
-#### [amount] population [cityFilter]
-Example: "[20] population [in all cities]"
-
-Applicable to: Global
-
-#### Free Technology
-Applicable to: Global
-
-#### [amount] Free Technologies
-Example: "[20] Free Technologies"
-
-Applicable to: Global
-
-#### Reveals the entire map
-Applicable to: Global
-
-#### Triggers voting for the Diplomatic Victory
-Applicable to: Global
-
 #### This Unit upgrades for free
 Applicable to: Global
-
-#### This Unit gains the [promotion] promotion
-Example: "This Unit gains the [Shock I] promotion"
-
-Applicable to: Global
-
-#### [mapUnitFilter] units gain the [promotion] promotion
-Example: "[Wounded] units gain the [Shock I] promotion"
-
-Applicable to: Global
-
-#### Quantity of strategic resources produced by the empire +[amount]%
-Example: "Quantity of strategic resources produced by the empire +[20]%"
-
-Applicable to: Global
-
-#### +[amount]% attack strength to all [mapUnitFilter] units for [amount] turns
-Example: "+[20]% attack strength to all [Wounded] units for [20] turns"
-
-Applicable to: Global
-
-#### Provides the cheapest [stat] building in your first [amount] cities for free
-Example: "Provides the cheapest [Culture] building in your first [20] cities for free"
-
-Applicable to: Global
-
-#### Provides a [buildingName] in your first [amount] cities for free
-Example: "Provides a [Library] in your first [20] cities for free"
-
-Applicable to: Global
-
-#### Will not be displayed in Civilopedia
-Applicable to: Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
 
 ## Nation uniques
 #### Will not be chosen for new games
@@ -644,13 +708,11 @@ Example: "Starts with [Agriculture]"
 Applicable to: Nation
 
 ## Tech uniques
-#### Incompatible with [policy/tech/promotion]
-Example: "Incompatible with [policy/tech/promotion]"
-
-Applicable to: Tech, Policy, Promotion
-
 #### Starting tech
 Applicable to: Tech
+
+#### Only available
+Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement
 
 ## FollowerBelief uniques
 #### [amount]% [stat] from every follower, up to [amount]%
@@ -700,11 +762,6 @@ Example: "Hidden until [20] social policy branches have been completed"
 
 Applicable to: Building, Unit
 
-#### Not displayed as an available construction without [buildingName/tech/resource/policy]
-Example: "Not displayed as an available construction without [buildingName/tech/resource/policy]"
-
-Applicable to: Building, Unit
-
 #### Excess Food converted to Production when under construction
 Applicable to: Building, Unit
 
@@ -718,23 +775,13 @@ Example: "Cost increases by [20] per owned city"
 
 Applicable to: Building
 
-#### Cannot be built with [buildingName]
-Example: "Cannot be built with [Library]"
-
-Applicable to: Building
-
-#### Requires a [buildingName] in this city
-Example: "Requires a [Library] in this city"
-
-Applicable to: Building
-
 #### Requires a [buildingName] in all cities
 Example: "Requires a [Library] in all cities"
 
 Applicable to: Building
 
-#### [stats] with [resource]
-Example: "[+1 Gold, +2 Production] with [Iron]"
+#### Requires a [buildingName] in at least [amount] cities
+Example: "Requires a [Library] in at least [20] cities"
 
 Applicable to: Building
 
@@ -751,7 +798,7 @@ Applicable to: Building
 #### Must be next to [terrainFilter]
 Example: "Must be next to [Forest]"
 
-Applicable to: Building
+Applicable to: Building, Improvement
 
 #### Must not be next to [terrainFilter]
 Example: "Must not be next to [Forest]"
@@ -760,6 +807,11 @@ Applicable to: Building
 
 #### Unsellable
 Applicable to: Building
+
+#### Obsolete with [tech]
+Example: "Obsolete with [Agriculture]"
+
+Applicable to: Building, Improvement, Resource
 
 #### Remove extra unhappiness from annexed cities
 Applicable to: Building
@@ -822,12 +874,18 @@ Example: "Blast radius [20]"
 
 Applicable to: Unit
 
+#### Ranged attacks may be performed over obstacles
+Applicable to: Unit
+
 #### Uncapturable
 Applicable to: Unit
 
 #### May withdraw before melee ([amount]%)
 Example: "May withdraw before melee ([20]%)"
 
+Applicable to: Unit
+
+#### Unable to capture cities
 Applicable to: Unit
 
 #### Can move after attacking
@@ -837,6 +895,14 @@ Applicable to: Unit
 Applicable to: Unit
 
 #### Unit will heal every turn, even if it performs an action
+Applicable to: Unit
+
+#### All adjacent units heal [amount] HP when healing
+Example: "All adjacent units heal [20] HP when healing"
+
+Applicable to: Unit
+
+#### Eliminates combat penalty for attacking across a coast
 Applicable to: Unit
 
 #### 6 tiles in every direction always visible
@@ -1039,6 +1105,11 @@ Example: "Starts in regions of this type receive an extra [Iron]"
 Applicable to: Terrain
 
 #### Never receives any resources
+Applicable to: Terrain
+
+#### Becomes [terrainName] when adjacent to [terrainFilter]
+Example: "Becomes [terrainName] when adjacent to [Forest]"
+
 Applicable to: Terrain
 
 #### Considered [terrainQuality] when determining start locations
@@ -1272,6 +1343,11 @@ Applicable to: Conditional
 #### <during a Golden Age>
 Applicable to: Conditional
 
+#### <with [resource]>
+Example: "<with [Iron]>"
+
+Applicable to: Conditional
+
 #### <while the empire is happy>
 Applicable to: Conditional
 
@@ -1300,6 +1376,9 @@ Example: "<starting from the [Ancient era]>"
 
 Applicable to: Conditional
 
+#### <if no other Civilization has researched this>
+Applicable to: Conditional
+
 #### <after discovering [tech]>
 Example: "<after discovering [Agriculture]>"
 
@@ -1320,6 +1399,24 @@ Example: "<before adopting [Oligarchy]>"
 
 Applicable to: Conditional
 
+#### <for [amount] turns>
+Example: "<for [20] turns>"
+
+Applicable to: Conditional
+
+#### <by consuming this unit>
+Applicable to: Conditional
+
+#### <in cities with a [buildingFilter]>
+Example: "<in cities with a [Culture]>"
+
+Applicable to: Conditional
+
+#### <in cities without a [buildingFilter]>
+Example: "<in cities without a [Culture]>"
+
+Applicable to: Conditional
+
 #### <if this city has at least [amount] specialists>
 Example: "<if this city has at least [20] specialists>"
 
@@ -1335,6 +1432,16 @@ Applicable to: Conditional
 
 #### <for [mapUnitFilter] units>
 Example: "<for [Wounded] units>"
+
+Applicable to: Conditional
+
+#### <for units with [promotion]>
+Example: "<for units with [Shock I]>"
+
+Applicable to: Conditional
+
+#### <for units without [promotion]>
+Example: "<for units without [Shock I]>"
 
 Applicable to: Conditional
 
@@ -1417,73 +1524,112 @@ Example: "<in all except [Hybrid] Regions>"
 Applicable to: Conditional
 
 ## Deprecated uniques
- - "[stats] per turn from cities before [tech/policy]" - Deprecated As of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]> OR [stats] [in all cities] <before adopting [policy]>"
- - "[stats] from every Wonder" - Deprecated As of 3.19.1, replace with "[stats] from every [Wonder]"
- - "[stats] from every [buildingFilter] in cities where this religion has at least [amount] followers" - Deprecated As of 3.19.3, replace with "[stats] from every [buildingFilter] <in cities where this religion has at least [amount] followers>"
- - "+[amount]% [stat] from every [tileFilter/specialist/buildingName]" - Deprecated As of 3.18.17, replace with "[amount]% [stat] from every [tileFilter/specialist/buildingName]"
- - "+[amount]% yield from every [tileFilter]" - Deprecated As of 3.18.17, replace with "[+amount]% Yield from every [tileFilter]"
- - "+25% Production towards any buildings that already exist in the Capital" - Deprecated As of 3.19.3, replace with "[amount]% Production towards any buildings that already exist in the Capital"
- - "City-State Influence degrades [amount]% slower" - Deprecated As of 3.18.17, replace with "[-amount]% City-State Influence degradation"
- - "Quantity of Resources gifted by City-States increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% resources gifted by City-States"
- - "Happiness from Luxury Resources gifted by City-States increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% Happiness from luxury resources gifted by City-States"
- - "[amount]% of food is carried over after population increases" - Deprecated As of 3.19.2, replace with "[amount]% Food is carried over after population increases [cityFilter]"
- - "[amount]% of food is carried over [cityFilter] after population increases" - Deprecated As of 3.19.2, replace with "[amount]% Food is carried over after population increases [cityFilter]"
- - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated As of 3.18.2, replace with "[-amount]% Food consumption by specialists [cityFilter]"
- - "50% of excess happiness added to culture towards policies" - Deprecated As of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
- - "[amount]% Culture cost of natural border growth [cityFilter]" - Deprecated As of 3.19.2, replace with "[amount]% Culture cost of natural border growth [cityFilter]"
- - "-[amount]% Culture cost of acquiring tiles [cityFilter]" - Deprecated As of 3.19.1, replace with "[-amount]% Culture cost of natural border growth [cityFilter]"
- - "[amount]% cost of natural border growth" - Deprecated As of 3.19.1, replace with "[amount]% Culture cost of natural border growth [cityFilter]"
- - "-[amount]% Gold cost of acquiring tiles [cityFilter]" - Deprecated As of 3.19.1, replace with "[-amount]% Gold cost of acquiring tiles [cityFilter]"
- - "Maintenance on roads & railroads reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[-amount]% maintenance on road & railroads"
- - "-[amount]% maintenance cost for buildings [cityFilter]" - Deprecated As of 3.18.17, replace with "[-amount]% maintenace cost for buildings [cityFilter]"
- - "+[amount] happiness from each type of luxury resource" - Deprecated As of 3.18.17, replace with "[+amount] Happiness from each type of luxury resource"
- - "Culture cost of adopting new Policies reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[amount]% Culture cost of adopting new Policies"
- - "[amount]% Culture cost of adopting new policies" - Deprecated As of 3.19.1, replace with "[amount]% Culture cost of adopting new Policies"
- - "Defensive buildings in all cities are 25% more effective" - Deprecated As of 3.18.17, replace with "[+25]% City Strength from defensive buildings"
- - "[amount]% Strength for [mapUnitFilter] units which have another [mapUnitFilter] unit in an adjacent tile" - Deprecated As of 3.18.17, replace with "[amount]% Strength <for [mapUnitFilter] units> <when adjacent to a [mapUnitFilter] unit>"
- - "Gold cost of upgrading [baseUnitFilter] units reduced by [amount]%" - Deprecated As of 3.18.17, replace with "[-amount]% Gold cost of upgrading <for [baseUnitFilter] units>"
- - "Double gold from Great Merchant trade missions" - Deprecated As of 3.18.17, replace with "[+100]% Gold from Great Merchant trade missions"
- - "Golden Age length increased by [amount]%" - Deprecated As of 3.18.17, replace with "[+amount]% Golden Age length"
- - "+[amount]% Defensive Strength for cities" - Deprecated As of 3.18.17, replace with "[+amount]% Strength for cities <when defending>"
- - "[amount]% Attacking Strength for cities" - Deprecated As of 3.18.17, replace with "[amount]% Strength for cities <when attacking>"
- - "+[amount]% attacking strength for cities with garrisoned units" - Deprecated As of 3.19.1, replace with "[amount]% Strength for cities <with a garrison> <when attacking>"
- - "Population loss from nuclear attacks -[amount]%" - Deprecated As of 3.19.2, replace with "Population loss from nuclear attacks [-amount]% [in this city]"
- - "[amount]% Natural religion spread [cityFilter] with [tech/policy]" - Deprecated As of 3.19.3, replace with "[amount]% Natural religion spread [cityFilter] <after discovering [tech]> OR [amount]% natural religion spread [cityFilter] <after adopting [policy]>"
- - "Melee units pay no movement cost to pillage" - Deprecated As of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
- - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
- - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated As of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
- - "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])" - Deprecated As of 3.17.9, removed as of 3.19.3, replace with "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"
- - "Provides a free [buildingName] [cityFilter]" - Deprecated As of 3.17.7 - removed 3.18.19, replace with "Gain a free [buildingName] [cityFilter]"
- - "+[amount]% [stat] [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.18, replace with "[+amount]% [stat] [cityFilter]"
- - "+[amount]% [stat] in all cities" - Deprecated As of 3.17.10 - removed 3.18.18, replace with "[+amount]% [stat] [in all cities]"
- - "[amount]% [stat] while the empire is happy" - Deprecated As of 3.17.1 - removed 3.18.18, replace with "[amount]% [stat] [in all cities] <while the empire is happy>"
- - "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides the cheapest [stat] building in your first [amount] cities for free"
- - "Immediately creates a [buildingName] in each of your first [amount] cities for free" - Deprecated As of 3.16.15 - removed 3.18.4, replace with "Provides a [buildingName] in your first [amount] cities for free"
- - "[mapUnitFilter] units deal +[amount]% damage" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <for [mapUnitFilter] units>"
- - "+10% Strength for all units during Golden Age" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[+10]% Strength <for [All] units> <during a Golden Age>"
- - "[amount]% Strength for [mapUnitFilter] units in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <for [mapUnitFilter] units> <when fighting in [tileFilter] tiles>"
- - "+15% Combat Strength for all units when attacking Cities" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[+15]% Strength <for [All] units> <vs cities> <when attacking>"
- - "+[amount] Movement for all [mapUnitFilter] units" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Movement <for [mapUnitFilter] units>"
- - "+1 Movement for all units during Golden Age" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Movement <for [All] units> <during a Golden Age>"
- - "[amount] Sight for all [mapUnitFilter] units" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight <for [mapUnitFilter] units>"
- - "[amount]% Spread Religion Strength for [mapUnitFilter] units" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Spread Religion Strength <for [mapUnitFilter] units>"
- - "+[amount]% Production when constructing [baseUnitFilter] units [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[+amount]% Production when constructing [baseUnitFilter] units [cityFilter]"
- - "+[amount]% Production when constructing [stat] buildings" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
- - "+[amount]% Production when constructing [constructionFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
- - "+[amount]% Production when constructing a [buildingName]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
- - "+[amount]% Production when constructing [constructionFilter] [cityFilter]" - Deprecated As of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
- - "Not displayed as an available construction unless [buildingName] is built" - Deprecated As of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
- - "[stats] once [tech] is discovered" - Deprecated As of 3.17.10 - removed 3.18.19, replace with "[stats] <after discovering [tech]>"
- - "Cannot enter ocean tiles until Astronomy" - Deprecated As of 3.18.6, replace with "Cannot enter ocean tiles <before discovering [Astronomy]>"
- - "[amount]% Bonus XP gain" - Deprecated As of 3.18.12, replace with "[amount]% XP gained from combat"
- - "+[amount]% Strength when attacking" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when attacking>"
- - "+[amount]% Strength when defending" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <shen defending>"
- - "[amount]% Strength when defending vs [mapUnitFilter] units" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when defending> <vs [mapUnitFilter] units>"
- - "+[amount]% defence in [tileFilter] tiles" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles> <when defending>"
- - "+[amount]% Strength in [tileFilter]" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
- - "[amount] Visibility Range" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
- - "Limited Visibility" - Deprecated As of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
- - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated As of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before discovering [tech]>"
- - "Deal [amount] damage to adjacent enemy units" - Deprecated As of 3.18.17, replace with "Adjacent enemy units ending their turn take [30] damage"
- - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated As of 3.17.10 - removed 3.18.19, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
- - "Deal 30 damage to adjacent enemy units" - Deprecated As of 3.17.10 - removed 3.18.19, replace with "Adjacent enemy units ending their turn take [30] damage"
+ - "[stats] from every Wonder" - Deprecated as of 3.19.1, replace with "[stats] from every [Wonder]"
+ - "[stats] from every [buildingFilter] in cities where this religion has at least [amount] followers" - Deprecated as of 3.19.3, replace with "[stats] from every [buildingFilter] <in cities where this religion has at least [amount] followers>"
+ - "+[amount]% [stat] from every [tileFilter/specialist/buildingName]" - Deprecated as of 3.18.17, replace with "[+amount]% [stat] from every [tileFilter/specialist/buildingName]"
+ - "+[amount]% yield from every [tileFilter]" - Deprecated as of 3.18.17, replace with "[+amount]% Yield from every [tileFilter]"
+ - "+25% Production towards any buildings that already exist in the Capital" - Deprecated as of 3.19.3, replace with "[+25]% Production towards any buildings that already exist in the Capital"
+ - "City-State Influence degrades [amount]% slower" - Deprecated as of 3.18.17, replace with "[-amount]% City-State Influence degradation"
+ - "Quantity of Resources gifted by City-States increased by [amount]%" - Deprecated as of 3.18.17, replace with "[+amount]% resources gifted by City-States"
+ - "Happiness from Luxury Resources gifted by City-States increased by [amount]%" - Deprecated as of 3.18.17, replace with "[+amount]% Happiness from luxury resources gifted by City-States"
+ - "[amount]% of food is carried over after population increases" - Deprecated as of 3.19.2, replace with "[amount]% Food is carried over after population increases [in this city]"
+ - "[amount]% of food is carried over [cityFilter] after population increases" - Deprecated as of 3.19.2, replace with "[amount]% Food is carried over after population increases [cityFilter]"
+ - "[amount]% Culture cost of natural border growth [cityFilter]" - Deprecated as of 3.19.2, replace with "[amount]% Culture cost of natural border growth [cityFilter]"
+ - "-[amount]% Culture cost of acquiring tiles [cityFilter]" - Deprecated as of 3.19.1, replace with "[-amount]% Culture cost of natural border growth [cityFilter]"
+ - "[amount]% cost of natural border growth" - Deprecated as of 3.19.1, replace with "[amount]% Culture cost of natural border growth [in all cities]"
+ - "-[amount]% Gold cost of acquiring tiles [cityFilter]" - Deprecated as of 3.19.1, replace with "[-amount]% Gold cost of acquiring tiles [cityFilter]"
+ - "[stat] cost of purchasing [baseUnitFilter] units in cities [amount]%" - Deprecated as of 3.19.3, replace with "[stat] cost of purchasing [baseUnitFilter] units [amount]%"
+ - "Maintenance on roads & railroads reduced by [amount]%" - Deprecated as of 3.18.17, replace with "[-amount]% maintenance on road & railroads"
+ - "-[amount]% maintenance cost for buildings [cityFilter]" - Deprecated as of 3.18.17, replace with "[-amount]% maintenance cost for buildings [cityFilter]"
+ - "+[amount] happiness from each type of luxury resource" - Deprecated as of 3.18.17, replace with "[+amount] Happiness from each type of luxury resource"
+ - "Culture cost of adopting new Policies reduced by [amount]%" - Deprecated as of 3.18.17, replace with "[-amount]% Culture cost of adopting new Policies"
+ - "[amount]% Culture cost of adopting new policies" - Deprecated as of 3.19.1, replace with "[amount]% Culture cost of adopting new Policies"
+ - "Defensive buildings in all cities are 25% more effective" - Deprecated as of 3.18.17, replace with "[+25]% City Strength from defensive buildings"
+ - "[amount]% Strength for [mapUnitFilter] units which have another [mapUnitFilter] unit in an adjacent tile" - Deprecated as of 3.18.17, replace with "[amount]% Strength <for [mapUnitFilter] units> <when adjacent to a [mapUnitFilter] unit>"
+ - "Gold cost of upgrading [baseUnitFilter] units reduced by [amount]%" - Deprecated as of 3.18.17, replace with "[-amount]% Gold cost of upgrading <for [baseUnitFilter] units>"
+ - "Double gold from Great Merchant trade missions" - Deprecated as of 3.18.17, replace with "[+100]% Gold from Great Merchant trade missions"
+ - "Golden Age length increased by [amount]%" - Deprecated as of 3.18.17, replace with "[+amount]% Golden Age length"
+ - "+[amount]% Defensive Strength for cities" - Deprecated as of 3.18.17, replace with "[+amount]% Strength for cities <when defending>"
+ - "[amount]% Attacking Strength for cities" - Deprecated as of 3.18.17, replace with "[+amount]% Strength for cities <when attacking>"
+ - "+[amount]% attacking strength for cities with garrisoned units" - Deprecated as of 3.19.1, replace with "[+amount]% Strength for cities <with a garrison> <when attacking>"
+ - "Can embark and move over Coasts and Oceans immediately" - Deprecated as of 3.19.9, replace with "Enables embarkation for land units <starting from the [Ancient era]>", "Enables embarked units to enter ocean tiles <starting from the [Ancient era]>"
+ - "Population loss from nuclear attacks -[amount]%" - Deprecated as of 3.19.2, replace with "Population loss from nuclear attacks [-amount]% [in this city]"
+ - "[amount]% Natural religion spread [cityFilter] with [tech/policy]" - Deprecated as of 3.19.3, replace with "[amount]% Natural religion spread [cityFilter] <after discovering [tech/policy]>" OR "[amount]% Natural religion spread [cityFilter] <after adopting [tech/policy]>"
+ - "[amount] HP when healing in [tileFilter] tiles" - Deprecated as of 3.19.4, replace with "[amount] HP when healing <in [tileFilter] tiles>"
+ - "Melee units pay no movement cost to pillage" - Deprecated as of 3.18.17, replace with "No movement cost to pillage <for [Melee] units>"
+ - "Heal adjacent units for an additional 15 HP per turn" - Deprecated as of 3.19.3, replace with "All adjacent units heal [+15] HP when healing"
+ - "+[amount]% attack strength to all [mapUnitFilter] units for [amount2] turns" - Deprecated as of 3.19.8, replace with "[+amount]% Strength <when attacking> <for [mapUnitFilter] units> <for [amount2] turns>"
+ - "[stats] per turn from cities before [tech/policy]" - Deprecated as of 3.18.14, replace with "[stats] [in all cities] <before discovering [tech]>" OR "[stats] [in all cities] <before adopting [policy]>"
+ - "[mapUnitFilter] units gain [amount]% more Experience from combat" - Deprecated as of 3.18.12, replace with "[amount]% XP gained from combat <for [mapUnitFilter] units>"
+ - "[amount]% maintenance costs for [mapUnitFilter] units" - Deprecated as of 3.18.14, replace with "[amount]% maintenance costs <for [mapUnitFilter] units>"
+ - "50% of excess happiness added to culture towards policies" - Deprecated as of 3.18.2, replace with "[50]% of excess happiness converted to [Culture]"
+ - "-[amount]% food consumption by specialists [cityFilter]" - Deprecated as of 3.18.2, replace with "[-amount]% Food consumption by specialists [cityFilter]"
+ - "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] starting from the [era] at an increasing price ([amount])" - Deprecated as of 3.17.9, removed as of 3.19.3, replace with "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount]) <starting from the [era]>"
+ - "Provides a free [buildingName] [cityFilter]" - Deprecated as of 3.17.7 - removed 3.18.19, replace with "Gain a free [buildingName] [cityFilter]"
+ - "+[amount]% [stat] [cityFilter]" - Deprecated as of 3.17.10 - removed 3.18.18, replace with "[+amount]% [stat] [cityFilter]"
+ - "+[amount]% [stat] in all cities" - Deprecated as of 3.17.10 - removed 3.18.18, replace with "[+amount]% [stat] [in all cities]"
+ - "[amount]% [stat] while the empire is happy" - Deprecated as of 3.17.1 - removed 3.18.18, replace with "[amount]% [stat] [in all cities] <while the empire is happy>"
+ - "Immediately creates the cheapest available cultural building in each of your first [amount] cities for free" - Deprecated as of 3.16.15 - removed 3.18.4, replace with "Provides the cheapest [stat] building in your first [amount] cities for free"
+ - "Immediately creates a [buildingName] in each of your first [amount] cities for free" - Deprecated as of 3.16.15 - removed 3.18.4, replace with "Provides a [buildingName] in your first [amount] cities for free"
+ - "[mapUnitFilter] units deal +[amount]% damage" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[+amount]% Strength <for [mapUnitFilter] units>"
+ - "+10% Strength for all units during Golden Age" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[+10]% Strength <for [All] units> <during a Golden Age>"
+ - "[amount]% Strength for [mapUnitFilter] units in [tileFilter]" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <for [mapUnitFilter] units> <when fighting in [tileFilter] tiles>"
+ - "+15% Combat Strength for all units when attacking Cities" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[+15]% Strength <for [All] units> <vs cities> <when attacking>"
+ - "+[amount] Movement for all [mapUnitFilter] units" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[+amount] Movement <for [mapUnitFilter] units>"
+ - "+1 Movement for all units during Golden Age" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[+1] Movement <for [All] units> <during a Golden Age>"
+ - "[amount] Sight for all [mapUnitFilter] units" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[amount] Sight <for [mapUnitFilter] units>"
+ - "[amount]% Spread Religion Strength for [mapUnitFilter] units" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[amount]% Spread Religion Strength <for [mapUnitFilter] units>"
+ - "+[amount]% Production when constructing [baseUnitFilter] units [cityFilter]" - Deprecated as of 3.17.10 - removed 3.18.5, replace with "[+amount]% Production when constructing [baseUnitFilter] units [cityFilter]"
+ - "+[amount]% Production when constructing [stat] buildings" - Deprecated as of 3.17.10 - removed 3.18.5, replace with "[+amount]% Production when constructing [stat] buildings [in all cities]"
+ - "+[amount]% Production when constructing [constructionFilter]" - Deprecated as of 3.17.10 - removed 3.18.5, replace with "[+amount]% Production when constructing [constructionFilter] buildings [in all cities]"
+ - "+[amount]% Production when constructing a [buildingName]" - Deprecated as of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [buildingName] buildings [in all cities]"
+ - "+[amount]% Production when constructing [constructionFilter] [cityFilter]" - Deprecated as of 3.17.10 - removed 3.18.5, replace with "[amount]% Production when constructing [constructionFilter] buildings [cityFilter]"
+ - "Increases embarked movement +1" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[+1] Movement <for [Embarked] units>"
+ - "+1 Movement for all embarked units" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[+1] Movement <for [Embarked] units>"
+ - "Unhappiness from population decreased by [amount]%" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[-amount]% unhappiness from population [in all cities]"
+ - "Unhappiness from population decreased by [amount]% [cityFilter]" - Deprecated As of 3.16.11 - removed 3.17.11, replace with "[-amount]% unhappiness from population [cityFilter]"
+ - "+[amount]% growth [cityFilter]" - Deprecated As of 3.16.14 - removed 3.17.11, replace with "[+amount]% growth [cityFilter]"
+ - "+[amount]% growth [cityFilter] when not at war" - Deprecated As of 3.16.14 - removed 3.17.11, replace with "[+amount]% growth [cityFilter] <when not at war>"
+ - "-[amount]% [mapUnitFilter] unit maintenance costs" - Deprecated As of 3.16.16 - removed as of 3.17.11, replace with "[-amount]% maintenance costs <for [mapUnitFilter] units>"
+ - "-[amount]% unit upkeep costs" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[amount]% maintenance costs <for [All] units>"
+ - "[stats] from every specialist" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] from every specialist [in all cities]"
+ - "[stats] if this city has at least [amount] specialists" - Deprecated As of 3.16.16 - removed 3.17.11, replace with "[stats] <if this city has at least [amount] specialists>"
+ - "+1 happiness from each type of luxury resource" - Deprecated Extremely old - used for auto-updates only, replace with "[+1] Happiness from each type of luxury resource"
+ - "-33% unit upkeep costs" - Deprecated Extremely old - used for auto-updates only, replace with "[-33]% maintenance costs <for [All] units>"
+ - "-50% food consumption by specialists" - Deprecated Extremely old - used for auto-updates only, replace with "[-50]% Food consumption by specialists [in all cities]"
+ - "+50% attacking strength for cities with garrisoned units" - Deprecated Extremely old - used for auto-updates only, replace with "[+50]% Strength for cities <with a garrison> <when attacking>"
+ - "Incompatible with [policy/tech/promotion]" - Deprecated as of 3.19.8, replace with "Only available <before adopting [policy/tech/promotion]>" OR "Only available <before discovering [policy/tech/promotion]>" OR "Only available <for units without [policy/tech/promotion]>"
+ - "Not displayed as an available construction without [buildingName/tech/resource/policy]" - Deprecated as of 3.19.8, replace with "Only available <after adopting [buildingName/tech/resource/policy]>" OR "Only available <with [buildingName/tech/resource/policy]>" OR "Only available <after discovering [buildingName/tech/resource/policy]>"
+ - "Cannot be built with [buildingName]" - Deprecated as of 3.19.9, replace with "Only available <in cities without a [buildingName]>"
+ - "Requires a [buildingName] in this city" - Deprecated as of 3.19.9, replace with "Only available <in cities with a [buildingName]>"
+ - "[stats] with [resource]" - Deprecated as of 3.19.7, replace with "[stats] <with [resource]>"
+ - "Not displayed as an available construction unless [buildingName] is built" - Deprecated as of 3.16.11, replace with "Not displayed as an available construction without [buildingName]"
+ - "[stats] once [tech] is discovered" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "[stats] <after discovering [tech]>"
+ - "Eliminates combat penalty for attacking from the sea" - Deprecated as of 3.19.8, replace with "Eliminates combat penalty for attacking across a coast"
+ - "[amount]% Bonus XP gain" - Deprecated as of 3.18.12, replace with "[amount]% XP gained from combat"
+ - "Cannot enter ocean tiles until Astronomy" - Deprecated as of 3.18.6, replace with "Cannot enter ocean tiles <before discovering [Astronomy]>"
+ - "+[amount]% Strength when attacking" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[+amount]% Strength <when attacking>"
+ - "+[amount]% Strength when defending" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[+amount]% Strength <when defending>"
+ - "[amount]% Strength when defending vs [mapUnitFilter] units" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when defending> <vs [mapUnitFilter] units>"
+ - "+[amount]% defence in [tileFilter] tiles" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles> <when defending>"
+ - "+[amount]% Strength in [tileFilter]" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[amount]% Strength <when fighting in [tileFilter] tiles>"
+ - "[amount] Visibility Range" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[amount] Sight"
+ - "Limited Visibility" - Deprecated as of 3.17.5 - removed 3.18.5, replace with "[-1] Sight"
+ - "Double movement in coast" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [Coast]"
+ - "Double movement rate through Forest and Jungle" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
+ - "Double movement in Snow, Tundra and Hills" - Deprecated As of 3.17.1 - removed 3.17.13, replace with "Double movement in [terrainFilter]"
+ - "+[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength"
+ - "-[amount]% Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[-amount]% Strength"
+ - "+[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength <vs [combatantFilter] units>" OR "[+amount]% Strength <vs cities>"
+ - "-[amount]% Strength vs [combatantFilter]" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[-amount]% Strength <vs [combatantFilter] units>" OR "[+amount]% Strength <vs cities>"
+ - "+[amount]% Combat Strength" - Deprecated As of 3.17.3 - removed 3.17.13, replace with "[+amount]% Strength"
+ - "+1 Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+1] Sight"
+ - "+[amount] Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+amount] Sight"
+ - "+[amount] Sight for all [mapUnitFilter] units" - Deprecated Extremely old - used for auto-updates only, replace with "[+amount] Sight <for [mapUnitFilter] units>"
+ - "+2 Visibility Range" - Deprecated Extremely old - used for auto-updates only, replace with "[+2] Sight"
+ - "Can build improvements on tiles" - Deprecated Extremely old - used for auto-updates only, replace with "Can build [Land] improvements on tiles"
+ - "Science gained from research agreements +50%" - Deprecated Extremely old - used for auto-updates only, replace with "Science gained from research agreements [+50]%"
+ - "Deal [amount] damage to adjacent enemy units" - Deprecated as of 3.18.17, replace with "Adjacent enemy units ending their turn take [amount] damage"
+ - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated as of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before discovering [tech]>"
+ - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
+ - "Deal 30 damage to adjacent enemy units" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "Adjacent enemy units ending their turn take [30] damage"

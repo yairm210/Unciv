@@ -387,25 +387,43 @@ object UnitAutomation {
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
         if (unit.civInfo.cities.isEmpty()) return false
 
-        var enemyCities = unit.civInfo.gameInfo.civilizations
-                .filter { unit.civInfo.isAtWarWith(it) }
-                .flatMap { it.cities }.asSequence()
-                .filter { it.location in unit.civInfo.exploredTiles }
+        // only focus on *attacking* 1 enemy at a time otherwise you'll lose on both fronts
+
+        val enemies = unit.civInfo.getKnownCivs().filter { unit.civInfo.isAtWarWith(it) && it.cities.isNotEmpty() }
+
+        val ourCities = unit.civInfo.cities
+
+        var closestEnemyCity:CityInfo?=null
+        var closestDistance = 10000
+        for (enemy in enemies) {
+            val knownEnemyCities = enemy.cities.filter { it.location in unit.civInfo.exploredTiles }
+            if (knownEnemyCities.isEmpty()) continue
+            for(enemyCity in knownEnemyCities) {
+                val distanceToClosestCityOfOurs = ourCities.minOf {
+                    it.getCenterTile().aerialDistanceTo(enemyCity.getCenterTile())
+                }
+                if (distanceToClosestCityOfOurs < closestDistance){
+                    closestDistance = distanceToClosestCityOfOurs
+                    closestEnemyCity = enemyCity
+                }
+            }
+        }
+        if (closestEnemyCity==null) return false // no attackable cities found
+
+        // Our main attack target is the closest city, but we're fine with deviating from that a bit
+        var enemyCitiesByPriority = closestEnemyCity.civInfo.cities
+            .associateWith { it.getCenterTile().aerialDistanceTo(closestEnemyCity.getCenterTile()) }
+            .filterNot { it.value > 10 } // anything 10 tiles away from the target is irrelevant
+            .asSequence().sortedBy { it.value }.map { it.key } // sort the list by closeness to target - least is best!
 
         if (unit.baseUnit.isRanged()) // ranged units don't harm capturable cities, waste of a turn
-            enemyCities = enemyCities.filterNot { it.health == 1 }
+            enemyCitiesByPriority = enemyCitiesByPriority.filterNot { it.health == 1 }
 
-        val closestReachableEnemyCity = enemyCities
-                .asSequence().map { it.getCenterTile() }
-                .sortedBy { cityCenterTile ->
-                    // sort enemy cities by closeness to our cities, and only then choose the first reachable - checking canReach is comparatively very time-intensive!
-                    unit.civInfo.cities.asSequence()
-                        .map { cityCenterTile.aerialDistanceTo(it.getCenterTile()) }.minOrNull()!!
-                }
-                .firstOrNull { unit.movement.canReach(it) }
+        val closestReachableEnemyCity = enemyCitiesByPriority
+                .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
 
         if (closestReachableEnemyCity != null) {
-            return headTowardsEnemyCity(unit, closestReachableEnemyCity)
+            return headTowardsEnemyCity(unit, closestReachableEnemyCity.getCenterTile())
         }
         return false
     }

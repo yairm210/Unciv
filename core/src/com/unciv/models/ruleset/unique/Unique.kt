@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.unciv.logic.battle.CombatAction
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
@@ -23,6 +24,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         else Stats.parse(firstStatParam)
     }
     val conditionals: List<Unique> = text.getConditionals()
+    val isTriggerable = type != null && type.targetTypes.contains(UniqueTarget.Triggerable)
+            // <for [amount] turns]> in effect makes any unique become a triggerable unique
+            || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
 
     val allParams = params + conditionals.flatMap { it.params }
 
@@ -38,11 +42,34 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     }
 
     fun conditionalsApply(state: StateForConditionals?): Boolean {
-        if (state == null) return conditionals.isEmpty() 
+        if (state == null) return conditionals.isEmpty()
+        if (state.ignoreConditionals) return true
         for (condition in conditionals) {
             if (!conditionalApplies(condition, state)) return false
         }
         return true
+    }
+
+    fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
+
+    fun getReplacementText(): String {
+        val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
+        var replacementUniqueText = deprecationAnnotation.replaceWith.expression
+        val deprecatedUniquePlaceholders = type!!.text.getPlaceholderParameters()
+
+        // Here, for once, we DO want the conditional placeholder parameters together with the regular ones,
+        //  so we cheat the conditional detector by removing the '<'
+        for (parameter in replacementUniqueText.replace('<',' ').getPlaceholderParameters()) {
+            val parameterNumberInDeprecatedUnique =
+                deprecatedUniquePlaceholders.indexOf(parameter.removePrefix("+").removePrefix("-"))
+            if (parameterNumberInDeprecatedUnique == -1) continue
+            var replacementText = params[parameterNumberInDeprecatedUnique]
+            if (parameter.startsWith('+')) replacementText = "+$replacementText"
+            else if(parameter.startsWith('-')) replacementText = "-$replacementText"
+            replacementUniqueText =
+                replacementUniqueText.replace("[$parameter]", "[$replacementText]")
+        }
+        return replacementUniqueText
     }
 
     private fun conditionalApplies(
@@ -51,11 +78,24 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
     ): Boolean {
 
         fun ruleset() = state.civInfo!!.gameInfo.ruleSet
-        val relevantUnitTile by lazy { state.attackedTile ?: state.unit?.getTile() }
+        val relevantTile by lazy { state.attackedTile
+            ?: state.tile
+            ?: state.unit?.getTile()
+            ?: state.cityInfo?.getCenterTile()
+        }
+        val relevantUnit by lazy {
+            if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
+            else state.unit
+        }
 
         return when (condition.type) {
+            // These are 'what to do' and not 'when to do' conditionals
+            UniqueType.ConditionalTimedUnique -> true
+            UniqueType.ConditionalConsumeUnit -> true
+            
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
+            UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
             UniqueType.ConditionalHappy ->
                 state.civInfo != null && state.civInfo.statsForNextTurn.happiness >= 0
             UniqueType.ConditionalBetweenHappiness ->
@@ -81,6 +121,10 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalNoPolicy ->
                 state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
 
+            UniqueType.ConditionalCityWithBuilding -> 
+                state.cityInfo != null && state.cityInfo.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
+            UniqueType.ConditionalCityWithoutBuilding -> 
+                state.cityInfo != null && !state.cityInfo.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
             UniqueType.ConditionalSpecialistCount ->
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
             UniqueType.ConditionalFollowerCount ->
@@ -91,8 +135,9 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalVsCity -> state.theirCombatant?.matchesCategory("City") == true
             UniqueType.ConditionalVsUnits -> state.theirCombatant?.matchesCategory(condition.params[0]) == true
             UniqueType.ConditionalOurUnit ->
-                state.ourCombatant?.matchesCategory(condition.params[0]) == true
-                        || state.unit?.matchesFilter(condition.params[0]) == true
+                relevantUnit?.matchesFilter(condition.params[0]) == true
+            UniqueType.ConditionalUnitWithPromotion -> relevantUnit?.promotions?.promotions?.contains(params[0]) == true
+            UniqueType.ConditionalUnitWithoutPromotion -> relevantUnit?.promotions?.promotions?.contains(params[0]) == false
             UniqueType.ConditionalAttacking -> state.combatAction == CombatAction.Attack
             UniqueType.ConditionalDefending -> state.combatAction == CombatAction.Defend
             UniqueType.ConditionalAboveHP ->
@@ -101,45 +146,54 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
             
             UniqueType.ConditionalInTiles ->
-                relevantUnitTile?.matchesFilter(condition.params[0], state.civInfo) == true
+                relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
-                relevantUnitTile!=null && relevantUnitTile!!.matchesFilter(condition.params[0], state.civInfo)
-                        && relevantUnitTile!!.matchesFilter(condition.params[1], state.civInfo)
+                relevantTile!=null && relevantTile!!.matchesFilter(condition.params[0], state.civInfo)
+                        && relevantTile!!.matchesFilter(condition.params[1], state.civInfo)
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
                 yourCities < theirCities
             }
             UniqueType.ConditionalForeignContinent ->
-                state.civInfo != null && state.unit != null
-                        && (state.civInfo.cities.isEmpty()
+                state.civInfo != null && relevantTile != null
+                    && (state.civInfo.cities.isEmpty()
                         || state.civInfo.getCapital().getCenterTile().getContinent()
-                            != state.unit.getTile().getContinent()
-                        )
+                            != relevantTile!!.getContinent()
+                    )
             UniqueType.ConditionalAdjacentUnit ->
-                state.civInfo != null && relevantUnitTile!!.neighbors.any {
+                state.civInfo != null 
+                && relevantUnit != null
+                && relevantTile!!.neighbors.any {
                     it.militaryUnit != null
+                    && it.militaryUnit != relevantUnit
                     && it.militaryUnit!!.civInfo == state.civInfo    
                     && it.militaryUnit!!.matchesFilter(condition.params[0])
                 }
 
             UniqueType.ConditionalNeighborTiles ->
-                state.cityInfo != null &&
-                        state.cityInfo.getCenterTile().neighbors.count {
+                relevantTile != null &&
+                        relevantTile!!.neighbors.count {
                             it.matchesFilter(condition.params[2], state.civInfo)
                         } in (condition.params[0].toInt())..(condition.params[1].toInt())
             UniqueType.ConditionalNeighborTilesAnd ->
-                state.cityInfo != null
-                        && state.cityInfo.getCenterTile().neighbors.count {
-                    it.matchesFilter(condition.params[2], state.civInfo) &&
-                            it.matchesFilter(condition.params[3], state.civInfo)
+                relevantTile != null
+                && relevantTile!!.neighbors.count {
+                    it.matchesFilter(condition.params[2], state.civInfo) 
+                    && it.matchesFilter(condition.params[3], state.civInfo)
                 } in (condition.params[0].toInt())..(condition.params[1].toInt())
 
             UniqueType.ConditionalOnWaterMaps -> state.region?.continentID == -1
             UniqueType.ConditionalInRegionOfType -> state.region?.type == condition.params[0]
             UniqueType.ConditionalInRegionExceptOfType -> state.region?.type != condition.params[0]
+
+            UniqueType.ConditionalFirstCivToResearch -> sourceObjectType == UniqueTarget.Tech
+                    && state.civInfo != null
+                    && state.civInfo.gameInfo.civilizations.none {
+                it != state.civInfo && it.isMajorCiv() && it.hasTechOrPolicy(sourceObjectName!!)
+            }
 
             else -> false
         }
@@ -164,6 +218,9 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
 
     fun getUniques(uniqueType: UniqueType) = getUniques(uniqueType.placeholderText)
 
+    fun getMatchingUniques(uniqueType: UniqueType, state: StateForConditionals) = getUniques(uniqueType)
+        .filter { it.conditionalsApply(state) }
+
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
 
@@ -180,7 +237,6 @@ class UniqueMapTyped: EnumMap<UniqueType, ArrayList<Unique>>(UniqueType::class.j
 }
 
 
-// Will probably be allowed to be used as a conditional when I get the motivation to work on that -xlenstra
 class TemporaryUnique() {
 
     constructor(uniqueObject: Unique, turns: Int) : this() {

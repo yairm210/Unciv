@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Building
@@ -60,7 +59,7 @@ class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
 
             val (description, link) = when (construction) {
                 is BaseUnit -> construction.getDescription() to construction.makeLink()
-                is Building -> construction.getDescription(city, city.getRuleset()) to construction.makeLink()
+                is Building -> construction.getDescription(city) to construction.makeLink()
                 is PerpetualConstruction -> construction.description.replace("[rate]", "[${construction.getConversionRate(city)}]") to ""
                 else -> "" to "" // Should never happen
             }

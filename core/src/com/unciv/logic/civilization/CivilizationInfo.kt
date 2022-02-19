@@ -21,7 +21,6 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.TemporaryUnique
-import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
@@ -98,6 +97,9 @@ class CivilizationInfo {
     var detailedCivResources = ResourceSupplyList()
 
     @Transient
+    var summarizedCivResources = ResourceSupplyList()
+
+    @Transient
     val cityStateFunctions = CityStateFunctions(this)
 
     @Transient
@@ -147,6 +149,7 @@ class CivilizationInfo {
     
     /** Arraylist instead of HashMap as the same unique might appear multiple times
      * We don't use pairs, as these cannot be serialized due to having no no-arg constructor
+     * This can also contain NON-temporary uniques but I can't be bothered to do the deprecation dance with this one
      */
     val temporaryUniques = ArrayList<TemporaryUnique>()
     
@@ -266,7 +269,10 @@ class CivilizationInfo {
     //region pure functions
     fun getDifficulty(): Difficulty {
         if (isPlayerCivilization()) return gameInfo.getDifficulty()
-        return gameInfo.ruleSet.difficulties["Chieftain"]!!
+        // TODO We should be able to mark a difficulty as 'default AI difficulty' somehow
+        val chieftainDifficulty = gameInfo.ruleSet.difficulties["Chieftain"]
+        if (chieftainDifficulty != null) return chieftainDifficulty
+        return gameInfo.ruleSet.difficulties.values.first()
     }
 
     fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
@@ -321,13 +327,7 @@ class CivilizationInfo {
     fun getHappiness() = happinessForNextTurn
 
 
-    fun getCivResources(): ResourceSupplyList {
-        val newResourceSupplyList = ResourceSupplyList()
-        for (resourceSupply in detailedCivResources) {
-            newResourceSupplyList.add(resourceSupply.resource, resourceSupply.amount, "All")
-        }
-        return newResourceSupplyList
-    }
+    fun getCivResources(): ResourceSupplyList = summarizedCivResources
 
     // Preserves some origins for resources so we can separate them for trades
     fun getCivResourcesWithOriginsForTrade(): ResourceSupplyList {
@@ -360,7 +360,7 @@ class CivilizationInfo {
 
     fun getResourceModifier(resource: TileResource): Int {
         var resourceModifier = 1f
-        for (unique in getMatchingUniques("Double quantity of [] produced"))
+        for (unique in getMatchingUniques(UniqueType.DoubleResourceProduced))
             if (unique.params[0] == resource.name)
                 resourceModifier *= 2f
         if (resource.resourceType == ResourceType.Strategic) {
@@ -373,36 +373,28 @@ class CivilizationInfo {
 
     fun hasResource(resourceName: String): Boolean = getCivResourcesByName()[resourceName]!! > 0
 
-    // This function should be removed and replaced by marking where uniques originate from, hopefully.
-    fun getCivWideBuildingUniques(cityItIsFor: CityInfo): Sequence<Unique> =
-        cities.asSequence().flatMap {
-            city ->
-                if (city == cityItIsFor)
-                    city.getAllUniquesWithNonLocalEffects().filter { !it.isAntiLocalEffect }
-                else city.getAllUniquesWithNonLocalEffects()
-        }
-
-    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = 
+    fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals =
         StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
     fun hasUnique(unique: String) = getMatchingUniques(unique).any()
         
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
-    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
-        yieldAll(nation.getMatchingUniques(uniqueType,stateForConditionals))
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(this), cityToIgnore: CityInfo? = null) = sequence {
+        yieldAll(nation.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
-            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType) }
+            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueType, stateForConditionals) }
         )
-        yieldAll(policies.policyUniques.getUniques(uniqueType))
-        yieldAll(tech.techUniques.getUniques(uniqueType))
+        yieldAll(policies.policyUniques.getMatchingUniques(uniqueType, stateForConditionals))
+        yieldAll(tech.techUniques.getMatchingUniques(uniqueType, stateForConditionals))
         yieldAll(temporaryUniques.asSequence()
             .map { it.uniqueObject }
-            .filter { it.isOfType(uniqueType) }
+            .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) }
         )
         yieldAll(getEra().getMatchingUniques(uniqueType, stateForConditionals))
         if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.getFounderUniques().filter { it.isOfType(uniqueType) })
+            yieldAll(religionManager.religion!!.getFounderUniques()
+                .filter { it.isOfType(uniqueType) && it.conditionalsApply(stateForConditionals) })
         
         yieldAll(getCivResources().asSequence()
             .filter { it.amount > 0 }
@@ -410,9 +402,6 @@ class CivilizationInfo {
         )
         
         yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
-        
-    }.filter {
-        it.conditionalsApply(stateForConditionals)
     }
     
     fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null) = sequence {
@@ -586,7 +575,7 @@ class CivilizationInfo {
         if (otherCiv.civName == civName) return false // never at war with itself
         if (otherCiv.isBarbarian() || isBarbarian()) return true
         val diplomacyManager = diplomacy[otherCiv.civName]
-                ?: return false // not encountered yet
+            ?: return false // not encountered yet
         return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
     }
 
@@ -689,7 +678,7 @@ class CivilizationInfo {
     fun isLongCountDisplay() = hasLongCountDisplayUnique && isLongCountActive()
 
     fun calculateScoreBreakdown(): HashMap<String,Double> {
-        val scoreBreakdown = hashMapOf<String,Double>();
+        val scoreBreakdown = hashMapOf<String,Double>()
         // 1276 is the number of tiles in a medium sized map. The original uses 4160 for this,
         // but they have bigger maps
         var mapSizeModifier = 1276 / gameInfo.tileMap.mapParameters.numberOfTiles().toDouble()
@@ -796,7 +785,7 @@ class CivilizationInfo {
     fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
     fun updateViewableTiles() = transients().updateViewableTiles()
-    fun updateDetailedCivResources() = transients().updateDetailedCivResources()
+    fun updateDetailedCivResources() = transients().updateCivResources()
 
     fun startTurn() {
         civConstructions.startTurn()
@@ -875,9 +864,10 @@ class CivilizationInfo {
 
         // Update turn counter for temporary uniques
         for (unique in temporaryUniques) {
-            unique.turnsLeft -= 1
+            if (unique.turnsLeft >= 0)
+                unique.turnsLeft -= 1
         }
-        temporaryUniques.removeAll { it.turnsLeft <= 0 }
+        temporaryUniques.removeAll { it.turnsLeft == 0 }
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }  // This is the most expensive part of endTurn
@@ -1016,7 +1006,7 @@ class CivilizationInfo {
     // Higher is better
     private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
         if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible()) 
-            return -1;
+            return -1
         var score = 10
         if (tile.improvement == null) {
             score += 4

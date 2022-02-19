@@ -157,11 +157,13 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     // This is ALWAYS called after create() on Android - google "Android life cycle"
     override fun resume() {
         super.resume()
+        musicController.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
     }
 
     override fun pause() {
         if (isGameInfoInitialized()) GameSaver.autoSave(this.gameInfo)
+        musicController.pause()
         super.pause()
     }
 

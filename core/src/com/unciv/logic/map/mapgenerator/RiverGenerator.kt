@@ -4,11 +4,13 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.Ruleset
 
 
 class RiverGenerator(
     private val tileMap: TileMap,
-    private val randomness: MapGenerationRandomness
+    private val randomness: MapGenerationRandomness,
+    private val ruleset: Ruleset
 ) {
     companion object{
         const val MAP_TILES_PER_RIVER = 100
@@ -33,18 +35,6 @@ class RiverGenerator(
         val riverStarts =
             randomness.chooseSpreadOutLocations(numberOfRivers, optionalTiles, mapRadius)
         for (tile in riverStarts) spawnRiver(tile)
-
-        for (tile in tileMap.values) {
-            if (tile.isAdjacentToRiver()) {
-                when {
-                    tile.baseTerrain == Constants.desert && tile.terrainFeatures.isEmpty() ->
-                        tile.terrainFeatures.add(Constants.floodPlains)
-                    tile.baseTerrain == Constants.snow -> tile.baseTerrain = Constants.tundra
-                    tile.baseTerrain == Constants.tundra -> tile.baseTerrain = Constants.plains
-                }
-                tile.setTerrainTransients()
-            }
-        }
     }
 
     private fun TileInfo.isFarEnoughFromWater(): Boolean {

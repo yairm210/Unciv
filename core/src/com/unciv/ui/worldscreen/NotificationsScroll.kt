@@ -35,10 +35,14 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
             val label = notification.text.toLabel(Color.BLACK, 30)
             val listItem = Table()
 
+            listItem.background = ImageGetter.getRoundedEdgeRectangle()
+            listItem.add(label)
+
+
             val iconSize = 30f
             if (notification.icons.isNotEmpty()) {
                 val ruleset = worldScreen.gameInfo.ruleSet
-                for (icon in notification.icons) {
+                for (icon in notification.icons.reversed()) {
                     val image: Actor = when {
                         ruleset.technologies.containsKey(icon) -> ImageGetter.getTechIcon(icon)
                         ruleset.nations.containsKey(icon) -> ImageGetter.getNationIndicator(ruleset.nations[icon]!!, iconSize)
@@ -48,8 +52,6 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
                     listItem.add(image).size(iconSize).padRight(5f)
                 }
             }
-            listItem.background = ImageGetter.getRoundedEdgeRectangle()
-            listItem.add(label)
 
             // using a large click area with no gap in between each message item.
             // this avoids accidentally clicking in between the messages, resulting in a map click

@@ -306,7 +306,7 @@ object GameStarter {
             fun getEquivalentUnit(civ: CivilizationInfo, unitParam: String): String? {
                 var unit = unitParam // We want to change it and this is the easiest way to do so
                 if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
-                if (unit == "Settler" && "Settler" !in ruleSet.units) {
+                if (unit == Constants.settler && Constants.settler !in ruleSet.units) {
                     val buildableSettlerLikeUnits = 
                         settlerLikeUnits.filter {
                             it.value.isBuildable(civ)

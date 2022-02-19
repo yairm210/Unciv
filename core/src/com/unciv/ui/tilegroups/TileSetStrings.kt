@@ -17,21 +17,23 @@ class TileSetStrings(tileSet: String = UncivGame.Current.settings.tileSet, fallb
     val tileSetLocation = "TileSets/$tileSet/"
     val tileSetConfig = TileSetCache[tileSet] ?: TileSetConfig()
 
-    val hexagon = tileSetLocation + "Hexagon"
-    val crosshatchHexagon = tileSetLocation + "CrosshatchHexagon"
+    // These need to be by lazy since the orFallback expects a tileset, which it may not get.
+    val hexagon: String by lazy { orFallback {tileSetLocation + "Hexagon"} }
+    val hexagonList by lazy { listOf(hexagon) }
+    val crosshatchHexagon by lazy { orFallback { tileSetLocation + "CrosshatchHexagon" } }
+    val crosshair by lazy { orFallback { getString(tileSetLocation, "Crosshair") } }
+    val highlight by lazy { orFallback { getString(tileSetLocation, "Highlight") } }
     val cityOverlay = tileSetLocation + "CityOverlay"
     val roadsMap = RoadStatus.values()
         .filterNot { it == RoadStatus.None }
-        .map { it to tileSetLocation + it.name }
-        .toMap()
+        .associateWith { tileSetLocation + it.name }
     val naturalWonderOverlay = tileSetLocation + "NaturalWonderOverlay"
 
     val tilesLocation = tileSetLocation + "Tiles/"
     val cityTile = tilesLocation + "City"
-    val bottomRightRiver = tilesLocation + "River-BottomRight"
-    val bottomRiver = tilesLocation + "River-Bottom"
-    val bottomLeftRiver = tilesLocation + "River-BottomLeft"
-
+    val bottomRightRiver by lazy { orFallback { tilesLocation + "River-BottomRight"} }
+    val bottomRiver by lazy { orFallback { tilesLocation + "River-Bottom"} }
+    val bottomLeftRiver  by lazy { orFallback { tilesLocation + "River-BottomLeft"} }
     val unitsLocation = tileSetLocation + "Units/"
     val landUnit = unitsLocation + "LandUnit"
     val waterUnit = unitsLocation + "WaterUnit"

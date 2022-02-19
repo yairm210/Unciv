@@ -16,6 +16,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -62,7 +63,9 @@ object UnitActions {
         addEnhanceReligionAction(unit, actionList)
         actionList += getImprovementConstructionActions(unit, tile)
         addActionsWithLimitedUses(unit, actionList, tile)
-
+        addExplorationActions(unit, actionList)
+        addAutomateBuildingImprovementsAction(unit, actionList)
+        addTriggerUniqueActions(unit, actionList)
 
         addToggleActionsAction(unit, actionList, unitTable)
 
@@ -78,8 +81,6 @@ object UnitActions {
         addFortifyActions(actionList, unit, true)
 
         addSwapAction(unit, actionList, worldScreen)
-        addExplorationActions(unit, actionList)
-        addAutomateBuildingImprovementsAction(unit, actionList)
         addDisbandAction(actionList, unit, worldScreen)
         addGiftAction(unit, actionList, tile)
 
@@ -626,7 +627,7 @@ object UnitActions {
                 action = {
                     val unitTile = unit.getTile()
                     for (terrainFeature in tile.terrainFeatures.filter { unitTile.ruleset.tileImprovements.containsKey("Remove $it") })
-                        unitTile.terrainFeatures.remove(terrainFeature)// remove forest/jungle/marsh
+                        unitTile.removeTerrainFeature(terrainFeature)// remove forest/jungle/marsh
                     unitTile.improvement = improvementName
                     unitTile.improvementInProgress = null
                     unitTile.turnsToImprovement = 0
@@ -812,6 +813,18 @@ object UnitActions {
         }
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
+    }
+    
+    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
+        for (unique in unit.getUniques()) {
+            if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue
+            val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text){
+                UniqueTriggerActivation.triggerCivwideUnique(unique, unit.civInfo)
+                addStatsPerGreatPersonUsage(unit)
+                unit.destroy()
+            }
+            actionList += unitAction
+        }
     }
 
     private fun addToggleActionsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, unitTable: UnitTable) {

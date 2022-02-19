@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.CrashScreen
 import com.unciv.UncivGame
@@ -82,6 +83,7 @@ fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true, color: Co
     return IconCircleGroup(size, this, resizeActor, color)
 }
 
+
 fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table {
     val table = Table()
     table.pad(size)
@@ -91,6 +93,17 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table
     cell.fill()
     table.pack()
     return table
+}
+
+fun Group.addBorderAllowOpacity(size:Float, color: Color): Group {
+    val group = this
+    fun getTopBottomBorder() = ImageGetter.getDot(color).apply { width=group.width; height=size }
+    addActor(getTopBottomBorder().apply { setPosition(0f, group.height, Align.topLeft) })
+    addActor(getTopBottomBorder().apply { setPosition(0f, 0f, Align.bottomLeft) })
+    fun getLeftRightBorder() = ImageGetter.getDot(color).apply { width=size; height=group.height }
+    addActor(getLeftRightBorder().apply { setPosition(0f, 0f, Align.bottomLeft) })
+    addActor(getLeftRightBorder().apply { setPosition(group.width, 0f, Align.bottomRight) })
+    return group
 }
 
 

@@ -17,5 +17,12 @@ class ModConstants {
     val cityStrengthFromTechsExponent = 2.8
     val cityStrengthFromTechsFullMultiplier = 1.0
     val cityStrengthFromGarrison = 0.2
-    
+ 
+    // Formula for Unit Supply:
+    // Supply = unitSupplyBase (difficulties.json)
+    //          unitSupplyPerCity * amountOfCities + (difficulties.json) 
+    //          unitSupplyPerPopulation * amountOfPopulationInAllCities
+    // unitSupplyBase and unitSupplyPerCity can be found in difficulties.json
+    // unitSupplyBase, unitSupplyPerCity and unitSupplyPerPopulation can also be increased through uniques
+    val unitSupplyPerPopulation = 0.5
 }

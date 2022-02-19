@@ -12,6 +12,7 @@ data class StateForConditionals(
     val civInfo: CivilizationInfo? = null,
     val cityInfo: CityInfo? = null,
     val unit: MapUnit? = null,
+    val tile: TileInfo? = null,
 
     val ourCombatant: ICombatant? = null,
     val theirCombatant: ICombatant? = null,
@@ -19,4 +20,11 @@ data class StateForConditionals(
     val combatAction: CombatAction? = null,
 
     val region: Region? = null,
-)
+
+    val ignoreConditionals:Boolean = false,
+) {
+
+    companion object {
+        val IgnoreConditionals = StateForConditionals(ignoreConditionals = true)
+    }
+}
