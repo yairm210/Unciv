@@ -66,6 +66,10 @@ open class TileInfo {
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
     var terrainFeatures: List<String> = listOf()
+        private set
+    
+    @Transient
+    var terrainFeatureObjects: List<Terrain> = listOf()
 
 
     var naturalWonder: String? = null
@@ -870,13 +874,16 @@ open class TileInfo {
         }
     }
     
-    fun addTerrainFeature(terrainFeature:String) {
-        terrainFeatures = ArrayList(terrainFeatures).apply { add(terrainFeature) }
+    fun setTerrainFeatures(terrainFeatureList:List<String>){
+        terrainFeatures = terrainFeatureList
+        terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
     }
     
-    fun removeTerrainFeature(terrainFeature: String) {
-        terrainFeatures = ArrayList(terrainFeatures).apply { remove(terrainFeature) }
-    }
+    fun addTerrainFeature(terrainFeature:String) =
+        setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
+    
+    fun removeTerrainFeature(terrainFeature: String) =
+        setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })
 
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
@@ -905,7 +912,7 @@ open class TileInfo {
         if (naturalWonder != null) {
             val naturalWonder = ruleset.terrains[naturalWonder]!!
             baseTerrain = naturalWonder.turnsInto!!
-            terrainFeatures = listOf()
+            setTerrainFeatures(listOf())
             resource = null
             improvement = null
         }
@@ -961,7 +968,7 @@ open class TileInfo {
             val newTerrainFeatures = ArrayList<String>()
             newTerrainFeatures.add(Constants.hill)
             newTerrainFeatures.addAll(copy)
-            terrainFeatures = newTerrainFeatures
+            setTerrainFeatures(newTerrainFeatures)
         }
     }
 

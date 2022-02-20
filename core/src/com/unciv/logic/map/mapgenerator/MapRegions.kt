@@ -476,7 +476,7 @@ class MapRegions (val ruleset: Ruleset){
         val panicPosition = region.rect.getPosition(Vector2())
         val panicTerrain = ruleset.terrains.values.first { it.type == TerrainType.Land }.name
         region.tileMap[panicPosition].baseTerrain = panicTerrain
-        region.tileMap[panicPosition].terrainFeatures = listOf()
+        region.tileMap[panicPosition].setTerrainFeatures(listOf())
         setRegionStart(region, panicPosition)
     }
 

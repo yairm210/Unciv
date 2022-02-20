@@ -54,7 +54,7 @@ class UnitMovementAlgorithmsTests {
     fun canPassThroughPassableTerrains() {
         for (terrain in ruleSet.terrains.values) {
             tile.baseTerrain = terrain.name
-            tile.terrainFeatures = listOf()
+            tile.setTerrainFeatures(listOf())
             tile.setTransients()
 
             unit.baseUnit = BaseUnit().apply { unitType = "Sword"; ruleset = ruleSet }
@@ -112,7 +112,7 @@ class UnitMovementAlgorithmsTests {
     @Test
     fun canNOTEnterIce() {
         tile.baseTerrain = Constants.ocean
-        tile.terrainFeatures = listOf(Constants.ice)
+        tile.setTerrainFeatures(listOf(Constants.ice))
         tile.setTransients()
 
         for (type in ruleSet.unitTypes) {

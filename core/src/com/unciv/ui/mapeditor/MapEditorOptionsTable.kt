@@ -83,7 +83,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
         terrainFeaturesTable.add(getHex(ImageGetter.getRedCross(50f, 0.6f)).apply {
             onClick {
                 tileAction = {
-                    it.terrainFeatures = listOf()
+                    it.setTerrainFeatures(listOf())
                     it.naturalWonder = null
                     it.hasBottomRiver = false
                     it.hasBottomLeftRiver = false
