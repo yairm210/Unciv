@@ -39,12 +39,14 @@ class SaveGameScreen(val gameInfo: GameInfo) : PickerScreen(disableScroll = true
 
         val copyJsonButton = "Copy to clipboard".toTextButton()
         copyJsonButton.onClick {
-            try {
-                val json = Json().toJson(gameInfo)
-                val base64Gzip = Gzip.zip(json)
-                Gdx.app.clipboard.contents = base64Gzip
-            } catch (OOM: OutOfMemoryError) {
-                // you don't get a special toast, this isn't nearly common enough, this is a total edge-case
+            thread(name="Copy to clipboard") { // the Gzip rarely leads to ANRs
+                try {
+                    val json = Json().toJson(gameInfo)
+                    val base64Gzip = Gzip.zip(json)
+                    Gdx.app.clipboard.contents = base64Gzip
+                } catch (OOM: OutOfMemoryError) {
+                    // you don't get a special toast, this isn't nearly common enough, this is a total edge-case
+                }
             }
         }
         newSave.add(copyJsonButton).row()
