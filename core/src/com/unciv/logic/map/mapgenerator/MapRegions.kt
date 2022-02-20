@@ -487,7 +487,7 @@ class MapRegions (val ruleset: Ruleset){
     private fun normalizeStart(startTile: TileInfo, tileMap: TileMap, minorCiv: Boolean) {
         // Remove ice-like features adjacent to start
         for (tile in startTile.neighbors) {
-            val lastTerrain = tile.getTerrainFeaturesObjects().lastOrNull { it.impassable }
+            val lastTerrain = tile.terrainFeatureObjects.lastOrNull { it.impassable }
             if (lastTerrain != null) {
                 tile.removeTerrainFeature(lastTerrain.name)
             }
@@ -608,7 +608,7 @@ class MapRegions (val ruleset: Ruleset){
 
         // Start with list of candidate plots sorted in ring order 1,2,3
         val candidatePlots = startTile.getTilesInDistanceRange(1..rangeForBonuses)
-                .filter { it.resource == null && oasisEquivalent !in it.getTerrainFeaturesObjects() }
+                .filter { it.resource == null && oasisEquivalent !in it.terrainFeatureObjects }
                 .shuffled().sortedBy { it.aerialDistanceTo(startTile) }.toMutableList()
 
         // Place food bonuses (and oases) as able
@@ -1658,8 +1658,8 @@ class MapRegions (val ruleset: Ruleset){
 
             // Check first available out of unbuildable features, then other features, then base terrain
             val terrainToCheck = if (tile.terrainFeatures.isEmpty()) tile.getBaseTerrain()
-            else tile.getTerrainFeaturesObjects().firstOrNull { it.unbuildable }
-                    ?: tile.getTerrainFeaturesObjects().first()
+            else tile.terrainFeatureObjects.firstOrNull { it.unbuildable }
+                    ?: tile.terrainFeatureObjects.first()
 
             // Add all applicable qualities
             for (unique in terrainToCheck.getMatchingUniques(UniqueType.HasQuality, StateForConditionals(region = region))) {
@@ -1765,7 +1765,7 @@ class Region (val tileMap: TileMap, val rect: Rectangle, val continentID: Int = 
         terrainCounts.clear()
         for (tile in tiles) {
             val terrainsToCount = if (tile.getAllTerrains().any { it.hasUnique(UniqueType.IgnoreBaseTerrainForRegion) })
-                tile.getTerrainFeaturesObjects().map { it.name }.asSequence()
+                tile.terrainFeatureObjects.map { it.name }.asSequence()
             else
                 tile.getAllTerrains().map { it.name }
             for (terrain in terrainsToCount) {

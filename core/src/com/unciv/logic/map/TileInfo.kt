@@ -239,11 +239,10 @@ open class TileInfo {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    fun getTerrainFeaturesObjects(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
     fun getAllTerrains(): Sequence<Terrain> = sequence {
         yield(baseTerrainObject)
         if (naturalWonder != null) yield(getNaturalWonder())
-        yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
+        yieldAll(terrainFeatureObjects)
     }
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
@@ -273,7 +272,7 @@ open class TileInfo {
         
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this);
 
-        for (terrainFeatureBase in getTerrainFeaturesObjects()) {
+        for (terrainFeatureBase in terrainFeatureObjects) {
             when {
                 terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
                     return terrainFeatureBase.cloneStats()
@@ -369,7 +368,7 @@ open class TileInfo {
     private fun getTileStartYield(isCenter: Boolean): Float {
         var stats = getBaseTerrain().cloneStats()
 
-        for (terrainFeatureBase in getTerrainFeaturesObjects()) {
+        for (terrainFeatureBase in terrainFeatureObjects) {
             if (terrainFeatureBase.overrideStats)
                 stats = terrainFeatureBase.cloneStats()
             else
