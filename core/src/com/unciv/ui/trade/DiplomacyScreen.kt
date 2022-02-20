@@ -210,8 +210,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (relationLevel >= RelationshipLevel.Friend) {
             // RelationshipChange = Ally -> Friend or Friend -> Favorable
             val turnsToRelationshipChange = otherCivDiplomacyManager.getTurnsToRelationshipChange()
-            diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel())
-                .row()
+            if (turnsToRelationshipChange != 0)
+                diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel())
+                    .row()
         }
 
         val friendBonusLabelColor = if (relationLevel >= RelationshipLevel.Friend) Color.GREEN else Color.GRAY

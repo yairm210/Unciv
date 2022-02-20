@@ -200,6 +200,7 @@ class DiplomacyManager() {
         if (civInfo.isCityState() && !otherCiv().isCityState()) {
             val dropPerTurn = getCityStateInfluenceDegrade()
             return when {
+                dropPerTurn == 0f -> 0
                 relationshipLevel() >= RelationshipLevel.Ally -> ceil((influence - 60f) / dropPerTurn).toInt() + 1
                 relationshipLevel() >= RelationshipLevel.Friend -> ceil((influence - 30f) / dropPerTurn).toInt() + 1
                 else -> 0
