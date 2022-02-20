@@ -57,27 +57,35 @@ Triggers indicate context (call it intent, mood, whatever, it doesn't matter) by
 
 The current list of triggers is as follows:
 
-| Description | Prefix | [M] | Suffix | [M] | Flags |
+| Description | Prefix | M[^M] | Suffix | M[^X] | Flags |
 | ----------- |:------ |:---:| ----:|:---:|:---:|
-| Automatic next-track, game launch | Ambient | | | | |
-| Every 5th turn | (civ name) | M | Peace or War[1] | | [F] |
-| New game: Select a mod | (mod name) | M | Theme | | [S] |
-| New game: Pick a nation for a player | (nation name) | M | Theme | | [S] |
-| Diplomacy: Select player | (nation name) | M | Peace or War[2] | | [S] |
-| First contact[3] | (civ name) | M | Peace | M | |
-| War declaration | (civ name) | M | War | M | |
-| Civ defeated | (civ name) | M | Defeat | M | |
-| Golden Age | (civ name) | M | Golden | M | |
-| Wonder built | (wonder name) | M | Built | M | |
-| Tech researched | (tech name) | M | Researched | M | |
-| Map editor: Select nation start location | (nation name) | M | Theme | | [S] |
-| Options: Volume slider | | | | | [D] |
+| Automatic next-track[^0] | | | Ambient | | |
+| Launch game[^1] | | | Menu | | |
+| Every 10th turn | (player civ name) | M | Peace or War[^2] | | F[^F] |
+| New game: Select a mod | (mod name) | M | Theme | | S[^S] |
+| New game: Pick a nation for a player | (nation name) | M | Theme or Peace | | S[^S] |
+| Diplomacy: Select player | (nation name) | M | Peace or War[^3] | | S[^S] |
+| First contact[^4] | (civ name) | M | Theme or Peace | M | |
+| War declaration[^5] | (civ name) | M | War | M | |
+| Civ defeated | (civ name) | | Defeat | M | |
+| Golden Age | (civ name) | M | Golden | M | N[^N] |
+| Wonder built | (wonder name) | M | Built | M | N[^N] |
+| Tech researched | (tech name) | M | Researched | M | N[^N] |
+| Map editor: Select nation start location | (nation name) | M | Theme | | S[^S] N[^N] |
+| Options: Volume slider or Default track downloaded | | | | | D[^D] |
+| Options: Click currently playing label[^6] | | M | Ambient | | S[^S] | 
 
 Legend:
-[M]: Must Match. If no matching file is found, the trigger will do nothing.
-[S]: Stop after playback. No automatic next choice.
-[F]: Slow fadeout of replaced track.
-[D]: Always plays the default file.
-[1]: Whether the active player is at war with anybody
-[2]: According to your relation to the picked player
-[3]: Including Citystates
+[^N]: **Not implemented**
+[^M]: Prefix must match. If no matching file is found, the trigger will do nothing.
+[^X]: Suffix must match. If no matching file is found, the trigger will do nothing.
+[^S]: Stop after playback. No automatic next choice.
+[^F]: Slow fadeout of replaced track.
+[^D]: Always plays the default file.
+[^0]: Whenever a track finishes and the configured silence has elapsed, an 'Ambient' track without any context is chosen. Also triggered by 'resume' (e.g. switching to another app and back on Android)
+[^1]: First opening of the Main Menu (or the initial language picker).
+[^2]: Whether the active player is at war with anybody.
+[^3]: According to your relation to the picked player.
+[^4]: Excluding City States.
+[^5]: Both in the alert when another player declares War on you and declaring War yourself in Diplomacy screen.
+[^6]: Yes these flags are not optimal.
