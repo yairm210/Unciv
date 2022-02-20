@@ -194,13 +194,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     fun getStatPercentageBonuses(cityInfo: CityInfo?): Stats {
         val stats = percentStatBonus?.clone() ?: Stats()
         val civInfo = cityInfo?.civInfo ?: return stats  // initial stats
-
-        // Deprecated since 3.18.17
-            for (unique in civInfo.getMatchingUniques(UniqueType.StatPercentSignedFromObject)) {
-                if (matchesFilter(unique.params[2]))
-                    stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
-            }
-        //
         
         for (unique in civInfo.getMatchingUniques(UniqueType.StatPercentFromObject)) {
             if (matchesFilter(unique.params[2]))

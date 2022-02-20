@@ -443,19 +443,14 @@ open class TileInfo {
                 }
             }
             
-            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState) + 
-                city.getMatchingUniques(UniqueType.AllStatsSignedPercentFromObject) // Deprecated
-            ) {
+            for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
                 if (improvement.matchesFilter(unique.params[1]))
                     stats.timesInPlace(unique.params[0].toPercent())
             }
         }
 
         if (city == null) { // As otherwise we already got this above
-            for (unique in 
-                observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState) +
-                observingCiv.getMatchingUniques(UniqueType.AllStatsSignedPercentFromObject) // Deprecated
-            ) {
+            for (unique in observingCiv.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
                 if (improvement.matchesFilter(unique.params[1]))
                     stats.timesInPlace(unique.params[0].toPercent())
             }

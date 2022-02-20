@@ -261,10 +261,6 @@ class DiplomacyManager() {
         }
 
         var modifierPercent = 0f
-        // Deprecated since 3.18.17
-            for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateInfluenceDegradationDeprecated))
-                modifierPercent -= unique.params[0].toFloat()
-        //
         for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateInfluenceDegradation))
             modifierPercent += unique.params[0].toFloat()
 

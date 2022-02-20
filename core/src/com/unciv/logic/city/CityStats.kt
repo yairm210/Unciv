@@ -358,12 +358,6 @@ class CityStats(val cityInfo: CityInfo) {
             buildingsMaintenance *= cityInfo.civInfo.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
         }
 
-        // e.g. "-[50]% maintenance costs for buildings [in this city]"
-        // Deprecated since 3.18.17
-            for (unique in cityInfo.getMatchingUniques(UniqueType.DecreasedBuildingMaintenanceDeprecated)) {
-                buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
-            }
-        //
         for (unique in cityInfo.getMatchingUniques(UniqueType.BuildingMaintenance)) {
             buildingsMaintenance *= unique.params[0].toPercent()
         }

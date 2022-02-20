@@ -92,10 +92,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 transportationUpkeep += tile.roadStatus.upkeep
             }
         }
-        // Deprecated since 3.18.17
-            for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedRoadMaintenanceDeprecated))
-                transportationUpkeep *= (100f - unique.params[0].toInt()) / 100
-        //
         for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
             transportationUpkeep *= unique.params[0].toPercent()
 
@@ -246,11 +242,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for (unique in 
-            // Deprecated since 3.18.17
-                civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxuryDeprecated) +
-            //
-            civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxury))
+        for (unique in civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxury))
             happinessPerUniqueLuxury += unique.params[0].toInt()
 
         val ownedLuxuries = civInfo.getCivResources().map { it.resource }
@@ -264,12 +256,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Luxury resources"] = relevantLuxuries * happinessPerUniqueLuxury
 
         val happinessBonusForCityStateProvidedLuxuries =
-            (
-                // Deprecated since 3.18.17
-                    civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappinessDeprecated) + 
-                //        
-                civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappiness)
-            ).sumOf { it.params[0].toInt() } / 100f
+            civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappiness).sumOf { it.params[0].toInt() } / 100f
 
         val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
             .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }

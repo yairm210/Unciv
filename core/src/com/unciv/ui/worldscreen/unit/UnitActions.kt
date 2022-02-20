@@ -487,10 +487,6 @@ object UnitActions {
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
                         var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
-                        // Deprecated since 3.18.17
-                            if (unit.civInfo.hasUnique(UniqueType.DoubleGoldFromTradeMissions))
-                                goldEarned *= 2f
-                        //
                         for (goldUnique in unit.civInfo.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
                             goldEarned *= goldUnique.params[0].toPercent()
                         unit.civInfo.addGold(goldEarned.toInt())

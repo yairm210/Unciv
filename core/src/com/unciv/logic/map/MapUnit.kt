@@ -521,12 +521,6 @@ class MapUnit {
     fun getCostOfUpgrade(): Int {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2f + 10f
-        // Deprecated since 3.18.17
-            for (unique in civInfo.getMatchingUniques(UniqueType.ReducedUpgradingGoldCost)) {
-                if (matchesFilter(unique.params[0]))
-                    goldCostOfUpgrade *= (1 - unique.params[1].toFloat() / 100f)
-            }
-        //
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitUpgradeCost, StateForConditionals(civInfo, unit=this)))
             goldCostOfUpgrade *= unique.params[0].toPercent()
 

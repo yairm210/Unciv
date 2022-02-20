@@ -61,15 +61,6 @@ object BattleDamage {
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
 
-            // Deprecated since 3.18.17
-                for (unique in civInfo.getMatchingUniques(UniqueType.StrengthFromAdjacentUnits)) {
-                    if (combatant.matchesCategory(unique.params[1])
-                        && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) }
-                    ) {
-                        modifiers.add("Adjacent units", unique.params[0].toInt())
-                    }
-                }
-            //
 
             for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
                 .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
@@ -178,18 +169,6 @@ object BattleDamage {
                 }
             }
 
-        } else if (attacker is CityCombatant) {
-            // Deprecated since 3.19.1
-                if (attacker.city.getCenterTile().militaryUnit != null) {
-                    val garrisonBonus = attacker.city.getMatchingUniques(UniqueType.StrengthForGarrisonedCitiesAttacking)
-                        .sumOf { it.params[0].toInt() }
-                    if (garrisonBonus != 0)
-                        modifiers["Garrisoned unit"] = garrisonBonus
-                }
-                for (unique in attacker.city.getMatchingUniques(UniqueType.StrengthForCitiesAttacking)) {
-                    modifiers.add("Attacking Bonus", unique.params[0].toInt())
-                }
-            //
         }
 
         return modifiers
@@ -222,11 +201,6 @@ object BattleDamage {
 
             if (defender.unit.isFortified())
                 modifiers["Fortification"] = 20 * defender.unit.getFortificationTurns()
-        } else if (defender is CityCombatant) {
-
-            modifiers["Defensive Bonus"] =
-                defender.city.civInfo.getMatchingUniques(UniqueType.StrengthForCitiesDefending)
-                    .map { it.params[0].toFloat() / 100f }.sum().toInt()
         }
 
         return modifiers
