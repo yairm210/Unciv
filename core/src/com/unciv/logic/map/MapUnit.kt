@@ -904,7 +904,7 @@ class MapUnit {
 
         var goldGained =
             civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        if (civInfo.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities"))
+        if (civInfo.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
             goldGained *= 3f
 
         civInfo.addGold(goldGained.toInt())

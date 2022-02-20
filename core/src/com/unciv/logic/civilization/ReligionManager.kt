@@ -121,7 +121,7 @@ class ReligionManager {
         if (getGreatProphetEquivalent() == null) return false
         if (storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv()) return false
-        if (civInfo.hasUnique("May not generate great prophet equivalents naturally")) return false
+        if (civInfo.hasUnique(UniqueType.MAyNotGenerateGreatProphet)) return false
         return true
     }
     

@@ -117,7 +117,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
             civInfo.discoverNaturalWonder(tile.naturalWonder!!)
-            civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, "StatIcons/Happiness")
+            civInfo.addNotification("We have discovered [${tile.naturalWonder}]!", tile.position, "StatIcons/Happiness")
 
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
@@ -133,7 +133,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
             if (goldGained > 0) {
                 civInfo.addGold(goldGained)
-                civInfo.addNotification("We have received [" + goldGained + "] Gold for discovering [" + tile.naturalWonder + "]", NotificationIcon.Gold)
+                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]", NotificationIcon.Gold)
             }
 
         }
@@ -141,7 +141,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
     fun updateHasActiveGreatWall() {
         civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") &&
-                civInfo.hasUnique("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
+                civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
     }
 
 

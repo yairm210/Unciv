@@ -338,7 +338,7 @@ object Battle {
 
             // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
             if (defender.isDefeated()
-                    && attacker.getCivInfo().hasUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
+                    && attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitBarbarianFromEncampment)
                     && Random().nextDouble() < 0.67) {
                 attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
                 attacker.getCivInfo().addGold(25)
@@ -350,7 +350,7 @@ object Battle {
         }
 
         // Similarly, Ottoman unique
-        if (attacker.getCivInfo().hasUnique("50% chance of capturing defeated Barbarian naval units and earning 25 Gold")
+        if (attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitNavalBarbarian)
                 && defender.isDefeated()
                 && defender is MapUnitCombatant
                 && defender.unit.baseUnit.isWaterUnit()

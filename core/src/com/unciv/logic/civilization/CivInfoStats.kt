@@ -291,7 +291,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
         }
 
-        if (civInfo.hasUnique("Provides 1 happiness per 2 additional social policies adopted")) {
+        if (civInfo.hasUnique(UniqueType.HappinessPer2Policies)) {
             if (!statMap.containsKey("Policies")) statMap["Policies"] = 0f
             statMap["Policies"] = statMap["Policies"]!! +
                     civInfo.policies.getAdoptedPolicies()

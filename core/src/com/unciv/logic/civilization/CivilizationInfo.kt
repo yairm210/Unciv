@@ -375,7 +375,6 @@ class CivilizationInfo {
 
     fun hasUnique(uniqueType: UniqueType, stateForConditionals: StateForConditionals =
         StateForConditionals(this)) = getMatchingUniques(uniqueType, stateForConditionals).any()
-    fun hasUnique(unique: String) = getMatchingUniques(unique).any()
         
     // Does not return local uniques, only global ones.
     /** Destined to replace getMatchingUniques, gradually, as we fill the enum */
