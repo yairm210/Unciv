@@ -637,11 +637,16 @@ open class TileInfo {
     }
 
     fun canBeSettled(): Boolean {
+        val modConstants = tileMap.gameInfo.ruleSet.modOptions.constants
         if (isWater || isImpassible())
             return false
-        if (getTilesInDistance(2).any { it.isCityCenter() } ||
-                getTilesAtDistance(3).any { it.isCityCenter() && it.getContinent() == getContinent() })
-                    return false
+        if (getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
+                .any { it.isCityCenter() && it.getContinent() != getContinent() } 
+            || getTilesInDistance(modConstants.minimalCityDistance)
+                .any { it.isCityCenter() && it.getContinent() == getContinent() }
+        ) {
+            return false
+        }
         return true
     }
 
