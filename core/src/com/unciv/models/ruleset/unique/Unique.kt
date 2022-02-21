@@ -140,7 +140,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.policies.isAdopted(condition.params[0])
             UniqueType.ConditionalNoPolicy ->
                 state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
-            UniqueType.ConditionalWonderBuilt -> 
+            UniqueType.ConditionalBuildingBuilt -> 
                 state.civInfo != null && state.civInfo.cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
 
             UniqueType.ConditionalCityWithBuilding -> 

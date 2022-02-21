@@ -571,7 +571,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
-    ConditionalWonderBuilt("if [buildingName] is constructed", UniqueTarget.Conditional),
+    ConditionalBuildingBuilt("if [buildingName] is constructed", UniqueTarget.Conditional),
 
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
     ConditionalConsumeUnit("by consuming this unit", UniqueTarget.Conditional),
