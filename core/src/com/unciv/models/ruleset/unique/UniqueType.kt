@@ -451,7 +451,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     CannotBeBarbarian("Never appears as a Barbarian unit", UniqueTarget.Unit, flags = listOf(UniqueFlag.HiddenToUsers)),
     
     ReligiousUnit("Religious Unit", UniqueTarget.Unit),
-    SpaceshipPart("Spaceship part", UniqueTarget.Unit),
+    SpaceshipPart("Spaceship part", UniqueTarget.Unit, UniqueTarget.Building), // Usage for buildings is deprecated 
     AddInCapital("Can be added to [comment] in the Capital", UniqueTarget.Unit),
 
     
