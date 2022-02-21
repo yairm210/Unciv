@@ -146,7 +146,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (otherCiv.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }) {
             val resourcesTable = Table()
             resourcesTable.add("{Resources}:  ".toLabel()).padRight(10f)
-            for (supplyList in otherCiv.detailedCivResources) {
+            val cityStateResources = CityStateFunctions(otherCiv)
+                .getCityStateResourcesForAlly()
+            for (supplyList in cityStateResources) {
                 if (supplyList.resource.resourceType == ResourceType.Bonus)
                     continue
                 val name = supplyList.resource.name
@@ -173,7 +175,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         val ally = otherCiv.getAllyCiv()
         if (ally != null) {
             val allyString = "{Ally}: {$ally} {Influence}: ".tr() +
-                    otherCiv.getDiplomacyManager(ally).influence.toString()
+                    otherCiv.getDiplomacyManager(ally).influence.toInt().toString()
             diplomacyTable.add(allyString.toLabel()).row()
         }
 

@@ -4,6 +4,7 @@ import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -650,5 +651,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             )
         }
     }
-
+    
+    fun getCityStateResourcesForAlly(): ResourceSupplyList {
+        val newDetailedCivResources = ResourceSupplyList()
+        for (city in civInfo.cities) {
+            for (resourceSupply in city.getCityResources())
+                if (resourceSupply.amount > 0) // IGNORE the fact that they consume their own resources - #4769
+                    newDetailedCivResources.add(resourceSupply.resource, resourceSupply.amount, "City-States")
+        }
+        return newDetailedCivResources
+    }
 }
