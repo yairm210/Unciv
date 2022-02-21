@@ -280,7 +280,7 @@ class TechManager {
         }
 
         val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
-        val unitUpgrades = HashMap<String, ArrayList<CityInfo>>()
+        val unitUpgrades = HashMap<String, HashSet<CityInfo>>()
         for (city in civInfo.cities) {
             // Do not use replaceAll - that's a Java 8 feature and will fail on older phones!
             val oldQueue = city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
@@ -288,7 +288,7 @@ class TechManager {
             for (constructionName in oldQueue) {
                 if (constructionName in obsoleteUnits) {
                     if (constructionName !in unitUpgrades.keys) {
-                        unitUpgrades[constructionName] = ArrayList<CityInfo>()
+                        unitUpgrades[constructionName] = hashSetOf()
                     }
                     unitUpgrades[constructionName]?.add(city)
                     val construction = city.cityConstructions.getConstruction(constructionName)
@@ -301,9 +301,9 @@ class TechManager {
 
         // Add notifications for obsolete units/constructions
         for ((unit, cities) in unitUpgrades) {
-            val construction = cities[0].cityConstructions.getConstruction(unit)
+            val construction = cities.first().cityConstructions.getConstruction(unit)
             if (cities.size == 1) {
-                val city = cities[0]
+                val city = cities.first()
                 if (construction is BaseUnit && construction.upgradesTo != null) {
                     val text = "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
                     civInfo.addNotification(text, city.location, unit, NotificationIcon.Construction, construction.upgradesTo!!)
