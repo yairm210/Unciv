@@ -70,6 +70,7 @@ open class TileInfo {
     
     @Transient
     var terrainFeatureObjects: List<Terrain> = listOf()
+        private set
 
 
     var naturalWonder: String? = null

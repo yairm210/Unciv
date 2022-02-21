@@ -321,6 +321,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
         for (terrain in ruleset.terrains.values) {
             val tileInfo = TileInfo()
+            tileInfo.ruleset = ruleset
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn.isNotEmpty() -> terrain.occursOn.first()
