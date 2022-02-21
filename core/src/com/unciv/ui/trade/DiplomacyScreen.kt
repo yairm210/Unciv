@@ -174,9 +174,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
         if (ally != null) {
-            val allyString = "{Ally}: {$ally} {Influence}: ".tr() +
-                    otherCiv.getDiplomacyManager(ally).influence.toInt().toString()
-            diplomacyTable.add(allyString.toLabel()).row()
+            val allyInfluence = otherCiv.getDiplomacyManager(ally).influence.toInt()
+            diplomacyTable
+                .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
+                .row()
         }
 
         val protectors = otherCiv.getProtectorCivs()
