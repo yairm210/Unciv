@@ -314,6 +314,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
         UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
     @Deprecated("as of 3.19.8", ReplaceWith("Only available <after adopting [buildingName/tech/resource/policy]>\"" +
             " OR \"Only available <with [buildingName/tech/resource/policy]>\"" +
+            " OR \"Only available <if [buildingName/tech/resource/policy] is constructed>\"" +
             " OR \"Only available <after discovering [buildingName/tech/resource/policy]>"))
     NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
@@ -570,6 +571,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
+    ConditionalWonderBuilt("if [buildingName] is constructed", UniqueTarget.Conditional),
 
     ConditionalTimedUnique("for [amount] turns", UniqueTarget.Conditional),
     ConditionalConsumeUnit("by consuming this unit", UniqueTarget.Conditional),

@@ -406,7 +406,7 @@ class Ruleset {
 
         val deprecationAnnotation = unique.getDeprecationAnnotation()
         if (deprecationAnnotation != null) {
-            val replacementUniqueText = unique.getReplacementText()
+            val replacementUniqueText = unique.getReplacementText(this)
             val deprecationText =
                 "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
                         if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""

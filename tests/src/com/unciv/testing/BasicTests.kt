@@ -160,7 +160,7 @@ class BasicTests {
                         break
                     }
                     iteration++
-                    replacementUnique = Unique(replacementUnique.getReplacementText())
+                    replacementUnique = Unique(replacementUnique.getReplacementText(ruleset))
                 }
             }
         }
