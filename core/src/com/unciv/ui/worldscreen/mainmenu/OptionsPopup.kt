@@ -338,6 +338,11 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                             label.wrap = true
                             it.add(label).width(stage.width / 2).row()
                         }
+                        if(!noProblem)
+                            it.add("Copy to clipboard".toTextButton().onClick {
+                                Gdx.app.clipboard.contents = lines.map { it.text }.filterNot { it=="" }
+                                    .joinToString("\n")  
+                            }).row()
                     }
 
                     val loadingLabel = modCheckResultTable.children.last()
