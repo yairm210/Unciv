@@ -30,6 +30,7 @@ import com.unciv.ui.utils.MayaCalendar
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -899,23 +900,23 @@ class CivilizationInfo {
 
             if (flagsCountdown[flag]!! > 0)
                 flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-            
+
             if (flagsCountdown[flag] != 0) continue
-            
+
             when (flag) {
                 CivFlags.RevoltSpawning.name -> doRevoltSpawn()
             }
         }
         handleDiplomaticVictoryFlags()
     }
-    
+
     private fun handleDiplomaticVictoryFlags() {
         if (flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
             gameInfo.diplomaticVictoryVotesCast.clear()
             removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
             removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
         }
-        
+
         if (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0) {
             if (gameInfo.civilizations.any { it.victoryManager.hasWon() } ) {
                 removeFlag(CivFlags.TurnsTillNextDiplomaticVote.name)
@@ -924,7 +925,7 @@ class CivilizationInfo {
                 addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
             }
         }
-        
+
         if (flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name] == 0) {
             addFlag(CivFlags.ShowDiplomaticVotingResults.name, 1)
         }
@@ -960,23 +961,31 @@ class CivilizationInfo {
         shouldShowDiplomaticVotingResults()
 
     private fun updateRevolts() {
-        if (gameInfo.civilizations.none { it.civName == Constants.barbarians }) {
+        if (gameInfo.civilizations.none { it.isBarbarian() }) {
             // Can't spawn revolts without barbarians ¯\_(ツ)_/¯
             return
         }
-        
+
         if (!hasUnique(UniqueType.SpawnRebels)) {
             removeFlag(CivFlags.RevoltSpawning.name)
             return
         }
-        
+
         if (!hasFlag(CivFlags.RevoltSpawning.name)) {
             addFlag(CivFlags.RevoltSpawning.name, max(getTurnsBeforeRevolt(),1))
             return
         }
     }
-    
+
     private fun doRevoltSpawn() {
+        val barbarians = try {
+            // The first test in `updateRevolts` should prevent getting here in a no-barbarians game, but it has been shown to still occur
+            gameInfo.getBarbarianCivilization()
+        } catch (ex: NoSuchElementException) {
+            removeFlag(CivFlags.RevoltSpawning.name)
+            return
+        }
+
         val random = Random()
         val rebelCount = 1 + random.nextInt(100 + 20 * (cities.size - 1)) / 100
         val spawnCity = cities.maxByOrNull { random.nextInt(it.population.population + 10) } ?: return
@@ -987,21 +996,21 @@ class CivilizationInfo {
         }.maxByOrNull {
             random.nextInt(1000)
         } ?: return
-        
+
         repeat(rebelCount) {
             gameInfo.tileMap.placeUnitNearTile(
                 spawnTile.position,
                 unitToSpawn.name,
-                gameInfo.getBarbarianCivilization()
+                barbarians
             )
         }
-        
+
         // Will be automatically added again as long as unhappiness is still low enough
         removeFlag(CivFlags.RevoltSpawning.name) 
-        
+
         addNotification("Your citizens are revolting due to very high unhappiness!", spawnTile.position, unitToSpawn.name, "StatIcons/Malcontent")
     }
-    
+
     // Higher is better
     private fun rateTileForRevoltSpawn(tile: TileInfo): Int {
         if (tile.isWater || tile.militaryUnit != null || tile.civilianUnit != null || tile.isCityCenter() || tile.isImpassible()) 
@@ -1017,12 +1026,12 @@ class CivilizationInfo {
             score += 4
         return score
     }
-    
+
     private fun getTurnsBeforeRevolt(): Int {
         val score = ((4 + Random().nextInt(3)) * max(gameInfo.gameParameters.gameSpeed.modifier, 1f)).toInt()
         return score
     }
-    
+
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
      */
