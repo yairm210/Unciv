@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.Constants
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
@@ -57,7 +58,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
         val replacementUniqueText = deprecationAnnotation.replaceWith.expression
         val deprecatedUniquePlaceholders = type!!.text.getPlaceholderParameters()
-        val possibleUniques = replacementUniqueText.split("\" OR \"")
+        val possibleUniques = replacementUniqueText.split(Constants.uniqueOrDelimiter)
 
         // Here, for once, we DO want the conditional placeholder parameters together with the regular ones,
         //  so we cheat the conditional detector by removing the '<'

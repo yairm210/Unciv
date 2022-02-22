@@ -2,6 +2,7 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.models.metadata.BaseRuleset
@@ -130,7 +131,7 @@ class BasicTests {
         for (uniqueType in UniqueType.values()) {
             val deprecationAnnotation = uniqueType.getDeprecationAnnotation() ?: continue
             
-            val uniquesToCheck = deprecationAnnotation.replaceWith.expression.split("\", \"", "\" OR \"")
+            val uniquesToCheck = deprecationAnnotation.replaceWith.expression.split("\", \"", Constants.uniqueOrDelimiter)
             
             for (uniqueText in uniquesToCheck) {
                 val replacementTextUnique = Unique(uniqueText)

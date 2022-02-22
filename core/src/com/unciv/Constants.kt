@@ -59,6 +59,8 @@ object Constants {
     const val lowering = "Lowering"
     const val remove = "Remove "
     
+    const val uniqueOrDelimiter = "\" OR \""
+    
     const val minimumMovementEpsilon = 0.05
     const val defaultFontSize = 18
     const val headingFontSize = 24
