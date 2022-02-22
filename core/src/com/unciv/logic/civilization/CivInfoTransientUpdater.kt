@@ -172,14 +172,12 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             var resourceBonusPercentage = 1f
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
-            for (city in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }
-                .flatMap { it.cities }) {
-                for (resourceSupply in city.getCityResources())
-                    if (resourceSupply.origin != "Buildings") // IGNORE the fact that they consume their own resources - #4769
-                        newDetailedCivResources.add(
-                            resourceSupply.resource,
-                            (resourceSupply.amount * resourceBonusPercentage).toInt(), "City-States"
-                        )
+            for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
+                for (resource in CityStateFunctions(cityStateAlly).getCityStateResourcesForAlly()) {
+                    newDetailedCivResources.add(
+                        resource.apply { amount = (amount * resourceBonusPercentage).toInt() }
+                    )
+                }
             }
         }
 
