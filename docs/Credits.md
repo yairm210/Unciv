@@ -143,6 +143,10 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Modern Armor](https://thenounproject.com/search/?q=tank&i=218) By Public Domain Nouns for Modern Armor
 * [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
 * [Robot](https://thenounproject.com/term/robot/1182459/) by Lluisa Iborra, ES for Giant Death Robot
+* [Missile](https://thenounproject.com/term/missile/799922/) By ProSymbols for SS Booster
+* [Rocket](https://thenounproject.com/term/rocket/937173/) By BomSymbols for SS Cockpit
+* [Engine](https://thenounproject.com/term/engine/1877958/) By Andre for SS Engine
+* [Chamber](https://thenounproject.com/term/chamber/1242689/) By IYIKON for SS Stasis Chamber
 
 
 ### All Eras
@@ -334,13 +338,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 ### Information Era
 * [CN Tower Toronto](https://thenounproject.com/search/?q=cn%20tower&i=807678) By mikicon for CN tower
 * [War Shelter](https://www.flaticon.com/free-icon/war-shelter_978661) by [Frepik](www.freepik.com) for Bomb Shelter
-* [Missile](https://thenounproject.com/term/missile/799922/) By ProSymbols for SS Booster
-* [Rocket](https://thenounproject.com/term/rocket/937173/) By BomSymbols for SS Cockpit
 * [Hubble Telescope](https://thenounproject.com/search/?q=hubble%20space&i=445502) By Scott Lewis for Hubble Space Telescope
 * [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
 * [United Nations](https://thenounproject.com/search/?q=united+nations&i=3104698) by Imam for United Nations
-* [Engine](https://thenounproject.com/term/engine/1877958/) By Andre for SS Engine
-* [Chamber](https://thenounproject.com/term/chamber/1242689/) By IYIKON for SS Stasis Chamber
 
 ### All Era's
 * [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
