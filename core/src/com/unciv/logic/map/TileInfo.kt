@@ -516,7 +516,7 @@ open class TileInfo {
             } -> false
             // Road improvements can change on tiles with irremovable improvements - nothing else can, though.
             RoadStatus.values().none { it.name == improvement.name || it.removeAction == improvement.name }
-                    && getTileImprovement().let { it != null && it.hasUnique("Irremovable") } -> false
+                    && getTileImprovement().let { it != null && it.hasUnique( UniqueType.Irremovable) } -> false
 
             // Terrain blocks BUILDING improvements - removing things (such as fallout) is fine
             !improvement.name.startsWith(Constants.remove) &&

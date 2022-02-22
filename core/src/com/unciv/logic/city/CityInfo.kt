@@ -265,7 +265,7 @@ class CityInfo {
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values
             .asSequence()
-            .filter { it.uniques.contains("Indicates the capital city") }
+            .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
         return civSpecificBuilding?.name ?: indicatorBuildings.first().name
@@ -372,7 +372,7 @@ class CityInfo {
             var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
                 else 1
             if (resource.resourceType == ResourceType.Luxury
-                && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City")
+                && containsBuildingUnique(UniqueType.ProvidesExtraLuxuryFromCityResources)
             )
                 amountToAdd += 1
 
@@ -401,9 +401,6 @@ class CityInfo {
         if (!isStarving()) return null
         return population.foodStored / -foodForNextTurn() + 1
     }
-
-    fun containsBuildingUnique(unique: String) =
-        cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }

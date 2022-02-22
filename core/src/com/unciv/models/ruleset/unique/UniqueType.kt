@@ -346,6 +346,12 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     Unsellable("Unsellable", UniqueTarget.Building),
     ObsoleteWith("Obsolete with [tech]", UniqueTarget.Building, UniqueTarget.Resource, UniqueTarget.Improvement),
+    IndicatesCapital("Indicates the capital city", UniqueTarget.Building),
+    ProvidesExtraLuxuryFromCityResources("Provides 1 extra copy of each improved luxury resource near this City", UniqueTarget.Building),
+    
+    DestroyedWhenCityCaptured("Destroyed when the city is captured", UniqueTarget.Building),
+    NotDestroyedWhenCityCaptured("Never destroyed when the city is captured", UniqueTarget.Building),
+    DoublesGoldFromCapturingCity("Doubles Gold given to enemy if city is captured", UniqueTarget.Building),
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
 
@@ -546,8 +552,8 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     IsAncientRuinsEquivalent("Provides a random bonus when entered", UniqueTarget.Improvement),
     
     Unpillagable("Unpillagable", UniqueTarget.Improvement),
-
     Indestructible("Indestructible", UniqueTarget.Improvement),
+    Irremovable("Irremovable", UniqueTarget.Improvement),
     //endregion
 
     ///////////////////////////////////////// region CONDITIONALS /////////////////////////////////////////
