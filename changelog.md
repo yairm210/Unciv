@@ -1,3 +1,26 @@
+## 3.19.11
+
+Mod autoupdate improvements
+
+Performance improvements
+
+Added "copy to clipboard" button for mod errors
+
+Multiple small improvements
+
+By SomeTroglodyte:
+- Resolved no-barbarian mod error
+- Minimum window size
+
+By xlenstra:
+- Reorganized the way city states grant resources
+- Made spaceship parts units instead of buildings
+- Added mod constants for the distance between two cities
+
+By itanasi:
+- Updating Embarking Tutorial with more details
+- Made multiple tile defense bonuses stack
+
 ## 3.19.10
 
 Show json parsing errors for mods in the options menu
