@@ -317,6 +317,20 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
             " OR \"Only available <if [buildingName/tech/resource/policy] is constructed>\"" +
             " OR \"Only available <after discovering [buildingName/tech/resource/policy]>"))
     NotDisplayedWithout("Not displayed as an available construction without [buildingName/tech/resource/policy]", UniqueTarget.Building, UniqueTarget.Unit),
+
+    @Deprecated("as of 3.19.12", ReplaceWith("Only available <after adopting [buildingName/tech/era/policy]>\"" +
+            " OR \"Only available <if [buildingName/tech/era/policy] is constructed>\"" +
+            " OR \"Only available <starting from the [buildingName/tech/era/policy]>\"" +
+            " OR \"Only available <after discovering [buildingName/tech/era/policy]>"))
+    UnlockedWith("Unlocked with [buildingName/tech/era/policy]", UniqueTarget.Building, UniqueTarget.Unit),
+
+
+    @Deprecated("as of 3.19.12", ReplaceWith("Only available <after adopting [buildingName/tech/era/policy]>\"" +
+            " OR \"Only available <if [buildingName/tech/era/policy] is constructed>\"" +
+            " OR \"Only available <starting from the [buildingName/tech/era/policy]>\"" +
+            " OR \"Only available <after discovering [buildingName/tech/era/policy]>"))
+    Requires("Requires [buildingName/tech/era/policy]", UniqueTarget.Building, UniqueTarget.Unit),
+    
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
     RequiresPopulation("Requires at least [amount] population", UniqueTarget.Building, UniqueTarget.Unit),
     

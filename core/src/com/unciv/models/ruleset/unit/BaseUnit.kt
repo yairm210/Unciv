@@ -393,7 +393,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-        for (unique in getMatchingUniques("Unlocked with []") + getMatchingUniques("Requires []")) {
+        // This should be deprecated and replaced with the already-existing "only available when" unique, see above
+        for (unique in getMatchingUniques(UniqueType.UnlockedWith) + getMatchingUniques(UniqueType.Requires)) {
             val filter = unique.params[0]
             when {
                 ruleSet.technologies.contains(filter) -> 

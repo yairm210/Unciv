@@ -837,6 +837,21 @@ Example: "Obsolete with [Agriculture]"
 
 Applicable to: Building, Improvement, Resource
 
+#### Indicates the capital city
+Applicable to: Building
+
+#### Provides 1 extra copy of each improved luxury resource near this City
+Applicable to: Building
+
+#### Destroyed when the city is captured
+Applicable to: Building
+
+#### Never destroyed when the city is captured
+Applicable to: Building
+
+#### Doubles Gold given to enemy if city is captured
+Applicable to: Building
+
 #### Remove extra unhappiness from annexed cities
 Applicable to: Building
 
@@ -1237,6 +1252,9 @@ Applicable to: Improvement
 #### Indestructible
 Applicable to: Improvement
 
+#### Irremovable
+Applicable to: Improvement
+
 ## Resource uniques
 #### Generated with weight [amount]
 Example: "Generated with weight [20]"
@@ -1634,6 +1652,8 @@ Applicable to: Conditional
  - "+50% attacking strength for cities with garrisoned units" - Deprecated Extremely old - used for auto-updates only, replace with "[+50]% Strength for cities <with a garrison> <when attacking>"
  - "Incompatible with [policy/tech/promotion]" - Deprecated as of 3.19.8, replace with "Only available <before adopting [policy/tech/promotion]>" OR "Only available <before discovering [policy/tech/promotion]>" OR "Only available <for units without [policy/tech/promotion]>"
  - "Not displayed as an available construction without [buildingName/tech/resource/policy]" - Deprecated as of 3.19.8, replace with "Only available <after adopting [buildingName/tech/resource/policy]>" OR "Only available <with [buildingName/tech/resource/policy]>" OR "Only available <if [buildingName/tech/resource/policy] is constructed>" OR "Only available <after discovering [buildingName/tech/resource/policy]>"
+ - "Unlocked with [buildingName/tech/era/policy]" - Deprecated as of 3.19.12, replace with "Only available <after adopting [buildingName/tech/era/policy]>" OR "Only available <if [buildingName/tech/era/policy] is constructed>" OR "Only available <starting from the [buildingName/tech/era/policy]>" OR "Only available <after discovering [buildingName/tech/era/policy]>"
+ - "Requires [buildingName/tech/era/policy]" - Deprecated as of 3.19.12, replace with "Only available <after adopting [buildingName/tech/era/policy]>" OR "Only available <if [buildingName/tech/era/policy] is constructed>" OR "Only available <starting from the [buildingName/tech/era/policy]>" OR "Only available <after discovering [buildingName/tech/era/policy]>"
  - "Cannot be built with [buildingName]" - Deprecated as of 3.19.9, replace with "Only available <in cities without a [buildingName]>"
  - "Requires a [buildingName] in this city" - Deprecated as of 3.19.9, replace with "Only available <in cities with a [buildingName]>"
  - "[stats] with [resource]" - Deprecated as of 3.19.7, replace with "[stats] <with [resource]>"

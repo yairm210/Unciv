@@ -538,7 +538,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.RequiresTech.apply { "$requiredTech not researched!"})
 
         for (unique in uniqueObjects) {
-            if (unique.placeholderText != "Unlocked with []" && unique.placeholderText != "Requires []") continue
+            if (unique.type != UniqueType.UnlockedWith && unique.type != UniqueType.Requires) continue
             val filter = unique.params[0]
             when {
                 ruleSet.technologies.contains(filter) ->
