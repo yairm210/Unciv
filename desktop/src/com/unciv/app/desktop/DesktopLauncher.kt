@@ -33,12 +33,13 @@ internal object DesktopLauncher {
         config.setWindowIcon("ExtraImages/Icon.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
+        config.setWindowSizeLimits(120, 80, -1, -1);
         if (FileHandle(GameSaver.settingsFileName).exists()) {
             val settings = JsonParser().getFromJson(
                 GameSettings::class.java,
                 FileHandle(GameSaver.settingsFileName)
             )
-            config.setWindowedMode(settings.windowState.width, settings.windowState.height)
+            config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
         }
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
