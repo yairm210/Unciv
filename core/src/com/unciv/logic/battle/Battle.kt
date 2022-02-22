@@ -712,13 +712,12 @@ object Battle {
         }
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
-            val ruleset = tile.ruleset
             val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
             else 0.5f
             if (Random().nextFloat() < destructionChance) {
-                for (terrainFeature in tile.terrainFeatures)
-                    if (ruleset.terrains[terrainFeature]!!.hasUnique(UniqueType.DestroyableByNukes))
-                        tile.removeTerrainFeature(terrainFeature)
+                for (terrainFeature in tile.terrainFeatureObjects)
+                    if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
+                        tile.removeTerrainFeature(terrainFeature.name)
                 tile.addTerrainFeature("Fallout")
             }
         }

@@ -66,6 +66,11 @@ open class TileInfo {
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
     var terrainFeatures: List<String> = listOf()
+        private set
+    
+    @Transient
+    var terrainFeatureObjects: List<Terrain> = listOf()
+        private set
 
 
     var naturalWonder: String? = null
@@ -235,11 +240,10 @@ open class TileInfo {
         return civInfo.isAtWarWith(tileOwner)
     }
 
-    fun getTerrainFeaturesObjects(): List<Terrain> = terrainFeatures.mapNotNull { ruleset.terrains[it] }
     fun getAllTerrains(): Sequence<Terrain> = sequence {
         yield(baseTerrainObject)
         if (naturalWonder != null) yield(getNaturalWonder())
-        yieldAll(terrainFeatures.asSequence().mapNotNull { ruleset.terrains[it] })
+        yieldAll(terrainFeatureObjects)
     }
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
@@ -269,7 +273,7 @@ open class TileInfo {
         
         val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this);
 
-        for (terrainFeatureBase in getTerrainFeaturesObjects()) {
+        for (terrainFeatureBase in terrainFeatureObjects) {
             when {
                 terrainFeatureBase.hasUnique(UniqueType.NullifyYields) ->
                     return terrainFeatureBase.cloneStats()
@@ -365,7 +369,7 @@ open class TileInfo {
     private fun getTileStartYield(isCenter: Boolean): Float {
         var stats = getBaseTerrain().cloneStats()
 
-        for (terrainFeatureBase in getTerrainFeaturesObjects()) {
+        for (terrainFeatureBase in terrainFeatureObjects) {
             if (terrainFeatureBase.overrideStats)
                 stats = terrainFeatureBase.cloneStats()
             else
@@ -871,13 +875,16 @@ open class TileInfo {
         }
     }
     
-    fun addTerrainFeature(terrainFeature:String) {
-        terrainFeatures = ArrayList(terrainFeatures).apply { add(terrainFeature) }
+    fun setTerrainFeatures(terrainFeatureList:List<String>){
+        terrainFeatures = terrainFeatureList
+        terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
     }
     
-    fun removeTerrainFeature(terrainFeature: String) {
-        terrainFeatures = ArrayList(terrainFeatures).apply { remove(terrainFeature) }
-    }
+    fun addTerrainFeature(terrainFeature:String) =
+        setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
+    
+    fun removeTerrainFeature(terrainFeature: String) =
+        setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })
 
 
     /** If the unit isn't in the ruleset we can't even know what type of unit this is! So check each place
@@ -906,7 +913,7 @@ open class TileInfo {
         if (naturalWonder != null) {
             val naturalWonder = ruleset.terrains[naturalWonder]!!
             baseTerrain = naturalWonder.turnsInto!!
-            terrainFeatures = listOf()
+            setTerrainFeatures(listOf())
             resource = null
             improvement = null
         }
@@ -962,7 +969,7 @@ open class TileInfo {
             val newTerrainFeatures = ArrayList<String>()
             newTerrainFeatures.add(Constants.hill)
             newTerrainFeatures.addAll(copy)
-            terrainFeatures = newTerrainFeatures
+            setTerrainFeatures(newTerrainFeatures)
         }
     }
 
