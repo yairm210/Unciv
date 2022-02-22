@@ -262,7 +262,7 @@ fun String.tr(): String {
     }.toHashSet()
     val language = UncivGame.Current.settings.language
 
-    if (contains('<')) { // Conditionals!
+    if (contains('<') && contains('>')) { // Conditionals!
         /**
          * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
          * can contain multiple filters, such as <vs [{Military} {Water}] units>.

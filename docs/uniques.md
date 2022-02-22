@@ -169,6 +169,9 @@ Example: "[20]% [Culture] from City-States"
 
 Applicable to: Global
 
+#### Gold from all trade routes +25%
+Applicable to: Global
+
 #### Nullifies [stat] [cityFilter]
 Example: "Nullifies [Culture] [in all cities]"
 
@@ -316,6 +319,9 @@ Example: "[20]% Food consumption by specialists [in all cities]"
 
 Applicable to: Global, FollowerBelief
 
+#### Provides 1 happiness per 2 additional social policies adopted
+Applicable to: Global
+
 #### [amount]% of excess happiness converted to [stat]
 Example: "[20]% of excess happiness converted to [Culture]"
 
@@ -452,6 +458,12 @@ Applicable to: Global
 #### Enables construction of Spaceship parts
 Applicable to: Global
 
+#### Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)
+Applicable to: Global
+
+#### Production to science conversion in cities increased by 33%
+Applicable to: Global
+
 #### Notified of new Barbarian encampments
 Applicable to: Global
 
@@ -471,6 +483,18 @@ Applicable to: Global
 Applicable to: Global
 
 #### Receive a tech boost when scientific buildings/wonders are built in capital
+Applicable to: Global
+
+#### May not generate great prophet equivalents naturally
+Applicable to: Global
+
+#### 67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment
+Applicable to: Global
+
+#### 50% chance of capturing defeated Barbarian naval units and earning 25 Gold
+Applicable to: Global
+
+#### Receive triple Gold from Barbarian encampments and pillaging Cities
 Applicable to: Global
 
 #### Enables Open Borders agreements
@@ -1404,6 +1428,11 @@ Example: "<before adopting [Oligarchy]>"
 
 Applicable to: Conditional
 
+#### <if [buildingName] is constructed>
+Example: "<if [Library] is constructed>"
+
+Applicable to: Conditional
+
 #### <for [amount] turns>
 Example: "<for [20] turns>"
 
@@ -1604,7 +1633,7 @@ Applicable to: Conditional
  - "-50% food consumption by specialists" - Deprecated Extremely old - used for auto-updates only, replace with "[-50]% Food consumption by specialists [in all cities]"
  - "+50% attacking strength for cities with garrisoned units" - Deprecated Extremely old - used for auto-updates only, replace with "[+50]% Strength for cities <with a garrison> <when attacking>"
  - "Incompatible with [policy/tech/promotion]" - Deprecated as of 3.19.8, replace with "Only available <before adopting [policy/tech/promotion]>" OR "Only available <before discovering [policy/tech/promotion]>" OR "Only available <for units without [policy/tech/promotion]>"
- - "Not displayed as an available construction without [buildingName/tech/resource/policy]" - Deprecated as of 3.19.8, replace with "Only available <after adopting [buildingName/tech/resource/policy]>" OR "Only available <with [buildingName/tech/resource/policy]>" OR "Only available <after discovering [buildingName/tech/resource/policy]>"
+ - "Not displayed as an available construction without [buildingName/tech/resource/policy]" - Deprecated as of 3.19.8, replace with "Only available <after adopting [buildingName/tech/resource/policy]>" OR "Only available <with [buildingName/tech/resource/policy]>" OR "Only available <if [buildingName/tech/resource/policy] is constructed>" OR "Only available <after discovering [buildingName/tech/resource/policy]>"
  - "Cannot be built with [buildingName]" - Deprecated as of 3.19.9, replace with "Only available <in cities without a [buildingName]>"
  - "Requires a [buildingName] in this city" - Deprecated as of 3.19.9, replace with "Only available <in cities with a [buildingName]>"
  - "[stats] with [resource]" - Deprecated as of 3.19.7, replace with "[stats] <with [resource]>"
