@@ -1,0 +1,1085 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+    
+    
+      
+        <title>Map related JSON files - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e8d9bf0c.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#terrainsjson" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Map related JSON files
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Welcome to MkDocs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Credits/" class="md-nav__link">
+        Icon Credits
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Game%20Making%20Tips/" class="md-nav__link">
+        Tips and tricks for making a LibGDX game
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../unique%20parameters/" class="md-nav__link">
+        Unique parameters
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../uniques/" class="md-nav__link">
+        Uniques
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Wiki
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Wiki" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Wiki
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Audiovisual-Mods/" class="md-nav__link">
+        Audiovisual Mods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Building-locally-without-Android-Studio/" class="md-nav__link">
+        Building locally without Android Studio
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Civilization-related-JSON-files/" class="md-nav__link">
+        Civilization related JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Coding-standards/" class="md-nav__link">
+        Coding standards
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Creating-a-custom-tileset/" class="md-nav__link">
+        How to make Unciv use your custom tileset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Force-rating-calculation/" class="md-nav__link">
+        Force rating
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../From-code-to-deployment/" class="md-nav__link">
+        From code to deployment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Getting-Started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Home/" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Installing-on-macOS/" class="md-nav__link">
+        Installing on macOS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JSON-files-for-mods/" class="md-nav__link">
+        JSON files for mods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Making-a-new-Civilization/" class="md-nav__link">
+        Making a new Civilization
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Map related JSON files
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Map related JSON files
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#terrainsjson" class="md-nav__link">
+    Terrains.json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileimprovementsjson" class="md-nav__link">
+    TileImprovements.json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileresourcesjson" class="md-nav__link">
+    TileResources.json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ruinsjson" class="md-nav__link">
+    Ruins.json
+  </a>
+  
+    <nav class="md-nav" aria-label="Ruins.json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notifications" class="md-nav__link">
+    Notifications
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specific-uniques" class="md-nav__link">
+    Specific uniques
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileset-specific-json" class="md-nav__link">
+    Tileset-specific json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stats" class="md-nav__link">
+    Stats
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Miscellaneous-JSON-files/" class="md-nav__link">
+        Miscellaneous JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Mods/" class="md-nav__link">
+        Mods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Project-structure-and-major-classes/" class="md-nav__link">
+        Project structure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Regions/" class="md-nav__link">
+        Regions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Translating/" class="md-nav__link">
+        Translating
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Translations%2C-mods%2C-and-modding-freedom-in-Open-Source/" class="md-nav__link">
+        Translations, mods, and modding freedom in Open Source
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Uniques/" class="md-nav__link">
+        Uniques
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Unit-related-JSON-files/" class="md-nav__link">
+        Unit related JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_Footer/" class="md-nav__link">
+         Footer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_Sidebar/" class="md-nav__link">
+        [Home](.)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#terrainsjson" class="md-nav__link">
+    Terrains.json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileimprovementsjson" class="md-nav__link">
+    TileImprovements.json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileresourcesjson" class="md-nav__link">
+    TileResources.json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ruinsjson" class="md-nav__link">
+    Ruins.json
+  </a>
+  
+    <nav class="md-nav" aria-label="Ruins.json">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notifications" class="md-nav__link">
+    Notifications
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specific-uniques" class="md-nav__link">
+    Specific uniques
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tileset-specific-json" class="md-nav__link">
+    Tileset-specific json
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stats" class="md-nav__link">
+    Stats
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+  <h1>Map related JSON files</h1>
+
+<ul>
+<li><a href="#terrainsjson">Terrains.json</a></li>
+<li><a href="#tileresourcesjson">TileResources.json</a></li>
+<li><a href="#tileimprovementsjson">TileImprovements.json</a></li>
+<li><a href="#ruinsjson">Ruins.json</a></li>
+<li><a href="#tileset-specific-json">Tileset-specific json</a></li>
+</ul>
+<h2 id="terrainsjson">Terrains.json</h2>
+<p>This file lists the base terrains, terrain features and natural wonders that can appear on the map.</p>
+<p>Each terrain entry can have the following properties:
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required |  |
+| type | Enum | Required | Land, Water, TerrainFeature, NaturalWonder |
+| occursOn | List | Default none | Only for terrain features and Natural Wonders: The baseTerrain it can be placed on |
+| turnsInto  | String | Default none | Only for Natural Wonders: After placing the Natural Wonder its base terrain is changed to this |
+| weight | Integer | Default 10 | Only for Natural Wonders: <em>relative</em> weight it will be picked by the map generator |
+| <code>&lt;stats&gt;</code> | Float | Optional | Per-turn yield or bonus yield for the tile, see <a href="#stats">Stats</a> |
+| overrideStats | Boolean | Default false | If on, a feature's yields replace any yield from underlying terrain instead of adding to it |
+| unbuildable | Boolean | Default false | If true, nothing can be built here - not even resource improvements |
+| impassable | Boolean | Default false | no unit can enter unless it has a special unique |
+| movementCost | Integer | Default 1 | base movement cost |
+| defenceBonus | Float | Default 0 | combat bonus for units being attacked here |
+| RGB | List Integer * 3 | Default 'Gold' | RGB color for 'Default' tileset display |
+| uniques | List | Default empty | List of effects, <a href="../Uniques/#terrain-uniques">see here</a> |
+| civilopediaText | List | Default empty | see <a href="../Miscellaneous-JSON-files/#civilopedia-text">civilopediaText chapter</a> |</p>
+<p>Note that many Natural Wonders have hardcoded routines for their placement and are recognized by name (e.g. Great Barrier Reef being more than one tile).</p>
+<h2 id="tileimprovementsjson">TileImprovements.json</h2>
+<p>This file lists the improvements that can be constructed or created on a map tile by a unit (any unit having the appropriate unique).</p>
+<p>Note that improvements have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will just miss out on an <em>optional</em> visualization. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of all other terrain elements.</p>
+<p>Each improvement can have the following properties:
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required |  |
+| terrainsCanBeFoundOn | List | Default empty | <a href="#terrainsjson">Terrains</a> that allow this resource |
+| techRequired | String | Default none | The name of the technology required to build this improvement |
+| uniqueTo | String | Default none | The name of the nation this improvement is unique for |
+| <code>&lt;stats&gt;</code> | Float | Optional | Per-turn bonus yield for the tile, see <a href="#stats">Stats</a> |
+| turnsToBuild | Integer |  | Number of turns a worker spends building this (ignored for 'create' actions) |
+| uniques | List | Default empty | List of effects, <a href="../Uniques/#improvement-uniques">see here</a> |
+| shortcutKey | String | Default none | Keyboard binding. At the moment a single character (no function keys or Ctrl combinations) |
+| civilopediaText | List | Default empty | see <a href="../Miscellaneous-JSON-files/#civilopedia-text">civilopediaText chapter</a> |</p>
+<ul>
+<li>Tiles with no terrains, but positive turns to build, can be built only when the tile has a resource that names this improvement or special uniques are used. (TODO: missing something?)</li>
+<li>Tiles with no terrains, and no turns to build, are like great improvements - they're placeable. That means a unit could exist with a 'Can create [this]' unique, and that the improvement will not show in a worker's improvement picker dialog.</li>
+<li>Removable Terrain features will need to be removed before building an improvement - unless the feature is named in terrainsCanBeFoundOn <em>or</em> the unique "Does not need removal of [terrainFeature]" is used (e.g. Camp allowed by resource).</li>
+<li>Special improvements: Road, Railroad, Remove *, Cancel improvement order, City ruins, City center, Barbarian encampment - these have special meanings hardcoded to their names.</li>
+</ul>
+<h2 id="tileresourcesjson">TileResources.json</h2>
+<p>This file lists the resources that a map tile can have.</p>
+<p>Note the predefined resource <em>types</em> cannot be altered in json.</p>
+<p>Note also that resources have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will miss out on a visualization on the map. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of terrain and features but below an improvement - if the single improvement graphic exists at all.</p>
+<p>Each resource can have the following properties:
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| name | String | Required |  |
+| resourceType | String | Default Bonus | Bonus, Luxury or Strategic |
+| terrainsCanBeFoundOn | List | Default empty | <a href="#terrainsjson">Terrains</a> that allow this resource |
+| <code>&lt;stats&gt;</code> | Float | Optional | Per-turn bonus yield for the tile, see <a href="#stats">Stats</a>, can be repeated |
+| improvement | String | Default empty | The improvement (<a href="#tileimprovementsjson">TileImprovements.json</a>) for this resource |
+| improvementStats | Object | Default empty | The additional yield when improved as sub-object with one or more <a href="#stats">Stats</a> |
+| revealedBy | String | Default empty | The technology name required to see, work and improve this resource |
+| unique | String | Default empty | Effects, <a href="../Uniques/#resource-uniques">see here</a> - at the moment only one unique may be added |
+| civilopediaText | List | Default empty | see <a href="../Miscellaneous-JSON-files/#civilopedia-text">civilopediaText chapter</a> |</p>
+<h2 id="ruinsjson">Ruins.json</h2>
+<p><a href="/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json">Link to original</a></p>
+<p>This file contains the possible rewards ancient ruins give. It is not required, if omitted, the default file for the game is used, even in baseRuleSet mods.</p>
+<p>Each of the objects in the file represents a single reward you can get from ruins. It has the following properties:</p>
+<table>
+<thead>
+<tr>
+<th>attribute</th>
+<th>Type</th>
+<th>optional or not</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>required</td>
+<td>Name of the ruins. Never shown to the user, but they have to be distinct</td>
+</tr>
+<tr>
+<td>notification</td>
+<td>String</td>
+<td>required</td>
+<td>Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below.</td>
+</tr>
+<tr>
+<td>weight</td>
+<td>Integer (≥0)</td>
+<td>defaults to 1</td>
+<td>Weight this reward should have. Higher weights result in a higher chance of it being chosen*</td>
+</tr>
+<tr>
+<td>uniques</td>
+<td>List of Strings</td>
+<td>defaults to none</td>
+<td>[uniques]Uniques#one-time-effect) or <a href="../Uniques/#one-time-effect-units">uniques</a> that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug.</td>
+</tr>
+<tr>
+<td>excludedDifficulties</td>
+<td>List of Strings</td>
+<td>defaults to None</td>
+<td>A list of all difficulties on which this reward may <em>not</em> be awarded</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The exact algorithm for choosing a reward is the following: </li>
+<li>Create a list of all possible rewards, with rewards with a higher weight appearing multiple times. A reward with weight one will appear once, a reward with weight two will appear twice, etc. </li>
+<li>Shuffle this list</li>
+<li>Try give rewards starting from the top of the list. If any of the uniques of the rewards is valid in this context, reward it and stop trying more rewards.</li>
+</ul>
+<h3 id="notifications">Notifications</h3>
+<p>Some of the rewards ruins can give will have results that are not deterministic when writing it in the JSON, so creating a good notification for it would be impossible. An example for this would be the "Gain [50]-[100] [Gold]" unique, which will give a random amount of gold. For this reason, we allow some notifications to have parameters, in which values will be filled, such as "You found [goldAmount] gold in the ruins!". All the uniques which have this property can be found below.</p>
+<table>
+<thead>
+<tr>
+<th>unique</th>
+<th>parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free [] found in the ruins</td>
+<td>The name of the unit will be filled in the notification, including unique units of the nation</td>
+</tr>
+<tr>
+<td>[] population in a random city</td>
+<td>The name of the city to which the population is added will be filled in the notification</td>
+</tr>
+<tr>
+<td>Gain []-[] []</td>
+<td>The exact amount of the stat gained will be filled in the notification</td>
+</tr>
+<tr>
+<td>[] free random reasearchable Tech(s) from the []</td>
+<td>The notification must have placeholders equal to the number of techs granted this way. Each of the names of these free techs will be filled in the notification</td>
+</tr>
+<tr>
+<td>Gain enough Faith for a Pantheon</td>
+<td>The amount of faith gained is filled in the notification</td>
+</tr>
+<tr>
+<td>Gain enough Faith for []% of a Great Prophet</td>
+<td>The amount of faith gained is filled in the notification</td>
+</tr>
+</tbody>
+</table>
+<h3 id="specific-uniques">Specific uniques</h3>
+<p>A few uniques can be added to ancient ruin effects to modify when they can be earned. These are:
+- "Only available after [amount] turns"
+- "Hidden when religion is disabled"
+- "Hidden after a great prophet has been earned"</p>
+<h2 id="tileset-specific-json">Tileset-specific json</h2>
+<p>A mod can define new Tilesets or add to existing ones, namely FantasyHex. There is one json file per Tileset, named same as the Tileset, and placed in a subfolder named "TileSets" relative to the other json files. This is called TileSetConfig and has the following structure:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Type</th>
+<th>Optional?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>useColorAsBaseTerrain</td>
+<td>Boolean</td>
+<td>Default true</td>
+<td>? <em>WIP</em></td>
+</tr>
+<tr>
+<td>unexploredTileColor</td>
+<td>Color</td>
+<td>Default Dark Gray</td>
+<td><code>{"r":0.25,"g":0.25,"b":0.25,"a":1}</code></td>
+</tr>
+<tr>
+<td>fogOfWarColor</td>
+<td>Color</td>
+<td>Default Black</td>
+<td><code>{"r":0,"g":0,"b":0,"a":1}</code></td>
+</tr>
+<tr>
+<td>ruleVariants</td>
+<td>List</td>
+<td>Default empty</td>
+<td>see below</td>
+</tr>
+</tbody>
+</table>
+<p>ruleVariants control substitutions when layering images for a tile, they are list looking like:</p>
+<pre><code class="language-json">    &quot;ruleVariants&quot;: {
+        &quot;Grassland+Forest&quot;: [&quot;Grassland&quot;,&quot;GrasslandForest&quot;],
+        &quot;Plains+Forest&quot;: [&quot;Plains&quot;,&quot;PlainsForest&quot;],
+        &quot;Plains+Jungle&quot;: [&quot;Plains&quot;,&quot;PlainsJungle&quot;],
+        ...
+    }
+</code></pre>
+<p>Each line means "if the tile content is this... then combine the following png images". The key part follows a specific order and must match in its entirety, meaning "Plains+Forest" is not valid for "Plains+Forest+Deer", and when it matches no other image layering is done except roads and units (I think - <em>WIP</em>).</p>
+<p>When TileSetConfig's for the same Tileset are combined, for the first three properties the last mod wins, while ruleVariants are merged, meaning only an entry with the same key overwrites an earlier entry.</p>
+<h2 id="stats">Stats</h2>
+<p>Terrains, features, resources and improvements may list yield statistics. They can be one of the following:
+- production, food, gold, science, culture, happiness, faith</p>
+<p>If an object carries general stats, any combination (or none) of these can be specified. For specialized stats, they might come as sub-object in a named field. Example:</p>
+<pre><code class="language-json">        &quot;gold&quot;: 2,
+        &quot;improvement&quot;: &quot;Quarry&quot;,
+        &quot;improvementStats&quot;: {&quot;gold&quot;: 1,&quot;production&quot;: 1},
+</code></pre>
+<p>The values are usually integers, though the underlying code supports floating point. The effects are, however, insufficiently tested and therefore -so far- using fractional stats is unsupported. Go ahead and thoroughly test that in a mod and help out with feedback 😁.</p>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../Making-a-new-Civilization/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Making a new Civilization" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Making a new Civilization
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../Miscellaneous-JSON-files/" class="md-footer__link md-footer__link--next" aria-label="Next: Miscellaneous JSON files" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Miscellaneous JSON files
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.8aa65030.min.js"></script>
+      
+    
+  </body>
+</html>
