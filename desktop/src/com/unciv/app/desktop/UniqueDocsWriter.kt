@@ -72,7 +72,7 @@ class UniqueDocsWriter {
 
                 val uniqueText = if (targetType.key == UniqueTarget.Conditional) "<${uniqueType.text}>"
                 else uniqueType.text
-                lines += "#### $uniqueText"
+                lines += "### &#x1F537; $uniqueText"
                 if (uniqueType.text.contains('['))
                     lines += "Example: \"${replaceExamples(uniqueText)}\"\n"
                 lines += "Applicable to: " + uniqueType.targetTypes.sorted().joinToString()
