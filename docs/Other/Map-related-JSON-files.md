@@ -1,14 +1,9 @@
-* [Terrains.json](#terrainsjson)
-* [TileResources.json](#tileresourcesjson)
-* [TileImprovements.json](#tileimprovementsjson)
-* [Ruins.json](#ruinsjson)
-* [Tileset-specific json](#tileset-specific-json)
-
 
 ## Terrains.json
 This file lists the base terrains, terrain features and natural wonders that can appear on the map.
 
 Each terrain entry can have the following properties:
+
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | name | String | Required |  |
@@ -35,6 +30,7 @@ This file lists the improvements that can be constructed or created on a map til
 Note that improvements have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will just miss out on an _optional_ visualization. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of all other terrain elements.
 
 Each improvement can have the following properties:
+
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | name | String | Required |  |
@@ -61,6 +57,7 @@ Note the predefined resource _types_ cannot be altered in json.
 Note also that resources have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will miss out on a visualization on the map. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of terrain and features but below an improvement - if the single improvement graphic exists at all.
 
 Each resource can have the following properties:
+
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | name | String | Required |  |

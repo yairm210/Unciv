@@ -1,16 +1,11 @@
 
-* [Difficulties.json](#difficultiesjson)
-* [Eras.json](#erasjson)
-* [ModOptions.json](#modoptionsjson)
-* [Generic Civilopedia Text](#civilopedia-text)
-
-
 ## Difficulties.json
 [Link to original](/jsons/Civ%20V%20-%20Vanilla/Difficulties.json)
 
 This file defines the difficulty levels a player can choose when starting a new game.
 
 Each difficulty level can have the following attributes:
+
 | Attribute | Type | Mandatory | Notes |
 | --------- | ---- | ------- | ----- |
 | name | String | Required | Name of the difficulty level |
@@ -44,6 +39,7 @@ Each difficulty level can have the following attributes:
 This file should contain all the era's you want to use in your mod.
 
 Each era can have the following attributes:
+
 | attribute | Type | optional or not | notes |
 | --------- | ---- | --------------- | ----- |
 | name | String | required | Name of the era |
@@ -69,6 +65,7 @@ This file is a little different:
 - Is entirely optional but will be created after downloading a mod
 
 The file can have the following attributes, including the values Unciv sets (no point in a mod author setting those):
+
 | Attribute | Type | Defaults | Notes |
 |-----------|------|-----------|-------|
 | isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
@@ -97,6 +94,7 @@ An example of the format is:
 		],
 ```
 List of attributes - note not all combinations are valid:
+
 |attribute|type|description|
 |---------|----|-----------|
 |`text`|String|Text to display.|

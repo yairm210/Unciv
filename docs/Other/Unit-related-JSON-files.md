@@ -1,15 +1,11 @@
 
-* [Units.json](#unitsjson)
-* [UnitPromotions.json](#unitpromotionsjson)
-* [UnitTypes.json](#unittypesjson)
-
-
 ## Units.json
 [Link to original](/jsons/Civ%20V%20-%20Vanilla/Units.json)
 
 This file should contain a list of all the units, both military and civilian, that you want to use in your mod.
 
 Each unit can have the following attributes:
+
 | attribute | Type | optional or not | notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the units (required) |
@@ -44,6 +40,7 @@ Each promotion must have an icon, except progressions ending in " I", " II", " I
 Remember, promotions can be "bought" with XP, but also granted by the unit type, buildings, wonders and such. They are preserved when a unit upgrades, therefore special properties of nation unique units that can be inherited when they upgrade should be in a promotion, not uniques/stats in the units json (example: Slinger withdraw).
 
 Each promotion can have the following properties:
+
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | name | String | Required | See above for "I, II, III" progressions |
