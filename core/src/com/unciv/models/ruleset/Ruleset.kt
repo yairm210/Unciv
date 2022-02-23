@@ -575,8 +575,8 @@ class Ruleset {
             if (building.requiredBuildingInAllCities != null)
                 lines.add("${building.name} contains 'requiredBuildingInAllCities' - please convert to a \"" +
                         UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!)+"\" unique", RulesetErrorSeverity.Warning)
-            for (unique in building.uniqueObjects)
-                if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
+            for (unique in building.getMatchingUniques("Creates a [] improvement on a specific tile"))
+                if (!tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
             checkUniques(building, lines, rulesetSpecific, forOptionsPopup)
         }

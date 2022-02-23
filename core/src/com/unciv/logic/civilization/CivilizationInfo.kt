@@ -405,7 +405,7 @@ class CivilizationInfo {
     }
     
     fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null) = sequence {
-        yieldAll(nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate })
+        yieldAll(nation.getMatchingUniques(uniqueTemplate))
         yieldAll(cities.asSequence()
             .filter { it != cityToIgnore }
             .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueTemplate) }

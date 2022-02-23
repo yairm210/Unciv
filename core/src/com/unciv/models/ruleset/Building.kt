@@ -763,9 +763,8 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     }
 
     fun getImprovement(ruleset: Ruleset): TileImprovement? {
-        val improvementUnique = uniqueObjects
-            .firstOrNull { it.placeholderText == "Creates a [] improvement on a specific tile" }
-            ?: return null
+        val improvementUnique = getMatchingUniques("Creates a [] improvement on a specific tile")
+            .firstOrNull() ?: return null
         return ruleset.tileImprovements[improvementUnique.params[0]]
     }
 

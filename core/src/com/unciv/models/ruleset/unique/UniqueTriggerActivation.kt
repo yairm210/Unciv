@@ -125,20 +125,16 @@ object UniqueTriggerActivation {
             OneTimeFreeGreatPerson, MayanGainGreatPerson -> {
                 if (civInfo.isSpectator()) return false
                 val greatPeople = civInfo.getGreatPeople()
-                if (unique.type == MayanGainGreatPerson) {
-                    if (civInfo.greatPeople.longCountGPPool.isEmpty())
-                        // replenish maya GP pool when dry
-                        civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
-                }
+                if (unique.type == MayanGainGreatPerson && civInfo.greatPeople.longCountGPPool.isEmpty())
+                    civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
                 if (civInfo.isPlayerCivilization()) {
                     civInfo.greatPeople.freeGreatPeople++
+                    // Anyone an idea for a good icon?
                     if (unique.type == MayanGainGreatPerson) {
                         civInfo.greatPeople.mayaLimitedFreeGP++
                         civInfo.addNotification(notification!!, MayaLongCountAction(), MayaCalendar.notificationIcon)
-                    } else {
-                        if (notification != null)
-                            civInfo.addNotification(notification) // Anyone an idea for a good icon?
-                    }
+                    } else if (notification != null)
+                        civInfo.addNotification(notification)
                     return true
                 } else {
                     if (unique.type == MayanGainGreatPerson)
@@ -147,6 +143,7 @@ object UniqueTriggerActivation {
                     var greatPerson = greatPeople.random()
 
                     val preferredVictoryType = civInfo.victoryType()
+                    
                     if (preferredVictoryType == VictoryType.Cultural) {
                         val culturalGP =
                             greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }

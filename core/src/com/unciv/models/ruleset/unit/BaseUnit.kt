@@ -557,9 +557,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+    fun isGreatPerson() = hasUnique("Great Person - []")
 
-    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear weapon of Strength []" }
+    fun isNuclearWeapon() = hasUnique("Nuclear weapon of Strength []")
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
@@ -568,9 +568,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in uniqueObjects)
-            if (unique.isOfType(UniqueType.ConsumesResources))
-                resourceRequirements[unique.params[1]] = unique.params[0].toInt()
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources))
+            resourceRequirements[unique.params[1]] = unique.params[0].toInt()
         resourceRequirements
     }
 
@@ -629,7 +628,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (hasUnique(UniqueType.SelfDestructs))
             power /= 2
-        if (uniqueObjects.any { it.placeholderText =="Nuclear weapon of Strength []" } )
+        if (isNuclearWeapon())
             power += 4000
 
         // Uniques

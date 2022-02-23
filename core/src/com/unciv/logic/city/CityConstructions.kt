@@ -391,7 +391,7 @@ class CityConstructions {
 
     private fun constructionBegun(construction: IConstruction) {
         if (construction !is Building) return
-        if (construction.uniqueObjects.none { it.placeholderText == "Triggers a global alert upon build start" }) return
+        if (construction.hasUnique("Triggers a global alert upon build start")) return
         val buildingIcon = "BuildingIcons/${construction.name}"
         for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
             if (otherCiv == cityInfo.civInfo) continue
@@ -432,7 +432,10 @@ class CityConstructions {
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
                     cityInfo.location, NotificationIcon.Construction, icon)
         }
-        if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Triggers a global alert upon completion" } ) {
+        
+        if (construction is Building && construction.hasUnique("Triggers a global alert upon completion",
+                StateForConditionals(cityInfo.civInfo, cityInfo)
+            )) {
             for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
                 // No need to notify ourself, since we already got the building notification anyway
                 if (otherCiv == cityInfo.civInfo) continue

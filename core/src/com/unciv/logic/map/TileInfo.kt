@@ -538,7 +538,7 @@ open class TileInfo {
             improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater) && isAdjacentToFreshwater -> true
 
             // If an unique of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful).
-            improvement.uniqueObjects.filter { it.placeholderText == "Can only be built on [] tiles" }.let {
+            improvement.getMatchingUniques("Can only be built on [] tiles").let {
                 it.any() && it.all { unique -> matchesTerrainFilter(unique.params[0]) }
             } -> true
 
