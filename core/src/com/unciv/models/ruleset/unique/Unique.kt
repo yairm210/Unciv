@@ -170,6 +170,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
+            UniqueType.ConditionalInTilesNot ->
+                relevantTile?.matchesFilter(condition.params[0], state.civInfo) == false
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->

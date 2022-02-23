@@ -3,6 +3,7 @@ package com.unciv.models.translations
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
+import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.*
@@ -241,7 +242,7 @@ object TranslationFileWriter {
         val tileFilterMap = ruleset.terrains.keys.toMutableSet().apply { addAll(sequenceOf(
             "Friendly Land",
             "Foreign Land",
-            "Fresh water",
+            Constants.freshWater,
             "non-fresh water",
             "Open Terrain",
             "Rough Terrain",
