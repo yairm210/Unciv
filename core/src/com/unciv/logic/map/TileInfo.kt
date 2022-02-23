@@ -111,6 +111,7 @@ open class TileInfo {
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
         toReturn.terrainFeatures = terrainFeatures // immutable lists can be directly passed around
+        toReturn.terrainFeatureObjects = terrainFeatureObjects
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
         toReturn.resourceAmount = resourceAmount
@@ -823,6 +824,7 @@ open class TileInfo {
         if (!ruleset.terrains.containsKey(baseTerrain))
             throw Exception("Terrain $baseTerrain does not exist in ruleset!")
         baseTerrainObject = ruleset.terrains[baseTerrain]!!
+        setTerrainFeatures(terrainFeatures)
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
