@@ -18,7 +18,7 @@ The process has two major parts, one is "Getting your code in the main repositor
 
 When I'm ready to release a new version I:
 * Comment "merge translations" in one of the open PRs tagged as 'mergeable translation' to trigger the translation branch creation, add a "summary" comment to trigger summary generation, merge the PR and delete the branch (so next version translation branch starts fresh)
-* From my workstation - pull the latest changes and run the [translation generation](./Translating.md#translation-generation---for-developers)
+* From my workstation - pull the latest changes and run the [translation generation](../Other/Translating.md#translation-generation---for-developers)
 * Change the versionCode and versionName in the Android build.gradle so that Google Play and F-droid can recognize that it's a different release
 * Add an entry in the changelog.md done, WITHOUT hashtags, and less than 500 characters (that's the limit for Google play entries). The formatting needs to be exact or the text sent to Discord, the Github release etc. won't be complete.
 * Add a tag to the commit of the version. When the [Github action](https://github.com/yairm210/Unciv/actions/workflows/buildAndDeploy.yml) sees that we've added a tag, it will run a build, and this time (because of the configuration we put in the [yml file](/.github/workflows/buildAndDeploy.yml) file), it will:
@@ -63,8 +63,8 @@ However, it also imposes a couple of conventions about how links should best be 
 
 |Link type|Format|Example|
 |---|---|---|
-|Inter-wiki|Should begin with "./", and include ".md".|[`./Mods.md#other`](./Mods.md#other)|
-|Code or asset file|Should begin with "/", and be relative to the project root.|[`/android/assets/game.png`](/android/assets/game.png)|
+|Inter-wiki|Should begin with "./", and include ".md".|[`./Mods.md#other`](../Modders/Mods.md#other)|
+|Code or asset file|Should begin with "/", and be relative to the project root.|[`/android/assets/game.png`](/game.png)|
 
 These formats will allow IDEs like Android studio to resolve these links and check for broken links, while also working on the [Github code browser](https://github.com/yairm210/Unciv/tree/master/docs/wiki).
 

@@ -25,7 +25,7 @@ A list of all available uniques can be found [here](https://github.com/yairm210/
 
 ### Generated Documentation
 
-This part of the wiki is human-edited and partially out of date. However, we now have automatically generated documentation, complete for all Uniques that have been updated to the new UniqueType system. It is part of the main source tree and [can be found here.](/docs/uniques.md). This version should always be up-to-date with the uniques and conditionals currently supported in the game.
+This part of the wiki is human-edited and partially out of date. However, we now have automatically generated documentation, complete for all Uniques that have been updated to the new UniqueType system. It is part of the main source tree and [can be found here.](/docs/Modders/uniques.mdiques.md). This version should always be up-to-date with the uniques and conditionals currently supported in the game.
 
 ### Unique locations
 

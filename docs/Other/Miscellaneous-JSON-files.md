@@ -6,7 +6,7 @@
 
 
 ## Difficulties.json
-[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Difficulties.json)
+[Link to original](/jsons/Civ%20V%20-%20Vanilla/Difficulties.json)
 
 This file defines the difficulty levels a player can choose when starting a new game.
 
@@ -22,7 +22,7 @@ Each difficulty level can have the following attributes:
 | policyCostModifier | Float | Default 1 |
 | unhappinessModifier | Float | Default 1 |
 | barbarianBonus | Float | Default 0 |
-| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](./Unit-related-JSON-files.md#unitsjson)] |
+| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](Unit-related-JSON-files.md#unitsjson)] |
 | aiCityGrowthModifier | Float | Default 1 |
 | aiUnitCostModifier | Float | Default 1 |
 | aiBuildingCostModifier | Float | Default 1 |
@@ -39,7 +39,7 @@ Each difficulty level can have the following attributes:
 
 
 ## Eras.json
-[Link to original](/android/assets/jsons/Civ%20V%20-%20Vanilla/Eras.json)
+[Link to original](/jsons/Civ%20V%20-%20Vanilla/Eras.json)
 
 This file should contain all the era's you want to use in your mod.
 
@@ -51,11 +51,11 @@ Each era can have the following attributes:
 | iconRGB | List of 3 Integers | defaults to [255,255,255] | RGB color that icons for technologies of this era should have in the Tech screen |
 | unitBaseBuyCost | Integer (≥0) | defaults to 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided |
 | startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era |
-| startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](./Unit-related-JSON-files.md#unitsjson) |
+| startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson) |
 | startingWokerCount | Integer (≥0) | defaults to 0 | Amount of worker units that should be spawned when starting a game in this era |
-| startingWorkerUnit | String | defaults to "Worker" | Name of the unit that should be used for the previous field. Must be in [Units.json](./Unit-related-JSON-files.md#unitsjson) |
+| startingWorkerUnit | String | defaults to "Worker" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson) |
 | startingMilitaryUnitCount | Integer (≥0) | defaults to 1 | Amount of military units that should be spawned when starting a game in this era |
-| startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json](./Unit-related-JSON-files.md#unitsjson)|
+| startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson)|
 | startingGold | Integer (≥0) | defaults to 0 | Amount of gold each civ should receive when starting a game in this era |
 | startingCulture | Integer (≥0) | defaults to 0 | Amount of culture each civ should receive when starting a game in this era |
 | settlerPopulation | Integer (>0) | defaults to 1 | Default amount of population each city should have when settled when starting a game in this era |
@@ -73,11 +73,11 @@ The file can have the following attributes, including the values Unciv sets (no 
 |-----------|------|-----------|-------|
 | isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
 | maxXPfromBarbarians | Integer | 30 | ...as the name says... |
-| uniques | List | empty | Mod-wide specials, [see here](./Uniques.md#modoptions-uniques) |
-| techsToRemove | List | empty | List of [Technologies](./Civilization-related-JSON-files.md#techsjson) to remove (isBaseRuleset=false only) |
-| buildingsToRemove | List | empty | List of [Buildings or Wonders](./Civilization-related-JSON-files.md#buildingsjson) to remove (isBaseRuleset=false only) |
-| unitsToRemove | List | empty | List of [Units](./Unit-related-JSON-files.md#unitsjson) to remove (isBaseRuleset=false only) |
-| nationsToRemove | List | empty | List of [Nations](./Civilization-related-JSON-files.md#nationsjson) to remove (isBaseRuleset=false only) |
+| uniques | List | empty | Mod-wide specials, [see here](../Modders/Unique-parameter-types.md#modoptions-uniques) |
+| techsToRemove | List | empty | List of [Technologies](Civilization-related-JSON-files.md#techsjson) to remove (isBaseRuleset=false only) |
+| buildingsToRemove | List | empty | List of [Buildings or Wonders](Civilization-related-JSON-files.md#buildingsjson) to remove (isBaseRuleset=false only) |
+| unitsToRemove | List | empty | List of [Units](Unit-related-JSON-files.md#unitsjson) to remove (isBaseRuleset=false only) |
+| nationsToRemove | List | empty | List of [Nations](Civilization-related-JSON-files.md#nationsjson) to remove (isBaseRuleset=false only) |
 | lastUpdated | String | empty | Set automatically after download - Last repository update, not necessarily last content change |
 | modUrl | String | empty | Set automatically after download - URL of repository |
 | author | String | empty | Set automatically after download - Owner of repository |
