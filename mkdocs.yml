@@ -1,4 +1,4 @@
-site_name: Unciv documentation
+site_name: Unciv
 theme:
   name: material
 
@@ -15,3 +15,22 @@ theme:
       toggle:
         icon: material/lightbulb-outline
         name: Switch to dark mode
+
+  icon:
+    repo: fontawesome/brands/github
+    
+repo_name: yairm210/unciv
+repo_url: https://github.com/yairm210/unciv
+
+#markdown_extensions:
+#  - abbr
+#  - pymdownx.snippets
+#  - attr_list
+#  - md_in_html
+#  - pymdownx.superfences
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.details # For collapsable admonitions - see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks

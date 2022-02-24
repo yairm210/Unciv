@@ -17,1563 +17,1563 @@
  - [Deprecated uniques](#deprecated-uniques)
 
 ## Triggerable uniques
-### &#x1F537; Free [baseUnitFilter] appears
-Example: "Free [Melee] appears"
+??? example  "Free [baseUnitFilter] appears"
+	Example: "Free [Melee] appears"
 
-Applicable to: Triggerable
+	Applicable to: Triggerable
 
-### &#x1F537; [amount] free [baseUnitFilter] units appear
-Example: "[20] free [Melee] units appear"
+??? example  "[amount] free [baseUnitFilter] units appear"
+	Example: "[20] free [Melee] units appear"
 
-Applicable to: Triggerable
+	Applicable to: Triggerable
 
-### &#x1F537; Free Social Policy
-Applicable to: Triggerable
+??? example  "Free Social Policy"
+	Applicable to: Triggerable
 
-### &#x1F537; [amount] Free Social Policies
-Example: "[20] Free Social Policies"
+??? example  "[amount] Free Social Policies"
+	Example: "[20] Free Social Policies"
 
-Applicable to: Triggerable
+	Applicable to: Triggerable
 
-### &#x1F537; Empire enters golden age
-Applicable to: Triggerable
+??? example  "Empire enters golden age"
+	Applicable to: Triggerable
 
-### &#x1F537; Free Great Person
-Applicable to: Triggerable
+??? example  "Free Great Person"
+	Applicable to: Triggerable
 
-### &#x1F537; [amount] population [cityFilter]
-Example: "[20] population [in all cities]"
+??? example  "[amount] population [cityFilter]"
+	Example: "[20] population [in all cities]"
 
-Applicable to: Triggerable
+	Applicable to: Triggerable
 
-### &#x1F537; Free Technology
-Applicable to: Triggerable
+??? example  "Free Technology"
+	Applicable to: Triggerable
 
-### &#x1F537; [amount] Free Technologies
-Example: "[20] Free Technologies"
+??? example  "[amount] Free Technologies"
+	Example: "[20] Free Technologies"
 
-Applicable to: Triggerable
+	Applicable to: Triggerable
 
-### &#x1F537; Reveals the entire map
-Applicable to: Triggerable
+??? example  "Reveals the entire map"
+	Applicable to: Triggerable
 
-### &#x1F537; Triggers voting for the Diplomatic Victory
-Applicable to: Triggerable
+??? example  "Triggers voting for the Diplomatic Victory"
+	Applicable to: Triggerable
 
-### &#x1F537; This Unit gains the [promotion] promotion
-Example: "This Unit gains the [Shock I] promotion"
+??? example  "This Unit gains the [promotion] promotion"
+	Example: "This Unit gains the [Shock I] promotion"
 
-Applicable to: Triggerable
+	Applicable to: Triggerable
 
-### &#x1F537; [mapUnitFilter] units gain the [promotion] promotion
-Example: "[Wounded] units gain the [Shock I] promotion"
+??? example  "[mapUnitFilter] units gain the [promotion] promotion"
+	Example: "[Wounded] units gain the [Shock I] promotion"
 
-Applicable to: Triggerable
+	Applicable to: Triggerable
 
-### &#x1F537; Provides the cheapest [stat] building in your first [amount] cities for free
-Example: "Provides the cheapest [Culture] building in your first [20] cities for free"
+??? example  "Provides the cheapest [stat] building in your first [amount] cities for free"
+	Example: "Provides the cheapest [Culture] building in your first [20] cities for free"
 
-Applicable to: Triggerable
+	Applicable to: Triggerable
 
-### &#x1F537; Provides a [buildingName] in your first [amount] cities for free
-Example: "Provides a [Library] in your first [20] cities for free"
+??? example  "Provides a [buildingName] in your first [amount] cities for free"
+	Example: "Provides a [Library] in your first [20] cities for free"
 
-Applicable to: Triggerable
+	Applicable to: Triggerable
 
-### &#x1F537; Will not be displayed in Civilopedia
-Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
+??? example  "Will not be displayed in Civilopedia"
+	Applicable to: Triggerable, Global, Nation, Era, Tech, Policy, FounderBelief, FollowerBelief, Building, Wonder, Unit, UnitType, Promotion, Terrain, Improvement, Resource, Ruins, CityState, ModOptions, Conditional
 
 ## Global uniques
-### &#x1F537; [stats]
-Example: "[+1 Gold, +2 Production]"
+??? example  "[stats]"
+	Example: "[+1 Gold, +2 Production]"
 
-Applicable to: Global, FollowerBelief, Improvement
+	Applicable to: Global, FollowerBelief, Improvement
 
-### &#x1F537; [stats] [cityFilter]
-Example: "[+1 Gold, +2 Production] [in all cities]"
+??? example  "[stats] [cityFilter]"
+	Example: "[+1 Gold, +2 Production] [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stats] from every specialist [cityFilter]
-Example: "[+1 Gold, +2 Production] from every specialist [in all cities]"
+??? example  "[stats] from every specialist [cityFilter]"
+	Example: "[+1 Gold, +2 Production] from every specialist [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stats] per [amount] population [cityFilter]
-Example: "[+1 Gold, +2 Production] per [20] population [in all cities]"
+??? example  "[stats] per [amount] population [cityFilter]"
+	Example: "[+1 Gold, +2 Production] per [20] population [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stats] in cities with [amount] or more population
-Example: "[+1 Gold, +2 Production] in cities with [20] or more population"
+??? example  "[stats] in cities with [amount] or more population"
+	Example: "[+1 Gold, +2 Production] in cities with [20] or more population"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stats] in cities on [terrainFilter] tiles
-Example: "[+1 Gold, +2 Production] in cities on [Forest] tiles"
+??? example  "[stats] in cities on [terrainFilter] tiles"
+	Example: "[+1 Gold, +2 Production] in cities on [Forest] tiles"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stats] from all [buildingFilter] buildings
-Example: "[+1 Gold, +2 Production] from all [Culture] buildings"
+??? example  "[stats] from all [buildingFilter] buildings"
+	Example: "[+1 Gold, +2 Production] from all [Culture] buildings"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stats] whenever a Great Person is expended
-Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
+??? example  "[stats] whenever a Great Person is expended"
+	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [stats] from [tileFilter] tiles [cityFilter]
-Example: "[+1 Gold, +2 Production] from [Farm] tiles [in all cities]"
+??? example  "[stats] from [tileFilter] tiles [cityFilter]"
+	Example: "[+1 Gold, +2 Production] from [Farm] tiles [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stats] from [tileFilter] tiles without [tileFilter] [cityFilter]
-Example: "[+1 Gold, +2 Production] from [Farm] tiles without [Farm] [in all cities]"
+??? example  "[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]"
+	Example: "[+1 Gold, +2 Production] from [Farm] tiles without [Farm] [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stats] from every [tileFilter/specialist/buildingFilter]
-Example: "[+1 Gold, +2 Production] from every [tileFilter/specialist/buildingFilter]"
+??? example  "[stats] from every [tileFilter/specialist/buildingFilter]"
+	Example: "[+1 Gold, +2 Production] from every [tileFilter/specialist/buildingFilter]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stats] from each Trade Route
-Example: "[+1 Gold, +2 Production] from each Trade Route"
+??? example  "[stats] from each Trade Route"
+	Example: "[+1 Gold, +2 Production] from each Trade Route"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% [stat]
-Example: "[20]% [Culture]"
+??? example  "[amount]% [stat]"
+	Example: "[20]% [Culture]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% [stat] [cityFilter]
-Example: "[20]% [Culture] [in all cities]"
+??? example  "[amount]% [stat] [cityFilter]"
+	Example: "[20]% [Culture] [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% [stat] from every [tileFilter/specialist/buildingName]
-Example: "[20]% [Culture] from every [tileFilter/specialist/buildingName]"
+??? example  "[amount]% [stat] from every [tileFilter/specialist/buildingName]"
+	Example: "[20]% [Culture] from every [tileFilter/specialist/buildingName]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% Yield from every [tileFilter]
-Example: "[20]% Yield from every [Farm]"
+??? example  "[amount]% Yield from every [tileFilter]"
+	Example: "[20]% Yield from every [Farm]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% [stat] from City-States
-Example: "[20]% [Culture] from City-States"
+??? example  "[amount]% [stat] from City-States"
+	Example: "[20]% [Culture] from City-States"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Gold from all trade routes +25%
-Applicable to: Global
+??? example  "Gold from all trade routes +25%"
+	Applicable to: Global
 
-### &#x1F537; Nullifies [stat] [cityFilter]
-Example: "Nullifies [Culture] [in all cities]"
+??? example  "Nullifies [stat] [cityFilter]"
+	Example: "Nullifies [Culture] [in all cities]"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Nullifies Growth [cityFilter]
-Example: "Nullifies Growth [in all cities]"
+??? example  "Nullifies Growth [cityFilter]"
+	Example: "Nullifies Growth [in all cities]"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% Production when constructing [buildingFilter] wonders [cityFilter]
-Example: "[20]% Production when constructing [Culture] wonders [in all cities]"
+??? example  "[amount]% Production when constructing [buildingFilter] wonders [cityFilter]"
+	Example: "[20]% Production when constructing [Culture] wonders [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% Production when constructing [buildingFilter] buildings [cityFilter]
-Example: "[20]% Production when constructing [Culture] buildings [in all cities]"
+??? example  "[amount]% Production when constructing [buildingFilter] buildings [cityFilter]"
+	Example: "[20]% Production when constructing [Culture] buildings [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% Production when constructing [baseUnitFilter] units [cityFilter]
-Example: "[20]% Production when constructing [Melee] units [in all cities]"
+??? example  "[amount]% Production when constructing [baseUnitFilter] units [cityFilter]"
+	Example: "[20]% Production when constructing [Melee] units [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% Production towards any buildings that already exist in the Capital
-Example: "[20]% Production towards any buildings that already exist in the Capital"
+??? example  "[amount]% Production towards any buildings that already exist in the Capital"
+	Example: "[20]% Production towards any buildings that already exist in the Capital"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; Tile yields from Natural Wonders doubled
-Applicable to: Global
+??? example  "Tile yields from Natural Wonders doubled"
+	Applicable to: Global
 
-### &#x1F537; Military Units gifted from City-States start with [amount] XP
-Example: "Military Units gifted from City-States start with [20] XP"
+??? example  "Military Units gifted from City-States start with [amount] XP"
+	Example: "Military Units gifted from City-States start with [20] XP"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Militaristic City-States grant units [amount] times as fast when you are at war with a common nation
-Example: "Militaristic City-States grant units [20] times as fast when you are at war with a common nation"
+??? example  "Militaristic City-States grant units [amount] times as fast when you are at war with a common nation"
+	Example: "Militaristic City-States grant units [20] times as fast when you are at war with a common nation"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Gifts of Gold to City-States generate [amount]% more Influence
-Example: "Gifts of Gold to City-States generate [20]% more Influence"
+??? example  "Gifts of Gold to City-States generate [amount]% more Influence"
+	Example: "Gifts of Gold to City-States generate [20]% more Influence"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns.
-Example: "Can spend Gold to annex or puppet a City-State that has been your ally for [20] turns."
+??? example  "Can spend Gold to annex or puppet a City-State that has been your ally for [amount] turns."
+	Example: "Can spend Gold to annex or puppet a City-State that has been your ally for [20] turns."
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; City-State territory always counts as friendly territory
-Applicable to: Global
+??? example  "City-State territory always counts as friendly territory"
+	Applicable to: Global
 
-### &#x1F537; Allied City-States will occasionally gift Great People
-Applicable to: Global
+??? example  "Allied City-States will occasionally gift Great People"
+	Applicable to: Global
 
-### &#x1F537; [amount]% City-State Influence degradation
-Example: "[20]% City-State Influence degradation"
+??? example  "[amount]% City-State Influence degradation"
+	Example: "[20]% City-State Influence degradation"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Resting point for Influence with City-States is increased by [amount]
-Example: "Resting point for Influence with City-States is increased by [20]"
+??? example  "Resting point for Influence with City-States is increased by [amount]"
+	Example: "Resting point for Influence with City-States is increased by [20]"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Allied City-States provide [stat] equal to [amount]% of what they produce for themselves
-Example: "Allied City-States provide [Culture] equal to [20]% of what they produce for themselves"
+??? example  "Allied City-States provide [stat] equal to [amount]% of what they produce for themselves"
+	Example: "Allied City-States provide [Culture] equal to [20]% of what they produce for themselves"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% resources gifted by City-States
-Example: "[20]% resources gifted by City-States"
+??? example  "[amount]% resources gifted by City-States"
+	Example: "[20]% resources gifted by City-States"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% Happiness from luxury resources gifted by City-States
-Example: "[20]% Happiness from luxury resources gifted by City-States"
+??? example  "[amount]% Happiness from luxury resources gifted by City-States"
+	Example: "[20]% Happiness from luxury resources gifted by City-States"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; City-State Influence recovers at twice the normal rate
-Applicable to: Global
+??? example  "City-State Influence recovers at twice the normal rate"
+	Applicable to: Global
 
-### &#x1F537; [amount] units cost no maintenance
-Example: "[20] units cost no maintenance"
+??? example  "[amount] units cost no maintenance"
+	Example: "[20] units cost no maintenance"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Cannot build [baseUnitFilter] units
-Example: "Cannot build [Melee] units"
+??? example  "Cannot build [baseUnitFilter] units"
+	Example: "Cannot build [Melee] units"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% growth [cityFilter]
-Example: "[20]% growth [in all cities]"
+??? example  "[amount]% growth [cityFilter]"
+	Example: "[20]% growth [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% Food is carried over after population increases [cityFilter]
-Example: "[20]% Food is carried over after population increases [in all cities]"
+??? example  "[amount]% Food is carried over after population increases [cityFilter]"
+	Example: "[20]% Food is carried over after population increases [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; Gain a free [buildingName] [cityFilter]
-Example: "Gain a free [Library] [in all cities]"
+??? example  "Gain a free [buildingName] [cityFilter]"
+	Example: "Gain a free [Library] [in all cities]"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% Great Person generation [cityFilter]
-Example: "[20]% Great Person generation [in all cities]"
+??? example  "[amount]% Great Person generation [cityFilter]"
+	Example: "[20]% Great Person generation [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% great person generation [cityFilter]
-Example: "[20]% great person generation [in all cities]"
+??? example  "[amount]% great person generation [cityFilter]"
+	Example: "[20]% great person generation [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion
-Example: "May choose [20] additional [Follower] beliefs when [founding] a religion"
+??? example  "May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion"
+	Example: "May choose [20] additional [Follower] beliefs when [founding] a religion"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion
-Example: "May choose [20] additional belief(s) of any type when [founding] a religion"
+??? example  "May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion"
+	Example: "May choose [20] additional belief(s) of any type when [founding] a religion"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% unhappiness from population [cityFilter]
-Example: "[20]% unhappiness from population [in all cities]"
+??? example  "[amount]% unhappiness from population [cityFilter]"
+	Example: "[20]% unhappiness from population [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% unhappiness from specialists [cityFilter]
-Example: "[20]% unhappiness from specialists [in all cities]"
+??? example  "[amount]% unhappiness from specialists [cityFilter]"
+	Example: "[20]% unhappiness from specialists [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% Food consumption by specialists [cityFilter]
-Example: "[20]% Food consumption by specialists [in all cities]"
+??? example  "[amount]% Food consumption by specialists [cityFilter]"
+	Example: "[20]% Food consumption by specialists [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; Provides 1 happiness per 2 additional social policies adopted
-Applicable to: Global
+??? example  "Provides 1 happiness per 2 additional social policies adopted"
+	Applicable to: Global
 
-### &#x1F537; [amount]% of excess happiness converted to [stat]
-Example: "[20]% of excess happiness converted to [Culture]"
+??? example  "[amount]% of excess happiness converted to [stat]"
+	Example: "[20]% of excess happiness converted to [Culture]"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% Culture cost of natural border growth [cityFilter]
-Example: "[20]% Culture cost of natural border growth [in all cities]"
+??? example  "[amount]% Culture cost of natural border growth [cityFilter]"
+	Example: "[20]% Culture cost of natural border growth [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% Gold cost of acquiring tiles [cityFilter]
-Example: "[20]% Gold cost of acquiring tiles [in all cities]"
+??? example  "[amount]% Gold cost of acquiring tiles [cityFilter]"
+	Example: "[20]% Gold cost of acquiring tiles [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])
-Example: "May buy [Melee] units for [20] [Culture] [in all cities] at an increasing price ([20])"
+??? example  "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter] at an increasing price ([amount])"
+	Example: "May buy [Melee] units for [20] [Culture] [in all cities] at an increasing price ([20])"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; May buy [buildingFilter] buildings for [amount] [stat] [cityFilter] at an increasing price ([amount])
-Example: "May buy [Culture] buildings for [20] [Culture] [in all cities] at an increasing price ([20])"
+??? example  "May buy [buildingFilter] buildings for [amount] [stat] [cityFilter] at an increasing price ([amount])"
+	Example: "May buy [Culture] buildings for [20] [Culture] [in all cities] at an increasing price ([20])"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; May buy [baseUnitFilter] units for [amount] [stat] [cityFilter]
-Example: "May buy [Melee] units for [20] [Culture] [in all cities]"
+??? example  "May buy [baseUnitFilter] units for [amount] [stat] [cityFilter]"
+	Example: "May buy [Melee] units for [20] [Culture] [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; May buy [buildingFilter] buildings for [amount] [stat] [cityFilter]
-Example: "May buy [Culture] buildings for [20] [Culture] [in all cities]"
+??? example  "May buy [buildingFilter] buildings for [amount] [stat] [cityFilter]"
+	Example: "May buy [Culture] buildings for [20] [Culture] [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; May buy [baseUnitFilter] units with [stat] [cityFilter]
-Example: "May buy [Melee] units with [Culture] [in all cities]"
+??? example  "May buy [baseUnitFilter] units with [stat] [cityFilter]"
+	Example: "May buy [Melee] units with [Culture] [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; May buy [buildingFilter] buildings with [stat] [cityFilter]
-Example: "May buy [Culture] buildings with [Culture] [in all cities]"
+??? example  "May buy [buildingFilter] buildings with [stat] [cityFilter]"
+	Example: "May buy [Culture] buildings with [Culture] [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost
-Example: "May buy [Melee] units with [Culture] for [20] times their normal Production cost"
+??? example  "May buy [baseUnitFilter] units with [stat] for [amount] times their normal Production cost"
+	Example: "May buy [Melee] units with [Culture] for [20] times their normal Production cost"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost
-Example: "May buy [Culture] buildings with [Culture] for [20] times their normal Production cost"
+??? example  "May buy [buildingFilter] buildings with [stat] for [amount] times their normal Production cost"
+	Example: "May buy [Culture] buildings with [Culture] for [20] times their normal Production cost"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; Enables conversion of city production to gold
-Applicable to: Global
+??? example  "Enables conversion of city production to gold"
+	Applicable to: Global
 
-### &#x1F537; Enables conversion of city production to science
-Applicable to: Global
+??? example  "Enables conversion of city production to science"
+	Applicable to: Global
 
-### &#x1F537; [stat] cost of purchasing items in cities [amount]%
-Example: "[Culture] cost of purchasing items in cities [20]%"
+??? example  "[stat] cost of purchasing items in cities [amount]%"
+	Example: "[Culture] cost of purchasing items in cities [20]%"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stat] cost of purchasing [buildingFilter] buildings [amount]%
-Example: "[Culture] cost of purchasing [Culture] buildings [20]%"
+??? example  "[stat] cost of purchasing [buildingFilter] buildings [amount]%"
+	Example: "[Culture] cost of purchasing [Culture] buildings [20]%"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [stat] cost of purchasing [baseUnitFilter] units [amount]%
-Example: "[Culture] cost of purchasing [Melee] units [20]%"
+??? example  "[stat] cost of purchasing [baseUnitFilter] units [amount]%"
+	Example: "[Culture] cost of purchasing [Melee] units [20]%"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; Improves movement speed on roads
-Applicable to: Global
+??? example  "Improves movement speed on roads"
+	Applicable to: Global
 
-### &#x1F537; Roads connect tiles across rivers
-Applicable to: Global
+??? example  "Roads connect tiles across rivers"
+	Applicable to: Global
 
-### &#x1F537; [amount]% maintenance on road & railroads
-Example: "[20]% maintenance on road & railroads"
+??? example  "[amount]% maintenance on road & railroads"
+	Example: "[20]% maintenance on road & railroads"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% maintenance cost for buildings [cityFilter]
-Example: "[20]% maintenance cost for buildings [in all cities]"
+??? example  "[amount]% maintenance cost for buildings [cityFilter]"
+	Example: "[20]% maintenance cost for buildings [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once.
-Example: "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [Agriculture]. Each bonus person can only be chosen once."
+??? example  "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [tech]. Each bonus person can only be chosen once."
+	Example: "Receive a free Great Person at the end of every [comment] (every 394 years), after researching [Agriculture]. Each bonus person can only be chosen once."
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count.
-Applicable to: Global
+??? example  "Once The Long Count activates, the year on the world screen displays as the traditional Mayan Long Count."
+	Applicable to: Global
 
-### &#x1F537; Retain [amount]% of the happiness from a luxury after the last copy has been traded away
-Example: "Retain [20]% of the happiness from a luxury after the last copy has been traded away"
+??? example  "Retain [amount]% of the happiness from a luxury after the last copy has been traded away"
+	Example: "Retain [20]% of the happiness from a luxury after the last copy has been traded away"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount] Happiness from each type of luxury resource
-Example: "[20] Happiness from each type of luxury resource"
+??? example  "[amount] Happiness from each type of luxury resource"
+	Example: "[20] Happiness from each type of luxury resource"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Each city founded increases culture cost of policies [amount]% less than normal
-Example: "Each city founded increases culture cost of policies [20]% less than normal"
+??? example  "Each city founded increases culture cost of policies [amount]% less than normal"
+	Example: "Each city founded increases culture cost of policies [20]% less than normal"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% Culture cost of adopting new Policies
-Example: "[20]% Culture cost of adopting new Policies"
+??? example  "[amount]% Culture cost of adopting new Policies"
+	Example: "[20]% Culture cost of adopting new Policies"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Quantity of strategic resources produced by the empire +[amount]%
-Example: "Quantity of strategic resources produced by the empire +[20]%"
+??? example  "Quantity of strategic resources produced by the empire +[amount]%"
+	Example: "Quantity of strategic resources produced by the empire +[20]%"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Double quantity of [resource] produced
-Example: "Double quantity of [Iron] produced"
+??? example  "Double quantity of [resource] produced"
+	Example: "Double quantity of [Iron] produced"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Double Happiness from Natural Wonders
-Applicable to: Global
+??? example  "Double Happiness from Natural Wonders"
+	Applicable to: Global
 
-### &#x1F537; Enables construction of Spaceship parts
-Applicable to: Global
+??? example  "Enables construction of Spaceship parts"
+	Applicable to: Global
 
-### &#x1F537; Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)
-Applicable to: Global
+??? example  "Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"
+	Applicable to: Global
 
-### &#x1F537; Production to science conversion in cities increased by 33%
-Applicable to: Global
+??? example  "Production to science conversion in cities increased by 33%"
+	Applicable to: Global
 
-### &#x1F537; Notified of new Barbarian encampments
-Applicable to: Global
+??? example  "Notified of new Barbarian encampments"
+	Applicable to: Global
 
-### &#x1F537; "Borrows" city names from other civilizations in the game
-Applicable to: Global
+??? example  ""Borrows" city names from other civilizations in the game"
+	Applicable to: Global
 
-### &#x1F537; Units fight as though they were at full strength even when damaged
-Applicable to: Global
+??? example  "Units fight as though they were at full strength even when damaged"
+	Applicable to: Global
 
-### &#x1F537; 100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)
-Applicable to: Global
+??? example  "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)"
+	Applicable to: Global
 
-### &#x1F537; Unhappiness from number of Cities doubled
-Applicable to: Global
+??? example  "Unhappiness from number of Cities doubled"
+	Applicable to: Global
 
-### &#x1F537; Great General provides double combat bonus
-Applicable to: Global
+??? example  "Great General provides double combat bonus"
+	Applicable to: Global
 
-### &#x1F537; Receive a tech boost when scientific buildings/wonders are built in capital
-Applicable to: Global
+??? example  "Receive a tech boost when scientific buildings/wonders are built in capital"
+	Applicable to: Global
 
-### &#x1F537; May not generate great prophet equivalents naturally
-Applicable to: Global
+??? example  "May not generate great prophet equivalents naturally"
+	Applicable to: Global
 
-### &#x1F537; 67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment
-Applicable to: Global
+??? example  "67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment"
+	Applicable to: Global
 
-### &#x1F537; 50% chance of capturing defeated Barbarian naval units and earning 25 Gold
-Applicable to: Global
+??? example  "50% chance of capturing defeated Barbarian naval units and earning 25 Gold"
+	Applicable to: Global
 
-### &#x1F537; Receive triple Gold from Barbarian encampments and pillaging Cities
-Applicable to: Global
+??? example  "Receive triple Gold from Barbarian encampments and pillaging Cities"
+	Applicable to: Global
 
-### &#x1F537; Enables Open Borders agreements
-Applicable to: Global
+??? example  "Enables Open Borders agreements"
+	Applicable to: Global
 
-### &#x1F537; Enables Research agreements
-Applicable to: Global
+??? example  "Enables Research agreements"
+	Applicable to: Global
 
-### &#x1F537; Science gained from research agreements [amount]%
-Example: "Science gained from research agreements [20]%"
+??? example  "Science gained from research agreements [amount]%"
+	Example: "Science gained from research agreements [20]%"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Triggers victory
-Applicable to: Global
+??? example  "Triggers victory"
+	Applicable to: Global
 
-### &#x1F537; Triggers a Cultural Victory upon completion
-Applicable to: Global
+??? example  "Triggers a Cultural Victory upon completion"
+	Applicable to: Global
 
-### &#x1F537; [amount]% City Strength from defensive buildings
-Example: "[20]% City Strength from defensive buildings"
+??? example  "[amount]% City Strength from defensive buildings"
+	Example: "[20]% City Strength from defensive buildings"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% tile improvement construction time
-Example: "[20]% tile improvement construction time"
+??? example  "[amount]% tile improvement construction time"
+	Example: "[20]% tile improvement construction time"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% Gold from Great Merchant trade missions
-Example: "[20]% Gold from Great Merchant trade missions"
+??? example  "[amount]% Gold from Great Merchant trade missions"
+	Example: "[20]% Gold from Great Merchant trade missions"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing
-Example: "[Wounded] Units adjacent to this city heal [20] HP per turn when healing"
+??? example  "[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing"
+	Example: "[Wounded] Units adjacent to this city heal [20] HP per turn when healing"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [amount]% Golden Age length
-Example: "[20]% Golden Age length"
+??? example  "[amount]% Golden Age length"
+	Example: "[20]% Golden Age length"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% Strength for cities
-Example: "[20]% Strength for cities"
+??? example  "[amount]% Strength for cities"
+	Example: "[20]% Strength for cities"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; New [baseUnitFilter] units start with [amount] Experience [cityFilter]
-Example: "New [Melee] units start with [20] Experience [in all cities]"
+??? example  "New [baseUnitFilter] units start with [amount] Experience [cityFilter]"
+	Example: "New [Melee] units start with [20] Experience [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion
-Example: "All newly-trained [Melee] units [in all cities] receive the [Shock I] promotion"
+??? example  "All newly-trained [baseUnitFilter] units [cityFilter] receive the [promotion] promotion"
+	Example: "All newly-trained [Melee] units [in all cities] receive the [Shock I] promotion"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; [baseUnitFilter] units built [cityFilter] can [action] [amount] extra times
-Example: "[Melee] units built [in all cities] can [action] [20] extra times"
+??? example  "[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times"
+	Example: "[Melee] units built [in all cities] can [action] [20] extra times"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; Enables embarkation for land units
-Applicable to: Global
+??? example  "Enables embarkation for land units"
+	Applicable to: Global
 
-### &#x1F537; Enables embarked units to enter ocean tiles
-Applicable to: Global
+??? example  "Enables embarked units to enter ocean tiles"
+	Applicable to: Global
 
-### &#x1F537; Population loss from nuclear attacks [amount]% [cityFilter]
-Example: "Population loss from nuclear attacks [20]% [in all cities]"
+??? example  "Population loss from nuclear attacks [amount]% [cityFilter]"
+	Example: "Population loss from nuclear attacks [20]% [in all cities]"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount]% Natural religion spread [cityFilter]
-Example: "[20]% Natural religion spread [in all cities]"
+??? example  "[amount]% Natural religion spread [cityFilter]"
+	Example: "[20]% Natural religion spread [in all cities]"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; Religion naturally spreads to cities [amount] tiles away
-Example: "Religion naturally spreads to cities [20] tiles away"
+??? example  "Religion naturally spreads to cities [amount] tiles away"
+	Example: "Religion naturally spreads to cities [20] tiles away"
 
-Applicable to: Global, FollowerBelief
+	Applicable to: Global, FollowerBelief
 
-### &#x1F537; Can be continually researched
-Applicable to: Global
+??? example  "Can be continually researched"
+	Applicable to: Global
 
-### &#x1F537; [amount] Unit Supply
-Example: "[20] Unit Supply"
+??? example  "[amount] Unit Supply"
+	Example: "[20] Unit Supply"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount] Unit Supply per [amount] population [cityFilter]
-Example: "[20] Unit Supply per [20] population [in all cities]"
+??? example  "[amount] Unit Supply per [amount] population [cityFilter]"
+	Example: "[20] Unit Supply per [20] population [in all cities]"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; [amount] Unit Supply per city
-Example: "[20] Unit Supply per city"
+??? example  "[amount] Unit Supply per city"
+	Example: "[20] Unit Supply per city"
 
-Applicable to: Global
+	Applicable to: Global
 
-### &#x1F537; Units in cities cost no Maintenance
-Applicable to: Global
+??? example  "Units in cities cost no Maintenance"
+	Applicable to: Global
 
-### &#x1F537; Rebel units may spawn
-Applicable to: Global
+??? example  "Rebel units may spawn"
+	Applicable to: Global
 
-### &#x1F537; [amount]% Strength
-Example: "[20]% Strength"
+??? example  "[amount]% Strength"
+	Example: "[20]% Strength"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; [amount]% Strength decreasing with distance from the capital
-Example: "[20]% Strength decreasing with distance from the capital"
+??? example  "[amount]% Strength decreasing with distance from the capital"
+	Example: "[20]% Strength decreasing with distance from the capital"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; [amount]% to Flank Attack bonuses
-Example: "[20]% to Flank Attack bonuses"
+??? example  "[amount]% to Flank Attack bonuses"
+	Example: "[20]% to Flank Attack bonuses"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; +30% Strength when fighting City-State units and cities
-Applicable to: Global
+??? example  "+30% Strength when fighting City-State units and cities"
+	Applicable to: Global
 
-### &#x1F537; [amount] Movement
-Example: "[20] Movement"
+??? example  "[amount] Movement"
+	Example: "[20] Movement"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; [amount] Sight
-Example: "[20] Sight"
+??? example  "[amount] Sight"
+	Example: "[20] Sight"
 
-Applicable to: Global, Unit, Terrain
+	Applicable to: Global, Unit, Terrain
 
-### &#x1F537; [amount] Range
-Example: "[20] Range"
+??? example  "[amount] Range"
+	Example: "[20] Range"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; [amount] HP when healing
-Example: "[20] HP when healing"
+??? example  "[amount] HP when healing"
+	Example: "[20] HP when healing"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; [amount]% Spread Religion Strength
-Example: "[20]% Spread Religion Strength"
+??? example  "[amount]% Spread Religion Strength"
+	Example: "[20]% Spread Religion Strength"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; No defensive terrain bonus
-Applicable to: Global, Unit
+??? example  "No defensive terrain bonus"
+	Applicable to: Global, Unit
 
-### &#x1F537; No defensive terrain penalty
-Applicable to: Global, Unit
+??? example  "No defensive terrain penalty"
+	Applicable to: Global, Unit
 
-### &#x1F537; No movement cost to pillage
-Applicable to: Global, Unit
+??? example  "No movement cost to pillage"
+	Applicable to: Global, Unit
 
-### &#x1F537; May heal outside of friendly territory
-Applicable to: Global, Unit
+??? example  "May heal outside of friendly territory"
+	Applicable to: Global, Unit
 
-### &#x1F537; All healing effects doubled
-Applicable to: Global, Unit
+??? example  "All healing effects doubled"
+	Applicable to: Global, Unit
 
-### &#x1F537; Heals [amount] damage if it kills a unit
-Example: "Heals [20] damage if it kills a unit"
+??? example  "Heals [amount] damage if it kills a unit"
+	Example: "Heals [20] damage if it kills a unit"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; Can only heal by pillaging
-Applicable to: Global, Unit
+??? example  "Can only heal by pillaging"
+	Applicable to: Global, Unit
 
-### &#x1F537; Normal vision when embarked
-Applicable to: Global, Unit
+??? example  "Normal vision when embarked"
+	Applicable to: Global, Unit
 
-### &#x1F537; Defense bonus when embarked
-Applicable to: Global, Unit
+??? example  "Defense bonus when embarked"
+	Applicable to: Global, Unit
 
-### &#x1F537; Embarked units can defend themselves
-Applicable to: Global
+??? example  "Embarked units can defend themselves"
+	Applicable to: Global
 
-### &#x1F537; [amount]% maintenance costs
-Example: "[20]% maintenance costs"
+??? example  "[amount]% maintenance costs"
+	Example: "[20]% maintenance costs"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; [amount]% Gold cost of upgrading
-Example: "[20]% Gold cost of upgrading"
+??? example  "[amount]% Gold cost of upgrading"
+	Example: "[20]% Gold cost of upgrading"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; [greatPerson] is earned [amount]% faster
-Example: "[greatPerson] is earned [20]% faster"
+??? example  "[greatPerson] is earned [amount]% faster"
+	Example: "[greatPerson] is earned [20]% faster"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; Earn [amount]% of the damage done to [mapUnitFilter] units as [plunderableStat]
-Example: "Earn [20]% of the damage done to [Wounded] units as [Gold]"
+??? example  "Earn [amount]% of the damage done to [mapUnitFilter] units as [plunderableStat]"
+	Example: "Earn [20]% of the damage done to [Wounded] units as [Gold]"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; Upon capturing a city, receive [amount] times its [stat] production as [plunderableStat] immediately
-Example: "Upon capturing a city, receive [20] times its [Culture] production as [Gold] immediately"
+??? example  "Upon capturing a city, receive [amount] times its [stat] production as [plunderableStat] immediately"
+	Example: "Upon capturing a city, receive [20] times its [Culture] production as [Gold] immediately"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [plunderableStat]
-Example: "Earn [20]% of killed [Wounded] unit's [Cost] as [Gold]"
+??? example  "Earn [amount]% of killed [mapUnitFilter] unit's [costOrStrength] as [plunderableStat]"
+	Example: "Earn [20]% of killed [Wounded] unit's [Cost] as [Gold]"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; [amount] XP gained from combat
-Example: "[20] XP gained from combat"
+??? example  "[amount] XP gained from combat"
+	Example: "[20] XP gained from combat"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; [amount]% XP gained from combat
-Example: "[20]% XP gained from combat"
+??? example  "[amount]% XP gained from combat"
+	Example: "[20]% XP gained from combat"
 
-Applicable to: Global, Unit
+	Applicable to: Global, Unit
 
-### &#x1F537; This Unit upgrades for free
-Applicable to: Global
+??? example  "This Unit upgrades for free"
+	Applicable to: Global
 
 ## Nation uniques
-### &#x1F537; Will not be chosen for new games
-Applicable to: Nation
+??? example  "Will not be chosen for new games"
+	Applicable to: Nation
 
-### &#x1F537; Starts with [tech]
-Example: "Starts with [Agriculture]"
+??? example  "Starts with [tech]"
+	Example: "Starts with [Agriculture]"
 
-Applicable to: Nation
+	Applicable to: Nation
 
 ## Tech uniques
-### &#x1F537; Starting tech
-Applicable to: Tech
+??? example  "Starting tech"
+	Applicable to: Tech
 
-### &#x1F537; Only available
-Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement
+??? example  "Only available"
+	Applicable to: Tech, Policy, Building, Unit, Promotion, Improvement
 
 ## FollowerBelief uniques
-### &#x1F537; [amount]% [stat] from every follower, up to [amount]%
-Example: "[20]% [Culture] from every follower, up to [20]%"
+??? example  "[amount]% [stat] from every follower, up to [amount]%"
+	Example: "[20]% [Culture] from every follower, up to [20]%"
 
-Applicable to: FollowerBelief
+	Applicable to: FollowerBelief
 
-### &#x1F537; Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [plunderableStat] when killed within 4 tiles of a city following this religion
-Example: "Earn [20]% of [Wounded] unit's [Cost] as [Gold] when killed within 4 tiles of a city following this religion"
+??? example  "Earn [amount]% of [mapUnitFilter] unit's [costOrStrength] as [plunderableStat] when killed within 4 tiles of a city following this religion"
+	Example: "Earn [20]% of [Wounded] unit's [Cost] as [Gold] when killed within 4 tiles of a city following this religion"
 
-Applicable to: FollowerBelief
+	Applicable to: FollowerBelief
 
 ## Building uniques
-### &#x1F537; Consumes [amount] [resource]
-Example: "Consumes [20] [Iron]"
+??? example  "Consumes [amount] [resource]"
+	Example: "Consumes [20] [Iron]"
 
-Applicable to: Building, Unit, Improvement
+	Applicable to: Building, Unit, Improvement
 
-### &#x1F537; Provides [amount] [resource]
-Example: "Provides [20] [Iron]"
+??? example  "Provides [amount] [resource]"
+	Example: "Provides [20] [Iron]"
 
-Applicable to: Building, Improvement
+	Applicable to: Building, Improvement
 
-### &#x1F537; Unbuildable
-Applicable to: Building, Unit
+??? example  "Unbuildable"
+	Applicable to: Building, Unit
 
-### &#x1F537; Cannot be purchased
-Applicable to: Building, Unit
+??? example  "Cannot be purchased"
+	Applicable to: Building, Unit
 
-### &#x1F537; Can be purchased with [stat] [cityFilter]
-Example: "Can be purchased with [Culture] [in all cities]"
+??? example  "Can be purchased with [stat] [cityFilter]"
+	Example: "Can be purchased with [Culture] [in all cities]"
 
-Applicable to: Building, Unit
+	Applicable to: Building, Unit
 
-### &#x1F537; Can be purchased for [amount] [stat] [cityFilter]
-Example: "Can be purchased for [20] [Culture] [in all cities]"
+??? example  "Can be purchased for [amount] [stat] [cityFilter]"
+	Example: "Can be purchased for [20] [Culture] [in all cities]"
 
-Applicable to: Building, Unit
+	Applicable to: Building, Unit
 
-### &#x1F537; Limited to [amount] per Civilization
-Example: "Limited to [20] per Civilization"
+??? example  "Limited to [amount] per Civilization"
+	Example: "Limited to [20] per Civilization"
 
-Applicable to: Building, Unit
+	Applicable to: Building, Unit
 
-### &#x1F537; Hidden until [amount] social policy branches have been completed
-Example: "Hidden until [20] social policy branches have been completed"
+??? example  "Hidden until [amount] social policy branches have been completed"
+	Example: "Hidden until [20] social policy branches have been completed"
 
-Applicable to: Building, Unit
+	Applicable to: Building, Unit
 
-### &#x1F537; Excess Food converted to Production when under construction
-Applicable to: Building, Unit
+??? example  "Excess Food converted to Production when under construction"
+	Applicable to: Building, Unit
 
-### &#x1F537; Requires at least [amount] population
-Example: "Requires at least [20] population"
+??? example  "Requires at least [amount] population"
+	Example: "Requires at least [20] population"
 
-Applicable to: Building, Unit
+	Applicable to: Building, Unit
 
-### &#x1F537; Cost increases by [amount] per owned city
-Example: "Cost increases by [20] per owned city"
+??? example  "Cost increases by [amount] per owned city"
+	Example: "Cost increases by [20] per owned city"
 
-Applicable to: Building
+	Applicable to: Building
 
-### &#x1F537; Requires a [buildingName] in all cities
-Example: "Requires a [Library] in all cities"
+??? example  "Requires a [buildingName] in all cities"
+	Example: "Requires a [Library] in all cities"
 
-Applicable to: Building
+	Applicable to: Building
 
-### &#x1F537; Requires a [buildingName] in at least [amount] cities
-Example: "Requires a [Library] in at least [20] cities"
+??? example  "Requires a [buildingName] in at least [amount] cities"
+	Example: "Requires a [Library] in at least [20] cities"
 
-Applicable to: Building
+	Applicable to: Building
 
-### &#x1F537; Must be on [terrainFilter]
-Example: "Must be on [Forest]"
+??? example  "Must be on [terrainFilter]"
+	Example: "Must be on [Forest]"
 
-Applicable to: Building
+	Applicable to: Building
 
-### &#x1F537; Must not be on [terrainFilter]
-Example: "Must not be on [Forest]"
+??? example  "Must not be on [terrainFilter]"
+	Example: "Must not be on [Forest]"
 
-Applicable to: Building
+	Applicable to: Building
 
-### &#x1F537; Must be next to [terrainFilter]
-Example: "Must be next to [Forest]"
+??? example  "Must be next to [terrainFilter]"
+	Example: "Must be next to [Forest]"
 
-Applicable to: Building, Improvement
+	Applicable to: Building, Improvement
 
-### &#x1F537; Must not be next to [terrainFilter]
-Example: "Must not be next to [Forest]"
+??? example  "Must not be next to [terrainFilter]"
+	Example: "Must not be next to [Forest]"
 
-Applicable to: Building
+	Applicable to: Building
 
-### &#x1F537; Unsellable
-Applicable to: Building
+??? example  "Unsellable"
+	Applicable to: Building
 
-### &#x1F537; Obsolete with [tech]
-Example: "Obsolete with [Agriculture]"
+??? example  "Obsolete with [tech]"
+	Example: "Obsolete with [Agriculture]"
 
-Applicable to: Building, Improvement, Resource
+	Applicable to: Building, Improvement, Resource
 
-### &#x1F537; Indicates the capital city
-Applicable to: Building
+??? example  "Indicates the capital city"
+	Applicable to: Building
 
-### &#x1F537; Provides 1 extra copy of each improved luxury resource near this City
-Applicable to: Building
+??? example  "Provides 1 extra copy of each improved luxury resource near this City"
+	Applicable to: Building
 
-### &#x1F537; Destroyed when the city is captured
-Applicable to: Building
+??? example  "Destroyed when the city is captured"
+	Applicable to: Building
 
-### &#x1F537; Never destroyed when the city is captured
-Applicable to: Building
+??? example  "Never destroyed when the city is captured"
+	Applicable to: Building
 
-### &#x1F537; Doubles Gold given to enemy if city is captured
-Applicable to: Building
+??? example  "Doubles Gold given to enemy if city is captured"
+	Applicable to: Building
 
-### &#x1F537; Remove extra unhappiness from annexed cities
-Applicable to: Building
+??? example  "Remove extra unhappiness from annexed cities"
+	Applicable to: Building
 
-### &#x1F537; Spaceship part
-Applicable to: Building, Unit
+??? example  "Spaceship part"
+	Applicable to: Building, Unit
 
-### &#x1F537; Hidden when religion is disabled
-Applicable to: Building, Unit, Ruins
+??? example  "Hidden when religion is disabled"
+	Applicable to: Building, Unit, Ruins
 
-### &#x1F537; Hidden when [victoryType] Victory is disabled
-Example: "Hidden when [Domination] Victory is disabled"
+??? example  "Hidden when [victoryType] Victory is disabled"
+	Example: "Hidden when [Domination] Victory is disabled"
 
-Applicable to: Building, Unit
+	Applicable to: Building, Unit
 
 ## Unit uniques
-### &#x1F537; Founds a new city
-Applicable to: Unit
+??? example  "Founds a new city"
+	Applicable to: Unit
 
-### &#x1F537; Can construct [improvementName]
-Example: "Can construct [Trading Post]"
+??? example  "Can construct [improvementName]"
+	Example: "Can construct [Trading Post]"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Can build [improvementFilter/terrainFilter] improvements on tiles
-Example: "Can build [improvementFilter/terrainFilter] improvements on tiles"
+??? example  "Can build [improvementFilter/terrainFilter] improvements on tiles"
+	Example: "Can build [improvementFilter/terrainFilter] improvements on tiles"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; May create improvements on water resources
-Applicable to: Unit
+??? example  "May create improvements on water resources"
+	Applicable to: Unit
 
-### &#x1F537; May found a religion
-Applicable to: Unit
+??? example  "May found a religion"
+	Applicable to: Unit
 
-### &#x1F537; May enhance a religion
-Applicable to: Unit
+??? example  "May enhance a religion"
+	Applicable to: Unit
 
-### &#x1F537; Can only attack [combatantFilter] units
-Example: "Can only attack [City] units"
+??? example  "Can only attack [combatantFilter] units"
+	Example: "Can only attack [City] units"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Can only attack [tileFilter] tiles
-Example: "Can only attack [Farm] tiles"
+??? example  "Can only attack [tileFilter] tiles"
+	Example: "Can only attack [Farm] tiles"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Cannot attack
-Applicable to: Unit
+??? example  "Cannot attack"
+	Applicable to: Unit
 
-### &#x1F537; Must set up to ranged attack
-Applicable to: Unit
+??? example  "Must set up to ranged attack"
+	Applicable to: Unit
 
-### &#x1F537; Self-destructs when attacking
-Applicable to: Unit
+??? example  "Self-destructs when attacking"
+	Applicable to: Unit
 
-### &#x1F537; Blast radius [amount]
-Example: "Blast radius [20]"
+??? example  "Blast radius [amount]"
+	Example: "Blast radius [20]"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Ranged attacks may be performed over obstacles
-Applicable to: Unit
+??? example  "Ranged attacks may be performed over obstacles"
+	Applicable to: Unit
 
-### &#x1F537; Uncapturable
-Applicable to: Unit
+??? example  "Uncapturable"
+	Applicable to: Unit
 
-### &#x1F537; May withdraw before melee ([amount]%)
-Example: "May withdraw before melee ([20]%)"
+??? example  "May withdraw before melee ([amount]%)"
+	Example: "May withdraw before melee ([20]%)"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Unable to capture cities
-Applicable to: Unit
+??? example  "Unable to capture cities"
+	Applicable to: Unit
 
-### &#x1F537; Can move after attacking
-Applicable to: Unit
+??? example  "Can move after attacking"
+	Applicable to: Unit
 
-### &#x1F537; Can move immediately once bought
-Applicable to: Unit
+??? example  "Can move immediately once bought"
+	Applicable to: Unit
 
-### &#x1F537; Unit will heal every turn, even if it performs an action
-Applicable to: Unit
+??? example  "Unit will heal every turn, even if it performs an action"
+	Applicable to: Unit
 
-### &#x1F537; All adjacent units heal [amount] HP when healing
-Example: "All adjacent units heal [20] HP when healing"
+??? example  "All adjacent units heal [amount] HP when healing"
+	Example: "All adjacent units heal [20] HP when healing"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Eliminates combat penalty for attacking across a coast
-Applicable to: Unit
+??? example  "Eliminates combat penalty for attacking across a coast"
+	Applicable to: Unit
 
-### &#x1F537; 6 tiles in every direction always visible
-Applicable to: Unit
+??? example  "6 tiles in every direction always visible"
+	Applicable to: Unit
 
-### &#x1F537; Can carry [amount] [mapUnitFilter] units
-Example: "Can carry [20] [Wounded] units"
+??? example  "Can carry [amount] [mapUnitFilter] units"
+	Example: "Can carry [20] [Wounded] units"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Can carry [amount] extra [mapUnitFilter] units
-Example: "Can carry [20] extra [Wounded] units"
+??? example  "Can carry [amount] extra [mapUnitFilter] units"
+	Example: "Can carry [20] extra [Wounded] units"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Cannot be carried by [mapUnitFilter] units
-Example: "Cannot be carried by [Wounded] units"
+??? example  "Cannot be carried by [mapUnitFilter] units"
+	Example: "Cannot be carried by [Wounded] units"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; May capture killed [mapUnitFilter] units
-Example: "May capture killed [Wounded] units"
+??? example  "May capture killed [mapUnitFilter] units"
+	Example: "May capture killed [Wounded] units"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Invisible to others
-Applicable to: Unit
+??? example  "Invisible to others"
+	Applicable to: Unit
 
-### &#x1F537; Invisible to non-adjacent units
-Applicable to: Unit
+??? example  "Invisible to non-adjacent units"
+	Applicable to: Unit
 
-### &#x1F537; Can see invisible [mapUnitFilter] units
-Example: "Can see invisible [Wounded] units"
+??? example  "Can see invisible [mapUnitFilter] units"
+	Example: "Can see invisible [Wounded] units"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; May upgrade to [baseUnitFilter] through ruins-like effects
-Example: "May upgrade to [Melee] through ruins-like effects"
+??? example  "May upgrade to [baseUnitFilter] through ruins-like effects"
+	Example: "May upgrade to [Melee] through ruins-like effects"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Double movement in [terrainFilter]
-Example: "Double movement in [Forest]"
+??? example  "Double movement in [terrainFilter]"
+	Example: "Double movement in [Forest]"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; All tiles cost 1 movement
-Applicable to: Unit
+??? example  "All tiles cost 1 movement"
+	Applicable to: Unit
 
-### &#x1F537; Can pass through impassable tiles
-Applicable to: Unit
+??? example  "Can pass through impassable tiles"
+	Applicable to: Unit
 
-### &#x1F537; Ignores terrain cost
-Applicable to: Unit
+??? example  "Ignores terrain cost"
+	Applicable to: Unit
 
-### &#x1F537; Ignores Zone of Control
-Applicable to: Unit
+??? example  "Ignores Zone of Control"
+	Applicable to: Unit
 
-### &#x1F537; Rough terrain penalty
-Applicable to: Unit
+??? example  "Rough terrain penalty"
+	Applicable to: Unit
 
-### &#x1F537; Can enter ice tiles
-Applicable to: Unit
+??? example  "Can enter ice tiles"
+	Applicable to: Unit
 
-### &#x1F537; Cannot enter ocean tiles
-Applicable to: Unit
+??? example  "Cannot enter ocean tiles"
+	Applicable to: Unit
 
-### &#x1F537; May enter foreign tiles without open borders
-Applicable to: Unit
+??? example  "May enter foreign tiles without open borders"
+	Applicable to: Unit
 
-### &#x1F537; May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there
-Example: "May enter foreign tiles without open borders, but loses [20] religious strength each turn it ends there"
+??? example  "May enter foreign tiles without open borders, but loses [amount] religious strength each turn it ends there"
+	Example: "May enter foreign tiles without open borders, but loses [20] religious strength each turn it ends there"
 
-Applicable to: Unit
+	Applicable to: Unit
 
-### &#x1F537; Never appears as a Barbarian unit
-Applicable to: Unit
+??? example  "Never appears as a Barbarian unit"
+	Applicable to: Unit
 
-### &#x1F537; Religious Unit
-Applicable to: Unit
+??? example  "Religious Unit"
+	Applicable to: Unit
 
-### &#x1F537; Can be added to [comment] in the Capital
-Example: "Can be added to [comment] in the Capital"
+??? example  "Can be added to [comment] in the Capital"
+	Example: "Can be added to [comment] in the Capital"
 
-Applicable to: Unit
+	Applicable to: Unit
 
 ## Promotion uniques
-### &#x1F537; Heal this unit by [amount] HP
-Example: "Heal this unit by [20] HP"
+??? example  "Heal this unit by [amount] HP"
+	Example: "Heal this unit by [20] HP"
 
-Applicable to: Promotion
+	Applicable to: Promotion
 
 ## Terrain uniques
-### &#x1F537; Must be adjacent to [amount] [simpleTerrain] tiles
-Example: "Must be adjacent to [20] [Elevated] tiles"
+??? example  "Must be adjacent to [amount] [simpleTerrain] tiles"
+	Example: "Must be adjacent to [20] [Elevated] tiles"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Must be adjacent to [amount] to [amount] [simpleTerrain] tiles
-Example: "Must be adjacent to [20] to [20] [Elevated] tiles"
+??? example  "Must be adjacent to [amount] to [amount] [simpleTerrain] tiles"
+	Example: "Must be adjacent to [20] to [20] [Elevated] tiles"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Must not be on [amount] largest landmasses
-Example: "Must not be on [20] largest landmasses"
+??? example  "Must not be on [amount] largest landmasses"
+	Example: "Must not be on [20] largest landmasses"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Must be on [amount] largest landmasses
-Example: "Must be on [20] largest landmasses"
+??? example  "Must be on [amount] largest landmasses"
+	Example: "Must be on [20] largest landmasses"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Occurs on latitudes from [amount] to [amount] percent of distance equator to pole
-Example: "Occurs on latitudes from [20] to [20] percent of distance equator to pole"
+??? example  "Occurs on latitudes from [amount] to [amount] percent of distance equator to pole"
+	Example: "Occurs on latitudes from [20] to [20] percent of distance equator to pole"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Occurs in groups of [amount] to [amount] tiles
-Example: "Occurs in groups of [20] to [20] tiles"
+??? example  "Occurs in groups of [amount] to [amount] tiles"
+	Example: "Occurs in groups of [20] to [20] tiles"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Neighboring tiles will convert to [baseTerrain]
-Example: "Neighboring tiles will convert to [Grassland]"
+??? example  "Neighboring tiles will convert to [baseTerrain]"
+	Example: "Neighboring tiles will convert to [Grassland]"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Neighboring tiles except [baseTerrain] will convert to [baseTerrain]
-Example: "Neighboring tiles except [Grassland] will convert to [Grassland]"
+??? example  "Neighboring tiles except [baseTerrain] will convert to [baseTerrain]"
+	Example: "Neighboring tiles except [Grassland] will convert to [Grassland]"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Grants 500 Gold to the first civilization to discover it
-Applicable to: Terrain
+??? example  "Grants 500 Gold to the first civilization to discover it"
+	Applicable to: Terrain
 
-### &#x1F537; Units ending their turn on this terrain take [amount] damage
-Example: "Units ending their turn on this terrain take [20] damage"
+??? example  "Units ending their turn on this terrain take [amount] damage"
+	Example: "Units ending their turn on this terrain take [20] damage"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game
-Example: "Grants [Shock I] ([comment]) to adjacent [Wounded] units for the rest of the game"
+??? example  "Grants [promotion] ([comment]) to adjacent [mapUnitFilter] units for the rest of the game"
+	Example: "Grants [Shock I] ([comment]) to adjacent [Wounded] units for the rest of the game"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; [amount] Strength for cities built on this terrain
-Example: "[20] Strength for cities built on this terrain"
+??? example  "[amount] Strength for cities built on this terrain"
+	Example: "[20] Strength for cities built on this terrain"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Provides a one-time Production bonus to the closest city when cut down
-Applicable to: Terrain
+??? example  "Provides a one-time Production bonus to the closest city when cut down"
+	Applicable to: Terrain
 
-### &#x1F537; Tile provides yield without assigned population
-Applicable to: Terrain, Improvement
+??? example  "Tile provides yield without assigned population"
+	Applicable to: Terrain, Improvement
 
-### &#x1F537; Nullifies all other stats this tile provides
-Applicable to: Terrain
+??? example  "Nullifies all other stats this tile provides"
+	Applicable to: Terrain
 
-### &#x1F537; Only [improvementFilter] improvements may be built on this tile
-Example: "Only [All Road] improvements may be built on this tile"
+??? example  "Only [improvementFilter] improvements may be built on this tile"
+	Example: "Only [All Road] improvements may be built on this tile"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Blocks line-of-sight from tiles at same elevation
-Applicable to: Terrain
+??? example  "Blocks line-of-sight from tiles at same elevation"
+	Applicable to: Terrain
 
-### &#x1F537; Has an elevation of [amount] for visibility calculations
-Example: "Has an elevation of [20] for visibility calculations"
+??? example  "Has an elevation of [amount] for visibility calculations"
+	Example: "Has an elevation of [20] for visibility calculations"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Always Fertility [amount] for Map Generation
-Example: "Always Fertility [20] for Map Generation"
+??? example  "Always Fertility [amount] for Map Generation"
+	Example: "Always Fertility [20] for Map Generation"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; [amount] to Fertility for Map Generation
-Example: "[20] to Fertility for Map Generation"
+??? example  "[amount] to Fertility for Map Generation"
+	Example: "[20] to Fertility for Map Generation"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]
-Example: "A Region is formed with at least [20]% [Elevated] tiles, with priority [20]"
+??? example  "A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]"
+	Example: "A Region is formed with at least [20]% [Elevated] tiles, with priority [20]"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]
-Example: "A Region is formed with at least [20]% [Elevated] tiles and [Elevated] tiles, with priority [20]"
+??? example  "A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]"
+	Example: "A Region is formed with at least [20]% [Elevated] tiles and [Elevated] tiles, with priority [20]"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles
-Example: "A Region can not contain more [Elevated] tiles than [Elevated] tiles"
+??? example  "A Region can not contain more [simpleTerrain] tiles than [simpleTerrain] tiles"
+	Example: "A Region can not contain more [Elevated] tiles than [Elevated] tiles"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Base Terrain on this tile is not counted for Region determination
-Applicable to: Terrain
+??? example  "Base Terrain on this tile is not counted for Region determination"
+	Applicable to: Terrain
 
-### &#x1F537; Starts in regions of this type receive an extra [resource]
-Example: "Starts in regions of this type receive an extra [Iron]"
+??? example  "Starts in regions of this type receive an extra [resource]"
+	Example: "Starts in regions of this type receive an extra [Iron]"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Never receives any resources
-Applicable to: Terrain
+??? example  "Never receives any resources"
+	Applicable to: Terrain
 
-### &#x1F537; Becomes [terrainName] when adjacent to [terrainFilter]
-Example: "Becomes [terrainName] when adjacent to [Forest]"
+??? example  "Becomes [terrainName] when adjacent to [terrainFilter]"
+	Example: "Becomes [terrainName] when adjacent to [Forest]"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Considered [terrainQuality] when determining start locations
-Example: "Considered [Undesirable] when determining start locations"
+??? example  "Considered [terrainQuality] when determining start locations"
+	Example: "Considered [Undesirable] when determining start locations"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Doesn't generate naturally
-Applicable to: Terrain, Resource
+??? example  "Doesn't generate naturally"
+	Applicable to: Terrain, Resource
 
-### &#x1F537; Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]
-Example: "Occurs at temperature between [20] and [20] and humidity between [20] and [20]"
+??? example  "Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]"
+	Example: "Occurs at temperature between [20] and [20] and humidity between [20] and [20]"
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Occurs in chains at high elevations
-Applicable to: Terrain
+??? example  "Occurs in chains at high elevations"
+	Applicable to: Terrain
 
-### &#x1F537; Occurs in groups around high elevations
-Applicable to: Terrain
+??? example  "Occurs in groups around high elevations"
+	Applicable to: Terrain
 
-### &#x1F537; Every [amount] tiles with this terrain will receive a major deposit of a strategic resource.
-Example: "Every [20] tiles with this terrain will receive a major deposit of a strategic resource."
+??? example  "Every [amount] tiles with this terrain will receive a major deposit of a strategic resource."
+	Example: "Every [20] tiles with this terrain will receive a major deposit of a strategic resource."
 
-Applicable to: Terrain
+	Applicable to: Terrain
 
-### &#x1F537; Rare feature
-Applicable to: Terrain
+??? example  "Rare feature"
+	Applicable to: Terrain
 
-### &#x1F537; Resistant to nukes
-Applicable to: Terrain
+??? example  "Resistant to nukes"
+	Applicable to: Terrain
 
-### &#x1F537; Can be destroyed by nukes
-Applicable to: Terrain
+??? example  "Can be destroyed by nukes"
+	Applicable to: Terrain
 
-### &#x1F537; Fresh water
-Applicable to: Terrain
+??? example  "Fresh water"
+	Applicable to: Terrain
 
-### &#x1F537; Rough terrain
-Applicable to: Terrain
+??? example  "Rough terrain"
+	Applicable to: Terrain
 
 ## Improvement uniques
-### &#x1F537; Can also be built on tiles adjacent to fresh water
-Applicable to: Improvement
+??? example  "Can also be built on tiles adjacent to fresh water"
+	Applicable to: Improvement
 
-### &#x1F537; [stats] from [tileFilter] tiles
-Example: "[+1 Gold, +2 Production] from [Farm] tiles"
+??? example  "[stats] from [tileFilter] tiles"
+	Example: "[+1 Gold, +2 Production] from [Farm] tiles"
 
-Applicable to: Improvement
+	Applicable to: Improvement
 
-### &#x1F537; [stats] for each adjacent [tileFilter]
-Example: "[+1 Gold, +2 Production] for each adjacent [Farm]"
+??? example  "[stats] for each adjacent [tileFilter]"
+	Example: "[+1 Gold, +2 Production] for each adjacent [Farm]"
 
-Applicable to: Improvement
+	Applicable to: Improvement
 
-### &#x1F537; Can be built outside your borders
-Applicable to: Improvement
+??? example  "Can be built outside your borders"
+	Applicable to: Improvement
 
-### &#x1F537; Can be built just outside your borders
-Applicable to: Improvement
+??? example  "Can be built just outside your borders"
+	Applicable to: Improvement
 
-### &#x1F537; Cannot be built on [tileFilter] tiles
-Example: "Cannot be built on [Farm] tiles"
+??? example  "Cannot be built on [tileFilter] tiles"
+	Example: "Cannot be built on [Farm] tiles"
 
-Applicable to: Improvement
+	Applicable to: Improvement
 
-### &#x1F537; Does not need removal of [tileFilter]
-Example: "Does not need removal of [Farm]"
+??? example  "Does not need removal of [tileFilter]"
+	Example: "Does not need removal of [Farm]"
 
-Applicable to: Improvement
+	Applicable to: Improvement
 
-### &#x1F537; Gives a defensive bonus of [amount]%
-Example: "Gives a defensive bonus of [20]%"
+??? example  "Gives a defensive bonus of [amount]%"
+	Example: "Gives a defensive bonus of [20]%"
 
-Applicable to: Improvement
+	Applicable to: Improvement
 
-### &#x1F537; Costs [amount] gold per turn when in your territory
-Example: "Costs [20] gold per turn when in your territory"
+??? example  "Costs [amount] gold per turn when in your territory"
+	Example: "Costs [20] gold per turn when in your territory"
 
-Applicable to: Improvement
+	Applicable to: Improvement
 
-### &#x1F537; Adjacent enemy units ending their turn take [amount] damage
-Example: "Adjacent enemy units ending their turn take [20] damage"
+??? example  "Adjacent enemy units ending their turn take [amount] damage"
+	Example: "Adjacent enemy units ending their turn take [20] damage"
 
-Applicable to: Improvement
+	Applicable to: Improvement
 
-### &#x1F537; Great Improvement
-Applicable to: Improvement
+??? example  "Great Improvement"
+	Applicable to: Improvement
 
-### &#x1F537; Provides a random bonus when entered
-Applicable to: Improvement
+??? example  "Provides a random bonus when entered"
+	Applicable to: Improvement
 
-### &#x1F537; Unpillagable
-Applicable to: Improvement
+??? example  "Unpillagable"
+	Applicable to: Improvement
 
-### &#x1F537; Indestructible
-Applicable to: Improvement
+??? example  "Indestructible"
+	Applicable to: Improvement
 
-### &#x1F537; Irremovable
-Applicable to: Improvement
+??? example  "Irremovable"
+	Applicable to: Improvement
 
 ## Resource uniques
-### &#x1F537; Generated with weight [amount]
-Example: "Generated with weight [20]"
+??? example  "Generated with weight [amount]"
+	Example: "Generated with weight [20]"
 
-Applicable to: Resource
+	Applicable to: Resource
 
-### &#x1F537; Minor deposits generated with weight [amount]
-Example: "Minor deposits generated with weight [20]"
+??? example  "Minor deposits generated with weight [amount]"
+	Example: "Minor deposits generated with weight [20]"
 
-Applicable to: Resource
+	Applicable to: Resource
 
-### &#x1F537; Generated near City States with weight [amount]
-Example: "Generated near City States with weight [20]"
+??? example  "Generated near City States with weight [amount]"
+	Example: "Generated near City States with weight [20]"
 
-Applicable to: Resource
+	Applicable to: Resource
 
-### &#x1F537; Special placement during map generation
-Applicable to: Resource
+??? example  "Special placement during map generation"
+	Applicable to: Resource
 
-### &#x1F537; Generated on every [amount] tiles
-Example: "Generated on every [20] tiles"
+??? example  "Generated on every [amount] tiles"
+	Example: "Generated on every [20] tiles"
 
-Applicable to: Resource
+	Applicable to: Resource
 
-### &#x1F537; Guaranteed with Strategic Balance resource option
-Applicable to: Resource
+??? example  "Guaranteed with Strategic Balance resource option"
+	Applicable to: Resource
 
-### &#x1F537; Deposits in [tileFilter] tiles always provide [amount] resources
-Example: "Deposits in [Farm] tiles always provide [20] resources"
+??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
+	Example: "Deposits in [Farm] tiles always provide [20] resources"
 
-Applicable to: Resource
+	Applicable to: Resource
 
-### &#x1F537; Can only be created by Mercantile City-States
-Applicable to: Resource
+??? example  "Can only be created by Mercantile City-States"
+	Applicable to: Resource
 
 ## Ruins uniques
-### &#x1F537; Free [baseUnitFilter] found in the ruins
-Example: "Free [Melee] found in the ruins"
+??? example  "Free [baseUnitFilter] found in the ruins"
+	Example: "Free [Melee] found in the ruins"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; [amount] population in a random city
-Example: "[20] population in a random city"
+??? example  "[amount] population in a random city"
+	Example: "[20] population in a random city"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; [amount] free random researchable Tech(s) from the [era]
-Example: "[20] free random researchable Tech(s) from the [Ancient era]"
+??? example  "[amount] free random researchable Tech(s) from the [era]"
+	Example: "[20] free random researchable Tech(s) from the [Ancient era]"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; Gain [amount] [stat]
-Example: "Gain [20] [Culture]"
+??? example  "Gain [amount] [stat]"
+	Example: "Gain [20] [Culture]"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; Gain [amount]-[amount] [stat]
-Example: "Gain [20]-[20] [Culture]"
+??? example  "Gain [amount]-[amount] [stat]"
+	Example: "Gain [20]-[20] [Culture]"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; Gain enough Faith for a Pantheon
-Applicable to: Ruins
+??? example  "Gain enough Faith for a Pantheon"
+	Applicable to: Ruins
 
-### &#x1F537; Gain enough Faith for [amount]% of a Great Prophet
-Example: "Gain enough Faith for [20]% of a Great Prophet"
+??? example  "Gain enough Faith for [amount]% of a Great Prophet"
+	Example: "Gain enough Faith for [20]% of a Great Prophet"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius
-Example: "Reveal up to [amount/'all'] [Farm] within a [20] tile radius"
+??? example  "Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius"
+	Example: "Reveal up to [amount/'all'] [Farm] within a [20] tile radius"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance
-Example: "From a randomly chosen tile [20] tiles away from the ruins, reveal tiles up to [20] tiles away with [20]% chance"
+??? example  "From a randomly chosen tile [amount] tiles away from the ruins, reveal tiles up to [amount] tiles away with [amount]% chance"
+	Example: "From a randomly chosen tile [20] tiles away from the ruins, reveal tiles up to [20] tiles away with [20]% chance"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; This Unit gains [amount] XP
-Example: "This Unit gains [20] XP"
+??? example  "This Unit gains [amount] XP"
+	Example: "This Unit gains [20] XP"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; This Unit upgrades for free including special upgrades
-Applicable to: Ruins
+??? example  "This Unit upgrades for free including special upgrades"
+	Applicable to: Ruins
 
-### &#x1F537; Only available after [amount] turns
-Example: "Only available after [20] turns"
+??? example  "Only available after [amount] turns"
+	Example: "Only available after [20] turns"
 
-Applicable to: Ruins
+	Applicable to: Ruins
 
-### &#x1F537; Hidden before founding a Pantheon
-Applicable to: Ruins
+??? example  "Hidden before founding a Pantheon"
+	Applicable to: Ruins
 
-### &#x1F537; Hidden after founding a Pantheon
-Applicable to: Ruins
+??? example  "Hidden after founding a Pantheon"
+	Applicable to: Ruins
 
-### &#x1F537; Hidden after generating a Great Prophet
-Applicable to: Ruins
+??? example  "Hidden after generating a Great Prophet"
+	Applicable to: Ruins
 
 ## CityState uniques
-### &#x1F537; Provides [stats] per turn
-Example: "Provides [+1 Gold, +2 Production] per turn"
+??? example  "Provides [stats] per turn"
+	Example: "Provides [+1 Gold, +2 Production] per turn"
 
-Applicable to: CityState
+	Applicable to: CityState
 
-### &#x1F537; Provides [stats] [cityFilter] per turn
-Example: "Provides [+1 Gold, +2 Production] [in all cities] per turn"
+??? example  "Provides [stats] [cityFilter] per turn"
+	Example: "Provides [+1 Gold, +2 Production] [in all cities] per turn"
 
-Applicable to: CityState
+	Applicable to: CityState
 
-### &#x1F537; Provides [amount] Happiness
-Example: "Provides [20] Happiness"
+??? example  "Provides [amount] Happiness"
+	Example: "Provides [20] Happiness"
 
-Applicable to: CityState
+	Applicable to: CityState
 
-### &#x1F537; Provides military units every ≈[amount] turns
-Example: "Provides military units every ≈[20] turns"
+??? example  "Provides military units every ≈[amount] turns"
+	Example: "Provides military units every ≈[20] turns"
 
-Applicable to: CityState
+	Applicable to: CityState
 
-### &#x1F537; Provides a unique luxury
-Applicable to: CityState
+??? example  "Provides a unique luxury"
+	Applicable to: CityState
 
 ## Conditional uniques
-### &#x1F537; <when at war>
-Applicable to: Conditional
+??? example  "&lt;when at war&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <when not at war>
-Applicable to: Conditional
+??? example  "&lt;when not at war&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <during a Golden Age>
-Applicable to: Conditional
+??? example  "&lt;during a Golden Age&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <with [resource]>
-Example: "<with [Iron]>"
+??? example  "&lt;with [resource]&gt;"
+	Example: "&lt;with [Iron]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <while the empire is happy>
-Applicable to: Conditional
+??? example  "&lt;while the empire is happy&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <when between [amount] and [amount] Happiness>
-Example: "<when between [20] and [20] Happiness>"
+??? example  "&lt;when between [amount] and [amount] Happiness&gt;"
+	Example: "&lt;when between [20] and [20] Happiness&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <when below [amount] Happiness>
-Example: "<when below [20] Happiness>"
+??? example  "&lt;when below [amount] Happiness&gt;"
+	Example: "&lt;when below [20] Happiness&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <during the [era]>
-Example: "<during the [Ancient era]>"
+??? example  "&lt;during the [era]&gt;"
+	Example: "&lt;during the [Ancient era]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <before the [era]>
-Example: "<before the [Ancient era]>"
+??? example  "&lt;before the [era]&gt;"
+	Example: "&lt;before the [Ancient era]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <starting from the [era]>
-Example: "<starting from the [Ancient era]>"
+??? example  "&lt;starting from the [era]&gt;"
+	Example: "&lt;starting from the [Ancient era]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <if no other Civilization has researched this>
-Applicable to: Conditional
+??? example  "&lt;if no other Civilization has researched this&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <after discovering [tech]>
-Example: "<after discovering [Agriculture]>"
+??? example  "&lt;after discovering [tech]&gt;"
+	Example: "&lt;after discovering [Agriculture]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <before discovering [tech]>
-Example: "<before discovering [Agriculture]>"
+??? example  "&lt;before discovering [tech]&gt;"
+	Example: "&lt;before discovering [Agriculture]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <after adopting [policy]>
-Example: "<after adopting [Oligarchy]>"
+??? example  "&lt;after adopting [policy]&gt;"
+	Example: "&lt;after adopting [Oligarchy]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <before adopting [policy]>
-Example: "<before adopting [Oligarchy]>"
+??? example  "&lt;before adopting [policy]&gt;"
+	Example: "&lt;before adopting [Oligarchy]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <if [buildingName] is constructed>
-Example: "<if [Library] is constructed>"
+??? example  "&lt;if [buildingName] is constructed&gt;"
+	Example: "&lt;if [Library] is constructed&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <for [amount] turns>
-Example: "<for [20] turns>"
+??? example  "&lt;for [amount] turns&gt;"
+	Example: "&lt;for [20] turns&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <by consuming this unit>
-Applicable to: Conditional
+??? example  "&lt;by consuming this unit&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <in cities with a [buildingFilter]>
-Example: "<in cities with a [Culture]>"
+??? example  "&lt;in cities with a [buildingFilter]&gt;"
+	Example: "&lt;in cities with a [Culture]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <in cities without a [buildingFilter]>
-Example: "<in cities without a [Culture]>"
+??? example  "&lt;in cities without a [buildingFilter]&gt;"
+	Example: "&lt;in cities without a [Culture]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <if this city has at least [amount] specialists>
-Example: "<if this city has at least [20] specialists>"
+??? example  "&lt;if this city has at least [amount] specialists&gt;"
+	Example: "&lt;if this city has at least [20] specialists&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <in cities where this religion has at least [amount] followers>
-Example: "<in cities where this religion has at least [20] followers>"
+??? example  "&lt;in cities where this religion has at least [amount] followers&gt;"
+	Example: "&lt;in cities where this religion has at least [20] followers&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <with a garrison>
-Applicable to: Conditional
+??? example  "&lt;with a garrison&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <for [mapUnitFilter] units>
-Example: "<for [Wounded] units>"
+??? example  "&lt;for [mapUnitFilter] units&gt;"
+	Example: "&lt;for [Wounded] units&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <for units with [promotion]>
-Example: "<for units with [Shock I]>"
+??? example  "&lt;for units with [promotion]&gt;"
+	Example: "&lt;for units with [Shock I]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <for units without [promotion]>
-Example: "<for units without [Shock I]>"
+??? example  "&lt;for units without [promotion]&gt;"
+	Example: "&lt;for units without [Shock I]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <vs cities>
-Applicable to: Conditional
+??? example  "&lt;vs cities&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <vs [mapUnitFilter] units>
-Example: "<vs [Wounded] units>"
+??? example  "&lt;vs [mapUnitFilter] units&gt;"
+	Example: "&lt;vs [Wounded] units&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <when fighting units from a Civilization with more Cities than you>
-Applicable to: Conditional
+??? example  "&lt;when fighting units from a Civilization with more Cities than you&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <when attacking>
-Applicable to: Conditional
+??? example  "&lt;when attacking&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <when defending>
-Applicable to: Conditional
+??? example  "&lt;when defending&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <when fighting in [tileFilter] tiles>
-Example: "<when fighting in [Farm] tiles>"
+??? example  "&lt;when fighting in [tileFilter] tiles&gt;"
+	Example: "&lt;when fighting in [Farm] tiles&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <on foreign continents>
-Applicable to: Conditional
+??? example  "&lt;on foreign continents&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <when adjacent to a [mapUnitFilter] unit>
-Example: "<when adjacent to a [Wounded] unit>"
+??? example  "&lt;when adjacent to a [mapUnitFilter] unit&gt;"
+	Example: "&lt;when adjacent to a [Wounded] unit&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <when above [amount] HP>
-Example: "<when above [20] HP>"
+??? example  "&lt;when above [amount] HP&gt;"
+	Example: "&lt;when above [20] HP&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <when below [amount] HP>
-Example: "<when below [20] HP>"
+??? example  "&lt;when below [amount] HP&gt;"
+	Example: "&lt;when below [20] HP&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <with [amount] to [amount] neighboring [tileFilter] tiles>
-Example: "<with [20] to [20] neighboring [Farm] tiles>"
+??? example  "&lt;with [amount] to [amount] neighboring [tileFilter] tiles&gt;"
+	Example: "&lt;with [20] to [20] neighboring [Farm] tiles&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles>
-Example: "<with [20] to [20] neighboring [Farm] [Farm] tiles>"
+??? example  "&lt;with [amount] to [amount] neighboring [tileFilter] [tileFilter] tiles&gt;"
+	Example: "&lt;with [20] to [20] neighboring [Farm] [Farm] tiles&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <in [tileFilter] tiles>
-Example: "<in [Farm] tiles>"
+??? example  "&lt;in [tileFilter] tiles&gt;"
+	Example: "&lt;in [Farm] tiles&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <in [tileFilter] [tileFilter] tiles>
-Example: "<in [Farm] [Farm] tiles>"
+??? example  "&lt;in [tileFilter] [tileFilter] tiles&gt;"
+	Example: "&lt;in [Farm] [Farm] tiles&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <in tiles without [tileFilter]>
-Example: "<in tiles without [Farm]>"
+??? example  "&lt;in tiles without [tileFilter]&gt;"
+	Example: "&lt;in tiles without [Farm]&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <on water maps>
-Applicable to: Conditional
+??? example  "&lt;on water maps&gt;"
+	Applicable to: Conditional
 
-### &#x1F537; <in [regionType] Regions>
-Example: "<in [Hybrid] Regions>"
+??? example  "&lt;in [regionType] Regions&gt;"
+	Example: "&lt;in [Hybrid] Regions&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
-### &#x1F537; <in all except [regionType] Regions>
-Example: "<in all except [Hybrid] Regions>"
+??? example  "&lt;in all except [regionType] Regions&gt;"
+	Example: "&lt;in all except [Hybrid] Regions&gt;"
 
-Applicable to: Conditional
+	Applicable to: Conditional
 
 ## Deprecated uniques
  - "[stats] from every Wonder" - Deprecated as of 3.19.1, replace with "[stats] from every [Wonder]"

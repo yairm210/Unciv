@@ -70,12 +70,12 @@ class UniqueDocsWriter {
                     continue
                 }
 
-                val uniqueText = if (targetType.key == UniqueTarget.Conditional) "<${uniqueType.text}>"
+                val uniqueText = if (targetType.key == UniqueTarget.Conditional) "&lt;${uniqueType.text}&gt;"
                 else uniqueType.text
-                lines += "### &#x1F537; $uniqueText"
+                lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
                 if (uniqueType.text.contains('['))
-                    lines += "Example: \"${replaceExamples(uniqueText)}\"\n"
-                lines += "Applicable to: " + uniqueType.targetTypes.sorted().joinToString()
+                    lines += "\tExample: \"${replaceExamples(uniqueText)}\"\n"
+                lines += "\tApplicable to: " + uniqueType.targetTypes.sorted().joinToString()
                 lines += ""
             }
         }
@@ -90,6 +90,6 @@ class UniqueDocsWriter {
             lines += " - \"${deprecatedUnique.text}\" - $deprecationText"
         }
 
-        File("../../docs/uniques.md").writeText(lines.joinToString("\n"))
+        File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\n"))
     }
 }

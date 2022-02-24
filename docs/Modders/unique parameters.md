@@ -5,7 +5,6 @@ These are split into two categories:
 - `Text that looks like this`. This last one must be used exactly the same
 Note that all of these are case-sensitive!
 
-
 ## action
 An action that a unit can preform. Currently, there are only two actions part of this:
 - `Spread Religion`
