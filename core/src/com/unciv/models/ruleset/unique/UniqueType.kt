@@ -241,6 +241,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ChanceToRecruitBarbarianFromEncampment("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment", UniqueTarget.Global),
     ChanceToRecruitNavalBarbarian("50% chance of capturing defeated Barbarian naval units and earning 25 Gold", UniqueTarget.Global),
     TripleGoldFromEncampmentsAndCities("Receive triple Gold from Barbarian encampments and pillaging Cities", UniqueTarget.Global),
+    CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
     
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
@@ -333,7 +334,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     
     ConvertFoodToProductionWhenConstructed("Excess Food converted to Production when under construction", UniqueTarget.Building, UniqueTarget.Unit),
     RequiresPopulation("Requires at least [amount] population", UniqueTarget.Building, UniqueTarget.Unit),
-    
+
+    TriggersAlertOnStart("Triggers a global alert upon build start", UniqueTarget.Building, UniqueTarget.Unit),
+    TriggersAlertOnCompletion("Triggers a global alert upon completion", UniqueTarget.Building, UniqueTarget.Unit),
     //endregion
     
     
@@ -366,6 +369,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     DestroyedWhenCityCaptured("Destroyed when the city is captured", UniqueTarget.Building),
     NotDestroyedWhenCityCaptured("Never destroyed when the city is captured", UniqueTarget.Building),
     DoublesGoldFromCapturingCity("Doubles Gold given to enemy if city is captured", UniqueTarget.Building),
+    
 
     RemoveAnnexUnhappiness("Remove extra unhappiness from annexed cities", UniqueTarget.Building),
 
@@ -553,6 +557,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     CanBuildOutsideBorders("Can be built outside your borders", UniqueTarget.Improvement),
     CanBuildJustOutsideBorders("Can be built just outside your borders", UniqueTarget.Improvement),
+    CanOnlyBeBuiltOnTile("Can only be built on [tileFilter] tiles", UniqueTarget.Improvement),
     CannotBuildOnTile("Cannot be built on [tileFilter] tiles", UniqueTarget.Improvement),
     NoFeatureRemovalNeeded("Does not need removal of [tileFilter]", UniqueTarget.Improvement),
     

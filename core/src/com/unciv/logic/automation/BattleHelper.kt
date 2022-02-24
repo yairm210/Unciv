@@ -39,16 +39,16 @@ object BattleHelper {
     ): ArrayList<AttackableTile> {
         val tilesWithEnemies = (tilesToCheck ?: unit.civInfo.viewableTiles)
             .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
+            // Filter out invalid Civilian Captures
             .filterNot {
                 val mapCombatant = Battle.getMapCombatantOfTile(it)
                 // IF all of these are true, THEN the action we'll be taking is in fact CAPTURING the civilian.
                 unit.baseUnit.isMelee() && mapCombatant is MapUnitCombatant && mapCombatant.unit.isCivilian()
                         // If we can't pass though that tile, we can't capture the civilian "remotely"
-                        // DO NOT use "!unit.movement.canPassThrough(it)" since then we won't be able to
-                        // capture enemy units since we can't move through them!
-                        && !it.canCivPassThrough(unit.civInfo)
-                        // Land Unit can't capture Naval and vice versa
-                        && !(unit.type.isLandUnit() && it.isWater || unit.type.isWaterUnit() && it.isLand)
+                        // Can use "unit.movement.canPassThrough(it)" now that we can move through
+                        // unguarded Civilian tiles. And this catches Naval trying to capture Land
+                        // Civilians or Land attacking Water Civilians it can't Embark on
+                        && !unit.movement.canPassThrough(it)
             }
 
         val rangeOfAttack = unit.getRange()

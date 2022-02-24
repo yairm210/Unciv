@@ -1,23 +1,14 @@
+
+# Unique parameter types
+
 This page contains an overview of all different parameters used in uniques and what values can be filled into them.
 Each of the different parameter types is described below, including all possible values for them.
 These are split into two categories: 
+
 - descriptions: e.g., "the name of any unit"
 - `Text that looks like this`. This last one must be used exactly the same
+
 Note that all of these are case-sensitive!
-
-
-## action
-An action that a unit can preform. Currently, there are only two actions part of this:
-- `Spread Religion`
-- `Remove Foreign religions from your own cities`
-
-
-## amount
-This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`.
-
-
-## baseTerrain
-The name of any terrain that is a base terrain according to the json file.
 
 
 ## baseUnitFilter
@@ -27,6 +18,7 @@ This means it doesn't have an owning civ or tile it stands on, just its base pro
 The latter is tested against the unit as it appears on the map, including its nation, tile, health and all other properties.
 
 The following are allowed to be used:
+
 - unit name
 - unit type - e.g. Melee, Ranged, WaterSubmarine, etc.
 - `Land`, `Water`, `Air`
@@ -45,14 +37,6 @@ The following are allowed to be used:
 - Any combination of the above (will match only if all match). The format is `{filter1} {filter2}` and can match any number of filters. For example: `[{Military} {Water}]` units, `[{non-air} {Armor}]` units, etc. No space or other text is allowed between the `[` and the first `{`.
 
 
-## belief
-The name of any belief
-
-
-## beliefType
-`Pantheon`, `Follower`, `Founder` or `Enhancer`.
-
-
 ## buildingFilter
 Allows to only activate a unique for certain buildings. Allowed options are:
 
@@ -69,10 +53,7 @@ Allows to only activate a unique for certain buildings. Allowed options are:
   - Provides a percentage bonus for that stat (e.g. +10% Production)
   - Provides that stat as a bonus for resources (e.g. +1 Food from every Wheat)
   - Provides that stat per some amount of population (e.g. +1 Science for every 2 population [cityFilter])
-
-
-## buildingName
-The name of any one building
+  
 
 
 ## cityFilter
@@ -97,90 +78,43 @@ cityFilters allow us to choose the range of cities affected by this unique:
 - `in all cities in which the majority religion is a enhanced religion`
 
 
-## combatantFilter
-This indicates a combatant, which can either be a unit or a city (when bombarding).
-Must either be `City` or a `mapUnitFilter`.
-
-
-## constructionFilter
-A filter for used when testing the current construction of a city. All values of `baseUnitFilter` and `buildingFilter` are allowed.
-
-
-## costOrStrength
-`Cost` or `Strength`
-
-
-## era
-The name of any era
-
-
-## foundingOrEnhancing
-`founding` or `enhancing`
-
-
-## great person
-The name of any great person
-
 
 ## improvementFilter
 For filtering a specific improvement.
 
 Allowed values are:
+
 - improvement name (Note that "Road" and "Railroad" _do_ work as improvementFilters, but not as tileFilters at the moment.)
 - `All`
 - `Great Improvements`, `Great`
 - `All Road` - for Roads & Railroads
 
-
-## improvementName
-The name of any improvement
-
-
 ## mapUnitFilter
 This indicates a unit as placed on the map. Compare with `baseUnitFilter`. 
 It can be any value noted in `baseUnitFilter` or one of the following:
+
 - `Wounded`, `wounded units`
 - `City-State`
 - `Barbarians`, `Barbarian`
 - Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
 
-## plunderableStat
-All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`
-
-
-## policy
-The name of any policy
-
-
-## promotion
-The name of any promotion
-
-
 ## regionType
 Used for dividing the world into regions in each of which a single player is placed at the start of the game.
 Allowed values are `Hybrid` and the name of any terrain that has one of the following two uniques:
+
 - `A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]`
 - `A Region is formed with at least [amount]% [simpleTerrain] tiles and [simpleTerrain] tiles, with priority [amount]`
-
-
-## resource
-The name of any resource
-
 
 ## simpleTerrain
 Used by NaturalWonderGenerator to place natural wonders
 
 Allowed values are:
+
 - `Land`
 - `Water`
 - `Elevated`
 - The name of any terrain
-
-
-## specialist
-The name of any specialist
-
 
 ## stats
 This indicates a text comprised of specific stats and is slightly more complex.
@@ -189,14 +123,6 @@ Each stats is comprised of several stat changes, each in the form of `+{amount} 
 For example: `+1 Science`.
 
 These can be strung together with ", " between them, for example: `+2 Production, +3 Food`.
-
-
-## stat
-This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
-
- 
-## tech
-The name of any tech
 
 
 ## terrainFilter
@@ -236,17 +162,3 @@ Allowed values are:
 - "All"
 - "Great Improvements", "Great"
 - "All Road" - for Roads & Railroads
-
-
-## tileFilter
-Anything that can be used either in an improvementFilter or in a tileFilter can be used here
-
-
-## victoryType
-The name of any victory type:
-- `Neutral`
-- `Cultural`
-- `Diplomatic`
-- `Domination`
-- `Scientific`
-- `Time`
