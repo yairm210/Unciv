@@ -49,14 +49,9 @@ class UniqueDocsWriter {
                 .replace("[victoryType]", "[Domination]")
                 .replace("[costOrStrength]", "[Cost]")
         }
-
-        lines += "## Table of Contents\n"
-        for (targetType in targetTypesToUniques) {
-            val sectionName = targetType.key.name + " uniques"
-            lines += " - [$sectionName](${toLink(sectionName)})"
-        }
-        lines += " - [Deprecated uniques](#deprecated-uniques)"
-        lines += ""
+        
+        lines += "# Uniques\n" +
+                "Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../unique parameters)"
 
         
         val deprecatedUniques = ArrayList<UniqueType>()
@@ -89,7 +84,34 @@ class UniqueDocsWriter {
 
             lines += " - \"${deprecatedUnique.text}\" - $deprecationText"
         }
+        
+        // Abbreviations, for adding short unique parameter help - see https://squidfunk.github.io/mkdocs-material/reference/abbreviations/
 
+        lines += ""
+        lines += "*[amount]: This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`."
+        lines += "*[baseTerrain]: The name of any terrain that is a base terrain according to the json file."
+        lines += "*[action]: An action that a unit can preform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'"
+        lines += "*[belief]: The name of any belief"
+        lines += "*[beliefType]: 'Pantheon', 'Follower', 'Founder' or 'Enhancer'."
+        lines += "*[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'"
+        lines += "*[tech]: The name of any tech"
+        lines += "*[resource]: The name of any resource"
+        lines += "*[specialist]: The name of any specialist"
+        lines += "*[promotion]: The name of any promotion"
+        lines += "*[policy]: The name of any policy"
+        lines += "*[improvementName]: The name of any improvement"
+        lines += "*[buildingName]: The name of any building"
+        lines += "*[era]: The name of any era"
+        lines += "*[constructionFilter]: A filter for used when testing the current construction of a city. All values of `baseUnitFilter` and `buildingFilter` are allowed."
+        lines += "*[foundingOrEnhancing]: `founding` or `enhancing`"
+        lines += "*[costOrStrength]: `Cost` or `Strength`"
+        lines += "*[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`."
+        lines += "*[plunderableStat]: All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`"
+        lines += "*[tileFilter]: Anything that can be used either in an improvementFilter or in a tileFilter can be used here"
+        lines += "*[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!"
+        lines += "*[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!"
+        
+        
         File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\n"))
     }
 }

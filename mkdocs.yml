@@ -30,7 +30,12 @@ repo_url: https://github.com/yairm210/unciv
 #  - pymdownx.superfences
 
 markdown_extensions:
+  # For adminitions
   - admonition
   - pymdownx.details
   - pymdownx.superfences
   - pymdownx.details # For collapsable admonitions - see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
+
+  # For Abbreviations
+  - abbr 
+  - pymdownx.snippets

@@ -1,21 +1,5 @@
-## Table of Contents
-
- - [Triggerable uniques](#triggerable-uniques)
- - [Global uniques](#global-uniques)
- - [Nation uniques](#nation-uniques)
- - [Tech uniques](#tech-uniques)
- - [FollowerBelief uniques](#followerbelief-uniques)
- - [Building uniques](#building-uniques)
- - [Unit uniques](#unit-uniques)
- - [Promotion uniques](#promotion-uniques)
- - [Terrain uniques](#terrain-uniques)
- - [Improvement uniques](#improvement-uniques)
- - [Resource uniques](#resource-uniques)
- - [Ruins uniques](#ruins-uniques)
- - [CityState uniques](#citystate-uniques)
- - [Conditional uniques](#conditional-uniques)
- - [Deprecated uniques](#deprecated-uniques)
-
+# Uniques
+Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../unique parameters)
 ## Triggerable uniques
 ??? example  "Free [baseUnitFilter] appears"
 	Example: "Free [Melee] appears"
@@ -1687,3 +1671,26 @@
  - "Cannot be built on [tileFilter] tiles until [tech] is discovered" - Deprecated as of 3.18.5, replace with "Cannot be built on [tileFilter] tiles <before discovering [tech]>"
  - "[stats] on [tileFilter] tiles once [tech] is discovered" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "[stats] from [tileFilter] tiles <after discovering [tech]>"
  - "Deal 30 damage to adjacent enemy units" - Deprecated as of 3.17.10 - removed 3.18.19, replace with "Adjacent enemy units ending their turn take [30] damage"
+
+*[amount]: This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`.
+*[baseTerrain]: The name of any terrain that is a base terrain according to the json file.
+*[action]: An action that a unit can preform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'
+*[belief]: The name of any belief
+*[beliefType]: 'Pantheon', 'Follower', 'Founder' or 'Enhancer'.
+*[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'
+*[tech]: The name of any tech
+*[resource]: The name of any resource
+*[specialist]: The name of any specialist
+*[promotion]: The name of any promotion
+*[policy]: The name of any policy
+*[improvementName]: The name of any improvement
+*[buildingName]: The name of any building
+*[era]: The name of any era
+*[constructionFilter]: A filter for used when testing the current construction of a city. All values of `baseUnitFilter` and `buildingFilter` are allowed.
+*[foundingOrEnhancing]: `founding` or `enhancing`
+*[costOrStrength]: `Cost` or `Strength`
+*[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
+*[plunderableStat]: All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`
+*[tileFilter]: Anything that can be used either in an improvementFilter or in a tileFilter can be used here
+*[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
+*[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
