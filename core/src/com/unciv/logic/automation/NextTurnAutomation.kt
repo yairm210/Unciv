@@ -60,7 +60,7 @@ object NextTurnAutomation {
             bullyCityStates(civInfo)
         }
         automateUnits(civInfo)  // this is the most expensive part
-        
+
         if (civInfo.isMajorCiv()) {
             // Can only be done now, as the prophet first has to decide to found/enhance a religion
             chooseReligiousBeliefs(civInfo)
@@ -69,6 +69,21 @@ object NextTurnAutomation {
         reassignWorkedTiles(civInfo)  // second most expensive
         trainSettler(civInfo)
         tryVoteForDiplomaticVictory(civInfo)
+    }
+
+    fun automateGoldToSciencePercentage(civInfo: CivilizationInfo) {
+        // Don't let the AI run blindly with the default convert-gold-to-science ratio if that option is enabled
+        val estimatedIncome = civInfo.statsForNextTurn.gold.toInt()
+        val projectedGold = civInfo.gold + estimatedIncome 
+        // TODO: some cleverness, this is just wild guessing.
+        val pissPoor = civInfo.tech.era.baseUnitBuyCost
+        val stinkingRich = civInfo.tech.era.startingGold * 10 + civInfo.cities.size * 2 * pissPoor
+        val maxPercent = 0.8f
+        civInfo.tech.goldPercentConvertedToScience = when {
+            civInfo.gold <= 0 -> 0f
+            projectedGold <= pissPoor -> 0f
+            else -> ((projectedGold - pissPoor) * maxPercent / stinkingRich).coerceAtMost(maxPercent)
+        }
     }
 
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
