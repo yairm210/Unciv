@@ -44,12 +44,12 @@ class UncivSlider (
     private val getTipText: ((Float) -> String)? = null,
     onChange: ((Float) -> Unit)? = null
 ): Table(BaseScreen.skin) {
-    // constants for geometry tuning
     companion object {
         /** Can be passed directly to the [getTipText] constructor parameter */
         fun formatPercent(value: Float): String {
             return (value * 100f + 0.5f).toInt().toString() + "%"
         }
+        // constants for geometry tuning
         const val plusMinusFontSize = Constants.defaultFontSize
         const val plusMinusCircleSize = 20f
         const val padding = 5f                  // padding around the Slider, doubled between it and +/- buttons
@@ -72,6 +72,7 @@ class UncivSlider (
     // Compatibility with default Slider
     val minValue: Float
         get() = slider.minValue
+    @Suppress("unused") // Part of the Slider API
     val maxValue: Float
         get() = slider.maxValue
     var value: Float
@@ -87,6 +88,7 @@ class UncivSlider (
             stepChanged()
         }
     /** Returns true if the slider is being dragged. */
+    @Suppress("unused") // Part of the Slider API
     val isDragging: Boolean
         get() = slider.isDragging
     /** Disables the slider - visually (if the skin supports it) and blocks interaction */
@@ -108,9 +110,10 @@ class UncivSlider (
         slider.setSnapToValues(values, threshold)
     }
 
-    // Value tip format
-    var tipFormat = "%.1f"
+    // java format string for the value tip, set by changing stepSize 
+    private var tipFormat = "%.1f"
 
+    /** Prevents hiding the value tooltip over the slider knob */
     var permanentTip = false
 
     // Detect changes in isDragging
@@ -233,7 +236,8 @@ class UncivSlider (
             stepSize > 0.0099f -> "%.2f"
             else -> "%.3f"
         }
-        tipLabel.setText(tipFormat.format(slider.value))
+        if (getTipText == null)
+            tipLabel.setText(tipFormat.format(slider.value))
     }
 
     // Attempt to prevent ascendant ScrollPane(s) from stealing our focus
