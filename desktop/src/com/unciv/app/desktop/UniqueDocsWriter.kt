@@ -58,12 +58,7 @@ class UniqueDocsWriter {
         for (targetType in targetTypesToUniques) {
             lines += "## " + targetType.key.name + " uniques"
             for (uniqueType in targetType.value) {
-
-                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
-                if (deprecationAnnotation != null) {
-                    deprecatedUniques += uniqueType
-                    continue
-                }
+                if (uniqueType.getDeprecationAnnotation() != null) continue
 
                 val uniqueText = if (targetType.key == UniqueTarget.Conditional) "&lt;${uniqueType.text}&gt;"
                 else uniqueType.text
@@ -73,16 +68,6 @@ class UniqueDocsWriter {
                 lines += "\tApplicable to: " + uniqueType.targetTypes.sorted().joinToString()
                 lines += ""
             }
-        }
-        lines += "## Deprecated uniques"
-        for (deprecatedUnique in deprecatedUniques) {
-            val deprecationAnnotation =
-                deprecatedUnique.getDeprecationAnnotation()!!
-
-            val deprecationText = "Deprecated ${deprecationAnnotation.message}," +
-                    if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${deprecationAnnotation.replaceWith.expression}\"" else ""
-
-            lines += " - \"${deprecatedUnique.text}\" - $deprecationText"
         }
         
         // Abbreviations, for adding short unique parameter help - see https://squidfunk.github.io/mkdocs-material/reference/abbreviations/
