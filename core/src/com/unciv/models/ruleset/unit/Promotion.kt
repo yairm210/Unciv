@@ -101,7 +101,7 @@ class Promotion : RulesetObject() {
         }
 
         val grantors = ruleset.buildings.values.filter {
-            building -> building.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
+            building -> building.getMatchingUniques(UniqueType.UnitStartingPromotions)
             .any { it.params[2] == name }
         } + ruleset.terrains.values.filter {
             terrain -> terrain.getMatchingUniques(UniqueType.TerrainGrantsPromotion).any {

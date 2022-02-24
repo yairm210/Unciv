@@ -249,7 +249,6 @@ open class TileInfo {
 
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
-    fun hasUnique(unique: String) = getAllTerrains().any { it.hasUnique(unique) }
     fun hasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
 
     fun getWorkingCity(): CityInfo? {
@@ -539,7 +538,7 @@ open class TileInfo {
             improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater) && isAdjacentToFreshwater -> true
 
             // If an unique of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful).
-            improvement.getMatchingUniques("Can only be built on [] tiles").let {
+            improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile).let {
                 it.any() && it.all { unique -> matchesTerrainFilter(unique.params[0]) }
             } -> true
 
@@ -578,7 +577,7 @@ open class TileInfo {
             "Fresh Water" -> isAdjacentToFreshwater
             else -> {
                 if (terrainFeatures.contains(filter)) return true
-                if (hasUnique(filter)) return true
+                if (getAllTerrains().any { it.hasUnique(filter) }) return true
                 // Resource type check is last - cannot succeed if no resource here
                 if (resource == null) return false
                 // Checks 'luxury resource', 'strategic resource' and 'bonus resource' - only those that are visible of course

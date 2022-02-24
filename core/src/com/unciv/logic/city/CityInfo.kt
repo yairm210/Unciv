@@ -610,7 +610,7 @@ class CityInfo {
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
             val removedPopulation =
-                1 + civInfo.getMatchingUniques("Cities are razed [] times as fast")
+                1 + civInfo.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
                     .sumOf { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) {
