@@ -493,7 +493,7 @@ open class TileInfo {
         // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
         if (terrainFilter == "River") return isAdjacentToRiver()
         if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
-        return neighbors.any { neighbor -> neighbor.matchesFilter(terrainFilter) }
+        return (neighbors + this).any { neighbor -> neighbor.matchesFilter(terrainFilter) }
     }
 
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
