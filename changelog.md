@@ -1,3 +1,15 @@
+## 3.19.12
+
+Modding: Multiple Unique documentation improvement
+
+By SomeTroglodyte:
+- Slider fixes
+- Rudimentary AI control over goldPercentConvertedToScience
+
+Fix Navies capturing Land Civilians - By itanasi
+
+Translation updates
+
 ## 3.19.11
 
 Mod autoupdate improvements

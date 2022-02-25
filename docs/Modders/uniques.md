@@ -481,6 +481,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Receive triple Gold from Barbarian encampments and pillaging Cities"
 	Applicable to: Global
 
+??? example  "Cities are razed [amount] times as fast"
+	Example: "Cities are razed [20] times as fast"
+
+	Applicable to: Global
+
 ??? example  "Enables Open Borders agreements"
 	Applicable to: Global
 
@@ -776,6 +781,12 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Requires at least [amount] population"
 	Example: "Requires at least [20] population"
 
+	Applicable to: Building, Unit
+
+??? example  "Triggers a global alert upon build start"
+	Applicable to: Building, Unit
+
+??? example  "Triggers a global alert upon completion"
 	Applicable to: Building, Unit
 
 ??? example  "Cost increases by [amount] per owned city"
@@ -1197,6 +1208,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ??? example  "Can be built just outside your borders"
+	Applicable to: Improvement
+
+??? example  "Can only be built on [tileFilter] tiles"
+	Example: "Can only be built on [Farm] tiles"
+
 	Applicable to: Improvement
 
 ??? example  "Cannot be built on [tileFilter] tiles"
