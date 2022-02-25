@@ -51,14 +51,6 @@ open class TileInfo {
     @Transient
     var isOcean = false
 
-    // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
-    // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
-    @delegate:Transient
-    val isAdjacentToFreshwater: Boolean by lazy {
-        matchesTerrainFilter("River") || matchesTerrainFilter("Fresh water")
-                || neighbors.any { it.matchesTerrainFilter("Fresh water") }
-    }
-
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
     var airUnits = ArrayList<MapUnit>()
@@ -398,7 +390,7 @@ open class TileInfo {
                     .sumOf { it.params[0].toInt() }
         }
         if (isAdjacentToRiver()) fertility += 1
-        if (isAdjacentToFreshwater) fertility += 1 // meaning total +2 for river
+        if (isAdjacentTo(Constants.freshWater)) fertility += 1 // meaning total +2 for river
         if (checkCoasts && isCoastalTile()) fertility += 2
         return fertility
     }
@@ -435,8 +427,8 @@ open class TileInfo {
                     // Freshwater and non-freshwater cannot be moved to matchesUniqueFilter since that creates an endless feedback.
                     // If you're attempting that, check that it works!
                     // Edit: It seems to have been moved?
-                    || unique.params[1] == "Fresh water" && isAdjacentToFreshwater
-                    || unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater
+                    || unique.params[1] == Constants.freshWater && isAdjacentTo(Constants.freshWater)
+                    || unique.params[1] == "non-fresh water" && !isAdjacentTo(Constants.freshWater)
                 )
                     stats.add(unique.stats)
             }
@@ -496,10 +488,12 @@ open class TileInfo {
         }
     }
 
+    // This should be the only adjacency function
     fun isAdjacentTo(terrainFilter:String): Boolean {
-        if (terrainFilter == "Fresh water" && isAdjacentToFreshwater) return true
-        return if (terrainFilter == "River") isAdjacentToRiver()
-        else neighbors.any { neighbor -> neighbor.matchesFilter(terrainFilter) }
+        // Rivers are odd, as they aren't technically part of any specific tile but still count towards adjacency
+        if (terrainFilter == "River") return isAdjacentToRiver()
+        if (terrainFilter == Constants.freshWater && isAdjacentToRiver()) return true
+        return neighbors.any { neighbor -> neighbor.matchesFilter(terrainFilter) }
     }
 
     /** Without regards to what CivInfo it is, a lot of the checks are just for the improvement on the tile.
@@ -528,14 +522,14 @@ open class TileInfo {
             // Tiles with no terrains, and no turns to build, are like great improvements - they're placeable
             improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0 && isLand -> true
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
-            improvement.uniqueObjects.filter { it.type == UniqueType.MustBeNextTo }.any {
+            improvement.getMatchingUniques(UniqueType.MustBeNextTo).any {
                 !isAdjacentTo(it.params[0])
             } -> false
             !isWater && RoadStatus.values().any { it.name == improvement.name && it > roadStatus } -> true
             improvement.name == roadStatus.removeAction -> true
             topTerrain.unbuildable && !improvement.isAllowedOnFeature(topTerrain.name) -> false
             // DO NOT reverse this &&. isAdjacentToFreshwater() is a lazy which calls a function, and reversing it breaks the tests.
-            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater) && isAdjacentToFreshwater -> true
+            improvement.hasUnique(UniqueType.ImprovementBuildableByFreshWater) && isAdjacentTo(Constants.freshWater) -> true
 
             // If an unique of this type exists, we want all to match (e.g. Hill _and_ Forest would be meaningful).
             improvement.getMatchingUniques(UniqueType.CanOnlyBeBuiltOnTile).let {
@@ -574,7 +568,7 @@ open class TileInfo {
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
-            "Fresh Water" -> isAdjacentToFreshwater
+            "Fresh Water" -> isAdjacentTo(Constants.freshWater)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (getAllTerrains().any { it.hasUnique(filter) }) return true
