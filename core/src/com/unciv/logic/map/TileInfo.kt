@@ -821,12 +821,17 @@ open class TileInfo {
         isWater = getBaseTerrain().type == TerrainType.Water
         isLand = getBaseTerrain().type == TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
+        setTerrainFeatureTransients()
 
         // Resource amounts missing - Old save or bad mapgen?
         if (::tileMap.isInitialized && resource != null && tileResource.resourceType == ResourceType.Strategic && resourceAmount == 0) {
             // Let's assume it's a small deposit
             setTileResource(tileResource, majorDeposit = false)
         }
+    }
+
+    private fun setTerrainFeatureTransients() {
+        terrainFeatureObjects = terrainFeatures.mapNotNull { ruleset.terrains[it] }
     }
 
     fun setUnitTransients(unitCivTransients: Boolean) {
@@ -841,7 +846,7 @@ open class TileInfo {
     fun stripUnits() {
         for (unit in this.getUnits()) removeUnit(unit)
     }
-    
+
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
         resource = newResource.name
 
@@ -869,15 +874,15 @@ open class TileInfo {
             }
         }
     }
-    
+
     fun setTerrainFeatures(terrainFeatureList:List<String>){
         terrainFeatures = terrainFeatureList
-        terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
+        setTerrainFeatureTransients()
     }
-    
+
     fun addTerrainFeature(terrainFeature:String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
-    
+
     fun removeTerrainFeature(terrainFeature: String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })
 
