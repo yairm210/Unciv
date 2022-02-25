@@ -578,7 +578,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Sound effects volume".tr()).left().fillX()
 
         val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
-            initial = settings.soundEffectsVolume
+            initial = settings.soundEffectsVolume,
+            getTipText = UncivSlider::formatPercent
         ) {
             settings.soundEffectsVolume = it
             settings.save()
@@ -591,7 +592,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
             initial = settings.musicVolume,
-            sound = UncivSound.Silent
+            sound = UncivSound.Silent,
+            getTipText = UncivSlider::formatPercent
         ) {
             settings.musicVolume = it
             settings.save()
