@@ -221,7 +221,8 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-
+            unit.currentTile = tile
+            
             Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
         }
         // ranged check
@@ -230,7 +231,8 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-
+            unit.currentTile = tile
+            
             Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
         }
     }
