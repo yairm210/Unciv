@@ -208,6 +208,7 @@ class UnitMovementAlgorithmsTests {
     fun canNOTPassThroughTileWithEnemyUnits() {
         tile.baseTerrain = Constants.grassland
         tile.setTransients()
+        unit.testingSetCurrentTile(tile)
 
         val otherCiv = CivilizationInfo()
         otherCiv.civName = Constants.barbarians // they are always enemies
@@ -221,7 +222,6 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-            unit.currentTile = tile
             
             Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
         }
@@ -231,7 +231,6 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-            unit.currentTile = tile
             
             Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
         }

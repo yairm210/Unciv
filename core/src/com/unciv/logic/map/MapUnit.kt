@@ -40,7 +40,7 @@ class MapUnit {
     lateinit var baseUnit: BaseUnit
 
     @Transient
-    lateinit var currentTile: TileInfo
+    internal lateinit var currentTile: TileInfo
 
     @Transient
     val movement = UnitMovementAlgorithms(this)
@@ -850,6 +850,8 @@ class MapUnit {
     }
 
     fun removeFromTile() = currentTile.removeUnit(this)
+    // ONLY FOR DEBUG/Unit Testing
+    fun testingSetCurrentTile(tile: TileInfo) { currentTile = tile }
 
     fun moveThroughTile(tile: TileInfo) {
         // addPromotion requires currentTile to be valid because it accesses ruleset through it.
