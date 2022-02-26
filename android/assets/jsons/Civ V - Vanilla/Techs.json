@@ -246,7 +246,7 @@
 			{
 				"name": "Astronomy",
 				"row": 2,
-				"uniques": ["[+1] Movement <for [Embarked] units>","Enables embarked units to enter ocean tiles"],
+				"uniques": ["[+1] Movement <for [Embarked] units>","Enables [Embarked] units to enter ocean tiles"],
 				"prerequisites": ["Compass","Education"],
 				"quote": "'Joyfully to the breeze royal Odysseus spread his sail, and with his rudder skillfully he steered.' - Homer"
 			},

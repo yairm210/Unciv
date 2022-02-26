@@ -610,14 +610,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 && !tile.isCityCenter())
             return false
 
-
         if (tile.isWater && unit.baseUnit.isLandUnit()) {
             if (!unit.civInfo.tech.unitsCanEmbark) return false
             if (tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean)
                 return false
         }
-        if (tile.isOcean && !unit.civInfo.tech.wayfinding) { // Apparently all Polynesian naval units can enter oceans
-            if (unit.cannotEnterOceanTiles) return false
+        if (tile.isOcean && !unit.civInfo.tech.allUnitsCanEnterOcean) { // Apparently all Polynesian naval units can enter oceans
+            val unitSpecificAllowOcean = unit.civInfo.tech.specificUnitsCanEnterOcean &&
+                        unit.civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
+                            .any { unit.matchesFilter(it.params[0]) }
+            if (!unitSpecificAllowOcean && unit.cannotEnterOceanTiles) return false
         }
         if (tile.naturalWonder != null) return false
 
