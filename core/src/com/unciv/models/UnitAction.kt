@@ -141,7 +141,7 @@ enum class UnitActionType(
     HideAdditionalActions("Back",
         { imageGetHideMore() }, KeyCharAndCode(Input.Keys.PAGE_UP)),
     AddInCapital( "Add in capital",
-        { ImageGetter.getUnitIcon("SS Cockpit")}, UncivSound.Chimes),
+        { ImageGetter.getUnitIcon("SS Cockpit")}, 'g', UncivSound.Chimes),
     ;
 
     // Allow shorter initializations
