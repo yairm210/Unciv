@@ -401,11 +401,6 @@ class CityStats(val cityInfo: CityInfo) {
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
 
-        // Deprecated since 3.16.11
-            for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
-                unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
-        //
-
         for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromSpecialistsPercentageChange)) {
             if (cityInfo.matchesFilter(unique.params[1]))
                 unhappinessFromSpecialists *= unique.params[0].toPercent()

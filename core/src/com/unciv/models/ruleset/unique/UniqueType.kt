@@ -246,6 +246,23 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ChanceToRecruitNavalBarbarian("50% chance of capturing defeated Barbarian naval units and earning 25 Gold", UniqueTarget.Global),
     TripleGoldFromEncampmentsAndCities("Receive triple Gold from Barbarian encampments and pillaging Cities", UniqueTarget.Global),
     CitiesAreRazedXTimesFaster("Cities are razed [amount] times as fast", UniqueTarget.Global),
+    GreatPersonBoostWithFriendship("When declaring friendship, both parties gain a [amount]% boost to great person generation", UniqueTarget.Global),
+    NoImprovementMaintenanceInSpecificTiles("No Maintenance costs for improvements in [tileFilter] tiles", UniqueTarget.Global),
+    OtherCivsCityStateRelationsDegradeFaster("Influence of all other civilizations with all city-states degrades [amount]% faster", UniqueTarget.Global),
+    LandUnitsCrossTerrainAfterUnitGained("Land units may cross [terrainName] tiles after the first [baseUnitFilter] is earned", UniqueTarget.Global),
+    GainInfluenceWithUnitGiftToCityState("Gain [amount] Influence with a [baseUnitFilter] gift to a City-State", UniqueTarget.Global),
+    FaithCostOfGreatProphetChange("[amount]% Faith cost of generating Great Prophet equivalents", UniqueTarget.Global),
+    RestingPointOfCityStatesFollowingReligionChange("Resting point for Influence with City-States following this religion [amount]", UniqueTarget.Global),
+    // Todo can be replaced with a <within [amount] tiles of a [tileFilter] tile> conditional
+    StrengthWithinTilesOfTile("+[amount]% Strength if within [amount] tiles of a [tileFilter]", UniqueTarget.Global),
+    StatBonusPercentFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
+    
+    ProvidesGoldWheneverGreatPersonExpended("Provides a sum of gold each time you spend a Great Person", UniqueTarget.Global),
+    ProvidesStatsWheneverGreatPersonExpended("[stats] whenever a Great Person is expended", UniqueTarget.Global),
+    
+    // Acts as a trigger - this should be generalized somehow but the current setup does not allow this
+    // It would currently mean cycling through EVERY unique type to find ones with a specific conditional...
+    RecieveFreeUnitWhenDiscoveringTech("Receive free [baseUnitFilter] when you discover [tech]", UniqueTarget.Global),
     
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?
@@ -599,6 +616,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ConditionalFirstCivToResearch("if no other Civilization has researched this", UniqueTarget.Conditional),
     ConditionalTech("after discovering [tech]", UniqueTarget.Conditional),
     ConditionalNoTech("before discovering [tech]", UniqueTarget.Conditional),
+    ConditionalWhenTech("upon discovering [tech]", UniqueTarget.Conditional),
     ConditionalPolicy("after adopting [policy]", UniqueTarget.Conditional),
     ConditionalNoPolicy("before adopting [policy]", UniqueTarget.Conditional),
     ConditionalBuildingBuilt("if [buildingName] is constructed", UniqueTarget.Conditional),
