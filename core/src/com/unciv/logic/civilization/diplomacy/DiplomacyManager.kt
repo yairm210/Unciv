@@ -239,7 +239,7 @@ class DiplomacyManager() {
             restingPoint += unique.params[0].toInt()
 
         if (civInfo.cities.any()) // no capital if no cities
-            for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
+            for (unique in otherCiv().getMatchingUniques(UniqueType.RestingPointOfCityStatesFollowingReligionChange))
                 if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligionName())
                     restingPoint += unique.params[0].toInt()
 
@@ -270,7 +270,7 @@ class DiplomacyManager() {
             modifierPercent -= 25f  // 25% slower degrade when sharing a religion
 
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
-            for (unique in civ.getMatchingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
+            for (unique in civ.getMatchingUniques(UniqueType.OtherCivsCityStateRelationsDegradeFaster)) {
                 modifierPercent += unique.params[0].toFloat()
             }
         }

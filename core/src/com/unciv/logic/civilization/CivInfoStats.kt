@@ -79,7 +79,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
         val ignoredTileTypes =
-            civInfo.getMatchingUniques("No Maintenance costs for improvements in [] tiles")
+            civInfo.getMatchingUniques(UniqueType.NoImprovementMaintenanceInSpecificTiles)
                 .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
 
@@ -165,7 +165,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     }
                 }
 
-                for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                     cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
 
@@ -345,7 +345,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         // Just in case
         if (cityStatesHappiness > 0) {
-            for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                 if (unique.params[1] == Stat.Happiness.name)
                     cityStatesHappiness *= unique.params[0].toPercent()
             }

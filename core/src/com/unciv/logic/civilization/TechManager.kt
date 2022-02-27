@@ -324,7 +324,7 @@ class TechManager {
             }
         }
 
-        for (unique in civInfo.getMatchingUniques("Receive free [] when you discover []")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.RecieveFreeUnitWhenDiscoveringTech)) {
             if (unique.params[1] != techName) continue
             civInfo.addUnit(unique.params[0])
         }

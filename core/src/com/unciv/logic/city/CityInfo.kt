@@ -442,9 +442,9 @@ class CityInfo {
                 if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 
                     continue
 
-                for (ourUnique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (ourUnique in civInfo.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
                     allGppPercentageBonus += ourUnique.params[0].toInt()
-                for (theirUnique in otherCiv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
                     allGppPercentageBonus += theirUnique.params[0].toInt()
             }
 
@@ -835,13 +835,6 @@ class CityInfo {
         ).filter {
             it.conditionalsApply(stateForConditionals)
         }
-    }
-
-    // Get all matching uniques that don't apply to only this city
-    fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { !it.isLocalEffect }
-        // Note that we don't query religion here, as those only have local effects
     }
 
 

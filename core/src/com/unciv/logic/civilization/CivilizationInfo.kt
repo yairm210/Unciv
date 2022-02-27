@@ -405,27 +405,6 @@ class CivilizationInfo {
         yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
     }
     
-    fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null) = sequence {
-        yieldAll(nation.getMatchingUniques(uniqueTemplate))
-        yieldAll(cities.asSequence()
-            .filter { it != cityToIgnore }
-            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueTemplate) }
-        )
-        yieldAll(policies.policyUniques.getUniques(uniqueTemplate))
-        yieldAll(tech.techUniques.getUniques(uniqueTemplate))
-        yieldAll(temporaryUniques.asSequence()
-            .map { it.uniqueObject }
-            .filter { it.placeholderText == uniqueTemplate }
-        )
-        yieldAll(getEra().getMatchingUniques(uniqueTemplate).asSequence())
-        if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.getFounderUniques()
-                .asSequence()
-                .filter { it.placeholderText == uniqueTemplate }
-            )
-        
-        yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueTemplate))
-    }
  
     //region Units
     fun getCivUnitsSize(): Int = units.size
@@ -1141,7 +1120,7 @@ class CivilizationInfo {
             placedUnit.setupAbilityUses(cityToAddTo)
         }
 
-        for (unique in getMatchingUniques("Land units may cross [] tiles after the first [] is earned")) {
+        for (unique in getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained)) {
             if (unit.matchesFilter(unique.params[1])) {
                 passThroughImpassableUnlocked = true    // Update the cached Boolean
                 passableImpassables.add(unique.params[0])   // Add to list of passable impassables
