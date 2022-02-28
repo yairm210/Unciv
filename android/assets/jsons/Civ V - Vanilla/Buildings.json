@@ -465,9 +465,7 @@
 		"hurryCostModifier": 25,
 		"requiredNearbyImprovedResources": ["Iron"],
 		"requiredTech": "Metal Casting",
-		// If spaceship parts are changed into units, the spaceship part unique should be changed to
-		// "[+15]% Production when constructing [Spaceship part] units [in this city]"
-		"uniques": ["[+15]% Production when constructing [Spaceship part] buildings [in this city]",
+		"uniques": ["[+15]% Production when constructing [Spaceship part] units [in this city]",
 			"[+15]% Production when constructing [Land] units [in this city]",
 			"[+1 Production] from [Iron] tiles [in this city]"]
 	},
@@ -947,9 +945,7 @@
 		"requiredResource": "Aluminum",
 		"cost": 360,
 		"requiredBuilding": "Factory",
-		// If spaceship parts are changed into units, this unique should be changed to
-		// "[+50]% Production when constructing [Spaceship part] units [in this city]"
-		"uniques": ["[+50]% Production when constructing [Spaceship part] buildings [in this city]"],
+		"uniques": ["[+50]% Production when constructing [Spaceship part] units [in this city]"],
 		"requiredTech": "Robotics"
 	},
 	// Column 16
