@@ -1,3 +1,15 @@
+## 3.19.13
+
+Minor performance improvements
+
+By SomeTroglodyte:
+- Fixed Spaceship production bonuses
+- Fixed Ctrl-Letter key bindings
+- Fixed Polynesia's Wayfinding
+- Fixed Petra and Garden not allowed in some cases
+
+Align Embarked Defense Strength per Era  - By itanasi
+
 ## 3.19.12
 
 Modding: Multiple Unique documentation improvement

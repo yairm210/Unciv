@@ -486,6 +486,64 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
+??? example  "When declaring friendship, both parties gain a [amount]% boost to great person generation"
+	Example: "When declaring friendship, both parties gain a [20]% boost to great person generation"
+
+	Applicable to: Global
+
+??? example  "No Maintenance costs for improvements in [tileFilter] tiles"
+	Example: "No Maintenance costs for improvements in [Farm] tiles"
+
+	Applicable to: Global
+
+??? example  "Influence of all other civilizations with all city-states degrades [amount]% faster"
+	Example: "Influence of all other civilizations with all city-states degrades [20]% faster"
+
+	Applicable to: Global
+
+??? example  "Land units may cross [terrainName] tiles after the first [baseUnitFilter] is earned"
+	Example: "Land units may cross [terrainName] tiles after the first [Melee] is earned"
+
+	Applicable to: Global
+
+??? example  "Gain [amount] Influence with a [baseUnitFilter] gift to a City-State"
+	Example: "Gain [20] Influence with a [Melee] gift to a City-State"
+
+	Applicable to: Global
+
+??? example  "[amount]% Faith cost of generating Great Prophet equivalents"
+	Example: "[20]% Faith cost of generating Great Prophet equivalents"
+
+	Applicable to: Global
+
+??? example  "Resting point for Influence with City-States following this religion [amount]"
+	Example: "Resting point for Influence with City-States following this religion [20]"
+
+	Applicable to: Global
+
+??? example  "+[amount]% Strength if within [amount] tiles of a [tileFilter]"
+	Example: "+[20]% Strength if within [20] tiles of a [Farm]"
+
+	Applicable to: Global
+
+??? example  "[amount]% [stat] from City-States"
+	Example: "[20]% [Culture] from City-States"
+
+	Applicable to: Global
+
+??? example  "Provides a sum of gold each time you spend a Great Person"
+	Applicable to: Global
+
+??? example  "[stats] whenever a Great Person is expended"
+	Example: "[+1 Gold, +2 Production] whenever a Great Person is expended"
+
+	Applicable to: Global
+
+??? example  "Receive free [baseUnitFilter] when you discover [tech]"
+	Example: "Receive free [Melee] when you discover [Agriculture]"
+
+	Applicable to: Global
+
 ??? example  "Enables Open Borders agreements"
 	Applicable to: Global
 
@@ -1435,6 +1493,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;before discovering [tech]&gt;"
 	Example: "&lt;before discovering [Agriculture]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;upon discovering [tech]&gt;"
+	Example: "&lt;upon discovering [Agriculture]&gt;"
 
 	Applicable to: Conditional
 
