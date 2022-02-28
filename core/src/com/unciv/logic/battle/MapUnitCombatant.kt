@@ -35,19 +35,9 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getDefendingStrength(): Int {
-        return if (unit.isEmbarked() && !isCivilian()) {
-            when(getCivInfo().getEraNumber()){
-                0 -> 3 // Ancient
-                1 -> 4 // Classical
-                2 -> 6 // Medieval
-                3 -> 8 // Renaissance
-                4 -> 10 // Industrial
-                5 -> 13 // Modern
-                6 -> 16 // Atomic
-                7 -> 20 // Information
-                else -> 5 * getCivInfo().getEraNumber() - 15 // catch rest
-            }
-        }else unit.baseUnit().strength
+        return if (unit.isEmbarked() && !isCivilian())
+            unit.civInfo.getEra().embarkDefense
+        else unit.baseUnit().strength
     }
 
     override fun getUnitType(): UnitType {
