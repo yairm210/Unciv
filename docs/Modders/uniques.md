@@ -551,7 +551,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Enables embarkation for land units"
 	Applicable to: Global
 
-??? example  "Enables embarked units to enter ocean tiles"
+??? example  "Enables [mapUnitFilter] units to enter ocean tiles"
+	Example: "Enables [Wounded] units to enter ocean tiles"
+
 	Applicable to: Global
 
 ??? example  "Population loss from nuclear attacks [amount]% [cityFilter]"
