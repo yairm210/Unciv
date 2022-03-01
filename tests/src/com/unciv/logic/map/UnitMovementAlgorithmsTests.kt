@@ -1,7 +1,6 @@
 ﻿//  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
