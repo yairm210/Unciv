@@ -838,6 +838,7 @@ open class TileInfo {
 
     fun setUnitTransients(unitCivTransients: Boolean) {
         for (unit in getUnits()) {
+            println(unit.name)
             unit.currentTile = this
             if (unitCivTransients)
                 unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner), false)

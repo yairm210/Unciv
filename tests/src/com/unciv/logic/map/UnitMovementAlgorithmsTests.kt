@@ -1,6 +1,7 @@
 ﻿//  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
@@ -208,7 +209,18 @@ class UnitMovementAlgorithmsTests {
     fun canNOTPassThroughTileWithEnemyUnits() {
         tile.baseTerrain = Constants.grassland
         tile.setTransients()
-        unit.testingSetCurrentTile(tile)
+        
+        val startTile = TileInfo()
+        startTile.baseTerrain = Constants.grassland
+        RulesetCache.loadRulesets()
+        val ruleSet = RulesetCache.getVanillaRuleset()
+        startTile.ruleset = ruleSet
+        startTile.setTransients()
+        unit.baseUnit = BaseUnit().apply { unitType = "Scout"; ruleset = ruleSet }
+        unit.baseUnit.ruleset = ruleSet
+        unit.name = "Scout"
+        startTile.militaryUnit = unit
+        startTile.setUnitTransients(false)
 
         val otherCiv = CivilizationInfo()
         otherCiv.civName = Constants.barbarians // they are always enemies
