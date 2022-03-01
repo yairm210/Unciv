@@ -1,18 +1,20 @@
 package com.unciv.ui.overviewscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.logic.city.CityFlags
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -62,6 +64,11 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
         for (name in columnsNames) {
             addSortIcon(name)
         }
+        val wltkSortIcon: IconCircleGroup = ImageGetter.getImage("OtherIcons/WLTK 2")
+            .apply { color = Color.BLACK }
+            .surroundWithCircle(iconSize, color = Color.TAN)
+        wltkSortIcon.addTooltip("We Love The King Day", 18f, tipAlign = Align.center )
+        addSortIcon("WLTK", wltkSortIcon)
         cityInfoTableIcons.pack()
 
         // Prepare middle third: cityInfoScrollPane (a ScrollPane containing cityInfoTableDetails)
@@ -78,7 +85,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
 
         // place the button for sorting by city name on top of the cities names
         // by sizing the filler to: subtract width of other columns and one cell padding from overall width
-        val headingFillerWidth = max(0f, cityInfoTableDetails.width - (iconSize + 2*paddingHorz) * (numHeaderCells-1) - 2*paddingHorz)
+        val headingFillerWidth = max(0f, cityInfoTableDetails.width - (iconSize + 2*paddingHorz) * numHeaderCells - 2*paddingHorz)
         headerFillerCell.width(headingFillerWidth)
         cityInfoTableIcons.width = cityInfoTableDetails.width
 
@@ -94,6 +101,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
             if (stat == Stat.Food || stat == Stat.Production) cityInfoTableTotal.add() // an intended empty space
             else cityInfoTableTotal.add(viewingPlayer.cities.sumOf { getStatOfCity(it, stat) }.toLabel()).myAlign(Align.center)
         }
+        cityInfoTableTotal.add(viewingPlayer.cities.count { it.isWeLoveTheKingDayActive() }.toLabel()).myAlign(Align.center)
         cityInfoTableTotal.pack()
 
         // Stack cityInfoTableIcons, cityInfoScrollPane, and cityInfoTableTotal vertically
@@ -125,6 +133,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
                     val stat = Stat.valueOf(sortType)
                     getStatOfCity(city1, stat) - getStatOfCity(city2, stat)
                 }
+                sortType == "WLTK" -> city1.isWeLoveTheKingDayActive().compareTo(city2.isWeLoveTheKingDayActive())
                 else -> city2.name.tr().compareTo(city1.name.tr())
             }
         }
@@ -142,7 +151,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
             }
             citiesTable.add(button)
 
-            if (city.cityConstructions.currentConstructionFromQueue.length > 0) {
+            if (city.cityConstructions.currentConstructionFromQueue.isNotEmpty()) {
                 citiesTable.add(ImageGetter.getConstructionImage(city.cityConstructions.currentConstructionFromQueue).surroundWithCircle(iconSize*0.8f)).padRight(paddingHorz)
             } else {
                 citiesTable.add()
@@ -156,6 +165,21 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
                 if (!column.isStat()) continue
                 citiesTable.add(getStatOfCity(city, Stat.valueOf(column)).toLabel()).myAlign(Align.center)
             }
+
+            when {
+                city.isWeLoveTheKingDayActive() -> {
+                    val image = ImageGetter.getImage("OtherIcons/WLTK 1").surroundWithCircle(iconSize, color = Color.CLEAR)
+                    image.addTooltip("[${city.getFlag(CityFlags.WeLoveTheKing)}] turns", 18f, tipAlign = Align.topLeft)
+                    citiesTable.add(image)
+                }
+                city.demandedResource.isNotEmpty() -> {
+                    val image = ImageGetter.getResourceImage(city.demandedResource, iconSize*0.7f)
+                    image.addTooltip("Demanding [${city.demandedResource}]", 18f, tipAlign = Align.topLeft)
+                    citiesTable.add(image).padLeft(iconSize*0.3f)
+                }
+                else -> citiesTable.add()
+            }
+
             citiesTable.row()
         }
 
