@@ -134,7 +134,7 @@ class TileImprovementConstructionTests {
     @Test
     fun terraceFarmCanNOTBeBuiltOnBonus() {
         val tile = getTile()
-        tile.terrainFeatures.add("Hill")
+        tile.addTerrainFeature("Hill")
         tile.resource = "Sheep"
         tile.setTransients()
         civInfo.civName = "Inca"

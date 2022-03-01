@@ -4,6 +4,7 @@ import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -348,7 +349,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
 
-        val bullyRange = max(5, civInfo.gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
+        val bullyRange = (civInfo.gameInfo.tileMap.tileMatrix.size / 10).coerceIn(5, 10)   // Longer range for larger maps
         val inRangeTiles = civInfo.getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
             .sumOf { if (it.militaryUnit?.civInfo == demandingCiv)
@@ -650,5 +651,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             )
         }
     }
-
+    
+    fun getCityStateResourcesForAlly(): ResourceSupplyList {
+        val newDetailedCivResources = ResourceSupplyList()
+        for (city in civInfo.cities) {
+            for (resourceSupply in city.getCityResources())
+                if (resourceSupply.amount > 0) // IGNORE the fact that they consume their own resources - #4769
+                    newDetailedCivResources.add(resourceSupply.resource, resourceSupply.amount, "City-States")
+        }
+        return newDetailedCivResources
+    }
 }

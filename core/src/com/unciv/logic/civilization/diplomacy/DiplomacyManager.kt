@@ -168,11 +168,11 @@ class DiplomacyManager() {
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
         if (civInfo.isCityState()) return when {
+            influence >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
+            influence >= 30 -> RelationshipLevel.Friend
             influence <= -30 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Unforgivable
             influence < 30 && civInfo.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
             influence < 0 -> RelationshipLevel.Enemy
-            influence >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
-            influence >= 30 -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
         }
 
@@ -200,6 +200,7 @@ class DiplomacyManager() {
         if (civInfo.isCityState() && !otherCiv().isCityState()) {
             val dropPerTurn = getCityStateInfluenceDegrade()
             return when {
+                dropPerTurn == 0f -> 0
                 relationshipLevel() >= RelationshipLevel.Ally -> ceil((influence - 60f) / dropPerTurn).toInt() + 1
                 relationshipLevel() >= RelationshipLevel.Friend -> ceil((influence - 30f) / dropPerTurn).toInt() + 1
                 else -> 0
@@ -238,7 +239,7 @@ class DiplomacyManager() {
             restingPoint += unique.params[0].toInt()
 
         if (civInfo.cities.any()) // no capital if no cities
-            for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
+            for (unique in otherCiv().getMatchingUniques(UniqueType.RestingPointOfCityStatesFollowingReligionChange))
                 if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligionName())
                     restingPoint += unique.params[0].toInt()
 
@@ -260,10 +261,6 @@ class DiplomacyManager() {
         }
 
         var modifierPercent = 0f
-        // Deprecated since 3.18.17
-            for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateInfluenceDegradationDeprecated))
-                modifierPercent -= unique.params[0].toFloat()
-        //
         for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateInfluenceDegradation))
             modifierPercent += unique.params[0].toFloat()
 
@@ -273,7 +270,7 @@ class DiplomacyManager() {
             modifierPercent -= 25f  // 25% slower degrade when sharing a religion
 
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
-            for (unique in civ.getMatchingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
+            for (unique in civ.getMatchingUniques(UniqueType.OtherCivsCityStateRelationsDegradeFaster)) {
                 modifierPercent += unique.params[0].toFloat()
             }
         }
@@ -289,7 +286,7 @@ class DiplomacyManager() {
 
         var modifierPercent = 0f
 
-        if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate"))
+        if (otherCiv().hasUnique(UniqueType.CityStateInfluenceRecoversTwiceNormalRate))
             modifierPercent += 100f
 
         val religion = if (civInfo.cities.isEmpty()) null
@@ -355,7 +352,7 @@ class DiplomacyManager() {
      */
     fun isConsideredFriendlyTerritory(): Boolean {
         if (civInfo.isCityState() &&
-            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique("City-State territory always counts as friendly territory")))
+            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)))
             return true
         return hasOpenBorders
     }

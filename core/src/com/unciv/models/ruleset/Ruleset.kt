@@ -406,7 +406,7 @@ class Ruleset {
 
         val deprecationAnnotation = unique.getDeprecationAnnotation()
         if (deprecationAnnotation != null) {
-            val replacementUniqueText = unique.getReplacementText()
+            val replacementUniqueText = unique.getReplacementText(this)
             val deprecationText =
                 "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
                         if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
@@ -417,7 +417,11 @@ class Ruleset {
             rulesetErrors.add(deprecationText, severity)
         }
 
-        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) })
+        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) }
+            // the 'consume unit' conditional causes a triggerable unique to become a unit action
+            && !(uniqueTarget==UniqueTarget.Unit
+                    && unique.isTriggerable 
+                    && unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }))
             rulesetErrors.add(
                 "$name's unique \"${unique.text}\" cannot be put on this type of object!",
                 RulesetErrorSeverity.Warning
@@ -571,8 +575,8 @@ class Ruleset {
             if (building.requiredBuildingInAllCities != null)
                 lines.add("${building.name} contains 'requiredBuildingInAllCities' - please convert to a \"" +
                         UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!)+"\" unique", RulesetErrorSeverity.Warning)
-            for (unique in building.uniqueObjects)
-                if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
+            for (unique in building.getMatchingUniques("Creates a [] improvement on a specific tile"))
+                if (!tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
             checkUniques(building, lines, rulesetSpecific, forOptionsPopup)
         }
@@ -729,7 +733,8 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache : HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) {
+    /** Returns error lines from loading the rulesets, so we can display the errors to users */
+    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) :List<String> {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
@@ -742,11 +747,12 @@ object RulesetCache : HashMap<String,Ruleset>() {
             }
         }
 
-        if (noMods) return
+        if (noMods) return listOf()
 
         val modsHandles = if (consoleMode) FileHandle("mods").list()
         else Gdx.files.local("mods").list()
 
+        val errorLines = ArrayList<String>()
         for (modFolder in modsHandles) {
             if (modFolder.name().startsWith('.')) continue
             if (!modFolder.isDirectory) continue
@@ -761,13 +767,13 @@ object RulesetCache : HashMap<String,Ruleset>() {
                     println(modRuleset.checkModLinks().getErrorText())
                 }
             } catch (ex: Exception) {
-                if (printOutput) {
-                    println("Exception loading mod '${modFolder.name()}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  ${ex.cause?.localizedMessage}")
-                }
+                errorLines += "Exception loading mod '${modFolder.name()}':"
+                errorLines += "  ${ex.localizedMessage}"
+                errorLines += "  ${ex.cause?.localizedMessage}"
             }
         }
+        if (printOutput) for (line in errorLines) println(line)
+        return errorLines
     }
 
 

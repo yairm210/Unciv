@@ -124,7 +124,7 @@ class CityInfo {
                 "Remove $it"
             )
         })
-            tile.terrainFeatures.remove(terrainFeature)
+            tile.removeTerrainFeature(terrainFeature)
 
         tile.improvement = null
         tile.improvementInProgress = null
@@ -181,7 +181,7 @@ class CityInfo {
         val cityName = nationCities[cityNameIndex]
 
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
-        if (cityNameRounds > 0 && civInfo.hasUnique("\"Borrows\" city names from other civilizations in the game")) {
+        if (cityNameRounds > 0 && civInfo.hasUnique(UniqueType.BorrowsCityNames)) {
             name = borrowCityName()
             return
         }
@@ -265,7 +265,7 @@ class CityInfo {
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values
             .asSequence()
-            .filter { it.uniques.contains("Indicates the capital city") }
+            .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
         return civSpecificBuilding?.name ?: indicatorBuildings.first().name
@@ -372,7 +372,7 @@ class CityInfo {
             var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
                 else 1
             if (resource.resourceType == ResourceType.Luxury
-                && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City")
+                && containsBuildingUnique(UniqueType.ProvidesExtraLuxuryFromCityResources)
             )
                 amountToAdd += 1
 
@@ -401,9 +401,6 @@ class CityInfo {
         if (!isStarving()) return null
         return population.foodStored / -foodForNextTurn() + 1
     }
-
-    fun containsBuildingUnique(unique: String) =
-        cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
@@ -445,9 +442,9 @@ class CityInfo {
                 if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 
                     continue
 
-                for (ourUnique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (ourUnique in civInfo.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
                     allGppPercentageBonus += ourUnique.params[0].toInt()
-                for (theirUnique in otherCiv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
                     allGppPercentageBonus += theirUnique.params[0].toInt()
             }
 
@@ -613,7 +610,7 @@ class CityInfo {
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
             val removedPopulation =
-                1 + civInfo.getMatchingUniques("Cities are razed [] times as fast")
+                1 + civInfo.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
                     .sumOf { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) {
@@ -838,13 +835,6 @@ class CityInfo {
         ).filter {
             it.conditionalsApply(stateForConditionals)
         }
-    }
-
-    // Get all matching uniques that don't apply to only this city
-    fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { !it.isLocalEffect }
-        // Note that we don't query religion here, as those only have local effects
     }
 
 

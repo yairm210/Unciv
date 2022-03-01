@@ -264,7 +264,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getModCheckTab() = Table(BaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick {
-            RulesetCache.loadRulesets()
             runModChecker(modCheckCheckBox!!.isChecked)
         }
         add(reloadModsButton).row()
@@ -277,10 +276,20 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     }
 
     private fun runModChecker(complex: Boolean = false) {
+        
         modCheckFirstRun = false
         if (modCheckCheckBox == null) return
 
         modCheckResultTable.clear()
+
+        val rulesetErrors = RulesetCache.loadRulesets()
+        if (rulesetErrors.isNotEmpty()) {
+            val errorTable = Table().apply { defaults().pad(2f) }
+            for (rulesetError in rulesetErrors)
+                errorTable.add(rulesetError.toLabel()).width(stage.width / 2).row()
+            modCheckResultTable.add(errorTable)
+        }
+        
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
         modCheckCheckBox!!.disable()
 
@@ -329,6 +338,11 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                             label.wrap = true
                             it.add(label).width(stage.width / 2).row()
                         }
+                        if(!noProblem)
+                            it.add("Copy to clipboard".toTextButton().onClick {
+                                Gdx.app.clipboard.contents = lines.map { it.text }.filterNot { it=="" }
+                                    .joinToString("\n")  
+                            }).row()
                     }
 
                     val loadingLabel = modCheckResultTable.children.last()
@@ -374,9 +388,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             // note that this replacement does not contain conditionals attached to the original!
 
 
-            var uniqueReplacementText = deprecatedUnique.getReplacementText()
+            var uniqueReplacementText = deprecatedUnique.getReplacementText(mod)
             while (Unique(uniqueReplacementText).getDeprecationAnnotation() != null)
-                uniqueReplacementText = Unique(uniqueReplacementText).getReplacementText()
+                uniqueReplacementText = Unique(uniqueReplacementText).getReplacementText(mod)
 
             for (conditional in deprecatedUnique.conditionals)
                 uniqueReplacementText += " <${conditional.text}>"
@@ -437,7 +451,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
         val toastText = "Uniques updated!"
         ToastPopup(toastText, screen).open(true)
-        RulesetCache.loadRulesets()
         runModChecker()
     }
 
@@ -565,7 +578,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Sound effects volume".tr()).left().fillX()
 
         val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
-            initial = settings.soundEffectsVolume
+            initial = settings.soundEffectsVolume,
+            getTipText = UncivSlider::formatPercent
         ) {
             settings.soundEffectsVolume = it
             settings.save()
@@ -578,7 +592,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
             initial = settings.musicVolume,
-            sound = UncivSound.Silent
+            sound = UncivSound.Silent,
+            getTipText = UncivSlider::formatPercent
         ) {
             settings.musicVolume = it
             settings.save()

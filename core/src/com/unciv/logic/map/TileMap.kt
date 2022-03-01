@@ -447,7 +447,7 @@ class TileMap {
     fun removeMissingTerrainModReferences(ruleSet: Ruleset) {
         for (tile in this.values) {
             for (terrainFeature in tile.terrainFeatures.filter { !ruleSet.terrains.containsKey(it) })
-                tile.terrainFeatures.remove(terrainFeature)
+                tile.removeTerrainFeature(terrainFeature)
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
             if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))

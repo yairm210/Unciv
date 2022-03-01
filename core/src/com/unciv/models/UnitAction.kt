@@ -124,6 +124,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitIcon("Great Merchant") }, 'g', UncivSound.Chimes),
     FoundReligion("Found a Religion",
         { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
+    TriggerUnique("Trigger unique",
+        { ImageGetter.getImage("OtherIcons/Star") }, 'g', UncivSound.Chimes),
     SpreadReligion("Spread Religion",
         null, 'g', UncivSound.Choir),
     RemoveHeresy("Remove Heresy",
@@ -138,6 +140,8 @@ enum class UnitActionType(
         { imageGetShowMore() }, KeyCharAndCode(Input.Keys.PAGE_DOWN)),
     HideAdditionalActions("Back",
         { imageGetHideMore() }, KeyCharAndCode(Input.Keys.PAGE_UP)),
+    AddInCapital( "Add in capital",
+        { ImageGetter.getUnitIcon("SS Cockpit")}, 'g', UncivSound.Chimes),
     ;
 
     // Allow shorter initializations

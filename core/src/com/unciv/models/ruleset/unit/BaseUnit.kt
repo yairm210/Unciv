@@ -393,7 +393,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-        for (unique in getMatchingUniques("Unlocked with []") + getMatchingUniques("Requires []")) {
+        // This should be deprecated and replaced with the already-existing "only available when" unique, see above
+        for (unique in getMatchingUniques(UniqueType.UnlockedWith) + getMatchingUniques(UniqueType.Requires)) {
             val filter = unique.params[0]
             when {
                 ruleSet.technologies.contains(filter) -> 
@@ -425,12 +426,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
         }
         
-        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits, StateForConditionals(civInfo=civInfo))
-            .any { matchesFilter(it.params[0]) }
-        ) {
+        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits).any { matchesFilter(it.params[0]) }) {
             rejectionReasons.add(RejectionReason.CannotBeBuilt)
         }
-            
+        
+        for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)) {
+            if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
+                rejectionReasons.add(RejectionReason.MaxNumberBuildable)
+        }
+        
         return rejectionReasons
     }
 
@@ -553,9 +557,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+    fun isGreatPerson() = hasUnique("Great Person - []")
 
-    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear weapon of Strength []" }
+    fun isNuclearWeapon() = hasUnique("Nuclear weapon of Strength []")
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
@@ -564,9 +568,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in uniqueObjects)
-            if (unique.isOfType(UniqueType.ConsumesResources))
-                resourceRequirements[unique.params[1]] = unique.params[0].toInt()
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources))
+            resourceRequirements[unique.params[1]] = unique.params[0].toInt()
         resourceRequirements
     }
 
@@ -625,7 +628,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (hasUnique(UniqueType.SelfDestructs))
             power /= 2
-        if (uniqueObjects.any { it.placeholderText =="Nuclear weapon of Strength []" } )
+        if (isNuclearWeapon())
             power += 4000
 
         // Uniques

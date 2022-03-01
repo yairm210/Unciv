@@ -25,4 +25,11 @@ class ModConstants {
     // unitSupplyBase and unitSupplyPerCity can be found in difficulties.json
     // unitSupplyBase, unitSupplyPerCity and unitSupplyPerPopulation can also be increased through uniques
     val unitSupplyPerPopulation = 0.5
+    
+    // The minimal distance that must be between any two cities, not counting the tiles cities are on
+    // The number is the amount of tiles between two cities, not counting the tiles the cities are on.
+    // e.g. "C__C", where "C" is a tile with a city and "_" is a tile without a city, has a distance of 2.
+    // First constant is for cities on the same landmass, the second is for cities on different continents.
+    val minimalCityDistance = 3
+    val minimalCityDistanceOnDifferentContinents = 2
 }

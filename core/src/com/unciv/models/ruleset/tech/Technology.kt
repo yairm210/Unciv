@@ -138,7 +138,7 @@ class Technology: RulesetObject() {
             .filter {
                 it.requiredTech == name
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentUnit(it) == it)
-                && (nuclearWeaponsEnabled || it.uniqueObjects.none { unique -> unique.placeholderText == "Nuclear weapon of Strength []" })
+                && (nuclearWeaponsEnabled || !it.isNuclearWeapon())
                 && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
                 && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
             }

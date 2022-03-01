@@ -54,7 +54,7 @@ class GlobalUniquesTests {
         tile.ruleset = ruleSet
         tile.baseTerrain = terrain
         for (feature in features) {
-            tile.terrainFeatures.add(feature)
+            tile.addTerrainFeature(feature)
         }
         tile.tileMap = tileMap
         tile.position = position
@@ -89,7 +89,7 @@ class GlobalUniquesTests {
         
         if (replacePalace && civInfo.cities.size == 1) {
             // Add a capital indicator without any other stats
-            val palaceWithoutStats = createBuildingWithUnique("Indicates the capital city")
+            val palaceWithoutStats = createBuildingWithUnique(UniqueType.IndicatesCapital.text)
             cityInfo.cityConstructions.removeBuilding("Palace")
             cityInfo.cityConstructions.addBuilding(palaceWithoutStats.name)
         }

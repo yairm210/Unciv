@@ -61,10 +61,6 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumOf { it.cityStrength }.toFloat()
         val stateForConditionals = StateForConditionals(getCivInfo(), city, ourCombatant = this, combatAction = combatAction)
         
-        // Deprecated since 3.18.17
-            if (getCivInfo().hasUnique(UniqueType.DefensiveBuilding25, stateForConditionals))
-                buildingsStrength *= 1.25f
-        //
         for (unique in getCivInfo().getMatchingUniques(UniqueType.BetterDefensiveBuildings, stateForConditionals))
             buildingsStrength *= unique.params[0].toPercent()
         strength += buildingsStrength

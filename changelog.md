@@ -1,3 +1,69 @@
+## 3.19.13
+
+Minor performance improvements
+
+By SomeTroglodyte:
+- Fixed Spaceship production bonuses
+- Fixed Ctrl-Letter key bindings
+- Fixed Polynesia's Wayfinding
+- Fixed Petra and Garden not allowed in some cases
+
+Align Embarked Defense Strength per Era  - By itanasi
+
+## 3.19.12
+
+Modding: Multiple Unique documentation improvement
+
+By SomeTroglodyte:
+- Slider fixes
+- Rudimentary AI control over goldPercentConvertedToScience
+
+Fix Navies capturing Land Civilians - By itanasi
+
+Translation updates
+
+## 3.19.11
+
+Mod autoupdate improvements
+
+Performance improvements
+
+Added "copy to clipboard" button for mod errors
+
+Multiple small improvements
+
+By SomeTroglodyte:
+- Resolved no-barbarian mod error
+- Minimum window size
+
+By xlenstra:
+- Reorganized the way city states grant resources
+- Made spaceship parts units instead of buildings
+- Added mod constants for the distance between two cities
+
+By itanasi:
+- Updating Embarking Tutorial with more details
+- Made multiple tile defense bonuses stack
+
+## 3.19.10
+
+Show json parsing errors for mods in the options menu
+
+AI only builds work boats for buildable improvements
+
+Trigger uniques by sacrificing units with conditional
+
+By xlenstra:
+- Damage in battle table is now the average damage done
+- Added conditional checking for tiles
+
+By itanasi:
+- Show Improvements that are buildable after Removing TerrainFeature
+- Embarking penalty logic fix
+- Prevent Civilians from capturing Civilians
+
+Fix for music resumes after minimizing on android - By SomeTroglodyte
+
 ## 3.19.9
 
 Transported units reveal tiles as if they passed through the path of the transporting unit
