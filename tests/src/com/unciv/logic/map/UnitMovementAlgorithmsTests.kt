@@ -210,17 +210,7 @@ class UnitMovementAlgorithmsTests {
         tile.baseTerrain = Constants.grassland
         tile.setTransients()
         
-        val startTile = TileInfo()
-        startTile.baseTerrain = Constants.grassland
-        RulesetCache.loadRulesets()
-        val ruleSet = RulesetCache.getVanillaRuleset()
-        startTile.ruleset = ruleSet
-        startTile.setTransients()
-        unit.baseUnit = BaseUnit().apply { unitType = "Scout"; ruleset = ruleSet }
-        unit.baseUnit.ruleset = ruleSet
-        unit.name = "Scout"
-        startTile.militaryUnit = unit
-        startTile.setUnitTransients(false)
+        unit.currentTile = tile
 
         val otherCiv = CivilizationInfo()
         otherCiv.civName = Constants.barbarians // they are always enemies
@@ -234,7 +224,7 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-            
+
             Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
         }
         // ranged check
@@ -243,7 +233,7 @@ class UnitMovementAlgorithmsTests {
 
         for (type in ruleSet.unitTypes) {
             unit.baseUnit = BaseUnit().apply { unitType = type.key; ruleset = ruleSet }
-            
+
             Assert.assertFalse("$type must not enter occupied tile", unit.movement.canPassThrough(tile))
         }
     }

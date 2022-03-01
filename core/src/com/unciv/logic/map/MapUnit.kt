@@ -40,7 +40,7 @@ class MapUnit {
     lateinit var baseUnit: BaseUnit
 
     @Transient
-    internal lateinit var currentTile: TileInfo
+    lateinit var currentTile: TileInfo
 
     @Transient
     val movement = UnitMovementAlgorithms(this)
