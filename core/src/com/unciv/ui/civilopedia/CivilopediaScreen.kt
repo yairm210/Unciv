@@ -239,7 +239,7 @@ class CivilopediaScreen(
 
         val goToGameButton = Constants.close.toTextButton()
         goToGameButton.onClick {
-            game.setWorldScreen()
+            game.setScreen(previousScreen)
             dispose()
         }
 
