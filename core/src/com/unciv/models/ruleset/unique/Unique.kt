@@ -26,6 +26,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         else Stats.parse(firstStatParam)
     }
     val conditionals: List<Unique> = text.getConditionals()
+    
     val isTriggerable = type != null && type.targetTypes.contains(UniqueTarget.Triggerable)
             // <for [amount] turns]> in effect makes any unique become a triggerable unique
             || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
@@ -170,6 +171,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
+            UniqueType.ConditionalInTilesNot ->
+                relevantTile?.matchesFilter(condition.params[0], state.civInfo) == false
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
@@ -235,7 +238,7 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
         this[unique.placeholderText]!!.add(unique)
     }
 
-    fun getUniques(placeholderText: String): Sequence<Unique> {
+    private fun getUniques(placeholderText: String): Sequence<Unique> {
         return this[placeholderText]?.asSequence() ?: emptySequence()
     }
 

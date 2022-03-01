@@ -212,33 +212,33 @@ class WorkerAutomation(
                 }
             while (true) {
                 for (cityTile in cityTilesToSeek) {
-                    if (bfs.hasReachedTile(cityTile)) { // we have a winner!
-                        val pathToCity = bfs.getPathTo(cityTile)
-                        val roadableTiles = pathToCity.filter { it.roadStatus < bestRoadAvailable }
-                        val tileToConstructRoadOn: TileInfo
-                        if (currentTile in roadableTiles) tileToConstructRoadOn =
-                            currentTile
-                        else {
-                            val reachableTile = roadableTiles
-                                .sortedBy { it.aerialDistanceTo(unit.getTile()) }
-                                .firstOrNull {
-                                    unit.movement.canMoveTo(it) && unit.movement.canReach(
-                                        it
-                                    )
-                                }
-                                ?: continue
-                            tileToConstructRoadOn = reachableTile
-                            unit.movement.headTowards(tileToConstructRoadOn)
-                        }
-                        if (unit.currentMovement > 0 && currentTile == tileToConstructRoadOn
-                            && currentTile.improvementInProgress != bestRoadAvailable.name) {
-                            val improvement = bestRoadAvailable.improvement(ruleSet)!!
-                            tileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo)
-                        }
-                        if (WorkerAutomationConst.consoleOutput)
-                            println("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} to ${cityTile.getCity()!!.name} on $tileToConstructRoadOn")
-                        return true
+                    if (!bfs.hasReachedTile(cityTile)) continue
+                    // we have a winner!
+                    val pathToCity = bfs.getPathTo(cityTile)
+                    val roadableTiles = pathToCity.filter { it.roadStatus < bestRoadAvailable }
+                    val tileToConstructRoadOn: TileInfo
+                    if (currentTile in roadableTiles) tileToConstructRoadOn =
+                        currentTile
+                    else {
+                        val reachableTile = roadableTiles
+                            .sortedBy { it.aerialDistanceTo(unit.getTile()) }
+                            .firstOrNull {
+                                unit.movement.canMoveTo(it) && unit.movement.canReach(
+                                    it
+                                )
+                            }
+                            ?: continue
+                        tileToConstructRoadOn = reachableTile
+                        unit.movement.headTowards(tileToConstructRoadOn)
                     }
+                    if (unit.currentMovement > 0 && currentTile == tileToConstructRoadOn
+                        && currentTile.improvementInProgress != bestRoadAvailable.name) {
+                        val improvement = bestRoadAvailable.improvement(ruleSet)!!
+                        tileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo)
+                    }
+                    if (WorkerAutomationConst.consoleOutput)
+                        println("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} to ${cityTile.getCity()!!.name} on $tileToConstructRoadOn")
+                    return true
                 }
                 if (bfs.hasEnded()) break
                 bfs.nextStep()

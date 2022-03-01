@@ -711,10 +711,10 @@ object UnitActions {
         val civInfo = unit.civInfo
 
         val gainedStats = Stats()
-        for (unique in civInfo.getMatchingUniques("Provides a sum of gold each time you spend a Great Person")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
             gainedStats.gold += (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
         }
-        for (unique in civInfo.getMatchingUniques("[] whenever a Great Person is expended")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
             gainedStats.add(unique.stats)
         }
 
@@ -804,7 +804,7 @@ object UnitActions {
 
         val giftAction = {
             if (recipient.isCityState()) {
-                for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
+                for (unique in unit.civInfo.getMatchingUniques(UniqueType.GainInfluenceWithUnitGiftToCityState)) {
                     if (unit.matchesFilter(unique.params[1])) {
                         recipient.getDiplomacyManager(unit.civInfo)
                             .addInfluence(unique.params[0].toFloat() - 5f)

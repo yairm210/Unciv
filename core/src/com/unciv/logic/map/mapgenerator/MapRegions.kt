@@ -2,6 +2,7 @@ package com.unciv.logic.map.mapgenerator
 
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
@@ -391,7 +392,7 @@ class MapRegions (val ruleset: Ruleset){
                 evaluateTileForStart(tile)
                 if (tile.isAdjacentToRiver())
                     riverTiles.add(tile.position)
-                else if (tile.isCoastalTile() || tile.isAdjacentToFreshwater)
+                else if (tile.isCoastalTile() || tile.isAdjacentTo(Constants.freshWater))
                     wetTiles.add(tile.position)
                 else
                     dryTiles.add(tile.position)
@@ -422,7 +423,7 @@ class MapRegions (val ruleset: Ruleset){
                 evaluateTileForStart(tile)
                 if (tile.isAdjacentToRiver())
                     riverTiles.add(tile.position)
-                else if (tile.isCoastalTile() || tile.isAdjacentToFreshwater)
+                else if (tile.isCoastalTile() || tile.isAdjacentTo(Constants.freshWater))
                     wetTiles.add(tile.position)
                 else
                     dryTiles.add(tile.position)
@@ -504,7 +505,7 @@ class MapRegions (val ruleset: Ruleset){
         // If terrible, try adding a hill to a dry flat tile
         if (innerProduction == 0 || (innerProduction < 2 && outerProduction < 8) || (minorCiv && innerProduction < 4)) {
             val hillSpot = startTile.neighbors
-                    .filter { it.isLand && it.terrainFeatures.isEmpty() && !it.isAdjacentToFreshwater && !it.isImpassible() }
+                    .filter { it.isLand && it.terrainFeatures.isEmpty() && !it.isAdjacentTo(Constants.freshWater) && !it.isImpassible() }
                     .toList().randomOrNull()
             val hillEquivalent = ruleset.terrains.values
                     .firstOrNull { it.type == TerrainType.TerrainFeature && it.production >= 2 && !it.hasUnique(UniqueType.RareFeature) }?.name

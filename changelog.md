@@ -1,3 +1,27 @@
+## 3.19.13
+
+Minor performance improvements
+
+By SomeTroglodyte:
+- Fixed Spaceship production bonuses
+- Fixed Ctrl-Letter key bindings
+- Fixed Polynesia's Wayfinding
+- Fixed Petra and Garden not allowed in some cases
+
+Align Embarked Defense Strength per Era  - By itanasi
+
+## 3.19.12
+
+Modding: Multiple Unique documentation improvement
+
+By SomeTroglodyte:
+- Slider fixes
+- Rudimentary AI control over goldPercentConvertedToScience
+
+Fix Navies capturing Land Civilians - By itanasi
+
+Translation updates
+
 ## 3.19.11
 
 Mod autoupdate improvements

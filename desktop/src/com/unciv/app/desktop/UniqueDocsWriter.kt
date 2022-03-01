@@ -49,47 +49,54 @@ class UniqueDocsWriter {
                 .replace("[victoryType]", "[Domination]")
                 .replace("[costOrStrength]", "[Cost]")
         }
-
-        lines += "## Table of Contents\n"
-        for (targetType in targetTypesToUniques) {
-            val sectionName = targetType.key.name + " uniques"
-            lines += " - [$sectionName](${toLink(sectionName)})"
-        }
-        lines += " - [Deprecated uniques](#deprecated-uniques)"
-        lines += ""
+        
+        lines += "# Uniques\n" +
+                "Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../unique parameters)"
 
         
         val deprecatedUniques = ArrayList<UniqueType>()
         for (targetType in targetTypesToUniques) {
             lines += "## " + targetType.key.name + " uniques"
             for (uniqueType in targetType.value) {
+                if (uniqueType.getDeprecationAnnotation() != null) continue
 
-                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
-                if (deprecationAnnotation != null) {
-                    deprecatedUniques += uniqueType
-                    continue
-                }
-
-                val uniqueText = if (targetType.key == UniqueTarget.Conditional) "<${uniqueType.text}>"
+                val uniqueText = if (targetType.key == UniqueTarget.Conditional) "&lt;${uniqueType.text}&gt;"
                 else uniqueType.text
-                lines += "### &#x1F537; $uniqueText"
+                lines += "??? example  \"$uniqueText\"" // collapsable material mkdocs block, see https://squidfunk.github.io/mkdocs-material/reference/admonitions/?h=%3F%3F%3F#collapsible-blocks
                 if (uniqueType.text.contains('['))
-                    lines += "Example: \"${replaceExamples(uniqueText)}\"\n"
-                lines += "Applicable to: " + uniqueType.targetTypes.sorted().joinToString()
+                    lines += "\tExample: \"${replaceExamples(uniqueText)}\"\n"
+                lines += "\tApplicable to: " + uniqueType.targetTypes.sorted().joinToString()
                 lines += ""
             }
         }
-        lines += "## Deprecated uniques"
-        for (deprecatedUnique in deprecatedUniques) {
-            val deprecationAnnotation =
-                deprecatedUnique.getDeprecationAnnotation()!!
+        
+        // Abbreviations, for adding short unique parameter help - see https://squidfunk.github.io/mkdocs-material/reference/abbreviations/
 
-            val deprecationText = "Deprecated ${deprecationAnnotation.message}," +
-                    if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${deprecationAnnotation.replaceWith.expression}\"" else ""
-
-            lines += " - \"${deprecatedUnique.text}\" - $deprecationText"
-        }
-
-        File("../../docs/uniques.md").writeText(lines.joinToString("\n"))
+        lines += ""
+        lines += "*[amount]: This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`."
+        lines += "*[baseTerrain]: The name of any terrain that is a base terrain according to the json file."
+        lines += "*[action]: An action that a unit can preform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'"
+        lines += "*[belief]: The name of any belief"
+        lines += "*[beliefType]: 'Pantheon', 'Follower', 'Founder' or 'Enhancer'."
+        lines += "*[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'"
+        lines += "*[tech]: The name of any tech"
+        lines += "*[resource]: The name of any resource"
+        lines += "*[specialist]: The name of any specialist"
+        lines += "*[promotion]: The name of any promotion"
+        lines += "*[policy]: The name of any policy"
+        lines += "*[improvementName]: The name of any improvement"
+        lines += "*[buildingName]: The name of any building"
+        lines += "*[era]: The name of any era"
+        lines += "*[constructionFilter]: A filter for used when testing the current construction of a city. All values of `baseUnitFilter` and `buildingFilter` are allowed."
+        lines += "*[foundingOrEnhancing]: `founding` or `enhancing`"
+        lines += "*[costOrStrength]: `Cost` or `Strength`"
+        lines += "*[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`."
+        lines += "*[plunderableStat]: All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`"
+        lines += "*[tileFilter]: Anything that can be used either in an improvementFilter or in a tileFilter can be used here"
+        lines += "*[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!"
+        lines += "*[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!"
+        
+        
+        File("../../docs/Modders/uniques.md").writeText(lines.joinToString("\n"))
     }
 }

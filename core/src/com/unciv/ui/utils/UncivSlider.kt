@@ -1,5 +1,7 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
@@ -11,6 +13,8 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.unciv.Constants
 import com.unciv.models.UncivSound
+import kotlin.math.abs
+import kotlin.math.sign
 
 /**
  * Modified Gdx [Slider]
@@ -40,8 +44,12 @@ class UncivSlider (
     private val getTipText: ((Float) -> String)? = null,
     onChange: ((Float) -> Unit)? = null
 ): Table(BaseScreen.skin) {
-    // constants for geometry tuning
     companion object {
+        /** Can be passed directly to the [getTipText] constructor parameter */
+        fun formatPercent(value: Float): String {
+            return (value * 100f + 0.5f).toInt().toString() + "%"
+        }
+        // constants for geometry tuning
         const val plusMinusFontSize = Constants.defaultFontSize
         const val plusMinusCircleSize = 20f
         const val padding = 5f                  // padding around the Slider, doubled between it and +/- buttons
@@ -57,9 +65,14 @@ class UncivSlider (
     private val tipContainer: Container<Label> = Container(tipLabel)
     private val tipHideTask: Timer.Task
 
+    // copies of maliciously protected Slider members
+    private var snapToValues: FloatArray? = null
+    private var snapThreshold: Float = 0f
+
     // Compatibility with default Slider
     val minValue: Float
         get() = slider.minValue
+    @Suppress("unused") // Part of the Slider API
     val maxValue: Float
         get() = slider.maxValue
     var value: Float
@@ -75,24 +88,32 @@ class UncivSlider (
             stepChanged()
         }
     /** Returns true if the slider is being dragged. */
+    @Suppress("unused") // Part of the Slider API
     val isDragging: Boolean
         get() = slider.isDragging
+    /** Disables the slider - visually (if the skin supports it) and blocks interaction */
     var isDisabled: Boolean
         get() = slider.isDisabled
-        set(value) { slider.isDisabled = value }
-    /** Sets the range of this progress bar. The progress bar's current value is clamped to the range. */
+        set(value) {
+            slider.isDisabled = value
+            setPlusMinusEnabled()
+        }
+    /** Sets the range of this slider. The slider's current value is clamped to the range. */
     fun setRange(min: Float, max: Float) {
         slider.setRange(min, max)
         setPlusMinusEnabled()
     }
-    /** Will make this progress bar snap to the specified values, if the knob is within the threshold. */
+    /** Will make this slider snap to the specified values, if the knob is within the threshold. */
     fun setSnapToValues(values: FloatArray?, threshold: Float) {
+        snapToValues = values       // make a copy so our plus/minus code can snap
+        snapThreshold = threshold
         slider.setSnapToValues(values, threshold)
     }
 
-    // Value tip format
-    var tipFormat = "%.1f"
+    // java format string for the value tip, set by changing stepSize 
+    private var tipFormat = "%.1f"
 
+    /** Prevents hiding the value tooltip over the slider knob */
     var permanentTip = false
 
     // Detect changes in isDragging
@@ -114,7 +135,7 @@ class UncivSlider (
                 .apply { setAlignment(Align.center) }
                 .surroundWithCircle(plusMinusCircleSize)
             minusButton.onClick {
-                value -= stepSize
+                addToValue(-stepSize)
             }
             add(minusButton).apply { 
                 if (vertical) padBottom(padding) else padLeft(padding)
@@ -129,8 +150,8 @@ class UncivSlider (
             plusButton = "+".toLabel(Color.BLACK, plusMinusFontSize)
                 .apply { setAlignment(Align.center) }
                 .surroundWithCircle(plusMinusCircleSize)
-            plusButton.onClick { 
-                value += stepSize
+            plusButton.onClick {
+                addToValue(stepSize)
             }
             add(plusButton).apply {
                 if (vertical) padTop(padding) else padRight(padding)
@@ -157,6 +178,34 @@ class UncivSlider (
         })
     }
 
+    // Helper for plus/minus button onClick, non-trivial only if setSnapToValues is used
+    private fun addToValue(delta: Float) {
+        // un-snapping with Shift is taken from Slider source, and the loop mostly as well
+        // with snap active, plus/minus buttons will go to the next snap position regardless of stepSize
+        // this could be shorter if Slider.snap(), Slider.snapValues and Slider.threshold weren't protected
+        if (snapToValues?.isEmpty() != false ||
+                Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) ||
+                Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT)
+        ) {
+            value += delta
+            return
+        }
+        var bestDiff = -1f
+        var bestIndex = -1
+        for ((i, snapValue) in snapToValues!!.withIndex()) {
+            val diff = abs(value - snapValue)
+            if (diff <= snapThreshold) {
+                if (bestIndex == -1 || diff < bestDiff) {
+                    bestDiff = diff
+                    bestIndex = i
+                }
+            }
+        }
+        bestIndex += delta.sign.toInt()
+        if (bestIndex !in snapToValues!!.indices) return
+        value = snapToValues!![bestIndex]
+    }
+
     // Visual feedback
     private fun valueChanged() {
         if (getTipText == null)
@@ -172,10 +221,10 @@ class UncivSlider (
     }
 
     private fun setPlusMinusEnabled() {
-        val enableMinus = slider.value > slider.minValue
+        val enableMinus = slider.value > slider.minValue && !isDisabled
         minusButton?.touchable = if(enableMinus) Touchable.enabled else Touchable.disabled
         minusButton?.apply {circle.color.a = if(enableMinus) 1f else 0.5f}
-        val enablePlus = slider.value < slider.maxValue
+        val enablePlus = slider.value < slider.maxValue && !isDisabled
         plusButton?.touchable = if(enablePlus) Touchable.enabled else Touchable.disabled
         plusButton?.apply {circle.color.a = if(enablePlus) 1f else 0.5f}
     }
@@ -187,7 +236,8 @@ class UncivSlider (
             stepSize > 0.0099f -> "%.2f"
             else -> "%.3f"
         }
-        tipLabel.setText(tipFormat.format(slider.value))
+        if (getTipText == null)
+            tipLabel.setText(tipFormat.format(slider.value))
     }
 
     // Attempt to prevent ascendant ScrollPane(s) from stealing our focus

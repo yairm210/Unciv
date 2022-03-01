@@ -349,7 +349,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
 
-        val bullyRange = max(5, civInfo.gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
+        val bullyRange = (civInfo.gameInfo.tileMap.tileMatrix.size / 10).coerceIn(5, 10)   // Longer range for larger maps
         val inRangeTiles = civInfo.getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
             .sumOf { if (it.militaryUnit?.civInfo == demandingCiv)

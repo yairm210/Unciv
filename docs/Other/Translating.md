@@ -1,3 +1,5 @@
+# Translating
+
 ## Starting out
 
 The translation files are at [/android/assets/jsons/translations](/jsons/translations)

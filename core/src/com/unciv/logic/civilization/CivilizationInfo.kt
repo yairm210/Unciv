@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
+import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
@@ -404,27 +405,6 @@ class CivilizationInfo {
         yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueType, stateForConditionals))
     }
     
-    fun getMatchingUniques(uniqueTemplate: String, cityToIgnore: CityInfo? = null) = sequence {
-        yieldAll(nation.getMatchingUniques(uniqueTemplate))
-        yieldAll(cities.asSequence()
-            .filter { it != cityToIgnore }
-            .flatMap { city -> city.getMatchingUniquesWithNonLocalEffects(uniqueTemplate) }
-        )
-        yieldAll(policies.policyUniques.getUniques(uniqueTemplate))
-        yieldAll(tech.techUniques.getUniques(uniqueTemplate))
-        yieldAll(temporaryUniques.asSequence()
-            .map { it.uniqueObject }
-            .filter { it.placeholderText == uniqueTemplate }
-        )
-        yieldAll(getEra().getMatchingUniques(uniqueTemplate).asSequence())
-        if (religionManager.religion != null)
-            yieldAll(religionManager.religion!!.getFounderUniques()
-                .asSequence()
-                .filter { it.placeholderText == uniqueTemplate }
-            )
-        
-        yieldAll(gameInfo.ruleSet.globalUniques.getMatchingUniques(uniqueTemplate))
-    }
  
     //region Units
     fun getCivUnitsSize(): Int = units.size
@@ -792,6 +772,10 @@ class CivilizationInfo {
         attacksSinceTurnStart.clear()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
+        // Do this after updateStatsForNextTurn but before cities.startTurn
+        if (playerType == PlayerType.AI && gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.convertGoldToScience))
+            NextTurnAutomation.automateGoldToSciencePercentage(this)
+
         // Generate great people at the start of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
@@ -1136,7 +1120,7 @@ class CivilizationInfo {
             placedUnit.setupAbilityUses(cityToAddTo)
         }
 
-        for (unique in getMatchingUniques("Land units may cross [] tiles after the first [] is earned")) {
+        for (unique in getMatchingUniques(UniqueType.LandUnitsCrossTerrainAfterUnitGained)) {
             if (unit.matchesFilter(unique.params[1])) {
                 passThroughImpassableUnlocked = true    // Update the cached Boolean
                 passableImpassables.add(unique.params[0])   // Add to list of passable impassables
