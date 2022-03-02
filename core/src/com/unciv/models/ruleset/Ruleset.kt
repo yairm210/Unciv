@@ -450,7 +450,7 @@ class Ruleset {
             add(RulesetError(text, errorSeverityToReport))
         }
 
-        private fun getFinalSeverity(): RulesetErrorSeverity {
+        fun getFinalSeverity(): RulesetErrorSeverity {
             if (isEmpty()) return RulesetErrorSeverity.OK
             return this.maxOf { it.errorSeverityToReport }
         }

@@ -329,7 +329,17 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
                     // Instead, some manual work needs to be put in.
 
-                    val expanderTab = ExpanderTab(mod.name, startsOutOpened = false){
+                    val iconColor = modLinks.getFinalSeverity().color
+                    val iconName = when(iconColor) {
+                        Color.RED -> "OtherIcons/Stop"
+                        Color.YELLOW -> "OtherIcons/ExclamationMark"
+                        else -> "OtherIcons/Checkmark"
+                    }
+                    val icon = ImageGetter.getImage(iconName)
+                        .apply { color = Color.BLACK }
+                        .surroundWithCircle(30f, color = iconColor)
+
+                    val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = false) {
                         it.defaults().align(Align.left)
                         if (!noProblem && mod.folderLocation != null) {
                             val replaceableUniques = getDeprecatedReplaceableUniques(mod)
