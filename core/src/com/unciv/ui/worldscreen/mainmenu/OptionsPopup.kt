@@ -25,6 +25,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -45,7 +46,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
-    private var modCheckBaseSelect: SelectBox<String>? = null
+    private var modCheckBaseSelect: TranslatedSelectBox? = null
     private val modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
 
@@ -270,18 +271,17 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getModCheckTab() = Table(BaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick {
-            runModChecker(modCheckBaseSelect!!.selected)
+            runModChecker(modCheckBaseSelect!!.selected.value)
         }
         add(reloadModsButton).row()
 
         val labeledBaseSelect = Table(BaseScreen.skin).apply {
             add("Check extension mods based on:".toLabel()).padRight(10f)
-            val baseMods = RulesetCache.getSortedBaseRulesets().toTypedArray()
-            modCheckBaseSelect = SelectBox<String>(BaseScreen.skin).apply {
-                setItems(modCheckWithoutBase, *baseMods)
+            val baseMods = listOf(modCheckWithoutBase) + RulesetCache.getSortedBaseRulesets()
+            modCheckBaseSelect = TranslatedSelectBox(baseMods, modCheckWithoutBase, BaseScreen.skin).apply {
                 selectedIndex = 0
                 onChange {
-                    runModChecker(modCheckBaseSelect!!.selected)
+                    runModChecker(modCheckBaseSelect!!.selected.value)
                 }
             }
             add(modCheckBaseSelect)
