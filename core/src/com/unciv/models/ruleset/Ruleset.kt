@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
@@ -433,11 +434,11 @@ class Ruleset {
 
 
     class RulesetError(val text:String, val errorSeverityToReport: RulesetErrorSeverity)
-    enum class RulesetErrorSeverity {
-        OK,
-        WarningOptionsOnly,
-        Warning,
-        Error,
+    enum class RulesetErrorSeverity(val color: Color) {
+        OK(Color.GREEN),
+        WarningOptionsOnly(Color.YELLOW),
+        Warning(Color.YELLOW),
+        Error(Color.RED),
     }
 
     class RulesetErrorList : ArrayList<RulesetError>() {

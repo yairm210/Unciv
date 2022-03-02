@@ -13,6 +13,8 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Ruleset.RulesetError
+import com.unciv.models.ruleset.Ruleset.RulesetErrorSeverity
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.Unique
@@ -44,7 +46,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
     private var modCheckCheckBox: CheckBox? = null
-    private var modCheckResultTable = Table()
+    private val modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
 
     //endregion
@@ -289,30 +291,19 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 errorTable.add(rulesetError.toLabel()).width(stage.width / 2).row()
             modCheckResultTable.add(errorTable)
         }
-        
+
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
         modCheckCheckBox!!.disable()
 
         crashHandlingThread(name="ModChecker") {
             for (mod in RulesetCache.values.sortedBy { it.name }) {
-                var noProblem = true
-                val lines = ArrayList<FormattedLine>()
-
                 val modLinks =
-                    if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
-                    else mod.checkModLinks(forOptionsPopup = true)
-                for (error in modLinks.sortedByDescending { it.errorSeverityToReport }) {
-                    val color = when (error.errorSeverityToReport) {
-                        Ruleset.RulesetErrorSeverity.OK -> "#00FF00"
-                        Ruleset.RulesetErrorSeverity.Warning,
-                        Ruleset.RulesetErrorSeverity.WarningOptionsOnly -> "#FFFF00"
-                        Ruleset.RulesetErrorSeverity.Error -> "#FF0000"
-                    }
-                    lines += FormattedLine(error.text, color = color)
-                }
-                if (modLinks.isNotOK()) noProblem = false
-                lines += FormattedLine()
-                if (noProblem) lines += FormattedLine("No problems found.".tr())
+                        if (!complex) mod.checkModLinks(forOptionsPopup = true)
+                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
+                modLinks.sortByDescending { it.errorSeverityToReport }
+                val noProblem = !modLinks.isNotOK()
+                if (modLinks.isNotEmpty()) modLinks += RulesetError("", RulesetErrorSeverity.OK)
+                if (noProblem) modLinks += RulesetError("No problems found.".tr(), RulesetErrorSeverity.OK)
 
                 postCrashHandlingRunnable {
                     // When the options popup is already closed before this postRunnable is run,
@@ -330,18 +321,16 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                                 it.add("Autoupdate mod uniques".toTextButton()
                                     .onClick { autoUpdateUniques(mod, replaceableUniques) }).pad(10f).row()
                         }
-                        for (line in lines) {
-                            val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
-                                .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
-                            else Label(line.text + "\n", BaseScreen.skin)
-                                .apply { if (line.color != "") color = Color.valueOf(line.color) }
+                        for (line in modLinks) {
+                            val label = Label(line.text, BaseScreen.skin)
+                                .apply { color = line.errorSeverityToReport.color }
                             label.wrap = true
                             it.add(label).width(stage.width / 2).row()
                         }
-                        if(!noProblem)
+                        if (!noProblem)
                             it.add("Copy to clipboard".toTextButton().onClick {
-                                Gdx.app.clipboard.contents = lines.map { it.text }.filterNot { it=="" }
-                                    .joinToString("\n")  
+                                Gdx.app.clipboard.contents = modLinks
+                                    .joinToString("\n") { line -> line.text }
                             }).row()
                     }
 
