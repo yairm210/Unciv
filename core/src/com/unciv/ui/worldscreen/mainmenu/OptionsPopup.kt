@@ -45,11 +45,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
-    private var modCheckCheckBox: CheckBox? = null
+    private var modCheckBaseSelect: SelectBox<String>? = null
     private val modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
 
     //endregion
+
+    companion object {
+        private const val modCheckWithoutBase = "-none-"
+    }
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
@@ -266,21 +270,31 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getModCheckTab() = Table(BaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick {
-            runModChecker(modCheckCheckBox!!.isChecked)
+            runModChecker(modCheckBaseSelect!!.selected)
         }
         add(reloadModsButton).row()
-        modCheckCheckBox = "Check extension mods based on vanilla".toCheckBox {
-            runModChecker(it)
+
+        val labeledBaseSelect = Table(BaseScreen.skin).apply {
+            add("Check extension mods based on:".toLabel()).padRight(10f)
+            val baseMods = RulesetCache.getSortedBaseRulesets().toTypedArray()
+            modCheckBaseSelect = SelectBox<String>(BaseScreen.skin).apply {
+                setItems(modCheckWithoutBase, *baseMods)
+                selectedIndex = 0
+                onChange {
+                    runModChecker(modCheckBaseSelect!!.selected)
+                }
+            }
+            add(modCheckBaseSelect)
         }
-        add(modCheckCheckBox).row()
+        add(labeledBaseSelect).row()
 
         add(modCheckResultTable)
     }
 
-    private fun runModChecker(complex: Boolean = false) {
-        
+    private fun runModChecker(base: String = modCheckWithoutBase) {
+
         modCheckFirstRun = false
-        if (modCheckCheckBox == null) return
+        if (modCheckBaseSelect == null) return
 
         modCheckResultTable.clear()
 
@@ -293,13 +307,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
 
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
-        modCheckCheckBox!!.disable()
+        modCheckBaseSelect!!.isDisabled = true
 
         crashHandlingThread(name="ModChecker") {
             for (mod in RulesetCache.values.sortedBy { it.name }) {
+                if (base != modCheckWithoutBase && mod.modOptions.isBaseRuleset) continue
+
                 val modLinks =
-                        if (!complex) mod.checkModLinks(forOptionsPopup = true)
-                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
+                        if (base == modCheckWithoutBase) mod.checkModLinks(forOptionsPopup = true)
+                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base)
                 modLinks.sortByDescending { it.errorSeverityToReport }
                 val noProblem = !modLinks.isNotOK()
                 if (modLinks.isNotEmpty()) modLinks += RulesetError("", RulesetErrorSeverity.OK)
@@ -344,7 +360,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             // done with all mods!
             postCrashHandlingRunnable {
                 modCheckResultTable.removeActor(modCheckResultTable.children.last())
-                modCheckCheckBox!!.enable()
+                modCheckBaseSelect!!.isDisabled = false
             }
         }
     }
