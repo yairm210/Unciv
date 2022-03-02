@@ -15,15 +15,16 @@ import com.unciv.ui.utils.*
 class GameOptionsTable(
     val previousScreen: IPreviousScreen,
     val isPortrait: Boolean = false,
-    val updatePlayerPickerTable:(desiredCiv:String)->Unit
+    val updatePlayerPickerTable: (desiredCiv: String) -> Unit
 ) : Table(BaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
     var locked = false
     var modCheckboxes: ModCheckboxTable? = null
-    private set;
+        private set
 
     init {
+        setupTranslations()
         getGameOptionsTable()
     }
 
@@ -38,10 +39,7 @@ class GameOptionsTable(
         defaults().pad(5f)
 
         // We assign this first to make sure addBaseRulesetSelectBox doesn't reference a null object
-        modCheckboxes = 
-            if (isPortrait) 
-                getModCheckboxes(isPortrait = true)
-            else getModCheckboxes()
+        modCheckboxes = getModCheckboxes(isPortrait)
 
         add(Table().apply {
             defaults().pad(5f)
@@ -58,7 +56,6 @@ class GameOptionsTable(
             }).colspan(2).fillX().row()
         }).row()
         addVictoryTypeCheckboxes()
-        
 
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         checkboxTable.addNoBarbariansCheckbox()
@@ -86,8 +83,8 @@ class GameOptionsTable(
             { gameParameters.noBarbarians = it }
 
     private fun Table.addRagingBarbariansCheckbox() =
-        addCheckbox("Raging Barbarians", gameParameters.ragingBarbarians)
-        { gameParameters.ragingBarbarians = it }
+            addCheckbox("Raging Barbarians", gameParameters.ragingBarbarians)
+            { gameParameters.ragingBarbarians = it }
 
     private fun Table.addOneCityChallengeCheckbox() =
             addCheckbox("One City Challenge", gameParameters.oneCityChallenge)
@@ -167,7 +164,7 @@ class GameOptionsTable(
     private fun Table.addBaseRulesetSelectBox() {
         val sortedBaseRulesets = RulesetCache.getSortedBaseRulesets()
         if (sortedBaseRulesets.size < 2) return
-        
+
         addSelectBox(
             "{Base Ruleset}:",
             sortedBaseRulesets,
@@ -175,7 +172,7 @@ class GameOptionsTable(
         ) { newBaseRuleset ->
             val previousSelection = gameParameters.baseRuleset
             if (newBaseRuleset == gameParameters.baseRuleset) return@addSelectBox null
-            
+
             // Check if this mod is well-defined
             val baseRulesetErrors = RulesetCache[newBaseRuleset]!!.checkModLinks()
             if (baseRulesetErrors.isError()) {
@@ -183,7 +180,7 @@ class GameOptionsTable(
                 ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
                 return@addSelectBox previousSelection
             }
-            
+
             // If so, add it to the current ruleset
             gameParameters.baseRuleset = newBaseRuleset
             onChooseMod(newBaseRuleset)
@@ -204,9 +201,9 @@ class GameOptionsTable(
                     "\n\n${modLinkErrors.getErrorText()}"
                 ToastPopup(toastMessage, previousScreen as BaseScreen, 5000L)
             }
-            
+
             modCheckboxes!!.setBaseRuleset(newBaseRuleset)
-            
+
             null
         }
     }
@@ -222,7 +219,7 @@ class GameOptionsTable(
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it; null }
     }
-    
+
     private fun addVictoryTypeCheckboxes() {
         add("{Victory Conditions}:".toLabel()).colspan(2).row()
 
@@ -257,20 +254,24 @@ class GameOptionsTable(
         ruleset.mods += gameParameters.baseRuleset
         ruleset.mods += gameParameters.mods
         ruleset.modOptions = newRuleset.modOptions
-        
+
         ImageGetter.setNewRuleset(ruleset)
         UncivGame.Current.musicController.setModList(gameParameters.getModsAndBaseRuleset())
     }
 
-    fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
+    private fun getModCheckboxes(isPortrait: Boolean = false): ModCheckboxTable {
         return ModCheckboxTable(gameParameters.mods, gameParameters.baseRuleset, previousScreen as BaseScreen, isPortrait) {
             onChooseMod(it)
         }
     }
-    
-    private fun onChooseMod(mod: String) {
+
+    private fun setupTranslations() {
         val activeMods: LinkedHashSet<String> = LinkedHashSet(gameParameters.getModsAndBaseRuleset())
         UncivGame.Current.translations.translationActiveMods = activeMods
+    }
+
+    private fun onChooseMod(mod: String) {
+        setupTranslations()
         reloadRuleset()
         update()
 
@@ -287,4 +288,3 @@ class GameOptionsTable(
         updatePlayerPickerTable(desiredCiv)
     }
 }
-

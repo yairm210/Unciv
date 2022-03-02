@@ -29,8 +29,8 @@ import kotlin.collections.LinkedHashSet
  *
  *  @see    String.tr   for more explanations (below)
  */
-class Translations : LinkedHashMap<String, TranslationEntry>(){
-    
+class Translations : LinkedHashMap<String, TranslationEntry>() {
+
     var percentCompleteOfLanguages = HashMap<String,Int>()
             .apply { put("English",100) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
@@ -38,7 +38,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     // used by tr() whenever GameInfo not initialized (allowing new game screen to use mod translations)
     var translationActiveMods = LinkedHashSet<String>()
-
+    var forceTranslationActiveMods = false
 
     /**
      * Searches for the translation entry of a given [text] for a given [language].
@@ -165,7 +165,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
     /** Ensure _all_ languages are loaded, used by [TranslationFileWriter] and `TranslationTests` */
-    fun readAllLanguagesTranslation(printOutput:Boolean=false) {
+    fun readAllLanguagesTranslation(printOutput: Boolean = false) {
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
         // which means we need to list everything manually =/
@@ -180,7 +180,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         if(printOutput) println("Loading translation files - ${translationFilesTime}ms")
     }
 
-    fun loadPercentageCompleteOfLanguages(){
+    fun loadPercentageCompleteOfLanguages() {
         val startTime = System.currentTimeMillis()
 
         percentCompleteOfLanguages = TranslationFileReader.readLanguagePercentages()
@@ -192,7 +192,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     fun getConditionalOrder(language: String): String {
         return getText(englishConditionalOrderingString, language, null)
     }
-    
+
     fun placeConditionalsAfterUnique(language: String): Boolean {
         if (get(conditionalUniqueOrderString, language, null)?.get(language) == "before")
             return false
@@ -206,11 +206,11 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translation = getText("\" \"", language, null)
         return translation.substring(1, translation.length-1)
     }
-    
+
     fun shouldCapitalize(language: String): Boolean {
         return get(shouldCapitalizeString, language, null)?.get(language)?.toBoolean() ?: true
     }
-    
+
     companion object {
         // Whenever this string is changed, it should also be changed in the translation files!
         // It is mostly used as the template for translating the order of conditionals   
@@ -256,7 +256,7 @@ val pointyBraceRegex = Regex("""\<([^>]*)\>""")
  */
 fun String.tr(): String {
     val activeMods = with(UncivGame.Current) {
-        if (isGameInfoInitialized())
+        if (!translations.forceTranslationActiveMods && isGameInfoInitialized())
             gameInfo.gameParameters.mods + gameInfo.gameParameters.baseRuleset
         else translations.translationActiveMods
     }.toHashSet()
@@ -388,7 +388,7 @@ fun String.getPlaceholderText() = this
         .removeConditionals()
         .replace(squareBraceRegex, "[]")
 
-fun String.equalsPlaceholderText(str:String): Boolean {
+fun String.equalsPlaceholderText(str: String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
     return this.getPlaceholderText() == str
 }

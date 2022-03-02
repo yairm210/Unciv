@@ -33,6 +33,7 @@ class NewGameScreen(
     private val mapOptionsTable: MapOptionsTable
 
     init {
+        UncivGame.Current.translations.forceTranslationActiveMods = true
         updateRuleset()  // must come before playerPickerTable so mod nations from fromSettings
         // Has to be initialized before the mapOptionsTable, since the mapOptionsTable refers to it on init
         playerPickerTable = PlayerPickerTable(
@@ -153,7 +154,7 @@ class NewGameScreen(
         topTable.add(playerPickerTable)  // No ScrollPane, PlayerPickerTable has its own
                 .width(stage.width / 3).top()
     }
-    
+
     private fun initPortrait() {
         scrollPane.setScrollingDisabled(false,false)
 
@@ -164,7 +165,7 @@ class NewGameScreen(
 
         topTable.add(newGameOptionsTable.modCheckboxes).expandX().fillX().row()
         topTable.addSeparator(Color.DARK_GRAY, height = 1f)
-        
+
         topTable.add(ExpanderTab("Map Options") {
             it.add(mapOptionsTable).row()
         }).expandX().fillX().row()
@@ -228,6 +229,11 @@ class NewGameScreen(
                 ToastPopup("Game ID copied to clipboard!".tr(), game.worldScreen, 2500)
             }
         }
+    }
+
+    override fun dispose() {
+        UncivGame.Current.translations.forceTranslationActiveMods = false
+        super.dispose()
     }
 
     fun updateRuleset() {
