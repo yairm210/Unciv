@@ -71,6 +71,10 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             newGameScreen.updateTables()
         }
 
+        // Pre-select custom if any map saved within last 15 minutes
+        if (mapFilesSequence.any { it.fileHandle.lastModified() > System.currentTimeMillis() - 900000 })
+            mapTypeSelectBox.selected = TranslatedSelectBox.TranslatedString(MapType.custom)
+
         // activate once, so when we had a file map before we'll have the right things set for another one
         updateOnMapTypeChange()
 
@@ -119,11 +123,13 @@ class MapOptionsTable(private val newGameScreen: NewGameScreen): Table() {
             .forEach { mapFiles.add(it) }
         mapFileSelectBox.items = mapFiles
 
-        // Pre-select: a) map named in mapParameters or b) alphabetically first
+        // Pre-select: a) map saved within last 15min or b) map named in mapParameters or c) alphabetically first
         // This is a kludge - the better way would be to have a "play this map now" menu button in the editor
         // (which would ideally not even require a save file - which makes implementation non-trivial)
         val selectedItem =
-            mapFiles.firstOrNull { it.fileHandle.name() == mapParameters.name }
+            mapFiles.maxByOrNull { it.fileHandle.lastModified() }
+                ?.takeIf { it.fileHandle.lastModified() > System.currentTimeMillis() - 900000 }
+            ?: mapFiles.firstOrNull { it.fileHandle.name() == mapParameters.name }
             ?: mapFiles.firstOrNull()
             ?: return
         mapFileSelectBox.selected = selectedItem
