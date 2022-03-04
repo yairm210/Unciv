@@ -261,21 +261,25 @@ class TileMap {
         val radius = if (mapParameters.shape == MapShape.rectangular)
             mapParameters.mapSize.width / 2
         else mapParameters.mapSize.radius
+        val x1 = tile.position.x.toInt()
+        val y1 = tile.position.y.toInt()
+        val x2 = otherTile.position.x.toInt()
+        val y2 = otherTile.position.y.toInt()
 
-        val xDifference = tile.position.x - otherTile.position.x
-        val yDifference = tile.position.y - otherTile.position.y
-        val xWrapDifferenceBottom = tile.position.x - (otherTile.position.x - radius)
-        val yWrapDifferenceBottom = tile.position.y - (otherTile.position.y - radius)
-        val xWrapDifferenceTop = tile.position.x - (otherTile.position.x + radius)
-        val yWrapDifferenceTop = tile.position.y - (otherTile.position.y + radius)
+        val xDifference = x1 - x2
+        val yDifference = y1 - y2
+        val xWrapDifferenceBottom = if (radius < 3) 0 else x1 - (x2 - radius)
+        val yWrapDifferenceBottom = if (radius < 3) 0 else y1 - (y2 - radius)
+        val xWrapDifferenceTop = if (radius < 3) 0 else x1 - (x2 + radius)
+        val yWrapDifferenceTop = if (radius < 3) 0 else y1 - (y2 + radius)
 
         return when {
-            xDifference == 1f && yDifference == 1f -> 6 // otherTile is below
-            xDifference == -1f && yDifference == -1f -> 12 // otherTile is above
-            xDifference == 1f || xWrapDifferenceBottom == 1f -> 4 // otherTile is bottom-right
-            yDifference == 1f || yWrapDifferenceBottom == 1f -> 8 // otherTile is bottom-left
-            xDifference == -1f || xWrapDifferenceTop == -1f -> 10 // otherTile is top-left
-            yDifference == -1f || yWrapDifferenceTop == -1f -> 2 // otherTile is top-right
+            xDifference == 1 && yDifference == 1 -> 6 // otherTile is below
+            xDifference == -1 && yDifference == -1 -> 12 // otherTile is above
+            xDifference == 1 || xWrapDifferenceBottom == 1 -> 4 // otherTile is bottom-right
+            yDifference == 1 || yWrapDifferenceBottom == 1 -> 8 // otherTile is bottom-left
+            xDifference == -1 || xWrapDifferenceTop == -1 -> 10 // otherTile is top-left
+            yDifference == -1 || yWrapDifferenceTop == -1 -> 2 // otherTile is top-right
             else -> -1
         }
     }
