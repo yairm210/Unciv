@@ -287,6 +287,7 @@ object UnitActions {
                         tile.turnsToImprovement = 2
                     }
                     tile.improvement = null
+                    unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
                     val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)

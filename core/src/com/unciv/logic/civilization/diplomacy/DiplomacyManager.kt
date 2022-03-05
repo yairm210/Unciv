@@ -168,11 +168,11 @@ class DiplomacyManager() {
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
         if (civInfo.isCityState()) return when {
+            influence >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
+            influence >= 30 -> RelationshipLevel.Friend
             influence <= -30 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Unforgivable
             influence < 30 && civInfo.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
             influence < 0 -> RelationshipLevel.Enemy
-            influence >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
-            influence >= 30 -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
         }
 

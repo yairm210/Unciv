@@ -1,4 +1,4 @@
-name: ci 
+name: Generate mkdocs from docs folder
 on:
   workflow_dispatch:
   push:

@@ -610,14 +610,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 && !tile.isCityCenter())
             return false
 
-
+        val unitSpecificAllowOcean: Boolean by lazy {
+            unit.civInfo.tech.specificUnitsCanEnterOcean &&
+                    unit.civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
+                        .any { unit.matchesFilter(it.params[0]) }
+        }
         if (tile.isWater && unit.baseUnit.isLandUnit()) {
             if (!unit.civInfo.tech.unitsCanEmbark) return false
-            if (tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean)
+            if (tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean && !unitSpecificAllowOcean)
                 return false
         }
-        if (tile.isOcean && !unit.civInfo.tech.wayfinding) { // Apparently all Polynesian naval units can enter oceans
-            if (unit.cannotEnterOceanTiles) return false
+        if (tile.isOcean && !unit.civInfo.tech.allUnitsCanEnterOcean) { // Apparently all Polynesian naval units can enter oceans
+            if (!unitSpecificAllowOcean && unit.cannotEnterOceanTiles) return false
         }
         if (tile.naturalWonder != null) return false
 
@@ -626,8 +630,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         val firstUnit = tile.getFirstUnit()
         // Moving to non-empty tile
         if (firstUnit != null && unit.civInfo != firstUnit.civInfo) {
-            // Allow movement through unguarded, at-war Civilian Unit. Capture on the way
-            if (tile.getUnguardedCivilian() != null && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
+            // Allow movement through unguarded, at-war Civilian Unit. Capture on the way 
+            // But not for Embarked Units capturing on Water
+            if (!(unit.isEmbarked() && tile.isWater)
+                    && tile.getUnguardedCivilian() != null && unit.civInfo.isAtWarWith(tile.civilianUnit!!.civInfo))
                 return true
             // Cannot enter hostile tile with any unit in there
             if (unit.civInfo.isAtWarWith(firstUnit.civInfo))

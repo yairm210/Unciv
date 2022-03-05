@@ -85,7 +85,8 @@
       "Siege units are extremely powerful against cities, but need to be Set Up before they can attack.\nOnce your siege unit is set up, it can attack from the current tile,\n  but once moved to another tile, it will need to be set up again."
   ],
   Embarking: [
-      "Once a certain tech is researched, your land units can embark, allowing them to traverse water tiles.\nEntering or leaving water takes the entire turn.\nUnits are defenseless while embarked (cannot use modifiers) and have a fixed Defending Strength based on your tech Era, so be careful!\nRanged Units can't attack, Melee Units have a Strength penalty, and all have limited vision."
+      "Once a certain tech is researched, your land units can embark, allowing them to traverse water tiles.\nEntering or leaving water takes the entire turn.",
+      "Units are defenseless while embarked (cannot use modifiers), and have a fixed Defending Strength based on your tech Era, so be careful!\nRanged Units can't attack, Melee Units have a Strength penalty, and all have limited vision."
   ],
   Idle_Units: [
       "If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again.\nIf you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - \n  units in Fortify or Sleep are not considered idle units.\nIf you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units."

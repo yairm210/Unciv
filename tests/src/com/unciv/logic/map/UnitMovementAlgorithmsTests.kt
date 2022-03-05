@@ -208,6 +208,8 @@ class UnitMovementAlgorithmsTests {
     fun canNOTPassThroughTileWithEnemyUnits() {
         tile.baseTerrain = Constants.grassland
         tile.setTransients()
+        
+        unit.currentTile = tile
 
         val otherCiv = CivilizationInfo()
         otherCiv.civName = Constants.barbarians // they are always enemies

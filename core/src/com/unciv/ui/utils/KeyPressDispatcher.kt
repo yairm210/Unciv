@@ -46,7 +46,7 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
             else -> "\"$char\""
         }
     }
-    
+
     companion object {
         // Convenience shortcuts for frequently used constants
         /** Android back, assigns ESC automatically as well */
@@ -66,9 +66,16 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         /** mini-factory for control codes - case insensitive */
         fun ctrl(letter: Char) = KeyCharAndCode(Char(letter.code and 31), 0)
 
+        /** mini-factory for control codes from keyCodes */
+        fun ctrlFromCode(keyCode: Int): KeyCharAndCode {
+            val name = Input.Keys.toString(keyCode)
+            if (name.length != 1 || !name[0].isLetter()) return KeyCharAndCode(Char.MIN_VALUE, keyCode)
+            return ctrl(name[0])
+        }
+
         /** mini-factory for KeyCharAndCode values to be compared by character, not by code */
         fun ascii(char: Char) = KeyCharAndCode(char.lowercaseChar(), 0)
-        
+
         /** factory maps a Char to a keyCode if possible, returns a Char-based instance otherwise */
         fun mapChar(char: Char): KeyCharAndCode {
             val code = Input.Keys.valueOf(char.uppercaseChar().toString())
@@ -164,31 +171,31 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
      * @param   checkIgnoreKeys An optional lambda - when it returns true all keys are ignored
      */
     fun install(stage: Stage, checkIgnoreKeys: (() -> Boolean)? = null) {
+        if (consoleLog)
+            println("$this: install")
         if (installStage != null) uninstall()
         listener =
             object : InputListener() {
                 override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                    /*
-                    : Boolean {
-                    return super.keyDown(event, keycode)
-                        }(event: InputEvent?, character: Char)
-                     */
-
-                    // look for both key code and ascii entries - ascii first as the
-                    // Char constructor of KeyCharAndCode generates keyCode based instances
-                    // preferentially but we would miss Ctrl- combos otherwise
                     val key = when {
                         event == null ->
                             KeyCharAndCode.UNKNOWN
+                        Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) ||Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) ->
+                            KeyCharAndCode.ctrlFromCode(event.keyCode)
                         else ->
                             KeyCharAndCode(event.keyCode)
                     }
 
                     // see if we want to handle this key, and if not, let it propagate
-                    if (!contains(key) || (checkIgnoreKeys?.invoke() == true))
+                    if (!contains(key) || (checkIgnoreKeys?.invoke() == true)) {
+                        if (consoleLog)
+                            println("${this@KeyPressDispatcher}: $key not handled")
                         return super.keyDown(event, keycode)
-                    
+                    }
+
                     // try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
+                    if (consoleLog)
+                        println("${this@KeyPressDispatcher}: handling $key")
                     try {
                         this@KeyPressDispatcher[key]?.invoke()
                     } catch (ex: Exception) {}
@@ -216,8 +223,12 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
         if (listener == null || installStage == null) return
         if (listenerInstalled && (isEmpty() || isPaused || forceRemove)) {
             listenerInstalled = false
+            if (consoleLog)
+                println("$this: removeListener")
             installStage!!.removeListener(listener)
         } else if (!listenerInstalled && !(isEmpty() || isPaused)) {
+            if (consoleLog)
+                println("$this: addListener")
             installStage!!.addListener(listener)
             listenerInstalled = true
         }
@@ -231,6 +242,9 @@ class KeyPressDispatcher(val name: String? = null) : HashMap<KeyCharAndCode, (()
         }
 
     companion object {
+        // Control debug logging
+        private const val consoleLog = false
+
         /** Tests presence of a physical keyboard - static here as convenience shortcut only */
         val keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
     }

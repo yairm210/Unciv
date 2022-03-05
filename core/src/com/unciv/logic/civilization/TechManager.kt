@@ -3,7 +3,6 @@ package com.unciv.logic.civilization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
-import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -34,11 +33,13 @@ class TechManager {
 
     // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is one way of improving the time cost
     @Transient
-    var wayfinding = false
-    @Transient
     var unitsCanEmbark = false
     @Transient
     var embarkedUnitsCanEnterOcean = false
+    @Transient
+    var allUnitsCanEnterOcean = false
+    @Transient
+    var specificUnitsCanEnterOcean = false
 
     // UnitMovementAlgorithms.getMovementCostBetweenAdjacentTiles is a close second =)
     @Transient
@@ -373,15 +374,22 @@ class TechManager {
     fun setTransients() {
         researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
         researchedTechnologies.forEach { addTechToTransients(it) }
+        updateEra()  // before updateTransientBooleans so era-based conditionals can work
         updateTransientBooleans()
-        updateEra()
     }
 
     private fun updateTransientBooleans() {
-        wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
-        unitsCanEmbark = wayfinding || civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
+        val wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
+        unitsCanEmbark = wayfinding ||
+                civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
+        val enterOceanUniques = civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
+        allUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] == "All" }
+        embarkedUnitsCanEnterOcean = wayfinding ||
+                allUnitsCanEnterOcean ||
+                enterOceanUniques.any { it.params[0] == "Embarked" } ||
+                civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
+        specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] != "All" && it.params[0] != "Embarked" }
 
-        embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))
             RoadStatus.Road.movementImproved else RoadStatus.Road.movement
         roadsConnectAcrossRivers = civInfo.hasUnique(UniqueType.RoadsConnectAcrossRivers)
