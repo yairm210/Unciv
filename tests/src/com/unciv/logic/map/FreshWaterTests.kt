@@ -17,8 +17,9 @@ class FreshWaterTests {
     private var ruleSet = Ruleset()
 
     companion object {
-        private const val testingMap = "H4sIAAAAAAAA/52Sv07DMBDGXyUP4A4NYrmRQsUQCRRQl6rDoRzkVCeO7EtpsPLuOMqWpMRisWT7d993/3yFzStarEjIOvDSNQRPVSOdCj9v/EPgLRbcOkjVNxdSwr0qib9KgTtVhzjYtU5M1asPdJS3mhwJ7PiSHJJNcsCatcZeCWvK2Akc/cC9k7XINTwG2kqvfGMcC5sa/BU2W9WFY1T8kxzAdS5KLEboGsVEZb5JhxrTJVLJeN0TSmvJwfEFHbvTRGEQmMRneCa32MxIo+cwrKnPdu4TH37LegKtM2Mey61VJboHI2EJM/qUnC9kQWxLS51YEciHxb6pEJNmRL3j7JYzmfV0r40pkkaHx9kKjEv0L6FT/wsygYGG+gMAAA=="
-        private val shouldHaveFreshWater = setOf(Vector2(-1f,-1f),Vector2(1f,1f),Vector2(-2f,-2f),Vector2(2f,2f),Vector2(-1f,-2f),Vector2(1f,2f),Vector2(1f,-1f),Vector2(-1f,1f),Vector2(2f,1f),Vector2(-2f,-1f))
+        @Suppress("SpellCheckingInspection")
+        private const val testingMap = "H4sIAAAAAAAA/52SwU7DMAyGX6UPkB5WxMVHBhOHSqCBdpl6CKqh1tKmit3REvXdSdVb17GIS6Qkn//f+WNf6/ZVO12joGPwMrQIT3Urgwo3b/SD4J0uqWPI1DeVUsG9qpC+KoE71YQ62HYsth7Vh2bcdwYZBbZ0Tg5Jmhx0Q8boUQkZzIkFjn7i3tE5TQ08BtrJqHxrmYRsA76HdKOGsMyKf5ITeJuLEosR6qOYqM7TbHpjtkYqmbc71NI5ZDi+aCYuFgqTwKI+1yfk1TAjjZ7DZy19Npc+8eXXrBfQbWbuIy7auKnoo1yvJFdpfrASxj7HT9nTGR2I63Dli1YbuYxuZ6wtk9aEQy4i5ecZ+o/BWIy/FE5uFvkDAAA="
+        private val shouldHaveFreshWater = setOf(Vector2(-1f,-1f),Vector2(1f,1f),Vector2(-2f,-2f),Vector2(2f,2f),Vector2(-1f,-2f),Vector2(1f,2f),Vector2(2f,0f),Vector2(-2f,0f),Vector2(2f,1f),Vector2(-2f,-1f))
     }
 
     @Before
