@@ -612,7 +612,7 @@ open class TileInfo {
         var bonus = baseTerrainObject.defenceBonus
         if (terrainFeatureObjects.isNotEmpty()) {
             val otherTerrainBonus = terrainFeatureObjects.maxOf { it.defenceBonus }
-            if (abs(otherTerrainBonus) > 0.000001f) bonus = otherTerrainBonus // never compare to 0f
+            if (otherTerrainBonus != 0f) bonus = otherTerrainBonus  // replaces baseTerrainObject
         }
         if (naturalWonder != null) bonus += getNaturalWonder().defenceBonus
         val tileImprovement = getTileImprovement()
