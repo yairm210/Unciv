@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -791,7 +792,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
 
             !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
-                .any { it.currentMovement >= 0.1f && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
+                .any { it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
                 NextTurnAction("Move automated units", Color.LIGHT_GRAY) {
                     viewingCiv.hasMovedAutomatedUnits = true
                     isPlayersTurn = false // Disable state changes
