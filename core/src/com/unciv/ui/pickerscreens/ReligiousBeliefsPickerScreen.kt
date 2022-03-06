@@ -3,6 +3,7 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -65,8 +66,13 @@ class ReligiousBeliefsPickerScreen (
         topTable.addSeparator()
         topTable.add(middlePanes)
 
-        if (pickIconAndName) rightSideButton.label = "Choose a Religion".toLabel()
-        else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.getReligionDisplayName()}]".toLabel()
+        val rightSideButtonText = if (pickIconAndName)
+            "Choose a Religion"
+        else "Enhance [${choosingCiv.religionManager.religion!!.getReligionDisplayName()}]"
+        // This forces this label to use an own clone of the default style. If not, hovering over the button
+        // will gray out all the default-styled Labels on the screen - exact cause and why this does not affect other buttons unknown 
+        rightSideButton.label = Label(rightSideButtonText.tr(), LabelStyle(skin[LabelStyle::class.java]))
+
         rightSideButton.onClick(UncivSound.Choir) {
             choosingCiv.religionManager.chooseBeliefs(displayName, religionName, beliefsToChoose.map { it.belief!! })
             UncivGame.Current.setWorldScreen()
