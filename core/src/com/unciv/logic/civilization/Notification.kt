@@ -1,9 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.models.stats.Stat
 import com.unciv.ui.cityscreen.CityScreen
-import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.MayaCalendar
@@ -54,10 +52,15 @@ interface NotificationAction {
     fun execute(worldScreen: WorldScreen)
 }
 
-/** cycle through tiles */
+/** A notification action that cycles through tiles.
+ * 
+ * Constructors accept any kind of [Vector2] collection, including [Iterable], [Sequence], `vararg`.
+ * `varargs` allows nulls which are ignored, a resulting empty list is allowed and equivalent to no [NotificationAction].
+ */
 data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : NotificationAction {
-
-    constructor(locations: List<Vector2>) : this(ArrayList(locations))
+    constructor(locations: Iterable<Vector2>) : this(locations.toCollection(ArrayList()))
+    constructor(locations: Sequence<Vector2>) : this(locations.toCollection(ArrayList()))
+    constructor(vararg locations: Vector2?) : this(locations.asSequence().filterNotNull())
 
     override fun execute(worldScreen: WorldScreen) {
         if (locations.isNotEmpty()) {
