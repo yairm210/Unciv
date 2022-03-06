@@ -1,3 +1,19 @@
+## 3.19.14
+
+By SomeTroglodyte:
+- Sort maps & accelerate playing a newly edited map
+- Fixed many minor UI bugs
+- WLTK decorations
+- Improve unique replacement for +/- amounts
+- Locate Mod Errors - choose base ruleset to do complex check against
+- Move automated units button was showing when it didn't do anything
+
+Added deep link to multiplayer games  - By GGGuenni
+
+Block Embarked from capturing Civilians on Water  - By itanasi
+
+Translations update
+
 ## 3.19.13
 
 Minor performance improvements

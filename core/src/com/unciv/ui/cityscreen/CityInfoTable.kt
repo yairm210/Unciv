@@ -159,7 +159,9 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
     private fun Table.addStatInfo() {
         val cityStats = cityScreen.city.cityStats
 
+        val showFaith = cityScreen.city.civInfo.gameInfo.isReligionEnabled()
         for (stat in Stat.values()) {
+            if (stat == Stat.Faith && !showFaith) continue
             val statValuesTable = Table()
             statValuesTable.touchable = Touchable.enabled
             addCategory(stat.name, statValuesTable)
@@ -241,12 +243,15 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
 
         statValuesTable.pack()
-        val toggleButtonChar = if (showDetails) "-" else "+"
-        val toggleButton = toggleButtonChar.toLabel().apply { setAlignment(Align.center) }
-            .surroundWithCircle(25f, color = ImageGetter.getBlue())
-            .surroundWithCircle(27f, false)
-        statValuesTable.addActor(toggleButton)
-        toggleButton.setPosition(0f, statValuesTable.height, Align.topLeft)
+
+        if (stat != Stat.Happiness) {
+            val toggleButtonChar = if (showDetails) "-" else "+"
+            val toggleButton = toggleButtonChar.toLabel().apply { setAlignment(Align.center) }
+                .surroundWithCircle(25f, color = ImageGetter.getBlue())
+                .surroundWithCircle(27f, false)
+            statValuesTable.addActor(toggleButton)
+            toggleButton.setPosition(0f, statValuesTable.height, Align.topLeft)
+        }
 
         statValuesTable.padBottom(4f)
     }

@@ -26,7 +26,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         else Stats.parse(firstStatParam)
     }
     val conditionals: List<Unique> = text.getConditionals()
-    
+
     val isTriggerable = type != null && type.targetTypes.contains(UniqueTarget.Triggerable)
             // <for [amount] turns]> in effect makes any unique become a triggerable unique
             || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
@@ -63,24 +63,46 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
         // Here, for once, we DO want the conditional placeholder parameters together with the regular ones,
         //  so we cheat the conditional detector by removing the '<'
+        //  note this is only done for the replacement, not the deprecated unique, thus parameters of
+        //  conditionals on the deprecated unique are ignored
+
         val finalPossibleUniques = ArrayList<String>()
-        
+
         for (possibleUnique in possibleUniques) {
+            var resultingUnique = possibleUnique
             for (parameter in possibleUnique.replace('<', ' ').getPlaceholderParameters()) {
-                val parameterNumberInDeprecatedUnique =
-                    deprecatedUniquePlaceholders.indexOf(
-                        parameter.removePrefix("+").removePrefix("-")
-                    )
-                if (parameterNumberInDeprecatedUnique == -1) continue
+                val parameterHasSign = parameter.startsWith('-') || parameter.startsWith('+')
+                val parameterUnsigned = if (parameterHasSign) parameter.drop(1) else parameter
+                val parameterNumberInDeprecatedUnique = deprecatedUniquePlaceholders.indexOf(parameterUnsigned)
+                if (parameterNumberInDeprecatedUnique !in params.indices) continue
+                val positionInDeprecatedUnique = type.text.indexOf("[$parameterUnsigned]")
                 var replacementText = params[parameterNumberInDeprecatedUnique]
-                if (parameter.startsWith('+')) replacementText = "+$replacementText"
-                else if (parameter.startsWith('-')) replacementText = "-$replacementText"
-                finalPossibleUniques +=
-                    possibleUnique.replace("[$parameter]", "[$replacementText]")
+                if (UniqueParameterType.Number in type.parameterTypeMap[parameterNumberInDeprecatedUnique]) {
+                    // The following looks for a sign just before [amount] and detects replacing "-[-33]" with "[+33]" and similar situations
+                    val deprecatedHadPlusSign = positionInDeprecatedUnique > 0 && type.text[positionInDeprecatedUnique - 1] == '+'
+                    val deprecatedHadMinusSign = positionInDeprecatedUnique > 0 && type.text[positionInDeprecatedUnique - 1] == '-'
+                    val deprecatedHadSign = deprecatedHadPlusSign || deprecatedHadMinusSign
+                    val positionInNewUnique = possibleUnique.indexOf("[$parameter]")
+                    val newHasMinusSign = positionInNewUnique > 0 && possibleUnique[positionInNewUnique - 1] == '-'
+                    val replacementHasMinusSign = replacementText.startsWith('-')
+                    val replacementHasPlusSign = replacementText.startsWith('+')
+                    val replacementIsSigned = replacementHasPlusSign || replacementHasMinusSign
+                    val replacementTextUnsigned = if (replacementIsSigned) replacementText.drop(1) else replacementText
+                    val replacementShouldBeNegative = if (deprecatedHadMinusSign == newHasMinusSign) replacementHasMinusSign else !replacementHasMinusSign
+                    val replacementShouldBeSigned = deprecatedHadSign && !newHasMinusSign || parameterHasSign
+                    replacementText = when {
+                        !(deprecatedHadSign || newHasMinusSign || replacementIsSigned) -> replacementText
+                        replacementShouldBeNegative -> "-$replacementTextUnsigned"
+                        replacementShouldBeSigned -> "+$replacementTextUnsigned"
+                        else -> replacementTextUnsigned
+                    }
+                }
+                resultingUnique = resultingUnique.replace("[$parameter]", "[$replacementText]")
             }
+            finalPossibleUniques += resultingUnique
         }
         if (finalPossibleUniques.size == 1) return finalPossibleUniques.first()
-        
+
         // filter out possible replacements that are obviously wrong
         val uniquesWithNoErrors = finalPossibleUniques.filter { 
             val unique = Unique(it)
@@ -89,7 +111,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             errors.isEmpty()
         }
         if (uniquesWithNoErrors.size == 1) return uniquesWithNoErrors.first()
-        
+
         val uniquesToUnify = if (uniquesWithNoErrors.isNotEmpty()) uniquesWithNoErrors else possibleUniques
         return uniquesToUnify.joinToString("\", \"")
     }
@@ -114,7 +136,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalConsumeUnit -> true
-            
+
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
@@ -168,7 +190,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
             UniqueType.ConditionalBelowHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
-            
+
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesNot ->
