@@ -27,6 +27,9 @@ object NotificationIcon {
     const val Food = "StatIcons/Food"
     const val Faith = "StatIcons/Faith"
     const val Crosshair = "OtherIcons/CrosshairB"
+    const val Scout = "UnitIcons/Scout"
+    const val Ruins = "ImprovementIcons/Ancient ruins"
+    const val Barbarians = "ImprovementIcons/Barbarian encampment"
 }
 
 /**

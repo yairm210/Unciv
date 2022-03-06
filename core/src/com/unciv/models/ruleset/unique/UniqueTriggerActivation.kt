@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
@@ -90,7 +91,7 @@ object UniqueTriggerActivation {
                         else notification
                     civInfo.addNotification(
                         notificationText,
-                        placedUnit.getTile().position,
+                        LocationAction(placedUnit.getTile().position, tile?.position),
                         placedUnit.name
                     )
                 }
@@ -191,7 +192,7 @@ object UniqueTriggerActivation {
                         else notification
                     civInfo.addNotification(
                         notificationText,
-                        randomCity.location,
+                        LocationAction(randomCity.location, tile?.position),
                         NotificationIcon.Population
                     )
                 }
@@ -233,7 +234,7 @@ object UniqueTriggerActivation {
                             notification.fillPlaceholders(*(techsToResearch.map { it.name }
                                 .toTypedArray()))
                         else notification
-                    civInfo.addNotification(notificationText, NotificationIcon.Science)
+                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Science)
                 }
 
                 return true
@@ -261,7 +262,7 @@ object UniqueTriggerActivation {
 
             OneTimeRevealEntireMap -> {
                 if (notification != null) {
-                    civInfo.addNotification(notification, "UnitIcons/Scout")
+                    civInfo.addNotification(notification, LocationAction(tile?.position), NotificationIcon.Scout)
                 }
                 return civInfo.exploredTiles.addAll(
                     civInfo.gameInfo.tileMap.values.asSequence().map { it.position })
@@ -329,7 +330,7 @@ object UniqueTriggerActivation {
 
                 civInfo.addStat(stat, unique.params[0].toInt())
                 if (notification != null)
-                    civInfo.addNotification(notification, stat.notificationIcon)
+                    civInfo.addNotification(notification, LocationAction(tile?.position), stat.notificationIcon)
                 return true
             }
             OneTimeGainStatRange -> {
@@ -356,7 +357,7 @@ object UniqueTriggerActivation {
                         if (notification.hasPlaceholderParameters()) {
                             notification.fillPlaceholders(foundStatAmount.toString())
                         } else notification
-                    civInfo.addNotification(notificationText, stat.notificationIcon)
+                    civInfo.addNotification(notificationText, LocationAction(tile?.position), stat.notificationIcon)
                 }
 
                 return true
@@ -373,7 +374,7 @@ object UniqueTriggerActivation {
                         if (notification.hasPlaceholderParameters())
                             notification.fillPlaceholders(gainedFaith.toString())
                         else notification
-                    civInfo.addNotification(notificationText, NotificationIcon.Faith)
+                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Faith)
                 }
 
                 return true
@@ -391,7 +392,7 @@ object UniqueTriggerActivation {
                         if (notification.hasPlaceholderParameters())
                             notification.fillPlaceholders(gainedFaith.toString())
                         else notification
-                    civInfo.addNotification(notificationText, NotificationIcon.Faith)
+                    civInfo.addNotification(notificationText, LocationAction(tile?.position), NotificationIcon.Faith)
                 }
 
                 return true
@@ -424,8 +425,10 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(
                         notification,
-                        LocationAction(nearbyRevealableTiles)
-                    ) // We really need a barbarian icon
+                        LocationAction(nearbyRevealableTiles),
+                        if (unique.params[1] == Constants.barbarianEncampment)
+                            NotificationIcon.Barbarians else NotificationIcon.Scout
+                    )
                 }
 
                 return true
@@ -447,7 +450,7 @@ object UniqueTriggerActivation {
                     civInfo.addNotification(
                         notification,
                         tile.position,
-                        "ImprovementIcons/Ancient ruins"
+                        NotificationIcon.Ruins
                     )
             }
 
@@ -512,7 +515,7 @@ object UniqueTriggerActivation {
                     ?: return false
                 unit.promotions.addPromotion(promotion, true)
                 if (notification != null)
-                    unit.civInfo.addNotification(notification, unit.name)
+                    unit.civInfo.addNotification(notification, unit.getTile().position, unit.name)
                 return true
             }
         }
