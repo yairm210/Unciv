@@ -24,11 +24,6 @@ object UniqueTriggerActivation {
         tile: TileInfo? = null,
         notification: String? = null
     ): Boolean {
-        val chosenCity = cityInfo ?: civInfo.cities.firstOrNull { it.isCapital() }
-        val tileBasedRandom =
-            if (tile != null) Random(tile.position.toString().hashCode())
-            else Random(-550) // Very random indeed
-
         if (!unique.conditionalsApply(civInfo, cityInfo)) return false
 
         val timingConditional = unique.conditionals.firstOrNull{it.type == ConditionalTimedUnique}
@@ -37,11 +32,17 @@ object UniqueTriggerActivation {
             return true
         }
 
+        val chosenCity = cityInfo ?: civInfo.cities.firstOrNull { it.isCapital() }
+        val tileBasedRandom =
+            if (tile != null) Random(tile.position.toString().hashCode())
+            else Random(-550) // Very random indeed
+        val ruleSet = civInfo.gameInfo.ruleSet
+
         @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
         when (unique.type) {
             OneTimeFreeUnit -> {
                 val unitName = unique.params[0]
-                val unit = civInfo.gameInfo.ruleSet.units[unitName]
+                val unit = ruleSet.units[unitName]
                 if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
@@ -57,7 +58,7 @@ object UniqueTriggerActivation {
             }
             OneTimeAmountFreeUnits -> {
                 val unitName = unique.params[1]
-                val unit = civInfo.gameInfo.ruleSet.units[unitName]
+                val unit = ruleSet.units[unitName]
                 if (chosenCity == null || unit == null || (unit.hasUnique(UniqueType.FoundCity) && civInfo.isOneCityChallenger()))
                     return false
 
@@ -164,14 +165,14 @@ object UniqueTriggerActivation {
             OneTimeGainPopulation -> {
                 val citiesWithPopulationChanged: MutableList<Vector2> = mutableListOf()
                 val applicableCities = when (unique.params[1]) {
-                    "in this city" -> listOf(cityInfo!!)
-                    "in other cities" -> civInfo.cities.filter { it != cityInfo }
-                    else -> civInfo.cities.filter { it.matchesFilter(unique.params[1]) }
+                    "in this city" -> sequenceOf(cityInfo!!)
+                    "in other cities" -> civInfo.cities.asSequence().filter { it != cityInfo }
+                    else -> civInfo.cities.asSequence().filter { it.matchesFilter(unique.params[1]) }
                 }
                 for (city in applicableCities) {
                     city.population.addPopulation(unique.params[0].toInt())
                 }
-                if (notification != null && applicableCities.isNotEmpty())
+                if (notification != null && applicableCities.any())
                     civInfo.addNotification(
                         notification,
                         LocationAction(applicableCities.map { it.location }),
@@ -214,7 +215,7 @@ object UniqueTriggerActivation {
                 return true
             }
             OneTimeFreeTechRuins -> {
-                val researchableTechsFromThatEra = civInfo.gameInfo.ruleSet.technologies.values
+                val researchableTechsFromThatEra = ruleSet.technologies.values
                     .filter {
                         (it.column!!.era == unique.params[1] || unique.params[1] == "any era")
                                 && civInfo.tech.canBeResearched(it.name)
@@ -273,7 +274,7 @@ object UniqueTriggerActivation {
                 val promotedUnitLocations: MutableList<Vector2> = mutableListOf()
                 for (unit in civInfo.getCivUnits()) {
                     if (unit.matchesFilter(filter)
-                        && civInfo.gameInfo.ruleSet.unitPromotions.values.any {
+                        && ruleSet.unitPromotions.values.any {
                             it.name == promotion && unit.type.name in it.unitTypes
                         }
                     ) {
@@ -423,7 +424,7 @@ object UniqueTriggerActivation {
                 if (notification != null) {
                     civInfo.addNotification(
                         notification,
-                        LocationAction(nearbyRevealableTiles.toList())
+                        LocationAction(nearbyRevealableTiles)
                     ) // We really need a barbarian icon
                 }
 

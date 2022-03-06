@@ -313,11 +313,7 @@ object Battle {
             val notificationString = attackerString + whatHappenedString + defenderString
             val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
             val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
-            val locations = LocationAction (
-                if (attackerTile != null && attackerTile.position != attackedTile.position)
-                        listOf(attackedTile.position, attackerTile.position)
-                else listOf(attackedTile.position)
-            )
+            val locations = LocationAction(attackedTile.position, attackerTile?.position)
             defender.getCivInfo().addNotification(notificationString, locations, attackerIcon, whatHappenedIcon, defenderIcon)
         }
     }
@@ -773,38 +769,17 @@ object Battle {
 
             val attackerName = attacker.getName()
             val interceptorName = interceptor.name
-            val locations = LocationAction(
-                listOf(
-                    interceptor.currentTile.position,
-                    attacker.unit.currentTile.position
-                )
-            )
-
-            if (attacker.isDefeated()) {
-                attacker.getCivInfo()
-                    .addNotification(
-                        "Our [$attackerName] was destroyed by an intercepting [$interceptorName]",
-                        interceptor.currentTile.position, attackerName, NotificationIcon.War,
-                        interceptorName
-                    )
-                interceptingCiv
-                    .addNotification(
-                        "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]",
-                        locations, interceptorName, NotificationIcon.War, attackerName
-                    )
-            } else {
-                attacker.getCivInfo()
-                    .addNotification(
-                        "Our [$attackerName] was attacked by an intercepting [$interceptorName]",
-                        interceptor.currentTile.position, attackerName,NotificationIcon.War,
-                        interceptorName
-                    )
-                interceptingCiv
-                    .addNotification(
-                        "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]",
-                        locations, interceptorName, NotificationIcon.War, attackerName
-                    )
-            }
+            val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
+            val attackerText = if (attacker.isDefeated())
+                "Our [$attackerName] was destroyed by an intercepting [$interceptorName]"
+                else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
+            val interceptorText = if (attacker.isDefeated())
+                "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
+                else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
+            attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
+                attackerName, NotificationIcon.War, interceptorName)
+            interceptingCiv.addNotification(interceptorText, locations,
+                interceptorName, NotificationIcon.War, attackerName)
             return
         }
     }
@@ -859,7 +834,7 @@ object Battle {
 
         val attackingUnit = attackBaseUnit.name; val defendingUnit = defendBaseUnit.name
         val notificationString = "[$defendingUnit] withdrew from a [$attackingUnit]"
-        val locations = LocationAction(listOf(toTile.position, attacker.getTile().position))
+        val locations = LocationAction(toTile.position, attacker.getTile().position)
         defender.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit)
         attacker.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit)
         return true

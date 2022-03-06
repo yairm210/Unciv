@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -1084,7 +1083,7 @@ class CivilizationInfo {
 
 
     fun addNotification(text: String, location: Vector2, vararg notificationIcons: String) {
-        addNotification(text, LocationAction(listOf(location)), *notificationIcons)
+        addNotification(text, LocationAction(location), *notificationIcons)
     }
 
     fun addNotification(text: String, vararg notificationIcons: String) = addNotification(text, null, *notificationIcons)
