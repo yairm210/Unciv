@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapType
@@ -14,7 +15,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousScreen: BaseScreen)
@@ -66,15 +66,15 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     }
                     try {
                         val map = MapSaver.loadMap(chosenMap!!, checkSizeErrors = false)
-                        
+
                         val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
                         // [TEMPORARY] conversion of old maps with a base ruleset contained in the mods
                             val newBaseRuleset = map.mapParameters.mods.filter { it !in missingMods }.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
                             if (newBaseRuleset != null) map.mapParameters.baseRuleset = newBaseRuleset
                         //
-                        
+
                         if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
-                        
+
                         if (missingMods.isNotEmpty()) {
                             postCrashHandlingRunnable {
                                 needPopup = false
@@ -90,7 +90,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                                     map.mapParameters.baseRuleset = modBaseRuleset
                                     map.mapParameters.mods -= modBaseRuleset
                                 }
-                                    
+
                                 game.setScreen(MapEditorScreen(map))
                                 dispose()
                             } catch (ex: Throwable) {
@@ -184,7 +184,8 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         deleteButton.setText("Delete map".tr())
 
         mapsTable.clear()
-        for (map in MapSaver.getMaps()) {
+        val collator = UncivGame.Current.settings.getCollatorFromLocale()
+        for (map in MapSaver.getMaps().sortedWith(compareBy(collator) { it.name() })) {
             val existingMapButton = TextButton(map.name(), skin)
             existingMapButton.onClick {
                 for (cell in mapsTable.cells) cell.actor.color = Color.WHITE
@@ -194,7 +195,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                 chosenMap = map
                 mapNameTextField.text = map.name()
                 mapNameTextField.setSelection(Int.MAX_VALUE,Int.MAX_VALUE)  // sets caret to end of text
-                
+
                 deleteButton.enable()
                 deleteButton.color = Color.RED
             }

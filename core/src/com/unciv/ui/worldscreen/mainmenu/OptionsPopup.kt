@@ -13,6 +13,8 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Ruleset.RulesetError
+import com.unciv.models.ruleset.Ruleset.RulesetErrorSeverity
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.Unique
@@ -23,6 +25,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -43,11 +46,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
-    private var modCheckCheckBox: CheckBox? = null
-    private var modCheckResultTable = Table()
+    private var modCheckBaseSelect: TranslatedSelectBox? = null
+    private val modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
 
     //endregion
+
+    companion object {
+        private const val modCheckWithoutBase = "-none-"
+    }
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
@@ -264,21 +271,30 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getModCheckTab() = Table(BaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
         val reloadModsButton = "Reload mods".toTextButton().onClick {
-            runModChecker(modCheckCheckBox!!.isChecked)
+            runModChecker(modCheckBaseSelect!!.selected.value)
         }
         add(reloadModsButton).row()
-        modCheckCheckBox = "Check extension mods based on vanilla".toCheckBox {
-            runModChecker(it)
+
+        val labeledBaseSelect = Table(BaseScreen.skin).apply {
+            add("Check extension mods based on:".toLabel()).padRight(10f)
+            val baseMods = listOf(modCheckWithoutBase) + RulesetCache.getSortedBaseRulesets()
+            modCheckBaseSelect = TranslatedSelectBox(baseMods, modCheckWithoutBase, BaseScreen.skin).apply {
+                selectedIndex = 0
+                onChange {
+                    runModChecker(modCheckBaseSelect!!.selected.value)
+                }
+            }
+            add(modCheckBaseSelect)
         }
-        add(modCheckCheckBox).row()
+        add(labeledBaseSelect).row()
 
         add(modCheckResultTable)
     }
 
-    private fun runModChecker(complex: Boolean = false) {
-        
+    private fun runModChecker(base: String = modCheckWithoutBase) {
+
         modCheckFirstRun = false
-        if (modCheckCheckBox == null) return
+        if (modCheckBaseSelect == null) return
 
         modCheckResultTable.clear()
 
@@ -289,30 +305,21 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 errorTable.add(rulesetError.toLabel()).width(stage.width / 2).row()
             modCheckResultTable.add(errorTable)
         }
-        
+
         modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
-        modCheckCheckBox!!.disable()
+        modCheckBaseSelect!!.isDisabled = true
 
         crashHandlingThread(name="ModChecker") {
             for (mod in RulesetCache.values.sortedBy { it.name }) {
-                var noProblem = true
-                val lines = ArrayList<FormattedLine>()
+                if (base != modCheckWithoutBase && mod.modOptions.isBaseRuleset) continue
 
                 val modLinks =
-                    if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
-                    else mod.checkModLinks(forOptionsPopup = true)
-                for (error in modLinks.sortedByDescending { it.errorSeverityToReport }) {
-                    val color = when (error.errorSeverityToReport) {
-                        Ruleset.RulesetErrorSeverity.OK -> "#00FF00"
-                        Ruleset.RulesetErrorSeverity.Warning,
-                        Ruleset.RulesetErrorSeverity.WarningOptionsOnly -> "#FFFF00"
-                        Ruleset.RulesetErrorSeverity.Error -> "#FF0000"
-                    }
-                    lines += FormattedLine(error.text, color = color)
-                }
-                if (modLinks.isNotOK()) noProblem = false
-                lines += FormattedLine()
-                if (noProblem) lines += FormattedLine("No problems found.".tr())
+                        if (base == modCheckWithoutBase) mod.checkModLinks(forOptionsPopup = true)
+                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base)
+                modLinks.sortByDescending { it.errorSeverityToReport }
+                val noProblem = !modLinks.isNotOK()
+                if (modLinks.isNotEmpty()) modLinks += RulesetError("", RulesetErrorSeverity.OK)
+                if (noProblem) modLinks += RulesetError("No problems found.".tr(), RulesetErrorSeverity.OK)
 
                 postCrashHandlingRunnable {
                     // When the options popup is already closed before this postRunnable is run,
@@ -322,7 +329,17 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
                     // Instead, some manual work needs to be put in.
 
-                    val expanderTab = ExpanderTab(mod.name, startsOutOpened = false){
+                    val iconColor = modLinks.getFinalSeverity().color
+                    val iconName = when(iconColor) {
+                        Color.RED -> "OtherIcons/Stop"
+                        Color.YELLOW -> "OtherIcons/ExclamationMark"
+                        else -> "OtherIcons/Checkmark"
+                    }
+                    val icon = ImageGetter.getImage(iconName)
+                        .apply { color = Color.BLACK }
+                        .surroundWithCircle(30f, color = iconColor)
+
+                    val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = false) {
                         it.defaults().align(Align.left)
                         if (!noProblem && mod.folderLocation != null) {
                             val replaceableUniques = getDeprecatedReplaceableUniques(mod)
@@ -330,18 +347,16 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                                 it.add("Autoupdate mod uniques".toTextButton()
                                     .onClick { autoUpdateUniques(mod, replaceableUniques) }).pad(10f).row()
                         }
-                        for (line in lines) {
-                            val label = if (line.starred) Label(line.text + "\n", BaseScreen.skin)
-                                .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
-                            else Label(line.text + "\n", BaseScreen.skin)
-                                .apply { if (line.color != "") color = Color.valueOf(line.color) }
+                        for (line in modLinks) {
+                            val label = Label(line.text, BaseScreen.skin)
+                                .apply { color = line.errorSeverityToReport.color }
                             label.wrap = true
                             it.add(label).width(stage.width / 2).row()
                         }
-                        if(!noProblem)
+                        if (!noProblem)
                             it.add("Copy to clipboard".toTextButton().onClick {
-                                Gdx.app.clipboard.contents = lines.map { it.text }.filterNot { it=="" }
-                                    .joinToString("\n")  
+                                Gdx.app.clipboard.contents = modLinks
+                                    .joinToString("\n") { line -> line.text }
                             }).row()
                     }
 
@@ -355,7 +370,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             // done with all mods!
             postCrashHandlingRunnable {
                 modCheckResultTable.removeActor(modCheckResultTable.children.last())
-                modCheckCheckBox!!.enable()
+                modCheckBaseSelect!!.isDisabled = false
             }
         }
     }
