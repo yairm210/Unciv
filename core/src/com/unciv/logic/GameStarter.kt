@@ -187,10 +187,11 @@ object GameStarter {
 
                 // check if the policy is in the ruleset and not already adopted
                 if (ruleset.policies.containsKey(policyName) && !civInfo.policies.isAdopted(policyName)) {
-                    civInfo.policies.freePolicies++
-                    val policyToAdopt = ruleset.policies[policyName]
-                    if (policyToAdopt != null)
-                        civInfo.policies.adopt(policyToAdopt)
+                    val policyToAdopt = ruleset.policies[policyName]!!
+                    civInfo.policies.run {
+                        freePolicies++
+                        adopt(policyToAdopt)
+                    }
                 }
             }
         }
