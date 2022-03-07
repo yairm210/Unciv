@@ -226,8 +226,6 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
             val metaData = GameSaver.json().fromJson(DropboxMetaData::class.java, reader.readText())
 
             val date = metaData?.getServerModified()
-            println(date?.time)
-            println(System.currentTimeMillis())
             // 30 seconds should be more than sufficient for everything lock related
             // so we can assume the lock file was forgotten if it is older than 30 sec
             if (date != null && System.currentTimeMillis() - date.time < 30000) {
