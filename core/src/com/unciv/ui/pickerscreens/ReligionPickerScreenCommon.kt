@@ -5,6 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
@@ -13,6 +15,8 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
 
 abstract class ReligionPickerScreenCommon(
@@ -22,6 +26,9 @@ abstract class ReligionPickerScreenCommon(
 
     protected val gameInfo = choosingCiv.gameInfo
     protected val ruleset = gameInfo.ruleSet
+
+    private val descriptionTable = Table(skin)
+    private val descriptionScroll = descriptionLabel.parent as ScrollPane
 
     protected class Selection {
         var button: Button? = null
@@ -36,6 +43,16 @@ abstract class ReligionPickerScreenCommon(
     }
 
     init {
+        // Replace the PickerScreen's descriptionLabel
+        descriptionTable.defaults().top().left().pad(10f)
+        descriptionLabel.remove()
+        descriptionScroll.apply {
+            setScrollingDisabled(true, false)
+            setupFadeScrollBars(0f, 0f)
+            setScrollbarsOnTop(true)
+            actor = descriptionTable
+        }
+
         closeButton.isVisible = true
         setDefaultCloseAction()
     }
@@ -74,10 +91,22 @@ abstract class ReligionPickerScreenCommon(
         }
     }
 
-    protected fun Button.onClickSelect(selection: Selection, function: () -> Unit) {
+    protected fun Button.onClickSelect(selection: Selection, belief: Belief?, function: () -> Unit) {
         onClick {
             selection.switch(this)
             function()
+            descriptionTable.clear()
+            if (belief == null) return@onClick
+            descriptionScroll.scrollY = 0f
+            descriptionScroll.updateVisualScroll()
+            descriptionTable.apply {
+                add(MarkupRenderer.render(
+                    belief.getCivilopediaTextLines(withHeader = true), width - 20f
+                ) {
+                    UncivGame.Current.setScreen(CivilopediaScreen(ruleset, this@ReligionPickerScreenCommon, link = it))
+                }).growX()
+                // Icon should it be needed:  CivilopediaImageGetters.belief(belief.getIconName(), 50f)
+            }
         }
     }
 

@@ -90,7 +90,7 @@ class ReligiousBeliefsPickerScreen (
         )
 
         addIconsScroll { button, religionName ->
-            button.onClickSelect(iconSelection) {
+            button.onClickSelect(iconSelection, null) {
                 changeDisplayedReligionName(religionName)
                 this.religionName = religionName
                 changeReligionNameButton.enable()
@@ -200,7 +200,7 @@ class ReligiousBeliefsPickerScreen (
                     beliefButton.disable(redDisableColor)
                 }
                 else ->
-                    beliefButton.onClickSelect(rightSelection) {
+                    beliefButton.onClickSelect(rightSelection, belief) {
                         beliefsToChoose[leftButtonIndex].belief = belief
                         updateLeftTable()
                         checkAndEnableRightSideButton()
@@ -236,7 +236,7 @@ class ReligiousBeliefsPickerScreen (
         }
         leftChosenBeliefs.add(newBeliefButton).row()
 
-        newBeliefButton.onClickSelect(leftSelection) {
+        newBeliefButton.onClickSelect(leftSelection, belief) {
             leftSelectedIndex = index
             loadRightTable(beliefType, index)
         }

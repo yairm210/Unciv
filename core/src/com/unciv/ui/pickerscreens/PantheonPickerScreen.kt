@@ -18,7 +18,7 @@ class PantheonPickerScreen(
             if (belief.type != BeliefType.Pantheon) continue
             val beliefButton = getBeliefButton(belief, withTypeLabel = false)
             if (choosingCiv.religionManager.isPickablePantheonBelief(belief)) {
-                beliefButton.onClickSelect(selection) {
+                beliefButton.onClickSelect(selection, belief) {
                     selectedPantheon = belief
                     pick("Follow [${belief.name}]".tr())
                 }
