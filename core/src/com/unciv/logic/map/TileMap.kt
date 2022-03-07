@@ -486,6 +486,7 @@ class TileMap {
         var unitToPlaceTile: TileInfo? = null
         // try to place at the original point (this is the most probable scenario)
         val currentTile = get(position)
+        unit.currentTile = currentTile  // temporary
         if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
 
         // if it's not suitable, try to find another tile nearby
