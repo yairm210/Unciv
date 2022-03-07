@@ -758,7 +758,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
             viewingCiv.religionManager.canFoundPantheon() ->
                 NextTurnAction("Found Pantheon", Color.WHITE) {
-                    game.setScreen(PantheonPickerScreen(viewingCiv, gameInfo))
+                    game.setScreen(PantheonPickerScreen(viewingCiv))
                 }
 
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
@@ -766,7 +766,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     game.setScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
-                            gameInfo,
                             viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
                             pickIconAndName = true
                         )
@@ -778,7 +777,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     game.setScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
-                            gameInfo,
                             viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
                             pickIconAndName = false
                         )
