@@ -10,17 +10,14 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 class ConstructionInfoTable(val cityScreen: CityScreen): Table() {
     private val selectedConstructionTable = Table()
     val city = cityScreen.city
 
     init {
-        selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        selectedConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
         add(selectedConstructionTable).pad(2f).fill()
         background = ImageGetter.getBackground(Color.WHITE)
     }
