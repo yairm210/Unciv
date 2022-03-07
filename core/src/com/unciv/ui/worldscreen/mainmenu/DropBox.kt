@@ -169,7 +169,7 @@ class DropboxFileStorage:IFileStorage{
     }
 
     override fun deleteFile(fileName: String) {
-        DropBox.deleteFile(fileName)
+        DropBox.deleteFile(getLocalGameLocation(fileName))
     }
 
 }
@@ -269,7 +269,7 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
         }
 
         try {
-            DropBox.uploadFile(fileName, Gzip.zip(GameSaver.json().toJson(LockFile())))
+            OnlineMultiplayer().fileStorage.saveFileData(fileName, Gzip.zip(GameSaver.json().toJson(LockFile())))
         } catch (ex: DropBoxFileConflictException) {
             return locked
         }
