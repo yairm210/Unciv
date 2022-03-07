@@ -168,11 +168,11 @@ class DiplomacyManager() {
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
         if (civInfo.isCityState()) return when {
+            influence >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
+            influence >= 30 -> RelationshipLevel.Friend
             influence <= -30 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Unforgivable
             influence < 30 && civInfo.getTributeWillingness(otherCiv()) > 0 -> RelationshipLevel.Afraid
             influence < 0 -> RelationshipLevel.Enemy
-            influence >= 60 && civInfo.getAllyCiv() == otherCivName -> RelationshipLevel.Ally
-            influence >= 30 -> RelationshipLevel.Friend
             else -> RelationshipLevel.Neutral
         }
 
@@ -200,6 +200,7 @@ class DiplomacyManager() {
         if (civInfo.isCityState() && !otherCiv().isCityState()) {
             val dropPerTurn = getCityStateInfluenceDegrade()
             return when {
+                dropPerTurn == 0f -> 0
                 relationshipLevel() >= RelationshipLevel.Ally -> ceil((influence - 60f) / dropPerTurn).toInt() + 1
                 relationshipLevel() >= RelationshipLevel.Friend -> ceil((influence - 30f) / dropPerTurn).toInt() + 1
                 else -> 0
@@ -234,11 +235,11 @@ class DiplomacyManager() {
     private fun getCityStateInfluenceRestingPoint(): Float {
         var restingPoint = 0f
 
-        for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States is increased by []"))
+        for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateRestingPoint))
             restingPoint += unique.params[0].toInt()
 
         if (civInfo.cities.any()) // no capital if no cities
-            for (unique in otherCiv().getMatchingUniques("Resting point for Influence with City-States following this religion []"))
+            for (unique in otherCiv().getMatchingUniques(UniqueType.RestingPointOfCityStatesFollowingReligionChange))
                 if (otherCiv().religionManager.religion?.name == civInfo.getCapital().religion.getMajorityReligionName())
                     restingPoint += unique.params[0].toInt()
 
@@ -260,8 +261,8 @@ class DiplomacyManager() {
         }
 
         var modifierPercent = 0f
-        for (unique in otherCiv().getMatchingUniques("City-State Influence degrades []% slower"))
-            modifierPercent -= unique.params[0].toFloat()
+        for (unique in otherCiv().getMatchingUniques(UniqueType.CityStateInfluenceDegradation))
+            modifierPercent += unique.params[0].toFloat()
 
         val religion = if (civInfo.cities.isEmpty()) null
             else civInfo.getCapital().religion.getMajorityReligionName()
@@ -269,7 +270,7 @@ class DiplomacyManager() {
             modifierPercent -= 25f  // 25% slower degrade when sharing a religion
 
         for (civ in civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it != otherCiv()}) {
-            for (unique in civ.getMatchingUniques("Influence of all other civilizations with all city-states degrades []% faster")) {
+            for (unique in civ.getMatchingUniques(UniqueType.OtherCivsCityStateRelationsDegradeFaster)) {
                 modifierPercent += unique.params[0].toFloat()
             }
         }
@@ -285,7 +286,7 @@ class DiplomacyManager() {
 
         var modifierPercent = 0f
 
-        if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate"))
+        if (otherCiv().hasUnique(UniqueType.CityStateInfluenceRecoversTwiceNormalRate))
             modifierPercent += 100f
 
         val religion = if (civInfo.cities.isEmpty()) null
@@ -351,7 +352,7 @@ class DiplomacyManager() {
      */
     fun isConsideredFriendlyTerritory(): Boolean {
         if (civInfo.isCityState() &&
-            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique("City-State territory always counts as friendly territory")))
+            (relationshipLevel() >= RelationshipLevel.Friend || otherCiv().hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)))
             return true
         return hasOpenBorders
     }
@@ -466,8 +467,10 @@ class DiplomacyManager() {
 
             // Potentially notify about afraid status
             if (influence < 30  // We usually don't want to bully our friends
-            && !hasFlag(DiplomacyFlags.NotifiedAfraid)
-            && civInfo.getTributeWillingness(otherCiv()) > 0) {
+                && !hasFlag(DiplomacyFlags.NotifiedAfraid)
+                && civInfo.getTributeWillingness(otherCiv()) > 0
+                && otherCiv().isMajorCiv()
+            ) {
                 setFlag(DiplomacyFlags.NotifiedAfraid, 20)  // Wait 20 turns until next reminder
                 val text = "[${civInfo.civName}] is afraid of your military power!"
                 if (civCapitalLocation != null) otherCiv().addNotification(text, civCapitalLocation, civInfo.civName, NotificationIcon.Diplomacy)
@@ -485,7 +488,7 @@ class DiplomacyManager() {
             // If we have uniques that make city states grant military units faster when at war with a common enemy, add higher numbers to this flag
             if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.isMajorCiv() && otherCiv().isCityState() && 
                     civInfo.gameInfo.civilizations.filter { civInfo.isAtWarWith(it) && otherCiv().isAtWarWith(it) }.any()) {
-                for (unique in civInfo.getMatchingUniques("Militaristic City-States grant units [] times as fast when you are at war with a common nation")) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.CityStateMoreGiftedUnits)) {
                     flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name] =
                         flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! - unique.params[0].toInt() + 1
                     if (flagsCountdown[DiplomacyFlags.ProvideMilitaryUnit.name]!! <= 0) {
@@ -745,7 +748,7 @@ class DiplomacyManager() {
             // Our ally city states make peace with us
             if (thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(otherCiv).makePeace()
-            // Other city states that are not our ally don't like the fact that we made peace with their enemy
+            // Other City-States that are not our ally don't like the fact that we made peace with their enemy
             if (thirdCiv.getAllyCiv() != civInfo.civName && thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(civInfo).addInfluence(-10f)
         }

@@ -52,7 +52,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
         val closeButton = Constants.close.toTextButton()
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
-        closeButton.label.setFontSize(24)
+        closeButton.label.setFontSize(Constants.headingFontSize)
         closeButton.labelCell.pad(10f)
         closeButton.pack()
         closeButton.y = stage.height - closeButton.height - 10
@@ -145,8 +145,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
         if (otherCiv.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }) {
             val resourcesTable = Table()
-            resourcesTable.add("{Resources:}  ".toLabel()).padRight(10f)
-            for (supplyList in otherCiv.detailedCivResources) {
+            resourcesTable.add("{Resources}:  ".toLabel()).padRight(10f)
+            val cityStateResources = CityStateFunctions(otherCiv)
+                .getCityStateResourcesForAlly()
+            for (supplyList in cityStateResources) {
                 if (supplyList.resource.resourceType == ResourceType.Bonus)
                     continue
                 val name = supplyList.resource.name
@@ -172,9 +174,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
         if (ally != null) {
-            val allyString = "{Ally}: {$ally} {Influence}: ".tr() +
-                    otherCiv.getDiplomacyManager(ally).influence.toString()
-            diplomacyTable.add(allyString.toLabel()).row()
+            val allyInfluence = otherCiv.getDiplomacyManager(ally).influence.toInt()
+            diplomacyTable
+                .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
+                .row()
         }
 
         val protectors = otherCiv.getProtectorCivs()
@@ -196,12 +199,12 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
         val eraInfo = viewingCiv.getEra()
 
-        var friendBonusText = "{When Friends:} ".tr()
+        var friendBonusText = "{When Friends}: ".tr()
         val friendBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
         val friendBonusStrings = getAdjustedBonuses(friendBonusObjects)
         friendBonusText += friendBonusStrings.joinToString(separator = ", ") { it.tr() }
 
-        var allyBonusText = "{When Allies:} ".tr()
+        var allyBonusText = "{When Allies}: ".tr()
         val allyBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
         val allyBonusStrings = getAdjustedBonuses(allyBonusObjects)
         allyBonusText += allyBonusStrings.joinToString(separator = ", ") { it.tr() }
@@ -210,8 +213,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (relationLevel >= RelationshipLevel.Friend) {
             // RelationshipChange = Ally -> Friend or Friend -> Favorable
             val turnsToRelationshipChange = otherCivDiplomacyManager.getTurnsToRelationshipChange()
-            diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel())
-                .row()
+            if (turnsToRelationshipChange != 0)
+                diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel())
+                    .row()
         }
 
         val friendBonusLabelColor = if (relationLevel >= RelationshipLevel.Friend) Color.GREEN else Color.GRAY
@@ -227,7 +231,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (otherCiv.cityStateUniqueUnit != null) {
             val unitName = otherCiv.cityStateUniqueUnit
             val techName = viewingCiv.gameInfo.ruleSet.units[otherCiv.cityStateUniqueUnit]!!.requiredTech
-            diplomacyTable.add("[${otherCiv.civName}] is able to provide [${unitName}] once [${techName}] is researched.".toLabel(fontSize = 18)).row()
+            diplomacyTable.add("[${otherCiv.civName}] is able to provide [${unitName}] once [${techName}] is researched.".toLabel(fontSize = Constants.defaultFontSize)).row()
         }
 
         return diplomacyTable
@@ -239,7 +243,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         val bonusStrings = ArrayList<String>()
         for (bonus in bonuses) {
             var improved = false
-            for (unique in viewingCiv.getMatchingUniques("[]% [] from City-States")) {
+            for (unique in viewingCiv.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                 val boostAmount = unique.params[0].toPercent()
                 val boostedStat = Stat.valueOf(unique.params[1])
                 when (bonus.type) {
@@ -556,7 +560,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             quest.name
         val description = assignedQuest.getDescription()
 
-        questTable.add(title.toLabel(fontSize = 24)).row()
+        questTable.add(title.toLabel(fontSize = Constants.headingFontSize)).row()
         questTable.add(description.toLabel().apply { wrap = true; setAlignment(Align.center) })
             .width(stage.width / 2).row()
         if (quest.duration > 0)
@@ -582,7 +586,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         val progress = if (viewingCiv.knows(target)) "Currently you have killed [${otherCiv.questManager.unitsKilledSoFar(target, viewingCiv)}] of their military units."
             else "You need to find them first!"
 
-        warTable.add(title.toLabel(fontSize = 24)).row()
+        warTable.add(title.toLabel(fontSize = Constants.headingFontSize)).row()
         warTable.add(description.toLabel().apply { wrap = true; setAlignment(Align.center) })
             .width(stage.width / 2).row()
         warTable.add(progress.toLabel().apply { wrap = true; setAlignment(Align.center) })
@@ -779,10 +783,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
                 UsedNuclearWeapons -> "Your use of nuclear weapons is disgusting!"
                 StealingTerritory -> "You have stolen our lands!"
                 GaveUsUnits -> "You gave us units!"
-                DestroyedProtectedMinor -> "You destroyed City States that were under our protection!"
-                AttackedProtectedMinor -> "You attacked City States that were under our protection!"
-                BulliedProtectedMinor -> "You demanded tribute from City States that were under our protection!"
-                SidedWithProtectedMinor -> "You sided with a City State over us"
+                DestroyedProtectedMinor -> "You destroyed City-States that were under our protection!"
+                AttackedProtectedMinor -> "You attacked City-States that were under our protection!"
+                BulliedProtectedMinor -> "You demanded tribute from City-States that were under our protection!"
+                SidedWithProtectedMinor -> "You sided with a City-State over us"
                 ReturnedCapturedUnits -> "You returned captured units to us"
             }
             text = text.tr() + " "

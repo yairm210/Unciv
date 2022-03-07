@@ -6,11 +6,23 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Json
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
 import java.io.PrintWriter
 import java.io.StringWriter
 import kotlin.concurrent.thread
+
+/*
+Crashes are now handled from:
+- Event listeners, by [CrashHandlingStage].
+- The main rendering loop, by [UncivGame.render].
+- Threads, by [crashHandlingThread].
+- Main loop runnables, by [postCrashHandlingRunnable].
+
+Altogether, I *think* that should cover 90%-99% of all potential crashes.
+ */
 
 /** Screen to crash to when an otherwise unhandled exception or error is thrown. */
 class CrashScreen(val exception: Throwable): BaseScreen() {
@@ -23,17 +35,79 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
         }
     }
 
-    val text = generateReportHeader() + exception.stringify()
+    /** Qualified class name of the game screen that was active at the construction of this instance, or an error note. */
+    val lastScreenType = try {
+        UncivGame.Current.screen::class.qualifiedName.toString()
+    } catch (e: Throwable) {
+        "Could not get screen type: $e"
+    }
+
+    val text = formatReport(exception.stringify())
     var copied = false
         private set
 
-    fun generateReportHeader(): String {
+    /** @return The last active save game serialized as a compressed string if any, or an informational note otherwise. */
+    private fun tryGetSaveGame()
+        = try {
+            UncivGame.Current.gameInfo.let { gameInfo ->
+                Json().toJson(gameInfo).let {
+                    jsonString -> Gzip.zip(jsonString)
+                }
+            } // Taken from old CrashController().buildReport().
+        } catch (e: Throwable) {
+            "No save data: $e" // In theory .toString() could still error here.
+        }
+
+    /** @return Mods from the last active save game if any, or an informational note otherwise. */
+    private fun tryGetSaveMods()
+        = try { // Also from old CrashController().buildReport(), also could still error at .toString().
+            LinkedHashSet(UncivGame.Current.gameInfo.gameParameters.getModsAndBaseRuleset()).toString()
+        } catch (e: Throwable) {
+            "No mod data: $e"
+        }
+
+
+    /**
+     * @param message Error text. Probably exception traceback.
+     * @return Message with application, platform, and game state metadata.
+     * */
+    private fun formatReport(message: String): String {
+        val indent = " ".repeat(4)
+        val baseIndent = indent.repeat(3) // To be even with the template string.
+        val subIndent = baseIndent + indent // TO be one level more than the template string.
+        /** We only need the indent after any new lines in each substitution itself. So this prepends to all lines, and then removes from the start. */
+        fun String.prependIndentToOnlyNewLines(indent: String) = this.prependIndent(indent).removePrefix(indent)
+        /// The $lastScreenType substitution is the only one completely under the control of this class— Everything else can, in theory, have new lines in it due to containing strings or custom .toString behaviour with new lines (which… I think Table.toString or something actually does). So normalize indentation for basically everything.
         return """
-            Platform: ${Gdx.app.type}
-            Version: ${UncivGame.Current.version}
-            Rulesets: ${RulesetCache.keys}
+            **Platform:** ${Gdx.app.type.toString().prependIndentToOnlyNewLines(subIndent)}
+            **Version:** ${UncivGame.Current.version.prependIndentToOnlyNewLines(subIndent)}
+            **Rulesets:** ${RulesetCache.keys.toString().prependIndentToOnlyNewLines(subIndent)}
+            **Last Screen:** `$lastScreenType`
+            
+            --------------------------------
+            
+            ${UncivGame.Current.crashReportSysInfo?.getInfo().toString().prependIndentToOnlyNewLines(baseIndent)}
+            
+            --------------------------------
             
             
+            **Message:**
+            ```
+            ${message.prependIndentToOnlyNewLines(baseIndent)}
+            ```
+            
+            **Save Mods:**
+            ```
+            ${tryGetSaveMods().prependIndentToOnlyNewLines(baseIndent)}
+            ```
+            
+            **Save Data:**
+            <details><summary>Show Saved Game</summary>
+            
+            ```
+            ${tryGetSaveGame().prependIndentToOnlyNewLines(baseIndent)}
+            ```
+            </details>
             """.trimIndent()
     }
 
@@ -69,7 +143,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return Label for title at top of screen. */
     private fun makeTitleLabel() =
-        "An unrecoverable error has occurred in Unciv:".toLabel(fontSize = 24)
+        "An unrecoverable error has occurred in Unciv:".toLabel(fontSize = Constants.headingFontSize)
             .apply {
                 wrap = true
                 setAlignment(Align.center)
@@ -97,7 +171,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
 
     /** @return Table that displays decision buttons for the bottom of the screen. */
     private fun makeActionButtonsTable(): Table {
-        val copyButton = "Copy".toButton()
+        val copyButton = IconTextButton("Copy", fontSize = Constants.headingFontSize)
             .onClick {
                 Gdx.app.clipboard.contents = text
                 copied = true
@@ -106,7 +180,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                     this@CrashScreen
                 )
             }
-        val reportButton = "Open Issue Tracker".toButton(icon = "OtherIcons/Link")
+        val reportButton = IconTextButton("Open Issue Tracker", ImageGetter.getImage("OtherIcons/Link"), Constants.headingFontSize)
             .onClick {
                 if (copied) {
                     Gdx.net.openURI("https://github.com/yairm210/Unciv/issues")
@@ -117,7 +191,7 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                     )
                 }
             }
-        val closeButton = "Close Unciv".toButton()
+        val closeButton = IconTextButton("Close Unciv", fontSize = Constants.headingFontSize)
             .onClick { Gdx.app.exit() }
 
         val buttonsTable = Table()

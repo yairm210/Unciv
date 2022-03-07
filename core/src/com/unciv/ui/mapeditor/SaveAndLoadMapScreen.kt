@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.logic.map.MapType
@@ -14,7 +15,6 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousScreen: BaseScreen)
@@ -32,17 +32,17 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
             rightSideButtonAction = {
                 mapToSave!!.mapParameters.name = mapNameTextField.text
                 mapToSave.mapParameters.type = MapType.custom
-                thread(name = "SaveMap") {
+                crashHandlingThread(name = "SaveMap") {
                     try {
                         MapSaver.saveMap(mapNameTextField.text, getMapCloneForSave(mapToSave))
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                             game.setScreen(MapEditorScreen(mapToSave))
                             dispose()
                         }
                     } catch (ex: Exception) {
                         ex.printStackTrace()
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             val cantLoadGamePopup = Popup(this)
                             cantLoadGamePopup.addGoodSizedLabel("It looks like your map can't be saved!").row()
                             cantLoadGamePopup.addCloseButton()
@@ -54,11 +54,11 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         } else {
             rightSideButton.setText("Load map".tr())
             rightSideButtonAction = {
-                thread(name = "MapLoader") {
+                crashHandlingThread(name = "MapLoader") {
                     var popup: Popup? = null
                     var needPopup = true    // loadMap can fail faster than postRunnable runs
-                    Gdx.app.postRunnable {
-                        if (!needPopup) return@postRunnable
+                    postCrashHandlingRunnable {
+                        if (!needPopup) return@postCrashHandlingRunnable
                         popup = Popup(this).apply {
                             addGoodSizedLabel("Loading...")
                             open()
@@ -66,22 +66,22 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     }
                     try {
                         val map = MapSaver.loadMap(chosenMap!!, checkSizeErrors = false)
-                        
+
                         val missingMods = map.mapParameters.mods.filter { it !in RulesetCache }.toMutableList()
                         // [TEMPORARY] conversion of old maps with a base ruleset contained in the mods
                             val newBaseRuleset = map.mapParameters.mods.filter { it !in missingMods }.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
                             if (newBaseRuleset != null) map.mapParameters.baseRuleset = newBaseRuleset
                         //
-                        
+
                         if (map.mapParameters.baseRuleset !in RulesetCache) missingMods += map.mapParameters.baseRuleset
-                        
+
                         if (missingMods.isNotEmpty()) {
-                            Gdx.app.postRunnable {
+                            postCrashHandlingRunnable {
                                 needPopup = false
                                 popup?.close()
                                 ToastPopup("Missing mods: [${missingMods.joinToString()}]", this)
                             }
-                        } else Gdx.app.postRunnable {
+                        } else postCrashHandlingRunnable {
                             Gdx.input.inputProcessor = null // This is to stop ANRs happening here, until the map editor screen sets up.
                             try {
                                 // For deprecated maps, set the base ruleset field if it's still saved in the mods field
@@ -90,7 +90,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                                     map.mapParameters.baseRuleset = modBaseRuleset
                                     map.mapParameters.mods -= modBaseRuleset
                                 }
-                                    
+
                                 game.setScreen(MapEditorScreen(map))
                                 dispose()
                             } catch (ex: Throwable) {
@@ -105,7 +105,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                     } catch (ex: Throwable) {
                         needPopup = false
                         ex.printStackTrace()
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             popup?.close()
                             println("Error loading map \"$chosenMap\": ${ex.localizedMessage}")
                             ToastPopup("Error loading map!".tr() +
@@ -184,7 +184,8 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
         deleteButton.setText("Delete map".tr())
 
         mapsTable.clear()
-        for (map in MapSaver.getMaps()) {
+        val collator = UncivGame.Current.settings.getCollatorFromLocale()
+        for (map in MapSaver.getMaps().sortedWith(compareBy(collator) { it.name() })) {
             val existingMapButton = TextButton(map.name(), skin)
             existingMapButton.onClick {
                 for (cell in mapsTable.cells) cell.actor.color = Color.WHITE
@@ -194,7 +195,7 @@ class SaveAndLoadMapScreen(mapToSave: TileMap?, save:Boolean = false, previousSc
                 chosenMap = map
                 mapNameTextField.text = map.name()
                 mapNameTextField.setSelection(Int.MAX_VALUE,Int.MAX_VALUE)  // sets caret to end of text
-                
+
                 deleteButton.enable()
                 deleteButton.color = Color.RED
             }

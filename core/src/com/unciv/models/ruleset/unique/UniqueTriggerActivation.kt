@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.unique
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.MapUnit
@@ -29,6 +28,14 @@ object UniqueTriggerActivation {
         val tileBasedRandom =
             if (tile != null) Random(tile.position.toString().hashCode())
             else Random(-550) // Very random indeed
+
+        if (!unique.conditionalsApply(civInfo, cityInfo)) return false
+
+        val timingConditional = unique.conditionals.firstOrNull{it.type == ConditionalTimedUnique}
+        if (timingConditional!=null) {
+            civInfo.temporaryUniques.add(TemporaryUnique(unique, timingConditional.params[0].toInt()))
+            return true
+        }
 
         @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we're not treating all types here
         when (unique.type) {
@@ -118,20 +125,16 @@ object UniqueTriggerActivation {
             OneTimeFreeGreatPerson, MayanGainGreatPerson -> {
                 if (civInfo.isSpectator()) return false
                 val greatPeople = civInfo.getGreatPeople()
-                if (unique.type == MayanGainGreatPerson) {
-                    if (civInfo.greatPeople.longCountGPPool.isEmpty())
-                        // replenish maya GP pool when dry
-                        civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
-                }
+                if (unique.type == MayanGainGreatPerson && civInfo.greatPeople.longCountGPPool.isEmpty())
+                    civInfo.greatPeople.longCountGPPool = greatPeople.map { it.name }.toHashSet()
                 if (civInfo.isPlayerCivilization()) {
                     civInfo.greatPeople.freeGreatPeople++
+                    // Anyone an idea for a good icon?
                     if (unique.type == MayanGainGreatPerson) {
                         civInfo.greatPeople.mayaLimitedFreeGP++
                         civInfo.addNotification(notification!!, MayaLongCountAction(), MayaCalendar.notificationIcon)
-                    } else {
-                        if (notification != null)
-                            civInfo.addNotification(notification) // Anyone an idea for a good icon?
-                    }
+                    } else if (notification != null)
+                        civInfo.addNotification(notification)
                     return true
                 } else {
                     if (unique.type == MayanGainGreatPerson)
@@ -140,6 +143,7 @@ object UniqueTriggerActivation {
                     var greatPerson = greatPeople.random()
 
                     val preferredVictoryType = civInfo.victoryType()
+                    
                     if (preferredVictoryType == VictoryType.Cultural) {
                         val culturalGP =
                             greatPeople.firstOrNull { it.uniques.contains("Great Person - [Culture]") }

@@ -164,12 +164,12 @@ object ImageGetter {
         return Image(TextureRegion(texture))
     }
 
-    fun getImage(fileName: String): Image {
+    fun getImage(fileName: String?): Image {
         return Image(getDrawable(fileName))
     }
 
-    fun getDrawable(fileName: String): TextureRegionDrawable {
-        return if (textureRegionDrawables.containsKey(fileName)) textureRegionDrawables[fileName]!!
+    fun getDrawable(fileName: String?): TextureRegionDrawable {
+        return if (fileName != null && textureRegionDrawables.containsKey(fileName)) textureRegionDrawables[fileName]!!
         else textureRegionDrawables[whiteDotLocation]!!
     }
 
@@ -260,9 +260,9 @@ object ImageGetter {
     }
 
 
-    fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
-        if (improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
-            return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
+    fun getImprovementIcon(improvementName: String, size: Float = 20f): Group {
+        if (improvementName.startsWith(Constants.remove) || improvementName == Constants.cancelImprovementOrder)
+            return getImage("OtherIcons/Stop").surroundWithCircle(size)
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
@@ -296,8 +296,9 @@ object ImageGetter {
                 .surroundWithCircle(size)
                 .apply { circle.color = colorFromRGB(0, 12, 49) }
         if (level != 0) {
-            val starTable = Table().apply { defaults().pad(2f) }
-            for (i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(size / 3f)
+            val padding = if (level == 3) 0.5f else 2f
+            val starTable = Table().apply { defaults().pad(padding) }
+            for (i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(size / 4f)
             starTable.centerX(circle)
             starTable.y = size / 6f
             circle.addActor(starTable)
@@ -332,7 +333,16 @@ object ImageGetter {
         return redCross
     }
 
-    fun getResourceImage(resourceName: String, size: Float): Actor {
+    fun getArrowImage(align:Int = Align.right): Image {
+        val image = getImage("OtherIcons/ArrowRight")
+        image.setOrigin(Align.center)
+        if (align == Align.left) image.rotation = 180f
+        if (align == Align.bottom) image.rotation = -90f
+        if (align == Align.top) image.rotation = 90f
+        return image
+    }
+
+    fun getResourceImage(resourceName: String, size: Float): IconCircleGroup {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]
                 ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
@@ -370,6 +380,7 @@ object ImageGetter {
     class VerticalProgressBar(width: Float, height: Float):Group() {
         init {
             setSize(width, height)
+            isTransform = false
         }
 
         fun addColor(color: Color, percentage: Float): VerticalProgressBar {

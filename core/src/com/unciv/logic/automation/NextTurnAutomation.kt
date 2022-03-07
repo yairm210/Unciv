@@ -22,7 +22,6 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
-import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
@@ -61,7 +60,7 @@ object NextTurnAutomation {
             bullyCityStates(civInfo)
         }
         automateUnits(civInfo)  // this is the most expensive part
-        
+
         if (civInfo.isMajorCiv()) {
             // Can only be done now, as the prophet first has to decide to found/enhance a religion
             chooseReligiousBeliefs(civInfo)
@@ -70,6 +69,21 @@ object NextTurnAutomation {
         reassignWorkedTiles(civInfo)  // second most expensive
         trainSettler(civInfo)
         tryVoteForDiplomaticVictory(civInfo)
+    }
+
+    fun automateGoldToSciencePercentage(civInfo: CivilizationInfo) {
+        // Don't let the AI run blindly with the default convert-gold-to-science ratio if that option is enabled
+        val estimatedIncome = civInfo.statsForNextTurn.gold.toInt()
+        val projectedGold = civInfo.gold + estimatedIncome 
+        // TODO: some cleverness, this is just wild guessing.
+        val pissPoor = civInfo.tech.era.baseUnitBuyCost
+        val stinkingRich = civInfo.tech.era.startingGold * 10 + civInfo.cities.size * 2 * pissPoor
+        val maxPercent = 0.8f
+        civInfo.tech.goldPercentConvertedToScience = when {
+            civInfo.gold <= 0 -> 0f
+            projectedGold <= pissPoor -> 0f
+            else -> ((projectedGold - pissPoor) * maxPercent / stinkingRich).coerceAtMost(maxPercent)
+        }
     }
 
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
@@ -416,7 +430,7 @@ object NextTurnAutomation {
      *  a unit and selling a building to make room. Can happen due to trades etc */
     private fun freeUpSpaceResources(civInfo: CivilizationInfo) {
         // Can't build spaceships
-        if (!civInfo.hasUnique("Enables construction of Spaceship parts"))
+        if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
             return
 
         for (resource in civInfo.gameInfo.spaceResources) {

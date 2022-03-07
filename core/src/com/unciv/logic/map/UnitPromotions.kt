@@ -1,6 +1,8 @@
 package com.unciv.logic.map
 
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 
 class UnitPromotions {
@@ -66,7 +68,7 @@ class UnitPromotions {
         val promotion = ruleset.unitPromotions[promotionName]!!
         doDirectPromotionEffects(promotion)
 
-        if (promotion.uniqueObjects.none { it.placeholderText == "Doing so will consume this opportunity to choose a Promotion" })
+        if (!promotion.hasUnique("Doing so will consume this opportunity to choose a Promotion"))
             promotions.add(promotionName)
 
         unit.updateUniques(ruleset)
@@ -91,11 +93,14 @@ class UnitPromotions {
             .asSequence()
             .filter { unit.type.name in it.unitTypes && it.name !in promotions }
             .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
-            .filter { 
-                it.uniqueObjects.none { 
-                    unique -> unique.placeholderText == "Incompatible with []" 
-                    && promotions.any { chosenPromotions -> chosenPromotions == unique.params[0] } 
+            .filter {
+                it.getMatchingUniques(UniqueType.IncompatibleWith).all {
+                    unique -> !promotions.contains(unique.params[0])
                 }
+            }
+            .filter { promotion -> promotion.uniqueObjects
+                .none { it.type == UniqueType.OnlyAvailableWhen
+                        && !it.conditionalsApply(StateForConditionals(unit.civInfo, unit = unit))  }
             }
     }
 

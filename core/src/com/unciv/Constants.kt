@@ -6,7 +6,6 @@ object Constants {
     const val eraSpecificUnit = "Era Starting Unit"
     const val spreadReligionAbilityCount = "Spread Religion"
     const val removeHeresyAbilityCount = "Remove Foreign religions from your own cities"
-    const val hideFromCivilopediaUnique = "Will not be displayed in Civilopedia"
 
     const val impassable = "Impassable"
     const val ocean = "Ocean"
@@ -22,14 +21,11 @@ object Constants {
 
     const val forest = "Forest"
     const val jungle = "Jungle"
-
-    const val marsh = "Marsh"
-    const val oasis = "Oasis"
-    const val atoll = "Atoll"
     const val ice = "Ice"
-    const val floodPlains = "Flood plains"
     val vegetation = arrayOf(forest, jungle)
     val sea = arrayOf(ocean, coast)
+    
+    const val freshWater = "Fresh water"
 
     const val barbarianEncampment = "Barbarian encampment"
 
@@ -37,10 +33,10 @@ object Constants {
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
     const val random = "Random"
+    const val unknownNationName = "???"
 
     const val fort = "Fort"
     const val citadel = "Citadel"
-    const val tradingPost = "Trading post"
 
     const val futureTech = "Future Tech"
     // Easter egg name. Hopefully is to hopefully avoid conflicts when later players can name their own religions.
@@ -54,8 +50,6 @@ object Constants {
     const val close = "Close"
     const val yes = "Yes"
     const val no = "No"
-    const val enabled = "enabled"
-    const val disabled = "disabled"
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
@@ -63,6 +57,11 @@ object Constants {
 
     const val rising = "Rising"
     const val lowering = "Lowering"
+    const val remove = "Remove "
+    
+    const val uniqueOrDelimiter = "\" OR \""
     
     const val minimumMovementEpsilon = 0.05
+    const val defaultFontSize = 18
+    const val headingFontSize = 24
 }

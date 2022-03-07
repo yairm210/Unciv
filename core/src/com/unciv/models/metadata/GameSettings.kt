@@ -39,7 +39,7 @@ class GameSettings {
 
     var showMinimap: Boolean = true
     var minimapSize: Int = 6    // default corresponds to 15% screen space
-    var showPixelUnits: Boolean = false
+    var showPixelUnits: Boolean = true
     var showPixelImprovements: Boolean = true
     var continuousRendering = false
     var userId = ""

@@ -1,3 +1,323 @@
+## 3.19.14
+
+By SomeTroglodyte:
+- Sort maps & accelerate playing a newly edited map
+- Fixed many minor UI bugs
+- WLTK decorations
+- Improve unique replacement for +/- amounts
+- Locate Mod Errors - choose base ruleset to do complex check against
+- Move automated units button was showing when it didn't do anything
+
+Added deep link to multiplayer games  - By GGGuenni
+
+Block Embarked from capturing Civilians on Water  - By itanasi
+
+Translations update
+
+## 3.19.13
+
+Minor performance improvements
+
+By SomeTroglodyte:
+- Fixed Spaceship production bonuses
+- Fixed Ctrl-Letter key bindings
+- Fixed Polynesia's Wayfinding
+- Fixed Petra and Garden not allowed in some cases
+
+Align Embarked Defense Strength per Era  - By itanasi
+
+## 3.19.12
+
+Modding: Multiple Unique documentation improvement
+
+By SomeTroglodyte:
+- Slider fixes
+- Rudimentary AI control over goldPercentConvertedToScience
+
+Fix Navies capturing Land Civilians - By itanasi
+
+Translation updates
+
+## 3.19.11
+
+Mod autoupdate improvements
+
+Performance improvements
+
+Added "copy to clipboard" button for mod errors
+
+Multiple small improvements
+
+By SomeTroglodyte:
+- Resolved no-barbarian mod error
+- Minimum window size
+
+By xlenstra:
+- Reorganized the way city states grant resources
+- Made spaceship parts units instead of buildings
+- Added mod constants for the distance between two cities
+
+By itanasi:
+- Updating Embarking Tutorial with more details
+- Made multiple tile defense bonuses stack
+
+## 3.19.10
+
+Show json parsing errors for mods in the options menu
+
+AI only builds work boats for buildable improvements
+
+Trigger uniques by sacrificing units with conditional
+
+By xlenstra:
+- Damage in battle table is now the average damage done
+- Added conditional checking for tiles
+
+By itanasi:
+- Show Improvements that are buildable after Removing TerrainFeature
+- Embarking penalty logic fix
+- Prevent Civilians from capturing Civilians
+
+Fix for music resumes after minimizing on android - By SomeTroglodyte
+
+## 3.19.9
+
+Transported units reveal tiles as if they passed through the path of the transporting unit
+
+Captured unit notifications now sent to the correct civ :)
+
+Modding: Better unique typechecking and autoreplace, added new conditionals
+
+Can see improvement removal icons in Civilopedia
+
+Fixed untranslated texts, mainly in Civilopedia
+
+Add Amphibious penalty to Land attacking into Water and vice versa - By itanasi
+
+## 3.19.8
+
+Framerate improvements
+
+Performance improvements for wartime AI
+
+Modding: Arbitrary uniques can become timed uniques with a special conditional!
+
+Correctly recognize mod changes of content, not just metadata
+
+Destroyed units on capture provide the correct notification
+
+Loading a new game while nextTurn is running no longer reverts you to that game
+
+## 3.19.7
+
+Better conditionals for modding
+
+Withdraw chances can stack
+
+By itanasi:
+- Sea Unit can't capture Land Civilian (and vice versa)
+- Notify when Barbs don't give more XP
+
+## 3.19.6
+
+UI improvements across the board
+
+Map performance improvements
+
+Better mod loading error messages, added options button to reload all rulesets
+
+Exploring and automating workers are some of the most common actions, they don't deserve to be behind a 'get additional actions' click
+
+Flood plains no longer generate on desert hills
+
+Also capture Civilian Unit when capturing during battle - By itanasi
+
+Fixed a bug where units requiring nearby units for bonuses could find themselves - By xlenstra
+
+## 3.19.5
+
+HUGE reduction is memory consumption!
+
+Performance improvements!
+
+Greatly reduced loading times when mods are installed
+
+Better terrain moddability + Added unique to convert terrains if adjacent to something
+
+"Must be next to [terrainFilter]" now applicable on improvements
+
+Added mod warnings for empty ally and friend bonuses
+
+By xlenstra:
+- Fixed a bug where stats from uniques would exponentially grow
+- Fixed a bug where open borders, war declarations and cities could not be traded
+
+## 3.19.4
+
+Caught more mod failure conditions, removed certain assumptions from map creation
+
+Unique replacement warnings show the correct replacement with filled parameters
+
+By xlenstra:
+- Fixed a bug where unit discounts would not work
+- Fixed a crash when opening and closing the options menu in quick succession
+
+Fix art for farms on hills  - By SpacedOutChicken
+
+## 3.19.3
+
+Huge performance improvements to "next turn" 
+
+Removed mod dependency on specific terrains and resources
+
+By xlenstra:
+- Resources can now again provide uniques applying to the entire civ
+- Fixed a few rare mod-specific crashes
+
+New caravel image - By touhidurrr
+
+Minor logic cleanup  - By itanasi
+
+## 3.19.2
+
+Stat bonus drilldown in cities
+
+Performance improvements
+
+By will-ca:
+- Try to fix potential typos in stock rulesets.
+- Wiki improvements!
+- Make sure units always have starting promotions.
+
+By xlenstra:
+- Fixed the problems with the food carry-over unique
+- Made unhappiness effects moddable by adding a global uniques json
+  added revolts when < -20 happiness
+- Fixed a missing percentage sign in uniques
+
+Ranged capture  - By itanasi
+
+## 3.19.1
+
+Better drilldown to stat sources in city screen
+
+Start bias includes neighboring tiles for better effect
+
+Cleaner tech order display
+
+Better unique documentation - By xlenstra
+
+By will-ca:
+- Check rulesets for potential typos.
+- Avoid potential crashes when deleting mods.
+- Fix uneven fonts, unify font sizes.
+- Make "Help" button clearer and translatable, random nation indicators and labels translatable.
+
+Destroy Arsenal when city is captured  - By SpacedOutChicken
+
+## 3.19.0
+
+Vastly improved worker AI for mods, and AI utilization of workers
+
+Added button to update an installed mod from its action menu
+
+Converted all stat percent uniques to be iterated on efficiently once!
+
+Fixed a conversion error in "% city strength from defensive buildings" unique - By xlenstra
+
+## 3.18.19
+
+Worker AI improvements for modded improvements and terrains
+
+Performance improvements
+
+Minor UI improvements
+
+By will-ca:
+- Unified icon button UI
+- Added missing translation terms
+
+## 3.18.18
+
+"Cannot be built with" unique catches building equivalents as well
+
+Unique deprecation and textual improvements
+
+By will-ca:
+- Explain when cities can't be razed in Civilopedia
+- Solved "overlapping tiles" in modded tilesets
+- Fix a tiny and limited memory leak
+
+Made attacked civilians lose 40 hp as in civ5.  - By ravignir
+
+Capturing Civilians not considered an Attack  - By itanasi
+
+## 3.18.17
+
+Handling for multiplayer download errors
+
+Fixed fringe-case crashes
+
+By xlenstra:
+- Fixed a bug that occasionally placed hills on top of mountains
+- Made all the other constants determining the strength of cities moddable
+- Fixed a bug where citadels did not damage nearby units
+- Updated the natural wonders for vanilla
+
+Fix incorrect Archer obsolete  - By AdityaMH
+
+## 3.18.16
+
+Deprecation of requiredBuildingInAllCities
+
+Removed support for stat-named specialists
+
+Checks for parameter types of conditionals in mods
+
+By xlenstra:
+- Added a way to add moddable constants
+- Fixed 'cannot built on [strategic resource]' not working
+- Expanded the buildingFilter to include options for national wonders
+
+More informative reports for crashes in threads - By will-ca
+
+Fix missing siege unit resources needs for vanilla  - By AdityaMH
+
+## 3.18.15
+
+Detailed sources of battle modifiers
+
+Performance improvements
+
+By xlenstra:
+- Disables '[cityState] is afraid of your military power' for spectators & other non-major civs
+- Fixed a bug where great improvements could not be repaired after being pillaged
+- Fixed border image alpha
+
+Revert "Remove periodic saving again " (#5883) - By touhidurrr
+
+Added `tileScale` in `TileSetConfig` - By will-ca
+
+## 3.18.14
+
+By will-ca:
+- Unify and improve moddability of more tile-based images, including border images.
+- Arrows in Default tileset.
+
+By xlenstra:
+- Added more yield icons to the city screen
+- Reworked nukes again
+- Updated uniques
+- Fixed a bug with unit discount
+
+Stop promoting units with 0 movement via the promotion screen - By yairm210
+
+Delete unused image - By hundun000
+
+Remove periodic saving again - By GGGuenni
+
+Dispose object Graphics2D if it isn't used - By lishaoxia1985
+
 ## 3.18.13
 
 Stat names also include the stat icon :)
@@ -1485,7 +1805,7 @@ Tech info can display more than one revealed resource
 
 Experimental World Wrap - By GGGuenni!
 
-Resolved #3639 - City states that can't be connected by land no longer assign road connection quests
+Resolved #3639 - City-States that can't be connected by land no longer assign road connection quests
 
 Fix when Trade Gold = 0 it also shows in offer - By lishaoxia1985
 
@@ -2487,7 +2807,7 @@ Greatly improved performance of worker's automated city connecting
 
 Resolved #2853 - Sped up loading of saved game list
 
-Resolved #2852 - cannot make peace with a city state while at war with its ally
+Resolved #2852 - cannot make peace with a City-State while at war with its ally
 
 Resolved #2864 - Locks on tiles are removed when the tile is no longer under your control
 
@@ -2586,7 +2906,7 @@ Added an installation problem solution on Ubuntu - By illantalex
 
 ## 3.9.8
 
-Resolved #2787 - AIs MUCH more likely to build the Apollo Program and win a scientific victory
+Resolved #2787 - AIs MUCH more likely to build the Apollo Program and win a Scientific Victory
 
 Resolved #2789 - losing a resource no longer cancells all trades with that resource, only as many as is necessary to reach equilibrium
 

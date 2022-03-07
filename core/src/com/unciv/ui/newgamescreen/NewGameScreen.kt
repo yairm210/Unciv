@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Array
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
@@ -17,7 +18,6 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
-import kotlin.concurrent.thread
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
@@ -109,7 +109,7 @@ class NewGameScreen(
                 val mapSize = gameSetupInfo.mapParameters.mapSize
                 val message = mapSize.fixUndesiredSizes(gameSetupInfo.mapParameters.worldWrap)
                 if (message != null) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
                         with (mapOptionsTable.generatedMapOptionsTable) {
                             customMapSizeRadius.text = mapSize.radius.toString()
@@ -125,7 +125,7 @@ class NewGameScreen(
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
-            thread(name = "NewGame") {
+            crashHandlingThread(name = "NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
                 newGameThread()
             }
@@ -135,11 +135,11 @@ class NewGameScreen(
     private fun initLandscape() {
         scrollPane.setScrollingDisabled(true,true)
 
-        topTable.add("Game Options".toLabel(fontSize = 24)).pad(20f, 0f)
+        topTable.add("Game Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f, 0f)
         topTable.addSeparatorVertical(Color.BLACK, 1f)
-        topTable.add("Map Options".toLabel(fontSize = 24)).pad(20f,0f)
+        topTable.add("Map Options".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
         topTable.addSeparatorVertical(Color.BLACK, 1f)
-        topTable.add("Civilizations".toLabel(fontSize = 24)).pad(20f,0f)
+        topTable.add("Civilizations".toLabel(fontSize = Constants.headingFontSize)).pad(20f,0f)
         topTable.addSeparator(Color.CLEAR, height = 1f)
 
         topTable.add(ScrollPane(newGameOptionsTable)
@@ -177,11 +177,12 @@ class NewGameScreen(
     }
 
     private fun newGameThread() {
+        val newGame:GameInfo
         try {
             newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
             exception.printStackTrace()
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 Popup(this).apply {
                     addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
                     addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
@@ -192,36 +193,41 @@ class NewGameScreen(
                 rightSideButton.enable()
                 rightSideButton.setText("Start game!".tr())
             }
+            return
         }
 
-        if (newGame != null && gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-            newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
+        if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+            newGame.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
             try {
-                OnlineMultiplayer().tryUploadGame(newGame!!, withPreview = true)
+                OnlineMultiplayer().tryUploadGame(newGame, withPreview = true)
 
-                // Save gameId to clipboard because you have to do it anyway.
-                Gdx.app.clipboard.contents = newGame!!.gameId
-                // Popup to notify the User that the gameID got copied to the clipboard
-                Gdx.app.postRunnable { ToastPopup("gameID copied to clipboard".tr(), game.worldScreen, 2500) }
-
-                GameSaver.autoSave(newGame!!) {}
+                GameSaver.autoSave(newGame)
 
                 // Saved as Multiplayer game to show up in the session browser
-                val newGamePreview = newGame!!.asPreview()
+                val newGamePreview = newGame.asPreview()
                 GameSaver.saveGame(newGamePreview, newGamePreview.gameId)
             } catch (ex: Exception) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     Popup(this).apply {
                         addGoodSizedLabel("Could not upload game!")
                         addCloseButton()
                         open()
                     }
                 }
-                newGame = null
+                return
             }
         }
 
-        Gdx.graphics.requestRendering()
+        postCrashHandlingRunnable {
+            game.loadGame(newGame)
+            previousScreen.dispose()
+            if (newGame.gameParameters.isOnlineMultiplayer) {
+                // Save gameId to clipboard because you have to do it anyway.
+                Gdx.app.clipboard.contents = newGame.gameId
+                // Popup to notify the User that the gameID got copied to the clipboard
+                ToastPopup("Game ID copied to clipboard!".tr(), game.worldScreen, 2500)
+            }
+        }
     }
 
     fun updateRuleset() {
@@ -246,16 +252,6 @@ class NewGameScreen(
         playerPickerTable.update()
         newGameOptionsTable.gameParameters = gameSetupInfo.gameParameters
         newGameOptionsTable.update()
-    }
-
-    var newGame: GameInfo? = null
-
-    override fun render(delta: Float) {
-        if (newGame != null) {
-            game.loadGame(newGame!!)
-            previousScreen.dispose()
-        }
-        super.render(delta)
     }
 
     override fun resize(width: Int, height: Int) {

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -14,20 +13,26 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Ruleset.RulesetError
+import com.unciv.models.ruleset.Ruleset.RulesetErrorSeverity
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
-import kotlin.concurrent.thread
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -41,11 +46,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
-    private var modCheckCheckBox: CheckBox? = null
-    private var modCheckResultCell: Cell<Actor>? = null
+    private var modCheckBaseSelect: TranslatedSelectBox? = null
+    private val modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
 
     //endregion
+
+    companion object {
+        private const val modCheckWithoutBase = "-none-"
+    }
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
@@ -261,59 +270,203 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
     private fun getModCheckTab() = Table(BaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
-        modCheckCheckBox = "Check extension mods based on vanilla".toCheckBox {
-            runModChecker(it)
+        val reloadModsButton = "Reload mods".toTextButton().onClick {
+            runModChecker(modCheckBaseSelect!!.selected.value)
         }
-        add(modCheckCheckBox).row()
-        modCheckResultCell = add("Checking mods for errors...".toLabel())
+        add(reloadModsButton).row()
+
+        val labeledBaseSelect = Table(BaseScreen.skin).apply {
+            add("Check extension mods based on:".toLabel()).padRight(10f)
+            val baseMods = listOf(modCheckWithoutBase) + RulesetCache.getSortedBaseRulesets()
+            modCheckBaseSelect = TranslatedSelectBox(baseMods, modCheckWithoutBase, BaseScreen.skin).apply {
+                selectedIndex = 0
+                onChange {
+                    runModChecker(modCheckBaseSelect!!.selected.value)
+                }
+            }
+            add(modCheckBaseSelect)
+        }
+        add(labeledBaseSelect).row()
+
+        add(modCheckResultTable)
     }
 
-    private fun runModChecker(complex: Boolean = false) {
+    private fun runModChecker(base: String = modCheckWithoutBase) {
+
         modCheckFirstRun = false
-        if (modCheckCheckBox == null) return
-        modCheckCheckBox!!.disable()
-        if (modCheckResultCell == null) return
-        thread(name="ModChecker") {
-            val lines = ArrayList<FormattedLine>()
-            var noProblem = true
+        if (modCheckBaseSelect == null) return
+
+        modCheckResultTable.clear()
+
+        val rulesetErrors = RulesetCache.loadRulesets()
+        if (rulesetErrors.isNotEmpty()) {
+            val errorTable = Table().apply { defaults().pad(2f) }
+            for (rulesetError in rulesetErrors)
+                errorTable.add(rulesetError.toLabel()).width(stage.width / 2).row()
+            modCheckResultTable.add(errorTable)
+        }
+
+        modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
+        modCheckBaseSelect!!.isDisabled = true
+
+        crashHandlingThread(name="ModChecker") {
             for (mod in RulesetCache.values.sortedBy { it.name }) {
-                // Appending {} is a dirty trick to deactivate the automatic translation which would drop [] from unique messages
-                lines += FormattedLine("$mod", starred = true, header = 3)
+                if (base != modCheckWithoutBase && mod.modOptions.isBaseRuleset) continue
 
                 val modLinks =
-                    if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
-                    else mod.checkModLinks()
-                for (error in modLinks.sortedByDescending { it.errorSeverityToReport }) {
-                    val color = when (error.errorSeverityToReport) {
-                        Ruleset.RulesetErrorSeverity.OK -> "#00FF00"
-                        Ruleset.RulesetErrorSeverity.Warning,
-                        Ruleset.RulesetErrorSeverity.WarningOptionsOnly -> "#FFFF00"
-                        Ruleset.RulesetErrorSeverity.Error -> "#FF0000"
-                    }
-                    lines += FormattedLine(error.text, color = color)
-                }
-                if (modLinks.isNotOK()) noProblem = false
-                lines += FormattedLine()
-            }
-            if (noProblem) lines += FormattedLine("{No problems found}.",)
+                        if (base == modCheckWithoutBase) mod.checkModLinks(forOptionsPopup = true)
+                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base)
+                modLinks.sortByDescending { it.errorSeverityToReport }
+                val noProblem = !modLinks.isNotOK()
+                if (modLinks.isNotEmpty()) modLinks += RulesetError("", RulesetErrorSeverity.OK)
+                if (noProblem) modLinks += RulesetError("No problems found.".tr(), RulesetErrorSeverity.OK)
 
-            Gdx.app.postRunnable {
-                // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
-                // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
-                // Instead, some manual work needs to be put in.
-                val resultTable = Table().apply { defaults().align(Align.left) }
-                for (line in lines) {
-                    val label = if (line.starred) Label(line.text+"\n", BaseScreen.skin)
-                        .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
-                    else Label(line.text+"\n", BaseScreen.skin)
-                        .apply { if (line.color != "") color = Color.valueOf(line.color) }
-                    label.wrap = true
-                    resultTable.add(label).width(stage.width/2).row()
+                postCrashHandlingRunnable {
+                    // When the options popup is already closed before this postRunnable is run,
+                    // Don't add the labels, as otherwise the game will crash
+                    if (stage == null) return@postCrashHandlingRunnable
+                    // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
+                    // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
+                    // Instead, some manual work needs to be put in.
+
+                    val iconColor = modLinks.getFinalSeverity().color
+                    val iconName = when(iconColor) {
+                        Color.RED -> "OtherIcons/Stop"
+                        Color.YELLOW -> "OtherIcons/ExclamationMark"
+                        else -> "OtherIcons/Checkmark"
+                    }
+                    val icon = ImageGetter.getImage(iconName)
+                        .apply { color = Color.BLACK }
+                        .surroundWithCircle(30f, color = iconColor)
+
+                    val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = false) {
+                        it.defaults().align(Align.left)
+                        if (!noProblem && mod.folderLocation != null) {
+                            val replaceableUniques = getDeprecatedReplaceableUniques(mod)
+                            if (replaceableUniques.isNotEmpty())
+                                it.add("Autoupdate mod uniques".toTextButton()
+                                    .onClick { autoUpdateUniques(mod, replaceableUniques) }).pad(10f).row()
+                        }
+                        for (line in modLinks) {
+                            val label = Label(line.text, BaseScreen.skin)
+                                .apply { color = line.errorSeverityToReport.color }
+                            label.wrap = true
+                            it.add(label).width(stage.width / 2).row()
+                        }
+                        if (!noProblem)
+                            it.add("Copy to clipboard".toTextButton().onClick {
+                                Gdx.app.clipboard.contents = modLinks
+                                    .joinToString("\n") { line -> line.text }
+                            }).row()
+                    }
+
+                    val loadingLabel = modCheckResultTable.children.last()
+                    modCheckResultTable.removeActor(loadingLabel)
+                    modCheckResultTable.add(expanderTab).row()
+                    modCheckResultTable.add(loadingLabel).row()
                 }
-                modCheckResultCell?.setActor(resultTable)
-                modCheckCheckBox!!.enable()
+            }
+
+            // done with all mods!
+            postCrashHandlingRunnable {
+                modCheckResultTable.removeActor(modCheckResultTable.children.last())
+                modCheckBaseSelect!!.isDisabled = false
             }
         }
+    }
+
+    private fun getDeprecatedReplaceableUniques(mod:Ruleset): HashMap<String, String> {
+
+        val objectsToCheck = sequenceOf(
+            mod.units,
+            mod.tileImprovements,
+            mod.unitPromotions,
+            mod.buildings,
+            mod.policies,
+            mod.nations,
+            mod.beliefs,
+            mod.technologies,
+        )
+        val allDeprecatedUniques = HashSet<String>()
+        val deprecatedUniquesToReplacementText = HashMap<String, String>()
+
+        val deprecatedUniques = objectsToCheck
+            .flatMap { it.values }
+            .flatMap { it.uniqueObjects }
+            .filter { it.getDeprecationAnnotation() != null }
+
+
+        for (deprecatedUnique in deprecatedUniques) {
+            if (allDeprecatedUniques.contains(deprecatedUnique.text)) continue
+            allDeprecatedUniques.add(deprecatedUnique.text)
+
+            // note that this replacement does not contain conditionals attached to the original!
+
+
+            var uniqueReplacementText = deprecatedUnique.getReplacementText(mod)
+            while (Unique(uniqueReplacementText).getDeprecationAnnotation() != null)
+                uniqueReplacementText = Unique(uniqueReplacementText).getReplacementText(mod)
+
+            for (conditional in deprecatedUnique.conditionals)
+                uniqueReplacementText += " <${conditional.text}>"
+            val replacementUnique = Unique(uniqueReplacementText)
+
+            val modInvariantErrors = mod.checkUnique(
+                replacementUnique,
+                false,
+                "",
+                UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
+                deprecatedUnique.sourceObjectType!!
+            )
+            for (error in modInvariantErrors)
+                println(error.text + " - " + error.errorSeverityToReport)
+            if (modInvariantErrors.isNotEmpty()) continue // errors means no autoreplace
+
+            if (mod.modOptions.isBaseRuleset) {
+                val modSpecificErrors = mod.checkUnique(
+                    replacementUnique,
+                    false,
+                    "",
+                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
+                    deprecatedUnique.sourceObjectType
+                )
+                for (error in modSpecificErrors)
+                    println(error.text + " - " + error.errorSeverityToReport)
+                if (modSpecificErrors.isNotEmpty()) continue
+            }
+
+            deprecatedUniquesToReplacementText[deprecatedUnique.text] = uniqueReplacementText
+            println("Replace \"${deprecatedUnique.text}\" with \"$uniqueReplacementText\"")
+        }
+        return deprecatedUniquesToReplacementText
+    }
+
+    private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>, ) {
+
+        val filesToReplace = listOf(
+            "Units.json",
+            "TileImprovements.json",
+            "UnitPromotions.json",
+            "Buildings.json",
+            "Policies.json",
+            "Nations.json",
+            "Beliefs.json",
+            "Techs.json",
+        )
+
+        val jsonFolder = mod.folderLocation!!.child("jsons")
+        for (fileName in filesToReplace) {
+            val file = jsonFolder.child(fileName)
+            if (!file.exists() || file.isDirectory) continue
+            var newFileText = file.readString()
+            for ((original, replacement) in replaceableUniques) {
+                newFileText = newFileText.replace("\"$original\"", "\"$replacement\"")
+            }
+            file.writeString(newFileText, false)
+        }
+        val toastText = "Uniques updated!"
+        ToastPopup(toastText, screen).open(true)
+        runModChecker()
     }
 
     private fun getDebugTab() = Table(BaseScreen.skin).apply {
@@ -440,7 +593,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Sound effects volume".tr()).left().fillX()
 
         val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
-            initial = settings.soundEffectsVolume
+            initial = settings.soundEffectsVolume,
+            getTipText = UncivSlider::formatPercent
         ) {
             settings.soundEffectsVolume = it
             settings.save()
@@ -453,7 +607,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
             initial = settings.musicVolume,
-            sound = UncivSound.Silent
+            sound = UncivSound.Silent,
+            getTipText = UncivSlider::formatPercent
         ) {
             settings.musicVolume = it
             settings.save()
@@ -504,7 +659,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         label.wrap = true
         add(label).padTop(20f).colspan(2).fillX().row()
         previousScreen.game.musicController.onChange {
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 label.setText("Currently playing: [$it]".tr())
             }
         }
@@ -523,15 +678,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             errorTable.add("Downloading...".toLabel())
 
             // So the whole game doesn't get stuck while downloading the file
-            thread(name = "Music") {
+            crashHandlingThread(name = "Music") {
                 try {
                     previousScreen.game.musicController.downloadDefaultFile()
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         tabs.replacePage("Sound", getSoundTab())
                         previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
                     }
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         errorTable.clear()
                         errorTable.add("Could not download music!".toLabel(Color.RED))
                     }

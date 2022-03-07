@@ -107,7 +107,9 @@ class CivilopediaScreen(
             // Alphabetical order of localized names, using system default locale
             entries = entries.sortedWith(
                 compareBy<CivilopediaEntry>{ it.sortBy }
-                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), { it.name.tr() })
+                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), {
+                        // In order for the extra icons on Happiness and Faith to not affect sort order
+                        it.name.tr().replace(Fonts.happiness.toString(),"").replace(Fonts.faith.toString(),"") })
             )
 
         var currentY = -1f
@@ -171,16 +173,15 @@ class CivilopediaScreen(
         val imageSize = 50f
         onBackButtonClicked { game.setScreen(previousScreen) }
 
-        val hideReligionItems = !game.gameInfo.isReligionEnabled()
+        val religionEnabled = game.gameInfo.isReligionEnabled()
 
-        fun shouldBeDisplayed(uniqueObjects: List<Unique>): Boolean {
-            val uniques = uniqueObjects.map { it.placeholderText }
-
-            return Constants.hideFromCivilopediaUnique !in uniques
-                    && !(hideReligionItems && uniqueObjects.any { it.isOfType(UniqueType.HiddenWithoutReligion) } )
-                    && !(uniqueObjects.filter { unique -> unique.placeholderText == "Hidden when [] Victory is disabled"}.any {
-                    unique -> !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0] ))
-            })
+        fun shouldBeDisplayed(obj: IHasUniques): Boolean {
+            return when {
+                obj.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
+                (!religionEnabled && obj.hasUnique(UniqueType.HiddenWithoutReligion)) -> false
+                obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(it.params[0] )) } -> false
+                else -> true
+            }
         }
 
         fun getCategoryIterator(category: CivilopediaCategories): Collection<ICivilopediaText> =
@@ -203,10 +204,10 @@ class CivilopediaScreen(
 
         for (loopCategory in CivilopediaCategories.values()) {
             if (loopCategory.hide) continue
-            if (hideReligionItems && loopCategory == CivilopediaCategories.Belief) continue
+            if (!religionEnabled && loopCategory == CivilopediaCategories.Belief) continue
             categoryToEntries[loopCategory] =
                 getCategoryIterator(loopCategory)
-                    .filter { (it as? IHasUniques)?.let { obj -> shouldBeDisplayed(obj.uniqueObjects) } ?: true }
+                    .filter { (it as? IHasUniques)?.let { obj -> shouldBeDisplayed(obj) } ?: true }
                     .map { CivilopediaEntry(
                         (it as INamed).name,
                         loopCategory.getImage?.invoke(it.getIconName(), imageSize),
@@ -220,11 +221,10 @@ class CivilopediaScreen(
         buttonTable.defaults().pad(10f)
 
         var currentX = 10f  // = padLeft
-        for (categoryKey in categoryToEntries.keys) {
-            val button = Button(skin)
-            if (categoryKey.headerIcon.isNotEmpty())
-                button.add(ImageGetter.getImage(categoryKey.headerIcon)).size(20f).padRight(5f)
-            button.add(categoryKey.label.toLabel())
+        for ((categoryKey, entries) in categoryToEntries) {
+            if (entries.isEmpty()) continue
+            val icon = if (categoryKey.headerIcon.isNotEmpty()) ImageGetter.getImage(categoryKey.headerIcon) else null
+            val button = IconTextButton(categoryKey.label, icon)
             button.addTooltip(categoryKey.key)
 //            button.style = ImageButton.ImageButtonStyle(button.style)
             button.onClick { selectCategory(categoryKey) }
@@ -239,7 +239,7 @@ class CivilopediaScreen(
 
         val goToGameButton = Constants.close.toTextButton()
         goToGameButton.onClick {
-            game.setWorldScreen()
+            game.setScreen(previousScreen)
             dispose()
         }
 

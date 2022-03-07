@@ -2,6 +2,7 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.ReligionState
@@ -47,7 +48,7 @@ class ReligionOverviewTable(
     
     private fun addCivSpecificStats(statsTable: Table) {
         if (viewingPlayer.religionManager.canGenerateProphet()) {
-            statsTable.add("Minimal faith required for\nthe next [great prophet equivalent]:"
+            statsTable.add("Minimal Faith required for\nthe next [great prophet equivalent]:"
                 .fillPlaceholders(viewingPlayer.religionManager.getGreatProphetEquivalent()!!)
                 .toLabel()
             ).left()
@@ -73,7 +74,7 @@ class ReligionOverviewTable(
             val button: Button
             if (religion.isPantheon()) {
                 val image = if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName)
-                    ImageGetter.getNationIndicator(gameInfo.getCivilization(religion.foundingCivName).nation, 60f)
+                    ImageGetter.getNationIndicator(religion.getFounder().nation, 60f)
                 else
                     ImageGetter.getRandomNationIndicator(60f)
                 button = Button(image, BaseScreen.skin)
@@ -111,7 +112,7 @@ class ReligionOverviewTable(
         val foundingCivName =
             if (viewingPlayer.knows(religion.foundingCivName) || viewingPlayer.civName == religion.foundingCivName) 
                 religion.foundingCivName
-            else "???"
+            else Constants.unknownNationName
         statsTable.add(foundingCivName.toLabel()).right().pad(5f).row()
         if (religion.isMajorReligion()) {
             val holyCity = gameInfo.getCities().firstOrNull { it.religion.religionThisIsTheHolyCityOf == religion.name }
@@ -120,12 +121,12 @@ class ReligionOverviewTable(
                 val cityName = 
                     if (viewingPlayer.exploredTiles.contains(holyCity.getCenterTile().position))
                         holyCity.name
-                    else "???"
+                    else Constants.unknownNationName
                 statsTable.add(cityName.toLabel()).right().pad(5f).row()
             }
         }
         statsTable.add("Cities following this religion:".toLabel()).left()
-        statsTable.add(gameInfo.getCivilization(religion.foundingCivName).religionManager.numberOfCitiesFollowingThisReligion().toString()).right().pad(5f).row()
+        statsTable.add(religion.getFounder().religionManager.numberOfCitiesFollowingThisReligion().toString()).right().pad(5f).row()
         
         val minWidth = max(statsTable.minWidth, beliefsTable.minWidth) + 5
         
@@ -138,7 +139,7 @@ class ReligionOverviewTable(
     private fun createBeliefDescription(belief: Belief) =
         MarkupRenderer.render(
             belief.run { sequence {
-                yield(FormattedLine(name, size = 24, centered = true))
+                yield(FormattedLine(name, size = Constants.headingFontSize, centered = true))
                 yield(FormattedLine())
                 yieldAll(getCivilopediaTextLines(gameInfo.ruleSet, true))
             } }.toList()

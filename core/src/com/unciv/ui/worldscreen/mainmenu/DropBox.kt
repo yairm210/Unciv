@@ -144,8 +144,29 @@ object DropBox {
 
 }
 
+interface IFileStorage {
+    fun saveFileData(fileName: String, data: String)
+    fun loadFileData(fileName: String): String
+}
+
+class DropboxFileStorage:IFileStorage{
+    // This is the location in Dropbox only
+    fun getLocalGameLocation(gameId: String) = "/MultiplayerGames/$gameId"
+
+    override fun saveFileData(fileName: String, data: String) {
+        val fileLocationDropbox = getLocalGameLocation(fileName)
+        DropBox.uploadFile(fileLocationDropbox, data, true)
+    }
+
+    override fun loadFileData(fileName: String): String {
+        return DropBox.downloadFileAsString(getLocalGameLocation(fileName))
+    }
+
+}
+
 class OnlineMultiplayer {
-    fun getGameLocation(gameId: String) = "/MultiplayerGames/$gameId"
+    val fileStorage:IFileStorage = DropboxFileStorage()
+
 
     fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         // We upload the gamePreview before we upload the game as this
@@ -155,7 +176,7 @@ class OnlineMultiplayer {
         }
 
         val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
-        DropBox.uploadFile(getGameLocation(gameInfo.gameId), zippedGameInfo, true)
+        fileStorage.saveFileData(gameInfo.gameId, zippedGameInfo)
     }
 
     /**
@@ -166,16 +187,16 @@ class OnlineMultiplayer {
      */
     fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
-        DropBox.uploadFile("${getGameLocation(gameInfo.gameId)}_Preview", zippedGameInfo, true)
+        fileStorage.saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo)
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {
-        val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
+        val zippedGameInfo = fileStorage.loadFileData(gameId)
         return GameSaver.gameInfoFromString(Gzip.unzip(zippedGameInfo))
     }
 
     fun tryDownloadGamePreview(gameId: String): GameInfoPreview {
-        val zippedGameInfo = DropBox.downloadFileAsString("${getGameLocation(gameId)}_Preview")
+        val zippedGameInfo = fileStorage.loadFileData("${gameId}_Preview")
         return GameSaver.gameInfoPreviewFromString(Gzip.unzip(zippedGameInfo))
     }
 }

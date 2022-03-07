@@ -1,11 +1,16 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.utils.*
 import kotlin.math.ceil
 import kotlin.math.round
@@ -63,28 +68,48 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 } else "Stopped expansion".tr()
         if (cityInfo.expansion.chooseNewTileToOwn() != null)
             turnsToExpansionString +=
-                    " (${cityInfo.expansion.cultureStored}/${cityInfo.expansion.getCultureToNextTile()})"
+                    " (${cityInfo.expansion.cultureStored}${Fonts.culture}/${cityInfo.expansion.getCultureToNextTile()}${Fonts.culture})"
 
         var turnsToPopString =
                 when {
                     cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population"
                     cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population"
                     cityInfo.getRuleset().units[cityInfo.cityConstructions.currentConstructionFromQueue]
-                            .let { it != null && it.uniques.contains("Excess Food converted to Production when under construction") }
+                            .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
                     -> "Food converts to production"
                     else -> "Stopped population growth"
                 }.tr()
-        turnsToPopString += " (${cityInfo.population.foodStored}/${cityInfo.population.getFoodToNextPopulation()})"
+        turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
 
         innerTable.add(unassignedPopString.toLabel()).row()
         innerTable.add(turnsToExpansionString.toLabel()).row()
         innerTable.add(turnsToPopString.toLabel()).row()
-        if (cityInfo.isInResistance())
-            innerTable.add("In resistance for another [${cityInfo.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
-        if (cityInfo.isWeLoveTheKingDay())
-            innerTable.add("We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel()).row()
-        else if (cityInfo.demandedResource != "")
-            innerTable.add("Demanding [${cityInfo.demandedResource}]".toLabel()).row()
+
+        val tableWithIcons = Table()
+        tableWithIcons.defaults().pad(2f)
+        if (cityInfo.isInResistance()) {
+            tableWithIcons.add(ImageGetter.getImage("StatIcons/Resistance")).size(20f)
+            tableWithIcons.add("In resistance for another [${cityInfo.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
+        }
+
+        val (wltkIcon: Actor?, wltkLabel: Label?) = when {
+            cityInfo.isWeLoveTheKingDayActive() ->
+                ImageGetter.getStatIcon("Food") to
+                "We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel(Color.LIME)
+            cityInfo.demandedResource.isNotEmpty() ->
+                ImageGetter.getResourceImage(cityInfo.demandedResource, 20f) to
+                "Demanding [${cityInfo.demandedResource}]".toLabel(Color.CORAL)
+            else -> null to null
+        }
+        if (wltkLabel != null) {
+            tableWithIcons.add(wltkIcon!!).size(20f).padRight(5f)
+            wltkLabel.onClick {
+                UncivGame.Current.setScreen(CivilopediaScreen(cityInfo.getRuleset(), cityScreen, link = "We Love The King Day"))
+            }
+            tableWithIcons.add(wltkLabel).row()
+        }
+
+        innerTable.add(tableWithIcons).row()
     }
 
     private fun addReligionInfo() {

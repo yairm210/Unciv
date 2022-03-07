@@ -197,7 +197,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitDescriptionTable.clear()
             unitDescriptionTable.defaults().pad(2f).padRight(5f)
             unitDescriptionTable.add("Strength".tr())
-            unitDescriptionTable.add(CityCombatant(city).getCityStrength().toString()).row()
+            unitDescriptionTable.add(CityCombatant(city).getDefendingStrength().toString()).row()
             unitDescriptionTable.add("Bombard strength".tr())
             unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().toString()).row()
 

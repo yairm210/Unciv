@@ -1,8 +1,9 @@
 package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.ui.utils.*
@@ -25,10 +26,7 @@ class StatsOverviewTable (
     private fun getHappinessTable(): Table {
         val happinessTable = Table(BaseScreen.skin)
         happinessTable.defaults().pad(5f)
-        val happinessHeader = Table(BaseScreen.skin)
-        happinessHeader.add(ImageGetter.getStatIcon("Happiness")).pad(5f,0f,5f,12f).size(20f)
-        happinessHeader.add("Happiness".toLabel(fontSize = 24)).padTop(5f)
-        happinessTable.add(happinessHeader).colspan(2).row()
+        happinessTable.add("Happiness".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
         happinessTable.addSeparator()
 
         val happinessBreakdown = viewingPlayer.stats().getHappinessBreakdown()
@@ -46,10 +44,7 @@ class StatsOverviewTable (
     private fun getGoldTable(): Table {
         val goldTable = Table(BaseScreen.skin)
         goldTable.defaults().pad(5f)
-        val goldHeader = Table(BaseScreen.skin)
-        goldHeader.add(ImageGetter.getStatIcon("Gold")).pad(5f, 0f, 5f, 12f).size(20f)
-        goldHeader.add("Gold".toLabel(fontSize = 24)).padTop(5f)
-        goldTable.add(goldHeader).colspan(2).row()
+        goldTable.add("Gold".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
         goldTable.addSeparator()
         var total = 0f
         for (entry in viewingPlayer.stats().getStatMapForNextTurn()) {
@@ -65,15 +60,18 @@ class StatsOverviewTable (
             goldTable.addSeparator()
             val sliderTable = Table()
             sliderTable.add("Convert gold to science".toLabel()).row()
-            val slider = Slider(0f, 1f, 0.1f, false, BaseScreen.skin)
-            slider.value = viewingPlayer.tech.goldPercentConvertedToScience
 
-            slider.onChange {
-                viewingPlayer.tech.goldPercentConvertedToScience = slider.value
-                viewingPlayer.cities.forEach { it.cityStats.update() }
+            val slider = UncivSlider(0f, 1f, 0.1f,
+                initial = viewingPlayer.tech.goldPercentConvertedToScience,
+                getTipText = UncivSlider::formatPercent
+            ) {
+                viewingPlayer.tech.goldPercentConvertedToScience = it
+                for (city in viewingPlayer.cities) { city.cityStats.update() }
                 overviewScreen.setCategoryActions["Stats"]!!()      // ? will probably steal focus and so prevent dragging the slider
             }
-            sliderTable.add(slider)
+            slider.isDisabled = !UncivGame.Current.worldScreen.canChangeState
+
+            sliderTable.add(slider).padTop(15f)
             goldTable.add(sliderTable).colspan(2)
         }
 
@@ -84,10 +82,7 @@ class StatsOverviewTable (
     private fun getScienceTable(): Table {
         val scienceTable = Table(BaseScreen.skin)
         scienceTable.defaults().pad(5f)
-        val scienceHeader = Table(BaseScreen.skin)
-        scienceHeader.add(ImageGetter.getStatIcon("Science")).pad(5f,0f,5f,12f).size(20f)
-        scienceHeader.add("Science".toLabel(fontSize = 24)).padTop(5f)
-        scienceTable.add(scienceHeader).colspan(2).row()
+        scienceTable.add("Science".toLabel(fontSize = Constants.headingFontSize)).colspan(2).row()
         scienceTable.addSeparator()
         val scienceStats = viewingPlayer.stats().getStatMapForNextTurn()
             .filter { it.value.science != 0f }
@@ -109,7 +104,7 @@ class StatsOverviewTable (
         val greatPeopleIcon = ImageGetter.getStatIcon("Specialist")
         greatPeopleIcon.color = Color.ROYAL
         greatPeopleHeader.add(greatPeopleIcon).padRight(12f).size(30f)
-        greatPeopleHeader.add("Great person points".toLabel(fontSize = 24)).padTop(5f)
+        greatPeopleHeader.add("Great person points".toLabel(fontSize = Constants.headingFontSize)).padTop(5f)
         greatPeopleTable.add(greatPeopleHeader).colspan(3).row()
         greatPeopleTable.addSeparator()
         greatPeopleTable.add()
@@ -135,7 +130,7 @@ class StatsOverviewTable (
     
     private fun getScoreTable(): Table {
         val scoreTableHeader = Table(BaseScreen.skin)
-        scoreTableHeader.add("Score".toLabel(fontSize = 24)).padBottom(6f)
+        scoreTableHeader.add("Score".toLabel(fontSize = Constants.headingFontSize)).padBottom(6f)
         
         val scoreTable = Table(BaseScreen.skin)
         scoreTable.defaults().pad(5f)

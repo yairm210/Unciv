@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.PixmapPacker
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Disposable
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.stats.Stat
 
@@ -123,7 +124,7 @@ class NativeBitmapFontData(
 
 object Fonts {
 
-    /** All text is originally rendered in 50px (set in AndroidLauncher and DesktopLauncher), and thn scaled to fit the size of the text we need now.
+    /** All text is originally rendered in 50px (set in AndroidLauncher and DesktopLauncher), and then scaled to fit the size of the text we need now.
      * This has several advantages: It means we only render each character once (good for both runtime and RAM),
      * AND it means that our 'custom' emojis only need to be once size (50px) and they'll be rescaled for what's needed. */
     const val ORIGINAL_FONT_SIZE = 50f
@@ -133,8 +134,16 @@ object Fonts {
         val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
         font = BitmapFont(fontData, fontData.regions, false)
         font.setOwnsTexture(true)
+        font.data.setScale(Constants.defaultFontSize / ORIGINAL_FONT_SIZE)
     }
 
+    /**
+     * Turn a TextureRegion into a Pixmap.
+     *
+     * .dispose() must be called on the returned Pixmap when it is no longer needed, or else it will leave a memory leak behind.
+     *
+     * @return New Pixmap with all the size and pixel data from this TextureRegion copied into it.
+     */
     // From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
     fun extractPixmapFromTextureRegion(textureRegion:TextureRegion):Pixmap {
         val textureData = textureRegion.texture.textureData
@@ -146,8 +155,9 @@ object Fonts {
                 textureRegion.regionHeight,
                 textureData.format
         )
+        val textureDataPixmap = textureData.consumePixmap()
         pixmap.drawPixmap(
-                textureData.consumePixmap(), // The other Pixmap
+                textureDataPixmap, // The other Pixmap
                 0, // The target x-coordinate (top left corner)
                 0, // The target y-coordinate (top left corner)
                 textureRegion.regionX, // The source x-coordinate (top left corner)
@@ -155,6 +165,7 @@ object Fonts {
                 textureRegion.regionWidth, // The width of the area from the other Pixmap in pixels
                 textureRegion.regionHeight // The height of the area from the other Pixmap in pixels
         )
+        textureDataPixmap.dispose() // Prevent memory leak.
         return pixmap
     }
 

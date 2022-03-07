@@ -83,7 +83,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
         terrainFeaturesTable.add(getHex(ImageGetter.getRedCross(50f, 0.6f)).apply {
             onClick {
                 tileAction = {
-                    it.terrainFeatures.clear()
+                    it.setTerrainFeatures(listOf())
                     it.naturalWonder = null
                     it.hasBottomRiver = false
                     it.hasBottomLeftRiver = false
@@ -131,7 +131,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
         }).row()
 
         for (improvement in ruleset.tileImprovements.values) {
-            if (improvement.name.startsWith("Remove")) continue
+            if (improvement.name.startsWith(Constants.remove)) continue
             if (improvement.name == Constants.cancelImprovementOrder) continue
             val improvementImage = getHex(ImageGetter.getImprovementIcon(improvement.name, 40f))
             improvementImage.onClick {
@@ -305,7 +305,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
                     tileInfo.baseTerrain =
                         if (terrainObject.occursOn.isNotEmpty()) terrainObject.occursOn.first()
                         else ruleset.terrains.values.first { it.type == TerrainType.Land }.name
-                    tileInfo.terrainFeatures.add(terrain)
+                    tileInfo.addTerrainFeature(terrain)
                 }
 
                 tileInfo.resource = resource.name
@@ -321,12 +321,13 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
         for (terrain in ruleset.terrains.values) {
             val tileInfo = TileInfo()
+            tileInfo.ruleset = ruleset
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn.isNotEmpty() -> terrain.occursOn.first()
                     else -> "Grassland"
                 }
-                tileInfo.terrainFeatures.add(terrain.name)
+                tileInfo.addTerrainFeature(terrain.name)
             } else tileInfo.baseTerrain = terrain.name
             val group = makeTileGroup(tileInfo)
 
@@ -336,7 +337,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
                     when (terrain.type) {
                         TerrainType.TerrainFeature -> {
                             if (terrain.occursOn.contains(it.getLastTerrain().name))
-                                it.terrainFeatures.add(terrain.name)
+                                it.addTerrainFeature(terrain.name)
                         }
                         TerrainType.NaturalWonder -> it.naturalWonder = terrain.name
                         else -> it.baseTerrain = terrain.name

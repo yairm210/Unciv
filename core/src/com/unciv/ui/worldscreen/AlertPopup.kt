@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
@@ -89,64 +90,51 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.CityConquered -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
-                addGoodSizedLabel("What would you like to do with the city?", 24)
+                addGoodSizedLabel("What would you like to do with the city?", Constants.headingFontSize)
                         .padBottom(20f).row()
                 val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
 
                 if (city.foundingCiv != ""
                         && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
                         && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
-                    val liberateAction = {
+                    addLiberateOption(city.foundingCiv) {
                         city.liberateCity(conqueringCiv)
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    addLiberateOption(city.foundingCiv, liberateAction)
                     addSeparator()
                 }
 
                 if (conqueringCiv.isOneCityChallenger()) {
-                    val destroyAction = {
+                    addDestroyOption {
                         city.puppetCity(conqueringCiv)
                         city.destroyCity()
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    addDestroyOption(destroyAction)
                 } else {
-                    val annexAction = {
+                    addAnnexOption {
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    addAnnexOption(annexAction)
                     addSeparator()
 
-                    val puppetAction = {
+                    addPuppetOption {
                         city.puppetCity(conqueringCiv)
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    addPuppetOption(puppetAction)
                     addSeparator()
 
-                    val razeAction = {
+                    addRazeOption(canRaze = { city.canBeDestroyed(justCaptured = true) } ) {
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
                         city.isBeingRazed = true
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    add("Raze".toTextButton().apply {
-                        if (!city.canBeDestroyed(justCaptured = true)) disable()
-                        else {
-                            onClick(function = razeAction)
-                            keyPressDispatcher['r'] = razeAction
-                        }
-                    }).row()
-                    addGoodSizedLabel("Razing the city annexes it, and starts razing the city to the ground.").row()
-                    addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
                 }
             }
             AlertType.BorderConflict -> {
@@ -200,7 +188,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
 
                 val centerTable = Table()
                 centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
-                centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
+                centerTable.add(wonder.getShortDescription()
                         .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
@@ -243,32 +231,29 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.DiplomaticMarriage -> {
                 val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
-                addGoodSizedLabel(city.name.tr() + ": " + "What would you like to do with the city?".tr(), 24) // Add name because there might be several cities
+                addGoodSizedLabel(city.name.tr() + ": " + "What would you like to do with the city?".tr(), Constants.headingFontSize) // Add name because there might be several cities
                     .padBottom(20f).row()
                 val marryingCiv = worldScreen.gameInfo.currentPlayerCiv
 
                 if (marryingCiv.isOneCityChallenger()) {
-                    val destroyAction = {
+                    addDestroyOption {
                         city.destroyCity(overrideSafeties = true)
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    addDestroyOption(destroyAction)
                 } else {
-                    val annexAction = {
+                    addAnnexOption {
                         city.annexCity()
                         close()
                     }
-                    addAnnexOption(annexAction)
                     addSeparator()
 
-                    val puppetAction = {
+                    addPuppetOption {
                         city.isPuppet = true
                         city.cityStats.update()
                         worldScreen.shouldUpdate = true
                         close()
                     }
-                    addPuppetOption(puppetAction)
                 }
             }
             AlertType.BulliedProtectedMinor -> {
@@ -366,7 +351,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         responseTable.add(getCloseButton("No", 'n') {
             // Take it for ourselves
             // Settlers become workers at this point
-            if (capturedUnit.hasUnique("Founds a new city")) {
+            if (capturedUnit.hasUnique(UniqueType.FoundCity)) {
                 capturedUnit.destroy()
                 // This is so that future checks which check if a unit has been captured are caught give the right answer
                 //  For example, in postBattleMoveToAttackedTile
@@ -405,6 +390,22 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         add(liberateText.toTextButton().onClick(function = liberateAction)).row()
         keyPressDispatcher['l'] = liberateAction
         addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
+    }
+
+    private fun addRazeOption(canRaze: () -> Boolean, razeAction: () -> Unit) {
+        add("Raze".toTextButton().apply {
+            if (!canRaze()) disable()
+            else {
+                onClick(function = razeAction)
+                keyPressDispatcher['r'] = razeAction
+            }
+        }).row()
+        if (canRaze()) {
+            addGoodSizedLabel("Razing the city annexes it, and starts burning the city to the ground.").row()
+            addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
+        } else {
+            addGoodSizedLabel("Original capitals and holy cities cannot be razed.").row()
+        }
     }
 
     override fun close() {

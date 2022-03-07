@@ -174,8 +174,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             .apply { color = Color.FIREBRICK }
             .onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units")) }
 
-        val overviewButton = Button(BaseScreen.skin)
-        overviewButton.add("Overview".toLabel()).pad(10f)
+        val overviewButton = "Overview".toTextButton()
         overviewButton.addTooltip('e')
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
 

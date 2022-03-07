@@ -6,28 +6,24 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import com.unciv.logic.trade.TradeType.TradeTypeNumberType
-import com.unciv.models.ruleset.tile.ResourceSupply
 
-data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, var duration: Int = -1) {
+data class TradeOffer(val name: String, val type: TradeType, var amount: Int = 1, var duration: Int) {
 
-    init {
-        // Duration needs to be part of the variables defined in the primary constructor, 
-        // so that it will be copied over with the automatically generated copy()
-        
-        duration =
-            if (type.isImmediate) -1 // -1 for offers that are immediate (e.g. gold transfer)
-            else {
-                // Do *not* access UncivGame.Current.gameInfo in the default constructor!
-                val gameSpeed = UncivGame.Current.gameInfo.gameParameters.gameSpeed
-                when {
-                    name == Constants.peaceTreaty -> 10
-                    gameSpeed == GameSpeed.Quick -> 25
-                    else -> (30 * gameSpeed.modifier).toInt()
-                }
-            }
+    constructor(
+        name: String, 
+        type: TradeType, 
+        amount: Int = 1, 
+        gameSpeed: GameSpeed = UncivGame.Current.gameInfo.gameParameters.gameSpeed
+    ) : this(name, type, amount, duration = -1) {
+        duration = when {
+            type.isImmediate -> -1 // -1 for offers that are immediate (e.g. gold transfer)
+            name == Constants.peaceTreaty -> 10
+            gameSpeed == GameSpeed.Quick -> 25
+            else -> (30 * gameSpeed.modifier).toInt()
+        }
     }
-
-    constructor() : this("", TradeType.Gold) // so that the json deserializer can work
+    
+    constructor() : this("", TradeType.Gold, duration = -1) // so that the json deserializer can work
 
     @Suppress("CovariantEquals")    // This is an overload, not an override of the built-in equals(Any?)
     fun equals(offer: TradeOffer): Boolean {
@@ -45,7 +41,7 @@ data class TradeOffer(val name:String, val type:TradeType, var amount:Int = 1, v
         }.tr()
 
         if (type.numberType == TradeTypeNumberType.Simple || name == Constants.researchAgreement) offerText += " ($amount)"
-        else if (type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount${Fonts.gold})"
+        else if (type.numberType == TradeTypeNumberType.Gold) offerText += " ($amount)"
        
         if (duration > 0) offerText += "\n" + duration + Fonts.turn
 

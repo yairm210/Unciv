@@ -2,7 +2,7 @@
 	{
 		"name": "Tradition",
 		"era": "Ancient era",
-		"uniques": ["[+3 Culture] [in capital]", "-[25]% Culture cost of acquiring tiles [in all cities]"],
+		"uniques": ["[+3 Culture] [in capital]", "[-25]% Culture cost of natural border growth [in all cities]"],
 		"policies": [
 			{
 				"name": "Aristocracy",
@@ -18,7 +18,7 @@
 			},
 			{
 				"name": "Oligarchy",
-				"uniques": ["Units in cities cost no Maintenance", "+[100]% attacking strength for cities with garrisoned units"],
+				"uniques": ["Units in cities cost no Maintenance", "[+100]% Strength for cities <with a garrison> <when attacking>"],
 				"row": 1,
 				"column": 5
 			},
@@ -101,7 +101,7 @@
 			},
 			{
 				"name": "Discipline",
-				"uniques":["[+10]% Strength for [Melee] units which have another [Military] unit in an adjacent tile"],
+				"uniques":["[+10]% Strength <for [Melee] units> <when adjacent to a [Military] unit>"],
 				"row": 1,
 				"column": 4
 			},
@@ -121,7 +121,7 @@
 			},
 			{
 				"name": "Professional Army",
-				"uniques": ["Gold cost of upgrading [Military] units reduced by [33]%", "[+1 Happiness] from every [Walls]",
+				"uniques": ["[-33]% Gold cost of upgrading <for [Military] units>", "[+1 Happiness] from every [Walls]",
 					"[+1 Happiness] from every [Castle]", "[+1 Happiness] from every [Arsenal]", "[+1 Happiness] from every [Military Base]"
 				],
 				"requires": ["Military Caste"],
@@ -136,7 +136,7 @@
 	},{
 		"name": "Piety",
 		"era": "Classical era",
-		"uniques": ["[+15]% Production when constructing [Culture] buildings [in all cities]", "Incompatible with [Rationalism]"],
+		"uniques": ["[+15]% Production when constructing [Culture] buildings [in all cities]", "Only available <before adopting [Rationalism]>"],
 		"policies": [
 			{
 				"name": "Organized Religion",
@@ -152,7 +152,7 @@
 			},
 			{
 				"name": "Theocracy",
-				"uniques": ["+[10]% [Gold] from every [Temple]"],
+				"uniques": ["[+10]% [Gold] from every [Temple]"],
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 1
@@ -173,14 +173,14 @@
 			},
 			{
 				"name": "Piety Complete",
-				"uniques": ["Culture cost of adopting new Policies reduced by [10]%"]
+				"uniques": ["[-10]% Culture cost of adopting new Policies"]
 			}
 		]
 	},
 	{
 		"name": "Patronage",
 		"era": "Classical era",
-		"uniques": ["City-State Influence degrades [25]% slower"],
+		"uniques": ["[-25]% City-State Influence degradation"],
 		"policies": [
 			{
 				"name": "Philantropy",
@@ -203,8 +203,8 @@
 			},
 			{
 				"name": "Cultural Diplomacy",
-				"uniques": ["Quantity of Resources gifted by City-States increased by [100]%",
-					"Happiness from Luxury Resources gifted by City-States increased by [50]%"],
+				"uniques": ["[+100]% resources gifted by City-States",
+					"[+50]% Happiness from luxury resources gifted by City-States"],
 				"requires": ["Scholasticism"],
 				"row": 3,
 				"column": 2
@@ -231,15 +231,14 @@
 			{
 				"name": "Naval Tradition",
 				"uniques": ["[+1] Movement <for [{Military} {Water}] units>", "[+1] Sight <for [{Military} {Water}] units>",
-				 "Free [Great General] appears", "[+2] Movement <for [Great Admiral] units>" 
-					// ToDo: Should be "Free [Great Admiral] appears"
+				 "Free [Great General] appears" //, "[+2] Movement <for [Great Admiral] units>", "Free [Great Admiral] appears" - todo
 				],
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Trade Unions",
-				"uniques": ["Maintenance on roads & railroads reduced by [33]%", "[+1 Gold] from every [Harbor]", "[+1 Gold] from every [Seaport]"],
+				"uniques": ["[-33]% maintenance on road & railroads", "[+1 Gold] from every [Harbor]", "[+1 Gold] from every [Seaport]"],
 				"row": 1,
 				"column": 4
 			},
@@ -260,7 +259,7 @@
 			},
 			{
 				"name": "Protectionism",
-				"uniques": ["+[1] happiness from each type of luxury resource"],
+				"uniques": ["[+1] Happiness from each type of luxury resource"],
 				"requires": ["Mercantilism"],
 				"row": 3,
 				"column": 4
@@ -274,7 +273,7 @@
 	{
 		"name": "Rationalism",
 		"era": "Renaissance era",
-		"uniques": ["Science gained from research agreements [+50]%", "Incompatible with [Piety]"],
+		"uniques": ["Science gained from research agreements [+50]%", "Only available <before adopting [Piety]>"],
 		"policies": [
 			{
 				"name": "Secularism",
@@ -291,7 +290,7 @@
 			},
 			{
 				"name": "Free Thought",
-				"uniques": ["[+1 Science] from every [Trading post]", "+[17]% [Science] from every [University]"],
+				"uniques": ["[+1 Science] from every [Trading post]", "[+17]% [Science] from every [University]"],
 				"requires": ["Secularism"],
 				"row": 2,
 				"column": 1
@@ -319,23 +318,23 @@
 	{
 		"name": "Freedom",
 		"era": "Renaissance era",
-		"uniques": ["[+25]% great person generation [in all cities]", "Incompatible with [Autocracy]", "Incompatible with [Order]"],
+		"uniques": ["[+25]% great person generation [in all cities]", "Only available <before adopting [Autocracy]>", "Only available <before adopting [Order]>"],
 		"policies": [
 			{
 				"name": "Constitution",
-				"uniques": ["[+2 Culture] from every Wonder"],
+				"uniques": ["[+2 Culture] from every [Wonder]"],
 				"row": 1,
 				"column": 1
 			},
 			{
 				"name": "Universal Suffrage",
-				"uniques": ["+[33]% Defensive Strength for cities"],
+				"uniques": ["[+33]% Strength for cities <when defending>"],
 				"row": 1,
 				"column": 3
 			},
 			{
 				"name": "Civil Society",
-				"uniques": ["[-50]% food consumption by specialists [in all cities]"],
+				"uniques": ["[-50]% Food consumption by specialists [in all cities]"],
 				"row": 1,
 				"column": 5
 			},
@@ -355,7 +354,7 @@
 			},
 			{
 				"name": "Freedom Complete",
-				"uniques": ["+[100]% yield from every [Great Improvement]", "Golden Age length increased by [50]%"]
+				"uniques": ["[+100]% Yield from every [Great Improvement]", "[+50]% Golden Age length"]
 			}
 		]
 	},
@@ -363,7 +362,7 @@
 		"name": "Autocracy",
 		"era": "Industrial era",
 		"uniques": ["[-33]% maintenance costs <for [All] units>", "Upon capturing a city, receive [10] times its [Culture] production as [Culture] immediately",
-			"Incompatible with [Order]", "Incompatible with [Freedom]"],
+			"Only available <before adopting [Order]>", "Only available <before adopting [Freedom]>"],
 		"policies": [
 			{
 				"name": "Populism",
@@ -400,14 +399,14 @@
 			},
 			{
 				"name": "Autocracy Complete",
-				"uniques": ["+[25]% attack strength to all [Military] units for [30] turns"]
+				"uniques": ["[+25]% Strength <when attacking> <for [Military] units> <for [30] turns>"]
 			}
 		]
 	},
 	{
     "name": "Order",
     "era": "Industrial era",
-	"uniques": ["[+1 Happiness] [in all cities]", "Incompatible with [Autocracy]", "Incompatible with [Freedom]"],
+	"uniques": ["[+1 Happiness] [in all cities]", "Only available <before adopting [Autocracy]>", "Only available <before adopting [Freedom]>"],
     "policies": [
         {
             "name": "United Front",
@@ -417,7 +416,7 @@
         },
 		{
 			"name": "Planned Economy",
-			"uniques": ["+[25]% [Science] from every [Factory]"],
+			"uniques": ["[+25]% [Science] from every [Factory]"],
 			"row": 1,
 			"column": 3
 		},
@@ -430,7 +429,7 @@
         {
             "name": "Socialism",
             "requires": ["Planned Economy"],
-			"uniques": ["-[15]% maintenance cost for buildings [in all cities]"],
+			"uniques": ["[-15]% maintenance cost for buildings [in all cities]"],
             "row": 2,
             "column": 3
         },

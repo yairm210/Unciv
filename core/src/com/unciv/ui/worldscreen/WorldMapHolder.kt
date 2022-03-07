@@ -99,7 +99,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 override fun clicked(event: InputEvent?, x: Float, y: Float) {
                     val unit = worldScreen.bottomUnitTable.selectedUnit
                         ?: return
-                    thread {
+                    crashHandlingThread {
                         val tile = tileGroup.tileInfo
 
                         if (worldScreen.bottomUnitTable.selectedUnitIsSwapping) {
@@ -107,7 +107,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                                 swapMoveUnitToTargetTile(unit, tile)
                             }
                             // If we are in unit-swapping mode, we don't want to move or attack
-                            return@thread
+                            return@crashHandlingThread
                         }
 
                         val attackableTile = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
@@ -115,13 +115,13 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         if (unit.canAttack() && attackableTile != null) {
                             Battle.moveAndAttack(MapUnitCombatant(unit), attackableTile)
                             worldScreen.shouldUpdate = true
-                            return@thread
+                            return@crashHandlingThread
                         }
 
                         val canUnitReachTile = unit.movement.canReach(tile)
                         if (canUnitReachTile) {
                             moveUnitToTargetTile(listOf(unit), tile)
-                            return@thread
+                            return@crashHandlingThread
                         }
                     }
                 }
@@ -198,7 +198,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         val selectedUnit = selectedUnits.first()
 
-        thread(name = "TileToMoveTo") {
+        crashHandlingThread(name = "TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it
@@ -208,10 +208,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             } catch (ex: Exception) {
                 println("Exception in getTileToMoveToThisTurn: ${ex.message}")
                 ex.printStackTrace()
-                return@thread
+                return@crashHandlingThread
             } // can't move here
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 try {
                     // Because this is darned concurrent (as it MUST be to avoid ANRs),
                     // there are edge cases where the canReach is true,
@@ -254,7 +254,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tileInfo: TileInfo) {
-        thread(name = "TurnsToGetThere") {
+        crashHandlingThread(name = "TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
@@ -279,12 +279,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 unitToTurnsToTile[unit] = turnsToGetThere
             }
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 val unitsWhoCanMoveThere = HashMap(unitToTurnsToTile.filter { it.value != 0 })
                 if (unitsWhoCanMoveThere.isEmpty()) { // give the regular tile overlays with no unit movement
                     addTileOverlays(tileInfo)
                     worldScreen.shouldUpdate = true
-                    return@postRunnable
+                    return@postCrashHandlingRunnable
                 }
 
                 val turnsToGetThere = unitsWhoCanMoveThere.values.maxOrNull()!!
@@ -362,22 +362,28 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
     }
 
-    private fun getMoveHereButton(dto: MoveHereButtonDto): Group {
-        val size = 60f
-        val moveHereButton = Group().apply { width = size;height = size; }
-        moveHereButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
-        moveHereButton.addActor(ImageGetter.getStatIcon("Movement")
-                .apply { color = Color.BLACK; width = size / 2; height = size / 2; center(moveHereButton) })
+    val buttonSize = 60f
+    val smallerCircleSizes = 25f
 
-        val numberCircle = ImageGetter.getCircle().apply { width = size / 2; height = size / 2;color = Color.BLUE }
+    private fun getMoveHereButton(dto: MoveHereButtonDto): Group {
+        val moveHereButton = ImageGetter.getStatIcon("Movement")
+            .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2 }
+            .surroundWithCircle(buttonSize-2, false)
+            .surroundWithCircle(buttonSize, false, Color.BLACK)
+
+
+        val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
+            .apply { setAlignment(Align.center) }
+            .surroundWithCircle(smallerCircleSizes-2, color = ImageGetter.getBlue().lerp(Color.BLACK, 0.3f))
+            .surroundWithCircle(smallerCircleSizes,false)
+
         moveHereButton.addActor(numberCircle)
 
-        moveHereButton.addActor(dto.unitToTurnsToDestination.values.maxOrNull()!!.toLabel().apply { center(numberCircle) })
         val firstUnit = dto.unitToTurnsToDestination.keys.first()
-        val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, size / 2)
+        val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, smallerCircleSizes)
         else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civInfo.nation.getInnerColor()).apply { setAlignment(Align.center) }
-                .surroundWithCircle(size / 2).apply { circle.color = firstUnit.civInfo.nation.getOuterColor() }
-        unitIcon.y = size - unitIcon.height
+                .surroundWithCircle(smallerCircleSizes).apply { circle.color = firstUnit.civInfo.nation.getOuterColor() }
+        unitIcon.y = buttonSize - unitIcon.height
         moveHereButton.addActor(unitIcon)
 
         val unitsThatCanMove = dto.unitToTurnsToDestination.keys.filter { it.currentMovement > 0 }
@@ -394,14 +400,13 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
-        val size = 60f
-        val swapWithButton = Group().apply { width = size;height = size; }
-        swapWithButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
+        val swapWithButton = Group().apply { width = buttonSize;height = buttonSize; }
+        swapWithButton.addActor(ImageGetter.getCircle().apply { width = buttonSize; height = buttonSize })
         swapWithButton.addActor(ImageGetter.getImage("OtherIcons/Swap")
-            .apply { color = Color.BLACK; width = size / 2; height = size / 2; center(swapWithButton) })
+            .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2; center(swapWithButton) })
 
-        val unitIcon = UnitGroup(dto.unit, size / 2)
-        unitIcon.y = size - unitIcon.height
+        val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)
+        unitIcon.y = buttonSize - unitIcon.height
         swapWithButton.addActor(unitIcon)
 
         swapWithButton.onClick(UncivSound.Silent) {

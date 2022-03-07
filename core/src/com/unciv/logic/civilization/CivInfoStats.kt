@@ -27,22 +27,29 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         }
 
         var unitsToPayFor = civInfo.getCivUnits()
-        if (civInfo.hasUnique("Units in cities cost no Maintenance"))
+        if (civInfo.hasUnique(UniqueType.UnitsInCitiesNoMaintenance))
             unitsToPayFor = unitsToPayFor.filterNot {
                 it.getTile().isCityCenter() && it.canGarrison()
             }
-        // Handle unit maintenance discounts
-        // Free Garrison already removed above from sequence
-        // To try and avoid concurrent modifications leading to crashes,
-        // we calculate the costs of one unit at a time.
-        // Each unit starts with 1f aka 100% of cost, and then the discout is addded.
+
+        // Each unit starts with 1f aka 100% of cost, and then the discount is added.
         // Note all discounts are in the form of -X%, such as -25 for 25% reduction
 
         val costsToPay = ArrayList<Float>()
+
+        // We IGNORE the conditionals when we get them civ-wide, so we won't need to do the same thing for EVERY unit in the civ.
+        // This leads to massive memory and CPU time savings when calculating the maintenance!
+        val civwideDiscountUniques = civInfo.getMatchingUniques(UniqueType.UnitMaintenanceDiscount, StateForConditionals.IgnoreConditionals).toList()
+
         for (unit in unitsToPayFor) {
-            val stateForConditionals = StateForConditionals(civInfo=civInfo, unit=unit)
+            val stateForConditionals = StateForConditionals(civInfo = civInfo, unit = unit)
             var unitMaintenance = 1f
-            for (unique in unit.getMatchingUniques(UniqueType.UnitMaintenanceDiscount, stateForConditionals, true)){
+            val uniquesThatApply = unit.getMatchingUniques(
+                UniqueType.UnitMaintenanceDiscount,
+                stateForConditionals
+            ) + civwideDiscountUniques.asSequence()
+                .filter { it.conditionalsApply(stateForConditionals) }
+            for (unique in uniquesThatApply) {
                 unitMaintenance *= unique.params[0].toPercent()
             }
             costsToPay.add(unitMaintenance)
@@ -67,12 +74,12 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
     }
 
     private fun getTransportationUpkeep(): Int {
-        var transportationUpkeep = 0
+        var transportationUpkeep = 0f
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
         val ignoredTileTypes =
-            civInfo.getMatchingUniques("No Maintenance costs for improvements in [] tiles")
+            civInfo.getMatchingUniques(UniqueType.NoImprovementMaintenanceInSpecificTiles)
                 .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
 
@@ -85,11 +92,10 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 transportationUpkeep += tile.roadStatus.upkeep
             }
         }
-        for (unique in civInfo.getMatchingUniques("Maintenance on roads & railroads reduced by []%"))
-            transportationUpkeep =
-                (transportationUpkeep * (100f - unique.params[0].toInt()) / 100).toInt()
+        for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
+            transportationUpkeep *= unique.params[0].toPercent()
 
-        return transportationUpkeep
+        return transportationUpkeep.toInt()
     }
 
     fun getUnitSupply(): Int {
@@ -102,9 +108,25 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         return supply
     }
 
-    fun getBaseUnitSupply(): Int = civInfo.getDifficulty().unitSupplyBase
-    fun getUnitSupplyFromCities(): Int = civInfo.cities.size * civInfo.getDifficulty().unitSupplyPerCity
-    fun getUnitSupplyFromPop(): Int = civInfo.cities.sumOf { it.population.population } / 2
+    fun getBaseUnitSupply(): Int {
+        return civInfo.getDifficulty().unitSupplyBase + 
+            civInfo.getMatchingUniques(UniqueType.BaseUnitSupply).sumOf { it.params[0].toInt() }
+    }
+    fun getUnitSupplyFromCities(): Int {
+        return civInfo.cities.size * 
+            (civInfo.getDifficulty().unitSupplyPerCity + civInfo.getMatchingUniques(UniqueType.UnitSupplyPerCity).sumOf { it.params[0].toInt() }) 
+    } 
+    fun getUnitSupplyFromPop(): Int {
+        var totalSupply = civInfo.cities.sumOf { it.population.population } * civInfo.gameInfo.ruleSet.modOptions.constants.unitSupplyPerPopulation
+        
+        for (unique in civInfo.getMatchingUniques(UniqueType.UnitSupplyPerPop)) {
+            val applicablePopulation = civInfo.cities
+                .filter { it.matchesFilter(unique.params[1]) }
+                .sumOf { it.population.population }
+            totalSupply += unique.params[0].toDouble() * applicablePopulation
+        }
+        return totalSupply.toInt()
+    }
     fun getUnitSupplyDeficit(): Int = max(0,civInfo.getCivUnitsSize() - getUnitSupply())
 
     /** Per each supply missing, a player gets -10% production. Capped at -70%. */
@@ -143,7 +165,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     }
                 }
 
-                for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                     cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
 
@@ -151,7 +173,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
 
             if (otherCiv.isCityState())
-                for (unique in civInfo.getMatchingUniques("Allied City-States provide [] equal to []% of what they produce for themselves")) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.CityStateStatPercent)) {
                     if (otherCiv.getDiplomacyManager(civInfo.civName)
                             .relationshipLevel() != RelationshipLevel.Ally
                     ) continue
@@ -190,17 +212,9 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     )
         }
 
-        // Deprecated since 3.16.15
-            if (civInfo.hasUnique(UniqueType.ExcessHappinessToCultureDeprecated)) {
-                val happiness = civInfo.getHappiness()
-                if (happiness > 0) statMap.add("Policies", Stats(culture = happiness / 2f))
-            }
-        //
-        
         if (civInfo.getHappiness() > 0) {
             val excessHappinessConversion = Stats()
-            for (unique in civInfo.getMatchingUniques("[]% of excess happiness converted to []")) {
-                
+            for (unique in civInfo.getMatchingUniques(UniqueType.ExcessHappinessToGlobalStat)) {
                 excessHappinessConversion.add(Stat.valueOf(unique.params[1]), (unique.params[0].toFloat() / 100f * civInfo.getHappiness()))
             }
             statMap.add("Policies", excessHappinessConversion)
@@ -228,19 +242,21 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for (unique in civInfo.getMatchingUniques("+[] happiness from each type of luxury resource"))
+        for (unique in civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxury))
             happinessPerUniqueLuxury += unique.params[0].toInt()
 
         val ownedLuxuries = civInfo.getCivResources().map { it.resource }
             .filter { it.resourceType == ResourceType.Luxury }
 
-        statMap["Luxury resources"] = civInfo.getCivResources()
+        val relevantLuxuries = civInfo.getCivResources().asSequence()
             .map { it.resource }
-            .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
+            .count { it.resourceType == ResourceType.Luxury
+                    && it.getMatchingUniques(UniqueType.ObsoleteWith)
+                .none { unique -> civInfo.tech.isResearched(unique.params[0]) } }
+        statMap["Luxury resources"] = relevantLuxuries * happinessPerUniqueLuxury
 
         val happinessBonusForCityStateProvidedLuxuries =
-            civInfo.getMatchingUniques("Happiness from Luxury Resources gifted by City-States increased by []%")
-                .sumOf { it.params[0].toInt() } / 100f
+            civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappiness).sumOf { it.params[0].toInt() } / 100f
 
         val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
             .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
@@ -275,7 +291,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
         }
 
-        if (civInfo.hasUnique("Provides 1 happiness per 2 additional social policies adopted")) {
+        if (civInfo.hasUnique(UniqueType.HappinessPer2Policies)) {
             if (!statMap.containsKey("Policies")) statMap["Policies"] = 0f
             statMap["Policies"] = statMap["Policies"]!! +
                     civInfo.policies.getAdoptedPolicies()
@@ -283,7 +299,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         }
 
         var happinessPerNaturalWonder = 1f
-        if (civInfo.hasUnique("Double Happiness from Natural Wonders"))
+        if (civInfo.hasUnique(UniqueType.DoubleHappinessFromNaturalWonders))
             happinessPerNaturalWonder *= 2
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
@@ -329,7 +345,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         // Just in case
         if (cityStatesHappiness > 0) {
-            for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                 if (unique.params[1] == Stat.Happiness.name)
                     cityStatesHappiness *= unique.params[0].toPercent()
             }

@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.victoryscreen.RankingType
@@ -183,8 +182,8 @@ class TradeEvaluation {
             }
             TradeType.Strategic_Resource -> {
                 if (civInfo.gameInfo.spaceResources.contains(offer.name) &&
-                    (civInfo.hasUnique("Enables construction of Spaceship parts") ||
-                            tradePartner.hasUnique("Enables construction of Spaceship parts"))
+                    (civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts) ||
+                            tradePartner.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                 )
                     return 10000 // We'd rather win the game, thanks
 
@@ -278,7 +277,7 @@ class TradeEvaluation {
     }
 
     private fun introductionValue(ruleSet: Ruleset): Int {
-        val unique = ruleSet.modOptions.uniqueObjects.firstOrNull{ it.placeholderText == ModOptionsConstants.tradeCivIntroductions }
+        val unique = ruleSet.modOptions.getMatchingUniques(ModOptionsConstants.tradeCivIntroductions).firstOrNull()
         if (unique == null) return 0
         return unique.params[0].toInt()
     }

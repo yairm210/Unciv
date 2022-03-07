@@ -39,14 +39,16 @@ object BattleHelper {
     ): ArrayList<AttackableTile> {
         val tilesWithEnemies = (tilesToCheck ?: unit.civInfo.viewableTiles)
             .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
+            // Filter out invalid Civilian Captures
             .filterNot {
                 val mapCombatant = Battle.getMapCombatantOfTile(it)
                 // IF all of these are true, THEN the action we'll be taking is in fact CAPTURING the civilian.
                 unit.baseUnit.isMelee() && mapCombatant is MapUnitCombatant && mapCombatant.unit.isCivilian()
                         // If we can't pass though that tile, we can't capture the civilian "remotely"
-                        // DO NOT use "!unit.movement.canPassThrough(it)" since then we won't be able to
-                        // capture enemy units since we can't move through them!
-                        && !it.canCivPassThrough(unit.civInfo)
+                        // Can use "unit.movement.canPassThrough(it)" now that we can move through
+                        // unguarded Civilian tiles. And this catches Naval trying to capture Land
+                        // Civilians or Land attacking Water Civilians it can't Embark on
+                        && !unit.movement.canPassThrough(it)
             }
 
         val rangeOfAttack = unit.getRange()
@@ -81,7 +83,7 @@ object BattleHelper {
 
         for ((reachableTile, movementLeft) in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
+                if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.getViewableTilesList(rangeOfAttack)
                     .asSequence()
@@ -103,14 +105,14 @@ object BattleHelper {
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
         if (combatant is MapUnitCombatant && 
-            combatant.unit.hasUnique("Can only attack [] units") &&
-            combatant.unit.getMatchingUniques("Can only attack [] units").none { tileCombatant.matchesCategory(it.params[0]) }
+            combatant.unit.hasUnique(UniqueType.CanOnlyAttackUnits) &&
+            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackUnits).none { tileCombatant.matchesCategory(it.params[0]) }
         )
             return false
 
         if (combatant is MapUnitCombatant &&
-            combatant.unit.hasUnique("Can only attack [] tiles") &&
-            combatant.unit.getMatchingUniques("Can only attack [] tiles").none { tile.matchesFilter(it.params[0]) }
+            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles)
+                .let { unique -> unique.any() && unique.none { tile.matchesFilter(it.params[0]) } }
         )
             return false
 

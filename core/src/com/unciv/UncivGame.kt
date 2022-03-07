@@ -19,27 +19,26 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import java.lang.Exception
 import java.util.*
-import kotlin.concurrent.thread
-
-
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
     constructor(version: String) : this(UncivGameParameters(version, null))
 
     val version = parameters.version
-    private val crashReportSender = parameters.crashReportSender
+    val crashReportSysInfo = parameters.crashReportSysInfo
     val cancelDiscordEvent = parameters.cancelDiscordEvent
     val fontImplementation = parameters.fontImplementation
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
     val limitOrientationsHelper = parameters.limitOrientationsHelper
 
+    var deepLinkedMultiplayerGame: String? = null
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings: GameSettings
-    lateinit var crashController: CrashController
     lateinit var musicController: MusicController
 
     /**
@@ -105,7 +104,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
-        thread(name = "LoadJSON") {
+        crashHandlingThread(name = "LoadJSON") {
             RulesetCache.loadRulesets(printOutput = true)
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
@@ -117,18 +116,27 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
             }
 
             // This stuff needs to run on the main thread because it needs the GL context
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 musicController.chooseTrack(suffix = MusicMood.Menu)
 
-                ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
+                ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
                 if (settings.isFreshlyCreated) {
                     setScreen(LanguagePickerScreen())
-                } else { setScreen(MainMenuScreen()) }
+                } else {
+                    if (deepLinkedMultiplayerGame == null)
+                        setScreen(MainMenuScreen())
+                    else {
+                        try {
+                            loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
+                        } catch (ex: Exception) {
+                            setScreen(MainMenuScreen())
+                        }
+                    }
+                }
                 isInitialized = true
             }
         }
-        crashController = CrashController.Impl(crashReportSender)
     }
 
     fun loadGame(gameInfo: GameInfo) {
@@ -161,11 +169,24 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     // This is ALWAYS called after create() on Android - google "Android life cycle"
     override fun resume() {
         super.resume()
+        musicController.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
+
+        // This is also needed in resume to open links and notifications
+        // correctly when the app was already running. The handling in onCreate
+        // does not seem to be enough
+        if (deepLinkedMultiplayerGame != null) {
+            try {
+                loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
+            } catch (ex: Exception) {
+                setScreen(MainMenuScreen())
+            }
+        }
     }
 
     override fun pause() {
         if (isGameInfoInitialized()) GameSaver.autoSave(this.gameInfo)
+        musicController.pause()
         super.pause()
     }
 

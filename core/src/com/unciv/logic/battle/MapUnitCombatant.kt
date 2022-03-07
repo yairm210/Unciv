@@ -25,7 +25,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
 
     override fun takeDamage(damage: Int) {
         unit.health -= damage
-        if(isDefeated()) unit.destroy()
+        if (unit.health < 0) unit.health = 0
+        if (isDefeated()) unit.destroy()
     }
 
     override fun getAttackingStrength(): Int {
@@ -34,7 +35,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getDefendingStrength(): Int {
-        return if (unit.isEmbarked() && !isCivilian()) 5 * getCivInfo().getEraNumber()
+        return if (unit.isEmbarked() && !isCivilian())
+            unit.civInfo.getEra().embarkDefense
         else unit.baseUnit().strength
     }
 

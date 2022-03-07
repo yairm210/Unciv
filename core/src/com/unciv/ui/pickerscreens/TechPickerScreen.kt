@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
@@ -162,12 +163,13 @@ class TechPickerScreen(
 
             var text = techName.tr()
 
-            if (techName == selectedTech?.name) {
+            if (techName == selectedTech?.name && techButton.color != currentTechColor) {
                 techButton.color = techButton.color.cpy().lerp(Color.BLACK, 0.5f)
             }
 
+            techButton.orderIndicator?.remove()
             if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
-                text += " (" + tempTechsToResearch.indexOf(techName) + ")"
+                techButton.addOrderIndicator(tempTechsToResearch.indexOf(techName) + 1)
             }
 
             if (!civTech.isResearched(techName) || techName == Constants.futureTech)
@@ -263,13 +265,20 @@ class TechPickerScreen(
         }
 
         val pathToTech = civTech.getRequiredTechsToDestination(tech)
-        for (requiredTech in pathToTech)
-            for (unique in requiredTech.uniqueObjects)
-                if (unique.placeholderText == "Incompatible with []" && civTech.isResearched(unique.params[0])) {
+        for (requiredTech in pathToTech) {
+            for (unique in requiredTech.getMatchingUniques(UniqueType.IncompatibleWith))
+                if (civTech.isResearched(unique.params[0])) {
                     rightSideButton.setText(unique.text.tr())
                     rightSideButton.disable()
                     return
                 }
+            for (unique in requiredTech.uniqueObjects
+                .filter { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) }) {
+                rightSideButton.setText(unique.text.tr())
+                rightSideButton.disable()
+                return
+            }
+        }
 
         tempTechsToResearch.clear()
         tempTechsToResearch.addAll(pathToTech.map { it.name })
@@ -288,7 +297,7 @@ class TechPickerScreen(
     }
 
     private fun centerOnTechnology(tech: Technology) {
-        Gdx.app.postRunnable {
+        postCrashHandlingRunnable {
             techNameToButton[tech.name]?.let {
                 scrollPane.scrollTo(it.x, it.y, it.width, it.height, true, true)
                 scrollPane.updateVisualScroll()

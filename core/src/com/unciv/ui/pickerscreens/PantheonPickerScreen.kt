@@ -2,6 +2,7 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -31,8 +32,8 @@ class PantheonPickerScreen(choosingCiv: CivilizationInfo, gameInfo: GameInfo) : 
                     else ImageGetter.getBackground(ImageGetter.getBlue()) 
             }
             beliefTable.pad(10f)
-            beliefTable.add(belief.name.toLabel(fontSize = 24)).row()
-            beliefTable.add(belief.uniques.joinToString().toLabel())
+            beliefTable.add(belief.name.toLabel(fontSize = Constants.headingFontSize)).row()
+            beliefTable.add(belief.uniques.joinToString { it.tr() }.toLabel())
             beliefTable.onClick { 
                 chosenPantheon = belief
                 pick("Follow [${chosenPantheon!!.name}]".tr())

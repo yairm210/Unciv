@@ -21,7 +21,6 @@ import com.unciv.ui.utils.UncivDateFormat.parseDate
 import com.unciv.ui.worldscreen.mainmenu.Github
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.concurrent.thread
 import kotlin.math.max
 
 /**
@@ -49,8 +48,6 @@ class ModManagementScreen(
     private var selectedModName = ""
     private var selectedAuthor = ""
 
-    private val deprecationLabel: WrappableLabel
-    private val deprecationCell: Cell<WrappableLabel>
     private val modDescriptionLabel: WrappableLabel
 
     private var installedHeaderLabel: Label? = null
@@ -58,8 +55,6 @@ class ModManagementScreen(
     private var installedExpanderTab: ExpanderTab? = null
     private var onlineExpanderTab: ExpanderTab? = null
 
-    // keep running count of mods fetched from online search for comparison to total count as reported by GitHub
-    private var downloadModCount = 0
 
     // Enable re-sorting and syncing entries in 'installed' and 'repo search' ScrollPanes
     private val installedModInfo = previousInstalledMods ?: HashMap(10) // HashMap<String, ModUIData> inferred
@@ -92,8 +87,6 @@ class ModManagementScreen(
         onBackButtonClicked(closeAction)
 
         val labelWidth = max(stage.width / 2f - 60f,60f)
-        deprecationLabel = WrappableLabel(deprecationText, labelWidth, Color.FIREBRICK)
-        deprecationLabel.wrap = true
         modDescriptionLabel = WrappableLabel("", labelWidth)
         modDescriptionLabel.wrap = true
 
@@ -102,8 +95,6 @@ class ModManagementScreen(
         labelWrapper.defaults().top().left().growX()
         val labelScroll = descriptionLabel.parent as ScrollPane
         descriptionLabel.remove()
-        deprecationCell = labelWrapper.add(deprecationLabel).padBottom(10f)
-        deprecationLabel.remove()
         labelWrapper.row()
         labelWrapper.add(modDescriptionLabel).row()
         labelScroll.actor = labelWrapper
@@ -194,116 +185,106 @@ class ModManagementScreen(
      *  calls itself for the next page of search results
      */
     private fun tryDownloadPage(pageNum: Int) {
-        runningSearchThread = thread(name="GitHubSearch") {
+        runningSearchThread = crashHandlingThread(name="GitHubSearch") {
             val repoSearch: Github.RepoSearch
             try {
                 repoSearch = Github.tryGetGithubReposWithTopic(amountPerPage, pageNum)!!
             } catch (ex: Exception) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     ToastPopup("Could not download mod list", this)
                 }
                 runningSearchThread = null
-                return@thread
+                return@crashHandlingThread
             }
 
-            Gdx.app.postRunnable {
-                // clear and remove last cell if it is the "..." indicator
-                val lastCell = downloadTable.cells.lastOrNull()
-                if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
-                    lastCell.setActor<Actor>(null)
-                    downloadTable.cells.removeValue(lastCell, true)
-                }
-
-                for (repo in repoSearch.items) {
-                    if (stopBackgroundTasks) return@postRunnable
-                    repo.name = repo.name.replace('-', ' ')
-
-                    // Mods we have manually decided to remove for instability are removed here
-                    // If at some later point these mods are updated, we should definitely remove
-                    // this piece of code. This is a band-aid, not a full solution.
-                    if (repo.html_url in modsToHideAsUrl) continue
-
-                    val existingMod = RulesetCache.values.firstOrNull { it.name == repo.name }
-                    val isUpdated = existingMod?.modOptions?.let {
-                        it.lastUpdated != "" && it.lastUpdated != repo.updated_at
-                    } == true
-
-                    if (existingMod != null) {
-                        if (isUpdated) {
-                            installedModInfo[repo.name]?.state?.isUpdated = true
-                        }
-                        if (existingMod.modOptions.author.isEmpty()) {
-                            rewriteModOptions(repo, Gdx.files.local("mods").child(repo.name))
-                            existingMod.modOptions.author = repo.owner.login
-                            existingMod.modOptions.modSize = repo.size
-                        }
-                    }
-
-                    val mod = ModUIData(repo, isUpdated)
-                    onlineModInfo[repo.name] = mod
-                    mod.button.onClick { onlineButtonAction(repo, mod.button) }
-
-                    val cell = downloadTable.add(mod.button)
-                    downloadTable.row()
-                    if (onlineScrollCurrentY < 0f) onlineScrollCurrentY = cell.padTop
-                    mod.y = onlineScrollCurrentY
-                    mod.height = cell.prefHeight
-                    onlineScrollCurrentY += cell.padBottom + cell.prefHeight + cell.padTop
-                    downloadModCount++
-                }
-
-                // Now the tasks after the 'page' of search results has been fully processed
-                if (repoSearch.items.size < amountPerPage) {
-                    // The search has reached the last page!
-                    // Check: due to time passing between github calls it is not impossible we get a mod twice
-                    val checkedMods: MutableSet<String> = mutableSetOf()
-                    val duplicates: MutableList<Cell<Actor>> = mutableListOf()
-                    downloadTable.cells.forEach {
-                        cell->
-                        cell.actor?.name?.apply {
-                            if (checkedMods.contains(this)) {
-                                duplicates.add(cell)
-                            } else checkedMods.add(this)
-                        }
-                    }
-                    duplicates.forEach {
-                        it.setActor(null)
-                        downloadTable.cells.removeValue(it, true)
-                    }
-                    downloadModCount -= duplicates.size
-                    // Check: It is also not impossible we missed a mod - just inform user
-                    if (repoSearch.total_count > downloadModCount || repoSearch.incomplete_results) {
-                        val retryLabel = "Online query result is incomplete".toLabel(Color.RED)
-                        retryLabel.touchable = Touchable.enabled
-                        retryLabel.onClick { reloadOnlineMods() }
-                        downloadTable.add(retryLabel)
-                    }
-                } else {
-                    // the page was full so there may be more pages.
-                    // indicate that search will be continued
-                    downloadTable.add("...".toLabel()).row()
-                }
-
-                downloadTable.pack()
-                // Shouldn't actor.parent.actor = actor be a no-op? No, it has side effects we need.
-                // See [commit for #3317](https://github.com/yairm210/Unciv/commit/315a55f972b8defe22e76d4a2d811c6e6b607e57)
-                (downloadTable.parent as ScrollPane).actor = downloadTable
-
-                // continue search unless last page was reached
-                if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
-                    tryDownloadPage(pageNum + 1)
-            }
+            postCrashHandlingRunnable { addModInfoFromRepoSearch(repoSearch, pageNum) }
             runningSearchThread = null
         }
     }
 
-    private fun syncOnlineSelected(name: String, button: Button) {
-        syncSelected(name, button, installedModInfo, scrollInstalledMods)
+    private fun addModInfoFromRepoSearch(repoSearch: Github.RepoSearch, pageNum: Int){
+        // clear and remove last cell if it is the "..." indicator
+        val lastCell = downloadTable.cells.lastOrNull()
+        if (lastCell != null && lastCell.actor is Label && (lastCell.actor as Label).text.toString() == "...") {
+            lastCell.setActor<Actor>(null)
+            downloadTable.cells.removeValue(lastCell, true)
+        }
+
+        for (repo in repoSearch.items) {
+            if (stopBackgroundTasks) return
+            repo.name = repo.name.replace('-', ' ')
+
+            if (onlineModInfo.containsKey(repo.name))
+                continue // we already got this mod in a previous download, since one has been added in between
+
+            // Mods we have manually decided to remove for instability are removed here
+            // If at some later point these mods are updated, we should definitely remove
+            // this piece of code. This is a band-aid, not a full solution.
+            if (repo.html_url in modsToHideAsUrl) continue
+
+            val installedMod = RulesetCache.values.firstOrNull { it.name == repo.name }
+            val isUpdatedVersionOfInstalledMod = installedMod?.modOptions?.let {
+                it.lastUpdated != "" && it.lastUpdated != repo.pushed_at
+            } == true
+
+            if (installedMod != null) {
+
+                if (isUpdatedVersionOfInstalledMod) {
+                    installedModInfo[repo.name]!!.state.hasUpdate = true
+                }
+
+                if (installedMod.modOptions.author.isEmpty()) {
+                    rewriteModOptions(repo, installedMod.folderLocation!!)
+                    installedMod.modOptions.author = repo.owner.login
+                    installedMod.modOptions.modSize = repo.size
+                }
+            }
+
+            val mod = ModUIData(repo, isUpdatedVersionOfInstalledMod)
+            onlineModInfo[repo.name] = mod
+            mod.button.onClick { onlineButtonAction(repo, mod.button) }
+
+            val cell = downloadTable.add(mod.button)
+            downloadTable.row()
+            if (onlineScrollCurrentY < 0f) onlineScrollCurrentY = cell.padTop
+            mod.y = onlineScrollCurrentY
+            mod.height = cell.prefHeight
+            onlineScrollCurrentY += cell.padBottom + cell.prefHeight + cell.padTop
+        }
+
+        // Now the tasks after the 'page' of search results has been fully processed
+        // The search has reached the last page!
+        if (repoSearch.items.size < amountPerPage) {
+            // Check: It is also not impossible we missed a mod - just inform user
+            if (repoSearch.incomplete_results) {
+                val retryLabel = "Online query result is incomplete".toLabel(Color.RED)
+                retryLabel.touchable = Touchable.enabled
+                retryLabel.onClick { reloadOnlineMods() }
+                downloadTable.add(retryLabel)
+            }
+        } else {
+            // the page was full so there may be more pages.
+            // indicate that search will be continued
+            downloadTable.add("...".toLabel()).row()
+        }
+
+        downloadTable.pack()
+        // Shouldn't actor.parent.actor = actor be a no-op? No, it has side effects we need.
+        // See [commit for #3317](https://github.com/yairm210/Unciv/commit/315a55f972b8defe22e76d4a2d811c6e6b607e57)
+        (downloadTable.parent as ScrollPane).actor = downloadTable
+
+        // continue search unless last page was reached
+        if (repoSearch.items.size >= amountPerPage && !stopBackgroundTasks)
+            tryDownloadPage(pageNum + 1)
     }
-    private fun syncInstalledSelected(name: String, button: Button) {
-        syncSelected(name, button, onlineModInfo, scrollOnlineMods)
+
+    private fun syncOnlineSelected(modName: String, button: Button) {
+        syncSelected(modName, button, installedModInfo, scrollInstalledMods)
     }
-    private fun syncSelected(name: String, button: Button, index: HashMap<String, ModUIData>, scroll: ScrollPane) {
+    private fun syncInstalledSelected(modName: String, button: Button) {
+        syncSelected(modName, button, onlineModInfo, scrollOnlineMods)
+    }
+    private fun syncSelected(modName: String, button: Button, modNameToData: HashMap<String, ModUIData>, scroll: ScrollPane) {
         // manage selection color for user selection
         lastSelectedButton?.color = Color.WHITE
         button.color = Color.BLUE
@@ -312,19 +293,19 @@ class ModManagementScreen(
             lastSyncMarkedButton?.color = Color.WHITE
         lastSyncMarkedButton = null
         // look for sync-able same mod in other list
-        val pos = index[name] ?: return
+        val modUIDataInOtherList = modNameToData[modName] ?: return
         // scroll into view
-        scroll.scrollY = (pos.y + (pos.height - scroll.height) / 2).coerceIn(0f, scroll.maxY)
+        scroll.scrollY = (modUIDataInOtherList.y + (modUIDataInOtherList.height - scroll.height) / 2).coerceIn(0f, scroll.maxY)
         // and color it so it's easier to find. ROYAL and SLATE too dark.
-        pos.button.color = Color.valueOf("7499ab")  // about halfway between royal and sky
-        lastSyncMarkedButton = pos.button
+        modUIDataInOtherList.button.color = Color.valueOf("7499ab")  // about halfway between royal and sky
+        lastSyncMarkedButton = modUIDataInOtherList.button
     }
 
     /** Recreate the information part of the right-hand column
      * @param repo: the repository instance as received from the GitHub api
      */
     private fun addModInfoToActionTable(repo: Github.Repo) {
-        addModInfoToActionTable(repo.name, repo.html_url, repo.updated_at, repo.owner.login, repo.size)
+        addModInfoToActionTable(repo.name, repo.html_url, repo.pushed_at, repo.owner.login, repo.size)
     }
     /** Recreate the information part of the right-hand column
      * @param modName: The mod name (name from the RuleSet)
@@ -386,7 +367,7 @@ class ModManagementScreen(
         showModDescription(repo.name)
         removeRightSideClickListeners()
         rightSideButton.enable()
-        val label = if (installedModInfo[repo.name]?.state?.isUpdated == true)
+        val label = if (installedModInfo[repo.name]?.state?.hasUpdate == true)
             "Update [${repo.name}]"
         else "Download [${repo.name}]"
         rightSideButton.setText(label.tr())
@@ -404,13 +385,13 @@ class ModManagementScreen(
 
     /** Download and install a mod in the background, called both from the right-bottom button and the URL entry popup */
     private fun downloadMod(repo: Github.Repo, postAction: () -> Unit = {}) {
-        thread(name="DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
+        crashHandlingThread(name="DownloadMod") { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
                 val modFolder = Github.downloadAndExtract(repo.html_url, repo.default_branch,
                     Gdx.files.local("mods"))
                     ?: throw Exception()    // downloadAndExtract returns null for 404 errors and the like -> display something!
                 rewriteModOptions(repo, modFolder)
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     ToastPopup("[${repo.name}] Downloaded!", this)
                     RulesetCache.loadRulesets()
                     RulesetCache[repo.name]?.let { 
@@ -419,13 +400,13 @@ class ModManagementScreen(
                     refreshInstalledModTable()
                     showModDescription(repo.name)
                     unMarkUpdatedMod(repo.name)
+                    postAction()
                 }
             } catch (ex: Exception) {
-                Gdx.app.postRunnable {
+                postCrashHandlingRunnable {
                     ToastPopup("Could not download [${repo.name}]", this)
+                    postAction()
                 }
-            } finally {
-                postAction()
             }
         }
     }
@@ -438,7 +419,7 @@ class ModManagementScreen(
         val modOptionsFile = modFolder.child("jsons/ModOptions.json")
         val modOptions = if (modOptionsFile.exists()) JsonParser().getFromJson(ModOptions::class.java, modOptionsFile) else ModOptions()
         modOptions.modUrl = repo.html_url
-        modOptions.lastUpdated = repo.updated_at
+        modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
         Json().toJson(modOptions, modOptionsFile)
@@ -451,9 +432,9 @@ class ModManagementScreen(
      *  (called under postRunnable posted by background thread)
      */
     private fun unMarkUpdatedMod(name: String) {
-        installedModInfo[name]?.state?.isUpdated = false
-        onlineModInfo[name]?.state?.isUpdated = false
-        val button = (onlineModInfo[name]?.button as? TextButton)
+        installedModInfo[name]?.state?.hasUpdate = false
+        onlineModInfo[name]?.state?.hasUpdate = false
+        val button = onlineModInfo[name]?.button
         button?.setText(name)
         if (optionsManager.sortInstalled == SortType.Status)
             refreshInstalledModTable()
@@ -464,29 +445,38 @@ class ModManagementScreen(
     /** Rebuild the right-hand column for clicks on installed mods
      *  Display single mod metadata, offer additional actions (delete is elsewhere)
     */
-    private fun refreshModActions(mod: Ruleset) {
+    private fun refreshInstalledModActions(mod: Ruleset) {
         modActionTable.clear()
         // show mod information first
         addModInfoToActionTable(mod.name, mod.modOptions)
 
         // offer 'permanent visual mod' toggle
         val visualMods = game.settings.visualMods
-        val isVisual = visualMods.contains(mod.name)
-        installedModInfo[mod.name]?.state?.isVisual = isVisual
+        val isVisualMod = visualMods.contains(mod.name)
+        installedModInfo[mod.name]!!.state.isVisual = isVisualMod
 
-        val visualCheckBox = "Permanent audiovisual mod".toCheckBox(isVisual) {
-            checked ->
+        val visualCheckBox = "Permanent audiovisual mod".toCheckBox(isVisualMod) { checked ->
             if (checked)
                 visualMods.add(mod.name)
             else
                 visualMods.remove(mod.name)
             game.settings.save()
             ImageGetter.setNewRuleset(ImageGetter.ruleset)
-            refreshModActions(mod)
+            refreshInstalledModActions(mod)
             if (optionsManager.sortInstalled == SortType.Status)
                 refreshInstalledModTable()
         }
         modActionTable.add(visualCheckBox).row()
+
+        if (installedModInfo[mod.name]!!.state.hasUpdate) {
+            val updateModTextbutton = "Update [${mod.name}]".toTextButton()
+            updateModTextbutton.onClick {
+                updateModTextbutton.setText("Downloading...".tr())
+                val repo = onlineModInfo[mod.name]!!.repo!!
+                downloadMod(repo) { refreshInstalledModActions(mod) }
+            }
+            modActionTable.add(updateModTextbutton)
+        }
     }
 
     /** Rebuild the left-hand column containing all installed mods */
@@ -495,10 +485,9 @@ class ModManagementScreen(
         // at least the button references otherwise sync will not work
         if (installedModInfo.isEmpty()) {
             for (mod in RulesetCache.values.asSequence().filter { it.name != "" }) {
-                ModUIData(mod).run {
-                    state.isVisual = mod.name in game.settings.visualMods
-                    installedModInfo[mod.name] = this
-                }
+                val modUIData = ModUIData(mod)
+                modUIData.state.isVisual = mod.name in game.settings.visualMods
+                installedModInfo[mod.name] = modUIData
             }
         }
 
@@ -529,9 +518,10 @@ class ModManagementScreen(
 
     private fun installedButtonAction(mod: ModUIData) {
         syncInstalledSelected(mod.name, mod.button)
-        refreshModActions(mod.ruleset!!)
+        refreshInstalledModActions(mod.ruleset!!)
         rightSideButton.setText("Delete [${mod.name}]".tr())
-        rightSideButton.isEnabled = true
+        // Don't let the player think he can delete Vanilla and G&K rulesets
+        rightSideButton.isEnabled = mod.ruleset.folderLocation!=null
         showModDescription(mod.name)
         removeRightSideClickListeners()
         rightSideButton.onClick {
@@ -539,7 +529,8 @@ class ModManagementScreen(
             YesNoPopup(
                 question = "Are you SURE you want to delete this mod?",
                 action = {
-                    deleteMod(mod.name)
+                    deleteMod(mod.ruleset)
+                    modActionTable.clear()
                     rightSideButton.setText("[${mod.name}] was deleted.".tr())
                 },
                 screen = this,
@@ -549,12 +540,10 @@ class ModManagementScreen(
     }
 
     /** Delete a Mod, refresh ruleset cache and update installed mod table */
-    private fun deleteMod(modName: String) {
-        val modFileHandle = Gdx.files.local("mods").child(modName)
-        if (modFileHandle.isDirectory) modFileHandle.deleteDirectory()
-        else modFileHandle.delete()     // This should never happen
+    private fun deleteMod(mod: Ruleset) {
+        mod.folderLocation!!.deleteDirectory()
         RulesetCache.loadRulesets()
-        installedModInfo.remove(modName)
+        installedModInfo.remove(mod.name)
         refreshInstalledModTable()
     }
 
@@ -587,11 +576,10 @@ class ModManagementScreen(
     }
 
     private fun showModDescription(modName: String) {
-        val online = onlineModInfo[modName]?.description ?: ""
-        val installed = installedModInfo[modName]?.description ?: ""
-        val separator = if (online.isEmpty() || installed.isEmpty()) "" else "\n"
-        deprecationCell.setActor(if (modName in modsToHideNames) deprecationLabel else null)
-        modDescriptionLabel.setText(online + separator + installed)
+        val onlineModDescription = onlineModInfo[modName]?.description ?: "" // shows github info
+        val installedModDescription = installedModInfo[modName]?.description ?: "" // shows ruleset info
+        val separator = if (onlineModDescription.isEmpty() || installedModDescription.isEmpty()) "" else "\n"
+        modDescriptionLabel.setText(onlineModDescription + separator + installedModDescription)
     }
 
     override fun resize(width: Int, height: Int) {
@@ -602,16 +590,9 @@ class ModManagementScreen(
     }
 
     companion object {
-        val modsToHideAsUrl = run {
+        val modsToHideAsUrl by lazy {
             val blockedModsFile = Gdx.files.internal("jsons/ManuallyBlockedMods.json")
             JsonParser().getFromJson(Array<String>::class.java, blockedModsFile)
         }
-        val modsToHideNames = run {
-            val regex = Regex(""".*/([^/]+)/?$""")
-            modsToHideAsUrl.map { url ->
-                regex.replace(url) { it.groups[1]!!.value }.replace('-', ' ')
-            }
-        }
-        const val deprecationText = "Deprecated until update conforms to current requirements"
     }
 }

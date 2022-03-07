@@ -24,7 +24,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     init {
         isVisible = false
         skin = BaseScreen.skin
-        background = ImageGetter.getBackground(ImageGetter.getBlue())
+        background = ImageGetter.getBackground(ImageGetter.getBlue().apply { a=0.8f })
 
         defaults().pad(5f)
         pad(5f)
@@ -53,6 +53,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             if (defender == null) { hide(); return }
             simulateBattle(attacker, defender)
         }
+        pack()
+        addBorderAllowOpacity(1f, Color.WHITE)
     }
 
     private fun tryGetAttacker(): ICombatant? {
@@ -93,51 +95,84 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         return defender
     }
 
+    private fun getIcon(combatant:ICombatant) =
+        if (combatant is MapUnitCombatant) UnitGroup(combatant.unit,25f)
+        else ImageGetter.getNationIndicator(combatant.getCivInfo().nation, 25f)
+
     private fun simulateBattle(attacker: ICombatant, defender: ICombatant){
         clear()
 
         val attackerNameWrapper = Table()
         val attackerLabel = attacker.getName().toLabel()
-        if (attacker is MapUnitCombatant)
-            attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
+        attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
 
         val defenderNameWrapper = Table()
         val defenderLabel = Label(defender.getName().tr(), skin)
-        if (defender is MapUnitCombatant)
-            defenderNameWrapper.add(UnitGroup(defender.unit,25f)).padRight(5f)
+        defenderNameWrapper.add(getIcon(defender)).padRight(5f)
+
         defenderNameWrapper.add(defenderLabel)
         add(defenderNameWrapper).row()
 
         addSeparator().pad(0f)
 
-        add(attacker.getAttackingStrength().toString()+Fonts.strength)
-        add(defender.getDefendingStrength().toString()+Fonts.strength).row()
+        add(attacker.getAttackingStrength().toString() + Fonts.strength)
+        add(defender.getDefendingStrength().toString() + Fonts.strength).row()
+
+
+        val quarterScreen = worldScreen.stage.width/4
 
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker, defender).map {
-                    val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
-                    val percentage = (if(it.value>0)"+" else "")+ it.value +"%"
-                    "$description: $percentage"
+                    val description = if (it.key.startsWith("vs "))
+                        ("vs [" + it.key.replace("vs ", "") + "]").tr()
+                    else it.key.tr()
+                    val percentage = (if (it.value > 0) "+" else "") + it.value + "%"
+
+                    val upOrDownLabel = if (it.value > 0f) "⬆".toLabel(Color.GREEN) else "⬇".toLabel(
+                        Color.RED)
+                    val modifierTable = Table()
+                    modifierTable.add(upOrDownLabel)
+                    val modifierLabel = "$percentage $description".toLabel(fontSize = 14).apply { wrap=true }
+                    modifierTable.add(modifierLabel).width(quarterScreen)
+                    modifierTable
                 }
         val defenderModifiers =
                 if (defender is MapUnitCombatant)
                     BattleDamage.getDefenceModifiers(attacker, defender).map {
                         val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
                         val percentage = (if(it.value>0)"+" else "")+ it.value +"%"
-                        "$description: $percentage"
+                        val upOrDownLabel = if (it.value > 0f) "⬆".toLabel(Color.GREEN) else "⬇".toLabel(
+                            Color.RED)
+                        val modifierTable = Table()
+                        modifierTable.add(upOrDownLabel)
+                        val modifierLabel = "$percentage $description".toLabel(fontSize = 14).apply { wrap=true }
+                        modifierTable.add(modifierLabel).width(quarterScreen)
+                        modifierTable
                     }
                 else listOf()
 
-        for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
-            if (attackerModifiers.size > i) add(attackerModifiers[i].toLabel(fontSize = 14)) else add()
-            if (defenderModifiers.size > i) add(defenderModifiers[i].toLabel(fontSize = 14)) else add()
+        for (i in 0..max(attackerModifiers.size,defenderModifiers.size)) {
+            if (attackerModifiers.size > i)
+                add(attackerModifiers[i])
+            else add().width(quarterScreen)
+            if (defenderModifiers.size > i)
+                add(defenderModifiers[i])
+            else add().width(quarterScreen)
             row().pad(2f)
         }
 
-        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker,null,defender)
-        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker,null,defender)
+        // from Battle.addXp(), check for can't gain more XP from Barbarians
+        val modConstants = attacker.getCivInfo().gameInfo.ruleSet.modOptions.constants
+        if (attacker is MapUnitCombatant && (attacker as MapUnitCombatant).unit.promotions.totalXpProduced() >= modConstants.maxXPfromBarbarians
+                && defender.getCivInfo().isBarbarian()){
+            add("Cannot gain more XP from Barbarians".tr().toLabel(fontSize = 16).apply { wrap=true }).width(quarterScreen)
+            row()
+        }
+
+        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker, null, defender, true)
+        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, null, defender, true)
 
 
         if (damageToAttacker>attacker.getHealth() && damageToDefender>defender.getHealth()) // when damage exceeds health, we don't want to show negative health numbers
@@ -164,7 +199,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             add("")
             add(
                 if (defender.isCivilian()
-                    && (defender as MapUnitCombatant).unit.hasUnique("Uncapturable")
+                    && (defender as MapUnitCombatant).unit.hasUnique(UniqueType.Uncapturable)
                 ) ""
                 else if (defender.isCivilian()) "Captured!".tr()
                 else "Occupied!".tr()
@@ -226,7 +261,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val attackerNameWrapper = Table()
         val attackerLabel = attacker.getName().toLabel()
-        attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
+        attackerNameWrapper.add(getIcon(attacker)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
         
@@ -241,16 +276,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             val defender = tryGetDefenderAtTile(tile, true) ?: continue
             
             val defenderLabel = Label(defender.getName().tr(), skin)
-            when (defender) {
-                is MapUnitCombatant ->
-                    defenderNameWrapper.add(UnitGroup(defender.unit, 25f)).padRight(5f)
-                is CityCombatant -> {
-                    val nation = defender.city.civInfo.nation
-                    val nationIcon = ImageGetter.getNationIcon(nation.name)
-                    nationIcon.color = nation.getInnerColor()
-                    defenderNameWrapper.add(nationIcon).size(25f).padRight(5f)
-                }
-            }
+            defenderNameWrapper.add(getIcon(defender)).padRight(5f)
             defenderNameWrapper.add(defenderLabel).row()
         }
         add(defenderNameWrapper).row()

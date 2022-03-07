@@ -8,8 +8,7 @@ import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.colorFromRGB
 
-class Era : INamed, IHasUniques {
-    override var name: String = ""
+class Era : RulesetObject(), IHasUniques {
     var eraNumber: Int = -1
     var researchAgreementCost = 300
     var startingSettlerCount = 1
@@ -24,6 +23,7 @@ class Era : INamed, IHasUniques {
     var settlerBuildings = ArrayList<String>()
     var startingObsoleteWonders = ArrayList<String>()
     var baseUnitBuyCost = 200
+    var embarkDefense = 3
     var startPercent = 0
 
     var friendBonus = HashMap<String, List<String>>()
@@ -32,10 +32,8 @@ class Era : INamed, IHasUniques {
     val allyBonusObjects: Map<CityStateType, List<Unique>> by lazy { initBonuses(allyBonus) }
 
     var iconRGB: List<Int>? = null
-    override var uniques: ArrayList<String> = arrayListOf()
     override fun getUniqueTarget() = UniqueTarget.Era
-    override val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it,
-        getUniqueTarget(), name) } }
+    override fun makeLink() = "" // No own category on Civilopedia screen
 
     private fun initBonuses(bonusMap: Map<String, List<String>>): Map<CityStateType, List<Unique>> {
         val objectMap = HashMap<CityStateType, List<Unique>>()
@@ -53,6 +51,7 @@ class Era : INamed, IHasUniques {
         }
     }
 
+    /** Since 3.19.5 we have a warning for mods without bonuses, eventually we should treat such mods as providing no bonus */
     fun undefinedCityStateBonuses(): Boolean {
         return friendBonus.isEmpty() || allyBonus.isEmpty()
     }
@@ -71,7 +70,4 @@ class Era : INamed, IHasUniques {
     }
 
     fun getHexColor() = "#" + getColor().toString().substring(0, 6)
-
-    /** This is used for display purposes in templates */ 
-    override fun toString() = name
 }

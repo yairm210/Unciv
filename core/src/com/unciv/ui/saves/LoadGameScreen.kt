@@ -41,13 +41,13 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             val loadingPopup = Popup( this)
             loadingPopup.addGoodSizedLabel("Loading...")
             loadingPopup.open()
-            thread {
+            crashHandlingThread(name = "Load Game") {
                 try {
                     // This is what can lead to ANRs - reading the file and setting the transients, that's why this is in another thread
                     val loadedGame = GameSaver.loadGameByName(selectedSave)
-                    Gdx.app.postRunnable { UncivGame.Current.loadGame(loadedGame) }
+                    postCrashHandlingRunnable { UncivGame.Current.loadGame(loadedGame) }
                 } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
+                    postCrashHandlingRunnable {
                         loadingPopup.close()
                         val cantLoadGamePopup = Popup(this)
                         cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
@@ -99,7 +99,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
             loadFromCustomLocation.onClick {
                 GameSaver.loadGameFromCustomLocation { gameInfo, exception ->
                     if (gameInfo != null) {
-                        Gdx.app.postRunnable {
+                        postCrashHandlingRunnable {
                             game.loadGame(gameInfo)
                         }
                     } else if (exception !is CancellationException) {
@@ -153,12 +153,12 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
         loadImage.addAction(Actions.rotateBy(360f, 2f))
         saveTable.add(loadImage).size(50f)
 
-        thread { // Apparently, even jut getting the list of saves can cause ANRs -
+        crashHandlingThread { // Apparently, even jut getting the list of saves can cause ANRs -
             // not sure how many saves these guys had but Google Play reports this to have happened hundreds of times
             // .toList() because otherwise the lastModified will only be checked inside the postRunnable
             val saves = GameSaver.getSaves().sortedByDescending { it.lastModified() }.toList()
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 saveTable.clear()
                 for (save in saves) {
                     if (save.name().startsWith("Autosave") && !showAutosaves) continue
@@ -183,7 +183,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
 
         val savedAt = Date(save.lastModified())
         var textToSet = save.name() + "\n${"Saved at".tr()}: " + savedAt.formatDate()
-        thread { // Even loading the game to get its metadata can take a long time on older phones
+        crashHandlingThread { // Even loading the game to get its metadata can take a long time on older phones
             try {
                 val game = GameSaver.loadGamePreviewFromFile(save)
                 val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
@@ -196,7 +196,7 @@ class LoadGameScreen(previousScreen:BaseScreen) : PickerScreen(disableScroll = t
                 textToSet += "\n${"Could not load game".tr()}!"
             }
 
-            Gdx.app.postRunnable {
+            postCrashHandlingRunnable {
                 descriptionLabel.setText(textToSet)
             }
         }

@@ -6,13 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.CrashScreen
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.concurrent.thread
 import kotlin.random.Random
 
 /**
@@ -53,7 +54,7 @@ fun Actor.center(parent: Stage){ centerX(parent); centerY(parent)}
 fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            thread(name = "Sound") { Sounds.play(sound) }
+            crashHandlingThread(name = "Sound") { Sounds.play(sound) }
             function(event, x, y)
         }
     })
@@ -82,6 +83,7 @@ fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true, color: Co
     return IconCircleGroup(size, this, resizeActor, color)
 }
 
+
 fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table {
     val table = Table()
     table.pad(size)
@@ -93,16 +95,15 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table
     return table
 }
 
-/** Wrap an [Actor] in a [Group] of a given size */
-fun Actor.sizeWrapped(x: Float, y: Float): Group {
-    val wrapper = Group().apply {
-        isTransform = false // performance helper - nothing here is rotated or scaled
-        setSize(x, y)
-    }
-    setSize(x, y)
-    center(wrapper)
-    wrapper.addActor(this)
-    return wrapper
+fun Group.addBorderAllowOpacity(size:Float, color: Color): Group {
+    val group = this
+    fun getTopBottomBorder() = ImageGetter.getDot(color).apply { width=group.width; height=size }
+    addActor(getTopBottomBorder().apply { setPosition(0f, group.height, Align.topLeft) })
+    addActor(getTopBottomBorder().apply { setPosition(0f, 0f, Align.bottomLeft) })
+    fun getLeftRightBorder() = ImageGetter.getDot(color).apply { width=size; height=group.height }
+    addActor(getLeftRightBorder().apply { setPosition(0f, 0f, Align.bottomLeft) })
+    addActor(getLeftRightBorder().apply { setPosition(group.width, 0f, Align.bottomRight) })
+    return group
 }
 
 
@@ -197,35 +198,20 @@ fun Float.toPercent() = 1 + this/100
 /** Translate a [String] and make a [TextButton] widget from it */
 fun String.toTextButton() = TextButton(this.tr(), BaseScreen.skin)
 
-/** Translate a [String] and make a [Button] widget from it, with control over font size, font colour, and an optional icon. */
-fun String.toButton(fontColor: Color = Color.WHITE, fontSize: Int = 24, icon: String? = null): Button {
-    val button = Button(BaseScreen.skin)
-    if (icon != null) {
-        val size = fontSize.toFloat()
-        button.add(
-            ImageGetter.getImage(icon).sizeWrapped(size, size)
-        ).padRight(size / 3)
-    }
-    button.add(
-        this.toLabel(fontColor, fontSize)
-    )
-    return button
-}
-
 /** Translate a [String] and make a [Label] widget from it */
 fun String.toLabel() = Label(this.tr(), BaseScreen.skin)
 /** Make a [Label] widget containing this [Int] as text */
 fun Int.toLabel() = this.toString().toLabel()
 
 /** Translate a [String] and make a [Label] widget from it with a specified font color and size */
-fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = 18): Label {
+fun String.toLabel(fontColor: Color = Color.WHITE, fontSize: Int = Constants.defaultFontSize): Label {
     // We don't want to use setFontSize and setFontColor because they set the font,
     //  which means we need to rebuild the font cache which means more memory allocation.
     var labelStyle = BaseScreen.skin.get(Label.LabelStyle::class.java)
-    if(fontColor != Color.WHITE || fontSize != 18) { // if we want the default we don't need to create another style
+    if (fontColor != Color.WHITE || fontSize != Constants.defaultFontSize) { // if we want the default we don't need to create another style
         labelStyle = Label.LabelStyle(labelStyle) // clone this to another
         labelStyle.fontColor = fontColor
-        if (fontSize != 18) labelStyle.font = Fonts.font
+        if (fontSize != Constants.defaultFontSize) labelStyle.font = Fonts.font
     }
     return Label(this.tr(), labelStyle).apply { setFontScale(fontSize / Fonts.ORIGINAL_FONT_SIZE) }
 }
@@ -319,6 +305,10 @@ object UncivDateFormat {
  *
  * In case an exception or error is thrown, the return will be null. Therefore the return type is always nullable.
  *
+ * The game loop, threading, and event systems already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
+ *
+ * Therefore, it usually shouldn't be necessary to manually use this. See the note at the top of [CrashScreen].kt for details.
+ *
  * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
  * @return Result from the function, or null if an exception is thrown.
  * */
@@ -343,12 +333,16 @@ fun <R> (() -> R).wrapCrashHandling(
 /**
  * Returns a wrapped a version of a Unit-returning function which safely crashes the game to [CrashScreen] if an exception or error is thrown.
  *
+ * The game loop, threading, and event systems already use this to wrap nearly everything that can happen during the lifespan of the Unciv application.
+ *
+ * Therefore, it usually shouldn't be necessary to manually use this. See the note at the top of [CrashScreen].kt for details.
+ *
  * @param postToMainThread Whether the [CrashScreen] should be opened by posting a runnable to the main thread, instead of directly. Set this to true if the function is going to run on any thread other than the main loop.
  * */
 fun (() -> Unit).wrapCrashHandlingUnit(
     postToMainThread: Boolean = false
 ): () -> Unit {
     val wrappedReturning = this.wrapCrashHandling(postToMainThread)
-    // Don't instantiate a new lambda every time.
+    // Don't instantiate a new lambda every time the return get called.
     return { wrappedReturning() ?: Unit }
 }

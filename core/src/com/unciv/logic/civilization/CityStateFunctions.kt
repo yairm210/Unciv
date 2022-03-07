@@ -4,6 +4,7 @@ import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -24,7 +25,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val cityStateType = ruleset.nations[civInfo.civName]?.cityStateType
             ?: return false
 
-        val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
+        val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
         for (tech in startingTechs)
             civInfo.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
 
@@ -348,7 +349,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
 
-        val bullyRange = max(5, civInfo.gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
+        val bullyRange = (civInfo.gameInfo.tileMap.tileMatrix.size / 10).coerceIn(5, 10)   // Longer range for larger maps
         val inRangeTiles = civInfo.getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
             .sumOf { if (it.militaryUnit?.civInfo == demandingCiv)
@@ -522,7 +523,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         // Set a diplomatic flag so we remember for future quests (and not to give them any)
         civInfo.getDiplomacyManager(bully).setFlag(DiplomacyFlags.Bullied, 20)
 
-        // Notify all city states that we were bullied (for quests)
+        // Notify all City-States that we were bullied (for quests)
         civInfo.gameInfo.getAliveCityStates()
             .forEach { it.questManager.cityStateBullied(civInfo, bully) }
     }
@@ -627,7 +628,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
                 NotificationIcon.Death, civInfo.civName)
         }
 
-        // Notify all city states that we were killed (for quest completion)
+        // Notify all City-States that we were killed (for quest completion)
         civInfo.gameInfo.getAliveCityStates()
             .forEach { it.questManager.cityStateConquered(civInfo, attacker) }
     }
@@ -639,11 +640,25 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (civInfo.cities.isEmpty()) // Can't receive units with no cities
             return
 
-        for (thirdCiv in civInfo.getKnownCivs().filter {
-                it != attacker && it.isAlive() && it.knows(attacker) && !it.isAtWarWith(attacker) }) {
-            thirdCiv.addNotification("[${civInfo.civName}] is being attacked by [${attacker.civName}] and asks all major civilizations to help them out by gifting them military units.",
-                civInfo.getCapital().location, civInfo.civName, "OtherIcons/Present")
+        for (thirdCiv in civInfo.getKnownCivs()
+            .filter { it != attacker && it.isAlive() && it.knows(attacker) && !it.isAtWarWith(attacker) && it.isMajorCiv() }
+        ) {
+            thirdCiv.addNotification(
+                "[${civInfo.civName}] is being attacked by [${attacker.civName}] and asks all major civilizations to help them out by gifting them military units.",
+                civInfo.getCapital().location, 
+                civInfo.civName, 
+                "OtherIcons/Present",
+            )
         }
     }
-
+    
+    fun getCityStateResourcesForAlly(): ResourceSupplyList {
+        val newDetailedCivResources = ResourceSupplyList()
+        for (city in civInfo.cities) {
+            for (resourceSupply in city.getCityResources())
+                if (resourceSupply.amount > 0) // IGNORE the fact that they consume their own resources - #4769
+                    newDetailedCivResources.add(resourceSupply.resource, resourceSupply.amount, "City-States")
+        }
+        return newDetailedCivResources
+    }
 }

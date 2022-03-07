@@ -1,6 +1,5 @@
 package com.unciv.testing
 
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver

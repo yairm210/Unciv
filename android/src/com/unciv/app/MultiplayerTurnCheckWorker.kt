@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
@@ -138,17 +139,18 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             }
         }
 
-        fun notifyUserAboutTurn(applicationContext: Context, gameName: String) {
-            val pendingIntent: PendingIntent =
-                    Intent(applicationContext, AndroidLauncher::class.java).let { notificationIntent ->
-                        PendingIntent.getActivity(applicationContext, 0, notificationIntent, 0)
-                    }
+        fun notifyUserAboutTurn(applicationContext: Context, game: Pair<String, String>) {
+            val intent = Intent(applicationContext, AndroidLauncher::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse("https://unciv.app/multiplayer?id=${game.second}")
+            }
+            val pendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, 0)
 
             val contentTitle = applicationContext.resources.getString(R.string.Notify_YourTurn_Short)
             val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
                     .setPriority(NotificationManagerCompat.IMPORTANCE_HIGH) // people are waiting!
                     .setContentTitle(contentTitle)
-                    .setContentText(applicationContext.resources.getString(R.string.Notify_YourTurn_Long).replace("[gameName]", gameName))
+                    .setContentText(applicationContext.resources.getString(R.string.Notify_YourTurn_Long).replace("[gameName]", game.first))
                     .setTicker(contentTitle)
                     // without at least vibrate, some Android versions don't show a heads-up notification
                     .setDefaults(DEFAULT_VIBRATE)
@@ -186,7 +188,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
             if (currentGameInfo.currentPlayerCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
-                notifyUserAboutTurn(applicationContext, gameNames[gameIds.indexOf(currentGameInfo.gameId)])
+                val gameIndex = gameIds.indexOf(currentGameInfo.gameId)
+                // Of the turnNotification is OFF, this will be -1 since we never saved this game in the array
+                // Or possibly reading the preview file returned an exception
+                if (gameIndex!=-1)
+                    notifyUserAboutTurn(applicationContext, Pair(gameNames[gameIndex], gameIds[gameIndex]))
             } else {
                 val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAME, gameNames),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.multiplayerTurnCheckerDelayInMinutes),
@@ -234,8 +240,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             val gameNames = inputData.getStringArray(GAME_NAME)!!
             var arrayIndex = 0
             // We only want to notify the user or update persisted notification once but still want
-            // to download all games to update the files hence this bool
-            var foundGame = ""
+            // to download all games to update the files so we save the first one we find
+            var foundGame: Pair<String, String>? = null
 
             for (gameId in gameIds){
                 //gameId could be an empty string if startTurnChecker fails to load all files
@@ -253,15 +259,11 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     I assume this happened because the TurnCheckerWorker gets canceled by the AndroidLauncher
                     while saves are getting saved right here.
                     Lets hope it works with gamePreview as they are a lot smaller and faster to save
-                    Well they don't work either ¯\_(ツ)_/¯
-                    I will have to find a different way (see #5756 for more info)
                      */
-                    //GameSaver.saveGame(gamePreview, gameNames[arrayIndex])
+                    GameSaver.saveGame(gamePreview, gameNames[arrayIndex])
 
-                    if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame.isEmpty()) {
-                        // We only save the first found game as the player will go into the
-                        // multiplayer screen anyway to join the game and see the other ones
-                        foundGame = gameNames[arrayIndex]
+                    if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!! && foundGame == null) {
+                        foundGame = Pair(gameNames[arrayIndex], gameIds[arrayIndex])
                     }
                     arrayIndex++
                 } catch (ex: FileNotFoundException){
@@ -274,7 +276,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 }
             }
 
-            if (foundGame.isNotEmpty()){
+            if (foundGame != null){
                 notifyUserAboutTurn(applicationContext, foundGame)
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)

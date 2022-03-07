@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.unciv.ui.utils.*
 
+
 /** Stage that safely brings the game to a [CrashScreen] if any event handlers throw an exception or an error that doesn't get otherwise handled. */
 class CrashHandlingStage: Stage {
     constructor(): super()
@@ -38,11 +39,11 @@ class CrashHandlingStage: Stage {
 
 // Another stack trace from an exception after setting TileInfo.naturalWonder to an invalid value is below that.
 
-// Below that are another two exceptions from a lambda given to Gdx.app.postRunnable{} and another to thread{}.
+// Below that are another two exceptions, from a lambda given to thread{} and another given to Gdx.app.postRunnable{}.
 
 // Stage()'s event handlers seem to be the most universal place to intercept exceptions from events.
 
-// Events and the render loop are the main ways that code gets run with GDX, right? So if we wrap both of those in exception handling, it should hopefully gracefully catch most unhandled exceptions… Threads may be the exception, hence why I put the wrapping as extension functions that can be invoked on the lambdas passed to threads.
+// Events and the render loop are the main ways that code gets run with GDX, right? So if we wrap both of those in exception handling, it should hopefully gracefully catch most unhandled exceptions… Threads may be the exception, hence why I put the wrapping as extension functions that can be invoked on the lambdas passed to threads, as in crashHandlingThread and postCrashHandlingRunnable.
 
 
 // Button click (event):

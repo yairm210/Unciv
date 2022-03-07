@@ -1,6 +1,7 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -70,7 +71,7 @@ object MayaCalendar {
     fun openPopup(previousScreen: BaseScreen, civInfo: CivilizationInfo, year: Int) {
         Popup(previousScreen).apply {
             name = "MayaCalendar"
-            addGoodSizedLabel("The Mayan Long Count", 24).apply {
+            addGoodSizedLabel("The Mayan Long Count", Constants.headingFontSize).apply {
                 actor.color = civInfo.nation.getOuterColor()
             }.row()
             addSeparator(color = Color.DARK_GRAY)

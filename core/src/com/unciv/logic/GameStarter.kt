@@ -11,8 +11,9 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
@@ -39,7 +40,7 @@ object GameStarter {
             gameSetupInfo.gameParameters.baseRuleset = baseRulesetInMods
 
         if (!RulesetCache.containsKey(gameSetupInfo.gameParameters.baseRuleset))
-            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getBaseRuleset().name
+            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getVanillaRuleset().name
         
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)
@@ -148,7 +149,7 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech)
 
             // generic start with technology unique
-            for (unique in civInfo.getMatchingUniques("Starts with []")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithTech)) {
                 // get the parameter from the unique
                 val techName = unique.params[0]
 
@@ -189,7 +190,7 @@ object GameStarter {
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove(Constants.barbarians)
 
-        val startingTechs = ruleset.technologies.values.filter { it.uniques.contains("Starting tech") }
+        val startingTechs = ruleset.technologies.values.filter { it.hasUnique(UniqueType.StartingTech) }
 
         if (!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
             val barbarianCivilization = CivilizationInfo(Constants.barbarians)
@@ -305,7 +306,7 @@ object GameStarter {
             fun getEquivalentUnit(civ: CivilizationInfo, unitParam: String): String? {
                 var unit = unitParam // We want to change it and this is the easiest way to do so
                 if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
-                if (unit == "Settler" && "Settler" !in ruleSet.units) {
+                if (unit == Constants.settler && Constants.settler !in ruleSet.units) {
                     val buildableSettlerLikeUnits = 
                         settlerLikeUnits.filter {
                             it.value.isBuildable(civ)
@@ -437,13 +438,20 @@ object GameStarter {
         var preferredTiles = freeTiles.toList()
         for (startBias in civ.nation.startBias) {
             preferredTiles = when {
-                startBias.startsWith("Avoid [") -> {
-                    val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
-                    preferredTiles.filter { !it.matchesTerrainFilter(tileToAvoid) }
+                startBias.equalsPlaceholderText("Avoid []") -> {
+                    val tileToAvoid = startBias.getPlaceholderParameters()[0]
+                    preferredTiles.filter { tile ->
+                        !tile.getTilesInDistance(1).any {
+                            it.matchesTerrainFilter(tileToAvoid)
+                        }
+                    }
                 }
-                startBias == Constants.coast -> preferredTiles.filter { it.isCoastalTile() }
                 startBias in tileMap.naturalWonders -> preferredTiles  // passthrough: already failed
-                else -> preferredTiles.filter { it.matchesTerrainFilter(startBias) }
+                else -> preferredTiles.filter { tile ->
+                    tile.getTilesInDistance(1).any {
+                        it.matchesTerrainFilter(startBias)
+                    }
+                }
             }
         }
         return preferredTiles.lastOrNull() ?: freeTiles.last()

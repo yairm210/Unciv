@@ -4,12 +4,14 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -130,7 +132,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val t = Table()
         t.defaults().pad(5f)
         t.add(getMilestone("Built Apollo Program",
-                playerCivInfo.hasUnique("Enables construction of Spaceship parts"))).row()
+                playerCivInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))).row()
 
         val victoryManager = playerCivInfo.victoryManager
 
@@ -158,7 +160,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             if (civ.isCurrentPlayer() || !civ.isMajorCiv()) continue
             val civName =
                     if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
-                    else "???"
+                    else Constants.unknownNationName
             table.add(getMilestone("Destroy [$civName]", civ.isDefeated())).row()
         }
         return table

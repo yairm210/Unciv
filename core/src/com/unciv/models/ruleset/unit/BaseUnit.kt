@@ -45,10 +45,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
     val specialUpgradesTo: String? by lazy { 
-        uniqueObjects
-        .filter { it.placeholderText == "May upgrade to [] through ruins-like effects"}
-        .map { it.params[0] }
-        .firstOrNull() 
+        getMatchingUniques(UniqueType.RuinsUpgrade).map { it.params[0] }.firstOrNull() 
     }
     var replaces: String? = null
     var uniqueTo: String? = null
@@ -68,8 +65,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         for (promotion in promotions)
             infoList += promotion.tr()
         if (replacementTextForUniques != "") infoList += replacementTextForUniques
-        else for (unique in uniques)
-            infoList += unique.tr()
+        else for (unique in uniqueObjects) if(!unique.hasFlag(UniqueFlag.HiddenToUsers))
+            infoList += unique.text.tr()
         return infoList.joinToString()
     }
 
@@ -255,15 +252,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (cityInfo == null) return super.canBePurchasedWithStat(cityInfo, stat)
         val conditionalState = StateForConditionals(civInfo = cityInfo.civInfo, cityInfo = cityInfo)
         
-        return (
-            cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
-                .any {
-                    it.params[2] == stat.name
-                    && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                    && matchesFilter(it.params[0])
-                    && cityInfo.matchesFilter(it.params[3])
-                }
-            || cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
+        return (cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .any {
                     it.params[2] == stat.name
                     && matchesFilter(it.params[0])
@@ -295,22 +284,6 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             val baseCost = super.getBaseBuyCost(cityInfo, stat)
             if (baseCost != null)
                 yield(baseCost)
-            // Deprecated since 3.17.9
-                yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCostEra, conditionalState)
-                    .filter {
-                        it.params[2] == stat.name
-                        && matchesFilter(it.params[0])
-                        && cityInfo.matchesFilter(it.params[3])
-                        && cityInfo.civInfo.getEraNumber() >= ruleset.eras[it.params[4]]!!.eraNumber
-                    }.map {
-                        getCostForConstructionsIncreasingInPrice(
-                            it.params[1].toInt(),
-                            it.params[5].toInt(),
-                            cityInfo.civInfo.civConstructions.boughtItemsWithIncreasingPrice[name] ?: 0
-                        )
-                    }
-                )
-            //
             yieldAll(cityInfo.getMatchingUniques(UniqueType.BuyUnitsIncreasingCost, conditionalState)
                 .filter {
                     it.params[2] == stat.name
@@ -351,11 +324,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing [] units []%")) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount) + cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscountDeprecated)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
-        for (unique in cityInfo.getMatchingUniques("[] cost of purchasing items in cities []%"))
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyItemsDiscount))
             if (stat.name == unique.params[0])
                 cost *= unique.params[1].toPercent()
 
@@ -378,7 +351,13 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         val civInfo = cityConstructions.cityInfo.civInfo
-        for (unique in uniqueObjects.filter { it.type == UniqueType.NotDisplayedWithout }) {
+
+        for (unique in uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }){
+            if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
+                rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
+        }
+        
+        for (unique in getMatchingUniques(UniqueType.NotDisplayedWithout)) {
             val filter = unique.params[0]
             if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
                     || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
@@ -388,9 +367,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (civRejectionReasons.isNotEmpty()) {
             rejectionReasons.addAll(civRejectionReasons)
         }
-        for (unique in uniqueObjects.filter { it.placeholderText == "Requires at least [] population" })
+        for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
             if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
-                rejectionReasons.add(RejectionReason.PopulationRequirement)
+                rejectionReasons.add(RejectionReason.PopulationRequirement.apply { errorMessage = unique.text })
         return rejectionReasons
     }
 
@@ -414,8 +393,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-        for (unique in uniqueObjects) {
-            if (unique.placeholderText != "Unlocked with []" && unique.placeholderText != "Requires []") continue
+        // This should be deprecated and replaced with the already-existing "only available when" unique, see above
+        for (unique in getMatchingUniques(UniqueType.UnlockedWith) + getMatchingUniques(UniqueType.Requires)) {
             val filter = unique.params[0]
             when {
                 ruleSet.technologies.contains(filter) -> 
@@ -442,18 +421,20 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 }
         }
 
-        if (hasUnique(UniqueType.FoundCity) &&
-            (civInfo.isCityState() || civInfo.isOneCityChallenger())
+        if ((civInfo.isCityState() || civInfo.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity)
         ) {
             rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
         }
         
-        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits, StateForConditionals(civInfo=civInfo))
-            .any { matchesFilter(it.params[0]) }
-        ) {
+        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits).any { matchesFilter(it.params[0]) }) {
             rejectionReasons.add(RejectionReason.CannotBeBuilt)
         }
-            
+        
+        for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)) {
+            if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
+                rejectionReasons.add(RejectionReason.MaxNumberBuildable)
+        }
+        
         return rejectionReasons
     }
 
@@ -474,7 +455,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             ?: return false  // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
-        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique("Can move immediately once bought"))
+        if (boughtWith != null && !civInfo.gameInfo.gameParameters.godMode && !unit.hasUnique(UniqueType.MoveImmediatelyOnceBought))
             unit.currentMovement = 0f
 
         // If this unit has special abilities that need to be kept track of, start doing so here
@@ -501,7 +482,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var XP = 0
 
         for (unique in
-        cityConstructions.cityInfo.getMatchingUniques("New [] units start with [] Experience []")
+        cityConstructions.cityInfo.getMatchingUniques(UniqueType.UnitStartingExperience)
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[2]) }
         ) {
             if (unit.matchesFilter(unique.params[0]))
@@ -509,7 +490,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
         unit.promotions.XP = XP        
 
-        for (unique in cityConstructions.cityInfo.getMatchingUniques("All newly-trained [] units [] receive the [] promotion")
+        for (unique in cityConstructions.cityInfo.getMatchingUniques(UniqueType.UnitStartingPromotions)
             .filter { cityConstructions.cityInfo.matchesFilter(it.params[1]) }) {
             val filter = unique.params[0]
             val promotion = unique.params.last()
@@ -576,19 +557,20 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+    fun isGreatPerson() = hasUnique("Great Person - []")
 
-    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear weapon of Strength []" }
+    fun isNuclearWeapon() = hasUnique("Nuclear weapon of Strength []")
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
-    override fun getResourceRequirements(): HashMap<String, Int> {
+    override fun getResourceRequirements(): HashMap<String, Int> = resourceRequirementsInternal
+
+    private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in uniqueObjects)
-            if (unique.isOfType(UniqueType.ConsumesResources))
-                resourceRequirements[unique.params[1]] = unique.params[0].toInt()
-        return resourceRequirements
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources))
+            resourceRequirements[unique.params[1]] = unique.params[0].toInt()
+        resourceRequirements
     }
 
     override fun requiresResource(resource: String): Boolean {
@@ -604,7 +586,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     fun isMilitary() = isRanged() || isMelee()
     fun isCivilian() = !isMilitary()
 
-    fun isLandUnit() = getType().isLandUnit()
+    val isLandUnitInternal by lazy { getType().isLandUnit() }
+    fun isLandUnit() = isLandUnitInternal
     fun isWaterUnit() = getType().isWaterUnit()
     fun isAirUnit() = getType().isAirUnit()
 
@@ -643,9 +626,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         // They did fix it in BNW so it was completely bugged and always 1, again math
         power = (power * movement.toFloat().pow(0.3f))
 
-        if (uniqueObjects.any { it.placeholderText =="Self-destructs when attacking" } )
+        if (hasUnique(UniqueType.SelfDestructs))
             power /= 2
-        if (uniqueObjects.any { it.placeholderText =="Nuclear weapon of Strength []" } )
+        if (isNuclearWeapon())
             power += 4000
 
         // Uniques

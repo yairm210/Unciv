@@ -1,0 +1,965 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+    
+    
+      
+        <title>Tips and tricks for making a LibGDX game - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.e8d9bf0c.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tips-and-tricks-for-making-a-libgdx-game" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tips and tricks for making a LibGDX game
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Welcome to MkDocs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Credits/" class="md-nav__link">
+        Icon Credits
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Tips and tricks for making a LibGDX game
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Tips and tricks for making a LibGDX game
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#use-kotlin" class="md-nav__link">
+    Use Kotlin
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-scene2d" class="md-nav__link">
+    Use Scene2d
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ignore-horizontal-and-vertical-groups-use-table" class="md-nav__link">
+    Ignore Horizontal and Vertical groups - use Table
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#if-your-game-is-getting-slow-use-the-android-profiler-in-android-studio" class="md-nav__link">
+    If your game is getting slow, use the Android profiler in Android Studio
+  </a>
+  
+    <nav class="md-nav" aria-label="If your game is getting slow, use the Android profiler in Android Studio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cache-everything" class="md-nav__link">
+    Cache everything
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimize-string-operations" class="md-nav__link">
+    Minimize String operations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequences-everywhere" class="md-nav__link">
+    Sequences everywhere!
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unique%20parameters/" class="md-nav__link">
+        Unique parameters
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../uniques/" class="md-nav__link">
+        Uniques
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Wiki
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Wiki" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Wiki
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Audiovisual-Mods/" class="md-nav__link">
+        Audiovisual Mods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Building-locally-without-Android-Studio/" class="md-nav__link">
+        Building locally without Android Studio
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Civilization-related-JSON-files/" class="md-nav__link">
+        Civilization related JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Coding-standards/" class="md-nav__link">
+        Coding standards
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Creating-a-custom-tileset/" class="md-nav__link">
+        How to make Unciv use your custom tileset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Force-rating-calculation/" class="md-nav__link">
+        Force rating
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/From-code-to-deployment/" class="md-nav__link">
+        From code to deployment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Getting-Started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Home/" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Installing-on-macOS/" class="md-nav__link">
+        Installing on macOS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/JSON-files-for-mods/" class="md-nav__link">
+        JSON files for mods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Making-a-new-Civilization/" class="md-nav__link">
+        Making a new Civilization
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Map-related-JSON-files/" class="md-nav__link">
+        Map related JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Miscellaneous-JSON-files/" class="md-nav__link">
+        Miscellaneous JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Mods/" class="md-nav__link">
+        Mods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Project-structure-and-major-classes/" class="md-nav__link">
+        Project structure
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Regions/" class="md-nav__link">
+        Regions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Translating/" class="md-nav__link">
+        Translating
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Translations%2C-mods%2C-and-modding-freedom-in-Open-Source/" class="md-nav__link">
+        Translations, mods, and modding freedom in Open Source
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Uniques/" class="md-nav__link">
+        Uniques
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/Unit-related-JSON-files/" class="md-nav__link">
+        Unit related JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/_Footer/" class="md-nav__link">
+         Footer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../wiki/_Sidebar/" class="md-nav__link">
+        [Home](.)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#use-kotlin" class="md-nav__link">
+    Use Kotlin
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#use-scene2d" class="md-nav__link">
+    Use Scene2d
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ignore-horizontal-and-vertical-groups-use-table" class="md-nav__link">
+    Ignore Horizontal and Vertical groups - use Table
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#if-your-game-is-getting-slow-use-the-android-profiler-in-android-studio" class="md-nav__link">
+    If your game is getting slow, use the Android profiler in Android Studio
+  </a>
+  
+    <nav class="md-nav" aria-label="If your game is getting slow, use the Android profiler in Android Studio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cache-everything" class="md-nav__link">
+    Cache everything
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimize-string-operations" class="md-nav__link">
+    Minimize String operations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequences-everywhere" class="md-nav__link">
+    Sequences everywhere!
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="tips-and-tricks-for-making-a-libgdx-game">Tips and tricks for making a LibGDX game</h1>
+<p>Here are a bunch of things I've learned from by brief excursion into the world of game making.</p>
+<p>Some of our will be obvious to you, some will not.</p>
+<h2 id="use-kotlin">Use Kotlin</h2>
+<p>Unciv started its life as a Unity project in C#, was shifted to Java and LibGDX, and finally to Kotlin.</p>
+<p>I regret every minute that I spent writing events in Java, this is probably the most significant change that your application could see.</p>
+<h2 id="use-scene2d">Use Scene2d</h2>
+<p>Unless you plan on creating images on the fly, you'll probably be using prerendered assets.</p>
+<p>Placing them manually is akin to manually positioning html tags, instead of using html heirarchy and css to guide positions.</p>
+<p>So too is Scene2d - as a placement framework. it's relatively simple to understand, especially when you...</p>
+<h2 id="ignore-horizontal-and-vertical-groups-use-table">Ignore Horizontal and Vertical groups - use Table</h2>
+<p>I personally found that table has all the functionality of the above, and more.</p>
+<p>Each class has a different syntax too, so I found it much simpler to just stick with Table for everything.</p>
+<p>Table does just about EVERYTHING! It's insanely amazing!</p>
+<h2 id="if-your-game-is-getting-slow-use-the-android-profiler-in-android-studio">If your game is getting slow, use the Android profiler in Android Studio</h2>
+<p>The top-down CPU chart is the best code profiler I've ever seen, use it to your advantage!</p>
+<h3 id="cache-everything">Cache everything</h3>
+<p>Caching is a trade-off between purer, state-agnostic code and higher performance.
+Coming from a PC background, I automatically assume that anything less than O(n^2) is less than a milisecond and therefore, not a cachinhg candidate.
+This is not so in mobile development.</p>
+<p>This becomes especially relevant when you need to save and load game data which has lots of connected parts - you have to avoid circular references, and you want to minimise the save size, but you need to reconstruct the missing links when loading.</p>
+<h3 id="minimize-string-operations">Minimize String operations</h3>
+<p>All the tip and tricks you've heard to minimize String operations? Use them!</p>
+<p>String constants should be consts, use StringBuilders (or just ArrayLists of strings that you later .joinToString())</p>
+<h3 id="sequences-everywhere">Sequences everywhere!</h3>
+<p>One thing I did not expect to be such an issue is intermediate lists when sorting and mapping.</p>
+<p>But apparently, the memory allocation for these tasks is Serious Business.</p>
+<p>So whenever possible, take your list and .asSequence() it before actiating list operations - this results in huge savings of both time and memory!</p>
+<p>The only time you shouldn't be doing this, though, is when you want to cache the specific values for future use -
+ sequences will go through the whole process every time you iterate on them, so just .toList() them when you've gotten the final results!</p>
+<h1 id="general-tips-for-making-an-open-source-game">General tips for making an Open Source game</h1>
+<h2 id="lower-the-entry-bar-for-both-programmers-and-players">Lower the entry bar - for both programmers and players</h2>
+<p>I think that most Open Source games suffer from this problem - those that are in are way in, but those that are out and want to join have to learn the ecosystem.</p>
+<p>Documentation is a big issue here, but so are detailed instructions - and I mean "Spoonfeeding".</p>
+<p>Treat new developers as if they've never used Git before - it's possible they haven't!</p>
+<p>Explain how to dowload the sourecode, the tools, how to get the game running locally, how to make changes and how to submit them.</p>
+<p>Same think with new players - getting the game up and running should be AS SIMPLE AS HUMANLY POSSIBLE - you want people to play your game, don't you?</p>
+<p>This includes:</p>
+<ul>
+<li>Source-To-Executable automation - I use Travis</li>
+<li>Play stores and the like</li>
+<li>Internal game tutorials - your players will NEVER BE SATISFIED with this last point, but at least do what you candidate</li>
+</ul>
+<h2 id="community-community-community">Community, Community, Community!</h2>
+<p>I, personally, underestimated this point for about a year after launch.</p>
+<p>I communicated with players through the Google Play Store and Github issues, and that seemed to be enough.</p>
+<p>It was only after repeated urgings from players that I opened a Discord server - and that gradually lead to a massive change!</p>
+<p>You see, it's not ABOUT programmer-to-player interaction. There will always be a small number of core devs relative to the large playerbase.</p>
+<p>The key to the community is the player-to-player interaction. Explaining things, questions, ideas, things that players bounc off each other,
+not only make the amorphous community a better pllace, but actually lead to a better game!</p>
+<p>Another think to remember is that there's a larger community around you - the Open Source community, the Linux community, etc.</p>
+<p>There are lots of people who will play your game only because it's open source, and it also means they don't have as many options.</p>
+<p>For example... </p>
+<ul>
+<li>Being the best 4X game means competing with the biggest names out there</li>
+<li>Being the best 4X game for Linux means many less competitors, but All The Cool Kids (tm) are multiplatforming nowadays so you're still outperformed.</li>
+<li>Being the best Open Source 4X game means about 5 competitors, and no money is involved either so the average entry is not as polished.</li>
+<li>Being the best Open Source 4X game for Android... means having so few competitors that it's totally doable.</li>
+</ul>
+<h2 id="everything-is-marketing">Everything is marketing.</h2>
+<p>Your game's name, the icon, screenshots, everythig a player sees about your game is marketing.</p>
+<p>Icons and bylines are especially important, since they're the first things your players will probably see.</p>
+<p>I saw an almost 50% (!) by changing the icon, after seveeral experiments, which Google Play lets you conduct very easily.</p>
+<h2 id="translations-are-part-of-your-source-code">Translations are part of your source code</h2>
+<p>This may be slightly contraversial, so I'll explain.</p>
+<p>We went though a number of iterations regarding how to save translations until we arrived at the current format.</p>
+<p>The important parts are:</p>
+<ul>
+<li>
+<p>Game translation files should be AUTO GENERATED. This allows you to add new objects into the game with impunity,
+ knowing that corresponding lines will be auto-added to the translations.</p>
+</li>
+<li>
+<p>Translations for each language should be stored separately - this allows concurrent modification of several independant languages with no risk of conflict</p>
+</li>
+<li>
+<p>Translations should be PR'd in! This allows other speakers to question or change the proposed translations, and allows you to run tests on your translations.
+If you require a specific format, this is invaluable as it means that bad translations will be rejected at the door.</p>
+</li>
+</ul>
+<h2 id="open-source-problems-require-open-source-solutions">Open source problems require open (source?) solutions</h2>
+<p>TL;DR, consider using APIs that are free, even if they're not Open Source.</p>
+<p>Multiplayer requires syncing game files beween clients, even when one of them is not currently online.</p>
+<p>The 'correct' way to solve this would probably be to have an online DB and a service which handles user requests.</p>
+<p>Since this is an Open Source game, I'm working on a 0$ budget, so we just store all the files in Dropbox and upload/download there.</p>
+<p>Is this secure? No, but does it need to be? You need to think of the cost vs the value.</p>
+<p>Same thing with Mods. Steam is big and secure so it handles its mods itself.</p>
+<p>We are small and open, so we just allow to download from Github, which lets us use all of Github's built in functions (user management, readmes, stars, versioning...) at no extra cost.</p>
+<p>And unlike the Dropbox usage, which is basically abuse, Github is built for thiss kind of thing!
+This is exactly the kind of use case they were thinking of to start with!</p>
+<h1 id="the-reckoning">The Reckoning</h1>
+<p>There comes a time in every project where the cool stuff is done. All the cutting-edge awesomeness and algorithmic playdough is done, and now all (hah) it needs is polish.</p>
+<p>You know who loves polish? Players! Sure, there are some that say "a good game is good even if it's basic" but they have <em>standards</em> for what a basic game should have as well.</p>
+<p>And the numbers don't lie. Polished games sell themselves better, and so are played more.</p>
+<p>You know who <strong>doesn't</strong> love polish? DEVELOPERS.</p>
+<p>When your game is relatively simple, then the options for polish are more limited, but the more complex the game, the more polish-venues there are.</p>
+<p>And it can be an ABSOLUTE GRIND. Another weird use-case, another ingame option, "better performance" (I must have spent dozens of hours on different performance related actions)</p>
+<p>And the worst thing is, that everyone notices when it's missing, but no one notices when it's there. A hundred versions of polish - literally - and the average player may notice only a slight change.</p>
+<p>And then comes the moment when you ask yourself, why bother? What are we even doing here?</p>
+<p>For me, the answers are as follows:</p>
+<p>A. To build something truly great, you have to keep going way beyond when it stops being fun.
+B. There's a community of people that like what you're doing and want there to be more of it :)
+C. You know you want to keep coding, and what, you think you're going to start another project and it'll work out as well? You've tried that multiple times, and let's face it the chance of you making a second game that goes so well is really small unless you invest in it as much time as you have in this, and yeah, then you'll be back in this position again.</p>
+<p>And that's basically the loop I've been in for the last hundred versions or so! Solve bugs, fix edge cases, improve AI, accept PRs. Lots of mod-related changes, both to stop the game breaking when people do things in mods that they shouldn't and to allow them more freedom in making them.</p>
+<p>I don't think I'll ever really continue to finish G&amp;K, I'm DEFINITELY not planning on implementing BNW mechanics which frankly I think are...not great.</p>
+<p>That's where I am right now. Kind of done with the game, but considering that I thought that half a year ago and releases are still releasing roughly every week, also kind of not.</p>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../Credits/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Icon Credits" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Icon Credits
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../unique%20parameters/" class="md-footer__link md-footer__link--next" aria-label="Next: Unique parameters" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Unique parameters
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.8aa65030.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -182,7 +182,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         class IconTable: Table() {
             override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
         }
-        val iconTable = IconTable()
+        val iconTable = IconTable().apply { isTransform = false }
         iconTable.touchable = Touchable.enabled
         iconTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor())
 
@@ -231,7 +231,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         label.toBack() // this is so the label is rendered right before the population group,
         //  so we save the font texture and avoid another texture switch
 
-        val cityStrength = CityCombatant(city).getCityStrength()
+        val cityStrength = CityCombatant(city).getDefendingStrength()
         val cityStrengthLabel =
             "${Fonts.strength}$cityStrength".toLabel(city.civInfo.nation.getInnerColor(), 10)
         if (!forPopup) {
@@ -500,6 +500,10 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
+    }
+
+    override fun act(delta: Float) {
+        return // actions should only be for the CityButtonLayerGroup
     }
 
 }

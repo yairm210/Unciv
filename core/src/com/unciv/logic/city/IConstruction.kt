@@ -27,16 +27,16 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
 
     fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
-        if (stat in listOf(Stat.Production, Stat.Happiness)) return false
+        if (stat == Stat.Production || stat == Stat.Happiness) return false
         if (hasUnique(UniqueType.CannotBePurchased)) return false
         if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat)
-            .any { it.params[0] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[1])) }
+            .any { cityInfo != null && it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
-            .any { it.params[1] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[2])) }
+            .any { cityInfo != null && it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
         ) return true
         return false
     }
@@ -145,7 +145,7 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
-    MaxNumberBuildable(true, "Maximum number being built"),
+    MaxNumberBuildable(true, "Maximum number have been built or are being constructed"),
 
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
@@ -195,7 +195,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
         const val CONVERSION_RATE: Int = 4
         val science = object : PerpetualConstruction("Science", "Convert production to science at a rate of [rate] to 1") {
             override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-                return cityConstructions.cityInfo.civInfo.hasUnique("Enables conversion of city production to science")
+                return cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesScienceProduction)
             }
             override fun getProductionTooltip(cityInfo: CityInfo): String {
                 return "\r\n${(cityInfo.cityStats.currentCityStats.production / getConversionRate(cityInfo)).roundToInt()}/${Fonts.turn}"
@@ -204,7 +204,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
         }
         val gold = object : PerpetualConstruction("Gold", "Convert production to gold at a rate of $CONVERSION_RATE to 1") {
             override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-                return cityConstructions.cityInfo.civInfo.hasUnique("Enables conversion of city production to gold")
+                return cityConstructions.cityInfo.civInfo.hasUnique(UniqueType.EnablesGoldProduction)
             }
         }
         val idle = object : PerpetualConstruction("Nothing", "The city will not produce anything.") {

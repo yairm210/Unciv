@@ -4,6 +4,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.floor
@@ -61,10 +62,13 @@ class PopulationManager {
         }
         if (foodStored >= getFoodToNextPopulation()) {  // growth!
             foodStored -= getFoodToNextPopulation()
-            var percentOfFoodCarriedOver = cityInfo
-                .getMatchingUniques("[]% of food is carried over [] after population increases")
-                .filter { cityInfo.matchesFilter(it.params[1]) }
-                .sumOf { it.params[0].toInt() }
+            var percentOfFoodCarriedOver = 
+                (
+                    (cityInfo.getMatchingUniques(UniqueType.CarryOverFood)
+                        + cityInfo.getMatchingUniques(UniqueType.CarryOverFoodAlsoDeprecated)
+                    ).filter { cityInfo.matchesFilter(it.params[1]) }
+                    + cityInfo.getMatchingUniques(UniqueType.CarryOverFoodDeprecated)
+                ).sumOf { it.params[0].toInt() }
             // Try to avoid runaway food gain in mods, just in case 
             if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
@@ -76,7 +80,7 @@ class PopulationManager {
 
     private fun getStatsOfSpecialist(name: String) = cityInfo.cityStats.getStatsOfSpecialist(name)
 
-    internal fun addPopulation(count: Int) {
+    fun addPopulation(count: Int) {
         val changedAmount = 
             if (population + count < 0) -population
             else count
@@ -92,7 +96,7 @@ class PopulationManager {
             cityInfo.religion.updatePressureOnPopulationChange(changedAmount)
     }
 
-    internal fun setPopulation(count: Int) {
+    fun setPopulation(count: Int) {
         addPopulation(-population + count)
     }
 

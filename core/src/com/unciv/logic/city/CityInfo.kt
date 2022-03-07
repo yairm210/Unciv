@@ -62,8 +62,6 @@ class CityInfo {
     var turnAcquired = 0
     var health = 200
 
-    @Deprecated("As of 3.18.4", ReplaceWith("CityFlags.Resistance"), DeprecationLevel.WARNING)
-    var resistanceCounter = 0
 
     var religion = CityInfoReligionManager()
     var population = PopulationManager()
@@ -126,7 +124,7 @@ class CityInfo {
                 "Remove $it"
             )
         })
-            tile.terrainFeatures.remove(terrainFeature)
+            tile.removeTerrainFeature(terrainFeature)
 
         tile.improvement = null
         tile.improvementInProgress = null
@@ -183,7 +181,7 @@ class CityInfo {
         val cityName = nationCities[cityNameIndex]
 
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
-        if (cityNameRounds > 0 && civInfo.hasUnique("\"Borrows\" city names from other civilizations in the game")) {
+        if (cityNameRounds > 0 && civInfo.hasUnique(UniqueType.BorrowsCityNames)) {
             name = borrowCityName()
             return
         }
@@ -267,7 +265,7 @@ class CityInfo {
     fun capitalCityIndicator(): String {
         val indicatorBuildings = getRuleset().buildings.values
             .asSequence()
-            .filter { it.uniques.contains("Indicates the capital city") }
+            .filter { it.hasUnique(UniqueType.IndicatesCapital) }
 
         val civSpecificBuilding = indicatorBuildings.firstOrNull { it.uniqueTo == civInfo.civName }
         return civSpecificBuilding?.name ?: indicatorBuildings.first().name
@@ -282,7 +280,7 @@ class CityInfo {
     fun hasFlag(flag: CityFlags) = flagsCountdown.containsKey(flag.name)
     fun getFlag(flag: CityFlags) = flagsCountdown[flag.name]!!
 
-    fun isWeLoveTheKingDay() = hasFlag(CityFlags.WeLoveTheKing)
+    fun isWeLoveTheKingDayActive() = hasFlag(CityFlags.WeLoveTheKing)
     fun isInResistance() = hasFlag(CityFlags.Resistance)
 
     /** @return the number of tiles 4 out from this city that could hold a city, ie how lonely this city is */
@@ -322,10 +320,11 @@ class CityInfo {
                 }
             }
         }
-        
+
+        val freeBuildings = civInfo.civConstructions.getFreeBuildings(id)
         for (building in cityConstructions.getBuiltBuildings()) {
             // Free buildings cost no resources
-            if (building.name in civInfo.civConstructions.getFreeBuildings(id))
+            if (building.name in freeBuildings)
                 continue
             for ((resourceName, amount) in building.getResourceRequirements()) {
                 val resource = getRuleset().tileResources[resourceName]!!
@@ -373,7 +372,7 @@ class CityInfo {
             var amountToAdd = if (resource.resourceType == ResourceType.Strategic) tileInfo.resourceAmount
                 else 1
             if (resource.resourceType == ResourceType.Luxury
-                && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City")
+                && containsBuildingUnique(UniqueType.ProvidesExtraLuxuryFromCityResources)
             )
                 amountToAdd += 1
 
@@ -403,9 +402,6 @@ class CityInfo {
         return population.foodStored / -foodForNextTurn() + 1
     }
 
-    fun containsBuildingUnique(unique: String) =
-        cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
-
     fun containsBuildingUnique(uniqueType: UniqueType) =
         cityConstructions.getBuiltBuildings().flatMap { it.uniqueObjects }.any { it.isOfType(uniqueType) }
 
@@ -434,7 +430,9 @@ class CityInfo {
             }
 
             var allGppPercentageBonus = 0
-            for (unique in getMatchingUniques("[]% great person generation []")) {
+            for (unique in getMatchingUniques(UniqueType.GreatPersonPointPercentage) 
+                + getMatchingUniques(UniqueType.GreatPersonPointPercentageDeprecated)
+            ) {
                 if (!matchesFilter(unique.params[1])) continue
                 allGppPercentageBonus += unique.params[0].toInt()
             }
@@ -444,9 +442,9 @@ class CityInfo {
                 if (!civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.DeclarationOfFriendship)) 
                     continue
 
-                for (ourUnique in civInfo.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (ourUnique in civInfo.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
                     allGppPercentageBonus += ourUnique.params[0].toInt()
-                for (theirUnique in otherCiv.getMatchingUniques("When declaring friendship, both parties gain a []% boost to great person generation"))
+                for (theirUnique in otherCiv.getMatchingUniques(UniqueType.GreatPersonBoostWithFriendship))
                     allGppPercentageBonus += theirUnique.params[0].toInt()
             }
 
@@ -483,6 +481,33 @@ class CityInfo {
         200 + cityConstructions.getBuiltBuildings().sumOf { it.cityHealth }
 
     override fun toString() = name // for debug
+
+    fun isHolyCity(): Boolean = religion.religionThisIsTheHolyCityOf != null
+
+    fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
+        return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
+    }
+
+    fun getForceEvaluation(): Int {
+        // Same as for units, so higher values count more
+        return CityCombatant(this).getDefendingStrength().toFloat().pow(1.5f).toInt()
+    }
+
+    fun getNeighbouringCivs(): Set<String> {
+        val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
+        val cityPositionList: ArrayList<TileInfo> = arrayListOf()
+
+        for (tiles in tilesList)
+            for (tile in tiles.neighbors)
+                if (!tilesList.contains(tile))
+                    cityPositionList.add(tile)
+
+        return cityPositionList
+            .asSequence()
+            .mapNotNull { it.getOwner()?.civName }
+            .toSet()
+    }
+    
     //endregion
 
     //region state-changing functions
@@ -496,11 +521,6 @@ class CityInfo {
         cityConstructions.cityInfo = this
         cityConstructions.setTransients()
         religion.setTransients(this)
-
-        if (resistanceCounter > 0) {
-            setFlag(CityFlags.Resistance, resistanceCounter)
-            resistanceCounter = 0
-        }
     }
 
     fun startTurn() {
@@ -590,7 +610,7 @@ class CityInfo {
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
             val removedPopulation =
-                1 + civInfo.getMatchingUniques("Cities are razed [] times as fast")
+                1 + civInfo.getMatchingUniques(UniqueType.CitiesAreRazedXTimesFaster)
                     .sumOf { it.params[0].toInt() - 1 }
             population.addPopulation(-1 * removedPopulation)
             if (population.population <= 0) {
@@ -798,33 +818,13 @@ class CityInfo {
     // Looking at all the use cases, the following functions were written to handle all findMatchingUniques() problems.
     // Sadly, due to the large disparity between use cases, there needed to be lots of functions.
 
-
-    // Finds matching uniques provided from both local and non-local sources.
-    fun getMatchingUniques(
-        placeholderText: String,
-        // We might have this cached to avoid concurrency problems. If we don't, just get it directly
-        localUniques: Sequence<Unique> = getLocalMatchingUniques(placeholderText),
-    ): Sequence<Unique> {
-        // The localUniques might not be filtered when passed as a parameter, so we filter it anyway
-        // The time loss shouldn't be that large I don't think
-        return civInfo.getMatchingUniques(placeholderText, this) +
-                localUniques.filter { it.placeholderText == placeholderText }
-    }
-
     // Finds matching uniques provided from both local and non-local sources.
     fun getMatchingUniques(
         uniqueType: UniqueType,
-        stateForConditionals: StateForConditionals? = null,
+        stateForConditionals: StateForConditionals = StateForConditionals(civInfo, this)
     ): Sequence<Unique> {
         return civInfo.getMatchingUniques(uniqueType, stateForConditionals, this) +
-            getLocalMatchingUniques(uniqueType, stateForConditionals)
-    }
-
-    // Matching uniques provided by sources in the city itself
-    fun getLocalMatchingUniques(placeholderText: String): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { !it.isAntiLocalEffect } +
-                religion.getUniques().filter { it.placeholderText == placeholderText }
+                getLocalMatchingUniques(uniqueType, stateForConditionals)
     }
 
     fun getLocalMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals? = null): Sequence<Unique> {
@@ -837,57 +837,11 @@ class CityInfo {
         }
     }
 
-    // Get all uniques that originate from this city
-    fun getAllLocalUniques(): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getAllUniques() + religion.getUniques()
-    }
 
-    // Get all matching uniques that don't apply to only this city
-    fun getMatchingUniquesWithNonLocalEffects(placeholderText: String): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getUniques(placeholderText)
-            .filter { !it.isLocalEffect }
-        // Note that we don't query religion here, as those only have local effects
-    }
-
-
-    fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType): Sequence<Unique> {
+    fun getMatchingUniquesWithNonLocalEffects(uniqueType: UniqueType, stateForConditionals: StateForConditionals): Sequence<Unique> {
         return cityConstructions.builtBuildingUniqueMap.getUniques(uniqueType)
-            .filter { !it.isLocalEffect }
+            .filter { !it.isLocalEffect && it.conditionalsApply(stateForConditionals) }
         // Note that we don't query religion here, as those only have local effects
-    }
-
-    // Get all uniques that don't apply to only this city
-    fun getAllUniquesWithNonLocalEffects(): Sequence<Unique> {
-        return cityConstructions.builtBuildingUniqueMap.getAllUniques()
-            .filter { !it.isLocalEffect }
-        // Note that we don't query religion here, as those only have local effects
-    }
-
-    fun isHolyCity(): Boolean = religion.religionThisIsTheHolyCityOf != null
-
-    fun canBeDestroyed(justCaptured: Boolean = false): Boolean {
-        return !isOriginalCapital && !isHolyCity() && (!isCapital() || justCaptured)
-    }
-
-    fun getForceEvaluation(): Int {
-        // Same as for units, so higher values count more
-        return CityCombatant(this).getCityStrength().toFloat().pow(1.5f).toInt()
-    }
-
-
-    fun getNeighbouringCivs(): Set<String> {
-        val tilesList: HashSet<TileInfo> = getTiles().toHashSet()
-        val cityPositionList: ArrayList<TileInfo> = arrayListOf()
-
-        for (tiles in tilesList)
-            for (tile in tiles.neighbors)
-                if (!tilesList.contains(tile))
-                    cityPositionList.add(tile)
-
-        return cityPositionList
-            .asSequence()
-            .mapNotNull { it.getOwner()?.civName }
-            .toSet()
     }
 
     //endregion
