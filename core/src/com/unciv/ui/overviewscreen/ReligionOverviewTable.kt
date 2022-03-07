@@ -11,7 +11,6 @@ import com.unciv.models.ruleset.Belief
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
 import kotlin.math.max
@@ -138,11 +137,7 @@ class ReligionOverviewTable(
 
     private fun createBeliefDescription(belief: Belief) =
         MarkupRenderer.render(
-            belief.run { sequence {
-                yield(FormattedLine(name, size = Constants.headingFontSize, centered = true))
-                yield(FormattedLine())
-                yieldAll(getCivilopediaTextLines(gameInfo.ruleSet, true))
-            } }.toList()
+            belief.getCivilopediaTextLines(withHeader = true)
         ) {
             UncivGame.Current.setScreen(CivilopediaScreen(gameInfo.ruleSet, overviewScreen, link = it))
         }.apply {
