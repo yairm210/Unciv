@@ -33,7 +33,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
 
         innerTable.width = cityScreen.stage.width / 4
-        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
         scrollPane = ScrollPane(innerTable.addBorder(2f, Color.WHITE))
         scrollPane.setOverscroll(false, false)
 

@@ -246,10 +246,10 @@ object ImageGetter {
     fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
 
     val foodCircleColor = colorFromRGB(129, 199, 132)
-    private val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE, 0.5f)
-    private val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE, 0.5f)
-    private val cultureCircleColor = Color.PURPLE.cpy().lerp(Color.WHITE, 0.5f)
-    private val scienceCircleColor = Color.BLUE.cpy().lerp(Color.WHITE, 0.5f)
+    private val productionCircleColor = Color.BROWN.brighten(0.5f)
+    private val goldCircleColor = Color.GOLD.brighten(0.5f)
+    private val cultureCircleColor = Color.PURPLE.brighten(0.5f)
+    private val scienceCircleColor = Color.BLUE.brighten(0.5f)
     private fun getColorFromStats(stats: Stats) = when {
         stats.food > 0 -> foodCircleColor
         stats.production > 0 -> productionCircleColor
@@ -368,7 +368,7 @@ object ImageGetter {
     fun getTechIcon(techName: String): Image {
         val techIconColor = ruleset.eras[ruleset.technologies[techName]?.era()]?.getColor()
             ?: return getWhiteDot()
-        return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK, 0.6f) }
+        return getImage("TechIcons/$techName").apply { color = techIconColor.darken(0.6f) }
     }
 
     fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {

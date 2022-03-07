@@ -20,7 +20,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
     val city = cityScreen.city
 
     init {
-        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
         add(innerTable).pad(2f).fill()
         background = ImageGetter.getBackground(Color.WHITE)
     }

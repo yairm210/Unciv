@@ -131,7 +131,7 @@ class PlayerPickerTable(
     fun getPlayerTable(player: Player): Table {
         val playerTable = Table()
         playerTable.pad(5f)
-        playerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.8f))
+        playerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.8f))
 
         val nationTable = getNationTable(player)
         playerTable.add(nationTable).left()
