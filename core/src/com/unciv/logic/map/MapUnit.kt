@@ -471,7 +471,6 @@ class MapUnit {
 
     fun isEmbarked(): Boolean {
         if (!baseUnit.isLandUnit()) return false
-        if (!this::currentTile.isInitialized) return false  // for safety
         return currentTile.isWater
     }
 
