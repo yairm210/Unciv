@@ -20,18 +20,18 @@ class ReligionOverviewTable(
     private val viewingPlayer: CivilizationInfo,
     private val overviewScreen: EmpireOverviewScreen
 ): Table() {
-    
+
     val gameInfo = viewingPlayer.gameInfo
-    
+
     private val civStatsTable = Table(BaseScreen.skin)
-    
+
     private val religionsTable = Table(BaseScreen.skin)
     private val topButtons = Table(BaseScreen.skin)
     private val topButtonLabel = "Click an icon to see the stats of this religion".toLabel()
     private val statsTable = Table(BaseScreen.skin)
     private val beliefsTable = Table(BaseScreen.skin)
     private var selectedReligion: String? = null
-    
+
     init {
         addCivSpecificStats(civStatsTable)
         addReligionButtons()
@@ -41,11 +41,11 @@ class ReligionOverviewTable(
         religionsTable.addSeparator()
         religionsTable.add(statsTable).pad(5f).row()
         religionsTable.add(beliefsTable).pad(5f)
-        
+
         add(civStatsTable).top().left().padRight(25f)
         add(religionsTable)
     }
-    
+
     private fun addCivSpecificStats(statsTable: Table) {
         if (viewingPlayer.religionManager.canGenerateProphet()) {
             statsTable.add("Minimal Faith required for\nthe next [great prophet equivalent]:"
@@ -57,16 +57,16 @@ class ReligionOverviewTable(
                 .toLabel()
             ).right().pad(5f).row()
         }
-        
+
         statsTable.add("Religions to be founded:".toLabel()).left()
-        
+
         val foundedReligions = viewingPlayer.gameInfo.civilizations.count { it.religionManager.religionState >= ReligionState.Religion }
         statsTable.add((viewingPlayer.religionManager.amountOfFoundableReligions() - foundedReligions).toLabel()).right().pad(5f).row()
-        
+
         statsTable.add("Religious status:".toLabel()).left()
         statsTable.add(viewingPlayer.religionManager.religionState.toString().toLabel()).right().pad(5f).row()
     }
-    
+
     private fun addReligionButtons() {
         topButtons.clear()
         val existingReligions: List<Religion> = gameInfo.civilizations.mapNotNull { it.religionManager.religion }
@@ -84,20 +84,20 @@ class ReligionOverviewTable(
                     BaseScreen.skin
                 )
             }
-            
+
             button.onClick {
                 selectedReligion = religion.name
                 addReligionButtons()
                 loadReligion(religion)
             }
-            
+
             if (selectedReligion == religion.name)
                 button.disable()
-            
+
             topButtons.add(button).pad(5f)
         }
     }
-    
+
     private fun loadReligion(religion: Religion) {
         statsTable.clear()
         beliefsTable.clear()
@@ -105,7 +105,7 @@ class ReligionOverviewTable(
         for (belief in religion.getAllBeliefsOrdered()) {
             beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
         }
-        
+
         statsTable.add("Religion Name:".toLabel()).left()
         statsTable.add(religion.getReligionDisplayName().toLabel()).right().pad(5f).row()
         statsTable.add("Founding Civ:".toLabel()).left()
@@ -127,12 +127,12 @@ class ReligionOverviewTable(
         }
         statsTable.add("Cities following this religion:".toLabel()).left()
         statsTable.add(religion.getFounder().religionManager.numberOfCitiesFollowingThisReligion().toString()).right().pad(5f).row()
-        
+
         val minWidth = max(statsTable.minWidth, beliefsTable.minWidth) + 5
-        
+
         statsTable.width = minWidth
         for (cell in beliefsTable.cells) {
-            cell.minWidth(minWidth)           
+            cell.minWidth(minWidth)
         }
     }
 

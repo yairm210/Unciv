@@ -21,9 +21,9 @@ import kotlin.random.Random
  */
 
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
-fun Button.disable(){
+fun Button.disable() {
     touchable= Touchable.disabled
-    color= Color.GRAY
+    color = Color.GRAY
 }
 /** Enable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
 fun Button.enable() {
