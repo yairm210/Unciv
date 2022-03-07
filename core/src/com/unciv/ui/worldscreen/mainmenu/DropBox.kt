@@ -147,11 +147,13 @@ object DropBox {
 interface IFileStorage {
     fun saveFileData(fileName: String, data: String)
     fun loadFileData(fileName: String): String
+    fun getFileMetaData(fileName: String): InputStream
+    fun deleteFile(fileName: String)
 }
 
 class DropboxFileStorage:IFileStorage{
     // This is the location in Dropbox only
-    fun getLocalGameLocation(gameId: String) = "/MultiplayerGames/$gameId"
+    fun getLocalGameLocation(fileName: String) = "/MultiplayerGames/$fileName"
 
     override fun saveFileData(fileName: String, data: String) {
         val fileLocationDropbox = getLocalGameLocation(fileName)
@@ -162,11 +164,18 @@ class DropboxFileStorage:IFileStorage{
         return DropBox.downloadFileAsString(getLocalGameLocation(fileName))
     }
 
+    override fun getFileMetaData(fileName: String): InputStream {
+        return DropBox.getFileMetaData(getLocalGameLocation(fileName))
+    }
+
+    override fun deleteFile(fileName: String) {
+        DropBox.deleteFile(fileName)
+    }
+
 }
 
 class OnlineMultiplayer {
     val fileStorage:IFileStorage = DropboxFileStorage()
-
 
     fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         // We upload the gamePreview before we upload the game as this
@@ -237,12 +246,12 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
         }
         
         locked = false
-        val fileName = "${OnlineMultiplayer().getGameLocation(gameInfo.gameId)}_Lock"
+        val fileName = "${gameInfo.gameId}_Lock"
 
         // We have to check if the lock file already exists before we try to upload a new
         // lock file to not overuse the dropbox file upload limit else it will return an error
         try {
-            val stream = DropBox.getFileMetaData(fileName)
+            val stream = OnlineMultiplayer().fileStorage.getFileMetaData(fileName)
             val reader = BufferedReader(InputStreamReader(stream))
             val metaData = GameSaver.json().fromJson(DropboxMetaData::class.java, reader.readText())
 
@@ -252,7 +261,7 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
             if (date != null && System.currentTimeMillis() - date.time < 30000) {
                 return locked
             } else {
-                DropBox.deleteFile(fileName)
+                OnlineMultiplayer().fileStorage.deleteFile(fileName)
             }
         } catch (ex: FileNotFoundException) {
             // Catching this exception means no lock file is present
@@ -311,7 +320,7 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
         if (!locked)
             return
 
-        DropBox.deleteFile("${OnlineMultiplayer().getGameLocation(gameInfo.gameId)}_Lock")
+        OnlineMultiplayer().fileStorage.deleteFile("${gameInfo.gameId}_Lock")
         locked = false
     }
 
