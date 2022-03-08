@@ -4,30 +4,34 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Ruleset.RulesetError
+import com.unciv.models.ruleset.Ruleset.RulesetErrorSeverity
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
-import kotlin.concurrent.thread
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -41,11 +45,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private val tabs: TabbedPager
     private val resolutionArray = com.badlogic.gdx.utils.Array(arrayOf("750x500", "900x600", "1050x700", "1200x800", "1500x1000"))
     private var modCheckFirstRun = true   // marker for automatic first run on selecting the page
-    private var modCheckCheckBox: CheckBox? = null
-    private var modCheckResultCell: Cell<Actor>? = null
+    private var modCheckBaseSelect: TranslatedSelectBox? = null
+    private val modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
 
     //endregion
+
+    companion object {
+        private const val modCheckWithoutBase = "-none-"
+    }
 
     init {
         settings.addCompletedTutorialTask("Open the options table")
@@ -157,28 +165,28 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         pad(10f)
         defaults().pad(2.5f)
 
-        addYesNoRow("Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
-        addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
-        addYesNoRow("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
-        addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
-        addYesNoRow("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
-        addMinimapSizeSlider()
+        addCheckbox("Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
+        addCheckbox("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
+        addCheckbox("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
+        addCheckbox("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
+        addCheckbox("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
+        addCheckbox("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
+        addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
-        addYesNoRow("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
-        addYesNoRow("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
+        addMinimapSizeSlider()
 
         addResolutionSelectBox()
 
         addTileSetSelectBox()
 
-        addYesNoRow("Continuous rendering", settings.continuousRendering) {
+        addCheckbox("Continuous rendering", settings.continuousRendering) {
             settings.continuousRendering = it
             Gdx.graphics.isContinuousRendering = it
         }
 
         val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
         val continuousRenderingLabel = WrappableLabel(continuousRenderingDescription,
-                tabs.prefWidth, Color.ORANGE.cpy().lerp(Color.WHITE, 0.7f), 14)
+                tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14)
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
     }
@@ -186,9 +194,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getGamePlayTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
-        addYesNoRow("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
-        addYesNoRow("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
-        addYesNoRow("Auto-assign city production", settings.autoAssignCityProduction, true) {
+        addCheckbox("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
+        addCheckbox("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
+        addCheckbox("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && previousScreen is WorldScreen &&
                 previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
@@ -197,9 +205,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 }
             }
         }
-        addYesNoRow("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-        addYesNoRow("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
-        addYesNoRow("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
+        addCheckbox("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
+        addCheckbox("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
+        addCheckbox("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     }
 
     private fun getSoundTab() = Table(BaseScreen.skin).apply {
@@ -221,7 +229,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         pad(10f)
         defaults().pad(5f)
 
-        addYesNoRow("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
+        addCheckbox("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
             settings.multiplayerTurnCheckerEnabled = it
             settings.save()
             tabs.replacePage("Multiplayer", getMultiplayerTab())
@@ -230,7 +238,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         if (settings.multiplayerTurnCheckerEnabled) {
             addMultiplayerTurnCheckerDelayBox()
 
-            addYesNoRow("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
+            addCheckbox("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
                 { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
         }
     }
@@ -241,13 +249,13 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         addAutosaveTurnsSelectBox()
 
-        addYesNoRow("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}",
+        addCheckbox("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}",
             settings.showExperimentalWorldWrap) {
             settings.showExperimentalWorldWrap = it
         }
 
         if (previousScreen.game.limitOrientationsHelper != null) {
-            addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {
+            addCheckbox("Enable portrait orientation", settings.allowAndroidPortrait) {
                 settings.allowAndroidPortrait = it
                 // Note the following might close the options screen indirectly and delayed
                 previousScreen.game.limitOrientationsHelper.allowPortrait(it)
@@ -261,59 +269,203 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
     private fun getModCheckTab() = Table(BaseScreen.skin).apply {
         defaults().pad(10f).align(Align.top)
-        modCheckCheckBox = "Check extension mods based on vanilla".toCheckBox {
-            runModChecker(it)
+        val reloadModsButton = "Reload mods".toTextButton().onClick {
+            runModChecker(modCheckBaseSelect!!.selected.value)
         }
-        add(modCheckCheckBox).row()
-        modCheckResultCell = add("Checking mods for errors...".toLabel())
+        add(reloadModsButton).row()
+
+        val labeledBaseSelect = Table(BaseScreen.skin).apply {
+            add("Check extension mods based on:".toLabel()).padRight(10f)
+            val baseMods = listOf(modCheckWithoutBase) + RulesetCache.getSortedBaseRulesets()
+            modCheckBaseSelect = TranslatedSelectBox(baseMods, modCheckWithoutBase, BaseScreen.skin).apply {
+                selectedIndex = 0
+                onChange {
+                    runModChecker(modCheckBaseSelect!!.selected.value)
+                }
+            }
+            add(modCheckBaseSelect)
+        }
+        add(labeledBaseSelect).row()
+
+        add(modCheckResultTable)
     }
 
-    private fun runModChecker(complex: Boolean = false) {
+    private fun runModChecker(base: String = modCheckWithoutBase) {
+
         modCheckFirstRun = false
-        if (modCheckCheckBox == null) return
-        modCheckCheckBox!!.disable()
-        if (modCheckResultCell == null) return
+        if (modCheckBaseSelect == null) return
+
+        modCheckResultTable.clear()
+
+        val rulesetErrors = RulesetCache.loadRulesets()
+        if (rulesetErrors.isNotEmpty()) {
+            val errorTable = Table().apply { defaults().pad(2f) }
+            for (rulesetError in rulesetErrors)
+                errorTable.add(rulesetError.toLabel()).width(stage.width / 2).row()
+            modCheckResultTable.add(errorTable)
+        }
+
+        modCheckResultTable.add("Checking mods for errors...".toLabel()).row()
+        modCheckBaseSelect!!.isDisabled = true
+
         crashHandlingThread(name="ModChecker") {
-            val lines = ArrayList<FormattedLine>()
-            var noProblem = true
             for (mod in RulesetCache.values.sortedBy { it.name }) {
-                // Appending {} is a dirty trick to deactivate the automatic translation which would drop [] from unique messages
-                lines += FormattedLine("$mod", starred = true, header = 3)
+                if (base != modCheckWithoutBase && mod.modOptions.isBaseRuleset) continue
 
                 val modLinks =
-                    if (complex) RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name))
-                    else mod.checkModLinks()
-                for (error in modLinks.sortedByDescending { it.errorSeverityToReport }) {
-                    val color = when (error.errorSeverityToReport) {
-                        Ruleset.RulesetErrorSeverity.OK -> "#00FF00"
-                        Ruleset.RulesetErrorSeverity.Warning,
-                        Ruleset.RulesetErrorSeverity.WarningOptionsOnly -> "#FFFF00"
-                        Ruleset.RulesetErrorSeverity.Error -> "#FF0000"
-                    }
-                    lines += FormattedLine(error.text, color = color)
-                }
-                if (modLinks.isNotOK()) noProblem = false
-                lines += FormattedLine()
-            }
-            if (noProblem) lines += FormattedLine("{No problems found}.",)
+                        if (base == modCheckWithoutBase) mod.checkModLinks(forOptionsPopup = true)
+                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base)
+                modLinks.sortByDescending { it.errorSeverityToReport }
+                val noProblem = !modLinks.isNotOK()
+                if (modLinks.isNotEmpty()) modLinks += RulesetError("", RulesetErrorSeverity.OK)
+                if (noProblem) modLinks += RulesetError("No problems found.".tr(), RulesetErrorSeverity.OK)
 
-            postCrashHandlingRunnable {
-                // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
-                // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
-                // Instead, some manual work needs to be put in.
-                val resultTable = Table().apply { defaults().align(Align.left) }
-                for (line in lines) {
-                    val label = if (line.starred) Label(line.text+"\n", BaseScreen.skin)
-                        .apply { setFontScale(22 / Fonts.ORIGINAL_FONT_SIZE) }
-                    else Label(line.text+"\n", BaseScreen.skin)
-                        .apply { if (line.color != "") color = Color.valueOf(line.color) }
-                    label.wrap = true
-                    resultTable.add(label).width(stage.width/2).row()
+                postCrashHandlingRunnable {
+                    // When the options popup is already closed before this postRunnable is run,
+                    // Don't add the labels, as otherwise the game will crash
+                    if (stage == null) return@postCrashHandlingRunnable
+                    // Don't just render text, since that will make all the conditionals in the mod replacement messages move to the end, which makes it unreadable
+                    // Don't use .toLabel() either, since that activates translations as well, which is what we're trying to avoid,
+                    // Instead, some manual work needs to be put in.
+
+                    val iconColor = modLinks.getFinalSeverity().color
+                    val iconName = when(iconColor) {
+                        Color.RED -> "OtherIcons/Stop"
+                        Color.YELLOW -> "OtherIcons/ExclamationMark"
+                        else -> "OtherIcons/Checkmark"
+                    }
+                    val icon = ImageGetter.getImage(iconName)
+                        .apply { color = Color.BLACK }
+                        .surroundWithCircle(30f, color = iconColor)
+
+                    val expanderTab = ExpanderTab(mod.name, icon = icon, startsOutOpened = false) {
+                        it.defaults().align(Align.left)
+                        if (!noProblem && mod.folderLocation != null) {
+                            val replaceableUniques = getDeprecatedReplaceableUniques(mod)
+                            if (replaceableUniques.isNotEmpty())
+                                it.add("Autoupdate mod uniques".toTextButton()
+                                    .onClick { autoUpdateUniques(mod, replaceableUniques) }).pad(10f).row()
+                        }
+                        for (line in modLinks) {
+                            val label = Label(line.text, BaseScreen.skin)
+                                .apply { color = line.errorSeverityToReport.color }
+                            label.wrap = true
+                            it.add(label).width(stage.width / 2).row()
+                        }
+                        if (!noProblem)
+                            it.add("Copy to clipboard".toTextButton().onClick {
+                                Gdx.app.clipboard.contents = modLinks
+                                    .joinToString("\n") { line -> line.text }
+                            }).row()
+                    }
+
+                    val loadingLabel = modCheckResultTable.children.last()
+                    modCheckResultTable.removeActor(loadingLabel)
+                    modCheckResultTable.add(expanderTab).row()
+                    modCheckResultTable.add(loadingLabel).row()
                 }
-                modCheckResultCell?.setActor(resultTable)
-                modCheckCheckBox!!.enable()
+            }
+
+            // done with all mods!
+            postCrashHandlingRunnable {
+                modCheckResultTable.removeActor(modCheckResultTable.children.last())
+                modCheckBaseSelect!!.isDisabled = false
             }
         }
+    }
+
+    private fun getDeprecatedReplaceableUniques(mod:Ruleset): HashMap<String, String> {
+
+        val objectsToCheck = sequenceOf(
+            mod.units,
+            mod.tileImprovements,
+            mod.unitPromotions,
+            mod.buildings,
+            mod.policies,
+            mod.nations,
+            mod.beliefs,
+            mod.technologies,
+        )
+        val allDeprecatedUniques = HashSet<String>()
+        val deprecatedUniquesToReplacementText = HashMap<String, String>()
+
+        val deprecatedUniques = objectsToCheck
+            .flatMap { it.values }
+            .flatMap { it.uniqueObjects }
+            .filter { it.getDeprecationAnnotation() != null }
+
+
+        for (deprecatedUnique in deprecatedUniques) {
+            if (allDeprecatedUniques.contains(deprecatedUnique.text)) continue
+            allDeprecatedUniques.add(deprecatedUnique.text)
+
+            // note that this replacement does not contain conditionals attached to the original!
+
+
+            var uniqueReplacementText = deprecatedUnique.getReplacementText(mod)
+            while (Unique(uniqueReplacementText).getDeprecationAnnotation() != null)
+                uniqueReplacementText = Unique(uniqueReplacementText).getReplacementText(mod)
+
+            for (conditional in deprecatedUnique.conditionals)
+                uniqueReplacementText += " <${conditional.text}>"
+            val replacementUnique = Unique(uniqueReplacementText)
+
+            val modInvariantErrors = mod.checkUnique(
+                replacementUnique,
+                false,
+                "",
+                UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
+                deprecatedUnique.sourceObjectType!!
+            )
+            for (error in modInvariantErrors)
+                println(error.text + " - " + error.errorSeverityToReport)
+            if (modInvariantErrors.isNotEmpty()) continue // errors means no autoreplace
+
+            if (mod.modOptions.isBaseRuleset) {
+                val modSpecificErrors = mod.checkUnique(
+                    replacementUnique,
+                    false,
+                    "",
+                    UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant,
+                    deprecatedUnique.sourceObjectType
+                )
+                for (error in modSpecificErrors)
+                    println(error.text + " - " + error.errorSeverityToReport)
+                if (modSpecificErrors.isNotEmpty()) continue
+            }
+
+            deprecatedUniquesToReplacementText[deprecatedUnique.text] = uniqueReplacementText
+            println("Replace \"${deprecatedUnique.text}\" with \"$uniqueReplacementText\"")
+        }
+        return deprecatedUniquesToReplacementText
+    }
+
+    private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>, ) {
+
+        val filesToReplace = listOf(
+            "Units.json",
+            "TileImprovements.json",
+            "UnitPromotions.json",
+            "Buildings.json",
+            "Policies.json",
+            "Nations.json",
+            "Beliefs.json",
+            "Techs.json",
+        )
+
+        val jsonFolder = mod.folderLocation!!.child("jsons")
+        for (fileName in filesToReplace) {
+            val file = jsonFolder.child(fileName)
+            if (!file.exists() || file.isDirectory) continue
+            var newFileText = file.readString()
+            for ((original, replacement) in replaceableUniques) {
+                newFileText = newFileText.replace("\"$original\"", "\"$replacement\"")
+            }
+            file.writeString(newFileText, false)
+        }
+        val toastText = "Uniques updated!"
+        ToastPopup(toastText, screen).open(true)
+        runModChecker()
     }
 
     private fun getDebugTab() = Table(BaseScreen.skin).apply {
@@ -400,7 +552,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             if (previousScreen is WorldScreen)
                 previousScreen.shouldUpdate = true
         }
-        add(minimapSlider).pad(10f).row()
+        add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
     }
 
     private fun Table.addResolutionSelectBox() {
@@ -440,7 +592,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Sound effects volume".tr()).left().fillX()
 
         val soundEffectsVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
-            initial = settings.soundEffectsVolume
+            initial = settings.soundEffectsVolume,
+            getTipText = UncivSlider::formatPercent
         ) {
             settings.soundEffectsVolume = it
             settings.save()
@@ -453,7 +606,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
             initial = settings.musicVolume,
-            sound = UncivSound.Silent
+            sound = UncivSound.Silent,
+            getTipText = UncivSlider::formatPercent
         ) {
             settings.musicVolume = it
             settings.save()
@@ -613,51 +767,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
     }
 
-
-    private fun Table.addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
-        val wrapWidth = tabs.prefWidth - 60f
-        add(WrappableLabel(text, wrapWidth).apply { wrap = true })
-            .left().fillX()
-            .maxWidth(wrapWidth)
-        val button = YesNoButton(initialValue, BaseScreen.skin) {
+    private fun Table.addCheckbox(text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
+        val checkbox = text.toCheckBox(initialState) {
             action(it)
             settings.save()
             if (updateWorld && previousScreen is WorldScreen)
                 previousScreen.shouldUpdate = true
         }
-        add(button).row()
+        add(checkbox).colspan(2).left().row()
     }
 
     //endregion
-
-    /**
-     *  This TextButton subclass helps to keep looks and behaviour of our Yes/No
-     *  in one place, but it also helps keeping context for those action lambdas.
-     *
-     *  Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
-     */
-    private class YesNoButton(
-        initialValue: Boolean,
-        skin: Skin,
-        action: (Boolean) -> Unit
-    ) : TextButton (initialValue.toYesNo(), skin ) {
-
-        var value = initialValue
-            private set(value) {
-                field = value
-                setText(value.toYesNo())
-            }
-
-        init {
-            color = ImageGetter.getBlue()
-            onClick {
-                value = !value
-                action.invoke(value)
-            }
-        }
-
-        companion object {
-            fun Boolean.toYesNo(): String = (if (this) Constants.yes else Constants.no).tr()
-        }
-    }
 }

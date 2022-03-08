@@ -164,7 +164,7 @@ class TechPickerScreen(
             var text = techName.tr()
 
             if (techName == selectedTech?.name && techButton.color != currentTechColor) {
-                techButton.color = techButton.color.cpy().lerp(Color.BLACK, 0.5f)
+                techButton.color = techButton.color.darken(0.5f)
             }
 
             techButton.orderIndicator?.remove()
@@ -265,13 +265,20 @@ class TechPickerScreen(
         }
 
         val pathToTech = civTech.getRequiredTechsToDestination(tech)
-        for (requiredTech in pathToTech)
+        for (requiredTech in pathToTech) {
             for (unique in requiredTech.getMatchingUniques(UniqueType.IncompatibleWith))
                 if (civTech.isResearched(unique.params[0])) {
                     rightSideButton.setText(unique.text.tr())
                     rightSideButton.disable()
                     return
                 }
+            for (unique in requiredTech.uniqueObjects
+                .filter { it.type == UniqueType.OnlyAvailableWhen && !it.conditionalsApply(civInfo) }) {
+                rightSideButton.setText(unique.text.tr())
+                rightSideButton.disable()
+                return
+            }
+        }
 
         tempTechsToResearch.clear()
         tempTechsToResearch.addAll(pathToTech.map { it.name })

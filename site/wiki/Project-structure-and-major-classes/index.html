@@ -1,0 +1,852 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.1">
+    
+    
+      
+        <title>Project structure - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e8d9bf0c.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#project-structure" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Project structure
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Welcome to MkDocs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Credits/" class="md-nav__link">
+        Icon Credits
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Game%20Making%20Tips/" class="md-nav__link">
+        Tips and tricks for making a LibGDX game
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../unique%20parameters/" class="md-nav__link">
+        Unique parameters
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../uniques/" class="md-nav__link">
+        Uniques
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Wiki
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Wiki" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Wiki
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Audiovisual-Mods/" class="md-nav__link">
+        Audiovisual Mods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Building-locally-without-Android-Studio/" class="md-nav__link">
+        Building locally without Android Studio
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Civilization-related-JSON-files/" class="md-nav__link">
+        Civilization related JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Coding-standards/" class="md-nav__link">
+        Coding standards
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Creating-a-custom-tileset/" class="md-nav__link">
+        How to make Unciv use your custom tileset
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Force-rating-calculation/" class="md-nav__link">
+        Force rating
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../From-code-to-deployment/" class="md-nav__link">
+        From code to deployment
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Getting-Started/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Home/" class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Installing-on-macOS/" class="md-nav__link">
+        Installing on macOS
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JSON-files-for-mods/" class="md-nav__link">
+        JSON files for mods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Making-a-new-Civilization/" class="md-nav__link">
+        Making a new Civilization
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Map-related-JSON-files/" class="md-nav__link">
+        Map related JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Miscellaneous-JSON-files/" class="md-nav__link">
+        Miscellaneous JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Mods/" class="md-nav__link">
+        Mods
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Project structure
+      </a>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Regions/" class="md-nav__link">
+        Regions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Translating/" class="md-nav__link">
+        Translating
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Translations%2C-mods%2C-and-modding-freedom-in-Open-Source/" class="md-nav__link">
+        Translations, mods, and modding freedom in Open Source
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Uniques/" class="md-nav__link">
+        Uniques
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Unit-related-JSON-files/" class="md-nav__link">
+        Unit related JSON files
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_Footer/" class="md-nav__link">
+         Footer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../_Sidebar/" class="md-nav__link">
+        [Home](.)
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="project-structure">Project structure</h1>
+<p>Since LibGDX, and therefore Unciv, are built for multi-platform support, the project structure is built accordingly.</p>
+<p>99% of the code is in the <a href="/core/src/com/unciv">Core</a> project, which contains all the platform-independant code.</p>
+<p>The <a href="/desktop">Desktop</a> and <a href="/android">Android</a> folders contain platform-specific things, and the Android folder also contains the game Images and the all-important Assets, which are required for running from Desktop as well, so we bundle them up into the .jar file when releasing.</p>
+<p>The <a href="/tests/src/com/unciv">Test</a> folder contains tests that can be run manually via gradle with <code>./gradlew tests:test</code>, and are run automatically by Travis for every push.</p>
+<h1 id="translations">Translations</h1>
+<p>Before we get to the Classes, a word on Languages. Unciv is playable in several handfuls of languages, and there's magic to support that. Whenever you include a new string in code you will need to give it a quick evaluation - will users see it, and if so, what do I need to do to support its translations. Sometimes you may not need to do anything, sometimes you will add a line to the <a href="/android/assets/jsons/translations/template.properties">translation templates</a>, and sometimes you will adapt the string formatting to support the translations. For details, see <a href="../Translating/#translation-generation---for-developers">the 'Translation generation - for developers' chapter</a>.</p>
+<h1 id="major-classes">Major classes</h1>
+<p>Civ, and therefore Unciv, is a game with endless interconnectivity - everything affects everything else.</p>
+<p>In order to have some semblance of order, we'll go over the main classes in the order in which they are serialized.</p>
+<p>So yes, you can - for instance - get the center tile of a city, a TileInfo, directly from CityInfo. But delving into all the connections would only harm the point of this overview, that's what the actual code is for ;)</p>
+<p>The Game State:</p>
+<ul>
+<li>GameInfo<ul>
+<li>CivilizationInfo<ul>
+<li>CityInfo</li>
+</ul>
+</li>
+<li>TileMap<ul>
+<li>TileInfo<ul>
+<li>MapUnit</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>RuleSet (unique in that it is not part of the game state)</li>
+</ul>
+</li>
+</ul>
+<p>The UI:</p>
+<ul>
+<li>MainMenuScreen</li>
+<li>NewGameScreen</li>
+<li>WorldScreen</li>
+<li>CityScreen</li>
+<li>MapEditorScreen</li>
+<li>Picker Screens - TechPickerScreen, PolicyPickerScreen, ImprovementPickerScreen, PromotionPickerScreen</li>
+</ul>
+<h1 id="game-state">Game State</h1>
+<h2 id="the-game-gameinfo">The Game - <code>GameInfo</code></h2>
+<p>First off, let's clarify: When we say "The Game", we mean the <em>state</em> of the game (what turn it is, who the players are, what each one has etc) and not the <em>UI</em> of the game.</p>
+<p>That is, The Game is the <em>currently played</em> game, not <em>Unciv</em>.</p>
+<p>The game contains three major parts:</p>
+<ul>
+<li>The list of the players, or civilizations - <code>List&lt;CivilizationInfo&gt;</code></li>
+<li>The map upon which the game is played - <code>TileMap</code></li>
+<li>The ruleset by which the game is played - <code>RuleSet</code>. This includes what technologies, buildings, units etc. are available, and IS NOT serialized and deserialized, but comes straight from the game files - more on that later.</li>
+<li>Parameters unique to this game - difficulty, game speed, victory conditions, etc.</li>
+</ul>
+<p>When we save the game, or load the game, we're actually serializing and deserializing this class, which means that the this class is the root of the entire game state.</p>
+<p>Most objects in the "state tree" have a transient reference to their parent, meaning the tree can be traversed in-code in all directions, and frequently is.</p>
+<h2 id="a-civilization-civilizationinfo">A Civilization - <code>CivilizationInfo</code></h2>
+<p>This represents one of the players of the game, and NOT a specific nation - meaning, not France, but rather "Player X who is France in this game". In another game, there will be another France.</p>
+<p>As one of the focal points of the game, it contains a lot of important information, the most important of which are:</p>
+<ul>
+<li>The list of cities the civilization has - <code>List&lt;CityInfo&gt;</code></li>
+<li>Which nation this is - references a certain Nation (part of the ruleset)</li>
+<li>Various Managers for the different aspects of the civilization - <code>PolicyManager</code>, <code>GoldenAgeManager</code>, <code>GreatPersonManager</code>, <code>TechManager</code>, <code>VictoryManager</code>, <code>DiplomacyManager</code></li>
+</ul>
+<h2 id="a-city-cityinfo">A City - <code>CityInfo</code></h2>
+<p>This contains the information about a specific city.</p>
+<p>Beyond basic information like name, location on map etc, the most important classes it contains are:</p>
+<ul>
+<li>Calculating the yield of the city - <code>CityStats</code></li>
+<li>Managers for the various aspects - <code>PopulationManager</code>, <code>CityConstructions</code>, <code>CityExpansionManager</code></li>
+<li>The tiles controlled and worked by the city - only their locations are permanently saved in the CityInfo, the actual information is in the TileInfo in the TileMap</li>
+</ul>
+<h2 id="the-map-tilemap">The map - <code>TileMap</code></h2>
+<p>This contains mostly helper functions and acts as a wrapper for the list of tiles it contains</p>
+<h2 id="a-tile-tileinfo">A tile - <code>TileInfo</code></h2>
+<p>Each tile is comprised of several layers, and so has information for each.</p>
+<p>Tiles have, primarily:
+- A base terrain - Grassland, Hills, Desert etc. References a certain <code>Terrain</code> (part of the ruleset)
+- An optional terrain feature - Forest, Jungle, Oasis etc.  References a certain <code>Terrain</code>  (part of the ruleset)
+- An optional resource - Iron, Dye, Wheat etc. References a certain <code>TileResource</code> (part of the ruleset)
+- An improvement built on the tile, if any.  References a certain <code>TileImprovement</code> (part of the ruleset)
+- The units that are currently in the tile - <code>MapUnit</code></p>
+<h2 id="a-unit-on-the-map-mapunit">A unit on the map - <code>MapUnit</code></h2>
+<p>Unlike buildings, Unit in Unciv has two meanings. One is a <em>Type</em> of unit (like Spearman), and one is a specific instance of a unit (say, a Babylonian Spearman, at a certain position, with X health).</p>
+<p><code>MapUnit</code> is a specific instance of a unit, whereas <code>BaseUnit</code> is the type of unit.</p>
+<p>Main information:
+- A name - references a specific <code>BaseUnit</code>
+- Health and Movement
+- Promotion status - <code>UnitPromotions</code></p>
+<h2 id="ruleset">Ruleset</h2>
+<p>So far so good - but what of everything that makes Civ, Civ? The units, the buildings, the nations, the improvements etc?</p>
+<p>Since these things remain the same for every game, these are not saved on a per-game basis, but rather are saved in json files in Unciv's asset folder.</p>
+<p>Each class in the game state that saves one of these will reference it by name, and when the game is running it will check the Ruleset to find the relevant information for that object.</p>
+<p>The various objects are:
+- <code>Technology</code> - referenced mainly in <code>CivilizationInfo.TechManager</code>
+- <code>Nations</code> - referenced mainly in <code>CivilizationInfo</code>
+- <code>Policy</code>  - referenced mainly in <code>CivilizationInfo.PolicyManager</code> (seeing a pattern here?)
+- <code>Building</code> - referenced mainly in <code>CityInfo.ConstructionManager</code>
+- <code>BaseUnit</code> - referenced mainly in <code>MapUnit</code>
+- <code>Promotion</code> - referenced mainly in <code>MapUnit</code>
+- <code>Terrain</code> - referenced mainly in <code>TileInfo</code>
+- <code>TileResource</code> - referenced mainly in <code>TileInfo</code>
+- <code>TileImprovement</code> - referenced mainly in <code>TileInfo</code></p>
+<p>There are also Translations in the Ruleset, but they technically have nothing to do with the game state but rather with the UI display.</p>
+<p>The information for all of these is in json files in <code>android\assets\jsons</code></p>
+<h1 id="ui">UI</h1>
+<p><code>UncivGame</code> is the 'base' class for the UI, from which everything starts, but it itself doesn't do much.</p>
+<p>When we change a screen, we're changing a value in UncivGame, the interesting stuff happens in the screens themselves.</p>
+<h2 id="the-main-menu-mainmenuscreen">The main menu - <code>MainMenuScreen</code></h2>
+<p>This is what the user sees when first entering the game. It acts as a hub to loading games, adding mods, options etc, without loading an actual game upfront - this allows us to differentiate between "User can't enter game" and "User can't load game" problems</p>
+<h2 id="starting-a-new-game-newgamescreen">Starting a new game - <code>NewGameScreen</code></h2>
+<p>This is basically a giant setting screen for GameOptions and MapOptions classes, divided into:</p>
+<ul>
+<li>GameOptionsTable - game speed, mods, etc</li>
+<li>MapOptionsTable - either from preexisting map file or generated, in which case: size, map generation type, etc.</li>
+<li>PlayerPickerTable - What civs are in the game and who controls them</li>
+</ul>
+<h2 id="the-world-screen-worldscreen">The World Screen - <code>WorldScreen</code></h2>
+<p>90% of the game is spent on this screen, so naturally it's the fullest, with the most things happening.</p>
+<p>This is the main hub of the game, with all other screens being opened from it, and closing back to reveal it.</p>
+<p>Most notable are:
+* The map itself - a <code>TileMapHolder</code> - with each of the rendered tiles being a <code>TileGroup</code>
+* The information panels - <code>WorldScreenTopBar</code> for stats and resources, <code>UnitTable</code> for the currently selected unit, <code>TileInfoTable</code> or the currently selected tile, <code>BattleTable</code> for battle simulation, and <code>NotificationsScroll</code> for the notifications
+* The minimap - <code>MinimapHolder</code>
+* Buttons linking to other screens - to the <code>TechPickerScreen</code>, <code>EmpireOverviewScreen</code>, and <code>PolicyPickerScreen</code>
+* The almighty Next Turn button</p>
+<h2 id="the-city-screen-cityscreen">The city screen - <code>CityScreen</code></h2>
+<p>The second-most important screen. </p>
+<p>Notable parts:
+* the City Stats table - should definitely be its own class come to think of it
+* The construction list and current construction (bottom left) - <code>ConstructionsTable</code>
+* Existing buildings, specialists and stats drilldown - <code>CityInfoTable</code></p>
+<h1 id="others">Others</h1>
+<p>A few words need to be said about the NextTurn process, but there isn't really a good place for it so I'll put it here.</p>
+<p>We clone the GameInfo and use a "new" GameInfo for each turn because of 2 reasons.</p>
+<p>The first is multithreading and thread safety, and the second is multiplayer reproducibility.</p>
+<p>The first point is pretty basic. The NextTurn needs to happen in a separate thread so that the user can still have a responsive game when it's off doing stuff. Stuff in the GameInfo changes on NextTurn, so if you're rendering that same GameInfo, this could cause conflicts. Also, after NextTurn we generally autosave, and if stuff changes in the state while we're trying to serialize it to put it in the save file, that's Not Fun. A single clone solves both of these problems at once.</p>
+<p>The second point is less obvious. If we use our mutable state, changing stuff in place, then what happens when we're playing in Multiplayer? Multiplayer is based upon the fact that you can receive an entire game state and go from there, and in fact the move to multiplayer was what made the whole "clone" thing necessary (on the way it also solved the aforementioned threading problems)</p>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../Mods/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Mods" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Mods
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../Regions/" class="md-footer__link md-footer__link--next" aria-label="Next: Regions" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Regions
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.8aa65030.min.js"></script>
+      
+    
+  </body>
+</html>

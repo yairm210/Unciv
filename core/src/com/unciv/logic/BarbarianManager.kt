@@ -13,7 +13,6 @@ import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
-import kotlin.system.measureNanoTime
 
 class BarbarianManager {
     val camps = HashMap<Vector2, Encampment>()
@@ -111,7 +110,7 @@ class BarbarianManager {
         val viableTiles = fogTiles.filter {
             !it.isImpassible()
                     && it.resource == null
-                    && it.terrainFeatures.none { feature -> gameInfo.ruleSet.terrains[feature]!!.hasUnique("Only [] improvements may be built on this tile") }
+                    && it.terrainFeatureObjects.none { feature -> feature.hasUnique(UniqueType.RestrictedBuildableImprovements) }
                     && it.neighbors.any { neighbor -> neighbor.isLand }
                     && it !in tooCloseToCapitals
                     && it !in tooCloseToCamps
@@ -157,7 +156,7 @@ class BarbarianManager {
      */
     private fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
         gameInfo.civilizations.filter {
-            it.hasUnique("Notified of new Barbarian encampments")
+            it.hasUnique(UniqueType.NotifiedOfBarbarianEncampments)
                     && it.exploredTiles.contains(tile.position)
         }
             .forEach {

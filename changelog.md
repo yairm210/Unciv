@@ -1,3 +1,236 @@
+## 3.19.15
+
+By SomeTroglodyte:
+- UI improvements of Religion Picker Screen
+- Better Notification locations
+- Code cleanup
+- Fix Mughal Fort unique
+
+By itanasi:
+- Return Stacking Terrain Bonus to Civ5 Rules
+
+By lishaoxia1985:
+- UI improvements
+
+Added "Starts with [policy] adopted" unique  - By HaneulCheong
+
+## 3.19.14
+
+By SomeTroglodyte:
+- Sort maps & accelerate playing a newly edited map
+- Fixed many minor UI bugs
+- WLTK decorations
+- Improve unique replacement for +/- amounts
+- Locate Mod Errors - choose base ruleset to do complex check against
+- Move automated units button was showing when it didn't do anything
+
+Added deep link to multiplayer games  - By GGGuenni
+
+Block Embarked from capturing Civilians on Water  - By itanasi
+
+Translations update
+
+## 3.19.13
+
+Minor performance improvements
+
+By SomeTroglodyte:
+- Fixed Spaceship production bonuses
+- Fixed Ctrl-Letter key bindings
+- Fixed Polynesia's Wayfinding
+- Fixed Petra and Garden not allowed in some cases
+
+Align Embarked Defense Strength per Era  - By itanasi
+
+## 3.19.12
+
+Modding: Multiple Unique documentation improvement
+
+By SomeTroglodyte:
+- Slider fixes
+- Rudimentary AI control over goldPercentConvertedToScience
+
+Fix Navies capturing Land Civilians - By itanasi
+
+Translation updates
+
+## 3.19.11
+
+Mod autoupdate improvements
+
+Performance improvements
+
+Added "copy to clipboard" button for mod errors
+
+Multiple small improvements
+
+By SomeTroglodyte:
+- Resolved no-barbarian mod error
+- Minimum window size
+
+By xlenstra:
+- Reorganized the way city states grant resources
+- Made spaceship parts units instead of buildings
+- Added mod constants for the distance between two cities
+
+By itanasi:
+- Updating Embarking Tutorial with more details
+- Made multiple tile defense bonuses stack
+
+## 3.19.10
+
+Show json parsing errors for mods in the options menu
+
+AI only builds work boats for buildable improvements
+
+Trigger uniques by sacrificing units with conditional
+
+By xlenstra:
+- Damage in battle table is now the average damage done
+- Added conditional checking for tiles
+
+By itanasi:
+- Show Improvements that are buildable after Removing TerrainFeature
+- Embarking penalty logic fix
+- Prevent Civilians from capturing Civilians
+
+Fix for music resumes after minimizing on android - By SomeTroglodyte
+
+## 3.19.9
+
+Transported units reveal tiles as if they passed through the path of the transporting unit
+
+Captured unit notifications now sent to the correct civ :)
+
+Modding: Better unique typechecking and autoreplace, added new conditionals
+
+Can see improvement removal icons in Civilopedia
+
+Fixed untranslated texts, mainly in Civilopedia
+
+Add Amphibious penalty to Land attacking into Water and vice versa - By itanasi
+
+## 3.19.8
+
+Framerate improvements
+
+Performance improvements for wartime AI
+
+Modding: Arbitrary uniques can become timed uniques with a special conditional!
+
+Correctly recognize mod changes of content, not just metadata
+
+Destroyed units on capture provide the correct notification
+
+Loading a new game while nextTurn is running no longer reverts you to that game
+
+## 3.19.7
+
+Better conditionals for modding
+
+Withdraw chances can stack
+
+By itanasi:
+- Sea Unit can't capture Land Civilian (and vice versa)
+- Notify when Barbs don't give more XP
+
+## 3.19.6
+
+UI improvements across the board
+
+Map performance improvements
+
+Better mod loading error messages, added options button to reload all rulesets
+
+Exploring and automating workers are some of the most common actions, they don't deserve to be behind a 'get additional actions' click
+
+Flood plains no longer generate on desert hills
+
+Also capture Civilian Unit when capturing during battle - By itanasi
+
+Fixed a bug where units requiring nearby units for bonuses could find themselves - By xlenstra
+
+## 3.19.5
+
+HUGE reduction is memory consumption!
+
+Performance improvements!
+
+Greatly reduced loading times when mods are installed
+
+Better terrain moddability + Added unique to convert terrains if adjacent to something
+
+"Must be next to [terrainFilter]" now applicable on improvements
+
+Added mod warnings for empty ally and friend bonuses
+
+By xlenstra:
+- Fixed a bug where stats from uniques would exponentially grow
+- Fixed a bug where open borders, war declarations and cities could not be traded
+
+## 3.19.4
+
+Caught more mod failure conditions, removed certain assumptions from map creation
+
+Unique replacement warnings show the correct replacement with filled parameters
+
+By xlenstra:
+- Fixed a bug where unit discounts would not work
+- Fixed a crash when opening and closing the options menu in quick succession
+
+Fix art for farms on hills  - By SpacedOutChicken
+
+## 3.19.3
+
+Huge performance improvements to "next turn" 
+
+Removed mod dependency on specific terrains and resources
+
+By xlenstra:
+- Resources can now again provide uniques applying to the entire civ
+- Fixed a few rare mod-specific crashes
+
+New caravel image - By touhidurrr
+
+Minor logic cleanup  - By itanasi
+
+## 3.19.2
+
+Stat bonus drilldown in cities
+
+Performance improvements
+
+By will-ca:
+- Try to fix potential typos in stock rulesets.
+- Wiki improvements!
+- Make sure units always have starting promotions.
+
+By xlenstra:
+- Fixed the problems with the food carry-over unique
+- Made unhappiness effects moddable by adding a global uniques json
+  added revolts when < -20 happiness
+- Fixed a missing percentage sign in uniques
+
+Ranged capture  - By itanasi
+
+## 3.19.1
+
+Better drilldown to stat sources in city screen
+
+Start bias includes neighboring tiles for better effect
+
+Cleaner tech order display
+
+Better unique documentation - By xlenstra
+
+By will-ca:
+- Check rulesets for potential typos.
+- Avoid potential crashes when deleting mods.
+- Fix uneven fonts, unify font sizes.
+- Make "Help" button clearer and translatable, random nation indicators and labels translatable.
+
+Destroy Arsenal when city is captured  - By SpacedOutChicken
+
 ## 3.19.0
 
 Vastly improved worker AI for mods, and AI utilization of workers

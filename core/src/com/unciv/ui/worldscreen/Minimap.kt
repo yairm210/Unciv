@@ -17,6 +17,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.tilegroups.ActionlessGroup
 import com.unciv.ui.utils.IconCircleGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
@@ -24,10 +25,12 @@ import com.unciv.ui.utils.surroundWithCircle
 import kotlin.math.max
 import kotlin.math.min
 
-class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
+class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group(){
     private val allTiles = Group()
     private val tileImages = HashMap<TileInfo, Image>()
     private val scrollPositionIndicators = ArrayList<ClippingImage>()
+
+    private val cityIconsGroup = ActionlessGroup()
 
     init {
         isTransform = false // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
@@ -93,8 +96,10 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
           allTiles.addActor(indicator)
         }
 
-        add(allTiles)
-        layout()
+        setSize(allTiles.width, allTiles.height)
+        addActor(allTiles)
+        cityIconsGroup.setSize(width, height)
+        addActor(cityIconsGroup)
     }
 
     /**### Transform and set coordinates for the scrollPositionIndicator.
@@ -135,7 +140,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
     private val cityIcons = HashMap<TileInfo, CivAndImage>()
 
     fun update(cloneCivilization: CivilizationInfo) {
-        for((tileInfo, hex) in tileImages) {
+        for ((tileInfo, hex) in tileImages) {
             hex.color = when {
                 !(UncivGame.Current.viewEntireMapForDebug || cloneCivilization.exploredTiles.contains(tileInfo.position)) -> Color.DARK_GRAY
                 tileInfo.isCityCenter() && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getInnerColor()
@@ -146,16 +151,20 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Table(){
             if (tileInfo.isCityCenter() && cloneCivilization.exploredTiles.contains(tileInfo.position)
                     && (!cityIcons.containsKey(tileInfo) || cityIcons[tileInfo]!!.civInfo != tileInfo.getOwner())) {
                 if (cityIcons.containsKey(tileInfo)) cityIcons[tileInfo]!!.image.remove() // city changed hands - remove old icon
-                val nationIcon= ImageGetter.getNationIndicator(tileInfo.getOwner()!!.nation,hex.width * 3)
-                nationIcon.setPosition(hex.x - nationIcon.width/3,hex.y - nationIcon.height/3)
+                val nation = tileInfo.getOwner()!!.nation
+                val nationIcon= ImageGetter.getCircle().apply { color = nation.getInnerColor() }.surroundWithCircle(hex.width, color = nation.getOuterColor())
+                nationIcon.setPosition(hex.x, hex.y)
                 nationIcon.onClick {
                     mapHolder.setCenterPosition(tileInfo.position)
                 }
-                allTiles.addActor(nationIcon)
+                cityIconsGroup.addActor(nationIcon)
                 cityIcons[tileInfo] = CivAndImage(tileInfo.getOwner()!!, nationIcon)
             }
         }
     }
+
+    // For debugging purposes
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
 class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
@@ -242,6 +251,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
     init {
         rebuildIfSizeChanged()
     }
+
     private fun rebuildIfSizeChanged() {
         val newMinimapSize = worldScreen.game.settings.minimapSize
         if (newMinimapSize == minimapSize) return
@@ -295,9 +305,7 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
 
 
     // For debugging purposes
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
-    }
+    override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
 }
 
 private class ClippingImage(drawable: Drawable) : Image(drawable) {

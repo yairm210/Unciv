@@ -70,10 +70,12 @@ class TutorialController(screen: BaseScreen) {
     /** Get all Tutorials intended to be displayed in the Civilopedia
      *  as a List of wrappers supporting INamed and ICivilopediaText
      */
-    fun getCivilopediaTutorials() =
-        tutorials.filter {
+    fun getCivilopediaTutorials(): List<CivilopediaTutorial> {
+        val civilopediaTutorials = tutorials.filter {
             Tutorial.findByName(it.key)!!.isCivilopedia
-        }.map {
-            CivilopediaTutorial(it.key, it.value)
+        }.map { 
+            tutorial -> CivilopediaTutorial(tutorial.key, tutorial.value)
         }
+        return civilopediaTutorials
+    }
 }

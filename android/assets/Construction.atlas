@@ -613,34 +613,6 @@ BuildingIcons/Research Lab
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/SS Booster
-  rotate: false
-  xy: 1624, 1574
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-BuildingIcons/SS Cockpit
-  rotate: false
-  xy: 1732, 1683
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-BuildingIcons/SS Engine
-  rotate: false
-  xy: 1840, 1790
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-BuildingIcons/SS Stasis Chamber
-  rotate: false
-  xy: 220, 62
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 BuildingIcons/Satrap's Court
   rotate: false
   xy: 436, 278
@@ -839,42 +811,42 @@ BuildingIcons/Utopia Project
   index: -1
 BuildingIcons/Walls
   rotate: false
-  xy: 760, 278
+  xy: 1084, 608
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Walls of Babylon
   rotate: false
-  xy: 868, 386
+  xy: 1192, 710
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Wat
   rotate: false
-  xy: 1300, 818
+  xy: 1624, 1141
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Water Mill
   rotate: false
-  xy: 1408, 926
+  xy: 1732, 1251
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Windmill
   rotate: false
-  xy: 1516, 1034
+  xy: 1840, 1358
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Workshop
   rotate: false
-  xy: 1840, 1358
+  xy: 868, 278
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -888,105 +860,105 @@ MayaCalendar/0
   index: -1
 MayaCalendar/1
   rotate: false
-  xy: 1024, 436
+  xy: 1348, 760
   size: 13, 50
   orig: 13, 50
   offset: 0, 0
   index: -1
 MayaCalendar/10
   rotate: false
-  xy: 926, 328
+  xy: 1250, 652
   size: 21, 50
   orig: 21, 50
   offset: 0, 0
   index: -1
 MayaCalendar/11
   rotate: false
-  xy: 1408, 868
+  xy: 1732, 1193
   size: 35, 50
   orig: 35, 50
   offset: 0, 0
   index: -1
 MayaCalendar/12
   rotate: false
-  xy: 1516, 976
+  xy: 1840, 1300
   size: 35, 50
   orig: 35, 50
   offset: 0, 0
   index: -1
 MayaCalendar/13
   rotate: false
-  xy: 1624, 1083
+  xy: 760, 112
   size: 35, 50
   orig: 35, 50
   offset: 0, 0
   index: -1
 MayaCalendar/14
   rotate: false
-  xy: 1732, 1193
+  xy: 868, 220
   size: 35, 50
   orig: 35, 50
   offset: 0, 0
   index: -1
 MayaCalendar/15
   rotate: false
-  xy: 1840, 1300
+  xy: 976, 328
   size: 30, 50
   orig: 30, 50
   offset: 0, 0
   index: -1
 MayaCalendar/16
   rotate: false
-  xy: 976, 436
+  xy: 1300, 760
   size: 40, 50
   orig: 40, 50
   offset: 0, 0
   index: -1
 MayaCalendar/17
   rotate: false
-  xy: 1084, 550
+  xy: 1408, 868
   size: 40, 50
   orig: 40, 50
   offset: 0, 0
   index: -1
 MayaCalendar/18
   rotate: false
-  xy: 1192, 652
+  xy: 1516, 976
   size: 40, 50
   orig: 40, 50
   offset: 0, 0
   index: -1
 MayaCalendar/19
   rotate: false
-  xy: 1300, 760
+  xy: 1624, 1083
   size: 40, 50
   orig: 40, 50
   offset: 0, 0
   index: -1
 MayaCalendar/2
   rotate: false
-  xy: 1132, 550
+  xy: 1456, 868
   size: 13, 50
   orig: 13, 50
   offset: 0, 0
   index: -1
 MayaCalendar/3
   rotate: false
-  xy: 1240, 652
+  xy: 1564, 976
   size: 13, 50
   orig: 13, 50
   offset: 0, 0
   index: -1
 MayaCalendar/4
   rotate: false
-  xy: 1348, 760
+  xy: 1672, 1083
   size: 13, 50
   orig: 13, 50
   offset: 0, 0
   index: -1
 MayaCalendar/5
   rotate: false
-  xy: 1451, 868
+  xy: 1775, 1193
   size: 10, 50
   orig: 10, 50
   offset: 0, 0
@@ -1007,14 +979,14 @@ MayaCalendar/7
   index: -1
 MayaCalendar/8
   rotate: false
-  xy: 760, 162
+  xy: 1084, 492
   size: 25, 50
   orig: 25, 50
   offset: 0, 0
   index: -1
 MayaCalendar/9
   rotate: false
-  xy: 818, 220
+  xy: 1142, 550
   size: 25, 50
   orig: 25, 50
   offset: 0, 0
@@ -1035,16 +1007,37 @@ MayaCalendar/Katun
   index: -1
 MayaCalendar/Maya
   rotate: false
-  xy: 760, 220
+  xy: 1084, 550
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 MayaCalendar/Tun
   rotate: false
-  xy: 868, 328
+  xy: 1192, 652
   size: 50, 50
   orig: 50, 50
+  offset: 0, 0
+  index: -1
+OtherIcons/WLTK 1
+  rotate: false
+  xy: 760, 278
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/WLTK 2
+  rotate: false
+  xy: 868, 386
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/WLTK LR
+  rotate: false
+  xy: 976, 494
+  size: 100, 100
+  orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/African Forest Elephant
@@ -1733,6 +1726,34 @@ UnitIcons/Rocket Artillery
   orig: 100, 100
   offset: 0, 0
   index: -1
+UnitIcons/SS Booster
+  rotate: false
+  xy: 1624, 1574
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+UnitIcons/SS Cockpit
+  rotate: false
+  xy: 1732, 1683
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+UnitIcons/SS Engine
+  rotate: false
+  xy: 1840, 1790
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+UnitIcons/SS Stasis Chamber
+  rotate: false
+  xy: 220, 62
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 UnitIcons/Samurai
   rotate: false
   xy: 328, 170
@@ -1861,42 +1882,42 @@ UnitIcons/Turtle Ship
   index: -1
 UnitIcons/War Chariot
   rotate: false
-  xy: 976, 494
+  xy: 1300, 818
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/War Elephant
   rotate: false
-  xy: 1084, 608
+  xy: 1408, 926
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Warrior
   rotate: false
-  xy: 1192, 710
+  xy: 1516, 1034
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Work Boats
   rotate: false
-  xy: 1624, 1141
+  xy: 652, 62
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Worker
   rotate: false
-  xy: 1732, 1251
+  xy: 760, 170
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Zero
   rotate: false
-  xy: 652, 62
+  xy: 976, 386
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

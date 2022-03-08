@@ -27,16 +27,16 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat? = null): Boolean  // Yes I'm hilarious.
 
     fun canBePurchasedWithStat(cityInfo: CityInfo?, stat: Stat): Boolean {
-        if (stat in listOf(Stat.Production, Stat.Happiness)) return false
+        if (stat == Stat.Production || stat == Stat.Happiness) return false
         if (hasUnique(UniqueType.CannotBePurchased)) return false
         if (stat == Stat.Gold) return !hasUnique(UniqueType.Unbuildable)
         // Can be purchased with [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedWithStat)
-            .any { it.params[0] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[1])) }
+            .any { cityInfo != null && it.params[0] == stat.name && cityInfo.matchesFilter(it.params[1]) }
         ) return true
         // Can be purchased for [amount] [Stat] [cityFilter]
         if (getMatchingUniques(UniqueType.CanBePurchasedForAmountStat)
-            .any { it.params[1] == stat.name && (cityInfo != null && cityInfo.matchesFilter(it.params[2])) }
+            .any { cityInfo != null && it.params[1] == stat.name && cityInfo.matchesFilter(it.params[2]) }
         ) return true
         return false
     }
@@ -145,7 +145,7 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
-    MaxNumberBuildable(true, "Maximum number being built"),
+    MaxNumberBuildable(true, "Maximum number have been built or are being constructed"),
 
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
@@ -158,7 +158,6 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     MorePolicyBranches(false, "Hidden until more policy branches are fully adopted"),
 
     RequiresNearbyResource(false, "Requires a certain resource being exploited nearby"),
-    InvalidRequiredBuilding(false, "Required building does not exist in ruleSet!"),
     CannotBeBuiltWith(false, "Cannot be built at the same time as another building already built"),
 
     RequiresBuildingInThisCity(true, "Requires a specific building in this city!"),

@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.NotificationIcon
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
@@ -34,19 +35,26 @@ class CityExpansionManager {
     // https://www.reddit.com/r/civ/comments/58rxkk/how_in_gods_name_do_borders_expand_in_civ_vi/ has it
     //   (per game XML files) at 6*(t+0.4813)^1.3
     // The second seems to be more based, so I'll go with that
+    // -- Note (added later) that this last link is specific to civ VI and not civ V
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (max(0, tilesClaimed()) + 1.4813).pow(1.3)
 
         if (cityInfo.civInfo.isCityState())
             cultureToNextTile *= 1.5f   // City states grow slower, perhaps 150% cost?
 
-        for (unique in cityInfo.getMatchingUniques("-[]% Culture cost of acquiring tiles []")) {
-            if (cityInfo.matchesFilter(unique.params[1]))
-                cultureToNextTile /= unique.params[0].toPercent()
-        }
+        // Deprecated since 3.19.1
+            for (unique in cityInfo.getMatchingUniques(UniqueType.DecreasedAcquiringTilesCost)  + cityInfo.getMatchingUniques(UniqueType.BorderGrowthPercentageWithoutPercentageSign)) {
+                if (cityInfo.matchesFilter(unique.params[1]))
+                    cultureToNextTile /= unique.params[0].toPercent()
+            }
+            
+            for (unique in cityInfo.getMatchingUniques(UniqueType.CostOfNaturalBorderGrowth))
+                cultureToNextTile *= unique.params[0].toPercent()
+        //
         
-        for (unique in cityInfo.getMatchingUniques("[]% cost of natural border growth")) 
-            cultureToNextTile *= unique.params[0].toPercent()
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BorderGrowthPercentage))
+            if (cityInfo.matchesFilter(unique.params[1]))
+                cultureToNextTile *= unique.params[0].toPercent()
 
         return cultureToNextTile.roundToInt()
     }
@@ -66,10 +74,18 @@ class CityExpansionManager {
         val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter - 1) + tilesClaimed() * 5.0
 
-        for (unique in cityInfo.getMatchingUniques("-[]% Gold cost of acquiring tiles []")) {
+        // Deprecated since 3.19.1
+            for (unique in cityInfo.getMatchingUniques(UniqueType.TileCostPercentageDiscount)) {
+                if (cityInfo.matchesFilter(unique.params[1]))
+                    cost *= (100 - unique.params[0].toFloat()) / 100
+            }
+        //
+        
+        for (unique in cityInfo.getMatchingUniques(UniqueType.TileCostPercentage)) {
             if (cityInfo.matchesFilter(unique.params[1]))
-                cost *= (100 - unique.params[0].toFloat()) / 100
+                cost *= unique.params[0].toPercent()
         }
+        
         return cost.roundToInt()
     }
 
@@ -128,7 +144,7 @@ class CityExpansionManager {
                 city.lockedTiles.remove(tileInfo.position)
         }
 
-        tileInfo.owningCity = null
+        tileInfo.setOwningCity(null)
 
         cityInfo.civInfo.updateDetailedCivResources()
         cityInfo.cityStats.update()
@@ -148,7 +164,7 @@ class CityExpansionManager {
             tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
 
         cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)
-        tileInfo.owningCity = cityInfo
+        tileInfo.setOwningCity(cityInfo)
         cityInfo.population.autoAssignPopulation()
         cityInfo.civInfo.updateDetailedCivResources()
         cityInfo.cityStats.update()
@@ -165,7 +181,7 @@ class CityExpansionManager {
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
             if (location != null) {
-                val locations = LocationAction(listOf(location, cityInfo.location))
+                val locations = LocationAction(location, cityInfo.location)
                 cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", locations, NotificationIcon.Culture)
             }
         }
@@ -174,7 +190,7 @@ class CityExpansionManager {
     fun setTransients() {
         val tiles = cityInfo.getTiles()
         for (tile in tiles)
-            tile.owningCity = cityInfo
+            tile.setOwningCity(cityInfo)
     }
     //endregion
 }

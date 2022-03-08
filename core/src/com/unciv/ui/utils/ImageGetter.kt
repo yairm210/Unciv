@@ -246,10 +246,10 @@ object ImageGetter {
     fun getWonderImage(wonderName: String) = getImage("WonderImages/$wonderName")
 
     val foodCircleColor = colorFromRGB(129, 199, 132)
-    private val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE, 0.5f)
-    private val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE, 0.5f)
-    private val cultureCircleColor = Color.PURPLE.cpy().lerp(Color.WHITE, 0.5f)
-    private val scienceCircleColor = Color.BLUE.cpy().lerp(Color.WHITE, 0.5f)
+    private val productionCircleColor = Color.BROWN.brighten(0.5f)
+    private val goldCircleColor = Color.GOLD.brighten(0.5f)
+    private val cultureCircleColor = Color.PURPLE.brighten(0.5f)
+    private val scienceCircleColor = Color.BLUE.brighten(0.5f)
     private fun getColorFromStats(stats: Stats) = when {
         stats.food > 0 -> foodCircleColor
         stats.production > 0 -> productionCircleColor
@@ -260,9 +260,9 @@ object ImageGetter {
     }
 
 
-    fun getImprovementIcon(improvementName: String, size: Float = 20f): Actor {
+    fun getImprovementIcon(improvementName: String, size: Float = 20f): Group {
         if (improvementName.startsWith(Constants.remove) || improvementName == Constants.cancelImprovementOrder)
-            return Table().apply { add(getImage("OtherIcons/Stop")).size(size) }
+            return getImage("OtherIcons/Stop").surroundWithCircle(size)
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
@@ -333,7 +333,16 @@ object ImageGetter {
         return redCross
     }
 
-    fun getResourceImage(resourceName: String, size: Float): Actor {
+    fun getArrowImage(align:Int = Align.right): Image {
+        val image = getImage("OtherIcons/ArrowRight")
+        image.setOrigin(Align.center)
+        if (align == Align.left) image.rotation = 180f
+        if (align == Align.bottom) image.rotation = -90f
+        if (align == Align.top) image.rotation = 90f
+        return image
+    }
+
+    fun getResourceImage(resourceName: String, size: Float): IconCircleGroup {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = ruleset.tileResources[resourceName]
                 ?: return iconGroup // This is the result of a bad modding setup, just give em an empty circle. Their problem.
@@ -359,7 +368,7 @@ object ImageGetter {
     fun getTechIcon(techName: String): Image {
         val techIconColor = ruleset.eras[ruleset.technologies[techName]?.era()]?.getColor()
             ?: return getWhiteDot()
-        return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK, 0.6f) }
+        return getImage("TechIcons/$techName").apply { color = techIconColor.darken(0.6f) }
     }
 
     fun getProgressBarVertical(width: Float, height: Float, percentComplete: Float, progressColor: Color, backgroundColor: Color): Group {
@@ -371,6 +380,7 @@ object ImageGetter {
     class VerticalProgressBar(width: Float, height: Float):Group() {
         init {
             setSize(width, height)
+            isTransform = false
         }
 
         fun addColor(color: Color, percentage: Float): VerticalProgressBar {

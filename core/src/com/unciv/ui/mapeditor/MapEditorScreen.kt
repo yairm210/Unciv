@@ -22,7 +22,7 @@ import com.unciv.ui.utils.*
 class MapEditorScreen(): BaseScreen() {
     var mapName = ""
     var tileMap = TileMap()
-    var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) }
+    var ruleset = Ruleset().apply { add(RulesetCache.getVanillaRuleset()) }
 
     var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder

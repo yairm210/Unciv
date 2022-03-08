@@ -35,7 +35,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
     fun addPopulationIcon(icon: Image = ImageGetter.getStatIcon("Population")
-            .apply { color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f) }) {
+            .apply { color = Color.GREEN.darken(0.5f) }) {
         populationIcon?.remove()
         populationIcon = icon
         populationIcon!!.run {
@@ -162,7 +162,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
 
         if (tileGroup.resourceImage != null) { // This could happen on any turn, since resources need certain techs to reveal them
             val shouldDisplayResource =
-                    if (tileGroup.showEntireMap) tileGroup.tileInfo.resource != null
+                    if (tileGroup.showEntireMap) showResourcesAndImprovements
                     else showResourcesAndImprovements
                             && tileGroup.tileInfo.hasViewableResource(UncivGame.Current.worldScreen.viewingCiv)
             tileGroup.resourceImage!!.isVisible = shouldDisplayResource

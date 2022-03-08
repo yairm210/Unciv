@@ -18,7 +18,7 @@ import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 
-open class BaseScreen : Screen {
+abstract class BaseScreen : Screen {
 
     val game: UncivGame = UncivGame.Current
     val stage: Stage

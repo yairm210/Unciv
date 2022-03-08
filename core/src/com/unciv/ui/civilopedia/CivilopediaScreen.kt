@@ -221,7 +221,8 @@ class CivilopediaScreen(
         buttonTable.defaults().pad(10f)
 
         var currentX = 10f  // = padLeft
-        for (categoryKey in categoryToEntries.keys) {
+        for ((categoryKey, entries) in categoryToEntries) {
+            if (entries.isEmpty()) continue
             val icon = if (categoryKey.headerIcon.isNotEmpty()) ImageGetter.getImage(categoryKey.headerIcon) else null
             val button = IconTextButton(categoryKey.label, icon)
             button.addTooltip(categoryKey.key)
@@ -238,7 +239,7 @@ class CivilopediaScreen(
 
         val goToGameButton = Constants.close.toTextButton()
         goToGameButton.onClick {
-            game.setWorldScreen()
+            game.setScreen(previousScreen)
             dispose()
         }
 

@@ -79,15 +79,15 @@ class CityConstructions {
 
     fun getBasicStatBuildings(stat: Stat) = cityInfo.getRuleset().buildings.values
         .asSequence()
-        .filter { !it.isAnyWonder() && it.replaces == null && it.getStats(null)[stat] > 0f }
+        .filter { !it.isAnyWonder() && it.replaces == null && it[stat] > 0f }
 
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
-    fun getStats(): Stats {
-        val stats = Stats()
+    fun getStats(): StatTreeNode {
+        val stats = StatTreeNode()
         for (building in getBuiltBuildings())
-            stats.add(building.getStats(cityInfo))
+            stats.addStats(building.getStats(cityInfo), building.name)
         return stats
     }
 
@@ -105,16 +105,6 @@ class CityConstructions {
         }
         
         return maintenanceCost
-    }
-
-    /**
-     * @return Bonus (%) [Stats] provided by all built buildings in city
-     */
-    fun getStatPercentBonuses(): Stats {
-        val stats = Stats()
-        for (building in getBuiltBuildings())
-            stats.add(building.getStatPercentageBonuses(cityInfo))
-        return stats
     }
 
     fun getCityProductionTextForCityButton(): String {
@@ -376,22 +366,21 @@ class CityConstructions {
                 (construction as INonPerpetualConstruction).getRejectionReasons(this)
 
             if (rejectionReasons.hasAReasonToBeRemovedFromQueue()) {
+                val workDone = getWorkDone(constructionName)
                 if (construction is Building) {
                     // Production put into wonders gets refunded
-                    if (construction.isWonder && getWorkDone(constructionName) != 0) {
-                        cityInfo.civInfo.addGold( getWorkDone(constructionName) )
-                        val buildingIcon = "BuildingIcons/${constructionName}"
-                        cityInfo.civInfo.addNotification("Excess production for [$constructionName] converted to [${getWorkDone(constructionName)}] gold", NotificationIcon.Gold, buildingIcon)
+                    if (construction.isWonder && workDone != 0) {
+                        cityInfo.civInfo.addGold(workDone)
+                        cityInfo.civInfo.addNotification(
+                            "Excess production for [$constructionName] converted to [$workDone] gold",
+                            cityInfo.location,
+                            NotificationIcon.Gold, "BuildingIcons/${constructionName}")
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
                     if (rejectionReasons.all { it == RejectionReason.Obsoleted } && construction.upgradesTo != null) {
-                        // I'd love to use the '+=' operator but since 'inProgressConstructions[...]' can be null, kotlin doesn't allow me to
-                        if (!inProgressConstructions.contains(construction.upgradesTo)) {
-                            inProgressConstructions[construction.upgradesTo!!] = getWorkDone(constructionName)
-                        } else {
-                            inProgressConstructions[construction.upgradesTo!!] = inProgressConstructions[construction.upgradesTo!!]!! + getWorkDone(constructionName)
-                        }
+                        inProgressConstructions[construction.upgradesTo!!] =
+                            (inProgressConstructions[construction.upgradesTo!!] ?: 0) + workDone
                     }
                 }
                 inProgressConstructions.remove(constructionName)
@@ -400,8 +389,8 @@ class CityConstructions {
     }
 
     private fun constructionBegun(construction: IConstruction) {
-        if (construction !is Building) return;
-        if (construction.uniqueObjects.none { it.placeholderText == "Triggers a global alert upon build start" }) return
+        if (construction !is Building) return
+        if (!construction.hasUnique(UniqueType.TriggersAlertOnStart)) return
         val buildingIcon = "BuildingIcons/${construction.name}"
         for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
             if (otherCiv == cityInfo.civInfo) continue
@@ -442,7 +431,10 @@ class CityConstructions {
             cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]",
                     cityInfo.location, NotificationIcon.Construction, icon)
         }
-        if (construction is Building && construction.uniqueObjects.any { it.placeholderText == "Triggers a global alert upon completion" } ) {
+        
+        if (construction is Building && construction.hasUnique(UniqueType.TriggersAlertOnCompletion,
+                StateForConditionals(cityInfo.civInfo, cityInfo)
+            )) {
             for (otherCiv in cityInfo.civInfo.gameInfo.civilizations) {
                 // No need to notify ourself, since we already got the building notification anyway
                 if (otherCiv == cityInfo.civInfo) continue
@@ -472,7 +464,8 @@ class CityConstructions {
         builtBuildingUniqueMap.clear()
         for (building in getBuiltBuildings())
             for (unique in building.uniqueObjects)
-                builtBuildingUniqueMap.addUnique(unique)
+                if (unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique })
+                    builtBuildingUniqueMap.addUnique(unique)
     }
 
     /**

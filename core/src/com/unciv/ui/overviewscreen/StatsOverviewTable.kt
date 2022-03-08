@@ -1,9 +1,9 @@
 package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.ui.utils.*
@@ -60,15 +60,18 @@ class StatsOverviewTable (
             goldTable.addSeparator()
             val sliderTable = Table()
             sliderTable.add("Convert gold to science".toLabel()).row()
-            val slider = Slider(0f, 1f, 0.1f, false, BaseScreen.skin)
-            slider.value = viewingPlayer.tech.goldPercentConvertedToScience
 
-            slider.onChange {
-                viewingPlayer.tech.goldPercentConvertedToScience = slider.value
-                viewingPlayer.cities.forEach { it.cityStats.update() }
+            val slider = UncivSlider(0f, 1f, 0.1f,
+                initial = viewingPlayer.tech.goldPercentConvertedToScience,
+                getTipText = UncivSlider::formatPercent
+            ) {
+                viewingPlayer.tech.goldPercentConvertedToScience = it
+                for (city in viewingPlayer.cities) { city.cityStats.update() }
                 overviewScreen.setCategoryActions["Stats"]!!()      // ? will probably steal focus and so prevent dragging the slider
             }
-            sliderTable.add(slider)
+            slider.isDisabled = !UncivGame.Current.worldScreen.canChangeState
+
+            sliderTable.add(slider).padTop(15f)
             goldTable.add(sliderTable).colspan(2)
         }
 

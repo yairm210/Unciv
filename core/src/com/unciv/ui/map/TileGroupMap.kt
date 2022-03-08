@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.tilegroups.ActionlessGroup
 import com.unciv.ui.tilegroups.TileGroup
 import kotlin.math.max
 import kotlin.math.min
@@ -78,13 +79,13 @@ class TileGroupMap<T: TileGroup>(
             }
         }
 
-        val baseLayers = ArrayList<Group>()
-        val featureLayers = ArrayList<Group>()
-        val miscLayers = ArrayList<Group>()
+        val baseLayers = ArrayList<ActionlessGroup>()
+        val featureLayers = ArrayList<ActionlessGroup>()
+        val miscLayers = ArrayList<ActionlessGroup>()
         val unitLayers = ArrayList<Group>()
-        val unitImageLayers = ArrayList<Group>()
+        val unitImageLayers = ArrayList<ActionlessGroup>()
         val cityButtonLayers = ArrayList<Group>()
-        val circleCrosshairFogLayers = ArrayList<Group>()
+        val circleCrosshairFogLayers = ArrayList<ActionlessGroup>()
 
         // Apparently the sortedByDescending is kinda memory-intensive because it needs to sort ALL the tiles
         for (group in tileGroups.sortedByDescending { it.tileInfo.position.x + it.tileInfo.position.y }) {

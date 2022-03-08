@@ -47,7 +47,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val happinessGroup = ImageGetter.getStatIcon("Happiness")
 
     init {
-        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
 
         add(getStatsTable()).row()
         add(getResourceTable())

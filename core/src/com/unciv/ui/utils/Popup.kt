@@ -27,7 +27,7 @@ open class Popup(val screen: BaseScreen): Table(BaseScreen.skin) {
         name = javaClass.simpleName
 
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a=.5f })
-        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
 
         innerTable.pad(20f)
         innerTable.defaults().pad(5f)

@@ -14,7 +14,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.*
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
@@ -119,13 +118,28 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     val unitLayerGroup = UnitLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
     val unitImageLayerGroup = UnitImageLayerGroupClass().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
 
-    val cityButtonLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize)
-        touchable = Touchable.childrenOnly; setOrigin(Align.center) }
+    class CityButtonLayerGroupClass(val tileInfo: TileInfo) :Group() {
+        override fun draw(batch: Batch?, parentAlpha: Float) {
+            if (!tileInfo.isCityCenter()) return
+            super.draw(batch, parentAlpha)
+        }
+        override fun act(delta: Float) {
+            if (!tileInfo.isCityCenter()) return
+            super.act(delta)
+        }
+        override fun hit(x: Float, y: Float, touchable: Boolean): Actor? {
+            if (!tileInfo.isCityCenter()) return null
+            return super.hit(x, y, touchable)
+        }
+    }
+
+    val cityButtonLayerGroup = CityButtonLayerGroupClass(tileInfo).apply { isTransform = false; setSize(groupSize, groupSize)
+        touchable = Touchable.childrenOnly; setOrigin(Align.center);  }
 
     val highlightCrosshairFogLayerGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
-    val highlightImage = ImageGetter.getImage(tileSetStrings.orFallback { getString(tileSetLocation, "Highlight") }) // for blue and red circles/emphasis on the tile
-    private val crosshairImage = ImageGetter.getImage(tileSetStrings.orFallback { getString(tileSetLocation, "Crosshair") }) // for when a unit is targeted
-    private val fogImage = ImageGetter.getImage(tileSetStrings.orFallback { crosshatchHexagon } )
+    val highlightImage = ImageGetter.getImage(tileSetStrings.highlight) // for blue and red circles/emphasis on the tile
+    private val crosshairImage = ImageGetter.getImage(tileSetStrings.crosshair) // for when a unit is targeted
+    private val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon )
 
     /**
      * Class for representing an arrow to add to the map at this tile.
@@ -203,22 +217,23 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         crosshairImage.isVisible = true
     }
 
+
     private fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String> {
-        if (viewingCiv == null && !showEntireMap) return listOf(tileSetStrings.orFallback { hexagon } )
+        if (viewingCiv == null && !showEntireMap) return tileSetStrings.hexagonList
         if (tileInfo.naturalWonder != null) return listOf(tileSetStrings.orFallback { getTile(tileInfo.naturalWonder!!) })
 
         val shownImprovement = tileInfo.getShownImprovement(viewingCiv)
-        val shouldShowImprovement = (shownImprovement != null && UncivGame.Current.settings.showPixelImprovements)
+        val shouldShowImprovement = shownImprovement != null && UncivGame.Current.settings.showPixelImprovements
 
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements && tileInfo.resource != null &&
                 (showEntireMap || viewingCiv == null || tileInfo.hasViewableResource(viewingCiv))
 
-        var resourceAndImprovementSequence = sequenceOf<String?>()
-        if (shouldShowResource) resourceAndImprovementSequence += sequenceOf(tileInfo.resource)
-        if (shouldShowImprovement) resourceAndImprovementSequence += sequenceOf(shownImprovement)
-        resourceAndImprovementSequence = resourceAndImprovementSequence.filterNotNull()
+        val resourceAndImprovementSequence = sequence {
+            if (shouldShowResource)  yield(tileInfo.resource!!)
+            if (shouldShowImprovement) yield(shownImprovement!!)
+        }
 
-        val terrainImages = (sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()).filterNotNull()
+        val terrainImages = sequenceOf(tileInfo.baseTerrain) + tileInfo.terrainFeatures.asSequence()
         val allTogether = (terrainImages + resourceAndImprovementSequence).joinToString("+")
         val allTogetherLocation = tileSetStrings.getTile(allTogether)
 
@@ -296,7 +311,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         }
 
         if (tileBaseImages.isEmpty()) { // Absolutely nothing! This is for the 'default' tileset
-            val image = ImageGetter.getImage(tileSetStrings.orFallback { hexagon })
+            val image = ImageGetter.getImage(tileSetStrings.hexagon)
             tileBaseImages.add(image)
             baseLayerGroup.addActor(image)
             setHexagonImageSize(image)
@@ -621,9 +636,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         var color =
                 if (tileSetStrings.tileSetConfig.useColorAsBaseTerrain)
                     tileInfo.getBaseTerrain().getColor()
-                else Color.WHITE // no need to color it, it's already colored
+                else Color.WHITE.cpy() // no need to color it, it's already colored
 
-        if (!isViewable) color = color.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+        if (!isViewable) color = color.lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
         for(image in tileBaseImages) image.color = color
     }
 
@@ -662,6 +677,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                         .tryImage { if (baseUnit.replaces != null) "$unitsLocation${baseUnit.replaces}" else null }
                         .tryImages(
                                 militaryUnit.civInfo.gameInfo.ruleSet.units.values.asSequence().map {
+                                    @Suppress("unused")  // yes receiver unused but we want the signature to match ImageAttempter instance
                                     fun MapUnit.() = if (it.unitType == militaryUnit.type.name)
                                         "$unitsLocation${it.name}"
                                     else
@@ -729,9 +745,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     private var bottomLeftRiverImage :Image?=null
 
     private fun updateRivers(displayBottomRight:Boolean, displayBottom:Boolean, displayBottomLeft:Boolean){
-        bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight, tileSetStrings.orFallback { bottomRightRiver })
-        bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, tileSetStrings.orFallback { bottomRiver })
-        bottomLeftRiverImage = updateRiver(bottomLeftRiverImage, displayBottomLeft, tileSetStrings.orFallback { bottomLeftRiver })
+        bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight, tileSetStrings.bottomRightRiver)
+        bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, tileSetStrings.bottomRiver)
+        bottomLeftRiverImage = updateRiver(bottomLeftRiverImage, displayBottomLeft, tileSetStrings.bottomLeftRiver)
     }
 
     private fun updateRiver(currentImage:Image?, shouldDisplay:Boolean,imageName:String): Image? {

@@ -117,7 +117,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             if (civInfo.naturalWonders.contains(tile.naturalWonder))
                 continue
             civInfo.discoverNaturalWonder(tile.naturalWonder!!)
-            civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, "StatIcons/Happiness")
+            civInfo.addNotification("We have discovered [${tile.naturalWonder}]!", tile.position, "StatIcons/Happiness")
 
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
@@ -127,13 +127,13 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 goldGained += 500
             }
 
-            if (civInfo.hasUnique("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)")) {
+            if (civInfo.hasUnique(UniqueType.GoldWhenDiscoveringNaturalWonder)) {
                 goldGained += if (discoveredNaturalWonders.contains(tile.naturalWonder!!)) 100 else 500
             }
 
             if (goldGained > 0) {
                 civInfo.addGold(goldGained)
-                civInfo.addNotification("We have received [" + goldGained + "] Gold for discovering [" + tile.naturalWonder + "]", NotificationIcon.Gold)
+                civInfo.addNotification("We have received [$goldGained] Gold for discovering [${tile.naturalWonder}]", NotificationIcon.Gold)
             }
 
         }
@@ -141,7 +141,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
     fun updateHasActiveGreatWall() {
         civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") &&
-                civInfo.hasUnique("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
+                civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
     }
 
 
@@ -164,26 +164,20 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums
     }
 
-    fun updateDetailedCivResources() {
+    fun updateCivResources() {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
 
         if (!civInfo.isCityState()) {
             var resourceBonusPercentage = 1f
-            for (unique in 
-            // Deprecated since 3.18.17 
-                civInfo.getMatchingUniques(UniqueType.CityStateResourcesDeprecated) + 
-            //        
-            civInfo.getMatchingUniques(UniqueType.CityStateResources))
+            for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
-            for (city in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }
-                .flatMap { it.cities }) {
-                for (resourceSupply in city.getCityResources())
-                    if (resourceSupply.origin != "Buildings") // IGNORE the fact that they consume their own resources - #4769
-                        newDetailedCivResources.add(
-                            resourceSupply.resource,
-                            (resourceSupply.amount * resourceBonusPercentage).toInt(), "City-States"
-                        )
+            for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
+                for (resource in CityStateFunctions(cityStateAlly).getCityStateResourcesForAlly()) {
+                    newDetailedCivResources.add(
+                        resource.apply { amount = (amount * resourceBonusPercentage).toInt() }
+                    )
+                }
             }
         }
 
@@ -192,6 +186,13 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             for ((resource, amount) in unit.baseUnit.getResourceRequirements())
                 newDetailedCivResources.add(civInfo.gameInfo.ruleSet.tileResources[resource]!!, -amount, "Units")
         civInfo.detailedCivResources = newDetailedCivResources
+
+        val newSummarizedCivResources = ResourceSupplyList()
+        for (resourceSupply in newDetailedCivResources) {
+            newSummarizedCivResources.add(resourceSupply.resource, resourceSupply.amount, "All")
+        }
+        civInfo.summarizedCivResources = newSummarizedCivResources
+
         civInfo.updateStatsForNextTurn() // More or less resources = more or less happiness, with potential domino effects
     }
 }

@@ -1,6 +1,5 @@
 package com.unciv.ui.cityscreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -17,7 +16,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import kotlin.concurrent.thread
 import kotlin.math.max
 import kotlin.math.min
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -262,7 +260,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         table.background = ImageGetter.getBackground(Color.BLACK)
 
         if (constructionQueueIndex == selectedQueueEntry)
-            table.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
+            table.background = ImageGetter.getBackground(Color.GREEN.darken(0.5f))
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, constructionName)
 
@@ -308,7 +306,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
                 (construction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
         return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
-                Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
+                Color.BROWN.brighten(0.5f), Color.WHITE)
     }
 
     private class ConstructionButtonDTO(val construction: IConstruction, val buttonText: String, val rejectionReason: String? = null)
@@ -322,7 +320,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
         pickConstructionButton.touchable = Touchable.enabled
 
         if (!isSelectedQueueEntry() && cityScreen.selectedConstruction != null && cityScreen.selectedConstruction == construction) {
-            pickConstructionButton.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
+            pickConstructionButton.background = ImageGetter.getBackground(Color.GREEN.darken(0.5f))
         }
 
         pickConstructionButton.add(getProgressBar(construction.name)).padRight(5f)
@@ -531,7 +529,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
     
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f))
+        tab.add(ImageGetter.getArrowImage(Align.top).apply { color = Color.BLACK }.surroundWithCircle(40f))
         if (cityScreen.canChangeState && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
@@ -548,7 +546,7 @@ class CityConstructionsTable(private val cityScreen: CityScreen) {
 
     private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Down").surroundWithCircle(40f))
+        tab.add(ImageGetter.getArrowImage(Align.bottom).apply { color = Color.BLACK }.surroundWithCircle(40f))
         if (cityScreen.canChangeState && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {

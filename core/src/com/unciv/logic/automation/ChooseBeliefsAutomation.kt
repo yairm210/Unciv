@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.random.Random
 
 object ChooseBeliefsAutomation {
@@ -60,29 +61,23 @@ object ChooseBeliefsAutomation {
         var score = 0f
         val ruleSet = civInfo.gameInfo.ruleSet
         for (unique in belief.uniqueObjects) {
-            var modifier = 1f
-            if (unique.conditionals.any { it.isOfType(UniqueType.ConditionalWar) 
-                || it.isOfType(UniqueType.ConditionalNotWar) 
-                || it.isOfType(UniqueType.ConditionalAttacking)
-                || it.isOfType(UniqueType.ConditionalDefending) }
-            ) {
-                modifier *= 0.5f
-            }
+            val modifier = 0.5f.pow(unique.conditionals.count())
             // Multiply by 3/10 if has an obsoleted era
             // Multiply by 2 if enough pop/followers (best implemented with conditionals, so left open for now)
             // If obsoleted, continue
-            score += modifier * when (unique.placeholderText) {
-                UniqueType.GrowthPercentBonus.placeholderText -> unique.params[0].toFloat() / 3f
-                "[]% cost of natural border growth" -> -unique.params[0].toFloat() * 2f / 10f
-                "[]% Strength for cities" -> unique.params[0].toFloat() / 10f // Modified by personality
-                "[] Units adjacent to this city heal [] HP per turn when healing" -> unique.params[1].toFloat() / 10f
-                "+[]% Production when constructing []" -> unique.params[0].toFloat() / 3f
-                UniqueType.StatsFromCitiesOnSpecificTiles.placeholderText ->
+            score += modifier * when (unique.type) {
+                UniqueType.GrowthPercentBonus -> unique.params[0].toFloat() / 3f
+                UniqueType.BorderGrowthPercentage -> -unique.params[0].toFloat() * 2f / 10f
+                UniqueType.StrengthForCities -> unique.params[0].toFloat() / 10f // Modified by personality
+                UniqueType.CityHealingUnits -> unique.params[1].toFloat() / 10f
+                UniqueType.PercentProductionBuildings -> unique.params[0].toFloat() / 3f
+                UniqueType.PercentProductionWonders -> unique.params[0].toFloat() / 3f
+                UniqueType.PercentProductionUnits -> unique.params[0].toFloat() / 3f
+                UniqueType.StatsFromCitiesOnSpecificTiles ->
                     if (city.getCenterTile().matchesFilter(unique.params[1])) 
                         unique.stats.values.sum() // Modified by personality 
                     else 0f
-                UniqueType.StatsFromObject.placeholderText,
-                "[] from every [] in cities where this religion has at least [] followers" ->
+                UniqueType.StatsFromObject ->
                     when {
                         ruleSet.buildings.containsKey(unique.params[1]) -> {
                             unique.stats.values.sum() / 
@@ -97,15 +92,15 @@ object ChooseBeliefsAutomation {
                         }
                         else -> 0f
                     }
-                UniqueType.StatsFromXPopulation.placeholderText ->
+                UniqueType.StatsFromXPopulation ->
                     unique.stats.values.sum() // Modified by personality
-                "[] from each Trade Route" ->
+                UniqueType.StatsFromTradeRoute ->
                     unique.stats.values.sum() *
                         if (city.isConnectedToCapital()) 2f
                         else 1f
-                "[]% [] from every follower, up to []%" -> 
+                UniqueType.StatPercentFromReligionFollowers -> 
                     min(unique.params[0].toFloat() * city.population.population, unique.params[2].toFloat()) 
-                UniqueType.StatsPerCity.placeholderText ->
+                UniqueType.StatsPerCity ->
                     if (city.matchesFilter(unique.params[1]))
                         unique.stats.values.sum()
                     else 0f

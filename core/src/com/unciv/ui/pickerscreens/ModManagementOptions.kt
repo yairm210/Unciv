@@ -184,7 +184,7 @@ class ModUIData(
         state.hasUpdate = isUpdated
     }
 
-    fun lastUpdated() = ruleset?.modOptions?.lastUpdated ?: repo?.updated_at ?: ""
+    fun lastUpdated() = ruleset?.modOptions?.lastUpdated ?: repo?.pushed_at ?: ""
     fun stargazers() = repo?.stargazers_count ?: 0
     fun author() = ruleset?.modOptions?.author ?: repo?.owner?.login ?: ""
     fun matchesFilter(filterText: String): Boolean = when {

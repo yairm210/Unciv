@@ -23,15 +23,15 @@ class TileImprovementConstructionTests {
     private fun getTile() = TileInfo().apply {
         baseTerrain = "Plains"
         ruleset = ruleSet
-        owningCity = city
         position = Vector2(1f, 1f) // so that it's not on the same position as the city
+        setOwningCity(city)
         this@apply.tileMap = this@TileImprovementConstructionTests.tileMap
     }
 
     @Before
     fun initTheWorld() {
         RulesetCache.loadRulesets()
-        ruleSet = RulesetCache.getBaseRuleset()
+        ruleSet = RulesetCache.getVanillaRuleset()
         civInfo.tech.researchedTechnologies.addAll(ruleSet.technologies.values)
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
         city.civInfo = civInfo
@@ -134,7 +134,7 @@ class TileImprovementConstructionTests {
     @Test
     fun terraceFarmCanNOTBeBuiltOnBonus() {
         val tile = getTile()
-        tile.terrainFeatures.add("Hill")
+        tile.addTerrainFeature("Hill")
         tile.resource = "Sheep"
         tile.setTransients()
         civInfo.civName = "Inca"

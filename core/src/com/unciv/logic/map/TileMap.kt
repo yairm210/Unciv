@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.abs
 
@@ -94,8 +95,10 @@ class TileMap {
     /** creates a hexagonal map of given radius (filled with grassland) */
     constructor(radius: Int, ruleset: Ruleset, worldWrap: Boolean = false) {
         startingLocations.clear()
+        val firstAvailableLandTerrain = ruleset.terrains.values.firstOrNull { it.type==TerrainType.Land }
+            ?: throw Exception("Cannot create map - no land terrains found!")
         for (vector in HexMath.getVectorsInDistance(Vector2.Zero, radius, worldWrap))
-            tileList.add(TileInfo().apply { position = vector; baseTerrain = Constants.grassland })
+            tileList.add(TileInfo().apply { position = vector; baseTerrain = firstAvailableLandTerrain.name })
         setTransients(ruleset)
     }
 
@@ -205,8 +208,11 @@ class TileMap {
     /** @return all tiles within [rectangle], respecting world edges and wrap.
      *  If using even Q coordinates the rectangle will be "straight" ie parallel with rectangular map edges. */
     fun getTilesInRectangle(rectangle: Rectangle, evenQ: Boolean = false): Sequence<TileInfo> =
-            if (rectangle.width <= 0 || rectangle.height <= 0)
-                sequenceOf(get(rectangle.x.toInt(), rectangle.y.toInt()))
+            if (rectangle.width <= 0 || rectangle.height <= 0) {
+                val tile = getIfTileExistsOrNull(rectangle.x.toInt(), rectangle.y.toInt())
+                if (tile == null) sequenceOf()
+                else sequenceOf(tile)
+            }
             else
                 sequence {
                     for (x in 0 until rectangle.width.toInt()) {
@@ -255,21 +261,25 @@ class TileMap {
         val radius = if (mapParameters.shape == MapShape.rectangular)
             mapParameters.mapSize.width / 2
         else mapParameters.mapSize.radius
+        val x1 = tile.position.x.toInt()
+        val y1 = tile.position.y.toInt()
+        val x2 = otherTile.position.x.toInt()
+        val y2 = otherTile.position.y.toInt()
 
-        val xDifference = tile.position.x - otherTile.position.x
-        val yDifference = tile.position.y - otherTile.position.y
-        val xWrapDifferenceBottom = tile.position.x - (otherTile.position.x - radius)
-        val yWrapDifferenceBottom = tile.position.y - (otherTile.position.y - radius)
-        val xWrapDifferenceTop = tile.position.x - (otherTile.position.x + radius)
-        val yWrapDifferenceTop = tile.position.y - (otherTile.position.y + radius)
+        val xDifference = x1 - x2
+        val yDifference = y1 - y2
+        val xWrapDifferenceBottom = if (radius < 3) 0 else x1 - (x2 - radius)
+        val yWrapDifferenceBottom = if (radius < 3) 0 else y1 - (y2 - radius)
+        val xWrapDifferenceTop = if (radius < 3) 0 else x1 - (x2 + radius)
+        val yWrapDifferenceTop = if (radius < 3) 0 else y1 - (y2 + radius)
 
         return when {
-            xDifference == 1f && yDifference == 1f -> 6 // otherTile is below
-            xDifference == -1f && yDifference == -1f -> 12 // otherTile is above
-            xDifference == 1f || xWrapDifferenceBottom == 1f -> 4 // otherTile is bottom-right
-            yDifference == 1f || yWrapDifferenceBottom == 1f -> 8 // otherTile is bottom-left
-            xDifference == -1f || xWrapDifferenceTop == -1f -> 10 // otherTile is top-left
-            yDifference == -1f || yWrapDifferenceTop == -1f -> 2 // otherTile is top-right
+            xDifference == 1 && yDifference == 1 -> 6 // otherTile is below
+            xDifference == -1 && yDifference == -1 -> 12 // otherTile is above
+            xDifference == 1 || xWrapDifferenceBottom == 1 -> 4 // otherTile is bottom-right
+            yDifference == 1 || yWrapDifferenceBottom == 1 -> 8 // otherTile is bottom-left
+            xDifference == -1 || xWrapDifferenceTop == -1 -> 10 // otherTile is top-left
+            yDifference == -1 || yWrapDifferenceTop == -1 -> 2 // otherTile is top-right
             else -> -1
         }
     }
@@ -441,7 +451,7 @@ class TileMap {
     fun removeMissingTerrainModReferences(ruleSet: Ruleset) {
         for (tile in this.values) {
             for (terrainFeature in tile.terrainFeatures.filter { !ruleSet.terrains.containsKey(it) })
-                tile.terrainFeatures.remove(terrainFeature)
+                tile.removeTerrainFeature(terrainFeature)
             if (tile.resource != null && !ruleSet.tileResources.containsKey(tile.resource!!))
                 tile.resource = null
             if (tile.improvement != null && !ruleSet.tileImprovements.containsKey(tile.improvement!!))
@@ -476,6 +486,7 @@ class TileMap {
         var unitToPlaceTile: TileInfo? = null
         // try to place at the original point (this is the most probable scenario)
         val currentTile = get(position)
+        unit.currentTile = currentTile  // temporary
         if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
 
         // if it's not suitable, try to find another tile nearby

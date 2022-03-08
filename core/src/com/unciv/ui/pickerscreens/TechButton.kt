@@ -2,10 +2,12 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.ui.utils.*
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
@@ -31,8 +33,8 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
             val percentWillBeComplete = (techCost - (remainingTech-techThisTurn)) / techCost.toFloat()
             val progressBar = ImageGetter.VerticalProgressBar(2f, 50f)
                     .addColor(Color.WHITE, 1f)
-                    .addColor(Color.BLUE.cpy().lerp(Color.WHITE, 0.3f), percentWillBeComplete)
-                    .addColor(Color.BLUE.cpy().lerp(Color.BLACK, 0.5f), percentComplete)
+                    .addColor(Color.BLUE.brighten(0.3f), percentWillBeComplete)
+                    .addColor(Color.BLUE.darken(0.5f), percentComplete)
             add(progressBar.addBorder(1f, Color.GRAY)).pad(10f)
             rightSide.add(text).padBottom(5f).row()
         } else rightSide.add(text).height(25f).padBottom(5f).row()
@@ -59,12 +61,21 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         for (building in tech.getEnabledBuildings(techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize))
 
-        for (building in tech.getObsoletedBuildings(techManager.civInfo))
-            techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize).apply {
+        for (obj in tech.getObsoletedObjects(techManager.civInfo)) {
+            val obsoletedIcon = when {
+                obj is Building -> ImageGetter.getConstructionImage(obj.name)
+                    .surroundWithCircle(techIconSize)
+                obj is TileResource -> ImageGetter.getResourceImage(obj.name, techIconSize)
+                obj is TileImprovement -> ImageGetter.getImprovementIcon(obj.name, techIconSize)
+                else -> continue
+            }.also {
                 val closeImage = ImageGetter.getRedCross(techIconSize / 2, 1f)
-                closeImage.center(this)
-                addActor(closeImage)
-            })
+                closeImage.center(it)
+                it.addActor(closeImage)
+            }
+            techEnabledIcons.add(obsoletedIcon)
+        }
+
 
         for (improvement in ruleset.tileImprovements.values.asSequence()
             .filter {

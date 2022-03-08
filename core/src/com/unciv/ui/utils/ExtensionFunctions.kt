@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.CrashScreen
 import com.unciv.UncivGame
@@ -39,8 +40,17 @@ var Button.isEnabled: Boolean
     get() = touchable == Touchable.enabled
     set(value) = if (value) enable() else disable()
 
+/** Create a new [Color] instance from [r]/[g]/[b] given as Integers in the range 0..255 */
 fun colorFromRGB(r: Int, g: Int, b: Int) = Color(r / 255f, g / 255f, b / 255f, 1f)
-fun colorFromRGB(rgb:List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
+/** Create a new [Color] instance from r/g/b given as Integers in the range 0..255 in the form of a 3-element List [rgb] */
+fun colorFromRGB(rgb: List<Int>) = colorFromRGB(rgb[0], rgb[1], rgb[2])
+/** Linearly interpolates between this [Color] and [BLACK][Color.BLACK] by [t] which is in the range [[0,1]].
+ * The result is returned as a new instance. */
+fun Color.darken(t: Float): Color = Color(this).lerp(Color.BLACK, t)
+/** Linearly interpolates between this [Color] and [WHITE][Color.WHITE] by [t] which is in the range [[0,1]].
+ * The result is returned as a new instance. */
+fun Color.brighten(t: Float): Color = Color(this).lerp(Color.WHITE, t)
+
 fun Actor.centerX(parent: Actor){ x = parent.width/2 - width/2 }
 fun Actor.centerY(parent: Actor){ y = parent.height/2- height/2}
 fun Actor.center(parent: Actor){ centerX(parent); centerY(parent)}
@@ -82,6 +92,7 @@ fun Actor.surroundWithCircle(size: Float, resizeActor: Boolean = true, color: Co
     return IconCircleGroup(size, this, resizeActor, color)
 }
 
+
 fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table {
     val table = Table()
     table.pad(size)
@@ -91,6 +102,17 @@ fun Actor.addBorder(size:Float, color: Color, expandCell:Boolean = false): Table
     cell.fill()
     table.pack()
     return table
+}
+
+fun Group.addBorderAllowOpacity(size:Float, color: Color): Group {
+    val group = this
+    fun getTopBottomBorder() = ImageGetter.getDot(color).apply { width=group.width; height=size }
+    addActor(getTopBottomBorder().apply { setPosition(0f, group.height, Align.topLeft) })
+    addActor(getTopBottomBorder().apply { setPosition(0f, 0f, Align.bottomLeft) })
+    fun getLeftRightBorder() = ImageGetter.getDot(color).apply { width=size; height=group.height }
+    addActor(getLeftRightBorder().apply { setPosition(0f, 0f, Align.bottomLeft) })
+    addActor(getLeftRightBorder().apply { setPosition(group.width, 0f, Align.bottomRight) })
+    return group
 }
 
 

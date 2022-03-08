@@ -3,11 +3,13 @@ package com.unciv.models
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.utils.Align
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.Constants
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.ui.utils.darken
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
@@ -44,7 +46,7 @@ data class UnitAction(
                 val match = fortificationRegex.matchEntire(title)
                 val percentFortified = match?.groups?.get(1)?.value?.toInt() ?: 0
                 ImageGetter.getImage("OtherIcons/Shield").apply { 
-                    color = Color.BLACK.cpy().lerp(Color.GREEN, percentFortified / 80f)
+                    color = Color.GREEN.darken(1f - percentFortified / 80f)
                 }
             }
             else -> ImageGetter.getImage("OtherIcons/Star")
@@ -123,6 +125,8 @@ enum class UnitActionType(
         { ImageGetter.getUnitIcon("Great Merchant") }, 'g', UncivSound.Chimes),
     FoundReligion("Found a Religion",
         { ImageGetter.getUnitIcon("Great Prophet") }, 'g', UncivSound.Choir),
+    TriggerUnique("Trigger unique",
+        { ImageGetter.getImage("OtherIcons/Star") }, 'g', UncivSound.Chimes),
     SpreadReligion("Spread Religion",
         null, 'g', UncivSound.Choir),
     RemoveHeresy("Remove Heresy",
@@ -137,6 +141,8 @@ enum class UnitActionType(
         { imageGetShowMore() }, KeyCharAndCode(Input.Keys.PAGE_DOWN)),
     HideAdditionalActions("Back",
         { imageGetHideMore() }, KeyCharAndCode(Input.Keys.PAGE_UP)),
+    AddInCapital( "Add in capital",
+        { ImageGetter.getUnitIcon("SS Cockpit")}, 'g', UncivSound.Chimes),
     ;
 
     // Allow shorter initializations
@@ -149,7 +155,7 @@ enum class UnitActionType(
         // readability factories
         private fun imageGetStopMove() = ImageGetter.getStatIcon("Movement").apply { color = Color.RED }
         private fun imageGetPromote() = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.GOLD }
-        private fun imageGetShowMore() = ImageGetter.getImage("OtherIcons/ArrowRight").apply { color = Color.BLACK }
-        private fun imageGetHideMore() = ImageGetter.getImage("OtherIcons/ArrowLeft").apply { color = Color.BLACK }
+        private fun imageGetShowMore() = ImageGetter.getArrowImage(Align.right).apply { color = Color.BLACK }
+        private fun imageGetHideMore() = ImageGetter.getArrowImage(Align.left).apply { color = Color.BLACK }
     }
 }

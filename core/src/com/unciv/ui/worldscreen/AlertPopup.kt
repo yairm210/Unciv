@@ -188,7 +188,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
 
                 val centerTable = Table()
                 centerTable.add(wonder.quote.toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
-                centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
+                centerTable.add(wonder.getShortDescription()
                         .toLabel().apply { wrap = true }).width(worldScreen.stage.width / 3).pad(10f)
                 add(centerTable).row()
                 add(getCloseButton(Constants.close))
@@ -256,55 +256,32 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     }
                 }
             }
-            AlertType.BulliedProtectedMinor -> {
+            AlertType.BulliedProtectedMinor, AlertType.AttackedProtectedMinor -> {
                 val involvedCivs = popupAlert.value.split('@')
-                val bully = worldScreen.gameInfo.getCivilization(involvedCivs[0])
+                val bullyOrAttacker = worldScreen.gameInfo.getCivilization(involvedCivs[0])
                 val cityState = worldScreen.gameInfo.getCivilization(involvedCivs[1])
                 val player = worldScreen.viewingCiv
-                addLeaderName(bully)
+                addLeaderName(bullyOrAttacker)
 
-                val text = if (bully.getDiplomacyManager(player).relationshipLevel() >= RelationshipLevel.Neutral) // Nice message
-                    "I've been informed that my armies have taken tribute from [${cityState.civName}], a city-state under your protection.\nI assure you, this was quite unintentional, and I hope that this does not serve to drive us apart."
-                else    // Nasty message
-                    "We asked [${cityState.civName}] for a tribute recently and they gave in.\nYou promised to protect them from such things, but we both know you cannot back that up."
+                val relation = bullyOrAttacker.getDiplomacyManager(player).relationshipLevel()
+                val text = when {
+                    popupAlert.type == AlertType.BulliedProtectedMinor && relation >= RelationshipLevel.Neutral ->  // Nice message
+                        "I've been informed that my armies have taken tribute from [${cityState.civName}], a city-state under your protection.\nI assure you, this was quite unintentional, and I hope that this does not serve to drive us apart."
+                    popupAlert.type == AlertType.BulliedProtectedMinor ->  // Nasty message
+                        "We asked [${cityState.civName}] for a tribute recently and they gave in.\nYou promised to protect them from such things, but we both know you cannot back that up."
+                    relation >= RelationshipLevel.Neutral ->  // Nice message
+                        "It's come to my attention that I may have attacked [${cityState.civName}], a city-state under your protection.\nWhile it was not my goal to be at odds with your empire, this was deemed a necessary course of action."
+                    else ->  // Nasty message
+                        "I thought you might like to know that I've launched an invasion of one of your little pet states.\nThe lands of [${cityState.civName}] will make a fine addition to my own."
+                }
                 addGoodSizedLabel(text).row()
 
                 add(getCloseButton("You'll pay for this!", 'y') {
-                    player.getDiplomacyManager(bully).sideWithCityState()
+                    player.getDiplomacyManager(bullyOrAttacker).sideWithCityState()
                 }).row()
                 add(getCloseButton("Very well.", 'n') {
-                    if(cityState.cities.isEmpty())
-                        player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", cityState.civName)
-                    else {
-                        val capitalLocation = LocationAction(listOf(cityState.getCapital().location))
-                        player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, cityState.civName)
-                    }
-                    cityState.removeProtectorCiv(player, forced = true)
-                }).row()
-            }
-            AlertType.AttackedProtectedMinor -> {
-                val involvedCivs = popupAlert.value.split('@')
-                val attacker = worldScreen.gameInfo.getCivilization(involvedCivs[0])
-                val cityState = worldScreen.gameInfo.getCivilization(involvedCivs[1])
-                val player = worldScreen.viewingCiv
-                addLeaderName(attacker)
-
-                val text = if (attacker.getDiplomacyManager(player).relationshipLevel() >= RelationshipLevel.Neutral) // Nice message
-                    "It's come to my attention that I may have attacked [${cityState.civName}], a city-state under your protection.\nWhile it was not my goal to be at odds with your empire, this was deemed a necessary course of action."
-                else    // Nasty message
-                    "I thought you might like to know that I've launched an invasion of one of your little pet states.\nThe lands of [${cityState.civName}] will make a fine addition to my own."
-                addGoodSizedLabel(text).row()
-
-                add(getCloseButton("You'll pay for this!", 'y') {
-                    player.getDiplomacyManager(attacker).sideWithCityState()
-                }).row()
-                add(getCloseButton("Very well.", 'n') {
-                    if(cityState.cities.isEmpty())
-                        player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", cityState.civName)
-                    else {
-                        val capitalLocation = LocationAction(listOf(cityState.getCapital().location))
-                        player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, cityState.civName)
-                    }
+                    val capitalLocation = LocationAction(cityState.cities.asSequence().map { it.location }) // in practice 0 or 1 entries, that's OK
+                    player.addNotification("You have broken your Pledge to Protect [${cityState.civName}]!", capitalLocation, cityState.civName)
                     cityState.removeProtectorCiv(player, forced = true)
                 }).row()
             }

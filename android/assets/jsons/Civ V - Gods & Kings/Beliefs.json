@@ -102,7 +102,7 @@
     {
         "name": "Religious Settlements",
         "type": "Pantheon",
-        "uniques": ["[-15]% cost of natural border growth"]
+        "uniques": ["[-15]% Culture cost of natural border growth [in cities following this religion]"]
     },
     {
         "name": "Sacred Path",
@@ -123,7 +123,7 @@
     {
         "name": "Asceticism",
         "type": "Follower",
-        "uniques": ["[+1 Happiness] from every [Shrine] in cities where this religion has at least [3] followers"]
+        "uniques": ["[+1 Happiness] from every [Shrine] <in cities where this religion has at least [3] followers>"]
     },
     {
         "name": "Cathedrals",
@@ -133,7 +133,7 @@
     {
         "name": "Choral Music",
         "type": "Follower",
-        "uniques": ["[+2 Culture] from every [Temple] in cities where this religion has at least [5] followers"]
+        "uniques": ["[+2 Culture] from every [Temple] <in cities where this religion has at least [5] followers>"]
     },
     {
         "name": "Divine inspiration",
@@ -158,7 +158,7 @@
     {
         "name": "Liturgical Drama",
         "type": "Follower",
-        "uniques": ["[+1 Faith] from every [Amphitheatre] in cities where this religion has at least [3] followers"]
+        "uniques": ["[+1 Faith] from every [Amphitheater] <in cities where this religion has at least [3] followers>"]
     },
     {
         "name": "Monasteries",
@@ -188,7 +188,7 @@
     {
         "name": "Religious Center",
         "type": "Follower",
-        "uniques": ["[+2 Happiness] from every [Temple] in cities where this religion has at least [5] followers"]
+        "uniques": ["[+2 Happiness] from every [Temple] <in cities where this religion has at least [5] followers>"]
     },
     {
         "name": "Religious Community",
@@ -285,12 +285,12 @@
     {
         "name": "Religious Texts",
         "type": "Enhancer",
-        "uniques": ["[+34]% Natural religion spread [in all cities]", "[+34]% Natural religion spread [in all cities] with [Printing Press]"]
+        "uniques": ["[+34]% Natural religion spread [in all cities]", "[+34]% Natural religion spread [in all cities] <after discovering [Printing Press]>"]
     },
     {
         "name": "Religious Unity",
         "type": "Enhancer",
-        "uniques": ["[+100]% Natural religion spread to [in City-State cities]"]
+        "uniques": ["[+100]% Natural religion spread [in City-State cities]"]
     },
     {
         "name": "Reliquary",

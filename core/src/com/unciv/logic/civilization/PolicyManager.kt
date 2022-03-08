@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.logic.map.MapSize
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.Policy.PolicyBranchType
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
@@ -54,8 +55,9 @@ class PolicyManager {
 
     fun addPolicyToTransients(policy: Policy) {
         for (unique in policy.uniqueObjects) {
-            // Should be replaced with a conditional of the same form later
-            if (!unique.text.contains(turnCountRegex))
+            // Should be deprecated together with TimedAttackStrength so I'm putting this here so the compiler will complain if we don't
+            val rememberToDeprecate = UniqueType.TimedAttackStrength
+            if (!unique.text.contains(turnCountRegex) && unique.conditionals.none { it.type == UniqueType.ConditionalTimedUnique })
                 policyUniques.addUnique(unique)
         }
     }
@@ -87,11 +89,7 @@ class PolicyManager {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities))
             cityModifier *= 1 - unique.params[0].toFloat() / 100
-        // Deprecated since 3.18.17
-            for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostDeprecated))
-                policyCultureCost *= 1 - unique.params[0].toFloat() / 100
-        //
-        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost) + civInfo.getMatchingUniques(UniqueType.LessPolicyCostDeprecated2))
+        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost))
             policyCultureCost *= unique.params[0].toPercent()
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
@@ -117,6 +115,8 @@ class PolicyManager {
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (checkEra && civInfo.gameInfo.ruleSet.eras[policy.branch.era]!!.eraNumber > civInfo.getEraNumber()) return false
         if (policy.getMatchingUniques(UniqueType.IncompatibleWith).any { adoptedPolicies.contains(it.params[0]) }) return false
+        if (policy.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
+                .any { !it.conditionalsApply(civInfo) }) return false
         return true
     }
 

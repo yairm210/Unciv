@@ -182,7 +182,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         class IconTable: Table() {
             override fun draw(batch: Batch?, parentAlpha: Float) { super.draw(batch, parentAlpha) }
         }
-        val iconTable = IconTable()
+        val iconTable = IconTable().apply { isTransform = false }
         iconTable.touchable = Touchable.enabled
         iconTable.background = ImageGetter.getRoundedEdgeRectangle(city.civInfo.nation.getOuterColor())
 
@@ -398,7 +398,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
                     (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
             val productionBar = ImageGetter.getProgressBarVertical(2f, groupHeight, constructionPercentage,
-                    Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.BLACK)
+                    Color.BROWN.brighten(0.5f), Color.BLACK)
             productionBar.x = 10f
             label.x = productionBar.x - label.width - 3
             group.addActor(productionBar)
@@ -500,6 +500,10 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) {
         super.draw(batch, parentAlpha)
+    }
+
+    override fun act(delta: Float) {
+        return // actions should only be for the CityButtonLayerGroup
     }
 
 }

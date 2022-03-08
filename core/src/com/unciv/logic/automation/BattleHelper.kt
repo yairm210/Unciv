@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.ICombatant
@@ -39,24 +40,21 @@ object BattleHelper {
     ): ArrayList<AttackableTile> {
         val tilesWithEnemies = (tilesToCheck ?: unit.civInfo.viewableTiles)
             .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
+            // Filter out invalid Civilian Captures
             .filterNot {
                 val mapCombatant = Battle.getMapCombatantOfTile(it)
                 // IF all of these are true, THEN the action we'll be taking is in fact CAPTURING the civilian.
                 unit.baseUnit.isMelee() && mapCombatant is MapUnitCombatant && mapCombatant.unit.isCivilian()
                         // If we can't pass though that tile, we can't capture the civilian "remotely"
-                        // DO NOT use "!unit.movement.canPassThrough(it)" since then we won't be able to
-                        // capture enemy units since we can't move through them!
-                        && !it.canCivPassThrough(unit.civInfo)
+                        // Can use "unit.movement.canPassThrough(it)" now that we can move through
+                        // unguarded Civilian tiles. And this catches Naval trying to capture Land
+                        // Civilians or Land attacking Water Civilians it can't Embark on
+                        && !unit.movement.canPassThrough(it)
             }
 
         val rangeOfAttack = unit.getRange()
 
         val attackableTiles = ArrayList<AttackableTile>()
-        // The >0.1 (instead of >0) solves a bug where you've moved 2/3 road tiles,
-        // you come to move a third (distance is less that remaining movements),
-        // and then later we round it off to a whole.
-        // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
-        // Silly floats, basically
 
         val unitMustBeSetUp = unit.hasUnique(UniqueType.MustSetUp)
         val tilesToAttackFrom = if (stayOnTile || unit.baseUnit.movesLikeAirUnits())
@@ -73,15 +71,15 @@ object BattleHelper {
                         unit.currentMovement - distance.totalDistance - movementPointsToExpendBeforeAttack
                     Pair(tile, movementLeft)
                 }
-                // still got leftover movement points after all that, to attack (0.1 is because of Float nonsense, see MapUnit.moveToTile(...)
-                .filter { it.second > 0.1f }
+                // still got leftover movement points after all that, to attack
+                .filter { it.second > Constants.minimumMovementEpsilon }
                 .filter {
                     it.first == unit.getTile() || unit.movement.canMoveTo(it.first)
                 }
 
         for ((reachableTile, movementLeft) in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.baseUnit.movesLikeAirUnits())
+                if (unit.hasUnique(UniqueType.IndirectFire) || unit.baseUnit.movesLikeAirUnits())
                     reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.getViewableTilesList(rangeOfAttack)
                     .asSequence()
@@ -109,8 +107,8 @@ object BattleHelper {
             return false
 
         if (combatant is MapUnitCombatant &&
-            combatant.unit.hasUnique("Can only attack [] tiles") &&
-            combatant.unit.getMatchingUniques("Can only attack [] tiles").none { tile.matchesFilter(it.params[0]) }
+            combatant.unit.getMatchingUniques(UniqueType.CanOnlyAttackTiles)
+                .let { unique -> unique.any() && unique.none { tile.matchesFilter(it.params[0]) } }
         )
             return false
 

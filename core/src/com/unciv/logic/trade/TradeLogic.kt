@@ -28,8 +28,9 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
 
         for (entry in civInfo.getCivResourcesWithOriginsForTrade()
-                .filterNot { it.resource.resourceType == ResourceType.Bonus }
-                .filter { it.origin == "Tradable" } ) {
+            .filterNot { it.resource.resourceType == ResourceType.Bonus }
+            .filter { it.origin == "Tradable" }
+        ) {
             val resourceTradeType = if (entry.resource.resourceType == ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource
             offers.add(TradeOffer(entry.resource.name, resourceTradeType, entry.amount))
@@ -47,7 +48,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         val otherCivsWeKnow = civInfo.getKnownCivs()
             .filter { it.civName != otherCivilization.civName && it.isMajorCiv() && !it.isDefeated() }
 
-        if (civInfo.gameInfo.ruleSet.modOptions.uniqueObjects.any{ it.placeholderText == ModOptionsConstants.tradeCivIntroductions }) {
+        if (civInfo.gameInfo.ruleSet.modOptions.hasUnique(ModOptionsConstants.tradeCivIntroductions)) {
             val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
             for (thirdCiv in civsWeKnowAndTheyDont) {
@@ -56,7 +57,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
 
         if (!civInfo.isCityState() && !otherCivilization.isCityState()
-                && !civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+                && !civInfo.gameInfo.ruleSet.modOptions.hasUnique(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
             val civsWeBothKnow = otherCivsWeKnow
                     .filter { otherCivilization.diplomacy.containsKey(it.civName) }
             val civsWeArentAtWarWith = civsWeBothKnow

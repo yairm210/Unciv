@@ -212,33 +212,33 @@ class WorkerAutomation(
                 }
             while (true) {
                 for (cityTile in cityTilesToSeek) {
-                    if (bfs.hasReachedTile(cityTile)) { // we have a winner!
-                        val pathToCity = bfs.getPathTo(cityTile)
-                        val roadableTiles = pathToCity.filter { it.roadStatus < bestRoadAvailable }
-                        val tileToConstructRoadOn: TileInfo
-                        if (currentTile in roadableTiles) tileToConstructRoadOn =
-                            currentTile
-                        else {
-                            val reachableTile = roadableTiles
-                                .sortedBy { it.aerialDistanceTo(unit.getTile()) }
-                                .firstOrNull {
-                                    unit.movement.canMoveTo(it) && unit.movement.canReach(
-                                        it
-                                    )
-                                }
-                                ?: continue
-                            tileToConstructRoadOn = reachableTile
-                            unit.movement.headTowards(tileToConstructRoadOn)
-                        }
-                        if (unit.currentMovement > 0 && currentTile == tileToConstructRoadOn
-                            && currentTile.improvementInProgress != bestRoadAvailable.name) {
-                            val improvement = bestRoadAvailable.improvement(ruleSet)!!
-                            tileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo)
-                        }
-                        if (WorkerAutomationConst.consoleOutput)
-                            println("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} to ${cityTile.getCity()!!.name} on $tileToConstructRoadOn")
-                        return true
+                    if (!bfs.hasReachedTile(cityTile)) continue
+                    // we have a winner!
+                    val pathToCity = bfs.getPathTo(cityTile)
+                    val roadableTiles = pathToCity.filter { it.roadStatus < bestRoadAvailable }
+                    val tileToConstructRoadOn: TileInfo
+                    if (currentTile in roadableTiles) tileToConstructRoadOn =
+                        currentTile
+                    else {
+                        val reachableTile = roadableTiles
+                            .sortedBy { it.aerialDistanceTo(unit.getTile()) }
+                            .firstOrNull {
+                                unit.movement.canMoveTo(it) && unit.movement.canReach(
+                                    it
+                                )
+                            }
+                            ?: continue
+                        tileToConstructRoadOn = reachableTile
+                        unit.movement.headTowards(tileToConstructRoadOn)
                     }
+                    if (unit.currentMovement > 0 && currentTile == tileToConstructRoadOn
+                        && currentTile.improvementInProgress != bestRoadAvailable.name) {
+                        val improvement = bestRoadAvailable.improvement(ruleSet)!!
+                        tileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo)
+                    }
+                    if (WorkerAutomationConst.consoleOutput)
+                        println("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} to ${cityTile.getCity()!!.name} on $tileToConstructRoadOn")
+                    return true
                 }
                 if (bfs.hasEnded()) break
                 bfs.nextStep()
@@ -282,29 +282,25 @@ class WorkerAutomation(
      * Tests if tile can be improved by a specific unit, or if no unit is passed, any unit at all
      * (but does not check whether the ruleset contains any unit capable of it)
      */
-    private fun tileCanBeImproved(unit: MapUnit?, tile: TileInfo): Boolean {
+    private fun tileCanBeImproved(unit: MapUnit, tile: TileInfo): Boolean {
         if (!tile.isLand || tile.isImpassible() || tile.isCityCenter())
             return false
         val city = tile.getCity()
         if (city == null || city.civInfo != civInfo)
             return false
         if (tile.improvement != null && !UncivGame.Current.settings.automatedWorkersReplaceImprovements) {
-            if (unit != null) {
-                if (unit.civInfo.isPlayerCivilization())
-                    return false
-            } else if (UncivGame.Current.gameInfo.currentPlayerCiv.isPlayerCivilization())
+            if (unit.civInfo.isPlayerCivilization())
                 return false
         }
 
         if (tile.improvement == null) {
-            if (unit == null) return true
             if (tile.improvementInProgress != null && unit.canBuildImprovement(tile.getTileImprovementInProgress()!!, tile)) return true
             val chosenImprovement = chooseImprovement(unit, tile)
             if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo) && unit.canBuildImprovement(chosenImprovement, tile)) return true
             
         } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
             && tile.tileResource.improvement != tile.improvement
-            && (unit == null || chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
+            && (chooseImprovement(unit, tile) // if the chosen improvement is not null and buildable
                 .let { it != null && tile.canBuildImprovement(it, civInfo) && unit.canBuildImprovement(it, tile)}))
             return true
         return false // couldn't find anything to construct here
@@ -442,7 +438,7 @@ class WorkerAutomation(
             if (closeTile.isCityCenter()) return false
             // don't build forts too close to other forts
             if (closeTile.improvement != null
-                && closeTile.getTileImprovement()!!.uniqueObjects.any { it.placeholderText == "Gives a defensive bonus of []%" }
+                && closeTile.getTileImprovement()!!.hasUnique("Gives a defensive bonus of []%")
                 || closeTile.improvementInProgress != Constants.fort) return false
             // there is another better tile for the fort
             if (!tile.isHill() && closeTile.isHill() &&

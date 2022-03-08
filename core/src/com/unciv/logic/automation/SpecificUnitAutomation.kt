@@ -1,24 +1,18 @@
 ﻿package com.unciv.logic.automation
 
-import com.badlogic.gdx.math.Vector2
-import com.unciv.Constants
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.ReligionManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.TileMap
 import com.unciv.models.UnitAction
-import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 import kotlin.math.max
 import kotlin.math.min
@@ -157,6 +151,7 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
+        val modConstants = unit.civInfo.gameInfo.ruleSet.modOptions.constants
         if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
             && !unit.civInfo.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
             && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
@@ -165,17 +160,18 @@ object SpecificUnitAutomation {
             for (city in unit.civInfo.gameInfo.getCities()) {
                 val center = city.getCenterTile()
                 if (unit.civInfo.knows(city.civInfo) &&
-                            // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                            city.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
-                        ) {
+                    // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
+                    city.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
+                ) {
                     yieldAll(center.getTilesInDistance(6))
                     continue
                 }
-                for (tile in center.getTilesAtDistance(3)) {
-                    if (tile.getContinent() == center.getContinent())
-                        yield(tile)
-                }
-                yieldAll(center.getTilesInDistance(2))
+                yieldAll(center.getTilesInDistance(modConstants.minimalCityDistance)
+                    .filter { it.getContinent() == center.getContinent() }
+                )
+                yieldAll(center.getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
+                    .filter { it.getContinent() != center.getContinent() }
+                )
             }
         }.toSet()
 
@@ -253,9 +249,7 @@ object SpecificUnitAutomation {
         val relatedStat = improvement.maxByOrNull { it.value }?.key ?: Stat.Culture
 
         val citiesByStatBoost = unit.civInfo.cities.sortedByDescending {
-            val stats = Stats()
-            for (bonus in it.cityStats.statPercentBonusList.values) stats.add(bonus)
-            stats[relatedStat]
+            it.cityStats.statPercentBonusTree.totalStats[relatedStat]
         }
 
 

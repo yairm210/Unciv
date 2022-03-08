@@ -40,7 +40,7 @@ object GameStarter {
             gameSetupInfo.gameParameters.baseRuleset = baseRulesetInMods
 
         if (!RulesetCache.containsKey(gameSetupInfo.gameParameters.baseRuleset))
-            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getBaseRuleset().name
+            gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getVanillaRuleset().name
         
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)
@@ -96,6 +96,10 @@ object GameStarter {
             addCivStats(gameInfo)
         }
 
+        runAndMeasure("Policies") {
+            addCivPolicies(gameInfo, ruleset)
+        }
+
         if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
             runAndMeasure("assignContinents") {
                 tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
@@ -149,7 +153,7 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech)
 
             // generic start with technology unique
-            for (unique in civInfo.getMatchingUniques("Starts with []")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithTech)) {
                 // get the parameter from the unique
                 val techName = unique.params[0]
 
@@ -170,6 +174,26 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech.name)
 
             civInfo.popupAlerts.clear() // Since adding technologies generates popups...
+        }
+    }
+
+    private fun addCivPolicies(gameInfo: GameInfo, ruleset: Ruleset) {
+        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
+
+            // generic start with policy unique
+            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithPolicy)) {
+                // get the parameter from the unique
+                val policyName = unique.params[0]
+
+                // check if the policy is in the ruleset and not already adopted
+                if (ruleset.policies.containsKey(policyName) && !civInfo.policies.isAdopted(policyName)) {
+                    val policyToAdopt = ruleset.policies[policyName]!!
+                    civInfo.policies.run {
+                        freePolicies++
+                        adopt(policyToAdopt)
+                    }
+                }
+            }
         }
     }
 
@@ -306,7 +330,7 @@ object GameStarter {
             fun getEquivalentUnit(civ: CivilizationInfo, unitParam: String): String? {
                 var unit = unitParam // We want to change it and this is the easiest way to do so
                 if (unit == Constants.eraSpecificUnit) unit = eraUnitReplacement
-                if (unit == "Settler" && "Settler" !in ruleSet.units) {
+                if (unit == Constants.settler && Constants.settler !in ruleSet.units) {
                     val buildableSettlerLikeUnits = 
                         settlerLikeUnits.filter {
                             it.value.isBuildable(civ)

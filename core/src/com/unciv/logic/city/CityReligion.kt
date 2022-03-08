@@ -6,6 +6,8 @@ import com.unciv.models.Counter
 import com.unciv.models.Religion
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.unique.Unique
+import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.utils.toPercent
 
 class CityInfoReligionManager {
     @Transient
@@ -113,7 +115,7 @@ class CityInfoReligionManager {
         
         if (newMajorityReligion in religionsAtSomePointAdopted) return
         
-        val religionOwningCiv = cityInfo.civInfo.gameInfo.getCivilization(newMajorityReligionObject.foundingCivName)
+        val religionOwningCiv = newMajorityReligionObject.getFounder()
         for (unique in newMajorityReligionObject.getFounderUniques()) {
             val statsGranted = when (unique.placeholderText) {
                 "[] when a city adopts this religion for the first time (modified by game speed)" ->
@@ -254,13 +256,15 @@ class CityInfoReligionManager {
 
     private fun getSpreadRange(): Int {
         var spreadRange = 10
-        for (unique in cityInfo.getMatchingUniques("Religion naturally spreads to cities [] tiles away"))
-            spreadRange += unique.params[0].toInt()
         
-        if (getMajorityReligion() != null)
-            for (unique in getMajorityReligion()!!.getFounderUniques()
-                .filter { it.placeholderText == "Religion naturally spreads to cities [] tiles away"}
-            ) spreadRange += unique.params[0].toInt()
+        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.ReligionSpreadDistance)) {
+            spreadRange += unique.params[0].toInt()
+        }
+        
+        if (getMajorityReligion() != null) {
+            for (unique in getMajorityReligion()!!.getFounder().getMatchingUniques(UniqueType.ReligionSpreadDistance))
+                spreadRange += unique.params[0].toInt()
+        }
         
         return spreadRange
     }
@@ -295,17 +299,27 @@ class CityInfoReligionManager {
     
     private fun pressureAmountToAdjacentCities(pressuredCity: CityInfo): Int {
         var pressure = pressureFromAdjacentCities.toFloat()
-        
-        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread []")) {
+
+        // Follower beliefs of this religion
+        for (unique in cityInfo.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrength)) { 
             if (pressuredCity.matchesFilter(unique.params[1]))
-                pressure *= 1f + unique.params[0].toFloat() / 100f
+                pressure *= unique.params[0].toPercent()
         }
-        
-        for (unique in cityInfo.getMatchingUniques("[]% Natural religion spread [] with []"))
-            if (pressuredCity.matchesFilter(unique.params[1]) 
-                && cityInfo.civInfo.hasTechOrPolicy(unique.params[2])
-            ) pressure *= 1f + unique.params[0].toFloat() / 100f
-        
+
+        // Founder beliefs of this religion
+        if (getMajorityReligion() != null) {
+            for (unique in getMajorityReligion()!!.getFounder().getMatchingUniques(UniqueType.NaturalReligionSpreadStrength))
+                if (pressuredCity.matchesFilter(unique.params[1]))
+                    pressure *= unique.params[0].toPercent()
+        }
+
+        // Deprecated since 3.19.3
+            for (unique in cityInfo.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrengthWith))
+                if (pressuredCity.matchesFilter(unique.params[1])
+                    && cityInfo.civInfo.hasTechOrPolicy(unique.params[2])
+                ) pressure *= unique.params[0].toPercent()
+        //
+
         return pressure.toInt()
     }
 }
