@@ -549,35 +549,35 @@
 		"uniques": ["[+30]% Strength decreasing with distance from the capital"]
 	},
 	{
-		"name": "Mohawk Warrior ability",
+		"name": "[Mohawk Warrior] ability",
 		"uniques": ["[+33]% Strength <when fighting in [Forest] tiles>", "[+33]% Strength <when fighting in [Jungle] tiles>"]
 	},
 	{
-		"name": "Jaguar ability",
+		"name": "[Jaguar] ability",
 		"uniques": ["[+33]% Strength <when fighting in [Forest] tiles>", "[+33]% Strength <when fighting in [Jungle] tiles>", "Heals [25] damage if it kills a unit"]
 	},
 	{
-		"name": "Persian Immortal ability",
+		"name": "[Persian Immortal] ability",
 		"uniques": ["[+10] HP when healing"]
 	},
 	{
-		"name": "Conquistador ability",
+		"name": "[Conquistador] ability",
 		"uniques": ["Defense bonus when embarked"]
 	},
 	{
-		"name": "Janissary ability",
+		"name": "[Janissary] ability",
 		"uniques": ["Heals [50] damage if it kills a unit", "[+25]% Strength <when attacking>"]
 	},
 	{
-		"name": "Sipahi ability",
+		"name": "[Sipahi] ability",
 		"uniques": ["No movement cost to pillage"]
 	},
 	{
-		"name": "Cossack ability",
+		"name": "[Cossack] ability",
 		"uniques": ["[+50]% Strength <vs [Wounded] units>"]
 	},
 	{
-		"name": "Norwegian Ski Infantry ability",
+		"name": "[Norwegian Ski Infantry] ability",
 		"uniques": ["[+25]% Strength <when fighting in [Snow] tiles>",
 			"[+25]% Strength <when fighting in [Tundra] tiles>",
 			"[+25]% Strength <when fighting in [Hill] tiles>",
@@ -586,7 +586,7 @@
 			"Double movement in [Hill]"]
 	},
 	{
-		"name": "Zero ability",
+		"name": "[Zero] ability",
 		"uniques": ["[+33]% Strength <vs [Fighter] units>"]
 	}
 ]

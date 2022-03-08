@@ -66,7 +66,7 @@
 		"strength": 8,
 		"cost": 40,
 		"obsoleteTech": "Metal Casting",
-		"promotions": ["Jaguar ability","Woodsman"],
+		"promotions": ["[Jaguar] ability","Woodsman"],
 		"upgradesTo": "Swordsman",
 		"attackSound": "nonmetalhit"
 	},
@@ -252,7 +252,7 @@
 		"obsoleteTech": "Civil Service",
 		"upgradesTo": "Pikeman",
 		"uniques": ["[+50]% Strength <vs [Mounted] units>"],
-		"promotions":["Persian Immortal ability"],
+		"promotions":["[Persian Immortal] ability"],
 		"attackSound": "metalhit"
 	},
 	{
@@ -377,7 +377,7 @@
 		"upgradesTo": "Longswordsman",
 		"obsoleteTech": "Gunpowder",
 		"hurryCostModifier": 20,
-		"promotions": ["Mohawk Warrior ability"],
+		"promotions": ["[Mohawk Warrior] ability"],
 		"attackSound": "metalhit"
 	},
 	/*
@@ -468,7 +468,7 @@
 		"upgradesTo": "Cavalry",
 		"obsoleteTech": "Military Science",
 		"uniques": ["Can move after attacking","No defensive terrain bonus", "Founds a new city <on foreign continents>", "[+2] Sight"],
-		"promotions": ["Conquistador ability"],
+		"promotions": ["[Conquistador] ability"],
 		"attackSound": "horse"
 		//Conquistador should have no penalty attacking cities
 		//Ability to found new cities can only be used on a foreign continent that does not contain the Spanish capital.
@@ -704,7 +704,7 @@
 		"requiredTech": "Gunpowder",
 		"upgradesTo": "Rifleman",
 		"obsoleteTech": "Rifling",
-		"promotions": ["Janissary ability"],
+		"promotions": ["[Janissary] ability"],
 		"attackSound": "shot"
 	},
 	{
@@ -793,7 +793,7 @@
 		"requiredResource": "Horses",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>",
 			"[+1] Sight"],
-		"promotions": ["Sipahi ability","Formation I"],
+		"promotions": ["[Sipahi] ability","Formation I"],
 		"upgradesTo": "Anti-Tank Gun",
 		"obsoleteTech": "Combustion",
 		"attackSound": "horse"
@@ -836,7 +836,7 @@
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Infantry",
-		"promotions": ["Norwegian Ski Infantry ability"],
+		"promotions": ["[Norwegian Ski Infantry] ability"],
 		"attackSound": "shot"
 	},
 	{
@@ -865,7 +865,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Tank",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","[-33]% Strength <vs cities>"],
-		"promotions":["Cossack ability"],
+		"promotions":["[Cossack] ability"],
 		"attackSound": "horse"
 	},
 	{
@@ -1015,7 +1015,7 @@
 		"requiredTech": "Radar",
 		"upgradesTo": "Jet Fighter",
 		"uniques": ["[100]% chance to intercept air attacks", "[+150]% Strength <vs [Bomber] units>", "[+150]% Strength <vs [Helicopter] units>"],
-		"promotions": ["Zero ability"],
+		"promotions": ["[Zero] ability"],
 		"attackSound": "machinegun"
 	},
 	{

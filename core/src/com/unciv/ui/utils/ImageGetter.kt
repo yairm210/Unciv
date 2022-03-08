@@ -281,20 +281,26 @@ object ImageGetter {
     }
 
     fun getPromotionIcon(promotionName: String, size: Float = 30f): Actor {
-        val level = when {
-            promotionName.endsWith(" I") -> 1
-            promotionName.endsWith(" II") -> 2
-            promotionName.endsWith(" III") -> 3
+        val nameWithoutBrackets = promotionName.replace("[", "").replace("]", "")
+
+        var level = when {
+            nameWithoutBrackets.endsWith(" I") -> 1
+            nameWithoutBrackets.endsWith(" II") -> 2
+            nameWithoutBrackets.endsWith(" III") -> 3
             else -> 0
         }
 
-        val basePromotionName = if (level == 0) promotionName
-        else promotionName.substring(0, promotionName.length - level - 1)
+        val basePromotionName = nameWithoutBrackets.dropLast(if (level == 0) 0 else level + 1)
 
-        val circle = ImageAttempter(Unit)
+        val imageAttempter = ImageAttempter(Unit)
+            .tryImage { "UnitPromotionIcons/$nameWithoutBrackets" }
             .tryImage { "UnitPromotionIcons/$basePromotionName" }
             .tryImage { "UnitIcons/${basePromotionName.removeSuffix(" ability")}" }
-            .getImage()
+
+        if (imageAttempter.getPathOrNull() != null && imageAttempter.getPath()!!.endsWith(nameWithoutBrackets))
+            level = 0
+
+        val circle = imageAttempter.getImage()
             .apply { color = colorFromRGB(255, 226, 0) }
             .surroundWithCircle(size)
             .apply { circle.color = colorFromRGB(0, 12, 49) }
