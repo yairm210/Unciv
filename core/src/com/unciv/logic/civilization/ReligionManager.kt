@@ -85,9 +85,7 @@ class ReligionManager {
 
     fun isPickablePantheonBelief(belief: Belief): Boolean {
         if (belief.type != BeliefType.Pantheon) return false
-        if (civInfo.gameInfo.civilizations.any { it.religionManager.religion != null && it.religionManager.religion!!.followerBeliefs.contains(belief.name)})
-            return false
-        return true
+        return (civInfo.gameInfo.civilizations.none { it.religionManager.religion?.followerBeliefs?.contains(belief.name) == true })
     }
 
     fun choosePantheonBelief(belief: Belief) {
