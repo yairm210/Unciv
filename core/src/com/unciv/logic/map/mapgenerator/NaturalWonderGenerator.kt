@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.abs
 import kotlin.math.round
+import kotlin.math.roundToInt
 
 class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
 
@@ -26,7 +27,9 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
             return
         val mapRadius = tileMap.mapParameters.mapSize.radius
         // number of Natural Wonders scales linearly with mapRadius as #wonders = mapRadius * 0.13133208 - 0.56128831
-        val numberToSpawn = round(mapRadius * 0.13133208f - 0.56128831f).toInt()
+        val numberToSpawn = ruleset.modOptions.constants.run {
+            mapRadius * naturalWonderCountMultiplier - naturalWonderCountAddedConstant
+        }.roundToInt()
 
         val spawned = mutableListOf<Terrain>()
         val allNaturalWonders = ruleset.terrains.values
