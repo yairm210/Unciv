@@ -670,7 +670,7 @@ class MapUnit {
             productionPointsToAdd * 2 / 3
         if (productionPointsToAdd > 0) {
             closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-            val locations = LocationAction(listOf(tile.position, closestCity.location))
+            val locations = LocationAction(tile.position, closestCity.location)
             civInfo.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
                 locations, NotificationIcon.Construction
@@ -1066,7 +1066,7 @@ class MapUnit {
             ?: return
         if (damage == 0) return
         health -= damage
-        val locations = LocationAction(listOf(citadelTile.position, currentTile.position))
+        val locations = LocationAction(citadelTile.position, currentTile.position)
         if (health <= 0) {
             civInfo.addNotification(
                 "An enemy [Citadel] has destroyed our [$name]",
