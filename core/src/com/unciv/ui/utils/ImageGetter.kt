@@ -291,10 +291,14 @@ object ImageGetter {
         val basePromotionName = if (level == 0) promotionName
         else promotionName.substring(0, promotionName.length - level - 1)
 
-        val circle = getImage("UnitPromotionIcons/$basePromotionName")
-                .apply { color = colorFromRGB(255, 226, 0) }
-                .surroundWithCircle(size)
-                .apply { circle.color = colorFromRGB(0, 12, 49) }
+        val circle = ImageAttempter(Unit)
+            .tryImage { "UnitPromotionIcons/$basePromotionName" }
+            .tryImage { "UnitIcons/${basePromotionName.removeSuffix(" ability")}" }
+            .getImage()
+            .apply { color = colorFromRGB(255, 226, 0) }
+            .surroundWithCircle(size)
+            .apply { circle.color = colorFromRGB(0, 12, 49) }
+
         if (level != 0) {
             val padding = if (level == 3) 0.5f else 2f
             val starTable = Table().apply { defaults().pad(padding) }
