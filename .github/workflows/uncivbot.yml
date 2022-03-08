@@ -158,7 +158,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - run: |
-          ll
+          ls
+          ls .github
+          ls .github/workflows
           node .github/workflows/createChangelogEntry.js ${{ secrets.ACTIONS_ACCESS_TOKEN }}
 
   merge_translations:
