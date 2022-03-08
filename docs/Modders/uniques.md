@@ -780,6 +780,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Nation
 
+??? example  "Starts with [policy] adopted"
+	Example: "Starts with [Oligarchy] adopted"
+
+	Applicable to: Nation
+
 ## Tech uniques
 ??? example  "Starting tech"
 	Applicable to: Tech

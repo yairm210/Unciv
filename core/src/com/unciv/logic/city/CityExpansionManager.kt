@@ -181,7 +181,7 @@ class CityExpansionManager {
         if (cultureStored >= getCultureToNextTile()) {
             val location = addNewTileWithCulture()
             if (location != null) {
-                val locations = LocationAction(listOf(location, cityInfo.location))
+                val locations = LocationAction(location, cityInfo.location)
                 cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has expanded its borders!", locations, NotificationIcon.Culture)
             }
         }
