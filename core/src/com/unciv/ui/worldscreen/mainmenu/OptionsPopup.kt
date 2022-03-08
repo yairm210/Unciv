@@ -186,7 +186,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
         val continuousRenderingLabel = WrappableLabel(continuousRenderingDescription,
-                tabs.prefWidth, Color.ORANGE.cpy().lerp(Color.WHITE, 0.7f), 14)
+                tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14)
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
     }

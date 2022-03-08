@@ -9,14 +9,11 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addBorderAllowOpacity
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen.skin) {
     init {
-        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
     }
 
     internal fun updateTileTable(tile: TileInfo?) {

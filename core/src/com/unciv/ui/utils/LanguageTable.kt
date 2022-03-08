@@ -11,7 +11,7 @@ import java.util.ArrayList
 /** Represents a row in the Language picker, used both in OptionsPopup and in LanguagePickerScreen */
 internal class LanguageTable(val language:String, val percentComplete: Int): Table(){
     private val blue = ImageGetter.getBlue()
-    private val darkBlue = blue.cpy().lerp(Color.BLACK,0.5f)!!
+    private val darkBlue = blue.darken(0.5f)!!
 
     init{
         pad(10f)

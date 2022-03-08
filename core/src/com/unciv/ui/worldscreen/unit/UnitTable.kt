@@ -59,7 +59,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     init {
         pad(5f)
         touchable = Touchable.enabled
-        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
 
         promotionsTable.touchable=Touchable.enabled
 

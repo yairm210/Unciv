@@ -164,7 +164,7 @@ class TechPickerScreen(
             var text = techName.tr()
 
             if (techName == selectedTech?.name && techButton.color != currentTechColor) {
-                techButton.color = techButton.color.cpy().lerp(Color.BLACK, 0.5f)
+                techButton.color = techButton.color.darken(0.5f)
             }
 
             techButton.orderIndicator?.remove()
