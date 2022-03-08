@@ -157,7 +157,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-      - run: node .github/workflows/createChangelogEntry.js ${{ secrets.ACTIONS_ACCESS_TOKEN }}
+      - run: |
+          ll
+          node .github/workflows/createChangelogEntry.js ${{ secrets.ACTIONS_ACCESS_TOKEN }}
 
   merge_translations:
     if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
