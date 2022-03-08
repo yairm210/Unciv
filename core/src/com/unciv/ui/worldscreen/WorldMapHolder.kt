@@ -130,7 +130,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         actor = tileGroupMap
 
-        setSize(worldScreen.stage.width * 2, worldScreen.stage.height * 2)
+        setSize(worldScreen.stage.width * 4, worldScreen.stage.height * 4)
         setOrigin(width / 2, height / 2)
         center(worldScreen.stage)
 
@@ -704,6 +704,15 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     override fun zoom(zoomScale: Float) {
         super.zoom(zoomScale)
         val scale = 1 / scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
+//        if (scale >= 2) {
+//            setSize(worldScreen.stage.width * 4, worldScreen.stage.height * 4)
+//            setOrigin(width / 2, height / 2)
+//            center(worldScreen.stage)
+//        }else {
+//            setSize(worldScreen.stage.width * 2, worldScreen.stage.height * 2)
+//            setOrigin(width / 2, height / 2)
+//            center(worldScreen.stage)
+//        }
         if (scale >= 1)
             for (tileGroup in allWorldTileGroups)
                 tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
