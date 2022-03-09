@@ -150,8 +150,8 @@ jobs:
               core.setFailed(`Failed at: ${process.env.WIKIBOT_STATUS}.`)
             }
 
-  summary:
-    if: github.event_name == 'issue_comment' && github.event.comment.body == 'summary' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+  prepare_version_for_rollout:
+    if: github.event_name == 'issue_comment' && (github.event.comment.body == 'summary' || github.event.comment.body == 'prepare version') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
     # This is the only place I could find an apparent list of valid author associations. Also, at least they're not case-sensitive: https://docs.github.com/en/graphql/reference/enums#commentauthorassociation https://docs.github.com/en/actions/learn-github-actions/expressions#contains
     runs-on: ubuntu-latest
     steps:
@@ -167,7 +167,7 @@ jobs:
           
       - uses: EndBug/add-and-commit@v8 # You can change this to use a specific version.
         with:
-          new_branch: changelog
+          new_branch: version_rollout
 
   merge_translations:
     if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
