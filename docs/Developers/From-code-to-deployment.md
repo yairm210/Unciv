@@ -17,6 +17,7 @@ The process has two major parts, one is "Getting your code in the main repositor
 ## Deploying versions
 
 When I'm ready to release a new version I:
+
 * Comment "prepare version" in one of the open PRs tagged as 'mergeable translation' to trigger the translation branch creation.
   This also bumps the versions in the buildConfig.kt file, and generates a starting version summary in changelog.md.
   Merge the PR and delete the branch (so next version branch starts fresh)
@@ -31,15 +32,15 @@ When I'm ready to release a new version I:
    * Send an announcement on the Discord server of the version release and release notes via webhook
    * Pack, Sign, and Upload a new APK to the Google Play Console at 10% rollout
 * The F-Droid bot checks periodically if we added a new tag. When it recognizes that we did, it will update the [yaml file here](https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/com.unciv.app.yml)
-   * When the bot next runs and sees that there's a version it doesn't have a release for, it will attempt to build the new release. The log of the build will be added [here](https://f-droid.org/wiki/page/com.unciv.app/lastbuild) (redirects to the latest build), and the new release will eventually be available [here](https://f-droid.org/en/packages/com.unciv.app/)
+   * When the bot next runs and sees that there's a version it doesn't have a release for, it will attempt to build the new release. The log of the build will be added [here](https://monitor.f-droid.org/builds/running), and the new release will eventually be available [here](https://f-droid.org/en/packages/com.unciv.app/)
 
 ## About Google Play publishing
 
-+We start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.
-+
-+If there were problems, we halt the current rollout, fix the problems, and release a patch version, which starts at 10% again.
-+
-+Dear future me - the automation was extremely annoying guesswork to set up, so the facts you need to know are:
+We start at a 10% rollout, after a day with no major problems go to 30%, and after another day to 100%. If you were counting that means that most players will get the new version after 2+ days.
+
+If there were problems, we halt the current rollout, fix the problems, and release a patch version, which starts at 10% again.
+
+Dear future me - the automation was extremely annoying guesswork to set up, so the facts you need to know are:
 - There is a user at the [Google Cloud Platform Account Manager](https://console.cloud.google.com/iam-admin/iam) called  Unciv_Upload_Account. There is an access key to this account, in json, stored as the Github secret GOOGLE_PLAY_SERVICE_ACCOUNT_JSON.
 - This user was granted ADMIN permissions to the Google Play (after much trial and error since nothing else seemed to work) under User > Users and Permissions. Under Manage > Account permissions, you can see that it has Admin.
 

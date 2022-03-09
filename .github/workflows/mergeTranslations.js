@@ -57,10 +57,10 @@ async function main(){
     console.log("Current sha: " + currentSha)
     
     await github.git.createRef({...repo,
-      ref: `refs/heads/`+branch_to_merge_to,
+      ref: `refs/heads/` + branch_to_merge_to,
       sha: currentSha })
     
-    if (issue_to_comment_on!=0)
+    if (issue_to_comment_on != 0)
         await github.issues.createComment({...repo,
         issue_number: issue_to_comment_on,
         body: 'Translations branch created' })
@@ -108,7 +108,7 @@ async function main(){
         head: branch_to_merge_to,
         base: defaultBranch });
 
-        if (issue_to_comment_on!=0)
+        if (issue_to_comment_on != 0)
             await github.issues.createComment({...repo,
                 issue_number: issue_to_comment_on,
                 body: 'Version rollout PR created' });
