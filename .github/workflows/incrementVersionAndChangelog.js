@@ -43,11 +43,13 @@ async function main(){
         if (commitMessage.startsWith("Merge ") || commitMessage.startsWith("Update ")) return
         commitMessage = commitMessage.replace(/\(\#\d+\)/,"").replace(/\#\d+/,"") // match PR auto-text, like (#2345) or just #2345
         if (author != "yairm210"){
-        if (ownerToCommits[author] == undefined) ownerToCommits[author]=[]
-        ownerToCommits[author].push(commitMessage)
+            if (ownerToCommits[author] == undefined) ownerToCommits[author]=[]
+            ownerToCommits[author].push(commitMessage)
+            }
+            else commitSummary += "\n\n" + commitMessage
         }
-        else commitSummary += "\n\n" + commitMessage
-    });
+    );
+    
     Object.entries(ownerToCommits).forEach(entry => {
         const [author, commits] = entry;
         if (commits.length==1) commitSummary += "\n\n" + commits[0] + " - By "+author
