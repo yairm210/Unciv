@@ -159,7 +159,10 @@ jobs:
       - uses: actions/setup-node@v2
       - run: |
           npm i @octokit/rest
-          node .github/workflows/createChangelogEntry.js ${{ secrets.ACTIONS_ACCESS_TOKEN }}
+          node .github/workflows/createChangelogEntry.js
+      - uses: EndBug/add-and-commit@v8 # You can change this to use a specific version.
+        with:
+          new_branch: changelog
 
   merge_translations:
     if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
