@@ -62,8 +62,33 @@ async function main(){
 
     var changelogPath = 'changelog.md'
     var currentChangelog = fs.readFileSync(changelogPath).toString()
-    var newChangelog = textToAddToChangelog + currentChangelog
-    fs.writeFileSync(changelogPath, newChangelog)
+    if (!currentChangelog.startsWith(textToAddToChangelog)){ // minor idempotency - don't add twice
+        var newChangelog = textToAddToChangelog + currentChangelog
+        fs.writeFileSync(changelogPath, newChangelog)
+    }
+
+    var buildConfigPath = "buildSrc/src/main/kotlin/BuildConfig.kt"
+    var buildConfigString = fs.readFileSync(buildConfigPath).toString()
+
+    console.log("Original: "+buildConfigString)
+
+    // node.js string.match returns a regex string array, where array[0] is the entirety of the captured string, 
+    //  and array[1] is the first group, array[2] is the second group etc.  
+
+    var appVersion = buildConfigString.match(/appVersion = "(.*)"/)
+    if (appVersion != nextVersionString){
+        buildConfigString = buildConfigString.replace(appVersion[0], appVersion[0].replace(appVersion[1], nextVersionString))
+        var androidVersion = buildConfigString.match(/appCodeNumber = (\d*)/)
+        console.log("Android version: "+androidVersion)
+        var nextAndroidVersion = Number(androidVersion[1]) + 1
+        console.log("Next Android version: "+ nextAndroidVersion)
+        buildConfigString = buildConfigString.replace(androidVersion[0],
+             androidVersion[0].replace(androidVersion[1], nextAndroidVersion))
+
+        console.log("Final: "+buildConfigString)
+        fs.writeFileSync(buildConfigPath, buildConfigString)
+    }
+   
 }
 
 main()
