@@ -159,7 +159,8 @@ jobs:
       - uses: actions/setup-node@v2
       - run: |
           npm i @octokit/rest
-          node .github/workflows/createChangelogEntry.js
+
+          node .github/workflows/incrementVersionAndChangelog.js
           
           rm -rf node_modules # Now we need to remove extraneous node.js parts before commit
           rm package-lock.json
@@ -168,6 +169,12 @@ jobs:
       - uses: EndBug/add-and-commit@v8 # You can change this to use a specific version.
         with:
           new_branch: version_rollout
+
+      - name: Add translation PRs to the new branch, and PR the new branch to master
+        run: | 
+          npm i @octokit/rest
+          node .github/workflows/mergeTranslations.js ${{ secrets.ACTIONS_ACCESS_TOKEN }} ${{ github.event.issue.number }} version_rollout
+ 
 
   merge_translations:
     if: github.event_name == 'workflow_dispatch' || (github.event.comment.body == 'merge translations' && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
