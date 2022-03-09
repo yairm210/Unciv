@@ -160,6 +160,10 @@ jobs:
       - run: |
           npm i @octokit/rest
           node .github/workflows/createChangelogEntry.js
+          
+          rm -rf node_modules # Now we need to remove extraneous node.js parts before commit
+          rm package-lock.json
+          
       - uses: EndBug/add-and-commit@v8 # You can change this to use a specific version.
         with:
           new_branch: changelog
