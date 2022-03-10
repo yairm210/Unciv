@@ -31,7 +31,7 @@ class Belief : RulesetObject() {
             textList += FormattedLine()
         }
         if (type != BeliefType.None)
-            textList += FormattedLine("{Type}: $type", color = type.color, centered = withHeader)
+            textList += FormattedLine("{Type}: {$type}", color = type.color, centered = withHeader)
         uniqueObjects.forEach {
             if (!it.hasFlag(UniqueFlag.HiddenToUsers))
                 textList += FormattedLine(it)

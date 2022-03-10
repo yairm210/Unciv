@@ -1,6 +1,7 @@
 package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -44,7 +45,8 @@ class ReligionOverviewTable(
         addSeparator()
         statsTable.defaults().left().pad(5f)
         add(statsTable).row()
-        add(beliefsTable)
+        beliefsTable.defaults().padBottom(20f)
+        add(beliefsTable).pad(20f)
     }
 
     private fun Table.addCivSpecificStats() {
@@ -101,7 +103,7 @@ class ReligionOverviewTable(
         religionButtonLabel.setText(religion.getReligionDisplayName().tr())
 
         for (belief in religion.getAllBeliefsOrdered()) {
-            beliefsTable.add(createBeliefDescription(belief)).pad(10f).row()
+            beliefsTable.add(createBeliefDescription(belief)).row()
         }
 
         statsTable.add((if (religion.isPantheon()) "Pantheon Name:" else "Religion Name:").toLabel())
@@ -131,6 +133,13 @@ class ReligionOverviewTable(
         statsTable.width = minWidth
         for (cell in beliefsTable.cells) {
             cell.minWidth(minWidth)
+        }
+
+        // If we're wider than the container set our ScrollPane to center us
+        (parent as? ScrollPane)?.apply {
+            layout()
+            scrollX = maxX / 2
+            updateVisualScroll()
         }
     }
 
