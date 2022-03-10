@@ -14,7 +14,7 @@ I regret every minute that I spent writing events in Java, this is probably the 
 
 Unless you plan on creating images on the fly, you'll probably be using prerendered assets.
 
-Placing them manually is akin to manually positioning html tags, instead of using html heirarchy and css to guide positions.
+Placing them manually is akin to manually positioning html tags, instead of using html hierarchy and css to guide positions.
 
 So too is Scene2d - as a placement framework. it's relatively simple to understand, especially when you...
 
@@ -33,7 +33,7 @@ The top-down CPU chart is the best code profiler I've ever seen, use it to your 
 ### Cache everything
 
 Caching is a trade-off between purer, state-agnostic code and higher performance.
-Coming from a PC background, I automatically assume that anything less than O(n^2) is less than a milisecond and therefore, not a cachinhg candidate.
+Coming from a PC background, I automatically assume that anything less than O(n^2) is less than a millisecond and therefore, not a caching candidate.
 This is not so in mobile development.
 
 
@@ -52,7 +52,7 @@ One thing I did not expect to be such an issue is intermediate lists when sortin
 
 But apparently, the memory allocation for these tasks is Serious Business.
 
-So whenever possible, take your list and .asSequence() it before actiating list operations - this results in huge savings of both time and memory!
+So whenever possible, take your list and .asSequence() it before activating list operations - this results in huge savings of both time and memory!
 
 The only time you shouldn't be doing this, though, is when you want to cache the specific values for future use -
  sequences will go through the whole process every time you iterate on them, so just .toList() them when you've gotten the final results!
@@ -67,7 +67,7 @@ Documentation is a big issue here, but so are detailed instructions - and I mean
 
 Treat new developers as if they've never used Git before - it's possible they haven't!
 
-Explain how to dowload the sourecode, the tools, how to get the game running locally, how to make changes and how to submit them.
+Explain how to download the sourecode, the tools, how to get the game running locally, how to make changes and how to submit them.
 
 Same think with new players - getting the game up and running should be AS SIMPLE AS HUMANLY POSSIBLE - you want people to play your game, don't you?
 
@@ -87,8 +87,8 @@ It was only after repeated urgings from players that I opened a Discord server -
 
 You see, it's not ABOUT programmer-to-player interaction. There will always be a small number of core devs relative to the large playerbase.
 
-The key to the community is the player-to-player interaction. Explaining things, questions, ideas, things that players bounc off each other,
-not only make the amorphous community a better pllace, but actually lead to a better game!
+The key to the community is the player-to-player interaction. Explaining things, questions, ideas, things that players bounce off each other,
+not only make the amorphous community a better place, but actually lead to a better game!
 
 Another think to remember is that there's a larger community around you - the Open Source community, the Linux community, etc.
 
@@ -103,15 +103,15 @@ For example...
 
 ## Everything is marketing.
 
-Your game's name, the icon, screenshots, everythig a player sees about your game is marketing.
+Your game's name, the icon, screenshots, everything a player sees about your game is marketing.
 
 Icons and bylines are especially important, since they're the first things your players will probably see.
 
-I saw an almost 50% (!) by changing the icon, after seveeral experiments, which Google Play lets you conduct very easily.
+I saw an almost 50% (!) by changing the icon, after several experiments, which Google Play lets you conduct very easily.
 
 ## Translations are part of your source code
 
-This may be slightly contraversial, so I'll explain.
+This may be slightly controversial, so I'll explain.
 
 We went though a number of iterations regarding how to save translations until we arrived at the current format.
 
@@ -120,7 +120,7 @@ The important parts are:
 - Game translation files should be AUTO GENERATED. This allows you to add new objects into the game with impunity,
  knowing that corresponding lines will be auto-added to the translations.
  
-- Translations for each language should be stored separately - this allows concurrent modification of several independant languages with no risk of conflict
+- Translations for each language should be stored separately - this allows concurrent modification of several independent languages with no risk of conflict
 
 - Translations should be PR'd in! This allows other speakers to question or change the proposed translations, and allows you to run tests on your translations.
 If you require a specific format, this is invaluable as it means that bad translations will be rejected at the door.
@@ -129,7 +129,7 @@ If you require a specific format, this is invaluable as it means that bad transl
 
 TL;DR, consider using APIs that are free, even if they're not Open Source.
 
-Multiplayer requires syncing game files beween clients, even when one of them is not currently online.
+Multiplayer requires syncing game files between clients, even when one of them is not currently online.
 
 The 'correct' way to solve this would probably be to have an online DB and a service which handles user requests.
 
@@ -141,7 +141,7 @@ Same thing with Mods. Steam is big and secure so it handles its mods itself.
 
 We are small and open, so we just allow to download from Github, which lets us use all of Github's built in functions (user management, readmes, stars, versioning...) at no extra cost.
 
-And unlike the Dropbox usage, which is basically abuse, Github is built for thiss kind of thing!
+And unlike the Dropbox usage, which is basically abuse, Github is built for this kind of thing!
 This is exactly the kind of use case they were thinking of to start with!
 
 
@@ -166,7 +166,9 @@ And then comes the moment when you ask yourself, why bother? What are we even do
 For me, the answers are as follows:
 
 A. To build something truly great, you have to keep going way beyond when it stops being fun.
+
 B. There's a community of people that like what you're doing and want there to be more of it :)
+
 C. You know you want to keep coding, and what, you think you're going to start another project and it'll work out as well? You've tried that multiple times, and let's face it the chance of you making a second game that goes so well is really small unless you invest in it as much time as you have in this, and yeah, then you'll be back in this position again.
 
 And that's basically the loop I've been in for the last hundred versions or so! Solve bugs, fix edge cases, improve AI, accept PRs. Lots of mod-related changes, both to stop the game breaking when people do things in mods that they shouldn't and to allow them more freedom in making them.
@@ -174,3 +176,4 @@ And that's basically the loop I've been in for the last hundred versions or so! 
 I don't think I'll ever really continue to finish G&K, I'm DEFINITELY not planning on implementing BNW mechanics which frankly I think are...not great.
 
 That's where I am right now. Kind of done with the game, but considering that I thought that half a year ago and releases are still releasing roughly every week, also kind of not.
+

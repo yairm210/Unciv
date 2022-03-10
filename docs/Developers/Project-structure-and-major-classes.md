@@ -8,10 +8,11 @@ The [Desktop](/) and [Android](/) folders contain platform-specific things, and 
 
 The [Test](/com/unciv) folder contains tests that can be run manually via gradle with `./gradlew tests:test`, and are run automatically by Travis for every push.
 
-# Translations
+## Translations
+
 Before we get to the Classes, a word on Languages. Unciv is playable in several handfuls of languages, and there's magic to support that. Whenever you include a new string in code you will need to give it a quick evaluation - will users see it, and if so, what do I need to do to support its translations. Sometimes you may not need to do anything, sometimes you will add a line to the [translation templates](/jsons/translations/template.properties), and sometimes you will adapt the string formatting to support the translations. For details, see [the 'Translation generation - for developers' chapter](../Other/Translating.md#translation-generation---for-developers).
 
-# Major classes
+## Major classes
 
 Civ, and therefore Unciv, is a game with endless interconnectivity - everything affects everything else.
 
@@ -38,9 +39,9 @@ The UI:
 * MapEditorScreen
 * Picker Screens - TechPickerScreen, PolicyPickerScreen, ImprovementPickerScreen, PromotionPickerScreen
 
-# Game State
+## Game State
 
-## The Game - `GameInfo`
+### The Game - `GameInfo`
 
 First off, let's clarify: When we say "The Game", we mean the *state* of the game (what turn it is, who the players are, what each one has etc) and not the *UI* of the game.
 
@@ -57,7 +58,7 @@ When we save the game, or load the game, we're actually serializing and deserial
 
 Most objects in the "state tree" have a transient reference to their parent, meaning the tree can be traversed in-code in all directions, and frequently is.
 
-## A Civilization - `CivilizationInfo`
+### A Civilization - `CivilizationInfo`
 
 This represents one of the players of the game, and NOT a specific nation - meaning, not France, but rather "Player X who is France in this game". In another game, there will be another France.
 
@@ -67,7 +68,7 @@ As one of the focal points of the game, it contains a lot of important informati
  - Which nation this is - references a certain Nation (part of the ruleset)
  - Various Managers for the different aspects of the civilization - `PolicyManager`, `GoldenAgeManager`, `GreatPersonManager`, `TechManager`, `VictoryManager`, `DiplomacyManager`
 
-## A City - `CityInfo`
+### A City - `CityInfo`
 
 This contains the information about a specific city.
 
@@ -77,11 +78,11 @@ Beyond basic information like name, location on map etc, the most important clas
 - Managers for the various aspects - `PopulationManager`, `CityConstructions`, `CityExpansionManager`
 - The tiles controlled and worked by the city - only their locations are permanently saved in the CityInfo, the actual information is in the TileInfo in the TileMap
 
-## The map - `TileMap`
+### The map - `TileMap`
 
 This contains mostly helper functions and acts as a wrapper for the list of tiles it contains
 
-## A tile - `TileInfo`
+### A tile - `TileInfo`
 
 Each tile is comprised of several layers, and so has information for each.
 
@@ -92,7 +93,7 @@ Tiles have, primarily:
 - An improvement built on the tile, if any.  References a certain `TileImprovement` (part of the ruleset)
 - The units that are currently in the tile - `MapUnit`
 
-## A unit on the map - `MapUnit`
+### A unit on the map - `MapUnit`
 
 Unlike buildings, Unit in Unciv has two meanings. One is a *Type* of unit (like Spearman), and one is a specific instance of a unit (say, a Babylonian Spearman, at a certain position, with X health).
 
@@ -103,7 +104,7 @@ Main information:
 - Health and Movement
 - Promotion status - `UnitPromotions`
 
-## Ruleset
+### Ruleset
 
 So far so good - but what of everything that makes Civ, Civ? The units, the buildings, the nations, the improvements etc?
 
@@ -126,17 +127,17 @@ There are also Translations in the Ruleset, but they technically have nothing to
 
 The information for all of these is in json files in `android\assets\jsons`
 
-# UI
+## UI
 
 `UncivGame` is the 'base' class for the UI, from which everything starts, but it itself doesn't do much.
 
 When we change a screen, we're changing a value in UncivGame, the interesting stuff happens in the screens themselves.
 
-## The main menu - `MainMenuScreen`
+### The main menu - `MainMenuScreen`
 
 This is what the user sees when first entering the game. It acts as a hub to loading games, adding mods, options etc, without loading an actual game upfront - this allows us to differentiate between "User can't enter game" and "User can't load game" problems
 
-## Starting a new game - `NewGameScreen`
+### Starting a new game - `NewGameScreen`
 
 This is basically a giant setting screen for GameOptions and MapOptions classes, divided into:
 
@@ -144,7 +145,7 @@ This is basically a giant setting screen for GameOptions and MapOptions classes,
 * MapOptionsTable - either from preexisting map file or generated, in which case: size, map generation type, etc.
 * PlayerPickerTable - What civs are in the game and who controls them
 
-## The World Screen - `WorldScreen`
+### The World Screen - `WorldScreen`
 
 90% of the game is spent on this screen, so naturally it's the fullest, with the most things happening.
 
@@ -157,7 +158,7 @@ Most notable are:
 * Buttons linking to other screens - to the `TechPickerScreen`, `EmpireOverviewScreen`, and `PolicyPickerScreen`
 * The almighty Next Turn button
 
-## The city screen - `CityScreen`
+### The city screen - `CityScreen`
 
 The second-most important screen. 
 
@@ -166,7 +167,7 @@ Notable parts:
 * The construction list and current construction (bottom left) - `ConstructionsTable`
 * Existing buildings, specialists and stats drilldown - `CityInfoTable`
 
-# Others
+## Others
 
 A few words need to be said about the NextTurn process, but there isn't really a good place for it so I'll put it here.
 

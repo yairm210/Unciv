@@ -1,3 +1,13 @@
+## 3.19.16
+
+Wiki improvements
+
+Unique units abilities that should be inherited by upgrades  - By SomeTroglodyte
+
+By SpacedOutChicken:
+- Add Amphibious promotion to Songhai units 
+- Petra fix 
+
 ## 3.19.15
 
 By SomeTroglodyte:

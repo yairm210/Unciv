@@ -201,7 +201,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                         promotions.size == 1 -> "{Free promotion:} "
                         it.index == 0 -> "{Free promotions:} "
                         else -> ""
-                    } + "{${it.value}}" +
+                    } + "{${it.value.tr()}}" +   // tr() not redundant as promotion names now can use []
                             (if (promotions.size == 1 || it.index == promotions.size - 1) "" else ","),
                     link = "Promotions/${it.value}",
                     indent = if (it.index == 0) 0 else 1
