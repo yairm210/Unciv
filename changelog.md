@@ -2,26 +2,6 @@
 
 Wiki improvements
 
-Maybe this will add table of contents correctly?
-
-Readable deployment documentation
-
-Documentation for the rollout changes, and replacing the old translation method with the new one
-
-Converted translation merging to an octokit node.js file for easier configurability, debugging and developing
-
-testy  ()
-
-Prepare next version with node.js - now includes buildConfig values
-
-Node.js script creates new changelog text and adds it to the changelog
-
-Create uncivbot.yml
-
-Testing external changelog generation
-
-Updates summary action to use node.js script
-
 Unique units abilities that should be inherited by upgrades  - By SomeTroglodyte
 
 By SpacedOutChicken:
