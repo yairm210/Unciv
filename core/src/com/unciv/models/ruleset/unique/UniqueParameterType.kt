@@ -33,7 +33,7 @@ enum class UniqueParameterType(var parameterName:String) {
 
     },
     MapUnitFilter("mapUnitFilter") {
-        private val knownValues = setOf("Wounded", "Barbarians", "City-State", "Embarked", "Non-City")
+        private val knownValues = setOf("Wounded", Constants.barbarians, "City-State", "Embarked", "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if ('{' in parameterText) // "{filter} {filter}" for and logic
@@ -138,9 +138,9 @@ enum class UniqueParameterType(var parameterName:String) {
     //
     TerrainFilter("terrainFilter") {
         private val knownValues = setOf("All",
-            "Coastal", "River", "Open terrain", "Rough terrain", "Water resource",
+            Constants.coastal, "River", "Open terrain", "Rough terrain", "Water resource",
             "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
-            "Featureless", "Fresh Water", "Natural Wonder")
+            "Featureless", Constants.freshWaterFilter, "Natural Wonder")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null

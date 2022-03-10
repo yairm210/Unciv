@@ -177,7 +177,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         "Elevated" -> baseTerrain == Constants.mountain || isHill()
         "Water" -> isWater
         "Land" -> isLand
-        "Hill" -> isHill()
+        Constants.hill -> isHill()
         naturalWonder -> true
         in allTerrainFeatures -> getLastTerrain().name == filter
         else -> baseTerrain == filter

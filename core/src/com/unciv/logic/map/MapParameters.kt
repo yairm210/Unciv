@@ -1,11 +1,9 @@
 package com.unciv.logic.map
 
-import com.unciv.Constants
 import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.HexMath.getEquivalentRectangularSize
 import com.unciv.logic.HexMath.getNumberOfTilesInHexagon
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.ruleset.RulesetCache
 
 
 enum class MapSize(val radius: Int, val width: Int, val height: Int) {
@@ -13,7 +11,14 @@ enum class MapSize(val radius: Int, val width: Int, val height: Int) {
     Small(15, 33, 21),
     Medium(20, 44, 29),
     Large(30, 66, 43),
-    Huge(40, 87, 57)
+    Huge(40, 87, 57);
+
+    companion object {
+        /** Not a predefined [MapSize] enum value, but a String
+         * used in [MapParameters.mapSize] to indicate user-defined dimensions.
+         * Do not mistake for [MapType.custom]. */
+        const val custom = "Custom"
+    }
 }
 
 class MapSizeNew {
@@ -46,12 +51,12 @@ class MapSizeNew {
     }
 
     constructor(radius: Int) {
-        name = Constants.custom
+        name = MapSize.custom
         setNewRadius(radius)
     }
 
     constructor(width: Int, height: Int) {
-        name = Constants.custom
+        name = MapSize.custom
         this.width = width
         this.height = height
         this.radius = getEquivalentHexagonalRadius(width, height)
@@ -69,7 +74,7 @@ class MapSizeNew {
      * @return null if size was acceptable, otherwise untranslated reason message
      */
     fun fixUndesiredSizes(worldWrap: Boolean): String? {
-        if (name != Constants.custom) return null  // predefined sizes are OK
+        if (name != MapSize.custom) return null  // predefined sizes are OK
         // world-wrap mas must always have an even width, so round down silently
         if (worldWrap && width % 2 != 0 ) width--
         // check for any bad condition and bail if none of them
@@ -105,7 +110,7 @@ class MapSizeNew {
     }
 
     // For debugging and MapGenerator console output
-    override fun toString() = if (name == Constants.custom) "${width}x${height}" else name
+    override fun toString() = if (name == MapSize.custom) "${width}x${height}" else name
 }
 
 object MapShape {
@@ -151,7 +156,7 @@ class MapParameters {
 
     /** This is used mainly for the map editor, so you can continue editing a map under the same ruleset you started with */
     var mods = LinkedHashSet<String>()
-    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the Rulesetcache is not yet initialized when starting up 
+    var baseRuleset = BaseRuleset.Civ_V_GnK.fullName // Hardcoded as the Rulesetcache is not yet initialized when starting up
 
     /** Unciv Version of creation for support cases */
     var createdWithVersion = ""
@@ -219,7 +224,7 @@ class MapParameters {
     override fun toString() = sequence {
         if (name.isNotEmpty()) yield("\"$name\" ")
         yield("(")
-        if (mapSize.name != Constants.custom) yield(mapSize.name + " ")
+        if (mapSize.name != MapSize.custom) yield(mapSize.name + " ")
         if (worldWrap) yield("wrapped ")
         yield(shape)
         yield(" " + displayMapDimensions())
@@ -229,7 +234,7 @@ class MapParameters {
         yield("$elevationExponent/$temperatureExtremeness/$resourceRichness/$vegetationRichness/")
         yield("$rareFeaturesRichness/$maxCoastExtension/$tilesPerBiomeArea/$waterThreshold")
     }.joinToString("", postfix = ")")
-    
+
     fun numberOfTiles() =
         if (shape == MapShape.hexagonal) {
             1 + 3 * mapSize.radius * (mapSize.radius - 1)

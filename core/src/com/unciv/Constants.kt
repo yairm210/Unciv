@@ -9,7 +9,12 @@ object Constants {
 
     const val impassable = "Impassable"
     const val ocean = "Ocean"
+
+    /** The "Coast" _terrain_ */
     const val coast = "Coast"
+    /** The "Coastal" terrain _filter_ */
+    const val coastal = "Coastal"
+
     const val mountain = "Mountain"
     const val hill = "Hill"
     const val plains = "Plains"
@@ -24,8 +29,12 @@ object Constants {
     const val ice = "Ice"
     val vegetation = arrayOf(forest, jungle)
     val sea = arrayOf(ocean, coast)
-    
+
+    // Note the difference in case. **Not** interchangeable!
+    /** The "Fresh water" terrain _unique_ */
     const val freshWater = "Fresh water"
+    /** The "Fresh Water" terrain _filter_ */
+    const val freshWaterFilter = "Fresh Water"
 
     const val barbarianEncampment = "Barbarian encampment"
 
@@ -41,7 +50,7 @@ object Constants {
     const val futureTech = "Future Tech"
     // Easter egg name. Hopefully is to hopefully avoid conflicts when later players can name their own religions.
     // This religion name should never be displayed.
-    const val noReligionName = "The religion of TheLegend27" 
+    const val noReligionName = "The religion of TheLegend27"
 
     const val cancelImprovementOrder = "Cancel improvement order"
     const val tutorialPopupNamePrefix = "Tutorial: "
@@ -53,7 +62,6 @@ object Constants {
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
-    const val custom = "Custom"
 
     const val rising = "Rising"
     const val lowering = "Lowering"
