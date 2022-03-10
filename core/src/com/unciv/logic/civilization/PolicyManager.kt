@@ -89,11 +89,7 @@ class PolicyManager {
 
         for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostFromCities))
             cityModifier *= 1 - unique.params[0].toFloat() / 100
-        // Deprecated since 3.18.17
-            for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCostDeprecated))
-                policyCultureCost *= 1 - unique.params[0].toFloat() / 100
-        //
-        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost) + civInfo.getMatchingUniques(UniqueType.LessPolicyCostDeprecated2))
+        for (unique in civInfo.getMatchingUniques(UniqueType.LessPolicyCost))
             policyCultureCost *= unique.params[0].toPercent()
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier

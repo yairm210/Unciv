@@ -4,6 +4,7 @@ import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
@@ -81,7 +82,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
         val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
-        val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
+        val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
     }
 
@@ -109,7 +110,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
-        val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
+        val locations = LocationAction(placedLocation, cities.city2.location, city.location)
         receivingCiv.addNotification("[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, civInfo.civName, militaryUnit.name)
     }
 
@@ -348,7 +349,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
 
-        val bullyRange = max(5, civInfo.gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
+        val bullyRange = (civInfo.gameInfo.tileMap.tileMatrix.size / 10).coerceIn(5, 10)   // Longer range for larger maps
         val inRangeTiles = civInfo.getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
             .sumOf { if (it.militaryUnit?.civInfo == demandingCiv)
@@ -650,5 +651,14 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
             )
         }
     }
-
+    
+    fun getCityStateResourcesForAlly(): ResourceSupplyList {
+        val newDetailedCivResources = ResourceSupplyList()
+        for (city in civInfo.cities) {
+            for (resourceSupply in city.getCityResources())
+                if (resourceSupply.amount > 0) // IGNORE the fact that they consume their own resources - #4769
+                    newDetailedCivResources.add(resourceSupply.resource, resourceSupply.amount, "City-States")
+        }
+        return newDetailedCivResources
+    }
 }

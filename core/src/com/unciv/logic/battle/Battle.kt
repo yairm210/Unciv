@@ -313,11 +313,7 @@ object Battle {
             val notificationString = attackerString + whatHappenedString + defenderString
             val attackerIcon = if (attacker is CityCombatant) NotificationIcon.City else attacker.getName()
             val defenderIcon = if (defender is CityCombatant) NotificationIcon.City else defender.getName()
-            val locations = LocationAction (
-                if (attackerTile != null && attackerTile.position != attackedTile.position)
-                        listOf(attackedTile.position, attackerTile.position)
-                else listOf(attackedTile.position)
-            )
+            val locations = LocationAction(attackedTile.position, attackerTile?.position)
             defender.getCivInfo().addNotification(notificationString, locations, attackerIcon, whatHappenedIcon, defenderIcon)
         }
     }
@@ -338,7 +334,7 @@ object Battle {
 
             // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
             if (defender.isDefeated()
-                    && attacker.getCivInfo().hasUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
+                    && attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitBarbarianFromEncampment)
                     && Random().nextDouble() < 0.67) {
                 attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
                 attacker.getCivInfo().addGold(25)
@@ -350,7 +346,7 @@ object Battle {
         }
 
         // Similarly, Ottoman unique
-        if (attacker.getCivInfo().hasUnique("50% chance of capturing defeated Barbarian naval units and earning 25 Gold")
+        if (attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitNavalBarbarian)
                 && defender.isDefeated()
                 && defender is MapUnitCombatant
                 && defender.unit.baseUnit.isWaterUnit()
@@ -712,14 +708,13 @@ object Battle {
         }
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
-            if (tile.terrainFeatures.any { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.ResistsNukes) }) {
-                if (Random().nextFloat() < 0.25f) {
-                    tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
-                    tile.terrainFeatures.add("Fallout")
-                }
-            } else if (Random().nextFloat() < 0.5f) {
-                tile.terrainFeatures.removeAll { attacker.getCivInfo().gameInfo.ruleSet.terrains[it]!!.hasUnique(UniqueType.DestroyableByNukes) }
-                tile.terrainFeatures.add("Fallout")
+            val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
+            else 0.5f
+            if (Random().nextFloat() < destructionChance) {
+                for (terrainFeature in tile.terrainFeatureObjects)
+                    if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
+                        tile.removeTerrainFeature(terrainFeature.name)
+                tile.addTerrainFeature("Fallout")
             }
         }
     }
@@ -774,38 +769,17 @@ object Battle {
 
             val attackerName = attacker.getName()
             val interceptorName = interceptor.name
-            val locations = LocationAction(
-                listOf(
-                    interceptor.currentTile.position,
-                    attacker.unit.currentTile.position
-                )
-            )
-
-            if (attacker.isDefeated()) {
-                attacker.getCivInfo()
-                    .addNotification(
-                        "Our [$attackerName] was destroyed by an intercepting [$interceptorName]",
-                        interceptor.currentTile.position, attackerName, NotificationIcon.War,
-                        interceptorName
-                    )
-                interceptingCiv
-                    .addNotification(
-                        "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]",
-                        locations, interceptorName, NotificationIcon.War, attackerName
-                    )
-            } else {
-                attacker.getCivInfo()
-                    .addNotification(
-                        "Our [$attackerName] was attacked by an intercepting [$interceptorName]",
-                        interceptor.currentTile.position, attackerName,NotificationIcon.War,
-                        interceptorName
-                    )
-                interceptingCiv
-                    .addNotification(
-                        "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]",
-                        locations, interceptorName, NotificationIcon.War, attackerName
-                    )
-            }
+            val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
+            val attackerText = if (attacker.isDefeated())
+                "Our [$attackerName] was destroyed by an intercepting [$interceptorName]"
+                else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
+            val interceptorText = if (attacker.isDefeated())
+                "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
+                else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
+            attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
+                attackerName, NotificationIcon.War, interceptorName)
+            interceptingCiv.addNotification(interceptorText, locations,
+                interceptorName, NotificationIcon.War, attackerName)
             return
         }
     }
@@ -860,7 +834,7 @@ object Battle {
 
         val attackingUnit = attackBaseUnit.name; val defendingUnit = defendBaseUnit.name
         val notificationString = "[$defendingUnit] withdrew from a [$attackingUnit]"
-        val locations = LocationAction(listOf(toTile.position, attacker.getTile().position))
+        val locations = LocationAction(toTile.position, attacker.getTile().position)
         defender.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit)
         attacker.getCivInfo().addNotification(notificationString, locations, defendingUnit, NotificationIcon.War, attackingUnit)
         return true

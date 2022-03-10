@@ -351,34 +351,33 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         val civInfo = cityConstructions.cityInfo.civInfo
+        for (unique in uniqueObjects) {
+            when (unique.placeholderText) {
+                UniqueType.OnlyAvailableWhen.placeholderText -> if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
+                    rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-        for (unique in uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }){
-            if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
-                rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
+                UniqueType.NotDisplayedWithout.placeholderText -> {
+                    val filter = unique.params[0]
+                    if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
+                            || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
+                        rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
+                }
+
+                UniqueType.RequiresPopulation.placeholderText -> if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
+                    rejectionReasons.add(RejectionReason.PopulationRequirement.apply { errorMessage = unique.text })
+            }
         }
-        
-        for (unique in getMatchingUniques(UniqueType.NotDisplayedWithout)) {
-            val filter = unique.params[0]
-            if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
-                    || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
-                rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
-        }
+
         val civRejectionReasons = getRejectionReasons(civInfo)
         if (civRejectionReasons.isNotEmpty()) {
             rejectionReasons.addAll(civRejectionReasons)
         }
-        for (unique in getMatchingUniques(UniqueType.RequiresPopulation))
-            if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
-                rejectionReasons.add(RejectionReason.PopulationRequirement.apply { errorMessage = unique.text })
         return rejectionReasons
     }
 
     fun getRejectionReasons(civInfo: CivilizationInfo): RejectionReasons {
         val rejectionReasons = RejectionReasons()
         val ruleSet = civInfo.gameInfo.ruleSet
-
-        if (hasUnique(UniqueType.Unbuildable))
-            rejectionReasons.add(RejectionReason.Unbuildable)
 
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
             rejectionReasons.add(RejectionReason.RequiresTech.apply { this.errorMessage = "$requiredTech not researched" }) 
@@ -393,21 +392,35 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-        for (unique in getMatchingUniques("Unlocked with []") + getMatchingUniques("Requires []")) {
-            val filter = unique.params[0]
-            when {
-                ruleSet.technologies.contains(filter) -> 
-                    if (!civInfo.tech.isResearched(filter)) 
-                        rejectionReasons.add(RejectionReason.RequiresTech.apply { errorMessage = unique.text })
-                ruleSet.policies.contains(filter) ->
-                    if (!civInfo.policies.isAdopted(filter))
-                        rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
-                ruleSet.eras.contains(filter) ->
-                    if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
-                        rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
-                ruleSet.buildings.contains(filter) ->
-                    if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
-                        rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = unique.text })
+        for (unique in uniqueObjects) {
+            when (unique.placeholderText) {
+                UniqueType.Unbuildable.placeholderText ->
+                    rejectionReasons.add(RejectionReason.Unbuildable)
+
+                // This should be deprecated and replaced with the already-existing "only available when" unique, see above
+                UniqueType.UnlockedWith.placeholderText, UniqueType.Requires.placeholderText -> {
+                    val filter = unique.params[0]
+                    when {
+                        ruleSet.technologies.contains(filter) ->
+                            if (!civInfo.tech.isResearched(filter))
+                                rejectionReasons.add(RejectionReason.RequiresTech.apply { errorMessage = unique.text })
+                        ruleSet.policies.contains(filter) ->
+                            if (!civInfo.policies.isAdopted(filter))
+                                rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
+                        ruleSet.eras.contains(filter) ->
+                            if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
+                                rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
+                        ruleSet.buildings.contains(filter) ->
+                            if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
+                                rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = unique.text })
+                    }
+                }
+
+                UniqueType.FoundCity.placeholderText-> if (civInfo.isCityState() || civInfo.isOneCityChallenger())
+                    rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
+
+                UniqueType.MaxNumberBuildable.placeholderText -> if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
+                    rejectionReasons.add(RejectionReason.MaxNumberBuildable)
             }
         }
 
@@ -419,21 +432,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     })
                 }
         }
-
-        if ((civInfo.isCityState() || civInfo.isOneCityChallenger()) && hasUnique(UniqueType.FoundCity)
-        ) {
-            rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
-        }
         
         if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits).any { matchesFilter(it.params[0]) }) {
             rejectionReasons.add(RejectionReason.CannotBeBuilt)
         }
-        
-        for (unique in getMatchingUniques(UniqueType.MaxNumberBuildable)) {
-            if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
-                rejectionReasons.add(RejectionReason.MaxNumberBuildable)
-        }
-        
         return rejectionReasons
     }
 
@@ -556,9 +558,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         }
     }
 
-    fun isGreatPerson() = uniqueObjects.any { it.placeholderText == "Great Person - []" }
+    fun isGreatPerson() = hasUnique("Great Person - []")
 
-    fun isNuclearWeapon() = uniqueObjects.any { it.placeholderText == "Nuclear weapon of Strength []" }
+    fun isNuclearWeapon() = hasUnique("Nuclear weapon of Strength []")
 
     fun movesLikeAirUnits() = getType().getMovementType() == UnitMovementType.Air
 
@@ -567,9 +569,8 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
     private val resourceRequirementsInternal: HashMap<String, Int> by lazy {
         val resourceRequirements = HashMap<String, Int>()
         if (requiredResource != null) resourceRequirements[requiredResource!!] = 1
-        for (unique in uniqueObjects)
-            if (unique.isOfType(UniqueType.ConsumesResources))
-                resourceRequirements[unique.params[1]] = unique.params[0].toInt()
+        for (unique in getMatchingUniques(UniqueType.ConsumesResources))
+            resourceRequirements[unique.params[1]] = unique.params[0].toInt()
         resourceRequirements
     }
 
@@ -628,7 +629,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
         if (hasUnique(UniqueType.SelfDestructs))
             power /= 2
-        if (uniqueObjects.any { it.placeholderText =="Nuclear weapon of Strength []" } )
+        if (isNuclearWeapon())
             power += 4000
 
         // Uniques

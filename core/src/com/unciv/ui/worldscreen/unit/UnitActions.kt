@@ -16,6 +16,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -65,6 +66,7 @@ object UnitActions {
         addActionsWithLimitedUses(unit, actionList, tile)
         addExplorationActions(unit, actionList)
         addAutomateBuildingImprovementsAction(unit, actionList)
+        addTriggerUniqueActions(unit, actionList)
         addAddInCapitalAction(unit, actionList, tile)
 
 
@@ -285,6 +287,7 @@ object UnitActions {
                         tile.turnsToImprovement = 2
                     }
                     tile.improvement = null
+                    unit.civInfo.lastSeenImprovement.remove(tile.position)
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
                     val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
@@ -500,10 +503,6 @@ object UnitActions {
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
                         var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
-                        // Deprecated since 3.18.17
-                            if (unit.civInfo.hasUnique(UniqueType.DoubleGoldFromTradeMissions))
-                                goldEarned *= 2f
-                        //
                         for (goldUnique in unit.civInfo.getMatchingUniques(UniqueType.PercentGoldFromTradeMissions))
                             goldEarned *= goldUnique.params[0].toPercent()
                         unit.civInfo.addGold(goldEarned.toInt())
@@ -640,7 +639,7 @@ object UnitActions {
                 action = {
                     val unitTile = unit.getTile()
                     for (terrainFeature in tile.terrainFeatures.filter { unitTile.ruleset.tileImprovements.containsKey("Remove $it") })
-                        unitTile.terrainFeatures.remove(terrainFeature)// remove forest/jungle/marsh
+                        unitTile.removeTerrainFeature(terrainFeature)// remove forest/jungle/marsh
                     unitTile.improvement = improvementName
                     unitTile.improvementInProgress = null
                     unitTile.turnsToImprovement = 0
@@ -713,10 +712,10 @@ object UnitActions {
         val civInfo = unit.civInfo
 
         val gainedStats = Stats()
-        for (unique in civInfo.getMatchingUniques("Provides a sum of gold each time you spend a Great Person")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesGoldWheneverGreatPersonExpended)) {
             gainedStats.gold += (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
         }
-        for (unique in civInfo.getMatchingUniques("[] whenever a Great Person is expended")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.ProvidesStatsWheneverGreatPersonExpended)) {
             gainedStats.add(unique.stats)
         }
 
@@ -806,7 +805,7 @@ object UnitActions {
 
         val giftAction = {
             if (recipient.isCityState()) {
-                for (unique in unit.civInfo.getMatchingUniques("Gain [] Influence with a [] gift to a City-State")) {
+                for (unique in unit.civInfo.getMatchingUniques(UniqueType.GainInfluenceWithUnitGiftToCityState)) {
                     if (unit.matchesFilter(unique.params[1])) {
                         recipient.getDiplomacyManager(unit.civInfo)
                             .addInfluence(unique.params[0].toFloat() - 5f)
@@ -826,6 +825,18 @@ object UnitActions {
         }
 
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
+    }
+    
+    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
+        for (unique in unit.getUniques()) {
+            if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue
+            val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text){
+                UniqueTriggerActivation.triggerCivwideUnique(unique, unit.civInfo)
+                addStatsPerGreatPersonUsage(unit)
+                unit.destroy()
+            }
+            actionList += unitAction
+        }
     }
 
     private fun addToggleActionsAction(unit: MapUnit, actionList: ArrayList<UnitAction>, unitTable: UnitTable) {

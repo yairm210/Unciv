@@ -146,7 +146,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (otherCiv.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }) {
             val resourcesTable = Table()
             resourcesTable.add("{Resources}:  ".toLabel()).padRight(10f)
-            for (supplyList in otherCiv.detailedCivResources) {
+            val cityStateResources = CityStateFunctions(otherCiv)
+                .getCityStateResourcesForAlly()
+            for (supplyList in cityStateResources) {
                 if (supplyList.resource.resourceType == ResourceType.Bonus)
                     continue
                 val name = supplyList.resource.name
@@ -172,9 +174,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
         if (ally != null) {
-            val allyString = "{Ally}: {$ally} {Influence}: ".tr() +
-                    otherCiv.getDiplomacyManager(ally).influence.toString()
-            diplomacyTable.add(allyString.toLabel()).row()
+            val allyInfluence = otherCiv.getDiplomacyManager(ally).influence.toInt()
+            diplomacyTable
+                .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
+                .row()
         }
 
         val protectors = otherCiv.getProtectorCivs()
@@ -210,8 +213,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (relationLevel >= RelationshipLevel.Friend) {
             // RelationshipChange = Ally -> Friend or Friend -> Favorable
             val turnsToRelationshipChange = otherCivDiplomacyManager.getTurnsToRelationshipChange()
-            diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel())
-                .row()
+            if (turnsToRelationshipChange != 0)
+                diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel())
+                    .row()
         }
 
         val friendBonusLabelColor = if (relationLevel >= RelationshipLevel.Friend) Color.GREEN else Color.GRAY
@@ -239,7 +243,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         val bonusStrings = ArrayList<String>()
         for (bonus in bonuses) {
             var improved = false
-            for (unique in viewingCiv.getMatchingUniques("[]% [] from City-States")) {
+            for (unique in viewingCiv.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                 val boostAmount = unique.params[0].toPercent()
                 val boostedStat = Stat.valueOf(unique.params[1])
                 when (bonus.type) {

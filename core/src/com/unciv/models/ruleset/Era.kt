@@ -23,6 +23,7 @@ class Era : RulesetObject(), IHasUniques {
     var settlerBuildings = ArrayList<String>()
     var startingObsoleteWonders = ArrayList<String>()
     var baseUnitBuyCost = 200
+    var embarkDefense = 3
     var startPercent = 0
 
     var friendBonus = HashMap<String, List<String>>()

@@ -40,7 +40,7 @@ class MapUnit {
     lateinit var baseUnit: BaseUnit
 
     @Transient
-    internal lateinit var currentTile: TileInfo
+    lateinit var currentTile: TileInfo
 
     @Transient
     val movement = UnitMovementAlgorithms(this)
@@ -403,7 +403,6 @@ class MapUnit {
             viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
                 getTile().getTilesInDistance(6).toHashSet()  // it's that simple
             else HashSet(0) // bomber units don't do recon
-            return
         } else {
             viewableTiles = getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
         }
@@ -430,6 +429,7 @@ class MapUnit {
     /** For display in Unit Overview */
     fun getActionLabel() = if (action == null) "" else if (isFortified()) UnitActionType.Fortify.value else action!!
 
+    fun isMilitary() = baseUnit.isMilitary()
     fun isCivilian() = baseUnit.isCivilian()
 
     fun getFortificationTurns(): Int {
@@ -521,12 +521,6 @@ class MapUnit {
     fun getCostOfUpgrade(): Int {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2f + 10f
-        // Deprecated since 3.18.17
-            for (unique in civInfo.getMatchingUniques(UniqueType.ReducedUpgradingGoldCost)) {
-                if (matchesFilter(unique.params[0]))
-                    goldCostOfUpgrade *= (1 - unique.params[1].toFloat() / 100f)
-            }
-        //
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitUpgradeCost, StateForConditionals(civInfo, unit=this)))
             goldCostOfUpgrade *= unique.params[0].toPercent()
 
@@ -562,7 +556,7 @@ class MapUnit {
     }
 
     // Only military land units can truly "garrison"
-    fun canGarrison() = baseUnit.isMilitary() && baseUnit.isLandUnit()
+    fun canGarrison() = isMilitary() && baseUnit.isLandUnit()
 
     fun isGreatPerson() = baseUnit.isGreatPerson()
 
@@ -651,7 +645,7 @@ class MapUnit {
                     if (removedFeatureObject != null && removedFeatureObject.hasUnique(UniqueType.ProductionBonusWhenRemoved)) {
                         tryProvideProductionToClosestCity(removedFeatureName)
                     }
-                    tile.terrainFeatures.remove(removedFeatureName)
+                    tile.removeTerrainFeature(removedFeatureName)
                 }
             }
             tile.improvementInProgress == RoadStatus.Road.name -> tile.roadStatus = RoadStatus.Road
@@ -676,7 +670,7 @@ class MapUnit {
             productionPointsToAdd * 2 / 3
         if (productionPointsToAdd > 0) {
             closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-            val locations = LocationAction(listOf(tile.position, closestCity.location))
+            val locations = LocationAction(tile.position, closestCity.location)
             civInfo.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
                 locations, NotificationIcon.Construction
@@ -816,7 +810,7 @@ class MapUnit {
 
         // Wake sleeping units if there's an enemy in vision range:
         // Military units always but civilians only if not protected.
-        if (isSleeping() && (baseUnit.isMilitary() || currentTile.militaryUnit == null) &&
+        if (isSleeping() && (isMilitary() || currentTile.militaryUnit == null) &&
             this.viewableTiles.any {
                 it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
             }
@@ -871,7 +865,7 @@ class MapUnit {
         if (tile.improvement == Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
         // Capture Enemy Civilian Unit if you move on top of it
-        if (tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
+        if (isMilitary() && tile.getUnguardedCivilian() != null && civInfo.isAtWarWith(tile.getUnguardedCivilian()!!.civInfo)) {
             Battle.captureCivilianUnit(MapUnitCombatant(this), MapUnitCombatant(tile.civilianUnit!!))
         }
 
@@ -910,7 +904,7 @@ class MapUnit {
 
         var goldGained =
             civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        if (civInfo.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities"))
+        if (civInfo.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
             goldGained *= 3f
 
         civInfo.addGold(goldGained.toInt())
@@ -1072,7 +1066,7 @@ class MapUnit {
             ?: return
         if (damage == 0) return
         health -= damage
-        val locations = LocationAction(listOf(citadelTile.position, currentTile.position))
+        val locations = LocationAction(citadelTile.position, currentTile.position)
         if (health <= 0) {
             civInfo.addNotification(
                 "An enemy [Citadel] has destroyed our [$name]",

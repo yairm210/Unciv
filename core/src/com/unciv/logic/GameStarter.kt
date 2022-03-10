@@ -96,6 +96,10 @@ object GameStarter {
             addCivStats(gameInfo)
         }
 
+        runAndMeasure("Policies") {
+            addCivPolicies(gameInfo, ruleset)
+        }
+
         if (tileMap.continentSizes.isEmpty())   // Probably saved map without continent data
             runAndMeasure("assignContinents") {
                 tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
@@ -170,6 +174,26 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech.name)
 
             civInfo.popupAlerts.clear() // Since adding technologies generates popups...
+        }
+    }
+
+    private fun addCivPolicies(gameInfo: GameInfo, ruleset: Ruleset) {
+        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
+
+            // generic start with policy unique
+            for (unique in civInfo.getMatchingUniques(UniqueType.StartsWithPolicy)) {
+                // get the parameter from the unique
+                val policyName = unique.params[0]
+
+                // check if the policy is in the ruleset and not already adopted
+                if (ruleset.policies.containsKey(policyName) && !civInfo.policies.isAdopted(policyName)) {
+                    val policyToAdopt = ruleset.policies[policyName]!!
+                    civInfo.policies.run {
+                        freePolicies++
+                        adopt(policyToAdopt)
+                    }
+                }
+            }
         }
     }
 

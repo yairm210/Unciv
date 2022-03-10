@@ -14,12 +14,11 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
     fun update() {
         clear()
 
-        for ((specialistName, amount) in cityInfo.population.getMaxSpecialists()) {
+        for ((specialistName, maxSpecialists) in cityInfo.population.getMaxSpecialists()) {
             if (!cityInfo.getRuleset().specialists.containsKey(specialistName)) // specialist doesn't exist in this ruleset, probably a mod
                 continue
             val newSpecialists = cityInfo.population.getNewSpecialists()
             val assignedSpecialists = newSpecialists[specialistName]!!
-            val maxSpecialists = amount
 
             if (cityScreen.canChangeState) add(getUnassignButton(assignedSpecialists, specialistName))
             add(getAllocationTable(assignedSpecialists, maxSpecialists, specialistName)).pad(10f)
@@ -49,7 +48,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
         if (assignedSpecialists >= maxSpecialists || cityInfo.isPuppet) return Table()
         val assignButton = "+".toLabel(Color.BLACK, Constants.headingFontSize)
                 .apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(30f).apply { circle.color= Color.GREEN.cpy().lerp(Color.BLACK,0.2f) }
+                .surroundWithCircle(30f).apply { circle.color= Color.GREEN.darken(0.2f) }
         assignButton.onClick {
             cityInfo.population.specialistAllocations.add(specialistName, 1)
             cityInfo.cityStats.update()
@@ -63,7 +62,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
     private fun getUnassignButton(assignedSpecialists: Int, specialistName: String):Actor {
         val unassignButton = "-".toLabel(Color.BLACK,Constants.headingFontSize)
                 .apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(30f).apply { circle.color= Color.RED.cpy().lerp(Color.BLACK,0.1f) }
+                .surroundWithCircle(30f).apply { circle.color= Color.RED.darken(0.1f) }
         unassignButton.onClick {
             cityInfo.population.specialistAllocations.add(specialistName, -1)
             cityInfo.cityStats.update()

@@ -151,6 +151,7 @@ object SpecificUnitAutomation {
     }
 
     fun automateSettlerActions(unit: MapUnit) {
+        val modConstants = unit.civInfo.gameInfo.ruleSet.modOptions.constants
         if (unit.getTile().militaryUnit == null     // Don't move until you're accompanied by a military unit
             && !unit.civInfo.isCityState()          // ..unless you're a city state that was unable to settle its city on turn 1
             && unit.getDamageFromTerrain() < unit.health) return    // Also make sure we won't die waiting
@@ -159,17 +160,18 @@ object SpecificUnitAutomation {
             for (city in unit.civInfo.gameInfo.getCities()) {
                 val center = city.getCenterTile()
                 if (unit.civInfo.knows(city.civInfo) &&
-                            // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
-                            city.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
-                        ) {
+                    // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
+                    city.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)
+                ) {
                     yieldAll(center.getTilesInDistance(6))
                     continue
                 }
-                for (tile in center.getTilesAtDistance(3)) {
-                    if (tile.getContinent() == center.getContinent())
-                        yield(tile)
-                }
-                yieldAll(center.getTilesInDistance(2))
+                yieldAll(center.getTilesInDistance(modConstants.minimalCityDistance)
+                    .filter { it.getContinent() == center.getContinent() }
+                )
+                yieldAll(center.getTilesInDistance(modConstants.minimalCityDistanceOnDifferentContinents)
+                    .filter { it.getContinent() != center.getContinent() }
+                )
             }
         }.toSet()
 

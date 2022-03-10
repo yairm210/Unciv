@@ -2,6 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -22,6 +23,9 @@ class CityScreen(
     companion object {
         /** Distance from stage edges to floating widgets */
         const val posFromEdge = 5f
+
+        /** Size of the decoration icons shown besides the raze button */
+        const val wltkIconSize = 40f
     }
 
     /** Toggles or adds/removes all state changing buttons */
@@ -176,6 +180,14 @@ class CityScreen(
     private fun updateAnnexAndRazeCityButton() {
         razeCityButtonHolder.clear()
 
+        fun addWltkIcon(name: String, apply: Image.()->Unit = {}) =
+            razeCityButtonHolder.add(ImageGetter.getImage(name).apply(apply)).size(wltkIconSize)
+
+        if (city.isWeLoveTheKingDayActive()) {
+            addWltkIcon("OtherIcons/WLTK LR") { color = Color.GOLD }
+            addWltkIcon("OtherIcons/WLTK 1") { color = Color.FIREBRICK }.padRight(10f)
+        }
+
         if (city.isPuppet) {
             val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)
@@ -184,7 +196,7 @@ class CityScreen(
                 update()
             }
             if (!canChangeState) annexCityButton.disable()
-            razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
+            razeCityButtonHolder.add(annexCityButton) //.colspan(cityPickerTable.columns)
         } else if (!city.isBeingRazed) {
             val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
@@ -192,14 +204,24 @@ class CityScreen(
             if (!canChangeState || !city.canBeDestroyed())
                 razeCityButton.disable()
 
-            razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
+            razeCityButtonHolder.add(razeCityButton) //.colspan(cityPickerTable.columns)
         } else {
             val stopRazingCityButton = "Stop razing city".toTextButton()
             stopRazingCityButton.labelCell.pad(10f)
             stopRazingCityButton.onClick { city.isBeingRazed = false; update() }
             if (!canChangeState) stopRazingCityButton.disable()
-            razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)
+            razeCityButtonHolder.add(stopRazingCityButton) //.colspan(cityPickerTable.columns)
         }
+
+        if (city.isWeLoveTheKingDayActive()) {
+            addWltkIcon("OtherIcons/WLTK 2") { color = Color.FIREBRICK }.padLeft(10f)
+            addWltkIcon("OtherIcons/WLTK LR") {
+                color = Color.GOLD
+                scaleX = -scaleX
+                originX = wltkIconSize * 0.5f
+            }
+        }
+
         razeCityButtonHolder.pack()
         val centerX = if (!isPortrait()) stage.width / 2
             else constructionsTable.getUpperWidth().let { it + (stage.width - cityStatsTable.width - it) / 2 }

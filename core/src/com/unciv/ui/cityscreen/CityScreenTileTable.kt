@@ -20,7 +20,7 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
     val city = cityScreen.city
 
     init {
-        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
         add(innerTable).pad(2f).fill()
         background = ImageGetter.getBackground(Color.WHITE)
     }
@@ -38,7 +38,6 @@ class CityScreenTileTable(private val cityScreen: CityScreen): Table() {
         innerTable.pad(5f)
 
         innerTable.add( MarkupRenderer.render(selectedTile.toMarkup(city.civInfo), iconDisplay = IconDisplay.None) {
-            // Sorry, this will leave the city screen
             UncivGame.Current.setScreen(CivilopediaScreen(city.getRuleset(), cityScreen, link = it))
         } )
         innerTable.row()

@@ -1,12 +1,16 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityFlags
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.utils.*
 import kotlin.math.ceil
 import kotlin.math.round
@@ -80,20 +84,31 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         innerTable.add(unassignedPopString.toLabel()).row()
         innerTable.add(turnsToExpansionString.toLabel()).row()
         innerTable.add(turnsToPopString.toLabel()).row()
-        
+
         val tableWithIcons = Table()
         tableWithIcons.defaults().pad(2f)
         if (cityInfo.isInResistance()) {
             tableWithIcons.add(ImageGetter.getImage("StatIcons/Resistance")).size(20f)
             tableWithIcons.add("In resistance for another [${cityInfo.getFlag(CityFlags.Resistance)}] turns".toLabel()).row()
         }
-        if (cityInfo.isWeLoveTheKingDayActive()) {
-            tableWithIcons.add(ImageGetter.getStatIcon("Food")).size(20f)
-            tableWithIcons.add("We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel()).row()
-        } else if (cityInfo.demandedResource != "") {
-            tableWithIcons.add(ImageGetter.getResourceImage(cityInfo.demandedResource, 20f)).padRight(5f)
-            tableWithIcons.add("Demanding [${cityInfo.demandedResource}]".toLabel()).left().row()
+
+        val (wltkIcon: Actor?, wltkLabel: Label?) = when {
+            cityInfo.isWeLoveTheKingDayActive() ->
+                ImageGetter.getStatIcon("Food") to
+                "We Love The King Day for another [${cityInfo.getFlag(CityFlags.WeLoveTheKing)}] turns".toLabel(Color.LIME)
+            cityInfo.demandedResource.isNotEmpty() ->
+                ImageGetter.getResourceImage(cityInfo.demandedResource, 20f) to
+                "Demanding [${cityInfo.demandedResource}]".toLabel(Color.CORAL)
+            else -> null to null
         }
+        if (wltkLabel != null) {
+            tableWithIcons.add(wltkIcon!!).size(20f).padRight(5f)
+            wltkLabel.onClick {
+                UncivGame.Current.setScreen(CivilopediaScreen(cityInfo.getRuleset(), cityScreen, link = "We Love The King Day"))
+            }
+            tableWithIcons.add(wltkLabel).row()
+        }
+
         innerTable.add(tableWithIcons).row()
     }
 

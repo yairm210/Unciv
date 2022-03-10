@@ -23,7 +23,6 @@ import com.unciv.models.translations.tr
  * @param forceContentSize  Force virtual [content] width/height for alignment calculation
  *                      - because Gdx auto layout reports wrong dimensions on scaled actors.
  */
-@Suppress("unused") // reported incorrectly even when a use is right here in the Companion
 class UncivTooltip <T: Actor>(
     val target: Group,
     val content: T,
@@ -53,6 +52,8 @@ class UncivTooltip <T: Actor>(
      //region show, hide and positioning
     /** Show the Tooltip ([immediate]ly or begin the animation). _Can_ be called programmatically. */
     fun show(immediate: Boolean = false) {
+        if (target.stage == null) return
+
         val useAnimation = animate && !immediate
         if (state == TipState.Shown || state == TipState.Showing && useAnimation || !target.hasParent()) return
         if (state == TipState.Showing || state == TipState.Hiding) {
@@ -60,10 +61,11 @@ class UncivTooltip <T: Actor>(
             state = TipState.Hidden
             container.remove()
         }
-        val pos = target.localToParentCoordinates(target.getEdgePoint(targetAlign)).add(offset)
+
+        val pos = target.localToStageCoordinates(target.getEdgePoint(targetAlign)).add(offset)
         container.run {
-            val originX = getOriginX(contentWidth,tipAlign)
-            val originY = getOriginY(contentHeight,tipAlign)
+            val originX = getOriginX(contentWidth, tipAlign)
+            val originY = getOriginY(contentHeight, tipAlign)
             setOrigin(originX, originY)
             setPosition(pos.x - originX, pos.y - originY)
             if (useAnimation) {
@@ -76,7 +78,8 @@ class UncivTooltip <T: Actor>(
                 setScale(1f)
             }
         }
-        target.parent.addActor(container)
+        target.stage.addActor(container)
+
         if (useAnimation) {
             state = TipState.Showing
             container.addAction(Actions.sequence(
@@ -155,8 +158,9 @@ class UncivTooltip <T: Actor>(
          * @param text Automatically translated tooltip text
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
+         * @param tipAlign Point on the Tooltip to align with the top right of the [target]
          */
-        fun Group.addTooltip(text: String, size: Float = 26f, always: Boolean = false) {
+        fun Group.addTooltip(text: String, size: Float = 26f, always: Boolean = false, tipAlign: Int = Align.top) {
             if (!(always || KeyPressDispatcher.keyboardAvailable) || text.isEmpty()) return
 
             val label = text.toLabel(ImageGetter.getBlue(), 38)
@@ -183,7 +187,7 @@ class UncivTooltip <T: Actor>(
                 labelWithBackground,
                 forceContentSize = Vector2(size * widthHeightRatio, size),
                 offset = Vector2(-size/4, size/4),
-                tipAlign = Align.top
+                tipAlign = tipAlign
             ))
         }
 

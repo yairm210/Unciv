@@ -2,6 +2,7 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -77,7 +78,7 @@ class UnitOverviewTable(
             for (unit in viewingPlayer.getCivUnits().sortedWith(
                 compareBy({ it.displayName() },
                     { !it.due },
-                    { it.currentMovement < 0.1f },
+                    { it.currentMovement <= Constants.minimumMovementEpsilon },
                     { abs(it.currentTile.position.x) + abs(it.currentTile.position.y) })
             )) {
                 val baseUnit = unit.baseUnit()

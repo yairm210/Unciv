@@ -33,7 +33,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
 
         innerTable.width = cityScreen.stage.width / 4
-        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
         scrollPane = ScrollPane(innerTable.addBorder(2f, Color.WHITE))
         scrollPane.setOverscroll(false, false)
 
@@ -70,7 +70,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
         val buildingNameAndIconTable = ExpanderTab(displayName, Constants.defaultFontSize, icon, false, 5f) {
-            val detailsString = building.getDescription(cityScreen.city)
+            val detailsString = building.getDescription(cityScreen.city, false)
             it.add(detailsString.toLabel().apply { wrap = true })
                 .width(cityScreen.stage.width / 4 - 2 * pad).row() // when you set wrap, then you need to manually set the size of the label
             if (building.isSellable() && !isFree) {
@@ -159,7 +159,9 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
     private fun Table.addStatInfo() {
         val cityStats = cityScreen.city.cityStats
 
+        val showFaith = cityScreen.city.civInfo.gameInfo.isReligionEnabled()
         for (stat in Stat.values()) {
+            if (stat == Stat.Faith && !showFaith) continue
             val statValuesTable = Table()
             statValuesTable.touchable = Touchable.enabled
             addCategory(stat.name, statValuesTable)
@@ -241,12 +243,15 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
 
         statValuesTable.pack()
-        val toggleButtonChar = if (showDetails) "-" else "+"
-        val toggleButton = toggleButtonChar.toLabel().apply { setAlignment(Align.center) }
-            .surroundWithCircle(25f, color = ImageGetter.getBlue())
-            .surroundWithCircle(27f, false)
-        statValuesTable.addActor(toggleButton)
-        toggleButton.setPosition(0f, statValuesTable.height, Align.topLeft)
+
+        if (stat != Stat.Happiness) {
+            val toggleButtonChar = if (showDetails) "-" else "+"
+            val toggleButton = toggleButtonChar.toLabel().apply { setAlignment(Align.center) }
+                .surroundWithCircle(25f, color = ImageGetter.getBlue())
+                .surroundWithCircle(27f, false)
+            statValuesTable.addActor(toggleButton)
+            toggleButton.setPosition(0f, statValuesTable.height, Align.topLeft)
+        }
 
         statValuesTable.padBottom(4f)
     }

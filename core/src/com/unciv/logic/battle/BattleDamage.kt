@@ -61,15 +61,6 @@ object BattleDamage {
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
 
-            // Deprecated since 3.18.17
-                for (unique in civInfo.getMatchingUniques(UniqueType.StrengthFromAdjacentUnits)) {
-                    if (combatant.matchesCategory(unique.params[1])
-                        && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) }
-                    ) {
-                        modifiers.add("Adjacent units", unique.params[0].toInt())
-                    }
-                }
-            //
 
             for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
                 .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
@@ -88,7 +79,7 @@ object BattleDamage {
                 .flatMap { it.getUnits() }.filter { it.civInfo == combatant.unit.civInfo }
             if (nearbyCivUnits.any { it.hasUnique("Bonus for units in 2 tile radius 15%") }) {
                 val greatGeneralModifier =
-                    if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 30 else 15
+                    if (combatant.unit.civInfo.hasUnique(UniqueType.GreatGeneralProvidesDoubleCombatBonus)) 30 else 15
 
                 modifiers["Great General"] = greatGeneralModifier
             }
@@ -129,10 +120,20 @@ object BattleDamage {
         if (attacker is MapUnitCombatant) {
             modifiers.add(getTileSpecificModifiers(attacker, defender.getTile()))
 
-
-            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Eliminates combat penalty for attacking from the sea"))
+            // Depreciated Version
+            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique(UniqueType.AttackFromSea))
+                modifiers["Landing"] = -50
+            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
                 modifiers["Landing"] = -50
 
+            // Land Melee Unit attacking to Water
+            if (attacker.unit.type.isLandUnit() && !attacker.unit.isEmbarked() && attacker.isMelee() && defender.getTile().isWater
+                    && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast))
+                modifiers["Boarding"] = -50
+            // Naval Unit Melee attacking to Land (not City) unit
+            if (attacker.unit.type.isWaterUnit() && attacker.isMelee() && !defender.getTile().isWater
+                    && !attacker.unit.hasUnique(UniqueType.AttackAcrossCoast) && !defender.isCity())
+                modifiers["Landing"] = -50
 
             if (attacker.isMelee()) {
                 val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
@@ -168,18 +169,6 @@ object BattleDamage {
                 }
             }
 
-        } else if (attacker is CityCombatant) {
-            // Deprecated since 3.19.1
-                if (attacker.city.getCenterTile().militaryUnit != null) {
-                    val garrisonBonus = attacker.city.getMatchingUniques(UniqueType.StrengthForGarrisonedCitiesAttacking)
-                        .sumOf { it.params[0].toInt() }
-                    if (garrisonBonus != 0)
-                        modifiers["Garrisoned unit"] = garrisonBonus
-                }
-                for (unique in attacker.city.getMatchingUniques(UniqueType.StrengthForCitiesAttacking)) {
-                    modifiers.add("Attacking Bonus", unique.params[0].toInt())
-                }
-            //
         }
 
         return modifiers
@@ -212,11 +201,6 @@ object BattleDamage {
 
             if (defender.unit.isFortified())
                 modifiers["Fortification"] = 20 * defender.unit.getFortificationTurns()
-        } else if (defender is CityCombatant) {
-
-            modifiers["Defensive Bonus"] =
-                defender.city.civInfo.getMatchingUniques(UniqueType.StrengthForCitiesDefending)
-                    .map { it.params[0].toFloat() / 100f }.sum().toInt()
         }
 
         return modifiers
@@ -225,7 +209,7 @@ object BattleDamage {
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
-        for (unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
+        for (unique in unit.getCivInfo().getMatchingUniques(UniqueType.StrengthWithinTilesOfTile)) {
             if (tile.getTilesInDistance(unique.params[1].toInt())
                     .any { it.matchesFilter(unique.params[2]) }
             )
@@ -243,7 +227,7 @@ object BattleDamage {
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if (combatant !is MapUnitCombatant // is city
-            || (combatant.getCivInfo().hasUnique("Units fight as though they were at full strength even when damaged")
+            || (combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
                 && !combatant.unit.baseUnit.movesLikeAirUnits()
             )
         ) {
@@ -276,7 +260,8 @@ object BattleDamage {
     fun calculateDamageToAttacker(
         attacker: ICombatant,
         tileToAttackFrom: TileInfo?,
-        defender: ICombatant
+        defender: ICombatant,
+        ignoreRandomness: Boolean = false,
     ): Int {
         if (attacker.isRanged()) return 0
         if (defender.isCivilian()) return 0
@@ -285,13 +270,14 @@ object BattleDamage {
                 attacker,
                 defender
             )
-        return (damageModifier(ratio, true) * getHealthDependantDamageRatio(defender)).roundToInt()
+        return (damageModifier(ratio, true, attacker, ignoreRandomness) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
     fun calculateDamageToDefender(
         attacker: ICombatant,
         tileToAttackFrom: TileInfo?,
-        defender: ICombatant
+        defender: ICombatant,
+        ignoreRandomness: Boolean = false,
     ): Int {
         val ratio =
             getAttackingStrength(attacker, defender) / getDefendingStrength(
@@ -299,17 +285,25 @@ object BattleDamage {
                 defender
             )
         if (defender.isCivilian()) return 40
-        return (damageModifier(ratio, false) * getHealthDependantDamageRatio(attacker)).roundToInt()
+        return (damageModifier(ratio, false, attacker, ignoreRandomness) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
-    private fun damageModifier(attackerToDefenderRatio: Float, damageToAttacker: Boolean): Float {
+    private fun damageModifier(
+        attackerToDefenderRatio: Float,
+        damageToAttacker: Boolean,
+        attacker: ICombatant, // for the randomness
+        ignoreRandomness: Boolean = false,
+    ): Float {
         // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
         val strongerToWeakerRatio =
             attackerToDefenderRatio.pow(if (attackerToDefenderRatio < 1) -1 else 1)
         var ratioModifier = (((strongerToWeakerRatio + 3) / 4).pow(4) + 1) / 2
         if (damageToAttacker && attackerToDefenderRatio > 1 || !damageToAttacker && attackerToDefenderRatio < 1) // damage ratio from the weaker party is inverted
             ratioModifier = ratioModifier.pow(-1)
-        val randomCenteredAround30 = 24 + 12 * Random().nextFloat()
+        val randomSeed = attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode() // so people don't save-scum to get optimal results
+        val randomCenteredAround30 = 24 + 
+            if (ignoreRandomness) 6f
+            else 12 * Random(randomSeed.toLong()).nextFloat()
         return randomCenteredAround30 * ratioModifier
     }
 }

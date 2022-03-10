@@ -41,7 +41,7 @@ class TabbedPager(
     private val headerFontSize: Int = Constants.defaultFontSize,
     private val headerFontColor: Color = Color.WHITE,
     private val highlightColor: Color = Color.BLUE,
-    backgroundColor: Color = ImageGetter.getBlue().lerp(Color.BLACK, 0.5f),
+    backgroundColor: Color = ImageGetter.getBlue().darken(0.5f),
     private val headerPadding: Float = 10f,
     capacity: Int = 4
 ) : Table() {

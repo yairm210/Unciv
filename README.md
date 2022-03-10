@@ -37,11 +37,11 @@ Is this order:
 
 ## How can I help?
 
-Programmers start [here](https://github.com/yairm210/Unciv/wiki/Getting-Started)!
+Programmers start [here](https://yairm210.github.io/Unciv/Developers/Getting-Started/)!
 
-Translators start [here](https://github.com/yairm210/Unciv/wiki/Translating)!
+Translators start [here](https://yairm210.github.io/Unciv/Other/Translating/)!
 
-Modders start [here](https://github.com/yairm210/Unciv/wiki/Mods)!
+Modders start [here](https://yairm210.github.io/Unciv/Modders/Mods/)!
 
 You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
 
@@ -76,14 +76,14 @@ Considering how long it took to get this far, no.
 
 Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch.io/unciv), and if you're using the Itch app, your game will stay up-to-date - and we release pretty frequently so that's an issue ;)
 
-UnCiv can also be installed on macOS, a guide on how to do that can be found [here](https://github.com/yairm210/Unciv/wiki/Installing-on-macOS).
+Unciv can also be installed on macOS, a guide on how to do that can be found [here](https://yairm210.github.io/Unciv/Other/Installing-on-macOS/).
 
 If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`.
 For Mac users, you'll need to add extra parameters, `java -XstartOnFirstThread -Djava.awt.headless=true -jar Unciv.jar`. 
 
 If you use Flatpaks, there's a Flatpak by [MayeulC](https://github.com/MayeulC) and you can know more about it [here](https://github.com/flathub/io.github.yairm210.unciv). Flathub link is available in the [Downloads](#downloads) section.
 
-If you want to build it from scratch for some reason, [we have instructions for that as well](https://github.com/yairm210/Unciv/wiki/Building-locally-without-Android-Studio)
+If you want to build it from scratch for some reason, [we have instructions for that as well](https://yairm210.github.io/Unciv/Developers/Building-locally-without-Android-Studio/)
 
 ## How about IOS?
 

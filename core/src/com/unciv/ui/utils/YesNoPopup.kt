@@ -12,11 +12,11 @@ import com.unciv.UncivGame
  * @param restoreDefault A lambda to execute when "No" is chosen
  */
 open class YesNoPopup (
-    question: String,
-    action: ()->Unit,
-    screen: BaseScreen = UncivGame.Current.worldScreen,
-    restoreDefault: ()->Unit = {}
-        ) : Popup(screen) {
+        question: String,
+        action: ()->Unit,
+        screen: BaseScreen = UncivGame.Current.worldScreen,
+        restoreDefault: ()->Unit = {}
+    ) : Popup(screen) {
 
     /** The [Label][com.badlogic.gdx.scenes.scene2d.ui.Label] created for parameter `question` for optional layout tweaking */
     val promptLabel = question.toLabel()

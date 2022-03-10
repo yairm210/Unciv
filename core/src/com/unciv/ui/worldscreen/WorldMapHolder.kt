@@ -374,7 +374,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         val numberCircle = dto.unitToTurnsToDestination.values.maxOrNull()!!.toString().toLabel(fontSize = 14)
             .apply { setAlignment(Align.center) }
-            .surroundWithCircle(smallerCircleSizes-2, color = ImageGetter.getBlue().lerp(Color.BLACK, 0.3f))
+            .surroundWithCircle(smallerCircleSizes-2, color = ImageGetter.getBlue().darken(0.3f))
             .surroundWithCircle(smallerCircleSizes,false)
 
         moveHereButton.addActor(numberCircle)

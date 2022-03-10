@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
@@ -55,13 +56,15 @@ class ModOptions : IHasUniques {
     val maxXPfromBarbarians = 30
 
     override var uniques = ArrayList<String>()
-    // If this is delegated with "by lazy", the mod download process crashes and burns
+
+    // If these two are delegated with "by lazy", the mod download process crashes and burns 
+    // Instead, Ruleset.load sets them, which is preferable in this case anyway
     override var uniqueObjects: List<Unique> = listOf()
     override var uniqueMap: Map<String, List<Unique>> = mapOf()
+
     override fun getUniqueTarget() = UniqueTarget.ModOptions
 
     val constants = ModConstants()
-    
 }
 
 class Ruleset {
@@ -208,16 +211,16 @@ class Ruleset {
         // therefore does not guarantee keeping the order of elements like a LinkedHashMap does.
         // Using map{} sidesteps this problem
         eras.map { it.value }.withIndex().forEach { it.value.eraNumber = it.index }
-        
+
         val unitTypesFile = folderHandle.child("UnitTypes.json")
         if (unitTypesFile.exists()) unitTypes += createHashmap(jsonParser.getFromJson(Array<UnitType>::class.java, unitTypesFile))
-        
+
         val unitsFile = folderHandle.child("Units.json")
         if (unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
 
         val promotionsFile = folderHandle.child("UnitPromotions.json")
         if (promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
-        
+
         val questsFile = folderHandle.child("Quests.json")
         if (questsFile.exists()) quests += createHashmap(jsonParser.getFromJson(Array<Quest>::class.java, questsFile))
 
@@ -251,7 +254,7 @@ class Ruleset {
         val ruinRewardsFile = folderHandle.child("Ruins.json")
         if (ruinRewardsFile.exists())
             ruinRewards += createHashmap(jsonParser.getFromJson(Array<RuinReward>::class.java, ruinRewardsFile))
-        
+
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
@@ -290,7 +293,7 @@ class Ruleset {
             }
         }
     }
-    
+
     /** Used for displaying a RuleSet's name */
     override fun toString() = when {
         name.isNotEmpty() -> name
@@ -413,7 +416,7 @@ class Ruleset {
 
         val deprecationAnnotation = unique.getDeprecationAnnotation()
         if (deprecationAnnotation != null) {
-            val replacementUniqueText = unique.getReplacementText()
+            val replacementUniqueText = unique.getReplacementText(this)
             val deprecationText =
                 "$name's unique \"${unique.text}\" is deprecated ${deprecationAnnotation.message}," +
                         if (deprecationAnnotation.replaceWith.expression != "") " replace with \"${replacementUniqueText}\"" else ""
@@ -424,7 +427,11 @@ class Ruleset {
             rulesetErrors.add(deprecationText, severity)
         }
 
-        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) })
+        if (unique.type.targetTypes.none { uniqueTarget.canAcceptUniqueTarget(it) }
+            // the 'consume unit' conditional causes a triggerable unique to become a unit action
+            && !(uniqueTarget==UniqueTarget.Unit
+                    && unique.isTriggerable 
+                    && unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }))
             rulesetErrors.add(
                 "$name's unique \"${unique.text}\" cannot be put on this type of object!",
                 RulesetErrorSeverity.Warning
@@ -434,14 +441,14 @@ class Ruleset {
 
 
     class RulesetError(val text:String, val errorSeverityToReport: RulesetErrorSeverity)
-    enum class RulesetErrorSeverity {
-        OK,
-        WarningOptionsOnly,
-        Warning,
-        Error,
+    enum class RulesetErrorSeverity(val color: Color) {
+        OK(Color.GREEN),
+        WarningOptionsOnly(Color.YELLOW),
+        Warning(Color.YELLOW),
+        Error(Color.RED),
     }
 
-    class RulesetErrorList:ArrayList<RulesetError>() {
+    class RulesetErrorList : ArrayList<RulesetError>() {
         operator fun plusAssign(text: String) {
             add(text, RulesetErrorSeverity.Error)
         }
@@ -450,7 +457,7 @@ class Ruleset {
             add(RulesetError(text, errorSeverityToReport))
         }
 
-        private fun getFinalSeverity(): RulesetErrorSeverity {
+        fun getFinalSeverity(): RulesetErrorSeverity {
             if (isEmpty()) return RulesetErrorSeverity.OK
             return this.maxOf { it.errorSeverityToReport }
         }
@@ -468,7 +475,7 @@ class Ruleset {
                 .joinToString("\n") { it.errorSeverityToReport.name + ": " + it.text }
     }
 
-    fun checkModLinks(forOptionsPopup:Boolean = false): RulesetErrorList {
+    fun checkModLinks(forOptionsPopup: Boolean = false): RulesetErrorList {
         val lines = RulesetErrorList()
 
         // Checks for all mods - only those that can succeed without loading a base ruleset
@@ -578,8 +585,8 @@ class Ruleset {
             if (building.requiredBuildingInAllCities != null)
                 lines.add("${building.name} contains 'requiredBuildingInAllCities' - please convert to a \"" +
                         UniqueType.RequiresBuildingInAllCities.text.fillPlaceholders(building.requiredBuildingInAllCities!!)+"\" unique", RulesetErrorSeverity.Warning)
-            for (unique in building.uniqueObjects)
-                if (unique.placeholderText == "Creates a [] improvement on a specific tile" && !tileImprovements.containsKey(unique.params[0]))
+            for (unique in building.getMatchingUniques("Creates a [] improvement on a specific tile"))
+                if (!tileImprovements.containsKey(unique.params[0]))
                     lines += "${building.name} creates a ${unique.params[0]} improvement which does not exist!"
             checkUniques(building, lines, rulesetSpecific, forOptionsPopup)
         }
@@ -736,7 +743,8 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache : HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) {
+    /** Returns error lines from loading the rulesets, so we can display the errors to users */
+    fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) :List<String> {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
@@ -749,11 +757,12 @@ object RulesetCache : HashMap<String,Ruleset>() {
             }
         }
 
-        if (noMods) return
+        if (noMods) return listOf()
 
         val modsHandles = if (consoleMode) FileHandle("mods").list()
         else Gdx.files.local("mods").list()
 
+        val errorLines = ArrayList<String>()
         for (modFolder in modsHandles) {
             if (modFolder.name().startsWith('.')) continue
             if (!modFolder.isDirectory) continue
@@ -768,13 +777,13 @@ object RulesetCache : HashMap<String,Ruleset>() {
                     println(modRuleset.checkModLinks().getErrorText())
                 }
             } catch (ex: Exception) {
-                if (printOutput) {
-                    println("Exception loading mod '${modFolder.name()}':")
-                    println("  ${ex.localizedMessage}")
-                    println("  ${ex.cause?.localizedMessage}")
-                }
+                errorLines += "Exception loading mod '${modFolder.name()}':"
+                errorLines += "  ${ex.localizedMessage}"
+                errorLines += "  ${ex.cause?.localizedMessage}"
             }
         }
+        if (printOutput) for (line in errorLines) println(line)
+        return errorLines
     }
 
 
@@ -807,7 +816,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
      */
     fun getComplexRuleset(mods: LinkedHashSet<String>, optionalBaseRuleset: String? = null): Ruleset {
         val newRuleset = Ruleset()
-        
+
         val baseRuleset =
             if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
             else getVanillaRuleset()
@@ -817,7 +826,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
             .map { this[it]!! }
             .filter { !it.modOptions.isBaseRuleset } + 
             baseRuleset
-        
+
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             newRuleset.add(mod)
             newRuleset.mods += mod.name
