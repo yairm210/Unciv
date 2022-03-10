@@ -290,10 +290,14 @@ class FormattedLine (
             label.setAlignment(align)
             if (labelWidth == 0f)
                 table.add(label)
-                    .padLeft(indentWidth).align(align)
+                    .padLeft(indentWidth.coerceAtLeast(0f))
+                    .padRight((-indentWidth).coerceAtLeast(0f))
+                    .align(align)
             else
-                table.add(label).width(labelWidth - usedWidth - indentWidth)
-                    .padLeft(indentWidth).align(align)
+                table.add(label)
+                    .width(labelWidth - usedWidth - indentWidth)
+                    .padLeft(indentWidth)
+                    .align(align)
         }
         return table
     }

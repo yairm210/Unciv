@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.unique.UniqueFlag
 import com.unciv.models.ruleset.unique.UniqueTarget
@@ -20,13 +21,17 @@ class Belief : RulesetObject() {
     override fun getIconName() = if (type == BeliefType.None) "Religion" else type.name
 
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
-        return getCivilopediaTextLines(ruleset, false)
+        return getCivilopediaTextLines(false)
     }
-    
-    fun getCivilopediaTextLines(ruleset: Ruleset, centerType: Boolean): List<FormattedLine> {
+
+    fun getCivilopediaTextLines(withHeader: Boolean): List<FormattedLine> {
         val textList = ArrayList<FormattedLine>()
+        if (withHeader) {
+            textList += FormattedLine(name, size = Constants.headingFontSize, centered = true, link = makeLink())
+            textList += FormattedLine()
+        }
         if (type != BeliefType.None)
-            textList += FormattedLine("{Type}: $type", color = type.color, centered = centerType)
+            textList += FormattedLine("{Type}: $type", color = type.color, centered = withHeader)
         uniqueObjects.forEach {
             if (!it.hasFlag(UniqueFlag.HiddenToUsers))
                 textList += FormattedLine(it)
@@ -63,7 +68,7 @@ class Belief : RulesetObject() {
             name = "Religions"
             val lines = ArrayList<FormattedLine>()
             lines += FormattedLine(separator = true)
-            ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale(), { it.tr() })).forEach {
+            ruleset.religions.sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.tr() }).forEach {
                 lines += FormattedLine(it, icon = "Belief/$it")
             }
             civilopediaText = lines
