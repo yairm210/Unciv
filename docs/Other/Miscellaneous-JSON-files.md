@@ -96,10 +96,9 @@ Stored in ModOptions.constants, this is a collection of constants used internall
 | unitSupplyPerPopulation| Float | 0.5 | [^C] |
 | minimalCityDistance| Int | 3 | [^D] |
 | minimalCityDistanceOnDifferentContinents| Int | 2 | [^D] |
-| naturalWonderCountMultiplier| Float | 0.13133208 | [^E] |
-| naturalWonderCountAddedConstant| Float | 0.56128831 | [^E] |
+| naturalWonderCountMultiplier| Float | 0.124 | [^E] |
+| naturalWonderCountAddedConstant| Float | 0.1 | [^E] |
 | ancientRuinCountMultiplier| Float | 0.02 | [^F] |
-| spawnIceBelowTemperature | Float |-0.8 | [^G] |
 | maxLakeSize| Int | 10 | [^H] |
 | riverCountMultiplier| Float | 0.01 | [^I] |
 | minRiverLength| Int | 5 | [^I] |
@@ -123,9 +122,8 @@ unitSupplyBase, unitSupplyPerCity and unitSupplyPerPopulation can also be increa
 The number is the amount of tiles between two cities, not counting the tiles the cities are on.
 e.g. "C__C", where "C" is a tile with a city and "_" is a tile without a city, has a distance of 2.
 First constant is for cities on the same landmass, the second is for cities on different continents.
-[^E]: NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size
+[^E]: NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size. The number scales linearly with map radius: #wonders = radius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant. The defaults effectively mean Tiny - 1, Small - 2, Medium - 3, Large - 4, Huge - 5, Custom radius >=109 - all G&K wonders.
 [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
-[^G]: MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureExtremeness, latitude and perlin noise.
 [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 [^I]: RiverGenerator: river frequency and length bounds
 

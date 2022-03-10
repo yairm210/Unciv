@@ -507,7 +507,6 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spawnIce(tileMap: TileMap) {
         if (!ruleset.terrains.containsKey(Constants.ice)) return // I can't think of how to make this nicely moddable
         tileMap.setTransients(ruleset)
-        val spawnIceBelowTemperature = ruleset.modOptions.constants.spawnIceBelowTemperature
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
             if (tile.baseTerrain !in Constants.sea || tile.terrainFeatures.isNotEmpty())
@@ -517,7 +516,7 @@ class MapGenerator(val ruleset: Ruleset) {
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
-            if (temperature < spawnIceBelowTemperature)
+            if (temperature < -0.8f)
                 tile.addTerrainFeature(Constants.ice)
         }
     }

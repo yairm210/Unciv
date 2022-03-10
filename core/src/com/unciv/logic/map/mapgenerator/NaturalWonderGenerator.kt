@@ -26,9 +26,9 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         if (tileMap.mapParameters.noNaturalWonders)
             return
         val mapRadius = tileMap.mapParameters.mapSize.radius
-        // number of Natural Wonders scales linearly with mapRadius as #wonders = mapRadius * 0.13133208 - 0.56128831
+        // number of Natural Wonders scales linearly with mapRadius
         val numberToSpawn = ruleset.modOptions.constants.run {
-            mapRadius * naturalWonderCountMultiplier - naturalWonderCountAddedConstant
+            mapRadius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant
         }.roundToInt()
 
         val spawned = mutableListOf<Terrain>()
