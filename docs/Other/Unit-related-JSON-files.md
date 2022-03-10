@@ -26,7 +26,7 @@ Each unit can have the following attributes:
 | promotions | List of Strings | defaults to none | A list of all the promotions the unit automatically receives upon being built. Each promotion must be in [UnitPromotions.json](#unitpromotionsjson) |
 | uniques | List of Strings | defaults to none | A list of the unique abilities this unit has. A list of almost all uniques can be found [here](../Modders/Unique-parameter-types.md#unit-uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this will be displayed instead of the list of uniques. Can be used for better formatting. |
-| attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [sounds](#Sounds)
+| attackSound | String | defaults to none | The sound that is to be played when this unit attacks. For possible values, see [Sounds](#../Modders/Images-and-Audio.md#sounds)
 | civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
@@ -62,11 +62,3 @@ Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee
 | name | String | required | The name of the unit type |
 | movementType | String | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |
 | uniques | List of String | defaults to none | A list of the unique abilities every unit of this type has. A list of almost all uniques can be found [here](../Modders/Unique-parameter-types.md#unit-uniques) |
-
-
-## Sounds
-Standard values are below. The sounds themselves can be found [here](/sounds).
-
-- _arrow, artillery, bombard, bombing, cannon, chimes, choir, click, coin, construction, elephant, fortify, gdrAttack, horse, jetgun, machinegun, metalhit, missile, nonmetalhit, nuke, paper, policy, promote, setup, shipguns, shot, slider, swap, tankshot, throw, torpedo, upgrade, whoosh_.
-
-Mods can add their own sounds, as long as any new value in attackSound has a corresponding sound file in the mod's sound folder, using one of the formats mp3, ogg or wav (file name extension must match codec used). Remember, names are case sensitive. Small sizes strongly recommended, Unciv's own sounds use 24kHz joint stereo 8-bit VBR at about 50-100kBps.
