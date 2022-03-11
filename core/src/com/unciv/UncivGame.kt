@@ -20,7 +20,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
-import java.lang.Exception
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -121,19 +120,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
-                if (settings.isFreshlyCreated) {
-                    setScreen(LanguagePickerScreen())
-                } else {
-                    if (deepLinkedMultiplayerGame == null)
-                        setScreen(MainMenuScreen())
-                    else {
-                        try {
-                            loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
-                        } catch (ex: Exception) {
-                            setScreen(MainMenuScreen())
-                        }
-                    }
+                when {
+                    settings.isFreshlyCreated -> setScreen(LanguagePickerScreen())
+                    deepLinkedMultiplayerGame == null -> setScreen(MainMenuScreen())
+                    else -> tryLoadDeepLinkedGame()
                 }
+
                 isInitialized = true
             }
         }
@@ -165,6 +157,16 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
         Gdx.graphics.requestRendering()
     }
+    
+    fun tryLoadDeepLinkedGame() {
+        if (deepLinkedMultiplayerGame != null) {
+            try {
+                loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
+            } catch (ex: Exception) {
+                setScreen(MainMenuScreen())
+            }
+        }
+    }
 
     // This is ALWAYS called after create() on Android - google "Android life cycle"
     override fun resume() {
@@ -175,13 +177,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         // This is also needed in resume to open links and notifications
         // correctly when the app was already running. The handling in onCreate
         // does not seem to be enough
-        if (deepLinkedMultiplayerGame != null) {
-            try {
-                loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
-            } catch (ex: Exception) {
-                setScreen(MainMenuScreen())
-            }
-        }
+        tryLoadDeepLinkedGame()
     }
 
     override fun pause() {
