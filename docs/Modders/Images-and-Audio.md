@@ -1,4 +1,4 @@
-# Audiovisual Mods
+# Images and Audio
 - [The 'Permanent audiovisual mod' feature](#permanent-audiovisual-mods)
 - [Mods can override built-in graphics](#override-built-in-graphics)
 - [Mods can supply additional tilesets - see separate page](Creating-a-custom-tileset.md)
@@ -13,13 +13,21 @@ The following chapters describe possibilities that will work while a mod is ***a
 ## Override built-in graphics
 If a mod supplies an image with the same name and path as one included in the base game (and its [atlas](Mods.md#more-on-images-and-the-texture-atlas) is up to date), and the mod is active, the mod's graphics will be used instead of the built-in one.
 
-For example, if you include a file named "Images/OtherIcons/Link.png" in your mod, you will be overriding the little chain links icon denoting linked lines in Civilopedia.
+For example, if you include a file named "Images/OtherIcons/Link.png" in your mod, you will be overriding the little chain links icon denoting linked lines in Civilopedia. The first part of the path is not relevant for overriding, it controls which of a set of atlas files will carry the image, but for selection in the game only the rest of the path is relevant.  So, to override "Images.Tech/TechIcons/Archery.png" you could place your image as "Images/TechIcons/Archery.png" and it would work because the "TechIcons/Archery" part is the key.
 
 Please note, as for adding items, your graphics should keep the size and color choices of the original, or the result may be surprising, e.g. when the game tries to tint such an image.
 
 
 ## Supply additional graphics
-Currently there are two kinds where the game has display capability but does not supply graphics itself, as described in the next paragraphs:
+You will need to supply the graphics for new elements - a new unit needs its icon just as a new nation does. The rules are:
+* The path and name of the image file need to conform to the rule: `Image[.AtlasName]/Type-specific/Objectname.png` (Type-specific means "TechIcons" for a Technology, "NationIcons" for a Nation and so on. See vanilla game folders. Objectname is the exact name as defined in json, before translation.)
+* All path parts are case sensitive.
+* Unit Pixel sprites and [Tilesets](Creating-a-custom-tileset.md) follow special rules.
+* Promotions can be named "`[Unitname] ability`". In such a case, if `UnitIcons/Unitname.png` exists it will fall back to that unit icon when `UnitPromotionIcons/Unitname ability.png` is missing.
+* Promotions can be named "Something I" (or " II" or " III"). The suffix will be removed and painted as little stars, only the base `UnitPromotionIcons/Something.png` will be loaded.
+* The special rules for promotions can be combined, e.g. "`[Warrior] ability III`" will fall back to the Warrior unit icon and paint 3 Stars on it.
+
+Additionally, there there are two kinds of images where the game has display capability but does not supply graphics itself, as described in the next paragraphs:
 
 ### Adding Wonder Splash Screens
 You can add wonder images to mods and they'll be displayed instead of the standard icon when a wonder is finished. The image needs to be a .png and 2:1 ratio so for example 200x100 px.
@@ -36,6 +44,13 @@ These work best if they are square, between 100x100 and 256x256 pixels, and incl
 For example, [here](https://github.com/yairm210/Unciv-leader-portrait-mod-example) is mod showing how to add leader portraits, which can complement the base game.
 
 
+## Sounds
+Standard values are below. The sounds themselves can be found [here](/sounds).
+
+- _arrow, artillery, bombard, bombing, cannon, chimes, choir, click, coin, construction, elephant, fortify, gdrAttack, horse, jetgun, machinegun, metalhit, missile, nonmetalhit, nuke, paper, policy, promote, setup, shipguns, shot, slider, swap, tankshot, throw, torpedo, upgrade, whoosh_.
+
+Mods can add their own sounds, as long as any new value in attackSound has a corresponding sound file in the mod's sound folder, using one of the formats mp3, ogg or wav (file name extension must match codec used). Remember, names are case sensitive. Small sizes strongly recommended, Unciv's own sounds use 24kHz joint stereo 8-bit VBR at about 50-100kBps.
+
 ## Override built-in sounds
 This works like graphics, except no atlas is involved. E.g. you include a sounds/Click.mp3, it will play instead of the normal click sound. These files must stay short and small. A sound larger than 1MB when uncompressed may break or not play at all on mobile devices. Unciv tries to standardize on 24kHz sample rate, joint stereo, low-bitrate VBR (-128kbps) mp3. Only mp3 and ogg formats will be recognized (but an existing mp3 can be overridden with an ogg file).
 
@@ -44,7 +59,7 @@ This works like graphics, except no atlas is involved. E.g. you include a sounds
 Sound files (mp3 or ogg) in a mod /music folder will be recognized and used when the mod is active. Except for context-specific music as described in the following paragraphs, tracks will play randomly from all available tracks (with a little bias to avoid close repetition of tracks). There is no overriding - a "thatched-villagers.mp3" in a mod will play in addition to and with the same likelihood as the file that the base game offers to download for you. There is no hard technical limit on bitrate or length, but large bandwidth requirements may lead to stuttering (The end of a "next turn", right before the world map is updated, and with very large maps, is the most likely to cause this).
 
 ### Context-sensitive music: Overview
-The Music Controller will generally play one track after another, with a pause (can be changed in options) between. Leave-game confirmation dialog is opened playback will fade out and pause and can resume when it is closed.
+The Music Controller will generally play one track after another, with a pause (can be changed in options) between. While the "Leave game?" confirmation dialog is opened playback will fade out and pause and can resume when it is closed.
 
 There are various 'triggers' in the game code initiating a choice for a new track. The new track will, if necessary, fade out the currently playing track quickly before it starts playing. Track choice involves context provided by the trigger and a random factor, and an attempt is made to not repeat any track until at least eight others have played.
 

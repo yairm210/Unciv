@@ -82,7 +82,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
         val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
-        val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
+        val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
     }
 
@@ -110,7 +110,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
-        val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
+        val locations = LocationAction(placedLocation, cities.city2.location, city.location)
         receivingCiv.addNotification("[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, civInfo.civName, militaryUnit.name)
     }
 

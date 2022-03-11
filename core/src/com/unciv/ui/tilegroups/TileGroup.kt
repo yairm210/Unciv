@@ -636,9 +636,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
         var color =
                 if (tileSetStrings.tileSetConfig.useColorAsBaseTerrain)
                     tileInfo.getBaseTerrain().getColor()
-                else Color.WHITE // no need to color it, it's already colored
+                else Color.WHITE.cpy() // no need to color it, it's already colored
 
-        if (!isViewable) color = color.cpy().lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
+        if (!isViewable) color = color.lerp(tileSetStrings.tileSetConfig.fogOfWarColor, 0.6f)
         for(image in tileBaseImages) image.color = color
     }
 
@@ -677,6 +677,7 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
                         .tryImage { if (baseUnit.replaces != null) "$unitsLocation${baseUnit.replaces}" else null }
                         .tryImages(
                                 militaryUnit.civInfo.gameInfo.ruleSet.units.values.asSequence().map {
+                                    @Suppress("unused")  // yes receiver unused but we want the signature to match ImageAttempter instance
                                     fun MapUnit.() = if (it.unitType == militaryUnit.type.name)
                                         "$unitsLocation${it.name}"
                                     else

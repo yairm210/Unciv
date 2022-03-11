@@ -313,7 +313,7 @@ class TechManager {
                     civInfo.addNotification(text, city.location, NotificationIcon.Construction)
                 }
             } else {
-                val locationAction = LocationAction(cities.map { it.location })
+                val locationAction = LocationAction(cities.asSequence().map { it.location })
                 if (construction is BaseUnit && construction.upgradesTo != null) {
                     val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
                     civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)

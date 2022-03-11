@@ -311,6 +311,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     IncompatibleWith("Incompatible with [policy/tech/promotion]", UniqueTarget.Policy, UniqueTarget.Tech, UniqueTarget.Promotion),
     StartingTech("Starting tech", UniqueTarget.Tech),
     StartsWithTech("Starts with [tech]", UniqueTarget.Nation),
+    StartsWithPolicy("Starts with [policy] adopted", UniqueTarget.Nation),
     ResearchableMultipleTimes("Can be continually researched", UniqueTarget.Global),
 
     BaseUnitSupply("[amount] Unit Supply", UniqueTarget.Global),

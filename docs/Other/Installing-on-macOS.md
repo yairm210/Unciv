@@ -12,6 +12,6 @@ _(Sadly UnCiv dose not auto update when installing it using this method on macOS
 
 ## Installing from source
 
-For instructions on how to install UnCiv from source see [Building locally without Android Studio](../Developers/Building-locally-without-Android-Studio.md). It is not recommended to use this method as it achieves the same result as the first method whilst being much more complicated and prone to errors along the way.
+For instructions on how to install UnCiv from source see [Building locally without Android Studio](../Developers/Building-Locally.md). It is not recommended to use this method as it achieves the same result as the first method whilst being much more complicated and prone to errors along the way.
 
 _(Sadly UnCiv dose not auto update when installing it using this method on macOS so you will need to follow these steps every time you want to update the game.)_

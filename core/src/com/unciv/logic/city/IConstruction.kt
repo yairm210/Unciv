@@ -158,7 +158,6 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     MorePolicyBranches(false, "Hidden until more policy branches are fully adopted"),
 
     RequiresNearbyResource(false, "Requires a certain resource being exploited nearby"),
-    InvalidRequiredBuilding(false, "Required building does not exist in ruleSet!"),
     CannotBeBuiltWith(false, "Cannot be built at the same time as another building already built"),
 
     RequiresBuildingInThisCity(true, "Requires a specific building in this city!"),

@@ -303,18 +303,19 @@ class GameInfo {
                 thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationIcon.War, unitName)
             }
         } else {
-            val positions = tiles.map { it.position }
-            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
+            val positions = tiles.asSequence().map { it.position }
+            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
         }
     }
 
     private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
-        if (cities.count() < 3) {
+        if (cities.size < 3) {
             for (city in cities)
                 thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair)
-
-        } else
-            thisPlayer.addNotification("[${cities.count()}] of your cities can bombard the enemy!", LocationAction(cities.map { it.location }), NotificationIcon.City, NotificationIcon.Crosshair)
+        } else {
+            val positions = cities.asSequence().map { it.location }
+            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions), NotificationIcon.City, NotificationIcon.Crosshair)
+        }
     }
 
     fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
@@ -354,12 +355,12 @@ class GameInfo {
             // re-sort to a more pleasant display order
             .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
             .map { it.tile.position }
-            .toList()       // explicit materialization of sequence to satisfy addNotification overload
 
-        val text =  if(positions.size==1)
+        val positionsCount = positions.count()
+        val text =  if (positionsCount == 1)
             "[$resourceName] revealed near [${chosenCity.name}]"
         else
-            "[${positions.size}] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
+            "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
         civInfo.addNotification(
             text,

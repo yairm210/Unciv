@@ -4,9 +4,10 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
@@ -31,8 +32,6 @@ import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -166,28 +165,28 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         pad(10f)
         defaults().pad(2.5f)
 
-        addYesNoRow("Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
-        addYesNoRow("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
-        addYesNoRow("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
-        addYesNoRow("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
-        addYesNoRow("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
-        addMinimapSizeSlider()
+        addCheckbox("Show unit movement arrows", settings.showUnitMovements, true) { settings.showUnitMovements = it }
+        addCheckbox("Show tile yields", settings.showTileYields, true) { settings.showTileYields = it } // JN
+        addCheckbox("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
+        addCheckbox("Show resources and improvements", settings.showResourcesAndImprovements, true) { settings.showResourcesAndImprovements = it }
+        addCheckbox("Show tutorials", settings.showTutorials, true) { settings.showTutorials = it }
+        addCheckbox("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
+        addCheckbox("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
-        addYesNoRow("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
-        addYesNoRow("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
+        addMinimapSizeSlider()
 
         addResolutionSelectBox()
 
         addTileSetSelectBox()
 
-        addYesNoRow("Continuous rendering", settings.continuousRendering) {
+        addCheckbox("Continuous rendering", settings.continuousRendering) {
             settings.continuousRendering = it
             Gdx.graphics.isContinuousRendering = it
         }
 
         val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
         val continuousRenderingLabel = WrappableLabel(continuousRenderingDescription,
-                tabs.prefWidth, Color.ORANGE.cpy().lerp(Color.WHITE, 0.7f), 14)
+                tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14)
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
     }
@@ -195,9 +194,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getGamePlayTab() = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
-        addYesNoRow("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
-        addYesNoRow("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
-        addYesNoRow("Auto-assign city production", settings.autoAssignCityProduction, true) {
+        addCheckbox("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
+        addCheckbox("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
+        addCheckbox("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && previousScreen is WorldScreen &&
                 previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
@@ -206,9 +205,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 }
             }
         }
-        addYesNoRow("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
-        addYesNoRow("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
-        addYesNoRow("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
+        addCheckbox("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
+        addCheckbox("Automated workers replace improvements", settings.automatedWorkersReplaceImprovements) { settings.automatedWorkersReplaceImprovements = it }
+        addCheckbox("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
     }
 
     private fun getSoundTab() = Table(BaseScreen.skin).apply {
@@ -230,7 +229,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         pad(10f)
         defaults().pad(5f)
 
-        addYesNoRow("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
+        addCheckbox("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
             settings.multiplayerTurnCheckerEnabled = it
             settings.save()
             tabs.replacePage("Multiplayer", getMultiplayerTab())
@@ -239,7 +238,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         if (settings.multiplayerTurnCheckerEnabled) {
             addMultiplayerTurnCheckerDelayBox()
 
-            addYesNoRow("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
+            addCheckbox("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
                 { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
         }
     }
@@ -250,13 +249,13 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         addAutosaveTurnsSelectBox()
 
-        addYesNoRow("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}",
+        addCheckbox("{Show experimental world wrap for maps}\n{HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!}",
             settings.showExperimentalWorldWrap) {
             settings.showExperimentalWorldWrap = it
         }
 
         if (previousScreen.game.limitOrientationsHelper != null) {
-            addYesNoRow("Enable portrait orientation", settings.allowAndroidPortrait) {
+            addCheckbox("Enable portrait orientation", settings.allowAndroidPortrait) {
                 settings.allowAndroidPortrait = it
                 // Note the following might close the options screen indirectly and delayed
                 previousScreen.game.limitOrientationsHelper.allowPortrait(it)
@@ -553,7 +552,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             if (previousScreen is WorldScreen)
                 previousScreen.shouldUpdate = true
         }
-        add(minimapSlider).pad(10f).row()
+        add(minimapSlider).minWidth(selectBoxMinWidth).pad(10f).row()
     }
 
     private fun Table.addResolutionSelectBox() {
@@ -768,51 +767,15 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
     }
 
-
-    private fun Table.addYesNoRow(text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
-        val wrapWidth = tabs.prefWidth - 60f
-        add(WrappableLabel(text, wrapWidth).apply { wrap = true })
-            .left().fillX()
-            .maxWidth(wrapWidth)
-        val button = YesNoButton(initialValue, BaseScreen.skin) {
+    private fun Table.addCheckbox(text: String, initialState: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
+        val checkbox = text.toCheckBox(initialState) {
             action(it)
             settings.save()
             if (updateWorld && previousScreen is WorldScreen)
                 previousScreen.shouldUpdate = true
         }
-        add(button).row()
+        add(checkbox).colspan(2).left().row()
     }
 
     //endregion
-
-    /**
-     *  This TextButton subclass helps to keep looks and behaviour of our Yes/No
-     *  in one place, but it also helps keeping context for those action lambdas.
-     *
-     *  Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
-     */
-    private class YesNoButton(
-        initialValue: Boolean,
-        skin: Skin,
-        action: (Boolean) -> Unit
-    ) : TextButton (initialValue.toYesNo(), skin ) {
-
-        var value = initialValue
-            private set(value) {
-                field = value
-                setText(value.toYesNo())
-            }
-
-        init {
-            color = ImageGetter.getBlue()
-            onClick {
-                value = !value
-                action.invoke(value)
-            }
-        }
-
-        companion object {
-            fun Boolean.toYesNo(): String = (if (this) Constants.yes else Constants.no).tr()
-        }
-    }
 }

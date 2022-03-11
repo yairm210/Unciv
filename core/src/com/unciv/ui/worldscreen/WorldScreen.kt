@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -82,7 +83,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val fogOfWarButton = createFogOfWarButton()
     private val nextTurnButton = createNextTurnButton()
     private var nextTurnAction: () -> Unit = {}
-    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
+    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
@@ -758,7 +759,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
             viewingCiv.religionManager.canFoundPantheon() ->
                 NextTurnAction("Found Pantheon", Color.WHITE) {
-                    game.setScreen(PantheonPickerScreen(viewingCiv, gameInfo))
+                    game.setScreen(PantheonPickerScreen(viewingCiv))
                 }
 
             viewingCiv.religionManager.religionState == ReligionState.FoundingReligion ->
@@ -766,7 +767,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     game.setScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
-                            gameInfo,
                             viewingCiv.religionManager.getBeliefsToChooseAtFounding(),
                             pickIconAndName = true
                         )
@@ -778,7 +778,6 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                     game.setScreen(
                         ReligiousBeliefsPickerScreen(
                             viewingCiv,
-                            gameInfo,
                             viewingCiv.religionManager.getBeliefsToChooseAtEnhancing(),
                             pickIconAndName = false
                         )
@@ -791,7 +790,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
                 }
 
             !viewingCiv.hasMovedAutomatedUnits && viewingCiv.getCivUnits()
-                .any { it.currentMovement >= 0.1f && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
+                .any { it.currentMovement > Constants.minimumMovementEpsilon && (it.isMoving() || it.isAutomated() || it.isExploring()) } ->
                 NextTurnAction("Move automated units", Color.LIGHT_GRAY) {
                     viewingCiv.hasMovedAutomatedUnits = true
                     isPlayersTurn = false // Disable state changes

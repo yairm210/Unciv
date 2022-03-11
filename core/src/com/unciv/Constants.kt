@@ -58,10 +58,15 @@ object Constants {
     const val rising = "Rising"
     const val lowering = "Lowering"
     const val remove = "Remove "
-    
+
     const val uniqueOrDelimiter = "\" OR \""
-    
-    const val minimumMovementEpsilon = 0.05
+
+    /**
+     * Use this to determine whether a [MapUnit][com.unciv.logic.map.MapUnit]'s movement is exhausted
+     * (currentMovement <= this) if and only if a fuzzy comparison is needed to account for Float rounding errors.
+     * _Most_ checks do compare to 0!
+     */
+    const val minimumMovementEpsilon = 0.05f  // 0.1f was used previously, too - here for global searches
     const val defaultFontSize = 18
     const val headingFontSize = 24
 }
