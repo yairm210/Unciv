@@ -19,7 +19,7 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {

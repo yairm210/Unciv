@@ -16,7 +16,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import java.util.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
