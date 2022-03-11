@@ -268,7 +268,8 @@
 		"impassable": true,
 		"overrideStats": true,
 		"occursOn": ["Ocean", "Coast"],
-		"uniques": ["[-1] to Fertility for Map Generation",
+		"uniques": ["Occurs at temperature between [-1] and [-0.8] and humidity between [0] and [1]",
+					"[-1] to Fertility for Map Generation",
 					"Considered [Undesirable] when determining start locations"]
 	},
 	{

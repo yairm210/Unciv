@@ -23,8 +23,7 @@ object Constants {
     const val jungle = "Jungle"
     const val ice = "Ice"
     val vegetation = arrayOf(forest, jungle)
-    val sea = arrayOf(ocean, coast)
-    
+
     const val freshWater = "Fresh water"
 
     const val barbarianEncampment = "Barbarian encampment"
