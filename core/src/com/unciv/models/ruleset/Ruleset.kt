@@ -132,6 +132,8 @@ class Ruleset {
         units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
+        modOptions.uniques.addAll(ruleset.modOptions.uniques)
+        modOptions.constants.merge(ruleset.modOptions.constants)
         mods += ruleset.mods
     }
 
@@ -167,7 +169,7 @@ class Ruleset {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
                 if (modOptions.maxXPfromBarbarians != 30)
-                    modOptions.constants.maxXPfromBarbarians = modOptions.constants.maxXPfromBarbarians
+                    modOptions.constants.maxXPfromBarbarians = modOptions.maxXPfromBarbarians
             } catch (ex: Exception) {}
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
             modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }
@@ -822,11 +824,11 @@ object RulesetCache : HashMap<String,Ruleset>() {
             baseRuleset
 
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
-            newRuleset.add(mod)
-            newRuleset.mods += mod.name
             if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
             }
+            newRuleset.add(mod)
+            newRuleset.mods += mod.name
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
