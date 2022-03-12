@@ -16,7 +16,11 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.roundToInt
 
-class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccept: ()->Unit) : PickerScreen() {
+class ImprovementPickerScreen(
+    private val tileInfo: TileInfo,
+    private val unit: MapUnit,
+    private val onAccept: ()->Unit
+) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
     private val gameInfo = tileInfo.tileMap.gameInfo
     private val ruleSet = gameInfo.ruleSet
@@ -32,8 +36,8 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
             // no onAccept() - Worker can stay selected
         } else {
             if (improvement.name != tileInfo.improvementInProgress)
-                tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
-            if (tileInfo.civilianUnit != null) tileInfo.civilianUnit!!.action = null // this is to "wake up" the worker if it's sleeping
+                tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv, unit)
+            unit.action = null // this is to "wake up" the worker if it's sleeping
             onAccept()
         }
         game.setWorldScreen()
@@ -94,7 +98,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, unit: MapUnit, val onAccep
 
             var labelText = improvement.name.tr()
             val turnsToBuild = if (tileInfo.improvementInProgress == improvement.name) tileInfo.turnsToImprovement
-            else improvement.getTurnsToBuild(currentPlayerCiv)
+                else improvement.getTurnsToBuild(currentPlayerCiv, unit)
             if (turnsToBuild > 0) labelText += " - $turnsToBuild${Fonts.turn}"
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.tileResource.improvement == improvement.name
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()

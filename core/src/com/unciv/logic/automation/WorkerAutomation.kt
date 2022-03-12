@@ -146,7 +146,7 @@ class WorkerAutomation(
             && tileCanBeImproved(unit, currentTile)) {
             if (WorkerAutomationConst.consoleOutput)
                 println("WorkerAutomation: ${unit.label()} -> start improving $currentTile")
-            return currentTile.startWorkingOnImprovement(chooseImprovement(unit, currentTile)!!, civInfo)
+            return currentTile.startWorkingOnImprovement(chooseImprovement(unit, currentTile)!!, civInfo, unit)
         }
 
         if (currentTile.improvementInProgress != null) return // we're working!
@@ -234,7 +234,7 @@ class WorkerAutomation(
                     if (unit.currentMovement > 0 && currentTile == tileToConstructRoadOn
                         && currentTile.improvementInProgress != bestRoadAvailable.name) {
                         val improvement = bestRoadAvailable.improvement(ruleSet)!!
-                        tileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo)
+                        tileToConstructRoadOn.startWorkingOnImprovement(improvement, civInfo, unit)
                     }
                     if (WorkerAutomationConst.consoleOutput)
                         println("WorkerAutomation: ${unit.label()} -> connect city ${bfs.startingPoint.getCity()?.name} to ${cityTile.getCity()!!.name} on $tileToConstructRoadOn")

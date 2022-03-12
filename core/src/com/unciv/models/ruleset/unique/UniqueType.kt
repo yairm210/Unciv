@@ -273,7 +273,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     
     BetterDefensiveBuildings("[amount]% City Strength from defensive buildings", UniqueTarget.Global),
     
-    TileImprovementTime("[amount]% tile improvement construction time", UniqueTarget.Global),
+    TileImprovementTime("[amount]% tile improvement construction time", UniqueTarget.Global, UniqueTarget.Unit),
     PercentGoldFromTradeMissions("[amount]% Gold from Great Merchant trade missions", UniqueTarget.Global),
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),

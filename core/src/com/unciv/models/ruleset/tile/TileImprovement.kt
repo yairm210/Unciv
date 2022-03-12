@@ -2,10 +2,12 @@ package com.unciv.models.ruleset.tile
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetStatsObject
+import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unique.UniqueTarget
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
@@ -24,14 +26,14 @@ class TileImprovement : RulesetStatsObject() {
     val turnsToBuild: Int = 0 // This is the base cost.
 
 
-    fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
-        var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        for (unique in civInfo.getMatchingUniques(UniqueType.TileImprovementTime)) {
-            realTurnsToBuild *= unique.params[0].toPercent()
-        }
+    fun getTurnsToBuild(civInfo: CivilizationInfo, unit: MapUnit?): Int {
+        val state = StateForConditionals(civInfo, unit = unit)
+        val uniques = civInfo.getMatchingUniques(UniqueType.TileImprovementTime, state) +
+            (unit?.getMatchingUniques(UniqueType.TileImprovementTime, state) ?: sequenceOf())
+        return uniques.fold(turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier) {
+            it, unique -> it * unique.params[0].toPercent()
+        }.roundToInt().coerceAtLeast(1)
         // In some weird cases it was possible for something to take 0 turns, leading to it instead never finishing
-        if (realTurnsToBuild < 1) realTurnsToBuild = 1f
-        return realTurnsToBuild.roundToInt()
     }
 
     fun getDescription(ruleset: Ruleset): String {
