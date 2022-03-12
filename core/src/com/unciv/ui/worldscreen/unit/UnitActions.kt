@@ -713,7 +713,7 @@ object UnitActions {
             otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 
-    fun addStatsPerGreatPersonUsage(unit: MapUnit) {
+    private fun addStatsPerGreatPersonUsage(unit: MapUnit) {
         if (!unit.isGreatPerson()) return
 
         val civInfo = unit.civInfo
@@ -792,7 +792,7 @@ object UnitActions {
         if (getGiftAction != null) actionList += getGiftAction
     }
 
-    fun getGiftAction(unit: MapUnit, tile: TileInfo): UnitAction? {
+    private fun getGiftAction(unit: MapUnit, tile: TileInfo): UnitAction? {
         val recipient = tile.getOwner()
         // We need to be in another civs territory.
         if (recipient == null || recipient.isCurrentPlayer()) return null
@@ -834,7 +834,7 @@ object UnitActions {
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
     
-    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
+    private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
         for (unique in unit.getUniques()) {
             if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue
             val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text){

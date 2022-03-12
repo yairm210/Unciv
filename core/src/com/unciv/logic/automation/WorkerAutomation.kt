@@ -206,7 +206,7 @@ class WorkerAutomation(
                 BFS(toConnectTile, isCandidateTilePredicate).apply {
                     maxSize = HexMath.getNumberOfTilesInHexagon(
                         WorkerAutomationConst.maxBfsReachPadding +
-                        tilesOfConnectedCities.map { it.aerialDistanceTo(toConnectTile) }.minOrNull()!!
+                            tilesOfConnectedCities.minOf { it.aerialDistanceTo(toConnectTile) }
                     )
                     bfsCache[toConnectTile.position] = this@apply
                 }
