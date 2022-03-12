@@ -490,6 +490,20 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
             BaseScreen.enableSceneDebug = it
         }).row()
+
+        add("Allow untyped Uniques in mod checker".toCheckBox(RulesetCache.modCheckerAllowUntypedUniques) {
+            RulesetCache.modCheckerAllowUntypedUniques = it
+        }).row()
+
+        add(Table().apply {
+            add("Unique misspelling threshold".toLabel()).left().fillX()
+            add(
+                UncivSlider(0f, 0.5f, 0.05f, initial = RulesetCache.uniqueMisspellingThreshold.toFloat()) {
+                    RulesetCache.uniqueMisspellingThreshold = it.toDouble()
+                }
+            ).minWidth(120f).pad(5f)
+        }).row()
+
         val unlockTechsButton = "Unlock all techs".toTextButton()
         unlockTechsButton.onClick {
             if (!game.isGameInfoInitialized())
@@ -504,6 +518,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             game.worldScreen.shouldUpdate = true
         }
         add(unlockTechsButton).row()
+
         val giveResourcesButton = "Give all strategic resources".toTextButton()
         giveResourcesButton.onClick {
             if (!game.isGameInfoInitialized())
