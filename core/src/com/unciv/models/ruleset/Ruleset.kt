@@ -849,11 +849,15 @@ object RulesetCache : HashMap<String,Ruleset>() {
     /**
      * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
      */
-    fun checkCombinedModLinks(mods: LinkedHashSet<String>, baseRuleset: String? = null): Ruleset.RulesetErrorList {
+    fun checkCombinedModLinks(
+        mods: LinkedHashSet<String>,
+        baseRuleset: String? = null,
+        forOptionsPopup: Boolean = false
+    ): Ruleset.RulesetErrorList {
         return try {
             val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
-            newRuleset.checkModLinks()
+            newRuleset.checkModLinks(forOptionsPopup)
         } catch (ex: Exception) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error

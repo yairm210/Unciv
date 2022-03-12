@@ -314,7 +314,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
                 val modLinks =
                         if (base == modCheckWithoutBase) mod.checkModLinks(forOptionsPopup = true)
-                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base)
+                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, forOptionsPopup = true)
                 modLinks.sortByDescending { it.errorSeverityToReport }
                 val noProblem = !modLinks.isNotOK()
                 if (modLinks.isNotEmpty()) modLinks += RulesetError("", RulesetErrorSeverity.OK)
