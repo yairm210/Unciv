@@ -638,8 +638,14 @@ object UnitActions {
                 title = "Create [$improvementName]",
                 action = {
                     val unitTile = unit.getTile()
-                    for (terrainFeature in tile.terrainFeatures.filter { unitTile.ruleset.tileImprovements.containsKey("Remove $it") })
-                        unitTile.removeTerrainFeature(terrainFeature)// remove forest/jungle/marsh
+                    unitTile.setTerrainFeatures(
+                        // Remove terrainFeatures that a Worker can remove
+                        // and that aren't explicitly allowed under the improvement
+                        unitTile.terrainFeatures.filter {
+                            "Remove $it" !in unitTile.ruleset.tileImprovements ||
+                            it in improvement.terrainsCanBeBuiltOn
+                        }
+                    ) 
                     unitTile.improvement = improvementName
                     unitTile.improvementInProgress = null
                     unitTile.turnsToImprovement = 0
@@ -650,7 +656,8 @@ object UnitActions {
                         city.cityStats.update()
                         city.civInfo.updateDetailedCivResources()
                     }
-                    addStatsPerGreatPersonUsage(unit)
+                    if (unit.isGreatPerson())
+                        addStatsPerGreatPersonUsage(unit)
                     unit.destroy()
                 }.takeIf {
                     resourcesAvailable
