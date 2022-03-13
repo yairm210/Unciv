@@ -35,6 +35,7 @@ import kotlin.concurrent.thread
 
 
 class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
+    private var zoomLevel: Int = 1
     internal var selectedTile: TileInfo? = null
     private val tileGroups = HashMap<TileInfo, List<WorldTileGroup>>()
 
@@ -130,7 +131,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         actor = tileGroupMap
 
-        setSize(worldScreen.stage.width * 4, worldScreen.stage.height * 4)
+        setSize(worldScreen.stage.width * 2, worldScreen.stage.height * 2)
         setOrigin(width / 2, height / 2)
         center(worldScreen.stage)
 
@@ -704,15 +705,47 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     override fun zoom(zoomScale: Float) {
         super.zoom(zoomScale)
         val scale = 1 / scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
-//        if (scale >= 2) {
-//            setSize(worldScreen.stage.width * 4, worldScreen.stage.height * 4)
-//            setOrigin(width / 2, height / 2)
-//            center(worldScreen.stage)
-//        }else {
-//            setSize(worldScreen.stage.width * 2, worldScreen.stage.height * 2)
-//            setOrigin(width / 2, height / 2)
-//            center(worldScreen.stage)
-//        }
+        
+        println("zoomLevel: $zoomLevel scale $scale")
+        println("stage.width:${stage.width} stage.height:${stage.height} actor.width:${actor.width} actor.height:${actor.height}")
+        println("was X: $scrollX  X%: $scrollPercentX maxX: $maxX width:$width")
+        println("Y: $scrollY Y%: $scrollPercentY maxY:$maxY height:$height")
+        if (zoomLevel == 1 && scale >= 2) {
+            println("zoomup")
+            zoomLevel = 2
+            // X and Y are location of top-right corner
+            // Need location of center of screen
+            // worldScreen.stage.width = stage.width = window width (resolution)
+            // actor.width is size of the whole map
+            // maxX = actor.width - width
+            updateVisualScroll()
+            layout()
+            val percentX = scrollPercentX
+            val percentY = scrollPercentY
+            setSize(worldScreen.stage.width * zoomLevel * 2, worldScreen.stage.height * zoomLevel * 2)
+            setOrigin(width / 2, height / 2)
+            center(worldScreen.stage)
+            println("percentX: $percentX")
+            layout()  // first update sizes
+            scrollX
+            scrollPercentX = percentX
+            scrollPercentY = percentY
+            updateVisualScroll()
+        }else if(zoomLevel == 2 && scale < 2){
+            println("zoomdown")
+            zoomLevel = 1
+            val percentX = (scrollX + stage.width/2)/maxX
+            val percentY = (scrollY + stage.height/2)/maxY
+            setSize(worldScreen.stage.width * 2, worldScreen.stage.height * 2)
+            setOrigin(width / 2, height / 2)
+            center(worldScreen.stage)
+            scrollX = percentX*maxX-stage.width/2
+            scrollY = percentY*maxY-stage.height/2
+            updateVisualScroll()
+            layout()
+        }
+        println("now X: $scrollX  X%: $scrollPercentX maxX: $maxX width:$width")
+        println("Y: $scrollY Y%: $scrollPercentY maxY:$maxY height:$height")
         if (scale >= 1)
             for (tileGroup in allWorldTileGroups)
                 tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
