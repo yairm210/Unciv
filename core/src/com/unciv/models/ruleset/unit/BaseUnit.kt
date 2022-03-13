@@ -324,7 +324,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount) + cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscountDeprecated)) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
@@ -352,18 +352,19 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects) {
-            when (unique.placeholderText) {
-                UniqueType.OnlyAvailableWhen.placeholderText -> if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
+            @Suppress("NON_EXHAUSTIVE_WHEN")
+            when (unique.type) {
+                UniqueType.OnlyAvailableWhen -> if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
                     rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-                UniqueType.NotDisplayedWithout.placeholderText -> {
+                UniqueType.NotDisplayedWithout -> {
                     val filter = unique.params[0]
                     if (filter in civInfo.gameInfo.ruleSet.tileResources && !civInfo.hasResource(filter)
                             || filter in civInfo.gameInfo.ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(filter))
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
                 }
 
-                UniqueType.RequiresPopulation.placeholderText -> if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
+                UniqueType.RequiresPopulation -> if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
                     rejectionReasons.add(RejectionReason.PopulationRequirement.toInstance(unique.text))
             }
         }
@@ -393,12 +394,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
         for (unique in uniqueObjects) {
-            when (unique.placeholderText) {
-                UniqueType.Unbuildable.placeholderText ->
+            when (unique.type) {
+                UniqueType.Unbuildable ->
                     rejectionReasons.add(RejectionReason.Unbuildable)
 
                 // This should be deprecated and replaced with the already-existing "only available when" unique, see above
-                UniqueType.UnlockedWith.placeholderText, UniqueType.Requires.placeholderText -> {
+                UniqueType.UnlockedWith, UniqueType.Requires -> {
                     val filter = unique.params[0]
                     when {
                         ruleSet.technologies.contains(filter) ->
@@ -416,10 +417,10 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     }
                 }
 
-                UniqueType.FoundCity.placeholderText-> if (civInfo.isCityState() || civInfo.isOneCityChallenger())
+                UniqueType.FoundCity -> if (civInfo.isCityState() || civInfo.isOneCityChallenger())
                     rejectionReasons.add(RejectionReason.NoSettlerForOneCityPlayers)
 
-                UniqueType.MaxNumberBuildable.placeholderText -> if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
+                UniqueType.MaxNumberBuildable -> if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                     rejectionReasons.add(RejectionReason.MaxNumberBuildable)
             }
         }
