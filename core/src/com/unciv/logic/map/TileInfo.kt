@@ -59,7 +59,7 @@ open class TileInfo {
     lateinit var baseTerrain: String
     var terrainFeatures: List<String> = listOf()
         private set
-    
+
     @Transient
     var terrainFeatureObjects: List<Terrain> = listOf()
         private set
@@ -227,7 +227,7 @@ open class TileInfo {
             else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
         }
     }
-    
+
     fun isEnemyTerritory(civInfo: CivilizationInfo): Boolean {
         val tileOwner = getOwner() ?: return false
         return civInfo.isAtWarWith(tileOwner)
@@ -438,7 +438,7 @@ open class TileInfo {
                     stats.add(unique.stats)
                 }
             }
-            
+
             for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
                 if (improvement.matchesFilter(unique.params[1]))
                     stats.timesInPlace(unique.params[0].toPercent())
@@ -556,7 +556,7 @@ open class TileInfo {
             baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
-            "Coastal" -> isCoastalTile()
+            Constants.coastal -> isCoastalTile()
             "River" -> isAdjacentToRiver()
             naturalWonder -> true
             "Open terrain" -> !isRoughTerrain()
@@ -568,7 +568,7 @@ open class TileInfo {
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
-            "Fresh Water" -> isAdjacentTo(Constants.freshWater)
+            Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (getAllTerrains().any { it.hasUnique(filter) }) return true
@@ -845,7 +845,7 @@ open class TileInfo {
     fun stripUnits() {
         for (unit in this.getUnits()) removeUnit(unit)
     }
-    
+
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
         resource = newResource.name
 
@@ -873,15 +873,15 @@ open class TileInfo {
             }
         }
     }
-    
+
     fun setTerrainFeatures(terrainFeatureList:List<String>){
         terrainFeatures = terrainFeatureList
         terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
     }
-    
+
     fun addTerrainFeature(terrainFeature:String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
-    
+
     fun removeTerrainFeature(terrainFeature: String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })
 

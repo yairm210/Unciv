@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.JsonParser
+import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.Counter
 import com.unciv.models.ModConstants
@@ -52,7 +53,7 @@ class ModOptions : IHasUniques {
     var modSize = 0
  
     @Deprecated("As of 3.18.15")
-    val maxXPfromBarbarians = 30
+    var maxXPfromBarbarians = 30
 
     override var uniques = ArrayList<String>()
 
@@ -166,8 +167,7 @@ class Ruleset {
         if (modOptionsFile.exists()) {
             try {
                 modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
-                if (modOptions.maxXPfromBarbarians != 30)
-                    modOptions.constants.maxXPfromBarbarians = modOptions.constants.maxXPfromBarbarians
+                modOptions.updateDeprecations()
             } catch (ex: Exception) {}
             modOptions.uniqueObjects = modOptions.uniques.map { Unique(it, UniqueTarget.ModOptions) }
             modOptions.uniqueMap = modOptions.uniqueObjects.groupBy { it.placeholderText }

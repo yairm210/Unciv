@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
@@ -253,7 +254,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
 
     BetterDefensiveBuildings("[amount]% City Strength from defensive buildings", UniqueTarget.Global),
-
     TileImprovementTime("[amount]% tile improvement construction time", UniqueTarget.Global, UniqueTarget.Unit),
     PercentGoldFromTradeMissions("[amount]% Gold from Great Merchant trade missions", UniqueTarget.Global),
     // Todo: Lowercase the 'U' of 'Units' in this unique
@@ -275,6 +275,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     EmbarkAndEnterOcean("Can embark and move over Coasts and Oceans immediately", UniqueTarget.Global),
 
     PopulationLossFromNukes("Population loss from nuclear attacks [amount]% [cityFilter]", UniqueTarget.Global),
+  
     NaturalReligionSpreadStrength("[amount]% Natural religion spread [cityFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     ReligionSpreadDistance("Religion naturally spreads to cities [amount] tiles away", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
@@ -360,7 +361,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     // Todo nuclear weapon and spaceship enabling requires a rethink.
     // This doesn't actually directly affect anything, the "Only available <if [Manhattan Project] is constructed>" of the nuclear weapons does that.
     EnablesNuclearWeapons("Enables nuclear weapon", UniqueTarget.Building),
-    
 
     MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
     MustNotBeOn("Must not be on [terrainFilter]", UniqueTarget.Building),
@@ -542,7 +542,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     ResistsNukes("Resistant to nukes", UniqueTarget.Terrain),
     DestroyableByNukes("Can be destroyed by nukes", UniqueTarget.Terrain),
 
-    FreshWater("Fresh water", UniqueTarget.Terrain),
+    FreshWater(Constants.freshWater, UniqueTarget.Terrain),
     RoughTerrain("Rough terrain", UniqueTarget.Terrain),
 
     /////// Resource uniques

@@ -325,7 +325,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn.isNotEmpty() -> terrain.occursOn.first()
-                    else -> "Grassland"
+                    else -> Constants.grassland
                 }
                 tileInfo.addTerrainFeature(terrain.name)
             } else tileInfo.baseTerrain = terrain.name
