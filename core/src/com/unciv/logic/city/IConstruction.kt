@@ -97,7 +97,7 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
     }
 
     fun getMostImportantRejectionReason(): String? {
-        return orderOfErrorMessages.firstOrNull { this.contains(it) }?.errorMessage
+        return orderOfErrorMessages.firstOrNull { contains(it) }?.errorMessage
     }
 
     // Used for constant variables in the functions above
