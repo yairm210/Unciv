@@ -348,9 +348,18 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     RequiresAnotherBuilding("Requires a [buildingName] in this city", UniqueTarget.Building),
     RequiresBuildingInAllCities("Requires a [buildingName] in all cities", UniqueTarget.Building),
     RequiresBuildingInSomeCities("Requires a [buildingName] in at least [amount] cities", UniqueTarget.Building),
+    CanOnlyBeBuiltInCertainCities("Can only be built [cityFilter]", UniqueTarget.Building),
+    @Deprecated("as of 3.19.16", ReplaceWith("Can only be built [in annexed cities]"))
+    CanOnlyBeBuiltInAnnexedCities("Can only be built in annexed cities", UniqueTarget.Building),
+    
+    MustHaveOwnedWithinTiles("Must have an owned [tileFilter] within [amount] tiles", UniqueTarget.Building),
 
     @Deprecated("as of 3.19.7", ReplaceWith("[stats] <with [resource]>"))
     StatsWithResource("[stats] with [resource]", UniqueTarget.Building),
+    
+    // Todo nuclear weapon and spaceship enabling requires a rethink.
+    // This doesn't actually directly affect anything, the "Only available <if [Manhattan Project] is constructed>" of the nuclear weapons does that.
+    EnablesNuclearWeapons("Enables nuclear weapon", UniqueTarget.Building),
     
 
     MustBeOn("Must be on [terrainFilter]", UniqueTarget.Building),
