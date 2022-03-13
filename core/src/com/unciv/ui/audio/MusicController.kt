@@ -5,7 +5,7 @@ import com.badlogic.gdx.Files.FileType
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.worldscreen.mainmenu.DropBox
+import com.unciv.logic.multiplayer.DropBox
 import java.util.*
 import kotlin.concurrent.timer
 

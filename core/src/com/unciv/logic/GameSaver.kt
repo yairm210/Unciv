@@ -8,7 +8,6 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.crashHandlingThread
 import com.unciv.ui.utils.postCrashHandlingRunnable
 import java.io.File
-import kotlin.concurrent.thread
 
 object GameSaver {
     private const val saveFilesFolder = "SaveFiles"
