@@ -166,7 +166,7 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
-        if (!(unit.hasUnique(UniqueType.FoundCity))
+        if (!unit.hasUnique(UniqueType.FoundCity)
                 || tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civInfo.isOneCityChallenger() && unit.civInfo.hasEverOwnedOriginalCapital == true) return null

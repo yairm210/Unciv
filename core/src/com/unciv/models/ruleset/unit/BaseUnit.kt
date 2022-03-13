@@ -433,9 +433,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 }
         }
         
-        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits).any { matchesFilter(it.params[0]) }) {
-            rejectionReasons.add(RejectionReason.CannotBeBuilt)
-        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.CannotBuildUnits))
+            if (this.matchesFilter(unique.params[0])) {
+                val rejectionReason = RejectionReason.CannotBeBuilt
+                if (unique.conditionals.any { it.type == UniqueType.ConditionalBelowHappiness }){
+                    rejectionReason.shouldShow = true
+                    rejectionReason.errorMessage = unique.text
+                }
+                rejectionReasons.add(rejectionReason)
+            }
+        
         return rejectionReasons
     }
 
