@@ -443,7 +443,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return rejectionReasons.none { !it.shouldShow }
             || (
                 canBePurchasedWithAnyStat(cityConstructions.cityInfo)
-                && rejectionReasons.all { it == RejectionReason.Unbuildable }
+                && rejectionReasons.all { it.rejectionReason == RejectionReason.Unbuildable }
             )
     }
 
@@ -480,25 +480,25 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
                 UniqueType.MustBeOn.placeholderText ->
                     if (!cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
-                        rejectionReasons.add(RejectionReason.MustBeOnTile.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.MustBeOnTile.toInstance(unique.text))
 
                 UniqueType.MustNotBeOn.placeholderText ->
                     if (cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
-                        rejectionReasons.add(RejectionReason.MustNotBeOnTile.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.MustNotBeOnTile.toInstance(unique.text))
 
                 UniqueType.MustBeNextTo.placeholderText ->
                     if (!cityCenter.isAdjacentTo(unique.params[0]))
-                        rejectionReasons.add(RejectionReason.MustBeNextToTile.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.MustBeNextToTile.toInstance(unique.text))
 
                 UniqueType.MustNotBeNextTo.placeholderText ->
                     if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) })
-                        rejectionReasons.add(RejectionReason.MustNotBeNextToTile.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.MustNotBeNextToTile.toInstance(unique.text))
 
                 "Must have an owned [] within [] tiles" ->
                     if (cityCenter.getTilesInDistance(unique.params[1].toInt())
                         .none { it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == cityConstructions.cityInfo.civInfo }
                     )
-                        rejectionReasons.add(RejectionReason.MustOwnTile.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.MustOwnTile.toInstance(unique.text))
 
                 // Deprecated since 3.16.11
                     "Can only be built in annexed cities" ->
@@ -506,16 +506,16 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                             cityConstructions.cityInfo.isPuppet
                             || cityConstructions.cityInfo.civInfo.civName == cityConstructions.cityInfo.foundingCiv
                         )
-                            rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
+                            rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
                 //
 
                 "Can only be built []" ->
                     if (!cityConstructions.cityInfo.matchesFilter(unique.params[0]))
-                        rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.toInstance(unique.text))
 
                 UniqueType.ObsoleteWith.placeholderText ->
                     if (civInfo.tech.isResearched(unique.params[0]))
-                        rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.Obsoleted.toInstance(unique.text))
 
                 UniqueType.HiddenWithoutReligion.text ->
                     if (!civInfo.gameInfo.isReligionEnabled())
@@ -531,22 +531,22 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     when {
                         ruleSet.technologies.contains(filter) ->
                             if (!civInfo.tech.isResearched(filter))
-                                rejectionReasons.add(RejectionReason.RequiresTech.apply { errorMessage = unique.text })
+                                rejectionReasons.add(RejectionReason.RequiresTech.toInstance(unique.text))
                         ruleSet.policies.contains(filter) ->
                             if (!civInfo.policies.isAdopted(filter))
-                                rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
+                                rejectionReasons.add(RejectionReason.RequiresPolicy.toInstance(unique.text))
                         ruleSet.eras.contains(filter) ->
                             if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
-                                rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
+                                rejectionReasons.add(RejectionReason.UnlockedWithEra.toInstance(unique.text))
                         ruleSet.buildings.contains(filter) ->
                             if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
-                                rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = unique.text })
+                                rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance(unique.text))
                     }
                 }
 
                 UniqueType.SpaceshipPart.placeholderText -> {
                     if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
-                        rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" })
+                        rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
                     if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0)
                         rejectionReasons.add(RejectionReason.ReachedBuildCap)
                 }
@@ -556,7 +556,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter) && !cityConstructions.containsBuildingOrEquivalent(filter))
                         rejectionReasons.add(
                                 // replace with civ-specific building for user
-                                RejectionReason.RequiresBuildingInThisCity.apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(filter)}] in this city" }
+                                RejectionReason.RequiresBuildingInThisCity.toInstance("Requires a [${civInfo.getEquivalentBuilding(filter)}] in this city")
                         )
                 }
 
@@ -570,11 +570,10 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         val equivalentBuildingName = civInfo.getEquivalentBuilding(buildingName).name
                         rejectionReasons.add(
                                 // replace with civ-specific building for user
-                                RejectionReason.RequiresBuildingInAllCities.apply {
-                                    errorMessage = unique.text.fillPlaceholders(equivalentBuildingName, numberOfCitiesRequired.toString()) +
+                                RejectionReason.RequiresBuildingInAllCities.toInstance(
+                                    unique.text.fillPlaceholders(equivalentBuildingName, numberOfCitiesRequired.toString()) +
                                             " ($numberOfCitiesWithBuilding/$numberOfCitiesRequired)"
-                                }
-                        )
+                                ) )
                     }
                 }
 
@@ -587,33 +586,33 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     ) {
                         rejectionReasons.add(
                                 // replace with civ-specific building for user
-                                RejectionReason.RequiresBuildingInAllCities.apply {
-                                    errorMessage = "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"
-                                }
+                                RejectionReason.RequiresBuildingInAllCities.toInstance(
+                                    "Requires a [${civInfo.getEquivalentBuilding(unique.params[0])}] in all cities"
+                                )
                         )
                     }
                 }
 
                 UniqueType.HiddenBeforeAmountPolicies.placeholderText -> {
                     if (cityConstructions.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt())
-                        rejectionReasons.add(RejectionReason.MorePolicyBranches.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.MorePolicyBranches.toInstance(unique.text))
                 }
 
                 UniqueType.HiddenWithoutVictoryType.placeholderText -> {
                     if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0])))
-                        rejectionReasons.add(RejectionReason.HiddenWithoutVictory.apply { errorMessage = unique.text })
+                        rejectionReasons.add(RejectionReason.HiddenWithoutVictory.toInstance(unique.text))
                 }
             }
         }
 
         if (uniqueTo != null && uniqueTo != civInfo.civName)
-            rejectionReasons.add(RejectionReason.UniqueToOtherNation.apply { errorMessage = "Unique to $uniqueTo"})
+            rejectionReasons.add(RejectionReason.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
 
         if (civInfo.gameInfo.ruleSet.buildings.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
             rejectionReasons.add(RejectionReason.ReplacedByOurUnique)
 
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!))
-            rejectionReasons.add(RejectionReason.RequiresTech.apply { "$requiredTech not researched!"})
+            rejectionReasons.add(RejectionReason.RequiresTech.toInstance("$requiredTech not researched!"))
 
         // Regular wonders
         if (isWonder) {
@@ -644,19 +643,17 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         }
 
         if (requiredBuilding != null && !cityConstructions.containsBuildingOrEquivalent(requiredBuilding!!)) {
-            rejectionReasons.add(RejectionReason.RequiresBuildingInThisCity.apply { errorMessage = "Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"})
+            rejectionReasons.add(RejectionReason.RequiresBuildingInThisCity.toInstance("Requires a [${civInfo.getEquivalentBuilding(requiredBuilding!!)}] in this city"))
         }
 
         val cannotBeBuiltWithUnique = uniqueObjects
             .firstOrNull { it.isOfType(UniqueType.CannotBeBuiltWith) }
         if (cannotBeBuiltWithUnique != null && cityConstructions.containsBuildingOrEquivalent(cannotBeBuiltWithUnique.params[0]))
-            rejectionReasons.add(RejectionReason.CannotBeBuiltWith.apply { errorMessage = cannotBeBuiltWithUnique.text })
+            rejectionReasons.add(RejectionReason.CannotBeBuiltWith.toInstance(cannotBeBuiltWithUnique.text))
 
         for ((resource, amount) in getResourceRequirements())
             if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                rejectionReasons.add(RejectionReason.ConsumesResources.apply {
-                    errorMessage = "Consumes [$amount] [$resource]"
-                })
+                rejectionReasons.add(RejectionReason.ConsumesResources.toInstance("Consumes [$amount] [$resource]" ))
             }
 
         if (requiredNearbyImprovedResources != null) {
@@ -670,7 +667,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                 }
             if (!containsResourceWithImprovement)
-                rejectionReasons.add(RejectionReason.RequiresNearbyResource.apply { errorMessage = "Nearby $requiredNearbyImprovedResources required" })
+                rejectionReasons.add(RejectionReason.RequiresNearbyResource.toInstance("Nearby $requiredNearbyImprovedResources required"))
         }
 
         return rejectionReasons
