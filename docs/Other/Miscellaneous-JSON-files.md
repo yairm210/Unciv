@@ -48,7 +48,7 @@ Each era can have the following attributes:
 | unitBaseBuyCost | Integer (≥0) | defaults to 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided |
 | startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era |
 | startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson) |
-| startingWokerCount | Integer (≥0) | defaults to 0 | Amount of worker units that should be spawned when starting a game in this era |
+| startingWorkerCount | Integer (≥0) | defaults to 0 | Amount of worker units that should be spawned when starting a game in this era |
 | startingWorkerUnit | String | defaults to "Worker" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson) |
 | startingMilitaryUnitCount | Integer (≥0) | defaults to 1 | Amount of military units that should be spawned when starting a game in this era |
 | startingMilitaryUnit | String | defaults to "Warrior" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson)|
@@ -69,7 +69,7 @@ The file can have the following attributes, including the values Unciv sets (no 
 | Attribute | Type | Defaults | Notes |
 |-----------|------|-----------|-------|
 | isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
-| maxXPfromBarbarians | Integer | 30 | ...as the name says... |
+| maxXPfromBarbarians | Integer | 30 | *Deprecated*, see [constants](#ModConstants) |
 | uniques | List | empty | Mod-wide specials, [see here](../Modders/Unique-parameter-types.md#modoptions-uniques) |
 | techsToRemove | List | empty | List of [Technologies](Civilization-related-JSON-files.md#techsjson) to remove (isBaseRuleset=false only) |
 | buildingsToRemove | List | empty | List of [Buildings or Wonders](Civilization-related-JSON-files.md#buildingsjson) to remove (isBaseRuleset=false only) |
@@ -79,6 +79,53 @@ The file can have the following attributes, including the values Unciv sets (no 
 | modUrl | String | empty | Set automatically after download - URL of repository |
 | author | String | empty | Set automatically after download - Owner of repository |
 | modSize | Integer | empty | Set automatically after download - kB in entire repository, not sum of default branch files |
+| constants | Object | empty | see [constants](#ModOptions.constants) |
+
+### ModConstants
+Stored in ModOptions.constants, this is a collection of constants used internally in Unciv.
+
+| Attribute | Type | Defaults | Notes |
+|-----------|------|-----------|-------|
+| maxXPfromBarbarians | Int | 30 | [^A] |
+| cityStrengthBase| Float | 8.0 | [^B] |
+| cityStrengthPerPop| Float | 0.4 | [^B] |
+| cityStrengthFromTechsMultiplier| Float | 5.5 | [^B] |
+| cityStrengthFromTechsExponent| Float | 2.8 | [^B] |
+| cityStrengthFromTechsFullMultiplier| Float | 1.0 | [^B] |
+| cityStrengthFromGarrison| Float | 0.2 | [^B] |
+| unitSupplyPerPopulation| Float | 0.5 | [^C] |
+| minimalCityDistance| Int | 3 | [^D] |
+| minimalCityDistanceOnDifferentContinents| Int | 2 | [^D] |
+| naturalWonderCountMultiplier| Float | 0.124 | [^E] |
+| naturalWonderCountAddedConstant| Float | 0.1 | [^E] |
+| ancientRuinCountMultiplier| Float | 0.02 | [^F] |
+| maxLakeSize| Int | 10 | [^H] |
+| riverCountMultiplier| Float | 0.01 | [^I] |
+| minRiverLength| Int | 5 | [^I] |
+| maxRiverLength| Int | 666 | [^I] |
+
+[^A]: Max amount of experience that can be gained from combat with barbarians
+[^B]: Formula for city Strength:
+Strength = baseStrength + strengthPerPop + strengthFromTiles +
+((%techs * multiplier) ^ exponent) * fullMultiplier +
+(garrisonBonus * garrisonUnitStrength * garrisonUnitHealth/100) +
+defensiveBuildingStrength
+where %techs is the percentage of techs in the tech tree that are complete
+If no techs exist in this ruleset, %techs = 0.5 (=50%)
+[^C]: Formula for Unit Supply:
+Supply = unitSupplyBase (difficulties.json)
+unitSupplyPerCity * amountOfCities + (difficulties.json)
+unitSupplyPerPopulation * amountOfPopulationInAllCities
+unitSupplyBase and unitSupplyPerCity can be found in difficulties.json
+unitSupplyBase, unitSupplyPerCity and unitSupplyPerPopulation can also be increased through uniques
+[^D]: The minimal distance that must be between any two cities, not counting the tiles cities are on
+The number is the amount of tiles between two cities, not counting the tiles the cities are on.
+e.g. "C__C", where "C" is a tile with a city and "_" is a tile without a city, has a distance of 2.
+First constant is for cities on the same landmass, the second is for cities on different continents.
+[^E]: NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size. The number scales linearly with map radius: #wonders = radius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant. The defaults effectively mean Tiny - 1, Small - 2, Medium - 3, Large - 4, Huge - 5, Custom radius >=109 - all G&K wonders.
+[^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
+[^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
+[^I]: RiverGenerator: river frequency and length bounds
 
 
 ## Civilopedia text
