@@ -60,14 +60,6 @@ class NewGameScreen(
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
-            if (gameSetupInfo.gameParameters.players.none { it.playerType == PlayerType.Human }) {
-                val noHumanPlayersPopup = Popup(this)
-                noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
-                noHumanPlayersPopup.addCloseButton()
-                noHumanPlayersPopup.open()
-                return@onClick
-            }
-
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
                 for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
@@ -80,6 +72,19 @@ class NewGameScreen(
                         return@onClick
                     }
                 }
+            }
+
+            if (gameSetupInfo.gameParameters.players.none {
+                it.playerType == PlayerType.Human &&
+                    // do not allow multiplayer with only remote spectator(s) and AI(s) - non-MP that works
+                    !(it.chosenCiv == Constants.spectator && gameSetupInfo.gameParameters.isOnlineMultiplayer &&
+                            it.playerId != UncivGame.Current.settings.userId)
+            }) {
+                val noHumanPlayersPopup = Popup(this)
+                noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
+                noHumanPlayersPopup.addCloseButton()
+                noHumanPlayersPopup.open()
+                return@onClick
             }
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!

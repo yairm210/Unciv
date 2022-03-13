@@ -214,7 +214,7 @@ class GameInfo {
         //check is important or else switchTurn
         //would skip a turn if an AI civ calls nextTurn
         //this happens when resigning a multiplayer game
-        if (thisPlayer.isPlayerCivilization()){
+        if (thisPlayer.isPlayerCivilization()) {
             switchTurn()
         }
 
@@ -223,7 +223,7 @@ class GameInfo {
                 || turns < simulateMaxTurns && simulateUntilWin
                 // For multiplayer, if there are 3+ players and one is defeated or spectator,
                 // we'll want to skip over their turn
-                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator())
+                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.userId)
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation.automateCivMoves(thisPlayer)

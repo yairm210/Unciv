@@ -334,8 +334,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val foodBuilding = buildableNotWonders.asSequence()
             .filter { 
                 (it.isStatRelated(Stat.Food) 
-                    || it.hasUnique(UniqueType.CarryOverFoodDeprecated, conditionalState)
-                    || it.hasUnique(UniqueType.CarryOverFoodAlsoDeprecated, conditionalState)
                     || it.hasUnique(UniqueType.CarryOverFood, conditionalState)
                 ) && Automation.allowSpendingResource(civInfo, it) 
             }.minByOrNull { it.cost }
