@@ -1,3 +1,20 @@
+## 3.19.17
+
+Resolved  - now shows conditionals precluding construction of units 
+
+More unique cleanup
+
+Unique deprecation
+
+By SomeTroglodyte:
+- Support more freely modded Worker-like units 
+- Religion overview improved 
+- Mod checker minor improvements 
+- Fix 1 Spectator N AI games in seemingly endless loop 
+- Add Filipino.png since the Translation file is already there 
+
+Multiplayer code cleanup  - By GGGuenni
+
 ## 3.19.16
 
 Wiki improvements
