@@ -342,7 +342,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         return rejectionReasons.none { !it.shouldShow }
             || (
                 canBePurchasedWithAnyStat(cityConstructions.cityInfo)
-                && rejectionReasons.all { it == RejectionReason.Unbuildable }
+                && rejectionReasons.all { it.rejectionReason == RejectionReason.Unbuildable }
             )
     }
 
@@ -365,7 +365,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                 }
 
                 UniqueType.RequiresPopulation -> if (unique.params[0].toInt() > cityConstructions.cityInfo.population.population)
-                    rejectionReasons.add(RejectionReason.PopulationRequirement.apply { errorMessage = unique.text })
+                    rejectionReasons.add(RejectionReason.PopulationRequirement.toInstance(unique.text))
             }
         }
 
@@ -381,14 +381,14 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val ruleSet = civInfo.gameInfo.ruleSet
 
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) 
-            rejectionReasons.add(RejectionReason.RequiresTech.apply { this.errorMessage = "$requiredTech not researched" }) 
+            rejectionReasons.add(RejectionReason.RequiresTech.toInstance("$requiredTech not researched")) 
         if (obsoleteTech != null && civInfo.tech.isResearched(obsoleteTech!!))
-            rejectionReasons.add(RejectionReason.Obsoleted.apply { this.errorMessage = "Obsolete by $obsoleteTech" })
+            rejectionReasons.add(RejectionReason.Obsoleted.toInstance("Obsolete by $obsoleteTech"))
 
         if (uniqueTo != null && uniqueTo != civInfo.civName) 
-            rejectionReasons.add(RejectionReason.UniqueToOtherNation.apply { this.errorMessage = "Unique to $uniqueTo" })
+            rejectionReasons.add(RejectionReason.UniqueToOtherNation.toInstance("Unique to $uniqueTo"))
         if (ruleSet.units.values.any { it.uniqueTo == civInfo.civName && it.replaces == name })
-            rejectionReasons.add(RejectionReason.ReplacedByOurUnique.apply { this.errorMessage = "Our unique unit replaces this" })
+            rejectionReasons.add(RejectionReason.ReplacedByOurUnique.toInstance("Our unique unit replaces this"))
 
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled && isNuclearWeapon()) 
             rejectionReasons.add(RejectionReason.DisabledBySetting)
@@ -404,16 +404,16 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     when {
                         ruleSet.technologies.contains(filter) ->
                             if (!civInfo.tech.isResearched(filter))
-                                rejectionReasons.add(RejectionReason.RequiresTech.apply { errorMessage = unique.text })
+                                rejectionReasons.add(RejectionReason.RequiresTech.toInstance(unique.text))
                         ruleSet.policies.contains(filter) ->
                             if (!civInfo.policies.isAdopted(filter))
-                                rejectionReasons.add(RejectionReason.RequiresPolicy.apply { errorMessage = unique.text })
+                                rejectionReasons.add(RejectionReason.RequiresPolicy.toInstance(unique.text))
                         ruleSet.eras.contains(filter) ->
                             if (civInfo.getEraNumber() < ruleSet.eras[filter]!!.eraNumber)
-                                rejectionReasons.add(RejectionReason.UnlockedWithEra.apply { errorMessage = unique.text })
+                                rejectionReasons.add(RejectionReason.UnlockedWithEra.toInstance(unique.text))
                         ruleSet.buildings.contains(filter) ->
                             if (civInfo.cities.none { it.cityConstructions.containsBuildingOrEquivalent(filter) })
-                                rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = unique.text })
+                                rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance(unique.text))
                     }
                 }
 
@@ -428,15 +428,19 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         if (!civInfo.isBarbarian()) { // Barbarians don't need resources
             for ((resource, amount) in getResourceRequirements())
                 if (civInfo.getCivResourcesByName()[resource]!! < amount) {
-                    rejectionReasons.add(RejectionReason.ConsumesResources.apply {
-                        errorMessage = "Consumes [$amount] [$resource]"
-                    })
+                    rejectionReasons.add(RejectionReason.ConsumesResources.toInstance("Consumes [$amount] [$resource]"))
                 }
         }
         
-        if (civInfo.getMatchingUniques(UniqueType.CannotBuildUnits).any { matchesFilter(it.params[0]) }) {
-            rejectionReasons.add(RejectionReason.CannotBeBuilt)
-        }
+        for (unique in civInfo.getMatchingUniques(UniqueType.CannotBuildUnits))
+            if (this.matchesFilter(unique.params[0])) {
+                val rejectionReason = RejectionReason.CannotBeBuilt.toInstance()
+                if (unique.conditionals.any { it.type == UniqueType.ConditionalBelowHappiness }){
+                    rejectionReasons.add(RejectionReason.CannotBeBuilt.toInstance(unique.text, true))
+                }
+                else rejectionReasons.add(RejectionReason.CannotBeBuilt)
+            }
+        
         return rejectionReasons
     }
 

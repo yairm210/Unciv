@@ -243,6 +243,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // Acts as a trigger - this should be generalized somehow but the current setup does not allow this
     // It would currently mean cycling through EVERY unique type to find ones with a specific conditional...
+    @Suppress("SpellCheckingInspection")  // Not worth fixing
     RecieveFreeUnitWhenDiscoveringTech("Receive free [baseUnitFilter] when you discover [tech]", UniqueTarget.Global),
 
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
@@ -253,8 +254,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     TriggersCulturalVictory("Triggers a Cultural Victory upon completion", UniqueTarget.Global),
 
     BetterDefensiveBuildings("[amount]% City Strength from defensive buildings", UniqueTarget.Global),
-
-    TileImprovementTime("[amount]% tile improvement construction time", UniqueTarget.Global),
+    TileImprovementTime("[amount]% tile improvement construction time", UniqueTarget.Global, UniqueTarget.Unit),
     PercentGoldFromTradeMissions("[amount]% Gold from Great Merchant trade missions", UniqueTarget.Global),
     // Todo: Lowercase the 'U' of 'Units' in this unique
     CityHealingUnits("[mapUnitFilter] Units adjacent to this city heal [amount] HP per turn when healing", UniqueTarget.Global, UniqueTarget.FollowerBelief),
