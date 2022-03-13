@@ -168,12 +168,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
         }
 
-        // Deprecated since 3.19.3
-            for (unique in city.getMatchingUniques(UniqueType.StatsForBuildingsWithFollowers))
-                if (unique.params[2].toInt() <= city.religion.getFollowersOfMajorityReligion() && matchesFilter(unique.params[1]))
-                    stats.add(unique.stats)
-        //
-
         @Suppress("RemoveRedundantQualifierName")  // make it clearer Building inherits Stats
         for (unique in getMatchingUniques(UniqueType.StatsWithResource))
             if (civInfo.hasResource(unique.params[1]))
@@ -184,9 +178,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
-        else
-            for (unique in city.getMatchingUniques(UniqueType.StatsFromWondersDeprecated))
-                stats.add(unique.stats)
         return stats
     }
 

@@ -324,7 +324,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         var cost = getBaseBuyCost(cityInfo, stat)?.toDouble()
         if (cost == null) return null
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount) + cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscountDeprecated)) {
+        for (unique in cityInfo.getMatchingUniques(UniqueType.BuyUnitsDiscount)) {
             if (stat.name == unique.params[0] && matchesFilter(unique.params[1]))
                 cost *= unique.params[2].toPercent()
         }
