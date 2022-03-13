@@ -291,9 +291,6 @@ object UnitActions {
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
                     val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
-                        // Deprecated 3.18.17
-                            || (unit.baseUnit.isMelee() && unit.civInfo.hasUnique(UniqueType.NoMovementToPillageMelee))
-                        //
                     if (!freePillage) unit.useMovementPoints(1f)
 
                     unit.healBy(25)

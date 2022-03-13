@@ -168,12 +168,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             stats.add(unique.stats)
         }
 
-        // Deprecated since 3.19.3
-            for (unique in city.getMatchingUniques(UniqueType.StatsForBuildingsWithFollowers))
-                if (unique.params[2].toInt() <= city.religion.getFollowersOfMajorityReligion() && matchesFilter(unique.params[1]))
-                    stats.add(unique.stats)
-        //
-
         @Suppress("RemoveRedundantQualifierName")  // make it clearer Building inherits Stats
         for (unique in getMatchingUniques(UniqueType.StatsWithResource))
             if (civInfo.hasResource(unique.params[1]))
@@ -184,9 +178,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 if (matchesFilter(unique.params[1]))
                     stats.add(unique.stats)
             }
-        else
-            for (unique in city.getMatchingUniques(UniqueType.StatsFromWondersDeprecated))
-                stats.add(unique.stats)
         return stats
     }
 
@@ -461,12 +452,13 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.Unbuildable)
 
         for (unique in uniqueObjects) {
-            when (unique.placeholderText) { // TODO: Lots of typification…
-                UniqueType.OnlyAvailableWhen.placeholderText->
+            @Suppress("NON_EXHAUSTIVE_WHEN")
+            when (unique.type) { // TODO: Lots of typification…
+                UniqueType.OnlyAvailableWhen->
                     if (!unique.conditionalsApply(civInfo, cityConstructions.cityInfo))
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-                UniqueType.NotDisplayedWithout.placeholderText ->
+                UniqueType.NotDisplayedWithout ->
                     if (unique.params[0] in ruleSet.tileResources && !civInfo.hasResource(unique.params[0])
                         || unique.params[0] in ruleSet.buildings && !cityConstructions.containsBuildingOrEquivalent(unique.params[0])
                         || unique.params[0] in ruleSet.technologies && !civInfo.tech.isResearched(unique.params[0])
@@ -474,34 +466,33 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     )
                         rejectionReasons.add(RejectionReason.ShouldNotBeDisplayed)
 
-                // Shouldn't this be "Enables nuclear weapon_s_"?
-                "Enables nuclear weapon" -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
+                UniqueType.EnablesNuclearWeapons -> if (!cityConstructions.cityInfo.civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-                UniqueType.MustBeOn.placeholderText ->
+                UniqueType.MustBeOn ->
                     if (!cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
                         rejectionReasons.add(RejectionReason.MustBeOnTile.apply { errorMessage = unique.text })
 
-                UniqueType.MustNotBeOn.placeholderText ->
+                UniqueType.MustNotBeOn ->
                     if (cityCenter.matchesTerrainFilter(unique.params[0], civInfo))
                         rejectionReasons.add(RejectionReason.MustNotBeOnTile.apply { errorMessage = unique.text })
 
-                UniqueType.MustBeNextTo.placeholderText ->
+                UniqueType.MustBeNextTo ->
                     if (!cityCenter.isAdjacentTo(unique.params[0]))
                         rejectionReasons.add(RejectionReason.MustBeNextToTile.apply { errorMessage = unique.text })
 
-                UniqueType.MustNotBeNextTo.placeholderText ->
+                UniqueType.MustNotBeNextTo ->
                     if (cityCenter.getTilesInDistance(1).any { it.matchesFilter(unique.params[0], civInfo) })
                         rejectionReasons.add(RejectionReason.MustNotBeNextToTile.apply { errorMessage = unique.text })
 
-                "Must have an owned [] within [] tiles" ->
+                UniqueType.MustHaveOwnedWithinTiles ->
                     if (cityCenter.getTilesInDistance(unique.params[1].toInt())
                         .none { it.matchesFilter(unique.params[0], civInfo) && it.getOwner() == cityConstructions.cityInfo.civInfo }
                     )
                         rejectionReasons.add(RejectionReason.MustOwnTile.apply { errorMessage = unique.text })
 
                 // Deprecated since 3.16.11
-                    "Can only be built in annexed cities" ->
+                    UniqueType.CanOnlyBeBuiltInAnnexedCities ->
                         if (
                             cityConstructions.cityInfo.isPuppet
                             || cityConstructions.cityInfo.civInfo.civName == cityConstructions.cityInfo.foundingCiv
@@ -509,24 +500,24 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                             rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
                 //
 
-                "Can only be built []" ->
+                UniqueType.CanOnlyBeBuiltInCertainCities ->
                     if (!cityConstructions.cityInfo.matchesFilter(unique.params[0]))
                         rejectionReasons.add(RejectionReason.CanOnlyBeBuiltInSpecificCities.apply { errorMessage = unique.text })
 
-                UniqueType.ObsoleteWith.placeholderText ->
+                UniqueType.ObsoleteWith ->
                     if (civInfo.tech.isResearched(unique.params[0]))
                         rejectionReasons.add(RejectionReason.Obsoleted.apply { errorMessage = unique.text })
 
-                UniqueType.HiddenWithoutReligion.text ->
+                UniqueType.HiddenWithoutReligion ->
                     if (!civInfo.gameInfo.isReligionEnabled())
                         rejectionReasons.add(RejectionReason.DisabledBySetting)
 
-                UniqueType.MaxNumberBuildable.placeholderText ->
+                UniqueType.MaxNumberBuildable ->
                     if (civInfo.civConstructions.countConstructedObjects(this) >= unique.params[0].toInt())
                         rejectionReasons.add(RejectionReason.MaxNumberBuildable)
 
                 // This should be deprecated and replaced with the already-existing "only available when" unique, see above
-                UniqueType.UnlockedWith.placeholderText, UniqueType.Requires.placeholderText -> {
+                UniqueType.UnlockedWith, UniqueType.Requires -> {
                     val filter = unique.params[0]
                     when {
                         ruleSet.technologies.contains(filter) ->
@@ -544,14 +535,14 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     }
                 }
 
-                UniqueType.SpaceshipPart.placeholderText -> {
+                UniqueType.SpaceshipPart -> {
                     if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.apply { errorMessage = "Apollo project not built!" })
                     if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0)
                         rejectionReasons.add(RejectionReason.ReachedBuildCap)
                 }
 
-                UniqueType.RequiresAnotherBuilding.placeholderText -> {
+                UniqueType.RequiresAnotherBuilding -> {
                     val filter = unique.params[0]
                     if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter) && !cityConstructions.containsBuildingOrEquivalent(filter))
                         rejectionReasons.add(
@@ -560,7 +551,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                         )
                 }
 
-                UniqueType.RequiresBuildingInSomeCities.placeholderText -> {
+                UniqueType.RequiresBuildingInSomeCities -> {
                     val buildingName = unique.params[0]
                     val numberOfCitiesRequired = unique.params[1].toInt()
                     val numberOfCitiesWithBuilding = civInfo.cities.count {
@@ -578,7 +569,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     }
                 }
 
-                UniqueType.RequiresBuildingInAllCities.placeholderText -> {
+                UniqueType.RequiresBuildingInAllCities -> {
                     val filter = unique.params[0]
                     if (civInfo.gameInfo.ruleSet.buildings.containsKey(filter)
                             && civInfo.cities.any {
@@ -594,12 +585,12 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     }
                 }
 
-                UniqueType.HiddenBeforeAmountPolicies.placeholderText -> {
+                UniqueType.HiddenBeforeAmountPolicies -> {
                     if (cityConstructions.cityInfo.civInfo.getCompletedPolicyBranchesCount() < unique.params[0].toInt())
                         rejectionReasons.add(RejectionReason.MorePolicyBranches.apply { errorMessage = unique.text })
                 }
 
-                UniqueType.HiddenWithoutVictoryType.placeholderText -> {
+                UniqueType.HiddenWithoutVictoryType -> {
                     if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0])))
                         rejectionReasons.add(RejectionReason.HiddenWithoutVictory.apply { errorMessage = unique.text })
                 }

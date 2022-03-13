@@ -6,6 +6,14 @@ import com.unciv.logic.HexMath.getNumberOfTilesInHexagon
 import com.unciv.models.metadata.BaseRuleset
 
 
+/* Predefined Map Sizes - ours are a little lighter than the original values. For reference those are:
+    Civ5Duel(40,24,17),
+    Civ5Tiny(56,36,25),
+    Civ5Small(66,42,30),
+    Civ5Medium(80,52,37),
+    Civ5Large(104,64,47),
+    Civ5Huge(128,80,58),
+ */
 enum class MapSize(val radius: Int, val width: Int, val height: Int) {
     Tiny(10, 23, 15),
     Small(15, 33, 21),

@@ -489,11 +489,12 @@ class CivilizationInfo {
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
             .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
-        otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civName))
+        if (!otherCiv.isSpectator())
+            otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact, civName))
 
         if (isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
-        
+
         if (!(isCityState() && otherCiv.isMajorCiv())) return
         if (warOnContact || otherCiv.isMinorCivAggressor()) return // No gift if they are bad people, or we are just about to be at war
 

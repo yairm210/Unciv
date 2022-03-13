@@ -314,10 +314,6 @@ class CityStats(val cityInfo: CityInfo) {
             && cityInfo.civInfo.cities.isNotEmpty()
             && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
         ) {
-            // Deprecated since 3.19.3
-                for (unique in cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapitalDeprecated))
-                    addUniqueStats(unique, Stat.Production, 25f)
-            //
             for (unique in cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
         }
