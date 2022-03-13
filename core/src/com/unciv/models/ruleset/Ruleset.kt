@@ -308,12 +308,9 @@ class Ruleset {
         return stringList.joinToString { it.tr() }
     }
 
-    /** Similarity below which an untyped unique can be considered a potential misspelling.
-     * Roughly corresponds to the fraction of the Unique placeholder text that can be different/misspelled, but with some extra room for [getRelativeTextDistance] idiosyncrasies. */
-    private val uniqueMisspellingThreshold = 0.15 // Tweak as needed. Simple misspellings seem to be around 0.025, so would mostly be caught by 0.05. IMO 0.1 would be good, but raising to 0.15 also seemed to catch what may be an outdated Unique.
-
     fun checkUniques(
-        uniqueContainer: IHasUniques, lines: RulesetErrorList,
+        uniqueContainer: IHasUniques,
+        lines: RulesetErrorList,
         severityToReport: UniqueType.UniqueComplianceErrorSeverity,
         forOptionsPopup: Boolean
     ) {
@@ -344,31 +341,36 @@ class Ruleset {
                 getRelativeTextDistance(
                     it.placeholderText,
                     unique.placeholderText
-                ) <= uniqueMisspellingThreshold
+                ) <= RulesetCache.uniqueMisspellingThreshold
             }
             val equalUniques =
                 similarUniques.filter { it.placeholderText == unique.placeholderText }
-            if (equalUniques.isNotEmpty()) {
-                // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
-                    return listOf(
-                        RulesetError(
+            return when {
+                equalUniques.isNotEmpty() -> {
+                    // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
+                    listOf(RulesetError(
                             "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
-                            RulesetErrorSeverity.OK
-                    ))
-            } else if (similarUniques.isNotEmpty()) {
-                val text =
-                    "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
-                            similarUniques.joinToString("\n") { uniqueType ->
-                                val deprecationAnnotation =
-                                    UniqueType::class.java.getField(uniqueType.name)
-                                        .getAnnotation(Deprecated::class.java)
-                                if (deprecationAnnotation == null)
-                                    "\"${uniqueType.text}\""
-                                else
-                                    "\"${uniqueType.text}\" (Deprecated)"
-                            }.prependIndent("\t")
-                return listOf(RulesetError(text, RulesetErrorSeverity.OK))
-            } else return emptyList()
+                            RulesetErrorSeverity.OK))
+                }
+                similarUniques.isNotEmpty() -> {
+                    val text =
+                        "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
+                                similarUniques.joinToString("\n") { uniqueType ->
+                                    val deprecationAnnotation =
+                                        UniqueType::class.java.getField(uniqueType.name)
+                                            .getAnnotation(Deprecated::class.java)
+                                    if (deprecationAnnotation == null)
+                                        "\"${uniqueType.text}\""
+                                    else
+                                        "\"${uniqueType.text}\" (Deprecated)"
+                                }.prependIndent("\t")
+                    listOf(RulesetError(text, RulesetErrorSeverity.OK))
+                }
+                RulesetCache.modCheckerAllowUntypedUniques -> return emptyList()
+                else -> listOf(RulesetError(
+                        "$name's unique \"${unique.text}\" not found in Unciv's unique types.",
+                        RulesetErrorSeverity.OK))
+            }
         }
 
         val rulesetErrors = RulesetErrorList()
@@ -604,7 +606,7 @@ class Ruleset {
             checkUniques(improvement, lines, rulesetSpecific, forOptionsPopup)
         }
 
-        if (terrains.values.none { it.type==TerrainType.Land && !it.impassable })
+        if (terrains.values.none { it.type == TerrainType.Land && !it.impassable })
             lines += "No passable land terrains exist!"
         for (terrain in terrains.values) {
             for (baseTerrain in terrain.occursOn)
@@ -686,6 +688,7 @@ class Ruleset {
         for (belief in beliefs.values) {
             checkUniques(belief, lines, rulesetSpecific, forOptionsPopup)
         }
+
         for (nation in nations.values) {
             checkUniques(nation, lines, rulesetSpecific, forOptionsPopup)
             if (nation.favoredReligion != null && nation.favoredReligion !in religions)
@@ -699,12 +702,14 @@ class Ruleset {
                         lines += "${policy.name} requires policy $prereq which does not exist!"
             checkUniques(policy, lines, rulesetSpecific, forOptionsPopup)
         }
+
         for (reward in ruinRewards.values) {
             for (difficulty in reward.excludedDifficulties)
                 if (!difficulties.containsKey(difficulty))
                     lines += "${reward.name} references difficulty ${difficulty}, which does not exist!"
             checkUniques(reward, lines, rulesetSpecific, forOptionsPopup)
         }
+
         for (promotion in unitPromotions.values) {
             // These are warning as of 3.17.5 to not break existing mods and give them time to correct, should be upgraded to error in the future
             for (prereq in promotion.prerequisites)
@@ -715,14 +720,16 @@ class Ruleset {
                     lines.add("${promotion.name} references unit type $unitType, which does not exist!", RulesetErrorSeverity.Warning)
             checkUniques(promotion, lines, rulesetSpecific, forOptionsPopup)
         }
+
         for (unitType in unitTypes.values) {
             checkUniques(unitType, lines, rulesetSpecific, forOptionsPopup)
         }
 
-        for (difficulty in difficulties.values)
+        for (difficulty in difficulties.values) {
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
-                if (unitName!=Constants.eraSpecificUnit && !units.containsKey(unitName))
+                if (unitName != Constants.eraSpecificUnit && !units.containsKey(unitName))
                     lines += "Difficulty ${difficulty.name} contains starting unit $unitName which does not exist!"
+        }
 
         if (modOptions.maxXPfromBarbarians != 30) {
             lines.add("maxXPfromBarbarians is moved to the constants object, instead use: \nconstants: {\n    maxXPfromBarbarians: ${modOptions.maxXPfromBarbarians},\n}", RulesetErrorSeverity.Warning)
@@ -736,6 +743,14 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache : HashMap<String,Ruleset>() {
+    /** Whether mod checking allows untyped uniques - set to `false` once all vanilla uniques are converted! */
+    var modCheckerAllowUntypedUniques = true
+
+    /** Similarity below which an untyped unique can be considered a potential misspelling.
+     * Roughly corresponds to the fraction of the Unique placeholder text that can be different/misspelled, but with some extra room for [getRelativeTextDistance] idiosyncrasies. */
+    var uniqueMisspellingThreshold = 0.15 // Tweak as needed. Simple misspellings seem to be around 0.025, so would mostly be caught by 0.05. IMO 0.1 would be good, but raising to 0.15 also seemed to catch what may be an outdated Unique.
+
+
     /** Returns error lines from loading the rulesets, so we can display the errors to users */
     fun loadRulesets(consoleMode: Boolean = false, printOutput: Boolean = false, noMods: Boolean = false) :List<String> {
         clear()
@@ -849,11 +864,15 @@ object RulesetCache : HashMap<String,Ruleset>() {
     /**
      * Runs [Ruleset.checkModLinks] on a temporary [combined Ruleset][getComplexRuleset] for a list of [mods]
      */
-    fun checkCombinedModLinks(mods: LinkedHashSet<String>, baseRuleset: String? = null): Ruleset.RulesetErrorList {
+    fun checkCombinedModLinks(
+        mods: LinkedHashSet<String>,
+        baseRuleset: String? = null,
+        forOptionsPopup: Boolean = false
+    ): Ruleset.RulesetErrorList {
         return try {
             val newRuleset = getComplexRuleset(mods, baseRuleset)
             newRuleset.modOptions.isBaseRuleset = true // This is so the checkModLinks finds all connections
-            newRuleset.checkModLinks()
+            newRuleset.checkModLinks(forOptionsPopup)
         } catch (ex: Exception) {
             // This happens if a building is dependent on a tech not in the base ruleset
             //  because newRuleset.updateBuildingCosts() in getComplexRuleset() throws an error
