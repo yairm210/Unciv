@@ -130,6 +130,7 @@ jobs:
 ## DESKTOP
       
       - name: Upload to itch.io
+        continue-on-error: true
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/') 
         env:
           BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
