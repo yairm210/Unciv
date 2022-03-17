@@ -97,7 +97,11 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
     }
 
     fun getMostImportantRejectionReason(): String? {
-        return orderOfErrorMessages.firstOrNull { contains(it) }?.errorMessage
+        for (rejectionReason in orderOfErrorMessages) {
+            val rejectionReasonInstance = firstOrNull { it.rejectionReason == rejectionReason }
+            if (rejectionReasonInstance != null) return rejectionReasonInstance.errorMessage
+        }
+        return null
     }
 
     // Used for constant variables in the functions above
