@@ -82,7 +82,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             val relationLevel = civ.getDiplomacyManager(viewingCiv).relationshipLevel()
             val relationshipIcon = if (civ.isCityState() && relationLevel == RelationshipLevel.Ally)
                 ImageGetter.getImage("OtherIcons/Star")
-                    .surroundWithCircle(size = 30f, color = relationLevel.color).apply { 
+                    .surroundWithCircle(size = 30f, color = relationLevel.color).apply {
                         actor.color = Color.GOLD
                     }
             else
@@ -146,8 +146,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (otherCiv.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }) {
             val resourcesTable = Table()
             resourcesTable.add("{Resources}:  ".toLabel()).padRight(10f)
-            val cityStateResources = CityStateFunctions(otherCiv)
-                .getCityStateResourcesForAlly()
+            val cityStateResources = otherCiv.cityStateFunctions.getCityStateResourcesForAlly()
             for (supplyList in cityStateResources) {
                 if (supplyList.resource.resourceType == ResourceType.Bonus)
                     continue
@@ -374,7 +373,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
-        
+
         for (target in otherCiv.getKnownCivs().filter { otherCiv.questManager.warWithMajorActive(it) }) {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getWarWithMajorTable(target, otherCiv)).row()
@@ -580,7 +579,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
     private fun getWarWithMajorTable(target: CivilizationInfo, otherCiv: CivilizationInfo): Table {
         val warTable = Table()
         warTable.defaults().pad(10f)
-        
+
         val title = "War against [${target.civName}]"
         val description = "We need you to help us defend against [${target.civName}]. Killing [${otherCiv.questManager.unitsToKill(target)}] of their military units would slow their offensive."
         val progress = if (viewingCiv.knows(target)) "Currently you have killed [${otherCiv.questManager.unitsKilledSoFar(target, viewingCiv)}] of their military units."
@@ -591,7 +590,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             .width(stage.width / 2).row()
         warTable.add(progress.toLabel().apply { wrap = true; setAlignment(Align.center) })
             .width(stage.width / 2).row()
-  
+
         return warTable
     }
 

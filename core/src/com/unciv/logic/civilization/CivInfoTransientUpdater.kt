@@ -144,7 +144,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
     }
 
-
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
         if (civInfo.cities.isEmpty()) return // eg barbarians
 
@@ -173,7 +172,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
-                for (resource in CityStateFunctions(cityStateAlly).getCityStateResourcesForAlly()) {
+                for (resource in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
                     newDetailedCivResources.add(
                         resource.apply { amount = (amount * resourceBonusPercentage).toInt() }
                     )

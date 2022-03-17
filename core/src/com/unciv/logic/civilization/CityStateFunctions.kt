@@ -13,7 +13,6 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
@@ -487,12 +486,12 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (diplomacy.diplomaticStatus == DiplomaticStatus.War) return // No reward for enemies
 
         diplomacy.addInfluence(12f)
-        
+
         if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion))
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
         else
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
-        
+
         otherCiv.addNotification("[${civInfo.civName}] is grateful that you killed a Barbarian that was threatening them!",
             DiplomacyAction(civInfo.civName), civInfo.civName)
     }
@@ -645,13 +644,13 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         ) {
             thirdCiv.addNotification(
                 "[${civInfo.civName}] is being attacked by [${attacker.civName}] and asks all major civilizations to help them out by gifting them military units.",
-                civInfo.getCapital().location, 
-                civInfo.civName, 
+                civInfo.getCapital().location,
+                civInfo.civName,
                 "OtherIcons/Present",
             )
         }
     }
-    
+
     fun getCityStateResourcesForAlly(): ResourceSupplyList {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) {
