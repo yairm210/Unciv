@@ -1,13 +1,10 @@
 ## 3.19.18
 
-Nicer commit name for version rollout
-
 Double Zoom Out Range  - By itanasi
 
 By SomeTroglodyte:
-- Redesign EmpireOverviewScreen as TabbedPager 
-- Cache 'library' helper classes of CivilizationInfo 
-- Worldscreen unit supply deficit icon now updates properly 
+- Redesign of Empire Overview Screen - more info saves, better portrait display, and many more changes!
+- World Screen unit supply deficit icon now updates properly 
 - Close little loophole allowing promoting a unit after moving or attacking 
 
 ## 3.19.17
