@@ -188,7 +188,7 @@ class CivilizationInfo {
      *
      * @property attackingUnit Name key of [BaseUnit] type that performed the attack, or null (E.G. for city bombardments).
      * @property source Position of the tile from which the attack was made.
-     * @property target Position of the tile targetted by the attack.
+     * @property target Position of the tile targeted by the attack.
      * @see [MapUnit.UnitMovementMemory], [attacksSinceTurnStart]
      */
     class HistoricalAttackMemory() {
@@ -280,6 +280,7 @@ class CivilizationInfo {
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
 
     fun getProximity(civInfo: CivilizationInfo) = getProximity(civInfo.civName)
+    @Suppress("MemberVisibilityCanBePrivate")  // same visibility for overloads
     fun getProximity(civName: String) = proximity[civName] ?: Proximity.None
 
     /** Returns only undefeated civs, aka the ones we care about */
@@ -303,7 +304,10 @@ class CivilizationInfo {
     var cityStateUniqueUnit: String? = null // Unique unit for militaristic city state. Might still be null if there are no appropriate units
     fun isMajorCiv() = nation.isMajorCiv()
     fun isAlive(): Boolean = !isDefeated()
+
+    @Suppress("unused")  //TODO remove if future use unlikely, including DiplomacyFlags.EverBeenFriends and 2 DiplomacyManager methods - see #3183
     fun hasEverBeenFriendWith(otherCiv: CivilizationInfo): Boolean = getDiplomacyManager(otherCiv).everBeenFriends()
+
     fun hasMetCivTerritory(otherCiv: CivilizationInfo): Boolean = otherCiv.getCivTerritory().any { it in exploredTiles }
     fun getCompletedPolicyBranchesCount(): Int = policies.adoptedPolicies.count { Policy.isBranchCompleteByName(it) }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
@@ -317,8 +321,13 @@ class CivilizationInfo {
                else VictoryType.Neutral
     }
 
-    fun stats() = CivInfoStats(this)
-    fun transients() = CivInfoTransientUpdater(this)
+    @Transient
+    private val civInfoStats = CivInfoStats(this)
+    fun stats() = civInfoStats
+
+    @Transient
+    private val civInfoTransientUpdater = CivInfoTransientUpdater(this)
+    fun transients() = civInfoTransientUpdater
 
     fun updateStatsForNextTurn() {
         happinessForNextTurn = stats().getHappinessBreakdown().values.sum().roundToInt()
@@ -650,7 +659,7 @@ class CivilizationInfo {
     fun isMinorCivAggressor() = numMinorCivsAttacked >= 2
     fun isMinorCivWarmonger() = numMinorCivsAttacked >= 4
 
-    fun isLongCountActive(): Boolean {
+    private fun isLongCountActive(): Boolean {
         val unique = getMatchingUniques(UniqueType.MayanGainGreatPerson).firstOrNull()
             ?: return false
         return tech.isResearched(unique.params[1])
@@ -1011,10 +1020,8 @@ class CivilizationInfo {
         return score
     }
 
-    private fun getTurnsBeforeRevolt(): Int {
-        val score = ((4 + Random().nextInt(3)) * max(gameInfo.gameParameters.gameSpeed.modifier, 1f)).toInt()
-        return score
-    }
+    private fun getTurnsBeforeRevolt() =
+        ((4 + Random().nextInt(3)) * max(gameInfo.gameParameters.gameSpeed.modifier, 1f)).toInt()
 
     /** Modify gold by a given amount making sure it does neither overflow nor underflow.
      * @param delta the amount to add (can be negative)
