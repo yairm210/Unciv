@@ -13,10 +13,10 @@ import kotlin.math.abs
 /**
  * Supplies the Unit sub-table for the Empire Overview
  */
-class UnitOverviewTable(
-    private val viewingPlayer: CivilizationInfo,
-    private val overviewScreen: EmpireOverviewScreen
-) : Table(BaseScreen.skin) {
+class UnitOverviewTab(
+    viewingPlayer: CivilizationInfo,
+    overviewScreen: EmpireOverviewScreen
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
     init {
         add(getUnitSupplyTable()).top().padRight(25f)

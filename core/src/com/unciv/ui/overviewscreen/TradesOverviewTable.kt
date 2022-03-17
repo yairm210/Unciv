@@ -4,15 +4,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
-import com.unciv.ui.utils.BaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.toLabel
 
-class TradesOverviewTable (
-    private val viewingPlayer: CivilizationInfo,
-    private val overviewScreen: EmpireOverviewScreen
-) : Table() {
+class TradesOverviewTab(
+    viewingPlayer: CivilizationInfo,
+    overviewScreen: EmpireOverviewScreen
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
     init {
         defaults().pad(10f)
@@ -28,14 +27,14 @@ class TradesOverviewTable (
                     else -> -1
                 }
             }
-        for(diplomacy in diplomacies) {
+        for (diplomacy in diplomacies) {
             for (trade in diplomacy.trades)
                 add(createTradeTable(trade, diplomacy.otherCiv())).row()
         }
     }
 
     private fun createTradeTable(trade: Trade, otherCiv: CivilizationInfo): Table {
-        val generalTable = Table(BaseScreen.skin)
+        val generalTable = Table()
         generalTable.add(createOffersTable(viewingPlayer, trade.ourOffers, trade.theirOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
         generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).minWidth(overviewScreen.stage.width/4).fillY()
         return generalTable
@@ -47,12 +46,12 @@ class TradesOverviewTable (
         table.background = ImageGetter.getBackground(civ.nation.getOuterColor())
         table.add(civ.civName.toLabel(civ.nation.getInnerColor())).row()
         table.addSeparator()
-        for(offer in offersList){
+        for (offer in offersList) {
             var offerText = offer.getOfferText()
-            if(!offerText.contains("\n")) offerText+="\n"
+            if (!offerText.contains("\n")) offerText += "\n"
             table.add(offerText.toLabel(civ.nation.getInnerColor())).row()
         }
-        for(i in 1..numberOfOtherSidesOffers - offersList.size)
+        for (i in 1..numberOfOtherSidesOffers - offersList.size)
             table.add("\n".toLabel()).row() // we want both sides of the general table to have the same number of rows
         return table
     }

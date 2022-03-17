@@ -18,7 +18,18 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val overviewScreen: EmpireOverviewScreen): Table() {
+class CityOverviewTab(
+    viewingPlayer: CivilizationInfo,
+    overviewScreen: EmpireOverviewScreen,
+    persistedData: EmpireOverviewTabPersistableData? = null
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
+    class CityTabPersistableData(
+        var sortedBy: String = "City"
+    ) : EmpireOverviewTabPersistableData() {
+        override fun isEmpty() = sortedBy == "City"
+    }
+
+    override val persistableData = (persistedData as? CityTabPersistableData) ?: CityTabPersistableData()
 
     companion object {
         const val iconSize = 50f  //if you set this too low, there is a chance that the tables will be misaligned
@@ -31,20 +42,19 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
 
     init {
         val numHeaderCells = columnsNames.size + 2      // +1 City +1 Filler
-        var sortedBy = "City"
 
         val cityInfoTableIcons = Table(skin)
         val cityInfoTableDetails = Table(skin)
         val cityInfoTableTotal = Table(skin)
 
         fun sortOnClick(iconName: String) {
-            val descending = sortedBy == iconName
-            sortedBy = iconName
+            val descending = persistableData.sortedBy == iconName
+            persistableData.sortedBy = iconName
             // sort the table: clear and fill with sorted data
             cityInfoTableDetails.clear()
             fillCitiesTable(cityInfoTableDetails, iconName, descending)
             // reset to return back for ascending next time
-            if (descending) sortedBy = ""
+            if (descending) persistableData.sortedBy = ""
         }
 
         fun addSortIcon(iconName: String, iconParam: Actor? = null) {
@@ -77,7 +87,7 @@ class CityOverviewTable(private val viewingPlayer: CivilizationInfo, private val
             .minWidth(iconSize)     //we need the min width so we can align the different tables
             .align(Align.left)
 
-        fillCitiesTable(cityInfoTableDetails, sortedBy, false)
+        fillCitiesTable(cityInfoTableDetails, persistableData.sortedBy, false)
 
         val cityInfoScrollPane = AutoScrollPane(cityInfoTableDetails)
         cityInfoScrollPane.pack()

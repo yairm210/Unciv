@@ -12,12 +12,17 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 
-class DiplomacyOverviewTable (
-    private val viewingPlayer: CivilizationInfo,
-    private val overviewScreen: EmpireOverviewScreen
-): Table() {
-
-    private var includeCityStates = false
+class DiplomacyOverviewTab (
+    viewingPlayer: CivilizationInfo,
+    overviewScreen: EmpireOverviewScreen,
+    persistedData: EmpireOverviewTabPersistableData? = null
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
+    class DiplomacyTabPersistableData(
+        var includeCityStates: Boolean = false
+    ) : EmpireOverviewTabPersistableData() {
+        override fun isEmpty() = !includeCityStates
+    }
+    override val persistableData = (persistedData as? DiplomacyTabPersistableData) ?: DiplomacyTabPersistableData()
 
     init {
         update()
@@ -25,9 +30,9 @@ class DiplomacyOverviewTable (
 
     fun update() {
         clear()
-        val relevantCivs = viewingPlayer.gameInfo.civilizations
-            .filter { !it.isBarbarian() && !it.isSpectator() && (includeCityStates || !it.isCityState()) }
-        val diplomacyGroup = DiplomacyGroup(viewingPlayer, overviewScreen.centerAreaHeight, includeCityStates)
+        val relevantCivs = gameInfo.civilizations
+            .filter { !it.isBarbarian() && !it.isSpectator() && (persistableData.includeCityStates || !it.isCityState()) }
+        val diplomacyGroup = DiplomacyGroup(viewingPlayer, overviewScreen.centerAreaHeight, persistableData.includeCityStates)
         val playerKnowsAndUndefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && !it.isDefeated() }
         val playerKnowsAndDefeatedCivs = relevantCivs.filter { diplomacyGroup.playerKnows(it) && it.isDefeated() }
         if (playerKnowsAndUndefeatedCivs.size > 1)
@@ -39,12 +44,14 @@ class DiplomacyOverviewTable (
         titleTable.add(viewingPlayer.civName.toLabel()).left().padRight(10f)
         titleTable.add(viewingPlayer.calculateScoreBreakdown().values.sum().toInt().toLabel()).row()
 
-
         val civTableScrollPane = getCivTableScroll(relevantCivs, titleTable, playerKnowsAndUndefeatedCivs, playerKnowsAndDefeatedCivs)
 
         val toggleCityStatesButton = "City-States".toTextButton()
-        toggleCityStatesButton.color = if(includeCityStates) Color.RED else Color.GREEN
-        toggleCityStatesButton.onClick { includeCityStates = !includeCityStates; update() }
+        toggleCityStatesButton.color = if (persistableData.includeCityStates) Color.RED else Color.GREEN
+        toggleCityStatesButton.onClick {
+            persistableData.includeCityStates = !persistableData.includeCityStates
+            update()
+        }
 
         val floatingTable = Table()
         floatingTable.add(toggleCityStatesButton).row()
