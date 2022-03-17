@@ -22,7 +22,7 @@ object BattleDamage {
             UniqueTarget.Nation -> "National ability"
             UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
             else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
-        }
+        }.tr()
         if (unique.conditionals.isEmpty()) return source
 
         val conditionalsText = unique.conditionals.joinToString { it.text.tr() }
