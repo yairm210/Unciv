@@ -19,8 +19,11 @@ class StatsOverviewTab(
     private val goldAndSliderTable = Table()
     private val goldTable = Table()
     private val scienceTable = Table()
+    private val cultureTable = Table()
+    private val faithTable = Table()
     private val greatPeopleTable = Table()
     private val scoreTable = Table()
+    private val isReligionEnabled = gameInfo.isReligionEnabled()
 
     init {
         val tablePadding = 30f  // Padding around each of the stat tables
@@ -29,6 +32,8 @@ class StatsOverviewTab(
         happinessTable.defaults().pad(5f)
         goldTable.defaults().pad(5f)
         scienceTable.defaults().pad(5f)
+        cultureTable.defaults().pad(5f)
+        faithTable.defaults().pad(5f)
         greatPeopleTable.defaults().pad(5f)
         scoreTable.defaults().pad(5f)
 
@@ -38,11 +43,37 @@ class StatsOverviewTab(
 
         update()
 
-        add(happinessTable)
-        add(goldAndSliderTable)
-        add(scienceTable)
-        add(greatPeopleTable)
-        add(scoreTable)
+        val allStatTables = sequence {
+            yield(happinessTable)
+            yield(goldAndSliderTable)
+            yield(scienceTable)
+            yield(cultureTable)
+            if (isReligionEnabled) yield(faithTable)
+            yield(greatPeopleTable)
+            yield(scoreTable)
+        }
+
+        var optimumColumns = 1
+        for (numColumns in allStatTables.count() downTo 1) {
+            val totalWidth = allStatTables.withIndex()
+                .groupBy { it.index % numColumns }
+                .mapNotNull { col ->
+                    // `col` goes by column and lists the statTables in that column
+                    // as Map.Entry<Int, <List<IndexedValue<Table>>>
+                    col.value.maxOfOrNull {  // `it` is the IndexedValue<Table> from allStatTables.withIndex()
+                        it.value.prefWidth + tablePadding * 2
+                    }
+                }.sum()
+            if (totalWidth < overviewScreen.stage.width) {
+                optimumColumns = numColumns
+                break
+            }
+        }
+
+        for (entry in allStatTables.withIndex()) {
+            if (entry.index % optimumColumns == 0) row()
+            add(entry.value)
+        }
     }
 
     fun update() {
@@ -50,6 +81,8 @@ class StatsOverviewTab(
         updateHappinessTable()
         goldTable.updateStatTable(Stat.Gold, statMap)
         scienceTable.updateStatTable(Stat.Science, statMap)
+        cultureTable.updateStatTable(Stat.Culture, statMap)
+        if (isReligionEnabled) faithTable.updateStatTable(Stat.Faith, statMap)
         updateGreatPeopleTable()
         updateScoreTable()
     }
