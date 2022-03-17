@@ -5,21 +5,20 @@ import com.unciv.Constants
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
+import kotlin.math.roundToInt
 
 class RiverGenerator(
     private val tileMap: TileMap,
     private val randomness: MapGenerationRandomness,
-    private val ruleset: Ruleset
+    ruleset: Ruleset
 ) {
-    companion object{
-        const val MAP_TILES_PER_RIVER = 100
-        const val MIN_RIVER_LENGTH = 5
-        const val MAX_RIVER_LENGTH = 666  // Do not set < max map radius
-    }
+    private val riverCountMultiplier = ruleset.modOptions.constants.riverCountMultiplier
+    private val minRiverLength = ruleset.modOptions.constants.minRiverLength
+    private val maxRiverLength = ruleset.modOptions.constants.maxRiverLength
 
     fun spawnRivers() {
         if (tileMap.values.none { it.isWater }) return
-        val numberOfRivers = tileMap.values.count { it.isLand } / MAP_TILES_PER_RIVER
+        val numberOfRivers = (tileMap.values.count { it.isLand } * riverCountMultiplier).roundToInt()
 
         var optionalTiles = tileMap.values.asSequence()
             .filter { it.baseTerrain == Constants.mountain && it.isFarEnoughFromWater() }
@@ -37,14 +36,14 @@ class RiverGenerator(
     }
 
     private fun TileInfo.isFarEnoughFromWater(): Boolean {
-        for (distance in 1 until MIN_RIVER_LENGTH) {
+        for (distance in 1 until minRiverLength) {
             if (getTilesAtDistance(distance).any { it.isWater }) return false
         }
         return true
     }
 
     private fun getClosestWaterTile(tile: TileInfo): TileInfo {
-        for (distance in 1..MAX_RIVER_LENGTH) {
+        for (distance in 1..maxRiverLength) {
             val waterTiles = tile.getTilesAtDistance(distance).filter { it.isWater }
             if (waterTiles.any())
                 return waterTiles.toList().random(randomness.RNG)
@@ -59,7 +58,7 @@ class RiverGenerator(
         var riverCoordinate = RiverCoordinate(initialPosition.position,
                 RiverCoordinate.BottomRightOrLeft.values().random(randomness.RNG))
 
-        for (step in 1..MAX_RIVER_LENGTH) {     // Arbitrary max on river length, otherwise this will go in circles - rarely
+        for (step in 1..maxRiverLength) {     // Arbitrary max on river length, otherwise this will go in circles - rarely
             if (riverCoordinate.getAdjacentTiles(tileMap).any { it.isWater }) return
             val possibleCoordinates = riverCoordinate.getAdjacentPositions(tileMap)
             if (possibleCoordinates.none()) return // end of the line

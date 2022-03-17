@@ -170,6 +170,8 @@ class MapGenerator(val ruleset: Ruleset) {
             val tilesInArea = ArrayList<TileInfo>()
             val tilesToCheck = ArrayList<TileInfo>()
 
+            val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
+
             while (waterTiles.isNotEmpty()) {
                 val initialWaterTile = waterTiles.random(randomness.RNG)
                 tilesInArea += initialWaterTile
@@ -188,7 +190,7 @@ class MapGenerator(val ruleset: Ruleset) {
                     tilesToCheck -= tileWeAreChecking
                 }
 
-                if (tilesInArea.size <= 10) {
+                if (tilesInArea.size <= maxLakeSize) {
                     for (tile in tilesInArea) {
                         tile.baseTerrain = Constants.lakes
                         tile.setTransients()
@@ -216,8 +218,10 @@ class MapGenerator(val ruleset: Ruleset) {
         if (map.mapParameters.noRuins || ruinsEquivalents.isEmpty() )
             return
         val suitableTiles = map.values.filter { it.isLand && !it.isImpassible() }
-        val locations = randomness.chooseSpreadOutLocations(suitableTiles.size / 50,
-                suitableTiles, map.mapParameters.mapSize.radius)
+        val locations = randomness.chooseSpreadOutLocations(
+                (suitableTiles.size * ruleset.modOptions.constants.ancientRuinCountMultiplier).roundToInt(),
+                suitableTiles,
+                map.mapParameters.mapSize.radius)
         for (tile in locations)
             tile.improvement = ruinsEquivalents.keys.random()
     }

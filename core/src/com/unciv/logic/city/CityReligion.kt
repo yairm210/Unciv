@@ -313,13 +313,6 @@ class CityInfoReligionManager {
                     pressure *= unique.params[0].toPercent()
         }
 
-        // Deprecated since 3.19.3
-            for (unique in cityInfo.getLocalMatchingUniques(UniqueType.NaturalReligionSpreadStrengthWith))
-                if (pressuredCity.matchesFilter(unique.params[1])
-                    && cityInfo.civInfo.hasTechOrPolicy(unique.params[2])
-                ) pressure *= unique.params[0].toPercent()
-        //
-
         return pressure.toInt()
     }
 }

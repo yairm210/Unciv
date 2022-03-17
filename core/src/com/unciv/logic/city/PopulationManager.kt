@@ -63,12 +63,9 @@ class PopulationManager {
         if (foodStored >= getFoodToNextPopulation()) {  // growth!
             foodStored -= getFoodToNextPopulation()
             var percentOfFoodCarriedOver = 
-                (
-                    (cityInfo.getMatchingUniques(UniqueType.CarryOverFood)
-                        + cityInfo.getMatchingUniques(UniqueType.CarryOverFoodAlsoDeprecated)
-                    ).filter { cityInfo.matchesFilter(it.params[1]) }
-                    + cityInfo.getMatchingUniques(UniqueType.CarryOverFoodDeprecated)
-                ).sumOf { it.params[0].toInt() }
+                cityInfo.getMatchingUniques(UniqueType.CarryOverFood)
+                    .filter { cityInfo.matchesFilter(it.params[1]) }
+                    .sumOf { it.params[0].toInt() }
             // Try to avoid runaway food gain in mods, just in case 
             if (percentOfFoodCarriedOver > 95) percentOfFoodCarriedOver = 95 
             foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()

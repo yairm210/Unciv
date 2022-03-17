@@ -39,11 +39,10 @@ import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
-import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
-import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 
 /**

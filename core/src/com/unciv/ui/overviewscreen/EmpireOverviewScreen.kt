@@ -13,7 +13,10 @@ import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPage: String = "") : BaseScreen(){
+class EmpireOverviewScreen(
+    private var viewingPlayer: CivilizationInfo,
+    defaultPage: String = ""
+) : BaseScreen() {
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply { defaults().pad(5f) }
 
@@ -38,7 +41,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         )
     }
 
-    private fun addCategory(name:String, table:Table, disabled:Boolean=false) {
+    private fun addCategory(name: String, table: Table, disabled: Boolean = false) {
         // Buttons now hold their old label plus optionally an indicator for the shortcut key.
         // Implement this templated on UnitActionsTable.getUnitActionButton()
         val iconAndKey = ButtonDecorations.keyIconMap[name] ?: return   // category without decoration entry disappears
@@ -119,14 +122,14 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             val civGroup = Table()
 
             var labelText = civ.civName.tr()+afterCivNameText
-            var labelColor=Color.WHITE
-            val backgroundColor:Color
+            var labelColor = Color.WHITE
+            val backgroundColor: Color
 
             if (civ.isDefeated()) {
                 civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
                 backgroundColor = Color.LIGHT_GRAY
                 labelColor = Color.BLACK
-            } else if (currentPlayer==civ // game.viewEntireMapForDebug
+            } else if (currentPlayer == civ  // || game.viewEntireMapForDebug
                     || currentPlayer.knows(civ) || currentPlayer.isDefeated() || currentPlayer.victoryManager.hasWon()) {
                 civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
                 backgroundColor = civ.nation.getOuterColor()

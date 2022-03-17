@@ -1,3 +1,15 @@
+## 3.19.17
+
+Better displaying of units that cannot be built
+
+By SomeTroglodyte:
+- Support more freely modded Worker-like units 
+- Religion overview improved
+- Mod checker minor improvements 
+- Fixed Spectator & AI games in seemingly endless loop  
+
+Multiplayer code cleanup  - By GGGuenni
+
 ## 3.19.16
 
 Wiki improvements

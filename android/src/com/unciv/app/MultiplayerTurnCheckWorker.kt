@@ -16,7 +16,7 @@ import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 import java.io.StringWriter

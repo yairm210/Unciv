@@ -569,7 +569,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[amount]% tile improvement construction time"
 	Example: "[20]% tile improvement construction time"
 
-	Applicable to: Global
+	Applicable to: Global, Unit
 
 ??? example  "[amount]% Gold from Great Merchant trade missions"
 	Example: "[20]% Gold from Great Merchant trade missions"
@@ -867,6 +867,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Requires a [buildingName] in at least [amount] cities"
 	Example: "Requires a [Library] in at least [20] cities"
 
+	Applicable to: Building
+
+??? example  "Can only be built [cityFilter]"
+	Example: "Can only be built [in all cities]"
+
+	Applicable to: Building
+
+??? example  "Must have an owned [tileFilter] within [amount] tiles"
+	Example: "Must have an owned [Farm] within [20] tiles"
+
+	Applicable to: Building
+
+??? example  "Enables nuclear weapon"
 	Applicable to: Building
 
 ??? example  "Must be on [terrainFilter]"

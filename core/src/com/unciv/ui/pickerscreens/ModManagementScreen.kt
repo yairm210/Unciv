@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Json
 import com.unciv.JsonParser
 import com.unciv.MainMenuScreen
+import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -422,6 +423,7 @@ class ModManagementScreen(
         modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
+        modOptions.updateDeprecations()
         Json().toJson(modOptions, modOptionsFile)
     }
 

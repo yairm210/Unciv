@@ -59,7 +59,7 @@ open class TileInfo {
     lateinit var baseTerrain: String
     var terrainFeatures: List<String> = listOf()
         private set
-    
+
     @Transient
     var terrainFeatureObjects: List<Terrain> = listOf()
         private set
@@ -193,12 +193,12 @@ open class TileInfo {
     // We have to .toList() so that the values are stored together once for caching,
     // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
-    /** Returns the left shared neighbor of [this] and [neighbor] (relative to the view direction [this]->[neighbor]), or null if there is no such tile. */
+    /** Returns the left shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
     fun getLeftSharedNeighbor(neighbor: TileInfo): TileInfo? {
         return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) - 2) % 12)
     }
 
-    /** Returns the right shared neighbor [this] and [neighbor] (relative to the view direction [this]->[neighbor]), or null if there is no such tile. */
+    /** Returns the right shared neighbor of `this` and [neighbor] (relative to the view direction `this`->[neighbor]), or null if there is no such tile. */
     fun getRightSharedNeighbor(neighbor: TileInfo): TileInfo? {
         return tileMap.getClockPositionNeighborTile(this,(tileMap.getNeighborTileClockPosition(this, neighbor) + 2) % 12)
     }
@@ -227,7 +227,7 @@ open class TileInfo {
             else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
         }
     }
-    
+
     fun isEnemyTerritory(civInfo: CivilizationInfo): Boolean {
         val tileOwner = getOwner() ?: return false
         return civInfo.isAtWarWith(tileOwner)
@@ -262,8 +262,8 @@ open class TileInfo {
 
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo?): Stats {
         var stats = getBaseTerrain().cloneStats()
-        
-        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this);
+
+        val stateForConditionals = StateForConditionals(civInfo = observingCiv, cityInfo = city, tile = this)
 
         for (terrainFeatureBase in terrainFeatureObjects) {
             when {
@@ -438,7 +438,7 @@ open class TileInfo {
                     stats.add(unique.stats)
                 }
             }
-            
+
             for (unique in city.getMatchingUniques(UniqueType.AllStatsPercentFromObject, conditionalState)) {
                 if (improvement.matchesFilter(unique.params[1]))
                     stats.timesInPlace(unique.params[0].toPercent())
@@ -556,7 +556,7 @@ open class TileInfo {
             baseTerrain -> true
             "Water" -> isWater
             "Land" -> isLand
-            "Coastal" -> isCoastalTile()
+            Constants.coastal -> isCoastalTile()
             "River" -> isAdjacentToRiver()
             naturalWonder -> true
             "Open terrain" -> !isRoughTerrain()
@@ -568,7 +568,7 @@ open class TileInfo {
             "Water resource" -> isWater && observingCiv != null && hasViewableResource(observingCiv)
             "Natural Wonder" -> naturalWonder != null
             "Featureless" -> terrainFeatures.isEmpty()
-            "Fresh Water" -> isAdjacentTo(Constants.freshWater)
+            Constants.freshWaterFilter -> isAdjacentTo(Constants.freshWater)
             else -> {
                 if (terrainFeatures.contains(filter)) return true
                 if (getAllTerrains().any { it.hasUnique(filter) }) return true
@@ -845,7 +845,7 @@ open class TileInfo {
     fun stripUnits() {
         for (unit in this.getUnits()) removeUnit(unit)
     }
-    
+
     fun setTileResource(newResource: TileResource, majorDeposit: Boolean = false) {
         resource = newResource.name
 
@@ -873,15 +873,15 @@ open class TileInfo {
             }
         }
     }
-    
+
     fun setTerrainFeatures(terrainFeatureList:List<String>){
         terrainFeatures = terrainFeatureList
         terrainFeatureObjects = terrainFeatureList.mapNotNull { ruleset.terrains[it] }
     }
-    
+
     fun addTerrainFeature(terrainFeature:String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { add(terrainFeature) })
-    
+
     fun removeTerrainFeature(terrainFeature: String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })
 
@@ -897,9 +897,10 @@ open class TileInfo {
         }
     }
 
-    fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
+    fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo, unit: MapUnit) {
         improvementInProgress = improvement.name
-        turnsToImprovement = if (civInfo.gameInfo.gameParameters.godMode) 1 else improvement.getTurnsToBuild(civInfo)
+        turnsToImprovement = if (civInfo.gameInfo.gameParameters.godMode) 1
+            else improvement.getTurnsToBuild(civInfo, unit)
     }
 
     fun stopWorkingOnImprovement() {
