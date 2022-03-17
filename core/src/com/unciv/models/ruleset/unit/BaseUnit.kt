@@ -86,10 +86,11 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         lines += "$strengthLine$movement${Fonts.movement}"
 
         if (replacementTextForUniques != "") lines += replacementTextForUniques
-        else for (unique in uniques.filterNot {
-            it.startsWith("Hidden ") && it.endsWith(" disabled") || it == UniqueType.Unbuildable.text
+        else for (unique in uniqueObjects.filterNot {
+            it.type == UniqueType.Unbuildable
+                    || it.type?.flags?.contains(UniqueFlag.HiddenToUsers) == true
         })
-            lines += unique.tr()
+            lines += unique.text.tr()
 
         if (promotions.isNotEmpty()) {
             val prefix = "Free promotion${if (promotions.size == 1) "" else "s"}:".tr() + " "
