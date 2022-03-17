@@ -226,7 +226,7 @@ object UnitActions {
 
     private fun addPromoteAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
-        // promotion does not consume movement points, so we can do it always
+        // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
         actionList += UnitAction(UnitActionType.Promote,
             action = {
                 UncivGame.Current.setScreen(PromotionPickerScreen(unit))
