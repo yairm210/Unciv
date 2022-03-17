@@ -11,11 +11,10 @@ import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
-@Suppress("UNUSED_PARAMETER")       // Keep all OverviewScreen Pages compatible
-class ResourcesOverviewTable (
+class ResourcesOverviewTab(
     viewingPlayer: CivilizationInfo,
     overviewScreen: EmpireOverviewScreen
-) : Table() {
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
     init {
         defaults().pad(10f)

@@ -17,20 +17,23 @@ import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.utils.*
 import kotlin.math.max
 
-class ReligionOverviewTable(
-    private val viewingPlayer: CivilizationInfo,
-    private val overviewScreen: EmpireOverviewScreen
-): Table() {
+class ReligionOverviewTab(
+    viewingPlayer: CivilizationInfo,
+    overviewScreen: EmpireOverviewScreen,
+    persistedData: EmpireOverviewTabPersistableData? = null
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
+    class ReligionTabPersistableData(
+        var selectedReligion: String? = null
+    ) : EmpireOverviewTabPersistableData() {
+        override fun isEmpty() = selectedReligion == null
+    }
+    override val persistableData = (persistedData as? ReligionTabPersistableData) ?: ReligionTabPersistableData()
 
-    val gameInfo = viewingPlayer.gameInfo
-
-    private val civStatsTable = Table(BaseScreen.skin)
-    private val religionButtons = Table(BaseScreen.skin)
+    private val civStatsTable = Table()
+    private val religionButtons = Table()
     private val religionButtonLabel = "Click an icon to see the stats of this religion".toLabel()
-    private val statsTable = Table(BaseScreen.skin)
-    private val beliefsTable = Table(BaseScreen.skin)
-
-    private var selectedReligion: String? = null
+    private val statsTable = Table()
+    private val beliefsTable = Table()
 
     init {
         defaults().pad(5f)
@@ -38,14 +41,15 @@ class ReligionOverviewTable(
         loadReligionButtons()
 
         civStatsTable.defaults().left().pad(5f)
+        statsTable.defaults().left().pad(5f)
+        beliefsTable.defaults().padBottom(20f)
         civStatsTable.addCivSpecificStats()
         add(civStatsTable).row()
         add(religionButtons).row()
         add(religionButtonLabel)
         addSeparator()
-        statsTable.defaults().left().pad(5f)
+        loadReligion(persistableData.selectedReligion)
         add(statsTable).row()
-        beliefsTable.defaults().padBottom(20f)
         add(beliefsTable).pad(20f)
     }
 
@@ -85,18 +89,23 @@ class ReligionOverviewTable(
             val button = Button(image, BaseScreen.skin)
 
             button.onClick {
-                selectedReligion = religion.name
+                persistableData.selectedReligion = religion.name
                 loadReligionButtons()
                 loadReligion(religion)
             }
 
-            if (selectedReligion == religion.name)
+            if (persistableData.selectedReligion == religion.name)
                 button.disable()
 
             religionButtons.add(button).pad(5f)
         }
     }
 
+    private fun loadReligion(religionName: String?) {
+        if (religionName == null) return
+        val religion = gameInfo.religions[religionName] ?: return
+        loadReligion(religion)
+    }
     private fun loadReligion(religion: Religion) {
         statsTable.clear()
         beliefsTable.clear()

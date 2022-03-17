@@ -1,17 +1,18 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g3d.model.Animation
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.min
 
 /*
     Unimplemented ideas:
-    Allow "fixed header" content that does not participate in scrolling
-        (OptionsPopup mod check tab)
+    Use fixedContent for OptionsPopup mod check tab
     `scrollAlign: Align` property controls initial content scroll position (currently it's Align.top)
  */
 
@@ -30,6 +31,8 @@ import kotlin.math.min
  * area of added pages and set the reported pref-W/H to their maximum within these bounds. But, if a
  * maximum is not specified, that coordinate will grow with content unlimited, and layout max-W/H will
  * always report the same as pref-W/H.
+ *
+ * [keyPressDispatcher] is optional and works with the `shortcutKey` parameter of [addPage] to support key bindings with tooltips.
  */
 //region Fields and initialization
 @Suppress("MemberVisibilityCanBePrivate", "unused")  // All member are part of our API
@@ -43,19 +46,23 @@ class TabbedPager(
     private val highlightColor: Color = Color.BLUE,
     backgroundColor: Color = ImageGetter.getBlue().darken(0.5f),
     private val headerPadding: Float = 10f,
+    separatorColor: Color = Color.CLEAR,
+    private val keyPressDispatcher: KeyPressDispatcher? = null,
     capacity: Int = 4
 ) : Table() {
 
     private class PageState(
         caption: String,
         var content: Actor,
+        var fixedContent: WidgetGroup? = null,
         var disabled: Boolean = false,
-        val onActivation: ((Int, String)->Unit)? = null,
+        val onActivation: ((Int, String) -> Unit)? = null,
+        val onDeactivation: ((Int, String, Float) -> Unit)? = null,
         icon: Actor? = null,
         iconSize: Float = 0f,
+        val shortcutKey: KeyCharAndCode = KeyCharAndCode.UNKNOWN,
         pager: TabbedPager
     ) {
-
         var scrollX = 0f
         var scrollY = 0f
 
@@ -90,6 +97,7 @@ class TabbedPager(
     private var headerHeight = 0f
 
     private val contentScroll = AutoScrollPane(null)
+    private val fixedContentWrapper = Container<WidgetGroup>()
 
     private val deferredSecretPages = ArrayDeque<PageState>(0)
     private var askPasswordLock = false
@@ -102,6 +110,9 @@ class TabbedPager(
         // Measure header height, most likely its final value
         removePage(addPage("Dummy"))
         add(headerScroll).growX().minHeight(headerHeight).row()
+        if (separatorColor != Color.CLEAR)
+            addSeparator(separatorColor)
+        add(fixedContentWrapper).growX().row()
         add(contentScroll).grow().row()
     }
 
@@ -145,7 +156,9 @@ class TabbedPager(
         if (index >= 0 && pages[index].disabled) return false
         if (activePage != -1) {
             pages[activePage].apply {
+                onDeactivation?.invoke(activePage, button.name, contentScroll.scrollY)
                 button.color = Color.WHITE
+                fixedContentWrapper.actor = null
                 scrollX = contentScroll.scrollX
                 scrollY = contentScroll.scrollY
                 contentScroll.removeActor(content)
@@ -155,6 +168,7 @@ class TabbedPager(
         if (index != -1) {
             pages[index].apply {
                 button.color = highlightColor
+                fixedContentWrapper.actor = fixedContent
                 contentScroll.actor = content
                 contentScroll.layout()
                 if (scrollX < 0f)  // was marked to center on first show
@@ -196,6 +210,19 @@ class TabbedPager(
      */
     fun setPageDisabled(caption: String, disabled: Boolean) = setPageDisabled(getPageIndex(caption), disabled)
 
+    /** Access a page's header button e.g. for unusual formatting */
+    fun getPageButton(index: Int) = pages[index].button
+
+    /** Change the vertical scroll position af a page's contents */
+    fun setPageScrollY(index: Int, scrollY: Float, animation: Boolean = false) {
+        if (index !in 0 until pages.size) return
+        val page = pages[index]
+        page.scrollY = scrollY
+        if (index != activePage) return
+        contentScroll.scrollY = scrollY
+        if (!animation) contentScroll.updateVisualScroll()
+    }
+
     /** Remove a page by its index.
      * @return `true` if page successfully removed */
     fun removePage(index: Int): Boolean {
@@ -211,7 +238,7 @@ class TabbedPager(
      * @return `true` if page successfully removed */
     fun removePage(caption: String) = removePage(getPageIndex(caption))
 
-    /** Replace a page's content by its index. */
+    /** Replace a page's [content] by its [index]. */
     fun replacePage(index: Int, content: Actor) {
         if (index !in 0 until pages.size) return
         val isActive = index == activePage
@@ -219,9 +246,20 @@ class TabbedPager(
         pages[index].content = content
         if (isActive) selectPage(index)
     }
+    /** Replace a page's [content] and [fixedContent] by its [index]. */
+    fun replacePage(index: Int, content: Actor, fixedContent: WidgetGroup?) {
+        if (index !in 0 until pages.size) return
+        val isActive = index == activePage
+        if (isActive) selectPage(-1)
+        pages[index].content = content
+        pages[index].fixedContent = fixedContent
+        if (isActive) selectPage(index)
+    }
 
-    /** Replace a page's content by its caption. */
+    /** Replace a page's [content] by its [caption]. */
     fun replacePage(caption: String, content: Actor) = replacePage(getPageIndex(caption), content)
+    /** Replace a page's [content] and [fixedContent] by its [caption]. */
+    fun replacePage(caption: String, content: Actor, fixedContent: WidgetGroup?) = replacePage(getPageIndex(caption), content, fixedContent)
 
     /** Add a page!
      * @param caption Text to be shown on the header button (automatically translated), can later be used to reference the page in other calls.
@@ -231,6 +269,9 @@ class TabbedPager(
      * @param insertBefore -1 to add at the end or index of existing page to insert this before
      * @param secret Marks page as 'secret'. A password is asked once per [TabbedPager] and if it does not match the has passed in the constructor the page and all subsequent secret pages are dropped.
      * @param disabled Initial disabled state. Disabled pages cannot be selected even with [selectPage], their button is dimmed.
+     * @param shortcutKey Optional keyboard key to associate - goes to the [KeyPressDispatcher] passed in the constructor.
+     * @param fixedContent Optional second content [WidgetGroup], will be placed outside the tab's [ScrollPane] between header and [content].
+     * @param onDeactivation _Optional_ callback called when this page is hidden. Lambda arguments are page index and caption, and scrollY of the tab's [ScrollPane].
      * @param onActivation _Optional_ callback called when this page is shown (per actual change to this page, not per header click). Lambda arguments are page index and caption.
      * @return The new page's index or -1 if it could not be immediately added (secret).
      */
@@ -242,16 +283,22 @@ class TabbedPager(
         insertBefore: Int = -1,
         secret: Boolean = false,
         disabled: Boolean = false,
-        onActivation: ((Int, String)->Unit)? = null
+        shortcutKey: KeyCharAndCode = KeyCharAndCode.UNKNOWN,
+        fixedContent: WidgetGroup? = null,
+        onDeactivation: ((Int, String, Float) -> Unit)? = null,
+        onActivation: ((Int, String) -> Unit)? = null
     ): Int {
         // Build page descriptor and header button
         val page = PageState(
                 caption = caption,
                 content = content ?: Group(),
+                fixedContent = fixedContent,
                 disabled = disabled,
                 onActivation = onActivation,
+                onDeactivation = onDeactivation,
                 icon = icon,
                 iconSize = iconSize,
+                shortcutKey = shortcutKey,
                 pager = this
         )
         page.button.apply {
@@ -260,6 +307,7 @@ class TabbedPager(
             onClick {
                 selectPage(page)
             }
+            addTooltip(shortcutKey, if (iconSize > 0f) iconSize else 18f)
             pack()
             if (height + 2 * headerPadding > headerHeight) {
                 headerHeight = height + 2 * headerPadding
@@ -310,6 +358,22 @@ class TabbedPager(
 
     private fun getPageIndex(page: PageState) = pages.indexOf(page)
 
+    private fun measureContent(group: WidgetGroup) {
+        group.packIfNeeded()
+        var needLayout = false
+        val contentWidth = min(group.width, limitWidth)
+        if (contentWidth > preferredWidth) {
+            preferredWidth = contentWidth
+            needLayout = true
+        }
+        val contentHeight = min(group.height, limitHeight)
+        if (contentHeight > preferredHeight) {
+            preferredHeight = contentHeight
+            needLayout = true
+        }
+        if (needLayout && activePage >= 0) invalidateHierarchy()
+    }
+
     private fun addAndShowPage(page: PageState, insertBefore: Int): Int {
         // Update pages array and header table
         val newIndex: Int
@@ -330,22 +394,15 @@ class TabbedPager(
             pages[i].buttonX += page.buttonW
 
         // Content Sizing
-        if (page.content is WidgetGroup) {
-            (page.content as WidgetGroup).packIfNeeded()
-            val contentWidth = min(page.content.width, limitWidth)
-            if (contentWidth > preferredWidth) {
-                preferredWidth = contentWidth
-                if (activePage >= 0) invalidateHierarchy()
-            }
-            val contentHeight = min(page.content.height, limitHeight)
-            if (contentHeight > preferredHeight) {
-                preferredHeight = contentHeight
-                if (activePage >= 0) invalidateHierarchy()
-            }
+        if (page.fixedContent != null) measureContent(page.fixedContent!!)
+        (page.content as? WidgetGroup)?.let {
+            measureContent(it)
             page.scrollX = -1f  // mark to center later when all pages are measured
         }
         if (growMaxWidth) maximumWidth = minimumWidth
         if (growMaxHeight) maximumHeight = minimumHeight
+
+        keyPressDispatcher?.set(page.shortcutKey) { selectPage(newIndex) }
 
         return newIndex
     }
