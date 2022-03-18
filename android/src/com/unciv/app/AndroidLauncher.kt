@@ -4,8 +4,11 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.ViewGroup
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
@@ -119,4 +122,51 @@ open class AndroidLauncher : AndroidApplication() {
     }
 }
 
-class AndroidTvLauncher:AndroidLauncher()
+class AndroidTvLauncher : AndroidLauncher() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val cursor = CursorView(this)
+        findViewById<ViewGroup>(android.R.id.content).addView(
+            cursor,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        input.addKeyListener { v, keyCode, event ->
+            when (event.action) {
+                KeyEvent.ACTION_DOWN -> when (event.keyCode) {
+                    KeyEvent.KEYCODE_DPAD_DOWN -> {
+                        cursor.cursor.y += SENSITIVITY
+                        cursor.invalidate()
+                        true
+                    }
+                    KeyEvent.KEYCODE_DPAD_UP -> {
+                        cursor.cursor.y -= SENSITIVITY
+                        cursor.invalidate()
+                        true
+                    }
+                    KeyEvent.KEYCODE_DPAD_LEFT -> {
+                        cursor.cursor.x -= SENSITIVITY
+                        cursor.invalidate()
+                        true
+                    }
+                    KeyEvent.KEYCODE_DPAD_RIGHT -> {
+                        cursor.cursor.x += SENSITIVITY
+                        cursor.invalidate()
+                        true
+                    }
+                    KeyEvent.KEYCODE_DPAD_CENTER -> {
+                        input.inputProcessor.touchDown(cursor.cursor.x.toInt(), cursor.cursor.y.toInt(), 0, Input.Buttons.LEFT)
+                        input.inputProcessor.touchUp(cursor.cursor.x.toInt(), cursor.cursor.y.toInt(), 0, Input.Buttons.LEFT)
+                        true
+                    }
+                    else -> false
+                }
+                else -> false
+            }
+        }
+    }
+
+    private companion object {
+        private const val SENSITIVITY = 5
+    }
+}
