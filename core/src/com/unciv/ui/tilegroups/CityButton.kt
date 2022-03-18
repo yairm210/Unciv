@@ -415,9 +415,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     private fun foreignCityInfoPopup() {
         fun openDiplomacy() {
             // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-            val screen = DiplomacyScreen(worldScreen.viewingCiv)
-            screen.updateRightSide(city.civInfo)
-            worldScreen.game.setScreen(screen)
+            worldScreen.game.setScreen(DiplomacyScreen(worldScreen.viewingCiv, city.civInfo))
         }
 
         // If there's nothing to display cuz no Religion - skip popup
