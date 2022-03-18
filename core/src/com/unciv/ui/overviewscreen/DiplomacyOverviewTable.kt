@@ -145,17 +145,24 @@ class DiplomacyOverviewTab (
         if (count == 0) return
         addSeparator()
         var currentColumn = 0
-        for (civ in civs) {
-            add(getCivMiniTable(civ)).left()
-            if (civ.isCityState()) {
-                currentColumn++
-            } else {
-                add(civ.calculateTotalScore().toInt().toLabel()).left()
-                currentColumn += 2
-            }
+        var lastCivWasMajor = false
+        fun advanceCols(delta: Int) {
+            currentColumn += delta
             if (currentColumn >= columns) {
                 row()
                 currentColumn = 0
+            }
+            lastCivWasMajor = delta == 2
+        }
+        for (civ in civs) {
+            if (lastCivWasMajor && civ.isCityState())
+                advanceCols(columns)
+            add(getCivMiniTable(civ)).left()
+            if (civ.isCityState()) {
+                advanceCols(1)
+            } else {
+                add(civ.calculateTotalScore().toInt().toLabel()).left()
+                advanceCols(2)
             }
         }
     }
