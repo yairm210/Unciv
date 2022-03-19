@@ -30,7 +30,7 @@
     {
         "name": "God of Craftsman",
         "type": "Pantheon",
-        "uniques": ["[+1 Production] in cities with [3] or more population"]
+        "uniques": ["[+1 Production] <if this city has at least [3] [Population]>"]
     },
     {
         "name": "God of the Open Sky",
@@ -55,7 +55,7 @@
     {
         "name": "Goddess of Love",
         "type": "Pantheon",
-        "uniques": ["[+1 Happiness] in cities with [6] or more population"]
+        "uniques": ["[+1 Happiness] <in cities with at least [6] [Population]"]
     },
     {
         "name": "Goddess of Protection",

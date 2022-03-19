@@ -79,6 +79,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // ToDo: Reword to `[stats] <in cities with [amount] or more population>` for consistency with other conditionals
+    @Deprecated("as of 3.19.19", ReplaceWith("[stats] <in cities with at least [amount] [Population]>"))
     StatsFromXPopulation("[stats] in cities with [amount] or more population", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -155,12 +156,16 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
     GreatPersonPointPercentage("[amount]% Great Person generation [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.19", ReplaceWith("[amount]% Great Person generation [cityFilter]"))
     GreatPersonPointPercentageDeprecated("[amount]% great person generation [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
 
+    UnhappinessFromPopulationTypePercentageChange("[amount]% Unhappiness from [populationFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.19", ReplaceWith("[amount]% Unhappiness from [Population] [cityFilter]"))
     UnhappinessFromPopulationPercentageChange("[amount]% unhappiness from population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.19", ReplaceWith("[amount]% Unhappiness from [Specialists] [cityFilter]"))
     UnhappinessFromSpecialistsPercentageChange("[amount]% unhappiness from specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     FoodConsumptionBySpecialists("[amount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     HappinessPer2Policies("Provides 1 happiness per 2 additional social policies adopted", UniqueTarget.Global),
@@ -605,7 +610,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     /////// city conditionals
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
+    ConditionalPopulationFilter("if this city has at least [amount] [pouplationFilter]", UniqueTarget.Conditional),
+    @Deprecated("as of 3.19.19", ReplaceWith("if this city has at least [amount] [Specialists]"))
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
+    @Deprecated("as of 3.19.19", ReplaceWith("if this city has at least [amount] [Followers of the Majority Religion]"))
     ConditionalFollowerCount("in cities where this religion has at least [amount] followers", UniqueTarget.Conditional),
     ConditionalWhenGarrisoned("with a garrison", UniqueTarget.Conditional),
 

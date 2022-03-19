@@ -98,6 +98,12 @@ It can be any value noted in `baseUnitFilter` or one of the following:
 - `Barbarians`, `Barbarian`
 - Again, any combination of the above is also allowed, e.g. `[{Wounded} {Water}]` units.
 
+## populationFilter
+A filter determining a part of the population of a city. It can be any of the following values:
+- `Population`
+- `Specialists`
+- `Unemployed`
+- `Followers of the Majority Religion`
 
 ## regionType
 Used for dividing the world into regions in each of which a single player is placed at the start of the game.

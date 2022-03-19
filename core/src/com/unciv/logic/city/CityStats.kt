@@ -401,27 +401,31 @@ class CityStats(val cityInfo: CityInfo) {
             unhappinessFromCity *= 2f //doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
-
+        
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
-        var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
-
-        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromSpecialistsPercentageChange)) {
-            if (cityInfo.matchesFilter(unique.params[1]))
-                unhappinessFromSpecialists *= unique.params[0].toPercent()
-        }
-
-        unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists()
-            .toFloat() - unhappinessFromSpecialists
+        
+        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
+            if (cityInfo.matchesFilter(unique.params[2]))
+                unhappinessFromCitizens += (unique.params[0].toFloat() / 100f) * cityInfo.population.getPopulationFilterAmount(unique.params[1])
+        
+        // Deprecated as of 3.19.19
+            for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromSpecialistsPercentageChange)) {
+                if (cityInfo.matchesFilter(unique.params[1]))
+                    unhappinessFromCitizens += unique.params[0].toFloat() / 100f * cityInfo.population.getNumberOfSpecialists()
+            }
+    
+            for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChange))
+                if (cityInfo.matchesFilter(unique.params[1]))
+                    unhappinessFromCitizens += unique.params[0].toFloat() / 100f * cityInfo.population.population
+        //
 
         if (cityInfo.isPuppet)
             unhappinessFromCitizens *= 1.5f
         else if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChange))
-            if (cityInfo.matchesFilter(unique.params[1]))
-                unhappinessFromCitizens *= unique.params[0].toPercent()
-
+        if (unhappinessFromCitizens < 0) unhappinessFromCitizens = 0f
+        
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city
