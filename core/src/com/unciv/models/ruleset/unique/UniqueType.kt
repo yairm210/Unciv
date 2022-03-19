@@ -73,7 +73,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region Stat providing uniques
 
-    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief, UniqueTarget.Improvement),
+    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief, UniqueTarget.Improvement, UniqueTarget.Terrain),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -88,7 +88,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatsFromTilesWithout("[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // This is a doozy
     StatsFromObject("[stats] from every [tileFilter/specialist/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-
     StatsFromTradeRoute("[stats] from each Trade Route", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     // Stat percentage boosts
@@ -98,7 +97,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     AllStatsPercentFromObject("[amount]% Yield from every [tileFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     StatPercentFromReligionFollowers("[amount]% [stat] from every follower, up to [amount]%", UniqueTarget.FollowerBelief),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
-    GoldBonusFromTradeRouts("Gold from all trade routes +25%", UniqueTarget.Global),
+    StatPercentFromTradeRoutes("[amount]% [stat] from Trade Routes", UniqueTarget.Global),
+    @Deprecated("as of 3.19.19", ReplaceWith("[+25]% [Gold] from Trade Routes"))
+    GoldBonusFromTradeRoutesDeprecated("Gold from all trade routes +25%", UniqueTarget.Global),
 
     NullifiesStat("Nullifies [stat] [cityFilter]", UniqueTarget.Global),
     NullifiesGrowth("Nullifies Growth [cityFilter]", UniqueTarget.Global),
