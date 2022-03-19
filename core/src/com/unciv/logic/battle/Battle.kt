@@ -707,15 +707,22 @@ object Battle {
             tile.improvement = null
         }
         tile.roadStatus = RoadStatus.None
-        if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
+        if (tile.isLand && !tile.isImpassible()) {
             if (tile.hasUnique(UniqueType.DestroyableByNukesChance)) {
-                for (terrainFeature in tile.terrainFeatureObjects)
-                    for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) {
-                        if (Random().nextFloat() < unique.params[0].toFloat() / 100f)
+                for (terrainFeature in tile.terrainFeatureObjects) {
+                    for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) { 
+                        if (Random().nextFloat() < unique.params[0].toFloat() / 100f) {
                             tile.removeTerrainFeature(terrainFeature.name)
+                            if (!tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible))
+                                tile.addTerrainFeature("Fallout")
+                        }
                     }
+                }
+            } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible)) {
+                tile.addTerrainFeature("Fallout")
             }
-            if (!tile.hasUnique(UniqueType.DestroyableByNukesChance)) return;
+            if (!tile.hasUnique(UniqueType.DestroyableByNukes)) return;
+            
             // Deprecated as of 3.19.19 -- If removed, the two successive `if`s above should be merged
                 val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
                 else 0.5f
@@ -723,7 +730,8 @@ object Battle {
                     for (terrainFeature in tile.terrainFeatureObjects)
                         if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
                             tile.removeTerrainFeature(terrainFeature.name)
-                    tile.addTerrainFeature("Fallout")
+                    if (!tile.hasUnique(UniqueType.Indestructible))
+                        tile.addTerrainFeature("Fallout")
                 }
             //
         }
