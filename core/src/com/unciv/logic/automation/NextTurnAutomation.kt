@@ -74,7 +74,7 @@ object NextTurnAutomation {
     fun automateGoldToSciencePercentage(civInfo: CivilizationInfo) {
         // Don't let the AI run blindly with the default convert-gold-to-science ratio if that option is enabled
         val estimatedIncome = civInfo.statsForNextTurn.gold.toInt()
-        val projectedGold = civInfo.gold + estimatedIncome 
+        val projectedGold = civInfo.gold + estimatedIncome
         // TODO: some cleverness, this is just wild guessing.
         val pissPoor = civInfo.tech.era.baseUnitBuyCost
         val stinkingRich = civInfo.tech.era.startingGold * 10 + civInfo.cities.size * 2 * pissPoor
@@ -393,31 +393,38 @@ object NextTurnAutomation {
         }
     }
 
+    /** Maps [VictoryType] to an ordered List of PolicyBranch names
+     *  The AI will prefer them in that order */
+    // TODO: This should be moddable, and needs an update to include new G&K Policies
     private object PolicyPriorityMap {
-        //todo This should be moddable, and needs an update to include new G&K Policies
-        /** Maps [VictoryType] to an ordered List of PolicyBranch names - the AI will prefer them in that order */
         val priorities = mapOf(
-            VictoryType.Cultural to listOf("Piety", "Freedom", "Tradition", "Commerce", "Patronage"),
-            VictoryType.Scientific to listOf("Rationalism", "Commerce", "Liberty", "Order", "Patronage"),
-            VictoryType.Domination to listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Commerce"),
-            VictoryType.Diplomatic to listOf("Patronage", "Commerce", "Rationalism", "Freedom", "Tradition")
+            VictoryType.Cultural to listOf(
+                "Piety", "Freedom", "Tradition", "Commerce", "Patronage"
+            ), VictoryType.Scientific to listOf(
+                "Rationalism", "Commerce", "Liberty", "Order", "Patronage"
+            ), VictoryType.Domination to listOf(
+                "Autocracy", "Honor", "Liberty", "Rationalism", "Commerce"
+            ), VictoryType.Diplomatic to listOf(
+                "Patronage", "Commerce", "Rationalism", "Freedom", "Tradition"
+            )
         )
     }
+
     private fun adoptPolicy(civInfo: CivilizationInfo) {
         while (civInfo.policies.canAdoptPolicy()) {
+            val adoptablePolicies = civInfo.gameInfo.ruleSet.policies.values.filter {
+                civInfo.policies.isAdoptable(it)
+            }
 
-            val adoptablePolicies = civInfo.gameInfo.ruleSet.policies.values
-                    .filter { civInfo.policies.isAdoptable(it) }
-
-            // This can happen if the player is crazy enough to have the game continue forever and he disabled cultural victory
+            // This can happen if the player is crazy enough to have
+            // the game continue forever and he disabled cultural victory
             if (adoptablePolicies.isEmpty()) return
 
-            val policyBranchPriority = PolicyPriorityMap.priorities[civInfo.victoryType()]
-                ?: emptyList()
-            val policiesByPreference = adoptablePolicies
-                    .groupBy { policy ->
-                        policyBranchPriority.indexOf(policy.branch.name).let { if (it == -1) 99 else it }
-                    }
+            val policyBranchPriority =
+                PolicyPriorityMap.priorities[civInfo.victoryType()] ?: emptyList()
+            val policiesByPreference = adoptablePolicies.groupBy { policy ->
+                policyBranchPriority.indexOf(policy.branch.name).let { if (it == -1) 99 else it }
+            }
 
             val preferredPolicies = policiesByPreference.minByOrNull { it.key }!!.value
 
@@ -485,7 +492,7 @@ object NextTurnAutomation {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
         val availableReligionIcons = civInfo.gameInfo.ruleSet.religions
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
-        val religionIcon = 
+        val religionIcon =
             if (civInfo.nation.favoredReligion in availableReligionIcons) civInfo.nation.favoredReligion
             else availableReligionIcons.randomOrNull()
                 ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
@@ -495,8 +502,8 @@ object NextTurnAutomation {
 
     private fun enhanceReligion(civInfo: CivilizationInfo) {
         civInfo.religionManager.chooseBeliefs(
-            null, 
-            null, 
+            null,
+            null,
             chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
         )
     }
@@ -519,11 +526,11 @@ object NextTurnAutomation {
 
     private fun chooseBeliefOfType(civInfo: CivilizationInfo, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
         return civInfo.gameInfo.ruleSet.beliefs
-            .filter { 
-                (it.value.type == beliefType || beliefType == BeliefType.Any) 
+            .filter {
+                (it.value.type == beliefType || beliefType == BeliefType.Any)
                 && !additionalBeliefsToExclude.contains(it.value)
                 && !civInfo.gameInfo.religions.values
-                    .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value) 
+                    .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value)
             }
             .map { it.value }
             .maxByOrNull { ChooseBeliefsAutomation.rateBelief(civInfo, it) }
