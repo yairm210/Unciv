@@ -137,7 +137,7 @@ enum class UniqueParameterType(var parameterName:String) {
         },
     //
     PopulationFilter("populationFilter") {
-        private val knownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion")
+        private val knownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion", "Followers of this Religion")
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
