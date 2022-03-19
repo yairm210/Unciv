@@ -1,6 +1,10 @@
 package com.unciv.app.desktop
 
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
+import com.unciv.JsonParser
+import com.unciv.logic.GameSaver
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.NativeFontImplementation
 import java.awt.*
 import java.awt.image.BufferedImage
@@ -8,7 +12,11 @@ import java.awt.image.BufferedImage
 
 class NativeFontDesktop(private val size: Int) : NativeFontImplementation {
     private val font by lazy {
-        Font("", Font.PLAIN, size)
+        val settings = JsonParser().getFromJson(
+            GameSettings::class.java,
+            FileHandle(GameSaver.settingsFileName)
+        )
+        Font(settings.desktopFontFamily, Font.PLAIN, size)
     }
     private val metric by lazy {
         val bi = BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR)

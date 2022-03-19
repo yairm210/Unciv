@@ -19,6 +19,7 @@ class GameSettings {
     var checkForDueUnits: Boolean = true
     var singleTapMove: Boolean = false
     var language: String = "English"
+    var desktopFontFamily: String = ""
     @Transient
     var locale: Locale? = null
     var resolution: String = "900x600" // Auto-detecting resolution was a BAD IDEA since it needs to be based on DPI AND resolution.
