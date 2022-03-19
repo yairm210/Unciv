@@ -3,11 +3,11 @@
         "name": "Tradition",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 0,
-            "Cultural": 0,
-            "Diplomatic": 0,
-            "Domination": 0,
-            "Scientific": 0
+            "Neutral": 10,
+            "Cultural": 10,
+            "Diplomatic": 10,
+            "Domination": 10,
+            "Scientific": 10
         },
         "uniques": [
             "[+3 Culture] [in capital]",
@@ -72,11 +72,11 @@
         "name": "Liberty",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 0,
-            "Cultural": 0,
-            "Diplomatic": 0,
-            "Domination": 0,
-            "Scientific": 0
+            "Neutral": 10,
+            "Cultural": 10,
+            "Diplomatic": 10,
+            "Domination": 10,
+            "Scientific": 10
         },
         "uniques": ["[+1 Culture] [in all cities]"],
         "policies": [
@@ -474,13 +474,13 @@
     },
     {
         "name": "Freedom",
-        "era": "Industrial era",
+        "era": "Renaissance era",
         "priorities": {
-            "Neutral": 0,
-            "Cultural": 0,
-            "Diplomatic": 0,
-            "Domination": 0,
-            "Scientific": 0
+            "Neutral": 10,
+            "Cultural": 10,
+            "Diplomatic": 10,
+            "Domination": 10,
+            "Scientific": 10
         },
         "uniques": [
             "[+25]% great person generation [in all cities]",
@@ -538,11 +538,11 @@
         "name": "Autocracy",
         "era": "Industrial era",
         "priorities": {
-            "Neutral": 0,
-            "Cultural": 0,
-            "Diplomatic": 0,
-            "Domination": 0,
-            "Scientific": 0
+            "Neutral": 10,
+            "Cultural": 10,
+            "Diplomatic": 10,
+            "Domination": 10,
+            "Scientific": 10
         },
         "uniques": [
             "[-33]% maintenance costs <for [All] units>",
@@ -608,11 +608,11 @@
         "name": "Order",
         "era": "Industrial era",
         "priorities": {
-            "Neutral": 0,
-            "Cultural": 0,
-            "Diplomatic": 0,
-            "Domination": 0,
-            "Scientific": 0
+            "Neutral": 10,
+            "Cultural": 10,
+            "Diplomatic": 10,
+            "Domination": 10,
+            "Scientific": 10
         },
         "uniques": [
             "[+1 Happiness] [in all cities]",
