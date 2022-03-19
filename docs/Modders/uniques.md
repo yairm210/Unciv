@@ -1539,8 +1539,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;if this city has at least [amount] [pouplationFilter]&gt;"
-	Example: "&lt;if this city has at least [20] [pouplationFilter]&gt;"
+??? example  "&lt;in cities with at least [amount] [populationFilter]&gt;"
+	Example: "&lt;in cities with at least [20] [populationFilter]&gt;"
 
 	Applicable to: Conditional
 

@@ -56,7 +56,7 @@ class PopulationManager {
         return when (filter) {
             "Specialists" -> getNumberOfSpecialists()
             "Population" -> population
-            "Followers of the Majority Religion" -> cityInfo.religion.getFollowersOfMajorityReligion()
+            "Followers of the Majority Religion", "Followers of this Religion" -> cityInfo.religion.getFollowersOfMajorityReligion()
             "Unemployed" -> getFreePopulation()
             else -> 0
         }

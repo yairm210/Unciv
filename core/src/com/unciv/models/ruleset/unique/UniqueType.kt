@@ -610,10 +610,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     /////// city conditionals
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
-    ConditionalPopulationFilter("if this city has at least [amount] [pouplationFilter]", UniqueTarget.Conditional),
-    @Deprecated("as of 3.19.19", ReplaceWith("if this city has at least [amount] [Specialists]"))
+    ConditionalPopulationFilter("in cities with at least [amount] [populationFilter]", UniqueTarget.Conditional),
+    @Deprecated("as of 3.19.19", ReplaceWith("in cities with at least [amount] [Specialists]"))
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
-    @Deprecated("as of 3.19.19", ReplaceWith("if this city has at least [amount] [Followers of the Majority Religion]"))
+    @Deprecated("as of 3.19.19", ReplaceWith("in cities with at least [amount] [Followers of the Majority Religion]"))
     ConditionalFollowerCount("in cities where this religion has at least [amount] followers", UniqueTarget.Conditional),
     ConditionalWhenGarrisoned("with a garrison", UniqueTarget.Conditional),
 

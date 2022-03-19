@@ -103,7 +103,7 @@ A filter determining a part of the population of a city. It can be any of the fo
 - `Population`
 - `Specialists`
 - `Unemployed`
-- `Followers of the Majority Religion`
+- `Followers of the Majority Religion` or `Followers of this Religion`, both of which only apply when this religion is the majority religion in that city
 
 ## regionType
 Used for dividing the world into regions in each of which a single player is placed at the start of the game.
