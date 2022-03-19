@@ -42,8 +42,8 @@ enum class EmpireOverviewCategories(
                 = DiplomacyOverviewTab(viewingPlayer, overviewScreen, persistedData),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.diplomacy.isEmpty().toState()),
     Resources("StatIcons/Happiness", 'R',
-        fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
-                = ResourcesOverviewTab(viewingPlayer, overviewScreen),
+        fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
+                = ResourcesOverviewTab(viewingPlayer, overviewScreen, persistedData),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.detailedCivResources.isEmpty().toState()),
     Religion("StatIcons/Faith", 'F',
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
