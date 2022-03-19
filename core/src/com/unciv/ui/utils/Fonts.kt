@@ -18,7 +18,13 @@ import com.unciv.models.stats.Stat
 interface NativeFontImplementation {
     fun getFontSize(): Int
     fun getCharPixmap(char: Char): Pixmap
+    open fun getDesktopAllFonts(): List<DesktopFont> = emptyList()
 }
+
+// If save in `GameSettings` need use enName.
+// If show to user need use localName.
+// If save localName in `GameSettings` may generate garbled characters by encoding.
+data class DesktopFont(val localName: String, val enName: String)
 
 // This class is loosely based on libgdx's FreeTypeBitmapFontData
 class NativeBitmapFontData(

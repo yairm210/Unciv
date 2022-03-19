@@ -5,10 +5,11 @@ import com.badlogic.gdx.graphics.Pixmap
 import com.unciv.JsonParser
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
+import com.unciv.ui.utils.DesktopFont
 import com.unciv.ui.utils.NativeFontImplementation
 import java.awt.*
 import java.awt.image.BufferedImage
-
+import java.util.*
 
 class NativeFontDesktop(private val size: Int) : NativeFontImplementation {
     private val font by lazy {
@@ -54,5 +55,12 @@ class NativeFontDesktop(private val size: Int) : NativeFontImplementation {
         }
         g.dispose()
         return pixmap
+    }
+
+    override fun getDesktopAllFonts(): List<DesktopFont> {
+        val allFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().allFonts.map {
+            DesktopFont(it.fontName, it.getFamily(Locale.ENGLISH))
+        }
+        return allFonts
     }
 }
