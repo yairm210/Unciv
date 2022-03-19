@@ -13,7 +13,6 @@ import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import java.util.*
 import kotlin.concurrent.timer
@@ -58,7 +57,6 @@ internal object DesktopLauncher {
         val game = UncivGame(desktopParameters)
 
         tryActivateDiscord(game)
-
         Lwjgl3Application(game, config)
     }
 

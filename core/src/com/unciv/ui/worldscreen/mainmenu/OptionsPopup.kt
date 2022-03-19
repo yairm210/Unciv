@@ -3,11 +3,15 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.Net
+import com.badlogic.gdx.Net.HttpResponseListener
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
@@ -31,6 +35,9 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
+import java.net.DatagramSocket
+import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.util.*
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
@@ -77,9 +84,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         tabs.addPage("Gameplay", getGamePlayTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
         tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
-        // at the moment the notification service only exists on Android
-        if (Gdx.app.type == Application.ApplicationType.Android)
-            tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
+        tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
         tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
         if (RulesetCache.size > 1) {
             tabs.addPage("Locate mod errors", getModCheckTab(), ImageGetter.getImage("OtherIcons/Mods"), 24f) { _, _ ->
@@ -228,19 +233,92 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getMultiplayerTab(): Table = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
+        
+        // at the moment the notification service only exists on Android
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            addCheckbox("Enable out-of-game turn notifications",
+                settings.multiplayerTurnCheckerEnabled) {
+                settings.multiplayerTurnCheckerEnabled = it
+                settings.save()
+                tabs.replacePage("Multiplayer", getMultiplayerTab())
+            }
 
-        addCheckbox("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
-            settings.multiplayerTurnCheckerEnabled = it
-            settings.save()
-            tabs.replacePage("Multiplayer", getMultiplayerTab())
-        }
+            if (settings.multiplayerTurnCheckerEnabled) {
+                addMultiplayerTurnCheckerDelayBox()
 
-        if (settings.multiplayerTurnCheckerEnabled) {
-            addMultiplayerTurnCheckerDelayBox()
-
-            addCheckbox("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
+                addCheckbox("Show persistent notification for turn notifier service",
+                    settings.multiplayerTurnCheckerPersistentNotificationEnabled)
                 { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
+            }
         }
+        
+        val connectionToServerButton = "Check connection to server".toTextButton()
+        
+        val ipAddress = getIpAddress()
+        add("Current IP address: $ipAddress - click to copy to clipboard".toTextButton().onClick { 
+            Gdx.app.clipboard.contents = ipAddress.toString()
+        }).row()
+
+        val multiplayerServerTextField = TextField(settings.multiplayerServer, BaseScreen.skin)
+        multiplayerServerTextField.programmaticChangeEvents = true
+        add("Server's IP address - click to copy from clipboard".toTextButton().onClick { 
+            multiplayerServerTextField.text = Gdx.app.clipboard.contents
+        }).row()
+        multiplayerServerTextField.onChange { 
+            println("Changed to "+multiplayerServerTextField.text)
+            settings.multiplayerServer = multiplayerServerTextField.text
+            settings.save()
+            connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
+        }
+        add(multiplayerServerTextField).row()
+        add("Reset to Dropbox".toTextButton().onClick {
+            multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
+        }).row()
+        
+        add(connectionToServerButton.onClick {
+            val popup = Popup(screen).apply { 
+                addGoodSizedLabel("Awaiting response...").row()
+            }
+            popup.open(true)
+            
+            successfullyConnectedToServer {
+                if (it) {
+                    popup.addGoodSizedLabel("Success!").row()
+                    popup.addCloseButton()
+                } else {
+                    popup.addGoodSizedLabel("Connection to the server failed!").row()
+                    popup.addCloseButton()
+                }
+            }
+        }).row()
+    }
+    
+    fun getIpAddress(): String? {
+        DatagramSocket().use { socket ->
+            socket.connect(InetAddress.getByName("8.8.8.8"), 10002)
+            return socket.getLocalAddress().getHostAddress()
+        }
+    }
+    
+    fun successfullyConnectedToServer(action: (Boolean)->Unit){
+        val httpGet = Net.HttpRequest(Net.HttpMethods.GET);
+        httpGet.setUrl("http://"+ settings.multiplayerServer+":8080/isalive")
+        Gdx.net.sendHttpRequest (httpGet, object:HttpResponseListener {
+
+            override fun failed(t:Throwable) {
+                action(false)
+                println(t.stackTrace)
+            }
+
+            override fun cancelled() {
+                action(false)
+            }
+
+            override fun handleHttpResponse(httpResponse: Net.HttpResponse) {
+                val result = httpResponse.getResultAsString()
+                action(true)
+            }
+        });
     }
 
     private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
@@ -440,7 +518,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         return deprecatedUniquesToReplacementText
     }
 
-    private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>, ) {
+    private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>) {
 
         val filesToReplace = listOf(
             "Units.json",

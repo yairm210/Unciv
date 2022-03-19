@@ -1,5 +1,7 @@
 package com.unciv.logic.multiplayer
 
+import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
@@ -14,14 +16,38 @@ interface IFileStorage {
 }
 
 interface IFileMetaData {
-    fun getFileName(): String?
     fun getLastModified(): Date?
+}
+
+class UncivServerFileStorage(val serverIp:String):IFileStorage{
+    override fun saveFileData(fileName: String, data: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun loadFileData(fileName: String): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun getFileMetaData(fileName: String): IFileMetaData {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteFile(fileName: String) {
+        TODO("Not yet implemented")
+    }
+
 }
 
 class FileStorageConflictException: Exception()
 
 class OnlineMultiplayer {
-    val fileStorage: IFileStorage = DropboxFileStorage()
+    val fileStorage: IFileStorage
+    init {
+        val settings = UncivGame.Current.settings
+        if (settings.multiplayerServer == Constants.dropboxMultiplayerServer)
+            fileStorage = DropboxFileStorage()
+        else fileStorage = UncivServerFileStorage(settings.multiplayerServer)
+    }
 
     fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         // We upload the gamePreview before we upload the game as this

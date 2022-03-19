@@ -2,6 +2,7 @@ package com.unciv.models.metadata
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import java.text.Collator
@@ -50,6 +51,10 @@ class GameSettings {
     var windowState = WindowState()
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()
+    
+    
+    var multiplayerServer = Constants.dropboxMultiplayerServer
+    
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
 

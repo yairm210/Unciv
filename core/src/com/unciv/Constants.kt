@@ -68,6 +68,8 @@ object Constants {
     const val remove = "Remove "
 
     const val uniqueOrDelimiter = "\" OR \""
+    
+    const val dropboxMultiplayerServer = "Dropbox"
 
     /**
      * Use this to determine whether a [MapUnit][com.unciv.logic.map.MapUnit]'s movement is exhausted
