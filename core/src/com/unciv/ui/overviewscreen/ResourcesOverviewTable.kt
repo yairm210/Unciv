@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -45,10 +46,13 @@ class ResourcesOverviewTab(
     private val turnImageH = getTurnImage(false)
     private val turnImageV = getTurnImage(true)
 
-    private val resourceDrilldown = viewingPlayer.detailedCivResources
+    private val resourceDrilldown: ResourceSupplyList = viewingPlayer.detailedCivResources
+    private val extraDrilldown: ResourceSupplyList = getExtraDrilldown()
+    private val drilldownSequence = resourceDrilldown.asSequence() + extraDrilldown.asSequence()
+
     // Order of source ResourceSupplyList: by tiles, enumerating the map in that spiral pattern
     // UI should not surprise player, thus we need a deterministic and guessable order
-    private val resources: List<TileResource> = resourceDrilldown.asSequence()
+    private val resources: List<TileResource> = drilldownSequence
         .map { it.resource }
         .filter { it.resourceType != ResourceType.Bonus }
         .distinct()
@@ -58,6 +62,7 @@ class ResourcesOverviewTab(
         )
         .toList()
     private val origins = resourceDrilldown.asSequence().map { it.origin }.distinct().toList()
+    private val extraOrigins = extraDrilldown.asSequence().map { it.origin }.distinct().toList()
 
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? =
         firstOrNull { it.resource == resource && it.origin == origin }?.amount?.toLabel()
@@ -126,11 +131,22 @@ class ResourcesOverviewTab(
             }
             row()
         }
+        addSeparator(Color.GRAY).pad(0f, defaultPad)
 
-        // Last row for the totals
+        // One row for the totals
         add("Total".toLabel()).left()
         for (resource in resources) {
             add(resourceDrilldown.getTotalLabel(resource))
+        }
+        addSeparator()
+
+        // Separate rows for origins not part of the totals
+        for (origin in extraOrigins) {
+            add(origin.toLabel()).left()
+            for (resource in resources) {
+                add(extraDrilldown.getLabel(resource, origin))
+            }
+            row()
         }
     }
 
@@ -138,11 +154,20 @@ class ResourcesOverviewTab(
         // First row of table has all the origin labels
         fixedContent.apply {
             add(turnImageV)
-            add("".toLabel())  // equalizeColumns needs the Actor
+            add("".toLabel())  //TODO equalizeColumns needs the Actor - unless the newer one is merged
+            addSeparatorVertical(Color.GRAY).pad(0f)
             for (origin in origins) {
                 add(origin.toLabel())
             }
             add("Total".toLabel())
+            addSeparatorVertical(Color.GRAY).pad(0f)
+            for (origin in extraOrigins) {
+                when (origin) {
+                    "We Love The King Day", "WLTK demand" ->
+                        add("WLTK".toLabel().apply { addTooltip(origin, 21f, tipAlign = Align.bottomLeft) })
+                    else -> add(origin.toLabel())
+                }
+            }
             addSeparator().pad(0f, defaultPad)
         }
 
@@ -150,15 +175,43 @@ class ResourcesOverviewTab(
         for (resource in resources) {
             add(getResourceImage(resource.name))
             add(resource.name.toLabel())
+            addSeparatorVertical(Color.GRAY).pad(0f)
             for (origin in origins) {
                 add(resourceDrilldown.getLabel(resource, origin))
             }
             add(resourceDrilldown.getTotalLabel(resource))
+            addSeparatorVertical(Color.GRAY).pad(0f)
+            for (origin in extraOrigins) {
+                add(extraDrilldown.getLabel(resource, origin))
+            }
             row()
         }
 
         fixedContent.pack()
-        pack()
+        pack()  //TODO the newer equalizeColumns does not need this
         equalizeColumns(fixedContent, this)
+    }
+
+    private fun getExtraDrilldown(): ResourceSupplyList {
+        val resourceSupplyList = ResourceSupplyList()
+        for (city in viewingPlayer.cities) {
+            if (city.demandedResource.isEmpty()) continue
+            val wltkResource = gameInfo.ruleSet.tileResources[city.demandedResource] ?: continue
+            if (city.isWeLoveTheKingDayActive()) {
+                resourceSupplyList.add(wltkResource, 1, "We Love The King Day")
+            } else {
+                resourceSupplyList.add(wltkResource, -1, "WLTK demand")
+            }
+            for (tile in city.getTiles()) {
+                if (tile.isCityCenter()) continue
+                if (!tile.hasViewableResource(viewingPlayer)) continue
+                val tileResource = tile.tileResource
+                if (tileResource.resourceType == ResourceType.Bonus) continue
+                if (tile.improvement == tileResource.improvement) continue
+                if (tileResource.resourceType == ResourceType.Strategic && tile.getTileImprovement()?.isGreatImprovement() == true) continue
+                resourceSupplyList.add(tileResource, -1, "unimproved")
+            }
+        }
+        return resourceSupplyList
     }
 }

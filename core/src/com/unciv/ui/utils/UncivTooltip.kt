@@ -24,7 +24,7 @@ import com.unciv.models.translations.tr
  *                      - because Gdx auto layout reports wrong dimensions on scaled actors.
  */
 class UncivTooltip <T: Actor>(
-    val target: Group,
+    val target: Actor,
     val content: T,
     val targetAlign: Int = Align.topRight,
     val tipAlign: Int = Align.topRight,
@@ -160,7 +160,7 @@ class UncivTooltip <T: Actor>(
          * @param always override requirement: presence of physical keyboard
          * @param tipAlign Point on the Tooltip to align with the top right of the [target]
          */
-        fun Group.addTooltip(text: String, size: Float = 26f, always: Boolean = false, tipAlign: Int = Align.top) {
+        fun Actor.addTooltip(text: String, size: Float = 26f, always: Boolean = false, tipAlign: Int = Align.top) {
             if (!(always || KeyPressDispatcher.keyboardAvailable) || text.isEmpty()) return
 
             val label = text.toLabel(ImageGetter.getBlue(), 38)
@@ -199,7 +199,7 @@ class UncivTooltip <T: Actor>(
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
          */
-        fun Group.addTooltip(char: Char, size: Float = 26f, always: Boolean = false) {
+        fun Actor.addTooltip(char: Char, size: Float = 26f, always: Boolean = false) {
             addTooltip((if (char in "Ii") 'i' else char.uppercaseChar()).toString(), size, always)
         }
 
@@ -211,7 +211,7 @@ class UncivTooltip <T: Actor>(
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
          */
-        fun Group.addTooltip(key: KeyCharAndCode, size: Float = 26f, always: Boolean = false) {
+        fun Actor.addTooltip(key: KeyCharAndCode, size: Float = 26f, always: Boolean = false) {
             if (key != KeyCharAndCode.UNKNOWN)
                 addTooltip(key.toString().tr(), size, always)
         }
