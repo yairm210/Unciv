@@ -37,7 +37,6 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.net.DatagramSocket
 import java.net.InetAddress
-import java.net.InetSocketAddress
 import java.util.*
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
@@ -281,9 +280,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
             popup.open(true)
             
-            successfullyConnectedToServer {
-                if (it) {
-                    popup.addGoodSizedLabel("Success!").row()
+            successfullyConnectedToServer { success: Boolean, result: String ->
+                if (success) {
+                    popup.addGoodSizedLabel("Return result: $result").row()
                     popup.addCloseButton()
                 } else {
                     popup.addGoodSizedLabel("Connection to the server failed!").row()
@@ -300,25 +299,37 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
     }
     
-    fun successfullyConnectedToServer(action: (Boolean)->Unit){
-        val httpGet = Net.HttpRequest(Net.HttpMethods.GET);
-        httpGet.setUrl("http://"+ settings.multiplayerServer+":8080/isalive")
-        Gdx.net.sendHttpRequest (httpGet, object:HttpResponseListener {
+    object SimpleHttp{
+        fun sendGetRequest(url:String, action: (success: Boolean, result:String)->Unit){
+            sendRequest(Net.HttpMethods.GET, url, "", action)
+        }
+        
+        fun sendRequest(method:String, url:String, content:String, action: (success:Boolean, result:String)->Unit){
+            val httpRequest = Net.HttpRequest(method);
+            httpRequest.url = url
+            httpRequest.content = content
+            httpRequest.timeOut = 0
+            Gdx.net.sendHttpRequest (httpRequest, object:HttpResponseListener {
+                override fun failed(t:Throwable) {
+                    action(false, t.message!!)
+                    println(t.stackTraceToString())
+                }
 
-            override fun failed(t:Throwable) {
-                action(false)
-                println(t.stackTrace)
-            }
+                override fun cancelled() {
+                    action(false, "")
+                    println("Cancelled call")
+                }
 
-            override fun cancelled() {
-                action(false)
-            }
-
-            override fun handleHttpResponse(httpResponse: Net.HttpResponse) {
-                val result = httpResponse.getResultAsString()
-                action(true)
-            }
-        });
+                override fun handleHttpResponse(httpResponse: Net.HttpResponse) {
+                    val result = httpResponse.getResultAsString()
+                    action(true, result)
+                }
+            })
+        }
+    }
+    
+    fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+        SimpleHttp.sendGetRequest( "http://"+ settings.multiplayerServer+":8080/isalive", action)
     }
 
     private fun getAdvancedTab() = Table(BaseScreen.skin).apply {

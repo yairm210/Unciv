@@ -1,11 +1,14 @@
 package com.unciv.logic.multiplayer
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Net
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
 import com.unciv.ui.saves.Gzip
+import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import java.util.*
 
 interface IFileStorage {
@@ -19,13 +22,31 @@ interface IFileMetaData {
     fun getLastModified(): Date?
 }
 
-class UncivServerFileStorage(val serverIp:String):IFileStorage{
+
+
+class UncivServerFileStorage(val serverIp:String):IFileStorage {
+    val serverUrl = "http://$serverIp:8080"
     override fun saveFileData(fileName: String, data: String) {
-        TODO("Not yet implemented")
+        OptionsPopup.SimpleHttp.sendRequest(Net.HttpMethods.POST, "$serverUrl/files/$fileName", data){
+            success: Boolean, result: String -> 
+            if (!success) {
+                println(result)
+                throw java.lang.Exception(result)
+            }
+        }
     }
 
     override fun loadFileData(fileName: String): String {
-        TODO("Not yet implemented")
+        var fileData = ""
+        OptionsPopup.SimpleHttp.sendGetRequest("$serverUrl/files/$fileName"){
+                success: Boolean, result: String ->
+            if (!success) {
+                println(result)
+                throw java.lang.Exception(result)
+            }
+            else fileData = result
+        }
+        return fileData
     }
 
     override fun getFileMetaData(fileName: String): IFileMetaData {
@@ -33,7 +54,10 @@ class UncivServerFileStorage(val serverIp:String):IFileStorage{
     }
 
     override fun deleteFile(fileName: String) {
-        TODO("Not yet implemented")
+        OptionsPopup.SimpleHttp.sendRequest(Net.HttpMethods.DELETE, "$serverUrl/files/$fileName", ""){
+                success: Boolean, result: String ->
+            if (!success) throw java.lang.Exception(result)
+        }
     }
 
 }
