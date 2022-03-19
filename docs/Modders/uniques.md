@@ -1256,10 +1256,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rare feature"
 	Applicable to: Terrain
 
-??? example  "Resistant to nukes"
-	Applicable to: Terrain
+??? example  "[amount]% chance to be destroyed by nukes"
+	Example: "[20]% chance to be destroyed by nukes"
 
-??? example  "Can be destroyed by nukes"
 	Applicable to: Terrain
 
 ??? example  "Fresh water"
@@ -1334,6 +1333,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ## Resource uniques
+??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
+	Example: "Deposits in [Farm] tiles always provide [20] resources"
+
+	Applicable to: Resource
+
+??? example  "Can only be created by Mercantile City-States"
+	Applicable to: Resource
+
 ??? example  "Generated with weight [amount]"
 	Example: "Generated with weight [20]"
 
@@ -1358,14 +1365,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Guaranteed with Strategic Balance resource option"
-	Applicable to: Resource
-
-??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
-	Example: "Deposits in [Farm] tiles always provide [20] resources"
-
-	Applicable to: Resource
-
-??? example  "Can only be created by Mercantile City-States"
 	Applicable to: Resource
 
 ## Ruins uniques

@@ -648,7 +648,7 @@ object Battle {
 
         for (tile in hitTiles) {
             // Handle complicated effects
-            doNukeExplosion(attacker, tile, strength)
+            doNukeExplosionForTile(attacker, tile, strength)
         }
 
         // Instead of postBattleAction() just destroy the unit, all other functions are not relevant
@@ -665,7 +665,7 @@ object Battle {
         }
     }
     
-    private fun doNukeExplosion(attacker: MapUnitCombatant, tile: TileInfo, nukeStrength: Int) {
+    private fun doNukeExplosionForTile(attacker: MapUnitCombatant, tile: TileInfo, nukeStrength: Int) {
         // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.ph
         // Testing done by Ravignir
@@ -708,14 +708,24 @@ object Battle {
         }
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
-            val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
-            else 0.5f
-            if (Random().nextFloat() < destructionChance) {
+            if (tile.hasUnique(UniqueType.DestroyableByNukesChance)) {
                 for (terrainFeature in tile.terrainFeatureObjects)
-                    if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
-                        tile.removeTerrainFeature(terrainFeature.name)
-                tile.addTerrainFeature("Fallout")
+                    for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) {
+                        if (Random().nextFloat() < unique.params[0].toFloat() / 100f)
+                            tile.removeTerrainFeature(terrainFeature.name)
+                    }
             }
+            if (!tile.hasUnique(UniqueType.DestroyableByNukesChance)) return;
+            // Deprecated as of 3.19.19 -- If removed, the two successive `if`s above should be merged
+                val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
+                else 0.5f
+                if (Random().nextFloat() < destructionChance) {
+                    for (terrainFeature in tile.terrainFeatureObjects)
+                        if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
+                            tile.removeTerrainFeature(terrainFeature.name)
+                    tile.addTerrainFeature("Fallout")
+                }
+            //
         }
     }
     
