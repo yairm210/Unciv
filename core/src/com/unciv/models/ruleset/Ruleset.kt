@@ -731,6 +731,7 @@ class Ruleset {
                     lines += "Difficulty ${difficulty.name} contains starting unit $unitName which does not exist!"
         }
 
+        @Suppress("DEPRECATION")
         if (modOptions.maxXPfromBarbarians != 30) {
             lines.add("maxXPfromBarbarians is moved to the constants object, instead use: \nconstants: {\n    maxXPfromBarbarians: ${modOptions.maxXPfromBarbarians},\n}", RulesetErrorSeverity.Warning)
         }

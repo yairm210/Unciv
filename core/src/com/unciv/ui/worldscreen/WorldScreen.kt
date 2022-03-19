@@ -411,7 +411,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             allUnits.filter(mapVisualization::isUnitPastVisible),
             allUnits.filter(mapVisualization::isUnitFutureVisible),
             allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
-                    .map { (attacker, source, target) -> source to target }
+                    .map { (_, source, target) -> source to target }
         )
 
         // if we use the clone, then when we update viewable tiles
