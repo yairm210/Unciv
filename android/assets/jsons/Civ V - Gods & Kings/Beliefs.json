@@ -55,7 +55,7 @@
     {
         "name": "Goddess of Love",
         "type": "Pantheon",
-        "uniques": ["[+1 Happiness] <in cities with at least [6] [Population]"]
+        "uniques": ["[+1 Happiness] <in cities with at least [6] [Population]>"]
     },
     {
         "name": "Goddess of Protection",
