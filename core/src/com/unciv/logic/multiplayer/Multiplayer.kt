@@ -27,7 +27,7 @@ interface IFileMetaData {
 class UncivServerFileStorage(val serverIp:String):IFileStorage {
     val serverUrl = "http://$serverIp:8080"
     override fun saveFileData(fileName: String, data: String) {
-        OptionsPopup.SimpleHttp.sendRequest(Net.HttpMethods.POST, "$serverUrl/files/$fileName", data){
+        OptionsPopup.SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data){
             success: Boolean, result: String -> 
             if (!success) {
                 println(result)

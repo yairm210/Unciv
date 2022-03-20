@@ -22,7 +22,7 @@ internal object UncivServer {
                 get("/isalive") {
                     call.respondText("true")
                 }
-                post("/files/{fileName}") {
+                put("/files/{fileName}") {
                     val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
                     withContext(Dispatchers.IO) {
                         val recievedBytes =
