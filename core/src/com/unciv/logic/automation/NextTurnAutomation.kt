@@ -392,36 +392,23 @@ object NextTurnAutomation {
 
     private fun adoptPolicy(civInfo: CivilizationInfo) {
         /*
-        **** Branch-based policy-to-adopt decision ****
-        Basically the AI prioritizes finishing branches before moving on,
+        # Branch-based policy-to-adopt decision
+        Basically the AI prioritizes finishing incomplete branches before moving on, \
         unless a new branch with higher priority is adoptable.
 
         - If incomplete branches have higher priorities than any newly adoptable branch,
             - Candidates are the unfinished branches.
         - Else if newly adoptable branches have higher priorities than any incomplete branch,
             - Candidates are the new branches.
-
         - Choose a random candidate closest to completion.
         - Pick a random child policy of a chosen branch and adopt it.
         */
         while (civInfo.policies.canAdoptPolicy()) {
-            // TODO: Remove this
-            println("")
-            println("[DEBUG] ${civInfo.civName} called adoptPolicy()")
-
             val incompleteBranches: Set<PolicyBranch> = civInfo.policies.incompleteBranches
             val adoptableBranches: Set<PolicyBranch> = civInfo.policies.adoptableBranches
-            // TODO: Remove this
-            println("[DEBUG] incompleteBranches = $incompleteBranches")
-            println("[DEBUG] adoptableBranches = $adoptableBranches")
 
             // Skip the whole thing if all branches are completed
-            if (incompleteBranches.isEmpty() && adoptableBranches.isEmpty()) {
-                // TODO: Remove this
-                println("[DEBUG] ${civInfo.civName} has completed all policy branches")
-                println("[DEBUG] Adopted policies: ${civInfo.policies.adoptedPolicies}")
-                return
-            }
+            if (incompleteBranches.isEmpty() && adoptableBranches.isEmpty()) return
 
             val priorityMap: Map<PolicyBranch, Int> = civInfo.policies.priorityMap
             var maxIncompletePriority: Int? =
@@ -434,12 +421,6 @@ object NextTurnAutomation {
                 maxAdoptablePriority!! - 1
             if (maxAdoptablePriority == null) maxAdoptablePriority =
                 maxIncompletePriority - 1
-
-            // TODO: Remove this
-            println("[DEBUG] victoryType = ${civInfo.victoryType()}")
-            println("[DEBUG] priorityMap = $priorityMap")
-            println("[DEBUG] maxIncompletePriority = $maxIncompletePriority")
-            println("[DEBUG] maxAdoptablePriority = $maxAdoptablePriority")
 
             // Candidate branches to adopt
             val candidates: Set<PolicyBranch> =
@@ -457,8 +438,6 @@ object NextTurnAutomation {
                         priorityMap[it] == maxAdoptablePriority
                     }.toSet()
                 }
-            // TODO: Remove this
-            println("[DEBUG] candidates = $candidates")
 
             // branchCompletionMap but keys are only candidates
             val candidateCompletionMap: Map<PolicyBranch, Int> =
@@ -472,17 +451,12 @@ object NextTurnAutomation {
             val targetBranch = candidateCompletionMap.filterValues { value ->
                 value == maxCompletion
             }.keys.random()
-            // TODO: Remove this
-            println("[DEBUG] targetBranch = $targetBranch")
 
             val policyToAdopt: Policy =
                 if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
                 else targetBranch.policies.filter { civInfo.policies.isAdoptable(it) }.random()
-            // TODO: Remove this
-            println("[DEBUG] policyToAdopt = $policyToAdopt")
+
             civInfo.policies.adopt(policyToAdopt)
-            // TODO: Remove this
-            println("[DEBUG] policy successfully adopted!")
         }
     }
 

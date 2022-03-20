@@ -243,7 +243,6 @@ class Ruleset {
                     }
                 }
                 policies[branch.name] = branch
-                println("[DEBUG] ${branch}.priorities = ${branch.priorities}") // TODO: Remove this
 
                 // Append child policies of this branch
                 for (policy in branch.policies) {
