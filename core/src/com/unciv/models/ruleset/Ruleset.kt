@@ -238,11 +238,12 @@ class Ruleset {
                 branch.requires = ArrayList()
                 branch.branch = branch
                 for (victoryType in VictoryType.values()) {
-                    if (victoryType.toString() !in branch.priorities.keys) {
-                        branch.priorities[victoryType.toString()] = -1
+                    if (victoryType.name !in branch.priorities.keys) {
+                        branch.priorities[victoryType.name] = -1
                     }
                 }
                 policies[branch.name] = branch
+                println("[DEBUG] ${branch}.priorities = ${branch.priorities}") // TODO: Remove this
 
                 // Append child policies of this branch
                 for (policy in branch.policies) {

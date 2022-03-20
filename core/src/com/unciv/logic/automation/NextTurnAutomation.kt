@@ -14,10 +14,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.*
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.Belief
-import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -393,43 +390,99 @@ object NextTurnAutomation {
         }
     }
 
-    /** Maps [VictoryType] to an ordered List of PolicyBranch names
-     *  The AI will prefer them in that order */
-    // TODO: This should be moddable, and needs an update to include new G&K Policies
-    private object PolicyPriorityMap {
-        val priorities = mapOf(
-            VictoryType.Cultural to listOf(
-                "Piety", "Freedom", "Tradition", "Commerce", "Patronage"
-            ), VictoryType.Scientific to listOf(
-                "Rationalism", "Commerce", "Liberty", "Order", "Patronage"
-            ), VictoryType.Domination to listOf(
-                "Autocracy", "Honor", "Liberty", "Rationalism", "Commerce"
-            ), VictoryType.Diplomatic to listOf(
-                "Patronage", "Commerce", "Rationalism", "Freedom", "Tradition"
-            )
-        )
-    }
-
     private fun adoptPolicy(civInfo: CivilizationInfo) {
+        /*
+        **** Branch-based policy-to-adopt decision ****
+        Basically the AI prioritizes finishing branches before moving on,
+        unless a new branch with higher priority is adoptable.
+
+        - If incomplete branches have higher priorities than any newly adoptable branch,
+            - Candidates are the unfinished branches.
+        - Else if newly adoptable branches have higher priorities than any incomplete branch,
+            - Candidates are the new branches.
+
+        - Choose a random candidate closest to completion.
+        - Pick a random child policy of a chosen branch and adopt it.
+        */
         while (civInfo.policies.canAdoptPolicy()) {
-            val adoptablePolicies = civInfo.gameInfo.ruleSet.policies.values.filter {
-                civInfo.policies.isAdoptable(it)
+            // TODO: Remove this
+            println("")
+            println("[DEBUG] ${civInfo.civName} called adoptPolicy()")
+
+            val incompleteBranches: Set<PolicyBranch> = civInfo.policies.incompleteBranches
+            val adoptableBranches: Set<PolicyBranch> = civInfo.policies.adoptableBranches
+            // TODO: Remove this
+            println("[DEBUG] incompleteBranches = $incompleteBranches")
+            println("[DEBUG] adoptableBranches = $adoptableBranches")
+
+            // Skip the whole thing if all branches are completed
+            if (incompleteBranches.isEmpty() && adoptableBranches.isEmpty()) {
+                // TODO: Remove this
+                println("[DEBUG] ${civInfo.civName} has completed all policy branches")
+                println("[DEBUG] Adopted policies: ${civInfo.policies.adoptedPolicies}")
+                return
             }
 
-            // This can happen if the player is crazy enough to have
-            // the game continue forever and he disabled cultural victory
-            if (adoptablePolicies.isEmpty()) return
+            val priorityMap: Map<PolicyBranch, Int> = civInfo.policies.priorityMap
+            var maxIncompletePriority: Int? =
+                civInfo.policies.getMaxPriority(incompleteBranches)
+            var maxAdoptablePriority: Int? = civInfo.policies.getMaxPriority(adoptableBranches)
 
-            val policyBranchPriority =
-                PolicyPriorityMap.priorities[civInfo.victoryType()] ?: emptyList()
-            val policiesByPreference = adoptablePolicies.groupBy { policy ->
-                policyBranchPriority.indexOf(policy.branch.name).let { if (it == -1) 99 else it }
-            }
+            // This here is a (probably dirty) code to bypass NoSuchElementException error
+            //  when one of the priority variables is null
+            if (maxIncompletePriority == null) maxIncompletePriority =
+                maxAdoptablePriority!! - 1
+            if (maxAdoptablePriority == null) maxAdoptablePriority =
+                maxIncompletePriority - 1
 
-            val preferredPolicies = policiesByPreference.minByOrNull { it.key }!!.value
+            // TODO: Remove this
+            println("[DEBUG] victoryType = ${civInfo.victoryType()}")
+            println("[DEBUG] priorityMap = $priorityMap")
+            println("[DEBUG] maxIncompletePriority = $maxIncompletePriority")
+            println("[DEBUG] maxAdoptablePriority = $maxAdoptablePriority")
 
-            val policyToAdopt = preferredPolicies.random()
+            // Candidate branches to adopt
+            val candidates: Set<PolicyBranch> =
+                // If incomplete branches have higher priorities than any newly adoptable branch,
+                if (maxAdoptablePriority <= maxIncompletePriority) {
+                    // Prioritize finishing one of the unfinished branches
+                    incompleteBranches.filter {
+                        priorityMap[it] == maxIncompletePriority
+                    }.toSet()
+                }
+                // If newly adoptable branches have higher priorities than any incomplete branch,
+                else {
+                    // Prioritize adopting one of the new branches
+                    adoptableBranches.filter {
+                        priorityMap[it] == maxAdoptablePriority
+                    }.toSet()
+                }
+            // TODO: Remove this
+            println("[DEBUG] candidates = $candidates")
+
+            // branchCompletionMap but keys are only candidates
+            val candidateCompletionMap: Map<PolicyBranch, Int> =
+                civInfo.policies.branchCompletionMap.filterKeys { key ->
+                    key in candidates
+                }
+            // The highest number of adopted child policies within a single candidate
+            val maxCompletion: Int =
+                candidateCompletionMap.maxOf { entry -> entry.value }
+            // The candidate closest to completion, hence the target branch
+            val targetBranch = candidateCompletionMap.filterValues { value ->
+                value == maxCompletion
+            }.keys.random()
+            // TODO: Remove this
+            println("[DEBUG] targetBranch = $targetBranch")
+
+            val policyToAdopt: Policy =
+                if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
+                else targetBranch.policies.filter { civInfo.policies.isAdoptable(it) }.random()
+            // TODO: Remove this
+            println("[DEBUG] policyToAdopt = $policyToAdopt")
             civInfo.policies.adopt(policyToAdopt)
+            // TODO: Remove this
+            println("[DEBUG] policy successfully adopted!")
         }
     }
 
