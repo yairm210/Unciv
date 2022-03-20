@@ -656,7 +656,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
             for (resourceSupply in city.getCityResources())
                 if (resourceSupply.amount > 0) // IGNORE the fact that they consume their own resources - #4769
-                    newDetailedCivResources.add(resourceSupply.resource, resourceSupply.amount, "City-States")
+                    newDetailedCivResources.add(resourceSupply.resource, resourceSupply.amount, "City-State")
         }
         return newDetailedCivResources
     }
