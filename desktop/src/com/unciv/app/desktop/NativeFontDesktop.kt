@@ -1,23 +1,16 @@
 package com.unciv.app.desktop
 
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Pixmap
-import com.unciv.JsonParser
-import com.unciv.logic.GameSaver
-import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.utils.DesktopFont
+import com.unciv.ui.utils.FontData
 import com.unciv.ui.utils.NativeFontImplementation
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.util.*
 
-class NativeFontDesktop(private val size: Int) : NativeFontImplementation {
+class NativeFontDesktop(private val size: Int, private val fontFamily: String) :
+    NativeFontImplementation {
     private val font by lazy {
-        val settings = JsonParser().getFromJson(
-            GameSettings::class.java,
-            FileHandle(GameSaver.settingsFileName)
-        )
-        Font(settings.desktopFontFamily, Font.PLAIN, size)
+        Font(fontFamily, Font.PLAIN, size)
     }
     private val metric by lazy {
         val bi = BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR)
@@ -57,10 +50,10 @@ class NativeFontDesktop(private val size: Int) : NativeFontImplementation {
         return pixmap
     }
 
-    override fun getDesktopAllFonts(): List<DesktopFont> {
+    override fun getAvailableFont(): Collection<FontData> {
         val allFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().allFonts.map {
-            DesktopFont(it.fontName, it.getFamily(Locale.ENGLISH))
-        }
+            FontData(it.fontName, it.getFamily(Locale.ENGLISH))
+        }.toSet()
         return allFonts
     }
 }
