@@ -331,10 +331,11 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                     action(true, text)
                 } catch (t: Throwable) {
                     println(t.message)
-                    val reader = BufferedReader(InputStreamReader(errorStream))
-                    val resultText = reader.readText()
-                    println(resultText)
-                    action (false, resultText)
+                    val errorMessageToReturn =
+                        if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
+                        else t.message!!
+                    println(errorMessageToReturn)
+                    action(false, errorMessageToReturn)
                 }
             }
         }
