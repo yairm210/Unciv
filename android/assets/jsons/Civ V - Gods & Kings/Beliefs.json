@@ -1,80 +1,80 @@
 
 [
     {
-        "name": "Ancestor Worship",
-        "type": "Pantheon",
+        "name": "祖霊崇拝",
+        "type": "パンテオン",
         "uniques": ["[+1 Culture] from every [Shrine]"]
     },
     {
-        "name": "Dance of the Aurora",
-        "type": "Pantheon",
+        "name": "アウローラの舞い",
+        "type": "パンテオン",
         "uniques": ["[+1 Faith] from [Tundra] tiles without [Forest] [in this city]"]
     },
     {
-        "name": "Desert Folklore",
-        "type": "Pantheon",
+        "name": "砂漠の民間伝承",
+        "type": "パンテオン",
         "uniques": ["[+1 Faith] from every [Desert]"]
     },
     {
-        "name": "Faith Healers",
-        "type": "Pantheon",
+        "name": "信仰の癒やし手",
+        "type": "パンテオン",
         "uniques": ["[All] Units adjacent to this city heal [+30] HP per turn when healing"]
         // This should be worded better
     },
     {
-        "name": "Fertility Rites",
-        "type": "Pantheon",
+        "name": "豊作を祈る儀式",
+        "type": "パンテオン",
         "uniques": ["[+10]% growth [in this city]"] 
         // Preferably I would not have a cityFilter here, but doing so requires no additional implementation 
     },
     {
-        "name": "God of Craftsman",
-        "type": "Pantheon",
+        "name": "職人の神",
+        "type": "パンテオン",
         "uniques": ["[+1 Production] in cities with [3] or more population"]
     },
     {
-        "name": "God of the Open Sky",
-        "type": "Pantheon",
+        "name": "大空を統べる神",
+        "type": "パンテオン",
         "uniques": ["[+1 Culture] from every [Pasture]"]
     },
     {
-        "name": "God of the Sea",
-        "type": "Pantheon",
+        "name": "海の神",
+        "type": "パンテオン",
         "uniques": ["[+1 Production] from every [Fishing Boats]"]
     },
     {
-        "name": "God of War",
-        "type": "Pantheon",
+        "name": "戦の神",
+        "type": "パンテオン",
         "uniques": ["Earn [50]% of [Military] unit's [Strength] as [Faith] when killed within 4 tiles of a city following this religion"]
     },
     {
-        "name": "Goddess of Festivals",
-        "type": "Pantheon",
+        "name": "祝祭の女神",
+        "type": "パンテオン",
         "uniques": ["[+1 Culture, +1 Faith] from every [Wine]", "[+1 Culture, +1 Faith] from every [Incense]"]
     },
     {
-        "name": "Goddess of Love",
-        "type": "Pantheon",
+        "name": "愛の女神",
+        "type": "パンテオン",
         "uniques": ["[+1 Happiness] in cities with [6] or more population"]
     },
     {
-        "name": "Goddess of Protection",
-        "type": "Pantheon",
+        "name": "守りの女神",
+        "type": "パンテオン",
         "uniques": ["[+30]% attacking Strength for cities"]
     },
     {
-        "name": "Goddess of the Hunt",
-        "type": "Pantheon",
+        "name": "狩の女神",
+        "type": "パンテオン",
         "uniques": ["[+1 Food] from every [Camp]"]
     },
     {
-        "name": "Messenger of the Gods",
-        "type": "Pantheon",
+        "name": "神々の御使い",
+        "type": "パンテオン",
         "uniques": ["[+2 Science] from each Trade Route"]
     },
     {
-        "name": "Monument to the Gods",
-        "type": "Pantheon",
+        "name": "神々を讃えるモニュメント",
+        "type": "パンテオン",
         "uniques": ["[+15]% Production when constructing [All] wonders [in cities following this religion]"]
         // ToDo: Should only be ancient/classical era wonders, but implementing that is another can of worms
         // For that we really should need an era.matchesFilter(), so we could write something like:
@@ -85,216 +85,216 @@
         // Alternatively, we could approximate this with "[+15]% Production when constructing [All] wonders [in all cities] <during the [Ancient era]>"
     },
     {
-        "name": "One with Nature",
-        "type": "Pantheon",
+        "name": "自然との合一",
+        "type": "パンテオン",
         "uniques": ["[+4 Faith] from every [Natural Wonder]"]
     },
     {
-        "name": "Oral Tradition",
-        "type": "Pantheon",
+        "name": "言い伝え",
+        "type": "パンテオン",
         "uniques": ["[+1 Culture] from every [Plantation]"]
     },
     {
-        "name": "Religious Idols",
-        "type": "Pantheon",
+        "name": "偶像",
+        "type": "パンテオン",
         "uniques": ["[+1 Culture, +1 Faith] from every [Gold Ore]", "[+1 Culture, +1 Faith] from every [Silver]"]
     },
     {
-        "name": "Religious Settlements",
-        "type": "Pantheon",
+        "name": "信仰の里",
+        "type": "パンテオン",
         "uniques": ["[-15]% Culture cost of natural border growth [in cities following this religion]"]
     },
     {
-        "name": "Sacred Path",
-        "type": "Pantheon",
+        "name": "聖なる道",
+        "type": "パンテオン",
         "uniques": ["[+1 Culture] from every [Jungle]"]
     },
     {
-        "name": "Sacred Waters",
-        "type": "Pantheon",
+        "name": "聖なる水",
+        "type": "パンテオン",
         "uniques": ["[+1 Happiness] in cities on [River] tiles"]
     },
     {
-        "name": "Stone Circles",
-        "type": "Pantheon",
+        "name": "環状列石",
+        "type": "パンテオン",
         "uniques": ["[+2 Faith] from every [Quarry]"]
     },
 ///////////////////////////////////////// Follower beliefs /////////////////////////////////////////
     {
-        "name": "Asceticism",
-        "type": "Follower",
+        "name": "禁欲主義",
+        "type": "信徒",
         "uniques": ["[+1 Happiness] from every [Shrine] <in cities where this religion has at least [3] followers>"]
     },
     {
-        "name": "Cathedrals",
-        "type": "Follower",
+        "name": "大聖堂",
+        "type": "信徒",
         "uniques": ["May buy [Cathedral] buildings with [Faith] [in cities following this religion]"]
     },
     {
-        "name": "Choral Music",
-        "type": "Follower",
+        "name": "合唱曲",
+        "type": "信徒",
         "uniques": ["[+2 Culture] from every [Temple] <in cities where this religion has at least [5] followers>"]
     },
     {
-        "name": "Divine inspiration",
-        "type": "Follower",
+        "name": "霊感",
+        "type": "信徒",
         "uniques": ["[+2 Faith] from every [Wonder]"]
     },
     {
-        "name": "Feed the World",
-        "type": "Follower",
+        "name": "この世界に糧を",
+        "type": "信徒",
         "uniques": ["[+1 Food] from every [Shrine]", "[+1 Food] from every [Temple]"]
     },
     {
-        "name": "Guruship",
-        "type": "Follower",
+        "name": "導師",
+        "type": "信徒",
         "uniques": ["[+2 Production] <if this city has at least [1] specialists>"]
     },
     {
-        "name": "Holy Warriors",
-        "type": "Follower",
+        "name": "聖戦士",
+        "type": "信徒",
         "uniques": ["May buy [{Military} {Land}] units with [Faith] for [2] times their normal Production cost <before the [Industrial era]>"]
     },
     {
-        "name": "Liturgical Drama",
-        "type": "Follower",
+        "name": "聖書劇",
+        "type": "信徒",
         "uniques": ["[+1 Faith] from every [Amphitheater] <in cities where this religion has at least [3] followers>"]
     },
     {
-        "name": "Monasteries",
-        "type": "Follower",
+        "name": "修道院",
+        "type": "信徒",
         "uniques": ["May buy [Monastery] buildings with [Faith] [in cities following this religion]"]
     },
     {
-        "name": "Mosques",
-        "type": "Follower",
+        "name": "モスク",
+        "type": "信徒",
         "uniques": ["May buy [Mosque] buildings with [Faith] [in cities following this religion]"]
     },
     {
-        "name": "Pagodas",
-        "type": "Follower",
+        "name": "パゴダ",
+        "type": "信徒",
         "uniques": ["May buy [Pagoda] buildings with [Faith] [in cities following this religion]"]
     },
     {
-        "name": "Peace Gardens",
-        "type": "Follower",
+        "name": "平和の庭園",
+        "type": "信徒",
         "uniques": ["[+2 Happiness] from every [Garden]"]
     },
     {
-        "name": "Religious Art",
-        "type": "Follower",
+        "name": "宗教芸術",
+        "type": "信徒",
         "uniques": ["[+8 Culture] from every [Hermitage]"]
     },
     {
-        "name": "Religious Center",
-        "type": "Follower",
+        "name": "信仰の中心",
+        "type": "信徒",
         "uniques": ["[+2 Happiness] from every [Temple] <in cities where this religion has at least [5] followers>"]
     },
     {
-        "name": "Religious Community",
-        "type": "Follower",
+        "name": "宗教共同体",
+        "type": "信徒",
         "uniques": ["[+1]% [Production] from every follower, up to [15]%"]
     },
     {
-        "name": "Swords into Ploughshares",
-        "type": "Follower",
+        "name": "剣を鋤の刃に",
+        "type": "信徒",
         "uniques": ["[+15]% growth [in this city] <when not at war>"]
     },
 ///////////////////////////////////////// Founder beliefs //////////////////////////////////////////
     
     {
-        "name": "Ceremonial Burial",
-        "type": "Founder",
+        "name": "埋葬",
+        "type": "創始者",
         "uniques": ["[+1 Happiness] for each global city following this religion"]
     },
     {
-        "name": "Church Property",
-        "type": "Founder",
+        "name": "教会資産",
+        "type": "創始者",
         "uniques": ["[+2 Gold] for each global city following this religion"]
     },
     {
-        "name": "Initiation Rites",
-        "type": "Founder",
+        "name": "入信の儀式",
+        "type": "創始者",
         "uniques": ["[+100 Gold] when a city adopts this religion for the first time (modified by game speed)"]
     },
     {
-        "name": "Interfaith Dialogue",
-        "type": "Founder",
+        "name": "宗教間対話",
+        "type": "創始者",
         "uniques": ["When spreading religion to a city, gain [10] times the amount of followers of other religions as [Science]"]
     }
     {
-        "name": "Papal Primacy",
-        "type": "Founder",
+        "name": "教皇の首位性",
+        "type": "創始者",
         "uniques": ["Resting point for Influence with City-States following this religion [+15]"]
     },
     {
-        "name": "Peace Loving",
-        "type": "Founder",
+        "name": "平和主義",
+        "type": "創始者",
         "uniques": ["[+1 Happiness] for every [5] global followers [in non-enemy foreign cities]"]
     },
     {
-        "name": "Pilgrimage",
-        "type": "Founder",
+        "name": "巡礼",
+        "type": "創始者",
         "uniques": ["[+2 Faith] for each global city following this religion"]
     },
     {
-        "name": "Tithe",
-        "type": "Founder",
+        "name": "10分の1税,
+        "type": "創始者",
         "uniques": ["[+1 Gold] for every [4] global followers [in all cities]"]
     },
     {
-        "name": "World Church",
-        "type": "Founder",
+        "name": "世界教会運動",
+        "type": "創始者",
         "uniques": ["[+1 Culture] for every [5] global followers [in foreign cities]"]
     },
 
     ////////////////////////////////////// Enhancer beliefs ///////////////////////////////////////
 
     {
-        "name": "Defender of the Faith",
-        "type": "Enhancer",
+        "name": "信仰の守護者",
+        "type": "改革",
         "uniques": ["[+20]% Strength <for [All] units> <when fighting in [Friendly Land] tiles>"]
         // ToDo: Should only be friendly territory of cities that follow this religion
     },
     {
-        "name": "Holy Order",
-        "type": "Enhancer",
+        "name": "聖職叙任",
+        "type": "改革",
         "uniques": ["[Faith] cost of purchasing [Missionary] units [-30]%", "[Faith] cost of purchasing [Inquisitor] units [-30]%"]
     },
     {
-        "name": "Itinerant Preachers",
-        "type": "Enhancer",
+        "name": "巡回説教者",
+        "type": "改革",
         "uniques": ["Religion naturally spreads to cities [+3] tiles away"]
     },
     {
-        "name": "Just War",
-        "type": "Enhancer",
+        "name": "正義の戦い",
+        "type": "改革",
         "uniques": ["[+20]% Strength <for [All] units> <when fighting in [Enemy Land] tiles>"]
         // ToDo: Should only be enemy territory of cities that follow this religion
     },
     {
-        "name": "Messiah",
-        "type": "Enhancer",
+        "name": "救世主",
+        "type": "改革",
         "uniques": ["[+25]% Spread Religion Strength <for [Great Prophet] units>", "[-25]% Faith cost of generating Great Prophet equivalents", "[Faith] cost for [Great Prophet] units [-25]%"]
     },
     {
-        "name": "Missionary Zeal",
-        "type": "Enhancer",
+        "name": "布教の情熱",
+        "type": "改革",
         "uniques": ["[+25]% Spread Religion Strength <for [Missionary] units>"]
     },
     {
-        "name": "Religious Texts",
-        "type": "Enhancer",
+        "name": "宗教書",
+        "type": "改革",
         "uniques": ["[+34]% Natural religion spread [in all cities]", "[+34]% Natural religion spread [in all cities] <after discovering [Printing Press]>"]
     },
     {
-        "name": "Religious Unity",
-        "type": "Enhancer",
+        "name": "信仰による結束",
+        "type": "改革",
         "uniques": ["[+100]% Natural religion spread [in City-State cities]"]
     },
     {
-        "name": "Reliquary",
-        "type": "Enhancer",
+        "name": "聖骨箱",
+        "type": "改革",
         "uniques": ["[+50 Faith] whenever a Great Person is expended"]
     }
 ]
