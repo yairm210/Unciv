@@ -1017,7 +1017,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Eliminates combat penalty for attacking across a coast"
 	Applicable to: Unit
 
-??? example  "6 tiles in every direction always visible"
+??? example  "No Sight"
+	Applicable to: Unit
+
+??? example  "Can see over obstacles"
 	Applicable to: Unit
 
 ??? example  "Can carry [amount] [mapUnitFilter] units"

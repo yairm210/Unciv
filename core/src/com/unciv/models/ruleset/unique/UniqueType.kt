@@ -436,6 +436,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     AttackFromSea("Eliminates combat penalty for attacking from the sea", UniqueTarget.Unit),
     AttackAcrossCoast("Eliminates combat penalty for attacking across a coast", UniqueTarget.Unit),
 
+    NoSight("No Sight", UniqueTarget.Unit),
+    CanSeeOverObstacles("Can see over obstacles", UniqueTarget.Unit),
+    @Deprecated("as of 3.19.19", ReplaceWith("[+4] Sight\", \"Can see over obstacles"))
     SixTilesAlwaysVisible("6 tiles in every direction always visible", UniqueTarget.Unit),
 
     CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),

@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.ruleset.unique.StateForConditionals
+import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
@@ -242,6 +243,9 @@ open class TileInfo {
     fun isRoughTerrain() = getAllTerrains().any{ it.isRough() }
 
     fun hasUnique(uniqueType: UniqueType) = getAllTerrains().any { it.hasUnique(uniqueType) }
+    fun getMatchingUniques(uniqueType: UniqueType, stateForConditionals: StateForConditionals = StateForConditionals(tile=this) ): Sequence<Unique> {
+        return getAllTerrains().flatMap { it.getMatchingUniques(uniqueType, stateForConditionals) }
+    }
 
     fun getWorkingCity(): CityInfo? {
         val civInfo = getOwner() ?: return null
