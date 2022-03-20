@@ -18,20 +18,14 @@ import com.unciv.ui.utils.NativeFontImplementation
 class NativeFontAndroid(private val size: Int, private val fontFamily: String) :
     NativeFontImplementation {
     private val paint = Paint().apply {
-        typeface = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val font = fontList.firstOrNull {
-                it.file?.nameWithoutExtension == fontFamily
-            }
+        typeface = if (fontFamily.isNotBlank() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val font = fontList.firstOrNull { it.file?.nameWithoutExtension == fontFamily }
             if (font != null) {
-                Typeface.CustomFallbackBuilder(
-                    FontFamily.Builder(font).build()
-                ).setSystemFallback(fontFamily).build()
-            } else {
-                Typeface.create(fontFamily, Typeface.NORMAL)
-            }
-        } else {
-            Typeface.create(fontFamily, Typeface.NORMAL)
-        }
+                Typeface.CustomFallbackBuilder(FontFamily.Builder(font).build())
+                    .setSystemFallback(fontFamily).build()
+            } else Typeface.create(fontFamily, Typeface.NORMAL)
+        } else Typeface.create(fontFamily, Typeface.NORMAL)
+
         isAntiAlias = true
         textSize = size.toFloat()
         strokeWidth = 0f
