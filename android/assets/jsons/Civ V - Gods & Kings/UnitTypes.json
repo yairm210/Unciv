@@ -59,7 +59,7 @@
     {
         "name": "Fighter",
         "movementType": "Air",
-        "uniques": ["Aircraft", "Can see over obstacles", "[+4] Sight"]
+        "uniques": ["Aircraft", "[+4] Sight", "Can see over obstacles"]
     },
     {
         "name": "Bomber",
