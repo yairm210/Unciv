@@ -774,7 +774,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Font family".toLabel()).left().fillX()
 
         val fontSelectBox = SelectBox<String>(skin)
-        val fontsLocalName = GdxArray<String>().apply { add("Default Font") }
+        val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
         val fontsEnName = GdxArray<String>().apply { add("") }
         for (font in fonts) {
             fontsLocalName.add(font.localName)
