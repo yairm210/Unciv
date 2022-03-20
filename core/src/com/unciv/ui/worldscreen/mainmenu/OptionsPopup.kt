@@ -16,6 +16,7 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.FileStorageConflictException
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.RulesetError
@@ -35,8 +36,15 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.FileNotFoundException
+import java.io.InputStreamReader
 import java.net.DatagramSocket
+import java.net.HttpURLConnection
 import java.net.InetAddress
+import java.net.URL
+import java.nio.charset.Charset
 import java.util.*
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
@@ -305,27 +313,32 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
         
         fun sendRequest(method:String, url:String, content:String, action: (success:Boolean, result:String)->Unit){
-            val httpRequest = Net.HttpRequest(method);
-            httpRequest.url = url
-            httpRequest.content = content
-            httpRequest.timeOut = 0
-            Gdx.net.sendHttpRequest (httpRequest, object:HttpResponseListener {
-                override fun failed(t:Throwable) {
-                    action(false, t.message!!)
-                    println(t.stackTraceToString())
-                }
+            with(URL(url).openConnection() as HttpURLConnection) {
+                requestMethod = method  // default is GET
 
-                override fun cancelled() {
-                    action(false, "")
-                    println("Cancelled call")
-                }
+                doOutput = true
 
-                override fun handleHttpResponse(httpResponse: Net.HttpResponse) {
-                    val result = httpResponse.getResultAsString()
-                    action(true, result)
+                try {
+                    if (content != "") {
+                        // StandardCharsets.UTF_8 requires API 19
+                        val postData: ByteArray = content.toByteArray(Charset.forName("UTF-8"))
+                        val outputStream = DataOutputStream(outputStream)
+                        outputStream.write(postData)
+                        outputStream.flush()
+                    }
+
+                    val text = BufferedReader(InputStreamReader(inputStream)).readText()
+                    action(true, text)
+                } catch (t: Throwable) {
+                    println(t.message)
+                    val reader = BufferedReader(InputStreamReader(errorStream))
+                    val resultText = reader.readText()
+                    println(resultText)
+                    action (false, resultText)
                 }
-            })
+            }
         }
+        
     }
     
     fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
