@@ -24,7 +24,7 @@ interface NativeFontImplementation {
 // If save in `GameSettings` need use enName.
 // If show to user need use localName.
 // If save localName in `GameSettings` may generate garbled characters by encoding.
-data class FontData(val localName: String, val enName: String) {
+data class FontData(val localName: String, val enName: String = localName) {
     override fun equals(other: Any?): Boolean {
         return if (other is FontData) enName == other.enName
         else super.equals(other)
