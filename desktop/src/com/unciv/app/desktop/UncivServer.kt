@@ -1,19 +1,22 @@
 package com.unciv.app.desktop
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Net
 import io.ktor.application.*
 
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.util.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.jvm.javaio.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.Exception
 
 fun main() {
     val fileFolderName = "MultiplayerFiles"
+    File(fileFolderName).mkdir()
+    println(File(fileFolderName).absolutePath)
     embeddedServer(Netty, port = 8080) {
         routing {
             get("/isalive") {
@@ -21,14 +24,21 @@ fun main() {
             }
             post("/files/{fileName}"){
                 val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
-                val recievedText = call.request.receiveChannel().toInputStream().toString()
-                File(fileFolderName, fileName).writeText(recievedText)
+                withContext(Dispatchers.IO){
+                    val recievedBytes = call.request.receiveChannel().toInputStream().readAllBytes()
+                    val textString = String(recievedBytes)
+                    println("Recieved text: $textString")
+                    File(fileFolderName, fileName).writeText(textString)
+                }
             }
             get("/files/{fileName}"){
                 val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
+                println("Get file: $fileName")
                 val file = File(fileFolderName, fileName)
                 if (!file.exists()) throw Exception("File does not exist!")
-                call.respondText(file.readText())
+                val fileText = file.readText()
+                println("Text read: $fileText")
+                call.respondText(fileText)
             }
             delete("/files/{fileName}"){
                 val fileName = call.parameters["fileName"] ?: throw Exception("No fileName!")
