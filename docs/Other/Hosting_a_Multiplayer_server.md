@@ -15,7 +15,8 @@ Your server has now started!
 
 In Unciv itself, from the same computer, enter Options > Multiplayer.
 
-Click the first button (copy to clipboard) and then the second (copy from clipboard) to put your computer's IP in the "Server IP" slot.
+Click the first text (Current IP address) to copy the IP to the clipboard.
+Then, click the second the second (Server IP address) to put your computer's IP in the "Server IP" slot.
 
 If you click "check connection to server" you should now get "Return result: true", which means it's working!
 

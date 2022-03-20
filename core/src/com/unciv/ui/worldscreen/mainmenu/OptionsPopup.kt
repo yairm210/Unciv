@@ -262,22 +262,25 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         val connectionToServerButton = "Check connection to server".toTextButton()
         
         val ipAddress = getIpAddress()
-        add("Current IP address: $ipAddress - click to copy to clipboard".toTextButton().onClick { 
+        add("{Current IP address}: $ipAddress".toTextButton().onClick { 
             Gdx.app.clipboard.contents = ipAddress.toString()
         }).row()
 
         val multiplayerServerTextField = TextField(settings.multiplayerServer, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
-        add("Server's IP address - click to copy from clipboard".toTextButton().onClick { 
+        val serverIpTable = Table()
+        
+        serverIpTable.add("Server's IP address".toLabel().onClick { 
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).row()
+        }).padRight(10f)
         multiplayerServerTextField.onChange { 
-            println("Changed to "+multiplayerServerTextField.text)
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
-        add(multiplayerServerTextField).row()
+        serverIpTable.add(multiplayerServerTextField)
+        add(serverIpTable).row()
+        
         add("Reset to Dropbox".toTextButton().onClick {
             multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
         }).row()
@@ -290,10 +293,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             
             successfullyConnectedToServer { success: Boolean, result: String ->
                 if (success) {
-                    popup.addGoodSizedLabel("Return result: $result").row()
+                    popup.addGoodSizedLabel("Success!").row()
                     popup.addCloseButton()
                 } else {
-                    popup.addGoodSizedLabel("Connection to the server failed!").row()
+                    popup.addGoodSizedLabel("Failed!").row()
                     popup.addCloseButton()
                 }
             }
