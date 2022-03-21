@@ -876,14 +876,15 @@ class CivilizationInfo {
             if (!flagsCountdown.containsKey(flag)) continue
 
             if (flag == CivFlags.CityStateGreatPersonGift.name) {
-                val cityStateAllies = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }
+                val cityStateAllies: List<CivilizationInfo> =
+                    getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName }
+                val givingCityState = cityStateAllies.filter { it.cities.isNotEmpty() }.randomOrNull()
 
-                if (cityStateAllies.any()) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+                if (cityStateAllies.isNotEmpty()) flagsCountdown[flag] = flagsCountdown[flag]!! - 1
 
-                if (flagsCountdown[flag]!! < min(cityStateAllies.count(), 10) && cities.isNotEmpty()
-                    && cityStateAllies.any { it.cities.isNotEmpty() }
+                if (flagsCountdown[flag]!! < min(cityStateAllies.size, 10) && cities.isNotEmpty()
+                    && givingCityState != null
                 ) {
-                    val givingCityState = getKnownCivs().filter { it.isCityState() && it.getAllyCiv() == civName && it.cities.isNotEmpty()}.random()
                     givingCityState.cityStateFunctions.giveGreatPersonToPatron(this)
                     flagsCountdown[flag] = turnsForGreatPersonFromCityState()
                 }
@@ -1247,10 +1248,9 @@ class CivilizationInfo {
 
         return proximity
     }
-    
+
     //////////////////////// City State wrapper functions ////////////////////////
 
-    /** Gain a random great person from the city state */
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) =
         cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
     fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
