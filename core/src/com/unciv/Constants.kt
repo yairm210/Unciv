@@ -28,7 +28,6 @@ object Constants {
     const val jungle = "Jungle"
     const val ice = "Ice"
     val vegetation = arrayOf(forest, jungle)
-    val sea = arrayOf(ocean, coast)
 
     // Note the difference in case. **Not** interchangeable!
     /** The "Fresh water" terrain _unique_ */
