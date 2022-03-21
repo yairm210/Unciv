@@ -15,9 +15,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 
-// TODO WLTK uses / demand (not in total)
-// TODO Unimproved amount in territory (not in total)
-
 class ResourcesOverviewTab(
     viewingPlayer: CivilizationInfo,
     overviewScreen: EmpireOverviewScreen,
@@ -154,7 +151,7 @@ class ResourcesOverviewTab(
         // First row of table has all the origin labels
         fixedContent.apply {
             add(turnImageV)
-            add("".toLabel())  //TODO equalizeColumns needs the Actor - unless the newer one is merged
+            add()
             addSeparatorVertical(Color.GRAY).pad(0f)
             for (origin in origins) {
                 add(origin.toLabel())
@@ -187,8 +184,6 @@ class ResourcesOverviewTab(
             row()
         }
 
-        fixedContent.pack()
-        pack()  //TODO the newer equalizeColumns does not need this
         equalizeColumns(fixedContent, this)
     }
 
