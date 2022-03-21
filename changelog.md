@@ -14,6 +14,8 @@ By xlenstra:
 - Added an AI for building & using spaceship parts 
 - Unified & generalized a few uniques
 
+Custom desktop font - by HAHH9527
+
 ## 3.19.18
 
 Double Zoom Out Range  - By itanasi
