@@ -338,7 +338,7 @@ object SpecificUnitAutomation {
         unit.movement.headTowards(destination)
 
 
-        if (cityToConvert != null && unit.currentTile.getCity() == destination!!.getCity()) {
+        if (cityToConvert != null && unit.currentTile.getCity() == destination.getCity()) {
             doReligiousAction(unit, destination)
         }
 

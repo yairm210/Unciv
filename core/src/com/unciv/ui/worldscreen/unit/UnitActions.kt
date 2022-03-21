@@ -54,7 +54,7 @@ object UnitActions {
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)
-        addParadropAction(unit, actionList, worldScreen)
+        addParadropAction(unit, actionList)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addBuildingImprovementsAction(unit, actionList, tile, worldScreen, unitTable)
@@ -244,7 +244,7 @@ object UnitActions {
                 }.takeIf { unit.currentMovement > 0 && !isSetUp })
     }
 
-    private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+    private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         val paradropUniques =
             unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
         if (!paradropUniques.any() || unit.isEmbarked()) return

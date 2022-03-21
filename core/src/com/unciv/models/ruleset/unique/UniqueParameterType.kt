@@ -369,7 +369,8 @@ enum class UniqueParameterType(var parameterName:String) {
             "in cities following this religion",
         )
 
-        fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param } ?: Unknown.apply { this.parameterName = param }
+        fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param }
+            ?: Unknown.apply { this.parameterName = param }  //TODO Danger: There is only one instance of Unknown!
     }
 }
 

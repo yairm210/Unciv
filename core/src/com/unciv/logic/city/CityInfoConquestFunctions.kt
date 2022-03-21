@@ -123,7 +123,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: CivilizationInfo) {
         // Gain gold for plundering city
-        val goldPlundered = getGoldForCapturingCity(conqueringCiv)  // todo: use this val
+        @Suppress("UNUSED_VARIABLE")  // todo: use this val
+        val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         city.apply {
 
             val oldCiv = civInfo
