@@ -39,11 +39,10 @@ import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
-import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
-import kotlin.concurrent.thread
 import kotlin.concurrent.timer
 
 /**
@@ -264,9 +263,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             if (!mapHolder.setCenterPosition(capital.location))
                 game.setScreen(CityScreen(capital))
         }
-        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { this.openOptionsPopup() }    //   Game Options
-        keyPressDispatcher[KeyCharAndCode.ctrl('S')] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
-        keyPressDispatcher[KeyCharAndCode.ctrl('L')] = { game.setScreen(LoadGameScreen(this)) }    //   Load
+        // These cause crashes so disabling for now
+//        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { this.openOptionsPopup() }    //   Game Options
+//        keyPressDispatcher[KeyCharAndCode.ctrl('S')] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
+//        keyPressDispatcher[KeyCharAndCode.ctrl('L')] = { game.setScreen(LoadGameScreen(this)) }    //   Load
         keyPressDispatcher[Input.Keys.NUMPAD_ADD] = { this.mapHolder.zoomIn() }    //   '+' Zoom
         keyPressDispatcher[Input.Keys.NUMPAD_SUBTRACT] = { this.mapHolder.zoomOut() }    //   '-' Zoom
         keyPressDispatcher.setCheckpoint()
@@ -412,7 +412,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             allUnits.filter(mapVisualization::isUnitPastVisible),
             allUnits.filter(mapVisualization::isUnitFutureVisible),
             allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
-                    .map { (attacker, source, target) -> source to target }
+                    .map { (_, source, target) -> source to target }
         )
 
         // if we use the clone, then when we update viewable tiles
@@ -432,6 +432,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         techPolicyAndVictoryHolder.pack()
         techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
+
+        topBar.unitSupplyImage.isVisible = selectedCiv.stats().getUnitSupplyDeficit() > 0
 
         if (!hasOpenPopups() && isPlayersTurn) {
             when {

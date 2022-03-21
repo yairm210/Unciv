@@ -1,14 +1,16 @@
 package com.unciv.app.desktop
 
 import com.badlogic.gdx.graphics.Pixmap
+import com.unciv.ui.utils.FontData
 import com.unciv.ui.utils.NativeFontImplementation
 import java.awt.*
 import java.awt.image.BufferedImage
+import java.util.*
 
-
-class NativeFontDesktop(private val size: Int) : NativeFontImplementation {
+class NativeFontDesktop(private val size: Int, private val fontFamily: String) :
+    NativeFontImplementation {
     private val font by lazy {
-        Font("", Font.PLAIN, size)
+        Font(fontFamily, Font.PLAIN, size)
     }
     private val metric by lazy {
         val bi = BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR)
@@ -46,5 +48,12 @@ class NativeFontDesktop(private val size: Int) : NativeFontImplementation {
         }
         g.dispose()
         return pixmap
+    }
+
+    override fun getAvailableFont(): Collection<FontData> {
+        val allFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().allFonts.map {
+            FontData(it.fontName, it.getFamily(Locale.ENGLISH))
+        }.toSet()
+        return allFonts
     }
 }

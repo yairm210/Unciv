@@ -3,15 +3,20 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.Net
+import com.badlogic.gdx.Net.HttpResponseListener
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.FileStorageConflictException
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.RulesetError
@@ -31,6 +36,15 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.FileNotFoundException
+import java.io.InputStreamReader
+import java.net.DatagramSocket
+import java.net.HttpURLConnection
+import java.net.InetAddress
+import java.net.URL
+import java.nio.charset.Charset
 import java.util.*
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
@@ -77,9 +91,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         tabs.addPage("Gameplay", getGamePlayTab(), ImageGetter.getImage("OtherIcons/Options"), 24f)
         tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
-        // at the moment the notification service only exists on Android
-        if (Gdx.app.type == Application.ApplicationType.Android)
-            tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
+        tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
         tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
         if (RulesetCache.size > 1) {
             tabs.addPage("Locate mod errors", getModCheckTab(), ImageGetter.getImage("OtherIcons/Mods"), 24f) { _, _ ->
@@ -228,19 +240,113 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getMultiplayerTab(): Table = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
+        
+        // at the moment the notification service only exists on Android
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            addCheckbox("Enable out-of-game turn notifications",
+                settings.multiplayerTurnCheckerEnabled) {
+                settings.multiplayerTurnCheckerEnabled = it
+                settings.save()
+                tabs.replacePage("Multiplayer", getMultiplayerTab())
+            }
 
-        addCheckbox("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
-            settings.multiplayerTurnCheckerEnabled = it
-            settings.save()
-            tabs.replacePage("Multiplayer", getMultiplayerTab())
-        }
+            if (settings.multiplayerTurnCheckerEnabled) {
+                addMultiplayerTurnCheckerDelayBox()
 
-        if (settings.multiplayerTurnCheckerEnabled) {
-            addMultiplayerTurnCheckerDelayBox()
-
-            addCheckbox("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
+                addCheckbox("Show persistent notification for turn notifier service",
+                    settings.multiplayerTurnCheckerPersistentNotificationEnabled)
                 { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
+            }
         }
+        
+        val connectionToServerButton = "Check connection to server".toTextButton()
+        
+        val ipAddress = getIpAddress()
+        add("{Current IP address}: $ipAddress".toTextButton().onClick { 
+            Gdx.app.clipboard.contents = ipAddress.toString()
+        }).row()
+
+        val multiplayerServerTextField = TextField(settings.multiplayerServer, BaseScreen.skin)
+        multiplayerServerTextField.programmaticChangeEvents = true
+        val serverIpTable = Table()
+        
+        serverIpTable.add("Server's IP address".toLabel().onClick { 
+            multiplayerServerTextField.text = Gdx.app.clipboard.contents
+        }).padRight(10f)
+        multiplayerServerTextField.onChange { 
+            settings.multiplayerServer = multiplayerServerTextField.text
+            settings.save()
+            connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
+        }
+        serverIpTable.add(multiplayerServerTextField)
+        add(serverIpTable).row()
+        
+        add("Reset to Dropbox".toTextButton().onClick {
+            multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
+        }).row()
+        
+        add(connectionToServerButton.onClick {
+            val popup = Popup(screen).apply { 
+                addGoodSizedLabel("Awaiting response...").row()
+            }
+            popup.open(true)
+            
+            successfullyConnectedToServer { success: Boolean, result: String ->
+                if (success) {
+                    popup.addGoodSizedLabel("Success!").row()
+                    popup.addCloseButton()
+                } else {
+                    popup.addGoodSizedLabel("Failed!").row()
+                    popup.addCloseButton()
+                }
+            }
+        }).row()
+    }
+    
+    fun getIpAddress(): String? {
+        DatagramSocket().use { socket ->
+            socket.connect(InetAddress.getByName("8.8.8.8"), 10002)
+            return socket.getLocalAddress().getHostAddress()
+        }
+    }
+    
+    object SimpleHttp{
+        fun sendGetRequest(url:String, action: (success: Boolean, result:String)->Unit){
+            sendRequest(Net.HttpMethods.GET, url, "", action)
+        }
+        
+        fun sendRequest(method:String, url:String, content:String, action: (success:Boolean, result:String)->Unit){
+            with(URL(url).openConnection() as HttpURLConnection) {
+                requestMethod = method  // default is GET
+
+                doOutput = true
+
+                try {
+                    if (content != "") {
+                        // StandardCharsets.UTF_8 requires API 19
+                        val postData: ByteArray = content.toByteArray(Charset.forName("UTF-8"))
+                        val outputStream = DataOutputStream(outputStream)
+                        outputStream.write(postData)
+                        outputStream.flush()
+                    }
+
+                    val text = BufferedReader(InputStreamReader(inputStream)).readText()
+                    action(true, text)
+                } catch (t: Throwable) {
+                    println(t.message)
+                    val errorMessageToReturn =
+                        if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
+                        else t.message!!
+                    println(errorMessageToReturn)
+                    action(false, errorMessageToReturn)
+                }
+            }
+        }
+        
+    }
+    
+    fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+        SimpleHttp.sendGetRequest( "http://"+ settings.multiplayerServer+":8080/isalive", action)
     }
 
     private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
@@ -261,6 +367,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 previousScreen.game.limitOrientationsHelper.allowPortrait(it)
             }
         }
+
+        addFontFamilySelect(Fonts.getAvailableFontFamilyNames())
 
         addTranslationGeneration()
 
@@ -314,7 +422,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
                 val modLinks =
                         if (base == modCheckWithoutBase) mod.checkModLinks(forOptionsPopup = true)
-                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base)
+                        else RulesetCache.checkCombinedModLinks(linkedSetOf(mod.name), base, forOptionsPopup = true)
                 modLinks.sortByDescending { it.errorSeverityToReport }
                 val noProblem = !modLinks.isNotOK()
                 if (modLinks.isNotEmpty()) modLinks += RulesetError("", RulesetErrorSeverity.OK)
@@ -377,14 +485,16 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getDeprecatedReplaceableUniques(mod:Ruleset): HashMap<String, String> {
 
         val objectsToCheck = sequenceOf(
-            mod.units,
+            mod.beliefs,
+            mod.buildings,
+            mod.nations,
+            mod.policies,
+            mod.technologies,
+            mod.terrains,
             mod.tileImprovements,
             mod.unitPromotions,
-            mod.buildings,
-            mod.policies,
-            mod.nations,
-            mod.beliefs,
-            mod.technologies,
+            mod.unitTypes,
+            mod.units,
         )
         val allDeprecatedUniques = HashSet<String>()
         val deprecatedUniquesToReplacementText = HashMap<String, String>()
@@ -440,17 +550,22 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         return deprecatedUniquesToReplacementText
     }
 
-    private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>, ) {
+    private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>) {
 
+        if (mod.name.contains("mod"))
+            println("mod")
+        
         val filesToReplace = listOf(
-            "Units.json",
+            "Beliefs.json",
+            "Buildings.json",
+            "Nations.json",
+            "Policies.json",
+            "Techs.json",
+            "Terrains.json",
             "TileImprovements.json",
             "UnitPromotions.json",
-            "Buildings.json",
-            "Policies.json",
-            "Nations.json",
-            "Beliefs.json",
-            "Techs.json",
+            "UnitTypes.json",
+            "Units.json",
         )
 
         val jsonFolder = mod.folderLocation!!.child("jsons")
@@ -490,6 +605,20 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         add("Gdx Scene2D debug".toCheckBox(BaseScreen.enableSceneDebug) {
             BaseScreen.enableSceneDebug = it
         }).row()
+
+        add("Allow untyped Uniques in mod checker".toCheckBox(RulesetCache.modCheckerAllowUntypedUniques) {
+            RulesetCache.modCheckerAllowUntypedUniques = it
+        }).row()
+
+        add(Table().apply {
+            add("Unique misspelling threshold".toLabel()).left().fillX()
+            add(
+                UncivSlider(0f, 0.5f, 0.05f, initial = RulesetCache.uniqueMisspellingThreshold.toFloat()) {
+                    RulesetCache.uniqueMisspellingThreshold = it.toDouble()
+                }
+            ).minWidth(120f).pad(5f)
+        }).row()
+
         val unlockTechsButton = "Unlock all techs".toTextButton()
         unlockTechsButton.onClick {
             if (!game.isGameInfoInitialized())
@@ -504,6 +633,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             game.worldScreen.shouldUpdate = true
         }
         add(unlockTechsButton).row()
+
         val giveResourcesButton = "Give all strategic resources".toTextButton()
         giveResourcesButton.onClick {
             if (!game.isGameInfoInitialized())
@@ -748,6 +878,34 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         autosaveTurnsSelectBox.onChange {
             settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
             settings.save()
+        }
+    }
+
+    private fun Table.addFontFamilySelect(fonts: Collection<FontData>) {
+        if (fonts.isEmpty()) return
+
+        add("Font family".toLabel()).left().fillX()
+
+        val fontSelectBox = SelectBox<String>(skin)
+        val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
+        val fontsEnName = GdxArray<String>().apply { add("") }
+        for (font in fonts) {
+            fontsLocalName.add(font.localName)
+            fontsEnName.add(font.enName)
+        }
+
+        val selectedIndex = fontsEnName.indexOf(settings.fontFamily).let { if (it == -1) 0 else it }
+
+        fontSelectBox.items = fontsLocalName
+        fontSelectBox.selected = fontsLocalName[selectedIndex]
+
+        add(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+
+        fontSelectBox.onChange {
+            settings.fontFamily = fontsEnName[fontSelectBox.selectedIndex]
+            ToastPopup(
+                "You need to restart the game for this change to take effect.", previousScreen
+            )
         }
     }
 

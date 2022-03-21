@@ -654,11 +654,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
      * @param selectUnit Select a unit at the destination
      * @return `true` if scroll position was changed, `false` otherwise
      */
-    fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true): Boolean {
+    fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnit? = null): Boolean {
         val tileGroup = allWorldTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return false
         selectedTile = tileGroup.tileInfo
-        if (selectUnit)
-            worldScreen.bottomUnitTable.tileSelected(selectedTile!!)
+        if (selectUnit || forceSelectUnit != null)
+            worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit)
 
         val originalScrollX = scrollX
         val originalScrollY = scrollY

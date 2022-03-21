@@ -153,6 +153,11 @@ object UnitAutomation {
             if (unit.hasUnique(UniqueType.CreateWaterImprovements))
                 return SpecificUnitAutomation.automateWorkBoats(unit)
 
+            // We try to add any unit in the capital we can, though that might not always be desirable
+            // For now its a simple option to allow AI to win a science victory again
+            if (unit.hasUnique(UniqueType.AddInCapital))
+                return SpecificUnitAutomation.automateAddInCapital(unit)
+            
             if (unit.hasUnique("Bonus for units in 2 tile radius 15%"))
                 return SpecificUnitAutomation.automateGreatGeneral(unit)
 

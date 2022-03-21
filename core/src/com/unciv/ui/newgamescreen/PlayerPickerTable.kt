@@ -128,7 +128,7 @@ class PlayerPickerTable(
      * @param player for which [Table] is generated
      * @return [Table] containing the all the elements
      */
-    fun getPlayerTable(player: Player): Table {
+    private fun getPlayerTable(player: Player): Table {
         val playerTable = Table()
         playerTable.pad(5f)
         playerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.8f))
@@ -274,7 +274,7 @@ private class NationPickerPopup(
         add(nationDetailsScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
 
         val randomNation = Nation().apply {
-            name = "Random"
+            name = Constants.random
             innerColor = listOf(255, 255, 255)
             outerColor = listOf(0, 0, 0)
             setTransients()
@@ -285,7 +285,7 @@ private class NationPickerPopup(
         if (spectator != null) nations += spectator
 
         nations += playerPicker.getAvailablePlayerCivs(player.chosenCiv)
-            .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale(), { it.name.tr() }))
+            .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
 
         var nationListScrollY = 0f
         var currentY = 0f

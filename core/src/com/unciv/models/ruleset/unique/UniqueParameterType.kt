@@ -33,7 +33,7 @@ enum class UniqueParameterType(var parameterName:String) {
 
     },
     MapUnitFilter("mapUnitFilter") {
-        private val knownValues = setOf("Wounded", "Barbarians", "City-State", "Embarked", "Non-City")
+        private val knownValues = setOf("Wounded", Constants.barbarians, "City-State", "Embarked", "Non-City")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if ('{' in parameterText) // "{filter} {filter}" for and logic
@@ -136,11 +136,21 @@ enum class UniqueParameterType(var parameterName:String) {
             }
         },
     //
+    PopulationFilter("populationFilter") {
+        private val knownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion", "Followers of this Religion")
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }  
+    },
     TerrainFilter("terrainFilter") {
         private val knownValues = setOf("All",
-            "Coastal", "River", "Open terrain", "Rough terrain", "Water resource",
+            Constants.coastal, "River", "Open terrain", "Rough terrain", "Water resource",
             "Foreign Land", "Foreign", "Friendly Land", "Friendly", "Enemy Land", "Enemy",
-            "Featureless", "Fresh Water", "Natural Wonder")
+            "Featureless", Constants.freshWaterFilter, "Natural Wonder")
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
@@ -369,7 +379,8 @@ enum class UniqueParameterType(var parameterName:String) {
             "in cities following this religion",
         )
 
-        fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param } ?: Unknown.apply { this.parameterName = param }
+        fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param }
+            ?: Unknown.apply { this.parameterName = param }  //TODO Danger: There is only one instance of Unknown!
     }
 }
 

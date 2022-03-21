@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.tile.ResourceSupply
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -144,7 +145,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 civInfo.hasUnique(UniqueType.EnemyLandUnitsSpendExtraMovement)
     }
 
-
     fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
         if (civInfo.cities.isEmpty()) return // eg barbarians
 
@@ -167,21 +167,29 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     fun updateCivResources() {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
-
+        
         if (!civInfo.isCityState()) {
+            // First we get all these resources of each city state separately
+            val cityStateProvidedResources = ResourceSupplyList()
             var resourceBonusPercentage = 1f
             for (unique in civInfo.getMatchingUniques(UniqueType.CityStateResources))
                 resourceBonusPercentage += unique.params[0].toFloat() / 100
             for (cityStateAlly in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
-                for (resource in CityStateFunctions(cityStateAlly).getCityStateResourcesForAlly()) {
-                    newDetailedCivResources.add(
+                for (resource in cityStateAlly.cityStateFunctions.getCityStateResourcesForAlly()) {
+                    cityStateProvidedResources.add(
                         resource.apply { amount = (amount * resourceBonusPercentage).toInt() }
                     )
                 }
             }
+            // Then we combine these into one
+            for (resourceSupply in cityStateProvidedResources.groupBy { it.resource }) {
+                newDetailedCivResources.add(ResourceSupply(resourceSupply.key, resourceSupply.value.sumOf { it.amount }, "City-States"))
+            }
+
         }
 
-        for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
+
+        for (diplomacyManager in civInfo.diplomacy.values) newDetailedCivResources.add(diplomacyManager.resourcesFromTrade())
         for (unit in civInfo.getCivUnits())
             for ((resource, amount) in unit.baseUnit.getResourceRequirements())
                 newDetailedCivResources.add(civInfo.gameInfo.ruleSet.tileResources[resource]!!, -amount, "Units")

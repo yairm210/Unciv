@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unique.Unique
 import kotlin.math.*
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.random.Random
@@ -24,6 +25,27 @@ class MapGenerator(val ruleset: Ruleset) {
 
     private var randomness = MapGenerationRandomness()
     private val firstLandTerrain = ruleset.terrains.values.first { it.type==TerrainType.Land }
+
+    /** Associates [terrain] with a range of temperatures and a range of humidities (both open to closed) */
+    private class TerrainOccursRange(
+        val terrain: Terrain,
+        val tempFrom: Float, val tempTo: Float,
+        val humidFrom: Float, val humidTo: Float
+    ) {
+        /** builds a [TerrainOccursRange] for [terrain] from a [unique] (type [UniqueType.TileGenerationConditions]) */
+        constructor(terrain: Terrain, unique: Unique)
+                : this(terrain,
+            unique.params[0].toFloat(), unique.params[1].toFloat(),
+            unique.params[2].toFloat(), unique.params[3].toFloat())
+        /** checks if both [temperature] and [humidity] satisfy their ranges (>From, <=To) */
+        // Yes this does implicit conversions Float/Double
+        fun matches(temperature: Double, humidity: Double) =
+            tempFrom < temperature && temperature <= tempTo &&
+            humidFrom < humidity && humidity <= humidTo
+    }
+    private fun Terrain.getGenerationConditions() =
+        getMatchingUniques(UniqueType.TileGenerationConditions)
+            .map { unique -> TerrainOccursRange(this, unique) }
 
     fun generateMap(mapParameters: MapParameters, civilizations: List<CivilizationInfo> = emptyList()): TileMap {
         val mapSize = mapParameters.mapSize
@@ -148,6 +170,8 @@ class MapGenerator(val ruleset: Ruleset) {
             val tilesInArea = ArrayList<TileInfo>()
             val tilesToCheck = ArrayList<TileInfo>()
 
+            val maxLakeSize = ruleset.modOptions.constants.maxLakeSize
+
             while (waterTiles.isNotEmpty()) {
                 val initialWaterTile = waterTiles.random(randomness.RNG)
                 tilesInArea += initialWaterTile
@@ -166,7 +190,7 @@ class MapGenerator(val ruleset: Ruleset) {
                     tilesToCheck -= tileWeAreChecking
                 }
 
-                if (tilesInArea.size <= 10) {
+                if (tilesInArea.size <= maxLakeSize) {
                     for (tile in tilesInArea) {
                         tile.baseTerrain = Constants.lakes
                         tile.setTransients()
@@ -194,8 +218,10 @@ class MapGenerator(val ruleset: Ruleset) {
         if (map.mapParameters.noRuins || ruinsEquivalents.isEmpty() )
             return
         val suitableTiles = map.values.filter { it.isLand && !it.isImpassible() }
-        val locations = randomness.chooseSpreadOutLocations(suitableTiles.size / 50,
-                suitableTiles, map.mapParameters.mapSize.radius)
+        val locations = randomness.chooseSpreadOutLocations(
+                (suitableTiles.size * ruleset.modOptions.constants.ancientRuinCountMultiplier).roundToInt(),
+                suitableTiles,
+                map.mapParameters.mapSize.radius)
         for (tile in locations)
             tile.improvement = ruinsEquivalents.keys.random()
     }
@@ -403,21 +429,11 @@ class MapGenerator(val ruleset: Ruleset) {
 
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
         val temperatureExtremeness = tileMap.mapParameters.temperatureExtremeness
-        
-        class TerrainOccursRange(
-            val terrain: Terrain,
-            val tempFrom: Float, val tempTo: Float,
-            val humidFrom: Float, val humidTo: Float
-        )
+
         // List is OK here as it's only sequentially scanned
         val limitsMap: List<TerrainOccursRange> =
-            ruleset.terrains.values.flatMap { terrain -> 
-                terrain.getMatchingUniques(UniqueType.TileGenerationConditions)
-                .map { unique ->
-                    TerrainOccursRange(terrain,
-                        unique.params[0].toFloat(), unique.params[1].toFloat(),
-                        unique.params[2].toFloat(), unique.params[3].toFloat())
-                }
+            ruleset.terrains.values.flatMap {
+                it.getGenerationConditions()
             }
         val noTerrainUniques = limitsMap.isEmpty()
         val elevationTerrains = arrayOf(Constants.mountain, Constants.hill)
@@ -449,10 +465,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 continue
             }
 
-            val matchingTerrain = limitsMap.firstOrNull {
-                it.tempFrom < temperature && temperature <= it.tempTo
-                && it.humidFrom < humidity && humidity <= it.humidTo
-            }
+            val matchingTerrain = limitsMap.firstOrNull { it.matches(temperature, humidity) }
 
             if (matchingTerrain != null) tile.baseTerrain = matchingTerrain.terrain.name
             else {
@@ -501,19 +514,43 @@ class MapGenerator(val ruleset: Ruleset) {
      * [MapParameters.temperatureExtremeness] as in [applyHumidityAndTemperature]
      */
     private fun spawnIce(tileMap: TileMap) {
-        if (!ruleset.terrains.containsKey(Constants.ice)) return // I can't think of how to make this nicely moddable
+        val waterTerrain: Set<String> =
+            ruleset.terrains.values.asSequence()
+            .filter { it.type == TerrainType.Water }
+            .map { it.name }.toSet()
+        val iceEquivalents: List<TerrainOccursRange> = 
+            ruleset.terrains.values.asSequence()
+            .filter { terrain ->
+                terrain.type == TerrainType.TerrainFeature &&
+                terrain.impassable &&
+                terrain.occursOn.all { it in waterTerrain }
+            }.flatMap { terrain ->
+                val conditions = terrain.getGenerationConditions()
+                if (conditions.any()) conditions
+                else sequenceOf(TerrainOccursRange(terrain, -1f, -0.8f, 0f, 1f))
+            }.toList()
+        if (iceEquivalents.isEmpty()) return
+
         tileMap.setTransients(ruleset)
         val temperatureSeed = randomness.RNG.nextInt().toDouble()
         for (tile in tileMap.values) {
-            if (tile.baseTerrain !in Constants.sea || tile.terrainFeatures.isNotEmpty())
+            if (tile.baseTerrain !in waterTerrain || tile.terrainFeatures.isNotEmpty())
                 continue
 
             val randomTemperature = randomness.getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
             val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
             var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
             temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
-            if (temperature < -0.8)
-                tile.addTerrainFeature(Constants.ice)
+
+            val candidates = iceEquivalents
+                .filter {
+                    it.matches(temperature, 1.0) &&
+                    tile.getLastTerrain().name in it.terrain.occursOn
+                }.map { it.terrain.name }
+            when (candidates.size) {
+                1 -> tile.addTerrainFeature(candidates.first())
+                !in 0..1 -> tile.addTerrainFeature(candidates.random(randomness.RNG))
+            }
         }
     }
 }

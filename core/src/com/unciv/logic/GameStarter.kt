@@ -33,7 +33,7 @@ object GameStarter {
         // In the case where we used to have an extension mod, and now we don't, we cannot "unselect" it in the UI.
         // We need to remove the dead mods so there aren't problems later.
         gameSetupInfo.gameParameters.mods.removeAll { !RulesetCache.containsKey(it) }
-        
+
         // [TEMPORARY] If we have a base ruleset in the mod list, we make that our base ruleset
         val baseRulesetInMods = gameSetupInfo.gameParameters.mods.firstOrNull { RulesetCache[it]!!.modOptions.isBaseRuleset }
         if (baseRulesetInMods != null)
@@ -41,7 +41,7 @@ object GameStarter {
 
         if (!RulesetCache.containsKey(gameSetupInfo.gameParameters.baseRuleset))
             gameSetupInfo.gameParameters.baseRuleset = RulesetCache.getVanillaRuleset().name
-        
+
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods, gameInfo.gameParameters.baseRuleset)
         val mapGen = MapGenerator(ruleset)
@@ -226,10 +226,12 @@ object GameStarter {
         val presetMajors = Stack<String>()
         presetMajors.addAll(availableCivNames.filter { it in civNamesWithStartingLocations })
 
-        for (player in newGameParameters.players.sortedBy { it.chosenCiv == "Random" }) {
-            val nationName = if (player.chosenCiv != "Random") player.chosenCiv
-            else if (presetMajors.isNotEmpty()) presetMajors.pop()
-            else availableCivNames.pop()
+        for (player in newGameParameters.players.sortedBy { it.chosenCiv == Constants.random }) {
+            val nationName = when {
+                player.chosenCiv != Constants.random -> player.chosenCiv
+                presetMajors.isNotEmpty() -> presetMajors.pop()
+                else -> availableCivNames.pop()
+            }
             availableCivNames.remove(nationName) // In case we got it from a map preset
 
             val playerCiv = CivilizationInfo(nationName)
@@ -315,7 +317,7 @@ object GameStarter {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
 
-            // Determine starting units based on starting era   
+            // Determine starting units based on starting era
             startingUnits = ruleSet.eras[startingEra]!!.getStartingUnits().toMutableList()
             eraUnitReplacement = ruleSet.eras[startingEra]!!.startingMilitaryUnit
 
@@ -409,7 +411,7 @@ object GameStarter {
             when {
                 civ.civName in tileMap.startingLocationsByNation -> 1 // harshest requirements
                 civ.nation.startBias.any { it in tileMap.naturalWonders } -> 2
-                civ.nation.startBias.contains("Tundra") -> 3    // Tundra starts are hard to find, so let's do them first
+                civ.nation.startBias.contains(Constants.tundra) -> 3    // Tundra starts are hard to find, so let's do them first
                 civ.nation.startBias.isNotEmpty() -> 4 // less harsh
                 else -> 5  // no requirements
             }

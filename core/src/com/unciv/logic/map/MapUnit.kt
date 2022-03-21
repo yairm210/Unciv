@@ -376,16 +376,14 @@ class MapUnit {
 
         val conditionalState = StateForConditionals(civInfo = civInfo, unit = this)
 
-        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)
-            && !civInfo.hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)) {
+        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
             return 1
         }
         
         visibilityRange += getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
-        visibilityRange += getTile().getAllTerrains()
-            .flatMap { it.getMatchingUniques(UniqueType.Sight, conditionalState) }
+        visibilityRange += getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
             .sumOf { it.params[0].toInt() }
         
         if (visibilityRange < 1) visibilityRange = 1
@@ -399,13 +397,13 @@ class MapUnit {
     fun updateVisibleTiles(updateCivViewableTiles:Boolean = true) {
         val oldViewableTiles = viewableTiles
 
-        if (baseUnit.isAirUnit()) {
-            viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
-                getTile().getTilesInDistance(6).toHashSet()  // it's that simple
-            else HashSet(0) // bomber units don't do recon
-        } else {
-            viewableTiles = getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
+        viewableTiles = when {
+            hasUnique(UniqueType.NoSight) -> hashSetOf()
+            hasUnique(UniqueType.CanSeeOverObstacles) ->
+                getTile().getTilesInDistance(getVisibilityRange()).toHashSet() // it's that simple
+            else -> getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
         }
+        
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
             civInfo.updateViewableTiles() // for the civ
@@ -552,7 +550,7 @@ class MapUnit {
     }
 
     private fun adjacentHealingBonus(): Int {
-        return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() } + 15 * getMatchingUniques(UniqueType.HealAdjacentUnitsDeprecated).count()
+        return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
 
     // Only military land units can truly "garrison"
@@ -713,14 +711,7 @@ class MapUnit {
         if (!mayHeal) return healing
 
         healing += getMatchingUniques(UniqueType.Heal, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
-        // Deprecated as of 3.19.4
-            for (unique in getMatchingUniques(UniqueType.HealInTiles, checkCivInfoUniques = true)) {
-                if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
-                    healing += unique.params[0].toInt()
-                }
-            }
-        //
-
+        
         val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
             it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.CityHealingUnits).any()
         }?.getCity()
@@ -1057,10 +1048,7 @@ class MapUnit {
                 && it.improvement != null
                 && civInfo.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
-                tile to (
-                        tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits) + 
-                        tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnitsOld)
-                    )
+                tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
                     .sumOf { it.params[0].toInt() }
             }.maxByOrNull { it.second }
             ?: return
@@ -1095,7 +1083,7 @@ class MapUnit {
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100
-            "Barbarians", "Barbarian" -> civInfo.isBarbarian()
+            Constants.barbarians, "Barbarian" -> civInfo.isBarbarian()
             "City-State" -> civInfo.isCityState()
             "Embarked" -> isEmbarked()
             "Non-City" -> true

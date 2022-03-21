@@ -11,11 +11,10 @@ import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
-@Suppress("UNUSED_PARAMETER")       // Keep all OverviewScreen Pages compatible
-class ResourcesOverviewTable (
+class ResourcesOverviewTab(
     viewingPlayer: CivilizationInfo,
     overviewScreen: EmpireOverviewScreen
-) : Table() {
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
 
     init {
         defaults().pad(10f)
@@ -43,8 +42,7 @@ class ResourcesOverviewTable (
                 overviewScreen.game.setWorldScreen()
             }
             holder.addActor(resourceImage)
-            holder.setSize(resourceImage.width,
-                resourceImage.height + labelPadding)
+            holder.setSize(resourceImage.width, resourceImage.height + labelPadding)
             // Center-align all labels, but right-align the last couple resources' labels
             // because they may get clipped otherwise. The leftmost label should be fine
             // center-aligned (if there are more than 2 resources), because the left side

@@ -75,7 +75,7 @@
 			},
 			{
 				"name": "Meritocracy",
-				"uniques": ["[+1 Happiness] [in all cities connected to capital]", "[-5]% unhappiness from population [in all non-occupied cities]"],
+				"uniques": ["[+1 Happiness] [in all cities connected to capital]", "[-5]% Unhappiness from [Population] [in all non-occupied cities]"],
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 5
@@ -323,7 +323,7 @@
 	{
 		"name": "Freedom",
 		"era": "Renaissance era",
-		"uniques": ["[+25]% great person generation [in all cities]", "Only available <before adopting [Autocracy]>", "Only available <before adopting [Order]>"],
+		"uniques": ["[+25]% Great Person generation [in all cities]", "Only available <before adopting [Autocracy]>", "Only available <before adopting [Order]>"],
 		"policies": [
 			{
 				"name": "Constitution",
@@ -352,7 +352,7 @@
 			},
 			{
 				"name": "Democracy",
-				"uniques": ["[-50]% unhappiness from specialists [in all cities]"],
+				"uniques": ["[-50]% Unhappiness from [Specialists] [in all cities]"],
 				"requires": ["Civil Society"],
 				"row": 2,
 				"column": 5

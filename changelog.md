@@ -1,3 +1,42 @@
+## 4.0.0
+
+Can now host your own Unciv server for Multiplayer - details in the wiki! 
+
+By SomeTroglodyte:
+- Prevent Char-to-code crash 
+- Moddable Ice generation 
+- Empire Overview improvements
+- Fix CS unit gift crash 
+
+By xlenstra:
+- Split 6 tiles visible unique into its parts, making it more moddable
+- Fixed a bug where the resource supply overview would not add up
+- Added an AI for building & using spaceship parts 
+- Unified & generalized a few uniques
+
+Custom desktop font - by HAHH9527
+
+## 3.19.18
+
+Double Zoom Out Range  - By itanasi
+
+By SomeTroglodyte:
+- Redesign of Empire Overview Screen - more info saves, better portrait display, and many more changes!
+- World Screen unit supply deficit icon now updates properly 
+- Close little loophole allowing promoting a unit after moving or attacking 
+
+## 3.19.17
+
+Better displaying of units that cannot be built
+
+By SomeTroglodyte:
+- Support more freely modded Worker-like units 
+- Religion overview improved
+- Mod checker minor improvements 
+- Fixed Spectator & AI games in seemingly endless loop  
+
+Multiplayer code cleanup  - By GGGuenni
+
 ## 3.19.16
 
 Wiki improvements

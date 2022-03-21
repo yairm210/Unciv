@@ -214,7 +214,7 @@ class GameInfo {
         //check is important or else switchTurn
         //would skip a turn if an AI civ calls nextTurn
         //this happens when resigning a multiplayer game
-        if (thisPlayer.isPlayerCivilization()){
+        if (thisPlayer.isPlayerCivilization()) {
             switchTurn()
         }
 
@@ -223,7 +223,7 @@ class GameInfo {
                 || turns < simulateMaxTurns && simulateUntilWin
                 // For multiplayer, if there are 3+ players and one is defeated or spectator,
                 // we'll want to skip over their turn
-                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator())
+                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.userId)
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation.automateCivMoves(thisPlayer)
@@ -283,15 +283,15 @@ class GameInfo {
                 }
         )
     }
-    
+
     private fun checkForTimeVictory() {
         if (turns != gameParameters.maxTurns || !gameParameters.victoryTypes.contains(VictoryType.Time)) return
-        
+
         val winningCiv = civilizations
             .filter { it.isMajorCiv() && !it.isSpectator() && !it.isBarbarian() }
-            .maxByOrNull { it.calculateScoreBreakdown().values.sum() } 
+            .maxByOrNull { it.calculateTotalScore() } 
             ?: return // Are there no civs left?
-        
+
         winningCiv.victoryManager.hasWonTimeVictory = true
     }
 
@@ -322,19 +322,18 @@ class GameInfo {
         // Calling with `maxDistance = 0` removes distance limitation.
         data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
 
-        var exploredRevealTiles:Sequence<TileInfo>
-
-        if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
-            // Look for matching mercantile CS centers 
-            exploredRevealTiles = getAliveCityStates()
-                .asSequence()
-                .filter { it.cityStateResource == resourceName }
-                .map { it.getCapital().getCenterTile() }
-        } else {
-            exploredRevealTiles = tileMap.values
-                .asSequence()
-                .filter { it.resource == resourceName }
-        }
+        val exploredRevealTiles: Sequence<TileInfo> =
+            if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+                // Look for matching mercantile CS centers 
+                getAliveCityStates()
+                    .asSequence()
+                    .filter { it.cityStateResource == resourceName }
+                    .map { it.getCapital().getCenterTile() }
+            } else {
+                tileMap.values
+                    .asSequence()
+                    .filter { it.resource == resourceName }
+            }
 
         val exploredRevealInfo = exploredRevealTiles
             .filter { it.position in civInfo.exploredTiles }

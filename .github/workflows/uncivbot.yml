@@ -27,6 +27,7 @@ jobs:
         uses: EndBug/add-and-commit@v8 # You can change this to use a specific version.
         with:
           new_branch: version_rollout
+          message: 'Bump version and create initial changelog entry'
 
       - name: Add translation PRs to the new branch, and PR the new branch to master
         run: | 

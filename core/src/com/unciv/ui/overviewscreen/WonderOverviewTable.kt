@@ -20,11 +20,10 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
-class WonderOverviewTable(
-    private val viewingPlayer: CivilizationInfo,
-    @Suppress("unused") private val overviewScreen: EmpireOverviewScreen
-): Table() {
-    val gameInfo = viewingPlayer.gameInfo
+class WonderOverviewTab(
+    viewingPlayer: CivilizationInfo,
+    overviewScreen: EmpireOverviewScreen
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     val ruleSet = gameInfo.ruleSet
 
     private val hideReligionItems = !gameInfo.isReligionEnabled()

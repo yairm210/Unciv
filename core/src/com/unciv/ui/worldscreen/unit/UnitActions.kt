@@ -54,7 +54,7 @@ object UnitActions {
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
         addPillageAction(unit, actionList, worldScreen)
-        addParadropAction(unit, actionList, worldScreen)
+        addParadropAction(unit, actionList)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addBuildingImprovementsAction(unit, actionList, tile, worldScreen, unitTable)
@@ -166,7 +166,7 @@ object UnitActions {
      * (no movement left, too close to another city).
       */
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): UnitAction? {
-        if (!(unit.hasUnique(UniqueType.FoundCity))
+        if (!unit.hasUnique(UniqueType.FoundCity)
                 || tile.isWater || tile.isImpassible()) return null
         // Spain should still be able to build Conquistadors in a one city challenge - but can't settle them
         if (unit.civInfo.isOneCityChallenger() && unit.civInfo.hasEverOwnedOriginalCapital == true) return null
@@ -226,7 +226,7 @@ object UnitActions {
 
     private fun addPromoteAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         if (unit.isCivilian() || !unit.promotions.canBePromoted()) return
-        // promotion does not consume movement points, so we can do it always
+        // promotion does not consume movement points, but is not allowed if a unit has exhausted its movement or has attacked
         actionList += UnitAction(UnitActionType.Promote,
             action = {
                 UncivGame.Current.setScreen(PromotionPickerScreen(unit))
@@ -244,7 +244,7 @@ object UnitActions {
                 }.takeIf { unit.currentMovement > 0 && !isSetUp })
     }
 
-    private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
+    private fun addParadropAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
         val paradropUniques =
             unit.getMatchingUniques("May Paradrop up to [] tiles from inside friendly territory")
         if (!paradropUniques.any() || unit.isEmbarked()) return
@@ -291,9 +291,6 @@ object UnitActions {
                     if (tile.resource != null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
                     val freePillage = unit.hasUnique(UniqueType.NoMovementToPillage, checkCivInfoUniques = true)
-                        // Deprecated 3.18.17
-                            || (unit.baseUnit.isMelee() && unit.civInfo.hasUnique(UniqueType.NoMovementToPillageMelee))
-                        //
                     if (!freePillage) unit.useMovementPoints(1f)
 
                     unit.healBy(25)
@@ -410,17 +407,21 @@ object UnitActions {
             }.takeIf { unit.currentMovement > 0 }
         )
     }
-
-    private fun addAddInCapitalAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
-        if (!unit.hasUnique(UniqueType.AddInCapital)) return
-
-        actionList += UnitAction(UnitActionType.AddInCapital,
+    
+    fun getAddInCapitalAction(unit: MapUnit, tile: TileInfo): UnitAction {
+        return UnitAction(UnitActionType.AddInCapital,
             title = "Add to [${unit.getMatchingUniques(UniqueType.AddInCapital).first().params[0]}]",
             action = {
                 unit.civInfo.victoryManager.currentsSpaceshipParts.add(unit.name, 1)
                 unit.destroy()
             }.takeIf { tile.isCityCenter() && tile.getCity()!!.isCapital() && tile.getCity()!!.civInfo == unit.civInfo }
         )
+    }
+
+    private fun addAddInCapitalAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        if (!unit.hasUnique(UniqueType.AddInCapital)) return
+
+        actionList += getAddInCapitalAction(unit, tile)
     }
 
 
@@ -638,8 +639,14 @@ object UnitActions {
                 title = "Create [$improvementName]",
                 action = {
                     val unitTile = unit.getTile()
-                    for (terrainFeature in tile.terrainFeatures.filter { unitTile.ruleset.tileImprovements.containsKey("Remove $it") })
-                        unitTile.removeTerrainFeature(terrainFeature)// remove forest/jungle/marsh
+                    unitTile.setTerrainFeatures(
+                        // Remove terrainFeatures that a Worker can remove
+                        // and that aren't explicitly allowed under the improvement
+                        unitTile.terrainFeatures.filter {
+                            "Remove $it" !in unitTile.ruleset.tileImprovements ||
+                            it in improvement.terrainsCanBeBuiltOn
+                        }
+                    ) 
                     unitTile.improvement = improvementName
                     unitTile.improvementInProgress = null
                     unitTile.turnsToImprovement = 0
@@ -650,7 +657,8 @@ object UnitActions {
                         city.cityStats.update()
                         city.civInfo.updateDetailedCivResources()
                     }
-                    addStatsPerGreatPersonUsage(unit)
+                    if (unit.isGreatPerson())
+                        addStatsPerGreatPersonUsage(unit)
                     unit.destroy()
                 }.takeIf {
                     resourcesAvailable
@@ -706,7 +714,7 @@ object UnitActions {
             otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, unit.civInfo.civName, NotificationIcon.War)
     }
 
-    fun addStatsPerGreatPersonUsage(unit: MapUnit) {
+    private fun addStatsPerGreatPersonUsage(unit: MapUnit) {
         if (!unit.isGreatPerson()) return
 
         val civInfo = unit.civInfo
@@ -785,7 +793,7 @@ object UnitActions {
         if (getGiftAction != null) actionList += getGiftAction
     }
 
-    fun getGiftAction(unit: MapUnit, tile: TileInfo): UnitAction? {
+    private fun getGiftAction(unit: MapUnit, tile: TileInfo): UnitAction? {
         val recipient = tile.getOwner()
         // We need to be in another civs territory.
         if (recipient == null || recipient.isCurrentPlayer()) return null
@@ -827,7 +835,7 @@ object UnitActions {
         return UnitAction(UnitActionType.GiftUnit, action = giftAction)
     }
     
-    fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
+    private fun addTriggerUniqueActions(unit: MapUnit, actionList: ArrayList<UnitAction>){
         for (unique in unit.getUniques()) {
             if (!unique.conditionals.any { it.type == UniqueType.ConditionalConsumeUnit }) continue
             val unitAction = UnitAction(type = UnitActionType.TriggerUnique, unique.text){

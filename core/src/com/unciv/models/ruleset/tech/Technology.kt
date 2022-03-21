@@ -119,7 +119,7 @@ class Technology: RulesetObject() {
             .filter {
                 predicate(it)   // expected to be the most selective, thus tested first
                 && (it.uniqueTo == civInfo.civName || it.uniqueTo==null && civInfo.getEquivalentBuilding(it) == it)
-                && (nuclearWeaponsEnabled || "Enables nuclear weapon" !in it.uniques)
+                && (nuclearWeaponsEnabled || it.hasUnique(UniqueType.EnablesNuclearWeapons))
                 && (religionEnabled || !it.hasUnique(UniqueType.HiddenWithoutReligion))
                 && !it.hasUnique(UniqueType.HiddenFromCivilopedia)
             }
@@ -203,7 +203,6 @@ class Technology: RulesetObject() {
             }
         }
 
-        var wantEmpty = true
         for (improvement in ruleset.tileImprovements.values)
             for (unique in improvement.uniqueObjects) {
                 if (unique.isOfType(UniqueType.Stats)) {
