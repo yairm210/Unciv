@@ -1248,10 +1248,9 @@ class CivilizationInfo {
 
         return proximity
     }
-    
+
     //////////////////////// City State wrapper functions ////////////////////////
 
-    /** Gain a random great person from the city state */
     fun receiveGoldGift(donorCiv: CivilizationInfo, giftAmount: Int) =
         cityStateFunctions.receiveGoldGift(donorCiv, giftAmount)
     fun turnsForGreatPersonFromCityState(): Int = ((37 + Random().nextInt(7)) * gameInfo.gameParameters.gameSpeed.modifier).toInt()
