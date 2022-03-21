@@ -407,17 +407,21 @@ object UnitActions {
             }.takeIf { unit.currentMovement > 0 }
         )
     }
-
-    private fun addAddInCapitalAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
-        if (!unit.hasUnique(UniqueType.AddInCapital)) return
-
-        actionList += UnitAction(UnitActionType.AddInCapital,
+    
+    fun getAddInCapitalAction(unit: MapUnit, tile: TileInfo): UnitAction {
+        return UnitAction(UnitActionType.AddInCapital,
             title = "Add to [${unit.getMatchingUniques(UniqueType.AddInCapital).first().params[0]}]",
             action = {
                 unit.civInfo.victoryManager.currentsSpaceshipParts.add(unit.name, 1)
                 unit.destroy()
             }.takeIf { tile.isCityCenter() && tile.getCity()!!.isCapital() && tile.getCity()!!.civInfo == unit.civInfo }
         )
+    }
+
+    private fun addAddInCapitalAction(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
+        if (!unit.hasUnique(UniqueType.AddInCapital)) return
+
+        actionList += getAddInCapitalAction(unit, tile)
     }
 
 
