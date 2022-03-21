@@ -377,14 +377,16 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getDeprecatedReplaceableUniques(mod:Ruleset): HashMap<String, String> {
 
         val objectsToCheck = sequenceOf(
-            mod.units,
+            mod.beliefs,
+            mod.buildings,
+            mod.nations,
+            mod.policies,
+            mod.technologies,
+            mod.terrains,
             mod.tileImprovements,
             mod.unitPromotions,
-            mod.buildings,
-            mod.policies,
-            mod.nations,
-            mod.beliefs,
-            mod.technologies,
+            mod.unitTypes,
+            mod.units,
         )
         val allDeprecatedUniques = HashSet<String>()
         val deprecatedUniquesToReplacementText = HashMap<String, String>()
@@ -442,15 +444,20 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
     private fun autoUpdateUniques(mod: Ruleset, replaceableUniques: HashMap<String, String>, ) {
 
+        if (mod.name.contains("mod"))
+            println("mod")
+        
         val filesToReplace = listOf(
-            "Units.json",
+            "Beliefs.json",
+            "Buildings.json",
+            "Nations.json",
+            "Policies.json",
+            "Techs.json",
+            "Terrains.json",
             "TileImprovements.json",
             "UnitPromotions.json",
-            "Buildings.json",
-            "Policies.json",
-            "Nations.json",
-            "Beliefs.json",
-            "Techs.json",
+            "UnitTypes.json",
+            "Units.json",
         )
 
         val jsonFolder = mod.folderLocation!!.child("jsons")
