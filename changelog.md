@@ -1,3 +1,25 @@
+## 3.19.19
+
+Unciv server 
+
+Don't drop uploads due to itch.io failure
+
+By SomeTroglodyte:
+- Prevent Char-to-code crash 
+- Moddable Ice generation (any impassable feature on Water possible) 
+- Empire Overview Religion: Fixed header, selection more visible 
+- Empire Overview Diplomacy 
+- Empire Overview Units: Persist scroll, unit select, show due, jump city, fixed header 
+- Reduce warnings 
+- Fix CS unit gift crash 
+
+By xlenstra:
+- Unified two uniques into one more descriptive unique 
+- Added an AI for building & using spaceship parts 
+- Unified & generalized a few uniques 
+- Split 6 tiles visible unique into its parts, making it more moddable 
+- Fixed a bug where the resource supply overview would not add up 
+
 ## 3.19.18
 
 Double Zoom Out Range  - By itanasi
