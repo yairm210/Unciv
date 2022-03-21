@@ -13,7 +13,6 @@ import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import java.util.*
 import kotlin.concurrent.timer
@@ -33,12 +32,10 @@ internal object DesktopLauncher {
         config.setWindowIcon("ExtraImages/Icon.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
-        config.setWindowSizeLimits(120, 80, -1, -1);
-        if (FileHandle(GameSaver.settingsFileName).exists()) {
-            val settings = JsonParser().getFromJson(
-                GameSettings::class.java,
-                FileHandle(GameSaver.settingsFileName)
-            )
+        config.setWindowSizeLimits(120, 80, -1, -1)
+
+        val settings = GameSettings.getSettingsForPlatformLaunchers()
+        if (!settings.isFreshlyCreated) {
             config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
         }
 
@@ -51,14 +48,13 @@ internal object DesktopLauncher {
         val desktopParameters = UncivGameParameters(
             versionFromJar,
             cancelDiscordEvent = { discordTimer?.cancel() },
-            fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt()),
+            fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
             customSaveLocationHelper = CustomSaveLocationHelperDesktop()
         )
 
         val game = UncivGame(desktopParameters)
 
         tryActivateDiscord(game)
-
         Lwjgl3Application(game, config)
     }
 

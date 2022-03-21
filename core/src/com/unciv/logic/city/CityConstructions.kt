@@ -71,6 +71,7 @@ class CityConstructions {
         return toReturn
     }
 
+    // Why is one of these called 'buildable' and the other 'constructable'?
     internal fun getBuildableBuildings(): Sequence<Building> = cityInfo.getRuleset().buildings.values
         .asSequence().filter { it.isBuildable(this) }
 

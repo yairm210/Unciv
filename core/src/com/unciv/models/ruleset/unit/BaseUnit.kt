@@ -395,6 +395,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
             rejectionReasons.add(RejectionReason.DisabledBySetting)
 
         for (unique in uniqueObjects) {
+            @Suppress("NON_EXHAUSTIVE_WHEN")  // Yes we want to implement only a few here
             when (unique.type) {
                 UniqueType.Unbuildable ->
                     rejectionReasons.add(RejectionReason.Unbuildable)
@@ -432,16 +433,15 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
                     rejectionReasons.add(RejectionReason.ConsumesResources.toInstance("Consumes [$amount] [$resource]"))
                 }
         }
-        
+
         for (unique in civInfo.getMatchingUniques(UniqueType.CannotBuildUnits))
             if (this.matchesFilter(unique.params[0])) {
-                val rejectionReason = RejectionReason.CannotBeBuilt.toInstance()
                 if (unique.conditionals.any { it.type == UniqueType.ConditionalBelowHappiness }){
                     rejectionReasons.add(RejectionReason.CannotBeBuilt.toInstance(unique.text, true))
                 }
                 else rejectionReasons.add(RejectionReason.CannotBeBuilt)
             }
-        
+
         return rejectionReasons
     }
 

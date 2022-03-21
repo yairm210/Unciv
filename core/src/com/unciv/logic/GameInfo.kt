@@ -283,15 +283,15 @@ class GameInfo {
                 }
         )
     }
-    
+
     private fun checkForTimeVictory() {
         if (turns != gameParameters.maxTurns || !gameParameters.victoryTypes.contains(VictoryType.Time)) return
-        
+
         val winningCiv = civilizations
             .filter { it.isMajorCiv() && !it.isSpectator() && !it.isBarbarian() }
-            .maxByOrNull { it.calculateScoreBreakdown().values.sum() } 
+            .maxByOrNull { it.calculateTotalScore() } 
             ?: return // Are there no civs left?
-        
+
         winningCiv.victoryManager.hasWonTimeVictory = true
     }
 
@@ -322,19 +322,18 @@ class GameInfo {
         // Calling with `maxDistance = 0` removes distance limitation.
         data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
 
-        var exploredRevealTiles:Sequence<TileInfo>
-
-        if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
-            // Look for matching mercantile CS centers 
-            exploredRevealTiles = getAliveCityStates()
-                .asSequence()
-                .filter { it.cityStateResource == resourceName }
-                .map { it.getCapital().getCenterTile() }
-        } else {
-            exploredRevealTiles = tileMap.values
-                .asSequence()
-                .filter { it.resource == resourceName }
-        }
+        val exploredRevealTiles: Sequence<TileInfo> =
+            if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+                // Look for matching mercantile CS centers 
+                getAliveCityStates()
+                    .asSequence()
+                    .filter { it.cityStateResource == resourceName }
+                    .map { it.getCapital().getCenterTile() }
+            } else {
+                tileMap.values
+                    .asSequence()
+                    .filter { it.resource == resourceName }
+            }
 
         val exploredRevealInfo = exploredRevealTiles
             .filter { it.position in civInfo.exploredTiles }

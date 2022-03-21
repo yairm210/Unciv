@@ -11,6 +11,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.Fonts
 import java.io.File
 
@@ -34,12 +35,15 @@ open class AndroidLauncher : AndroidApplication() {
         val config = AndroidApplicationConfiguration().apply {
             useImmersiveMode = true;
         }
+
+        val fontFamily = GameSettings.getSettingsForPlatformLaunchers(filesDir.path).fontFamily
+
         val androidParameters = UncivGameParameters(
-                version = BuildConfig.VERSION_NAME,
-                crashReportSysInfo = CrashReportSysInfoAndroid,
-                fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt()),
-                customSaveLocationHelper = customSaveLocationHelper,
-                limitOrientationsHelper = limitOrientationsHelper
+            version = BuildConfig.VERSION_NAME,
+            crashReportSysInfo = CrashReportSysInfoAndroid,
+            fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
+            customSaveLocationHelper = customSaveLocationHelper,
+            limitOrientationsHelper = limitOrientationsHelper
         )
 
         game = UncivGame(androidParameters)

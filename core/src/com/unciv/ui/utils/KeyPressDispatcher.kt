@@ -64,7 +64,15 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         val UNKNOWN = KeyCharAndCode(Input.Keys.UNKNOWN)
 
         /** mini-factory for control codes - case insensitive */
-        fun ctrl(letter: Char) = KeyCharAndCode(Char(letter.code and 31), 0)
+        fun ctrl(letter: Char) = KeyCharAndCode(Char(
+            try {
+                letter.code and 31
+            } catch (ex: NoSuchMethodError) {
+                // Seems to happen on some Ubuntu systems
+                @Suppress("DEPRECATION")
+                letter.toInt() and 31
+            }
+        ), 0)
 
         /** mini-factory for control codes from keyCodes */
         fun ctrlFromCode(keyCode: Int): KeyCharAndCode {
