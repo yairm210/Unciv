@@ -160,8 +160,10 @@ class ResourcesOverviewTab(
             addSeparatorVertical(Color.GRAY).pad(0f)
             for (origin in extraOrigins) {
                 when (origin) {
-                    "We Love The King Day", "WLTK demand" ->
-                        add("WLTK".toLabel().apply { addTooltip(origin, 21f, tipAlign = Align.bottomLeft) })
+                    "We Love The King Day" ->
+                        add("WLTK+".toLabel().apply { addTooltip(origin, 21f, tipAlign = Align.bottomLeft) })
+                    "WLTK demand" ->
+                        add("WLTK-".toLabel().apply { addTooltip(origin, 21f, tipAlign = Align.bottomLeft) })
                     else -> add(origin.toLabel())
                 }
             }
