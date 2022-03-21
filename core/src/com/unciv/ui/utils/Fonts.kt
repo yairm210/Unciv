@@ -18,7 +18,7 @@ import com.unciv.models.stats.Stat
 interface NativeFontImplementation {
     fun getFontSize(): Int
     fun getCharPixmap(char: Char): Pixmap
-    open fun getAvailableFont(): Collection<FontData> = emptyList()
+    fun getAvailableFont(): Collection<FontData>
 }
 
 // If save in `GameSettings` need use enName.
