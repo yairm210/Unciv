@@ -42,8 +42,7 @@ class ResourcesOverviewTab(
                 overviewScreen.game.setWorldScreen()
             }
             holder.addActor(resourceImage)
-            holder.setSize(resourceImage.width,
-                resourceImage.height + labelPadding)
+            holder.setSize(resourceImage.width, resourceImage.height + labelPadding)
             // Center-align all labels, but right-align the last couple resources' labels
             // because they may get clipped otherwise. The leftmost label should be fine
             // center-aligned (if there are more than 2 resources), because the left side

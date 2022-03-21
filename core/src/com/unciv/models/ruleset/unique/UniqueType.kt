@@ -73,12 +73,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // region Stat providing uniques
 
-    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief, UniqueTarget.Improvement),
+    Stats("[stats]", UniqueTarget.Global, UniqueTarget.FollowerBelief, UniqueTarget.Improvement, UniqueTarget.Terrain),
     StatsPerCity("[stats] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     StatsFromSpecialist("[stats] from every specialist [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     StatsPerPopulation("[stats] per [amount] population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // ToDo: Reword to `[stats] <in cities with [amount] or more population>` for consistency with other conditionals
+    @Deprecated("as of 3.19.19", ReplaceWith("[stats] <in cities with at least [amount] [Population]>"))
     StatsFromXPopulation("[stats] in cities with [amount] or more population", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     StatsFromCitiesOnSpecificTiles("[stats] in cities on [terrainFilter] tiles", UniqueTarget.Global, UniqueTarget.FollowerBelief),
@@ -88,7 +89,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     StatsFromTilesWithout("[stats] from [tileFilter] tiles without [tileFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     // This is a doozy
     StatsFromObject("[stats] from every [tileFilter/specialist/buildingFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
-
     StatsFromTradeRoute("[stats] from each Trade Route", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     // Stat percentage boosts
@@ -98,7 +98,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     AllStatsPercentFromObject("[amount]% Yield from every [tileFilter]", UniqueTarget.FollowerBelief, UniqueTarget.Global),
     StatPercentFromReligionFollowers("[amount]% [stat] from every follower, up to [amount]%", UniqueTarget.FollowerBelief),
     BonusStatsFromCityStates("[amount]% [stat] from City-States", UniqueTarget.Global),
-    GoldBonusFromTradeRouts("Gold from all trade routes +25%", UniqueTarget.Global),
+    StatPercentFromTradeRoutes("[amount]% [stat] from Trade Routes", UniqueTarget.Global),
+    @Deprecated("as of 3.19.19", ReplaceWith("[+25]% [Gold] from Trade Routes"))
+    GoldBonusFromTradeRoutesDeprecated("Gold from all trade routes +25%", UniqueTarget.Global),
 
     NullifiesStat("Nullifies [stat] [cityFilter]", UniqueTarget.Global),
     NullifiesGrowth("Nullifies Growth [cityFilter]", UniqueTarget.Global),
@@ -154,12 +156,16 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     
     GainFreeBuildings("Gain a free [buildingName] [cityFilter]", UniqueTarget.Global),
     GreatPersonPointPercentage("[amount]% Great Person generation [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.19", ReplaceWith("[amount]% Great Person generation [cityFilter]"))
     GreatPersonPointPercentageDeprecated("[amount]% great person generation [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
 
     FreeExtraBeliefs("May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion", UniqueTarget.Global),
     FreeExtraAnyBeliefs("May choose [amount] additional belief(s) of any type when [foundingOrEnhancing] a religion", UniqueTarget.Global),
 
+    UnhappinessFromPopulationTypePercentageChange("[amount]% Unhappiness from [populationFilter] [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.19", ReplaceWith("[amount]% Unhappiness from [Population] [cityFilter]"))
     UnhappinessFromPopulationPercentageChange("[amount]% unhappiness from population [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
+    @Deprecated("As of 3.19.19", ReplaceWith("[amount]% Unhappiness from [Specialists] [cityFilter]"))
     UnhappinessFromSpecialistsPercentageChange("[amount]% unhappiness from specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     FoodConsumptionBySpecialists("[amount]% Food consumption by specialists [cityFilter]", UniqueTarget.Global, UniqueTarget.FollowerBelief),
     HappinessPer2Policies("Provides 1 happiness per 2 additional social policies adopted", UniqueTarget.Global),
@@ -436,6 +442,9 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     AttackFromSea("Eliminates combat penalty for attacking from the sea", UniqueTarget.Unit),
     AttackAcrossCoast("Eliminates combat penalty for attacking across a coast", UniqueTarget.Unit),
 
+    NoSight("No Sight", UniqueTarget.Unit),
+    CanSeeOverObstacles("Can see over obstacles", UniqueTarget.Unit),
+    @Deprecated("as of 3.19.19", ReplaceWith("[+4] Sight\", \"Can see over obstacles"))
     SixTilesAlwaysVisible("6 tiles in every direction always visible", UniqueTarget.Unit),
 
     CarryAirUnits("Can carry [amount] [mapUnitFilter] units", UniqueTarget.Unit),
@@ -523,14 +532,6 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     HasQuality("Considered [terrainQuality] when determining start locations", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
 
-    ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    MinorDepositWeighting("Minor deposits generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    LuxuryWeightingForCityStates("Generated near City States with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-    ResourceFrequency("Generated on every [amount] tiles", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
-
-    StrategicBalanceResource("Guaranteed with Strategic Balance resource option", UniqueTarget.Resource),
-
     NoNaturalGeneration("Doesn't generate naturally", UniqueTarget.Terrain, UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
     TileGenerationConditions("Occurs at temperature between [amount] and [amount] and humidity between [amount] and [amount]", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
     OccursInChains("Occurs in chains at high elevations", UniqueTarget.Terrain, flags = UniqueFlag.setOfHiddenToUsers),
@@ -539,7 +540,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     RareFeature("Rare feature", UniqueTarget.Terrain),
 
+    DestroyableByNukesChance("[amount]% chance to be destroyed by nukes", UniqueTarget.Terrain),
+    @Deprecated("as of 3.19.19", ReplaceWith("[25]% chance to be destroyed by nukes"))
     ResistsNukes("Resistant to nukes", UniqueTarget.Terrain),
+    @Deprecated("as of 3.19.19", ReplaceWith("[50]% chance to be destroyed by nukes"))
     DestroyableByNukes("Can be destroyed by nukes", UniqueTarget.Terrain),
 
     FreshWater(Constants.freshWater, UniqueTarget.Terrain),
@@ -548,7 +552,13 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     /////// Resource uniques
     ResourceAmountOnTiles("Deposits in [tileFilter] tiles always provide [amount] resources", UniqueTarget.Resource),
     CityStateOnlyResource("Can only be created by Mercantile City-States", UniqueTarget.Resource),
-
+    
+    ResourceWeighting("Generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    MinorDepositWeighting("Minor deposits generated with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    LuxuryWeightingForCityStates("Generated near City States with weight [amount]", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    LuxurySpecialPlacement("Special placement during map generation", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    ResourceFrequency("Generated on every [amount] tiles", UniqueTarget.Resource, flags = UniqueFlag.setOfHiddenToUsers),
+    StrategicBalanceResource("Guaranteed with Strategic Balance resource option", UniqueTarget.Resource),
 
     ////// Improvement uniques
     ImprovementBuildableByFreshWater("Can also be built on tiles adjacent to fresh water", UniqueTarget.Improvement),
@@ -604,7 +614,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
     /////// city conditionals
     ConditionalCityWithBuilding("in cities with a [buildingFilter]", UniqueTarget.Conditional),
     ConditionalCityWithoutBuilding("in cities without a [buildingFilter]", UniqueTarget.Conditional),
+    ConditionalPopulationFilter("in cities with at least [amount] [populationFilter]", UniqueTarget.Conditional),
+    @Deprecated("as of 3.19.19", ReplaceWith("in cities with at least [amount] [Specialists]"))
     ConditionalSpecialistCount("if this city has at least [amount] specialists", UniqueTarget.Conditional),
+    @Deprecated("as of 3.19.19", ReplaceWith("in cities with at least [amount] [Followers of the Majority Religion]"))
     ConditionalFollowerCount("in cities where this religion has at least [amount] followers", UniqueTarget.Conditional),
     ConditionalWhenGarrisoned("with a garrison", UniqueTarget.Conditional),
 
@@ -986,5 +999,5 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 }
 
 // I didn't put this is a companion object because APPARENTLY doing that means you can't use it in the init function.
-val numberRegex = Regex("\\d") // I really doubt we'll get to double-digit numbers of parameters in a single unique.
+val numberRegex = Regex("\\d+$") // Any number of trailing digits
 

@@ -178,10 +178,11 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Tundra","Plains","Grassland","Hill"],
-		"uniques": ["Rough terrain",
+		"uniques": [
+			"Rough terrain",
 			"Provides a one-time Production bonus to the closest city when cut down",
 			"Blocks line-of-sight from tiles at same elevation",
-			"Resistant to nukes", "Can be destroyed by nukes",
+			"[25]% Chance to be destroyed by nukes",
 			"A Region is formed with at least [30]% [Forest] tiles, with priority [3]",
 			"A Region is formed with at least [35]% [Forest] tiles and [Jungle] tiles, with priority [3]",
 			"A Region can not contain more [Jungle] tiles than [Forest] tiles",
@@ -189,7 +190,8 @@
 			"Considered [Production] when determining start locations",
 			"Considered [Food] when determining start locations <in [Forest] Regions>",
 			"Considered [Food] when determining start locations <in [Tundra] Regions>",
-			"Every [39] tiles with this terrain will receive a major deposit of a strategic resource."],
+			"Every [39] tiles with this terrain will receive a major deposit of a strategic resource."
+		],
 		"civilopediaText": [{"text":"A Camp can be built here without cutting it down", "link":"Improvement/Camp"}]
 	},
 	{
@@ -201,16 +203,18 @@
 		"unbuildable": true,
 		"defenceBonus": 0.25,
 		"occursOn": ["Plains","Grassland"],
-		"uniques": ["Rough terrain",
+		"uniques": [
+			"Rough terrain",
 			"Blocks line-of-sight from tiles at same elevation",
-			"Resistant to nukes", "Can be destroyed by nukes",
+			"[25]% Chance to be destroyed by nukes",
 			"[-1] to Fertility for Map Generation",
 			"A Region is formed with at least [30]% [Jungle] tiles, with priority [2]",
 			"A Region is formed with at least [35]% [Jungle] tiles and [Forest] tiles, with priority [2]",
 			"A Region can not contain more [Forest] tiles than [Jungle] tiles",
 			"Considered [Food] when determining start locations <in all except [Grassland] Regions>",
 			"Considered [Desirable] when determining start locations <in all except [Grassland] Regions>",
-			"Every [33] tiles with this terrain will receive a major deposit of a strategic resource."]
+			"Every [33] tiles with this terrain will receive a major deposit of a strategic resource."
+		]
 	},
 	{
 		"name": "Marsh",
@@ -268,7 +272,8 @@
 		"impassable": true,
 		"overrideStats": true,
 		"occursOn": ["Ocean", "Coast"],
-		"uniques": ["[-1] to Fertility for Map Generation",
+		"uniques": ["Occurs at temperature between [-1] and [-0.8] and humidity between [0] and [1]",
+			"[-1] to Fertility for Map Generation",
 			"Considered [Undesirable] when determining start locations"]
 	},
 	{

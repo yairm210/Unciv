@@ -282,6 +282,15 @@ object SpecificUnitAutomation {
         }
     }
 
+    fun automateAddInCapital(unit: MapUnit) {
+        val capitalTile = unit.civInfo.getCapital().getCenterTile()
+        val unitTile = unit.movement.headTowards(capitalTile)
+        if (unitTile == capitalTile) {
+            UnitActions.getAddInCapitalAction(unit, unitTile).action!!()
+            return
+        }
+    }
+    
     fun automateMissionary(unit: MapUnit) {
         if (unit.religion != unit.civInfo.religionManager.religion?.name)
             return unit.destroy()
@@ -338,7 +347,7 @@ object SpecificUnitAutomation {
         unit.movement.headTowards(destination)
 
 
-        if (cityToConvert != null && unit.currentTile.getCity() == destination!!.getCity()) {
+        if (cityToConvert != null && unit.currentTile.getCity() == destination.getCity()) {
             doReligiousAction(unit, destination)
         }
 

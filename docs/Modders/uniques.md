@@ -71,7 +71,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "[stats]"
 	Example: "[+1 Gold, +2 Production]"
 
-	Applicable to: Global, FollowerBelief, Improvement
+	Applicable to: Global, FollowerBelief, Terrain, Improvement
 
 ??? example  "[stats] [cityFilter]"
 	Example: "[+1 Gold, +2 Production] [in all cities]"
@@ -85,11 +85,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[stats] per [amount] population [cityFilter]"
 	Example: "[+1 Gold, +2 Production] per [20] population [in all cities]"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "[stats] in cities with [amount] or more population"
-	Example: "[+1 Gold, +2 Production] in cities with [20] or more population"
 
 	Applicable to: Global, FollowerBelief
 
@@ -153,7 +148,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Gold from all trade routes +25%"
+??? example  "[amount]% [stat] from Trade Routes"
+	Example: "[20]% [Culture] from Trade Routes"
+
 	Applicable to: Global
 
 ??? example  "Nullifies [stat] [cityFilter]"
@@ -273,11 +270,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, FollowerBelief
 
-??? example  "[amount]% great person generation [cityFilter]"
-	Example: "[20]% great person generation [in all cities]"
-
-	Applicable to: Global, FollowerBelief
-
 ??? example  "May choose [amount] additional [beliefType] beliefs when [foundingOrEnhancing] a religion"
 	Example: "May choose [20] additional [Follower] beliefs when [founding] a religion"
 
@@ -288,13 +280,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "[amount]% unhappiness from population [cityFilter]"
-	Example: "[20]% unhappiness from population [in all cities]"
-
-	Applicable to: Global, FollowerBelief
-
-??? example  "[amount]% unhappiness from specialists [cityFilter]"
-	Example: "[20]% unhappiness from specialists [in all cities]"
+??? example  "[amount]% Unhappiness from [populationFilter] [cityFilter]"
+	Example: "[20]% Unhappiness from [populationFilter] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -1017,7 +1004,10 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Eliminates combat penalty for attacking across a coast"
 	Applicable to: Unit
 
-??? example  "6 tiles in every direction always visible"
+??? example  "No Sight"
+	Applicable to: Unit
+
+??? example  "Can see over obstacles"
 	Applicable to: Unit
 
 ??? example  "Can carry [amount] [mapUnitFilter] units"
@@ -1256,10 +1246,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rare feature"
 	Applicable to: Terrain
 
-??? example  "Resistant to nukes"
-	Applicable to: Terrain
+??? example  "[amount]% chance to be destroyed by nukes"
+	Example: "[20]% chance to be destroyed by nukes"
 
-??? example  "Can be destroyed by nukes"
 	Applicable to: Terrain
 
 ??? example  "Fresh water"
@@ -1334,6 +1323,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Improvement
 
 ## Resource uniques
+??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
+	Example: "Deposits in [Farm] tiles always provide [20] resources"
+
+	Applicable to: Resource
+
+??? example  "Can only be created by Mercantile City-States"
+	Applicable to: Resource
+
 ??? example  "Generated with weight [amount]"
 	Example: "Generated with weight [20]"
 
@@ -1358,14 +1355,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Resource
 
 ??? example  "Guaranteed with Strategic Balance resource option"
-	Applicable to: Resource
-
-??? example  "Deposits in [tileFilter] tiles always provide [amount] resources"
-	Example: "Deposits in [Farm] tiles always provide [20] resources"
-
-	Applicable to: Resource
-
-??? example  "Can only be created by Mercantile City-States"
 	Applicable to: Resource
 
 ## Ruins uniques
@@ -1552,13 +1541,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Conditional
 
-??? example  "&lt;if this city has at least [amount] specialists&gt;"
-	Example: "&lt;if this city has at least [20] specialists&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;in cities where this religion has at least [amount] followers&gt;"
-	Example: "&lt;in cities where this religion has at least [20] followers&gt;"
+??? example  "&lt;in cities with at least [amount] [populationFilter]&gt;"
+	Example: "&lt;in cities with at least [20] [populationFilter]&gt;"
 
 	Applicable to: Conditional
 

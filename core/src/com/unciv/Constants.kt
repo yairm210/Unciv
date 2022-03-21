@@ -28,7 +28,6 @@ object Constants {
     const val jungle = "Jungle"
     const val ice = "Ice"
     val vegetation = arrayOf(forest, jungle)
-    val sea = arrayOf(ocean, coast)
 
     // Note the difference in case. **Not** interchangeable!
     /** The "Fresh water" terrain _unique_ */
@@ -68,6 +67,8 @@ object Constants {
     const val remove = "Remove "
 
     const val uniqueOrDelimiter = "\" OR \""
+    
+    const val dropboxMultiplayerServer = "Dropbox"
 
     /**
      * Use this to determine whether a [MapUnit][com.unciv.logic.map.MapUnit]'s movement is exhausted
