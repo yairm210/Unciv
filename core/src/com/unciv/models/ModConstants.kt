@@ -38,19 +38,19 @@ class ModConstants {
     // With these values, radius * mul + add gives a 1-2-3-4-5 progression for Unciv predefined map sizes and a 2-3-4-5-6-7 progression for the original Civ5 map sizes.
     // 0.124 = (Civ5.Huge.getHexagonalRadiusForArea(w*h) - Civ5.Duel.getHexagonalRadiusForArea(w*h)) / 5 (if you do not round in the radius function)
     // The other constant is empiric to avoid an ugly jump in the progression.
-    val naturalWonderCountMultiplier = 0.124f
-    val naturalWonderCountAddedConstant = 0.1f
+    var naturalWonderCountMultiplier = 0.124f
+    var naturalWonderCountAddedConstant = 0.1f
 
     // MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
-    val ancientRuinCountMultiplier = 0.02f
+    var ancientRuinCountMultiplier = 0.02f
     // MapGenerator.spawnIce: spawn Ice where T < this, with T calculated from temperatureExtremeness, latitude and perlin noise. 
     val spawnIceBelowTemperature = -0.8f
     // MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
-    val maxLakeSize = 10
+    var maxLakeSize = 10
     // RiverGenerator: river frequency and length bounds
-    val riverCountMultiplier = 0.01f
-    val minRiverLength = 5
-    val maxRiverLength = 666  // Do not set < max map radius
+    var riverCountMultiplier = 0.01f
+    var minRiverLength = 5
+    var maxRiverLength = 666  // Do not set < max map radius
 
     fun merge(other: ModConstants) {
         if (other.maxXPfromBarbarians != defaults.maxXPfromBarbarians) maxXPfromBarbarians = other.maxXPfromBarbarians
@@ -63,6 +63,13 @@ class ModConstants {
         if (other.unitSupplyPerPopulation != defaults.unitSupplyPerPopulation) unitSupplyPerPopulation = other.unitSupplyPerPopulation
         if (other.minimalCityDistance != defaults.minimalCityDistance) minimalCityDistance = other.minimalCityDistance
         if (other.minimalCityDistanceOnDifferentContinents != defaults.minimalCityDistanceOnDifferentContinents) minimalCityDistanceOnDifferentContinents = other.minimalCityDistanceOnDifferentContinents
+        if (other.naturalWonderCountMultiplier != defaults.naturalWonderCountMultiplier) naturalWonderCountMultiplier = other.naturalWonderCountMultiplier
+        if (other.naturalWonderCountAddedConstant != defaults.naturalWonderCountAddedConstant) naturalWonderCountAddedConstant = other.naturalWonderCountAddedConstant
+        if (other.ancientRuinCountMultiplier != defaults.ancientRuinCountMultiplier) ancientRuinCountMultiplier = other.ancientRuinCountMultiplier
+        if (other.maxLakeSize != defaults.maxLakeSize) maxLakeSize = other.maxLakeSize
+        if (other.riverCountMultiplier != defaults.riverCountMultiplier) riverCountMultiplier = other.riverCountMultiplier
+        if (other.minRiverLength != defaults.minRiverLength) minRiverLength = other.minRiverLength
+        if (other.maxRiverLength != defaults.maxRiverLength) maxRiverLength = other.maxRiverLength
     }
 
     companion object {
