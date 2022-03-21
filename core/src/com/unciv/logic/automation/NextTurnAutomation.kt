@@ -475,9 +475,7 @@ object NextTurnAutomation {
             val unitToDisband = civInfo.getCivUnits()
                 .filter { it.baseUnit.requiresResource(resource) }
                 .minByOrNull { it.getForceEvaluation() }
-            if (unitToDisband != null) {
-                unitToDisband.disband()
-            }
+            unitToDisband?.disband()
 
             for (city in civInfo.cities) {
                 if (city.hasSoldBuildingThisTurn)

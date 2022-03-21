@@ -3,11 +3,11 @@
         "name": "Tradition",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 10,
-            "Cultural": 10,
-            "Diplomatic": 10,
-            "Domination": 10,
-            "Scientific": 10
+            "Neutral": 40,
+            "Cultural": 40,
+            "Diplomatic": 0,
+            "Domination": 0,
+            "Scientific": 40
         },
         "uniques": [
             "[+3 Culture] [in capital]",
@@ -72,11 +72,11 @@
         "name": "Liberty",
         "era": "Ancient era",
         "priorities": {
-            "Neutral": 10,
-            "Cultural": 10,
-            "Diplomatic": 10,
-            "Domination": 10,
-            "Scientific": 10
+            "Neutral": 40,
+            "Cultural": 0,
+            "Diplomatic": 40,
+            "Domination": 40,
+            "Scientific": 0
         },
         "uniques": ["[+1 Culture] [in all cities]"],
         "policies": [
@@ -141,7 +141,7 @@
             "Neutral": 0,
             "Cultural": 0,
             "Diplomatic": 0,
-            "Domination": 0,
+            "Domination": 10,
             "Scientific": 0
         },
         "uniques": [
@@ -211,7 +211,7 @@
         "era": "Classical era",
         "priorities": {
             "Neutral": 0,
-            "Cultural": 0,
+            "Cultural": 10,
             "Diplomatic": 0,
             "Domination": 0,
             "Scientific": 0
@@ -276,7 +276,7 @@
         "priorities": {
             "Neutral": 0,
             "Cultural": 0,
-            "Diplomatic": 0,
+            "Diplomatic": 20,
             "Domination": 0,
             "Scientific": 0
         },
@@ -340,10 +340,10 @@
         "era": "Medieval era",
         "priorities": {
             "Neutral": 0,
-            "Cultural": 0,
-            "Diplomatic": 0,
-            "Domination": 0,
-            "Scientific": 0
+            "Cultural": 10,
+            "Diplomatic": 10,
+            "Domination": 20,
+            "Scientific": 10
         },
         "uniques": ["[+25]% [Gold] [in capital]"],
         "policies": [
@@ -411,10 +411,10 @@
         "era": "Renaissance era",
         "priorities": {
             "Neutral": 0,
-            "Cultural": 0,
+            "Cultural": 10,
             "Diplomatic": 0,
             "Domination": 0,
-            "Scientific": 0
+            "Scientific": 20
         },
         "uniques": [
             "[+15]% [Science] <while the empire is happy>",
@@ -476,11 +476,11 @@
         "name": "Freedom",
         "era": "Renaissance era",
         "priorities": {
-            "Neutral": 10,
-            "Cultural": 10,
-            "Diplomatic": 10,
-            "Domination": 10,
-            "Scientific": 10
+            "Neutral": 30,
+            "Cultural": 30,
+            "Diplomatic": 20,
+            "Domination": 0,
+            "Scientific": 20
         },
         "uniques": [
             "[+25]% great person generation [in all cities]",
@@ -538,11 +538,11 @@
         "name": "Autocracy",
         "era": "Industrial era",
         "priorities": {
-            "Neutral": 10,
-            "Cultural": 10,
-            "Diplomatic": 10,
-            "Domination": 10,
-            "Scientific": 10
+            "Neutral": 30,
+            "Cultural": 0,
+            "Diplomatic": 0,
+            "Domination": 30,
+            "Scientific": 0
         },
         "uniques": [
             "[-33]% maintenance costs <for [All] units>",
@@ -608,11 +608,11 @@
         "name": "Order",
         "era": "Industrial era",
         "priorities": {
-            "Neutral": 10,
-            "Cultural": 10,
-            "Diplomatic": 10,
-            "Domination": 10,
-            "Scientific": 10
+            "Neutral": 30,
+            "Cultural": 0,
+            "Diplomatic": 30,
+            "Domination": 0,
+            "Scientific": 20
         },
         "uniques": [
             "[+1 Happiness] [in all cities]",

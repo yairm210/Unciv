@@ -228,10 +228,7 @@ class Ruleset {
         val policiesFile = folderHandle.child("Policies.json")
         if (policiesFile.exists()) {
             policyBranches += createHashmap(
-                jsonParser.getFromJson(
-                    Array<PolicyBranch>::class.java,
-                    policiesFile
-                )
+                jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile)
             )
             for (branch in policyBranches.values) {
                 // Setup this branch
@@ -239,7 +236,7 @@ class Ruleset {
                 branch.branch = branch
                 for (victoryType in VictoryType.values()) {
                     if (victoryType.name !in branch.priorities.keys) {
-                        branch.priorities[victoryType.name] = -1
+                        branch.priorities[victoryType.name] = 0
                     }
                 }
                 policies[branch.name] = branch
