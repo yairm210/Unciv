@@ -62,7 +62,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width*2, worldScreen.stage.height*2, continuousScrollingX)
+        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, worldScreen.stage.height, continuousScrollingX)
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
         for (tileGroup in daTileGroups) {
@@ -130,7 +130,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         actor = tileGroupMap
 
-        setSize(worldScreen.stage.width * 4, worldScreen.stage.height * 4)
+        setSize(worldScreen.stage.width * 2, worldScreen.stage.height * 2)
         setOrigin(width / 2, height / 2)
         center(worldScreen.stage)
 
@@ -654,11 +654,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
      * @param selectUnit Select a unit at the destination
      * @return `true` if scroll position was changed, `false` otherwise
      */
-    fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true): Boolean {
+    fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true, forceSelectUnit: MapUnit? = null): Boolean {
         val tileGroup = allWorldTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return false
         selectedTile = tileGroup.tileInfo
-        if (selectUnit)
-            worldScreen.bottomUnitTable.tileSelected(selectedTile!!)
+        if (selectUnit || forceSelectUnit != null)
+            worldScreen.bottomUnitTable.tileSelected(selectedTile!!, forceSelectUnit)
 
         val originalScrollX = scrollX
         val originalScrollY = scrollY
