@@ -214,7 +214,8 @@ class NewGameScreen(
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
                     Popup(this).apply {
-                        addGoodSizedLabel("Could not upload game!")
+                        addGoodSizedLabel("Could not upload game!").row()
+                        Gdx.input.inputProcessor = stage
                         addCloseButton()
                         open()
                     }
