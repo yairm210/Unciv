@@ -92,7 +92,7 @@ class CityStats(val cityInfo: CityInfo) {
                 stats.add(unique.stats)
             val percentageStats = Stats()
             for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentFromTradeRoutes))
-                percentageStats[Stat.valueOf(unique.params[0])] += unique.params[0].toFloat()
+                percentageStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
             // Deprecated as of 3.19.19
                 if (civInfo.hasUnique(UniqueType.GoldBonusFromTradeRoutesDeprecated)) percentageStats[Stat.Gold] += 25f // Machu Picchu speciality
             //
