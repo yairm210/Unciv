@@ -1,24 +1,18 @@
-## 3.19.19
+## 4.0.0
 
-Unciv server 
-
-Don't drop uploads due to itch.io failure
+Can now host your own Unciv server for Multiplayer - details in the wiki! 
 
 By SomeTroglodyte:
 - Prevent Char-to-code crash 
-- Moddable Ice generation (any impassable feature on Water possible) 
-- Empire Overview Religion: Fixed header, selection more visible 
-- Empire Overview Diplomacy 
-- Empire Overview Units: Persist scroll, unit select, show due, jump city, fixed header 
-- Reduce warnings 
+- Moddable Ice generation 
+- Empire Overview improvements
 - Fix CS unit gift crash 
 
 By xlenstra:
-- Unified two uniques into one more descriptive unique 
+- Split 6 tiles visible unique into its parts, making it more moddable
+- Fixed a bug where the resource supply overview would not add up
 - Added an AI for building & using spaceship parts 
-- Unified & generalized a few uniques 
-- Split 6 tiles visible unique into its parts, making it more moddable 
-- Fixed a bug where the resource supply overview would not add up 
+- Unified & generalized a few uniques
 
 ## 3.19.18
 

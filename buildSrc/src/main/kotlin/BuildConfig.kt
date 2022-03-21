@@ -4,7 +4,7 @@ object BuildConfig {
     const val kotlinVersion = "1.5.30"
     const val appName = "Unciv"
     const val appCodeNumber = 690
-    const val appVersion = "3.19.19"
+    const val appVersion = "4.0.0"
 
     const val gdxVersion = "1.10.0"
     const val roboVMVersion = "2.3.1"
