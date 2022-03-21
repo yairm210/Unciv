@@ -368,6 +368,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
         }
 
+        addFontFamilySelect(Fonts.getAvailableFontFamilyNames())
+
         addTranslationGeneration()
 
         addSetUserId()
@@ -876,6 +878,34 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         autosaveTurnsSelectBox.onChange {
             settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
             settings.save()
+        }
+    }
+
+    private fun Table.addFontFamilySelect(fonts: Collection<FontData>) {
+        if (fonts.isEmpty()) return
+
+        add("Font family".toLabel()).left().fillX()
+
+        val fontSelectBox = SelectBox<String>(skin)
+        val fontsLocalName = GdxArray<String>().apply { add("Default Font".tr()) }
+        val fontsEnName = GdxArray<String>().apply { add("") }
+        for (font in fonts) {
+            fontsLocalName.add(font.localName)
+            fontsEnName.add(font.enName)
+        }
+
+        val selectedIndex = fontsEnName.indexOf(settings.fontFamily).let { if (it == -1) 0 else it }
+
+        fontSelectBox.items = fontsLocalName
+        fontSelectBox.selected = fontsLocalName[selectedIndex]
+
+        add(fontSelectBox).minWidth(selectBoxMinWidth).pad(10f).row()
+
+        fontSelectBox.onChange {
+            settings.fontFamily = fontsEnName[fontSelectBox.selectedIndex]
+            ToastPopup(
+                "You need to restart the game for this change to take effect.", previousScreen
+            )
         }
     }
 
