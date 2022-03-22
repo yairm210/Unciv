@@ -19,14 +19,9 @@ internal object UncivServer {
         args.forEach { arg ->
             when {
                 arg.startsWith("-port=") -> {
-                    try {
-                        with(arg.removePrefix("-port=").toInt()) {
-                            if (this !in 1.rangeTo(65535)) println("'port' must in 1-65535")
-                            else serverPort = this
-                        }
-                    } catch (e: NumberFormatException) {
-                        println("'port' must be a positive integer")
-                    }
+                    val port = arg.removePrefix("-port=").toIntOrNull() ?: 0
+                    if (port in 1.rangeTo(65535)) serverPort = port
+                    else println("'port' must be between 1 and 65535")
                 }
             }
         }
