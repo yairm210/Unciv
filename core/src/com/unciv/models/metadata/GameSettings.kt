@@ -5,13 +5,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.Fonts
+import java.io.File
 import java.text.Collator
 import java.util.*
 import kotlin.collections.HashSet
-import kotlin.io.path.Path
 
 data class WindowState (val width: Int = 900, val height: Int = 600)
 
@@ -119,7 +118,7 @@ class GameSettings {
         fun getSettingsForPlatformLaunchers(base: String = ""): GameSettings {
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
             // If fact, at this point Gdx.app or Gdx.files are null but this still works.
-            val file = FileHandle(Path(base, GameSaver.settingsFileName).toString())
+            val file = FileHandle(base + File.separator + GameSaver.settingsFileName)
             return if (file.exists())
                 JsonParser().getFromJson(
                     GameSettings::class.java,
