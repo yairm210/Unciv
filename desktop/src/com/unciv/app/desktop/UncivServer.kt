@@ -19,8 +19,8 @@ internal object UncivServer {
         args.forEach { arg ->
             when {
                 arg.startsWith("-port=") -> with(arg.removePrefix("-port=").toIntOrNull() ?: 0) {
-                    if (this in 1.rangeTo(65535)) serverPort = this
-                    else println("'port' must be between 1 and 65535")
+                    if (this in 1024.rangeTo(49151)) serverPort = this
+                    else println("'port' must be between 1024 and 49151")
                 }
             }
         }
