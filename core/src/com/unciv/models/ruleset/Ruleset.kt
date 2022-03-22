@@ -346,12 +346,16 @@ class Ruleset {
             val equalUniques =
                 similarUniques.filter { it.placeholderText == unique.placeholderText }
             return when {
-                equalUniques.isNotEmpty() -> {
-                    // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
-                    listOf(RulesetError(
-                            "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
-                            RulesetErrorSeverity.OK))
-                }
+                // Malformed conditional
+                unique.text.count { it=='<' } != unique.text.count { it=='>' } ->listOf(
+                        RulesetError("$name's unique \"${unique.text}\" contains mismatched conditional braces!",
+                            RulesetErrorSeverity.Warning))
+                
+                // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
+                equalUniques.isNotEmpty() -> listOf(RulesetError(
+                        "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
+                        RulesetErrorSeverity.OK))
+                
                 similarUniques.isNotEmpty() -> {
                     val text =
                         "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
@@ -366,7 +370,7 @@ class Ruleset {
                                 }.prependIndent("\t")
                     listOf(RulesetError(text, RulesetErrorSeverity.OK))
                 }
-                RulesetCache.modCheckerAllowUntypedUniques -> return emptyList()
+                RulesetCache.modCheckerAllowUntypedUniques -> emptyList()
                 else -> listOf(RulesetError(
                         "$name's unique \"${unique.text}\" not found in Unciv's unique types.",
                         RulesetErrorSeverity.OK))
