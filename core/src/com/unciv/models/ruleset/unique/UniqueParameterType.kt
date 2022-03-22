@@ -136,6 +136,16 @@ enum class UniqueParameterType(var parameterName:String) {
             }
         },
     //
+    PopulationFilter("populationFilter") {
+        private val knownValues = setOf("Population", "Specialists", "Unemployed", "Followers of the Majority Religion", "Followers of this Religion")
+        override fun getErrorSeverity(
+            parameterText: String,
+            ruleset: Ruleset
+        ): UniqueType.UniqueComplianceErrorSeverity? {
+            if (parameterText in knownValues) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+        }  
+    },
     TerrainFilter("terrainFilter") {
         private val knownValues = setOf("All",
             Constants.coastal, "River", "Open terrain", "Rough terrain", "Water resource",
@@ -369,7 +379,8 @@ enum class UniqueParameterType(var parameterName:String) {
             "in cities following this religion",
         )
 
-        fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param } ?: Unknown.apply { this.parameterName = param }
+        fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param }
+            ?: Unknown.apply { this.parameterName = param }  //TODO Danger: There is only one instance of Unknown!
     }
 }
 

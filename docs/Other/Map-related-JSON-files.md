@@ -18,10 +18,8 @@ Each terrain entry can have the following properties:
 | movementCost | Integer | Default 1 | base movement cost |
 | defenceBonus | Float | Default 0 | combat bonus for units being attacked here |
 | RGB | List Integer * 3 | Default 'Gold' | RGB color for 'Default' tileset display |
-| uniques | List | Default empty | List of effects, [see here](../Modders/Unique-parameter-types.md#terrain-uniques) |
+| uniques | List | Default empty | List of effects, [see here](../Modders/uniques.md#terrain-uniques) |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
-
-Note that many Natural Wonders have hardcoded routines for their placement and are recognized by name (e.g. Great Barrier Reef being more than one tile).
 
 
 ## TileImprovements.json

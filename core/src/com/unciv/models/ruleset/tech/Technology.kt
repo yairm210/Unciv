@@ -203,7 +203,6 @@ class Technology: RulesetObject() {
             }
         }
 
-        var wantEmpty = true
         for (improvement in ruleset.tileImprovements.values)
             for (unique in improvement.uniqueObjects) {
                 if (unique.isOfType(UniqueType.Stats)) {

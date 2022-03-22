@@ -1,3 +1,21 @@
+## 4.0.0
+
+Can now host your own Unciv server for Multiplayer - details in the wiki! 
+
+By SomeTroglodyte:
+- Prevent Char-to-code crash 
+- Moddable Ice generation 
+- Empire Overview improvements
+- Fix CS unit gift crash 
+
+By xlenstra:
+- Split 6 tiles visible unique into its parts, making it more moddable
+- Fixed a bug where the resource supply overview would not add up
+- Added an AI for building & using spaceship parts 
+- Unified & generalized a few uniques
+
+Custom desktop font - by HAHH9527
+
 ## 3.19.18
 
 Double Zoom Out Range  - By itanasi

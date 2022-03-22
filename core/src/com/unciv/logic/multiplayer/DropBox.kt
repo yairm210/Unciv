@@ -176,7 +176,6 @@ object DropBox: IFileStorage {
         var name = ""
         private var server_modified = ""
 
-        override fun getFileName() = name
         override fun getLastModified(): Date {
             return server_modified.parseDate()
         }

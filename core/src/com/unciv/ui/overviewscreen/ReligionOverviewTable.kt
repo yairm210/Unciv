@@ -1,8 +1,10 @@
 package com.unciv.ui.overviewscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -35,19 +37,27 @@ class ReligionOverviewTab(
     private val statsTable = Table()
     private val beliefsTable = Table()
 
+    override fun getFixedContent(): WidgetGroup? {
+        return Table().apply {
+            defaults().pad(5f)
+            align(Align.top)
+
+            civStatsTable.defaults().left().pad(5f)
+            civStatsTable.addCivSpecificStats()
+            add(civStatsTable).row()
+            add(religionButtons).row()
+            add(religionButtonLabel)
+            addSeparator()
+        }
+    }
+
     init {
         defaults().pad(5f)
         align(Align.top)
         loadReligionButtons()
 
-        civStatsTable.defaults().left().pad(5f)
         statsTable.defaults().left().pad(5f)
         beliefsTable.defaults().padBottom(20f)
-        civStatsTable.addCivSpecificStats()
-        add(civStatsTable).row()
-        add(religionButtons).row()
-        add(religionButtonLabel)
-        addSeparator()
         loadReligion(persistableData.selectedReligion)
         add(statsTable).row()
         add(beliefsTable).pad(20f)
@@ -110,6 +120,8 @@ class ReligionOverviewTab(
         statsTable.clear()
         beliefsTable.clear()
         religionButtonLabel.setText(religion.getReligionDisplayName().tr())
+        religionButtonLabel.setFontSize(Constants.headingFontSize)
+        religionButtonLabel.color = Color.CORAL
 
         for (belief in religion.getAllBeliefsOrdered()) {
             beliefsTable.add(createBeliefDescription(belief)).row()

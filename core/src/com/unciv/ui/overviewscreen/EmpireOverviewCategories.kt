@@ -34,8 +34,8 @@ enum class EmpireOverviewCategories(
                 = TradesOverviewTab(viewingPlayer, overviewScreen),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.diplomacy.values.all { it.trades.isEmpty() }.toState()),
     Units("OtherIcons/Shield", 'U',
-        fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
-                = UnitOverviewTab(viewingPlayer, overviewScreen),
+        fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
+                = UnitOverviewTab(viewingPlayer, overviewScreen, persistedData),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.getCivUnits().none().toState()),
     Diplomacy("OtherIcons/DiplomacyW", 'D',
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)

@@ -326,7 +326,7 @@
 		"innerColor": [255,153,51],
 		"favoredReligion": "Hinduism",
 		"uniqueName": "Population Growth",
-		"uniques": ["Unhappiness from number of Cities doubled", "[-50]% unhappiness from population [in all cities]"],
+		"uniques": ["Unhappiness from number of Cities doubled", "[-50]% Unhappiness from [Population] [in all cities]"],
 		"cities": ["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]

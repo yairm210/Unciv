@@ -49,8 +49,19 @@ class PopulationManager {
             foodRequired *= cityInfo.civInfo.gameInfo.getDifficulty().aiCityGrowthModifier
         return foodRequired.toInt()
     }
-
+    
     //endregion
+
+    fun getPopulationFilterAmount(filter: String): Int {
+        return when (filter) {
+            "Specialists" -> getNumberOfSpecialists()
+            "Population" -> population
+            "Followers of the Majority Religion", "Followers of this Religion" -> cityInfo.religion.getFollowersOfMajorityReligion()
+            "Unemployed" -> getFreePopulation()
+            else -> 0
+        }
+    }
+
 
     fun nextTurn(food: Int) {
         foodStored += food
