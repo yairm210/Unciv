@@ -3,6 +3,7 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
@@ -29,6 +30,7 @@ class ResourcesOverviewTab(
     companion object {
         private const val iconSize = 50f
         private const val defaultPad = 10f
+        private const val tooltipSize = 24f
     }
 
     private fun getTurnImage(vertical: Boolean) =
@@ -57,8 +59,10 @@ class ResourcesOverviewTab(
                 .thenBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() }
         )
         .toList()
-    private val origins = resourceDrilldown.asSequence().map { it.origin }.distinct().toList()
-    private val extraOrigins = extraDrilldown.asSequence().map { it.origin }.distinct().toList()
+    private val origins: List<String> = resourceDrilldown.asSequence()
+        .map { it.origin }.distinct().toList()
+    private val extraOrigins: List<ExtraInfoOrigin> = extraDrilldown.asSequence()
+        .mapNotNull { ExtraInfoOrigin.safeValueOf(it.origin) }.distinct().toList()
 
     private fun ResourceSupplyList.getLabel(resource: TileResource, origin: String): Label? =
         firstOrNull { it.resource == resource && it.origin == origin }?.amount?.toLabel()
@@ -70,10 +74,24 @@ class ResourcesOverviewTab(
                 viewingPlayer.gameInfo.notifyExploredResources(viewingPlayer, name, 0, true)
                 overviewScreen.game.setWorldScreen()
             }
-            if (!persistableData.vertical)
-                addTooltip(name)
         }
 
+    private enum class ExtraInfoOrigin(
+        val horizontalCaption: String,
+        val verticalCaption: String,
+        val tooltip: String
+    ) {
+        Unimproved("Unimproved", "Unimproved",
+            "Number of tiles with this resource\nin your territory, without an\nappropriate improvement to use it"),
+        CelebratingWLKT("We Love The King Day", "WLTK+",
+            "Number of your cities celebrating\n'We Love The King Day' thanks\nto access to this resource"),
+        DemandingWLTK("WLTK demand", "WLTK-",
+            "Number of your cities\ndemanding this resource for\n'We Love The King Day'"),
+        ;
+        companion object {
+            fun safeValueOf(name: String) = values().firstOrNull { it.name == name }
+        }
+    }
     private val fixedContent = Table()
 
     init {
@@ -105,7 +123,9 @@ class ResourcesOverviewTab(
         // First row of table has all the icons
         add(turnImageH)
         for (resource in resources) {
-            add(getResourceImage(resource.name))
+            add(getResourceImage(resource.name).apply {
+                addTooltip(resource.name, tipAlign = Align.topLeft)
+            })
         }
         addSeparator()
 
@@ -128,9 +148,11 @@ class ResourcesOverviewTab(
 
         // Separate rows for origins not part of the totals
         for (origin in extraOrigins) {
-            add(origin.toLabel()).left()
+            add(origin.horizontalCaption.toLabel().apply {
+                addTooltip(origin.tooltip, tooltipSize, tipAlign = Align.left)
+            }).left()
             for (resource in resources) {
-                add(extraDrilldown.getLabel(resource, origin))
+                add(extraDrilldown.getLabel(resource, origin.name))
             }
             row()
         }
@@ -139,7 +161,7 @@ class ResourcesOverviewTab(
     private fun updateVertical() {
         // First row of table has all the origin labels
         fixedContent.apply {
-            add(turnImageV)
+            add(turnImageV).size(iconSize)
             add()
             addSeparatorVertical(Color.GRAY).pad(0f)
             for (origin in origins) {
@@ -148,13 +170,9 @@ class ResourcesOverviewTab(
             add("Total".toLabel())
             addSeparatorVertical(Color.GRAY).pad(0f)
             for (origin in extraOrigins) {
-                when (origin) {
-                    "We Love The King Day" ->
-                        add("WLTK+".toLabel().apply { addTooltip(origin, 21f, tipAlign = Align.bottomLeft) })
-                    "WLTK demand" ->
-                        add("WLTK-".toLabel().apply { addTooltip(origin, 21f, tipAlign = Align.bottomLeft) })
-                    else -> add(origin.toLabel())
-                }
+                add(origin.verticalCaption.toLabel().apply {
+                    addTooltip(origin.tooltip, tooltipSize, targetAlign = Align.bottom, tipAlign = Align.topRight)
+                })
             }
             addSeparator().pad(0f, defaultPad)
         }
@@ -170,12 +188,13 @@ class ResourcesOverviewTab(
             add(resourceDrilldown.getTotalLabel(resource))
             addSeparatorVertical(Color.GRAY).pad(0f)
             for (origin in extraOrigins) {
-                add(extraDrilldown.getLabel(resource, origin))
+                add(extraDrilldown.getLabel(resource, origin.name))
             }
             row()
         }
 
         equalizeColumns(fixedContent, this)
+        overviewScreen.resizePage(this)  // Without the height is miscalculated - shouldn't be
     }
 
     private fun getExtraDrilldown(): ResourceSupplyList {
@@ -184,9 +203,9 @@ class ResourcesOverviewTab(
             if (city.demandedResource.isEmpty()) continue
             val wltkResource = gameInfo.ruleSet.tileResources[city.demandedResource] ?: continue
             if (city.isWeLoveTheKingDayActive()) {
-                resourceSupplyList.add(wltkResource, 1, "We Love The King Day")
+                resourceSupplyList.add(wltkResource, 1, ExtraInfoOrigin.CelebratingWLKT.name)
             } else {
-                resourceSupplyList.add(wltkResource, -1, "WLTK demand")
+                resourceSupplyList.add(wltkResource, 1, ExtraInfoOrigin.DemandingWLTK.name)
             }
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
@@ -195,7 +214,7 @@ class ResourcesOverviewTab(
                 if (tileResource.resourceType == ResourceType.Bonus) continue
                 if (tile.improvement == tileResource.improvement) continue
                 if (tileResource.resourceType == ResourceType.Strategic && tile.getTileImprovement()?.isGreatImprovement() == true) continue
-                resourceSupplyList.add(tileResource, -1, "unimproved")
+                resourceSupplyList.add(tileResource, 1, ExtraInfoOrigin.Unimproved.name)
             }
         }
         return resourceSupplyList
