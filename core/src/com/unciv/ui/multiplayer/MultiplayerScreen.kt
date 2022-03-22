@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.*
+import com.unciv.logic.multiplayer.FileStorageRateLimitReached
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
@@ -121,20 +122,20 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
     //Adds a new Multiplayer game to the List
     //gameId must be nullable because clipboard content could be null
     fun addMultiplayerGame(gameId: String?, gameName: String = "") {
+        val popup = Popup(this)
+        popup.addGoodSizedLabel("Working...")
+        popup.open()
+
         try {
             //since the gameId is a String it can contain anything and has to be checked
             UUID.fromString(IdChecker.checkAndReturnGameUuid(gameId!!))
         } catch (ex: Exception) {
-            val errorPopup = Popup(this)
-            errorPopup.addGoodSizedLabel("Invalid game ID!")
-            errorPopup.row()
-            errorPopup.addCloseButton()
-            errorPopup.open()
+            popup.reuseWith("Invalid game ID!", true)
             return
         }
 
         if (gameIsAlreadySavedAsMultiplayer(gameId)) {
-            ToastPopup("Game is already added", this)
+            popup.reuseWith("Game is already added", true)
             return
         }
 
@@ -163,20 +164,16 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                     postCrashHandlingRunnable { reloadGameListUI() }
                 } catch (ex: Exception) {
                     postCrashHandlingRunnable {
-                        val errorPopup = Popup(this)
-                        errorPopup.addGoodSizedLabel("Could not download game!")
-                        errorPopup.row()
-                        errorPopup.addCloseButton()
-                        errorPopup.open()
+                        popup.reuseWith("Could not download game!", true)
                     }
+                }
+            } catch (ex: FileStorageRateLimitReached) {
+                postCrashHandlingRunnable {
+                    popup.reuseWith("Server limit reached! Please wait for [${ex.message}] seconds", true)
                 }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
-                    val errorPopup = Popup(this)
-                    errorPopup.addGoodSizedLabel("Could not download game!")
-                    errorPopup.row()
-                    errorPopup.addCloseButton()
-                    errorPopup.open()
+                    popup.reuseWith("Could not download game!", true)
                 }
             }
             postCrashHandlingRunnable {
@@ -197,14 +194,13 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                 val gameId = multiplayerGames[selectedGameFile]!!.gameId
                 val gameInfo = OnlineMultiplayer().tryDownloadGame(gameId)
                 postCrashHandlingRunnable { game.loadGame(gameInfo) }
+            } catch (ex: FileStorageRateLimitReached) {
+                postCrashHandlingRunnable {
+                    loadingGamePopup.reuseWith("Server limit reached! Please wait for [${ex.message}] seconds", true)
+                }
             } catch (ex: Exception) {
                 postCrashHandlingRunnable {
-                    loadingGamePopup.close()
-                    val errorPopup = Popup(this)
-                    errorPopup.addGoodSizedLabel("Could not download game!")
-                    errorPopup.row()
-                    errorPopup.addCloseButton()
-                    errorPopup.open()
+                    loadingGamePopup.reuseWith("Could not download game!", true)
                 }
             }
         }
@@ -351,6 +347,11 @@ class MultiplayerScreen(previousScreen: BaseScreen) : PickerScreen() {
                             ToastPopup("Could not download game!" + " ${fileHandle.name()}", this)
                         }
                     }
+                } catch (ex: FileStorageRateLimitReached) {
+                    postCrashHandlingRunnable {
+                        ToastPopup("Server limit reached! Please wait for [${ex.message}] seconds", this)
+                    }
+                    break // No need to keep trying if rate limit is reached
                 } catch (ex: Exception) {
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible

@@ -15,6 +15,7 @@ import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
+import com.unciv.logic.multiplayer.FileStorageRateLimitReached
 import com.unciv.models.metadata.GameSettings
 import com.unciv.logic.multiplayer.OnlineMultiplayer
 import java.io.FileNotFoundException
@@ -266,6 +267,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                         foundGame = Pair(gameNames[arrayIndex], gameIds[arrayIndex])
                     }
                     arrayIndex++
+                } catch (ex: FileStorageRateLimitReached) {
+                    // We just break here as configuredDelay is probably enough to wait for the rate limit anyway
+                    break
                 } catch (ex: FileNotFoundException){
                     // FileNotFoundException is thrown by OnlineMultiplayer().tryDownloadGamePreview(gameId)
                     // and indicates that there is no game preview present for this game
