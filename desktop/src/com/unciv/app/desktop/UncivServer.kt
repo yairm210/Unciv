@@ -18,9 +18,8 @@ internal object UncivServer {
     fun main(args: Array<String>) {
         args.forEach { arg ->
             when {
-                arg.startsWith("-port=") -> {
-                    val port = arg.removePrefix("-port=").toIntOrNull() ?: 0
-                    if (port in 1.rangeTo(65535)) serverPort = port
+                arg.startsWith("-port=") -> with(arg.removePrefix("-port=").toIntOrNull() ?: 0) {
+                    if (this in 1.rangeTo(65535)) serverPort = this
                     else println("'port' must be between 1 and 65535")
                 }
             }
