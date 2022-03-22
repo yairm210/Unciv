@@ -19,9 +19,10 @@ interface IFileMetaData {
 }
 
 class FileStorageConflictException: Exception()
+class FileStorageRateLimitReached(rateLimit: String): Exception(rateLimit)
 
 class OnlineMultiplayer {
-    val fileStorage: IFileStorage = DropboxFileStorage()
+    val fileStorage: IFileStorage = DropBox
 
     fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {
         // We upload the gamePreview before we upload the game as this
