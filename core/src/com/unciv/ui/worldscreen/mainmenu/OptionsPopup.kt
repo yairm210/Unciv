@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Net
-import com.badlogic.gdx.Net.HttpResponseListener
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -16,8 +15,8 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.multiplayer.FileStorageConflictException
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.getUrlWithPort
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.RulesetError
 import com.unciv.models.ruleset.Ruleset.RulesetErrorSeverity
@@ -38,7 +37,6 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.io.BufferedReader
 import java.io.DataOutputStream
-import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.net.DatagramSocket
 import java.net.HttpURLConnection
@@ -346,7 +344,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     }
     
     fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
-        SimpleHttp.sendGetRequest( "http://"+ settings.multiplayerServer+":8080/isalive", action)
+        SimpleHttp.sendGetRequest("http://${settings.multiplayerServer.getUrlWithPort()}/isalive", action)
     }
 
     private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
