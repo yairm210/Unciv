@@ -70,7 +70,7 @@ class OnlineMultiplayer {
     init {
         val settings = UncivGame.Current.settings
         if (settings.multiplayerServer == Constants.dropboxMultiplayerServer)
-            fileStorage = DropboxFileStorage()
+            fileStorage = DropBox
         else fileStorage = UncivServerFileStorage(settings.multiplayerServer)
     }
 
