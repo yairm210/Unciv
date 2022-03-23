@@ -54,10 +54,10 @@ class GameSettings {
     var windowState = WindowState()
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()
-    
-    
+
+
     var multiplayerServer = Constants.dropboxMultiplayerServer
-    
+
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
 
@@ -69,6 +69,9 @@ class GameSettings {
     var lastGameSetup: GameSetupInfo? = null
 
     var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
+
+    /** Maximum zoom-out of the map - performance heavy */
+    var maxWorldZoomOut = 2f
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
@@ -115,9 +118,9 @@ class GameSettings {
          *
          * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
          */
-        fun getSettingsForPlatformLaunchers(base: String = ""): GameSettings {
+        fun getSettingsForPlatformLaunchers(base: String = "."): GameSettings {
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
-            // If fact, at this point Gdx.app or Gdx.files are null but this still works.
+            // In fact, at this point Gdx.app or Gdx.files are null but this still works.
             val file = FileHandle(base + File.separator + GameSaver.settingsFileName)
             return if (file.exists())
                 JsonParser().getFromJson(
