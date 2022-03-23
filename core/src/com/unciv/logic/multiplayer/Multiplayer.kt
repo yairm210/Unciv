@@ -1,13 +1,12 @@
 package com.unciv.logic.multiplayer
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Net
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
-import com.unciv.models.metadata.getUrlWithPort
+import com.unciv.models.metadata.checkMultiplayerServerWithPort
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import java.util.*
@@ -72,7 +71,7 @@ class OnlineMultiplayer {
         if (settings.multiplayerServer == Constants.dropboxMultiplayerServer)
             fileStorage = DropboxFileStorage()
         else {
-            val serverIpWithPort = settings.multiplayerServer.getUrlWithPort()
+            val serverIpWithPort = settings.multiplayerServer.checkMultiplayerServerWithPort()
             fileStorage = UncivServerFileStorage(serverIpWithPort)
         }
     }

@@ -1,6 +1,7 @@
 package com.unciv.models.metadata
 
-fun String.getUrlWithPort(defaultPort: Int = 8080): String {
+/** Check the url, if no port, add [defaultPort], then return the url. */
+fun String.checkMultiplayerServerWithPort(defaultPort: Int = 8080): String {
     return if (contains(":")) this
     else "$this:$defaultPort"
 }
