@@ -70,8 +70,12 @@ object TranslationFileWriter {
             if (templateFile.exists())
                 linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
-            linesToTranslate += "\n######### City filters ###########\n"
-            linesToTranslate.addAll(UniqueParameterType.cityFilterStrings.map { "$it = " })
+            for (uniqueParameterType in UniqueParameterType.values()) {
+                val strings = uniqueParameterType.getTranslationWriterStringsForOutput()
+                if (strings.isEmpty()) continue
+                linesToTranslate += "\n######### ${uniqueParameterType.displayName} ###########\n"
+                linesToTranslate.addAll(strings.map { "$it = " })
+            }
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
@@ -93,25 +97,12 @@ object TranslationFileWriter {
 
         if (modFolder == null) { // base game
             linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
-            for (unique in UniqueType.values()) {
-                val deprecationAnnotation = unique.getDeprecationAnnotation()
+            for (uniqueType in UniqueType.values()) {
+                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
                 if (deprecationAnnotation != null) continue
-                if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
+                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers)) continue
 
-                // to get rid of multiple equal parameters, like "[amount] [amount]", don't use the unique.text directly
-                //  instead fill the placeholders with incremented values if the previous one exists
-                val newPlaceholders = ArrayList<String>()
-                for (placeholderText in unique.text.getPlaceholderParameters()) {
-                    if (!newPlaceholders.contains(placeholderText))
-                        newPlaceholders += placeholderText
-                    else {
-                        var i = 2
-                        while (newPlaceholders.contains(placeholderText + i)) i++
-                        newPlaceholders += placeholderText + i
-                    }
-                }
-                val finalText = unique.text.fillPlaceholders(*newPlaceholders.toTypedArray())
-                linesToTranslate.add("$finalText = ")
+                linesToTranslate.add("${uniqueType.getTranslatable()} = ")
             }
 
             for (uniqueTarget in UniqueTarget.values())
@@ -238,9 +229,39 @@ object TranslationFileWriter {
         }
     }
 
+    private fun UniqueType.getTranslatable(): String {
+        // to get rid of multiple equal parameters, like "[amount] [amount]", don't use the unique.text directly
+        //  instead fill the placeholders with incremented values if the previous one exists
+        val newPlaceholders = ArrayList<String>()
+        for (placeholderText in text.getPlaceholderParameters()) {
+            newPlaceholders.addNumberedParameter(placeholderText)
+        }
+        return text.fillPlaceholders(*newPlaceholders.toTypedArray())
+    }
+    private fun ArrayList<String>.addNumberedParameter(name: String) {
+        if (name !in this) {
+            this += name
+            return
+        }
+        var i = 2
+        while (name + i in this) i++
+        this += name + i
+    }
+
     private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
-        // build maps identifying parameters as certain types of filters - unitFilter etc
         val ruleset = RulesetCache.getVanillaRuleset()
+
+        // build maps identifying parameters as certain types of filters - unitFilter etc
+        // TODO move all into UniqueParameterType.getTranslationWriterStringsForMatching
+        // TODO use 1 master map materialized by associating UniqueParameterType.values() to that method call
+        // .. like so, yes this was tested:
+/*
+        val parameterTypeMap = UniqueParameterType.values()
+            .associate { it to it.getTranslationWriterStringsForMatching(ruleset) }
+        val type: UniqueParameterType? = parameterTypeMap.firstNotNullOfOrNull {
+            (key, set) -> key.takeIf { parameterName in set }
+        }
+*/
         val tileFilterMap = ruleset.terrains.keys.toMutableSet().apply { addAll(sequenceOf(
             "Friendly Land",
             "Foreign Land",
@@ -260,7 +281,8 @@ object TranslationFileWriter {
             "Buildings",
             "Building"
         )) }
-        val unitTypeMap = ruleset.unitTypes.keys.toMutableSet().apply { addAll(UniqueParameterType.unitTypeStrings) }
+        val unitTypeMap = UniqueParameterType.UnitTypeFilter.getTranslationWriterStringsForMatching(ruleset)
+        val cityFilterMap = UniqueParameterType.CityFilter.getTranslationWriterStringsForMatching(ruleset)
 
         val startMillis = System.currentTimeMillis()
 
@@ -291,10 +313,10 @@ object TranslationFileWriter {
                     return // We don't need to translate this at all, not user-visible
                 var stringToTranslate = string.removeConditionals()
 
-                val existingParameterNames = HashSet<String>()
                 if (unique.params.isNotEmpty()) {
+                    val parameterNames = ArrayList<String>()
                     for ((index, parameter) in unique.params.withIndex()) {
-                        var parameterName = when {
+                        val parameterName = when {
                             unique.type != null -> {
                                 val possibleParameterTypes = unique.type.parameterTypeMap[index]
                                 // for multiple types. will look like "[unitName/buildingName]"
@@ -311,18 +333,12 @@ object TranslationFileWriter {
                             parameter in buildingMap -> "building"
                             parameter in unitTypeMap -> "unitType"
                             Stats.isStats(parameter) -> "stats"
-                            parameter in UniqueParameterType.cityFilterStrings -> "cityFilter"
+                            parameter in cityFilterMap -> "cityFilter"
                             else -> "param"
                         }
-                        if (parameterName in existingParameterNames) {
-                            var i = 2
-                            while (parameterName + i in existingParameterNames) i++
-                            parameterName += i
-                        }
-                        existingParameterNames += parameterName
-
-                        stringToTranslate = stringToTranslate.replaceFirst(parameter, parameterName)
+                        parameterNames.addNumberedParameter(parameterName)
                     }
+                    stringToTranslate = stringToTranslate.fillPlaceholders(*parameterNames.toTypedArray())
                 } else if (string.contains('{')) {
                     val matches = curlyBraceRegex.findAll(string)
                     if (matches.any()) {
