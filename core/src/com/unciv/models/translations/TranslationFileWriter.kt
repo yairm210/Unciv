@@ -91,30 +91,32 @@ object TranslationFileWriter {
         }
 
 
-        linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
-        for (unique in UniqueType.values()) {
-            val deprecationAnnotation = unique.getDeprecationAnnotation()
-            if (deprecationAnnotation != null) continue
-            if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
+        if (modFolder == null) { // base game
+            linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
+            for (unique in UniqueType.values()) {
+                val deprecationAnnotation = unique.getDeprecationAnnotation()
+                if (deprecationAnnotation != null) continue
+                if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
 
-            // to get rid of multiple equal parameters, like "[amount] [amount]", don't use the unique.text directly
-            //  instead fill the placeholders with incremented values if the previous one exists
-            val newPlaceholders = ArrayList<String>()
-            for (placeholderText in unique.text.getPlaceholderParameters()) {
-                if (!newPlaceholders.contains(placeholderText))
-                    newPlaceholders += placeholderText
-                else {
-                    var i = 2
-                    while (newPlaceholders.contains(placeholderText + i)) i++
-                    newPlaceholders += placeholderText + i
+                // to get rid of multiple equal parameters, like "[amount] [amount]", don't use the unique.text directly
+                //  instead fill the placeholders with incremented values if the previous one exists
+                val newPlaceholders = ArrayList<String>()
+                for (placeholderText in unique.text.getPlaceholderParameters()) {
+                    if (!newPlaceholders.contains(placeholderText))
+                        newPlaceholders += placeholderText
+                    else {
+                        var i = 2
+                        while (newPlaceholders.contains(placeholderText + i)) i++
+                        newPlaceholders += placeholderText + i
+                    }
                 }
+                val finalText = unique.text.fillPlaceholders(*newPlaceholders.toTypedArray())
+                linesToTranslate.add("$finalText = ")
             }
-            val finalText = unique.text.fillPlaceholders(*newPlaceholders.toTypedArray())
-            linesToTranslate.add("$finalText = ")
-        }
 
-        for (uniqueTarget in UniqueTarget.values())
-            linesToTranslate.add("$uniqueTarget = ")
+            for (uniqueTarget in UniqueTarget.values())
+                linesToTranslate.add("$uniqueTarget = ")
+        }
 
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()
@@ -291,7 +293,7 @@ object TranslationFileWriter {
 
                 val existingParameterNames = HashSet<String>()
                 if (unique.params.isNotEmpty()) {
-                    for ((index,parameter) in unique.params.withIndex()) {
+                    for ((index, parameter) in unique.params.withIndex()) {
                         var parameterName = when {
                             unique.type != null -> {
                                 val possibleParameterTypes = unique.type.parameterTypeMap[index]
@@ -338,20 +340,35 @@ object TranslationFileWriter {
                     submitString(element)
                     return
                 }
-                val allFields = (
-                            element.javaClass.declaredFields
-                            + element.javaClass.fields
-                            // Include superclass so the main PolicyBranch, which inherits from Policy,
-                            // will recognize its Uniques and have them translated
-                            + element.javaClass.superclass.declaredFields
-                        ).filter {
+
+                // Example: PolicyBranch inherits from Policy inherits from RulesetObject.
+                // RulesetObject has the name and uniques properties and we wish to include them.
+                // So we need superclass recursion to be sure not to miss stuff in the future.
+                // The superclass != null check is made obsolete in theory by the Object check, but better play safe.
+                fun Class<*>.allSupers(): Sequence<Class<*>> = sequence {
+                    if (this@allSupers == Object::class.java) return@sequence
+                    yield(this@allSupers)
+                    if (superclass != null)
+                        yieldAll(superclass.allSupers())
+                }
+                // Including `fields` is dubious. AFAIK it is an incomplete view of what we're getting via superclass recursion.
+                val allFields = element.javaClass.fields.asSequence() +
+                        element.javaClass.allSupers().flatMap { it.declaredFields.asSequence() }
+                // Filter by classes we can and want to process, avoid Companion fields
+                // Note lazies are not Modifier.TRANSIENT but their type is different and excluded
+                val relevantFields = allFields.filter {
+                        (it.modifiers and (Modifier.STATIC or Modifier.TRANSIENT)) == 0
+                        && (
                             it.type == String::class.java ||
                             it.type == java.util.ArrayList::class.java ||
                             it.type == java.util.List::class.java ||        // CivilopediaText is not an ArrayList
                             it.type == java.util.HashSet::class.java ||
                             it.type.isEnum  // allow scanning Enum names
-                        }
-                for (field in allFields) {
+                        )
+                        && it.type != element.javaClass  // avoid following infinite loops
+                    }.distinct()  // We do get duplicates even without `fields`, no need to do double work, even if submitString operates on a set
+
+                for (field in relevantFields) {
                     field.isAccessible = true
                     val fieldValue = field.get(element)
                     if (isFieldTranslatable(javaClass, field, fieldValue)) { // skip fields which must not be translated
