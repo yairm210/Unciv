@@ -133,6 +133,8 @@ class Ruleset {
         units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
+        modOptions.uniques.addAll(ruleset.modOptions.uniques)
+        modOptions.constants.merge(ruleset.modOptions.constants)
         mods += ruleset.mods
     }
 
@@ -864,11 +866,11 @@ object RulesetCache : HashMap<String,Ruleset>() {
             baseRuleset
 
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
-            newRuleset.add(mod)
-            newRuleset.mods += mod.name
             if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
             }
+            newRuleset.add(mod)
+            newRuleset.mods += mod.name
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
