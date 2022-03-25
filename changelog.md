@@ -1,24 +1,15 @@
 ## 4.0.1
 
-Added test to find unmatched < and > for conditional typos. 
-
-4.0.0-patch1
-
-Missed important kudos!
-
 Custom server port  - By HAHH9527
 
 Add Moddable Policy Priorities  - By HaneulCheong
 
 By SomeTroglodyte:
 - Enable ModOptions uniques and ModConstants from non-base mods 
-- Implement a rudimentary CrashReportSysInfoDesktop 
 - Improved Widgets - Fixing Tabbed Pager Scrolling 
-- Make max Zoom out a setting and fix a merge mistake 
+- Make max Zoom out a setting
 - More thorough workaround for Char.code and Char(Int) crashing 
-- Improve TranslationFileWriter (less hardcoding, fixes PolicyBranch) 
-- Fix crash starting up on Lollipop 
-- Fix crash on loading a save where Machu Picchu is built 
+- Fix crashes and better crash info
 
 ## 4.0.0
 
