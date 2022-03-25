@@ -1246,8 +1246,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rare feature"
 	Applicable to: Terrain
 
-??? example  "[amount]% chance to be destroyed by nukes"
-	Example: "[20]% chance to be destroyed by nukes"
+??? example  "[amount]% Chance to be destroyed by nukes"
+	Example: "[20]% Chance to be destroyed by nukes"
 
 	Applicable to: Terrain
 

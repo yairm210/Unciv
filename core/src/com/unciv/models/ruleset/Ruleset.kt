@@ -159,6 +159,28 @@ class Ruleset {
         unitTypes.clear()
     }
 
+    fun allRulesetObjects(): Sequence<IRulesetObject> =
+            beliefs.values.asSequence() +
+            buildings.values.asSequence() +
+            //difficulties is only INamed
+            eras.values.asSequence() +
+            sequenceOf(globalUniques) +
+            nations.values.asSequence() +
+            policies.values.asSequence() +
+            policyBranches.values.asSequence() +
+            // quests is only INamed
+            // religions is just Strings
+            ruinRewards.values.asSequence() +
+            // specialists is only NamedStats
+            technologies.values.asSequence() +
+            terrains.values.asSequence() +
+            tileImprovements.values.asSequence() +
+            tileResources.values.asSequence() +
+            unitPromotions.values.asSequence() +
+            units.values.asSequence() +
+            unitTypes.values.asSequence()
+    fun allIHasUniques(): Sequence<IHasUniques> =
+            allRulesetObjects() + sequenceOf(modOptions)
 
     fun load(folderHandle: FileHandle, printOutput: Boolean) {
         val gameBasicsStartTime = System.currentTimeMillis()
