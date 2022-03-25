@@ -1,12 +1,12 @@
 package com.unciv.logic.multiplayer
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Net
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
+import com.unciv.models.metadata.checkMultiplayerServerWithPort
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import java.util.*
@@ -24,11 +24,11 @@ interface IFileMetaData {
 
 
 
-class UncivServerFileStorage(val serverIp:String):IFileStorage {
-    val serverUrl = "http://$serverIp:8080"
+class UncivServerFileStorage(serverIpWithPort:String):IFileStorage {
+    val serverUrl = "http://$serverIpWithPort"
     override fun saveFileData(fileName: String, data: String) {
         OptionsPopup.SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data){
-            success: Boolean, result: String -> 
+            success: Boolean, result: String ->
             if (!success) {
                 println(result)
                 throw java.lang.Exception(result)
@@ -70,7 +70,10 @@ class OnlineMultiplayer {
         val settings = UncivGame.Current.settings
         if (settings.multiplayerServer == Constants.dropboxMultiplayerServer)
             fileStorage = DropboxFileStorage()
-        else fileStorage = UncivServerFileStorage(settings.multiplayerServer)
+        else {
+            val serverIpWithPort = settings.multiplayerServer.checkMultiplayerServerWithPort()
+            fileStorage = UncivServerFileStorage(serverIpWithPort)
+        }
     }
 
     fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {

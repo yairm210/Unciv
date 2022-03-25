@@ -16,6 +16,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.checkMultiplayerServerWithPort
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.RulesetError
 import com.unciv.models.ruleset.Ruleset.RulesetErrorSeverity
@@ -342,9 +343,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
 
     }
-
-    private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
-        SimpleHttp.sendGetRequest( "http://"+ settings.multiplayerServer+":8080/isalive", action)
+    
+    fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+        SimpleHttp.sendGetRequest("http://${settings.multiplayerServer.checkMultiplayerServerWithPort()}/isalive", action)
     }
 
     private fun getAdvancedTab() = Table(BaseScreen.skin).apply {

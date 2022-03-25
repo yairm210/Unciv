@@ -12,12 +12,25 @@ import java.io.File
 
 
 internal object UncivServer {
+    private var serverPort = 8080
+
     @JvmStatic
-    fun main(arg: Array<String>) {
+    fun main(args: Array<String>) {
+        args.forEach { arg ->
+            when {
+                arg.startsWith("-port=") -> with(arg.removePrefix("-port=").toIntOrNull() ?: 0) {
+                    if (this in 1024..49151) serverPort = this
+                    else println("'port' must be between 1024 and 49151")
+                }
+            }
+        }
+
+        println("Server will run on $serverPort port, you can use '-port=XXXX' custom port.")
+
         val fileFolderName = "MultiplayerFiles"
         File(fileFolderName).mkdir()
         println(File(fileFolderName).absolutePath)
-        embeddedServer(Netty, port = 8080) {
+        embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {
                     call.respondText("true")
