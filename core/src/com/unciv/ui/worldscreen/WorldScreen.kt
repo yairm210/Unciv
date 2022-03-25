@@ -713,6 +713,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
      * to re-enable the next turn button within its Close button action
      */
     fun enableNextTurnButtonAfterOptions() {
+        mapHolder.reloadMaxZoom()
         nextTurnButton.isEnabled = isPlayersTurn && !waitingForAutosave
     }
 
