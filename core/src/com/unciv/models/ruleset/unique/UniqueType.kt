@@ -540,10 +540,10 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     RareFeature("Rare feature", UniqueTarget.Terrain),
 
-    DestroyableByNukesChance("[amount]% chance to be destroyed by nukes", UniqueTarget.Terrain),
-    @Deprecated("as of 3.19.19", ReplaceWith("[25]% chance to be destroyed by nukes"))
+    DestroyableByNukesChance("[amount]% Chance to be destroyed by nukes", UniqueTarget.Terrain),
+    @Deprecated("as of 3.19.19", ReplaceWith("[25]% Chance to be destroyed by nukes"))
     ResistsNukes("Resistant to nukes", UniqueTarget.Terrain),
-    @Deprecated("as of 3.19.19", ReplaceWith("[50]% chance to be destroyed by nukes"))
+    @Deprecated("as of 3.19.19", ReplaceWith("[50]% Chance to be destroyed by nukes"))
     DestroyableByNukes("Can be destroyed by nukes", UniqueTarget.Terrain),
 
     FreshWater(Constants.freshWater, UniqueTarget.Terrain),

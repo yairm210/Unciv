@@ -97,7 +97,9 @@ class PolicyManager {
         return toReturn
     }
 
-    fun getPolicyByName(name: String): Policy = civInfo.gameInfo.ruleSet.policies[name]!!
+    private fun getRulesetPolicies() = civInfo.gameInfo.ruleSet.policies
+
+    fun getPolicyByName(name: String): Policy = getRulesetPolicies()[name]!!
 
     fun setTransients() {
         for (policyName in adoptedPolicies) addPolicyToTransients(
@@ -180,11 +182,7 @@ class PolicyManager {
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy()) return false
 
         //Return true if there is a policy to adopt, else return false
-        return civInfo.gameInfo.ruleSet.policies.values.any {
-            civInfo.policies.isAdoptable(
-                it
-            )
-        }
+        return getRulesetPolicies().values.any { civInfo.policies.isAdoptable(it) }
     }
 
     fun adopt(policy: Policy, branchCompletion: Boolean = false) {
@@ -255,4 +253,7 @@ class PolicyManager {
             )
         }
     }
+
+    fun allPoliciesAdopted(checkEra: Boolean) =
+        getRulesetPolicies().values.none { isAdoptable(it, checkEra) }
 }

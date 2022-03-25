@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Net
-import com.badlogic.gdx.Net.HttpResponseListener
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -16,7 +15,6 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.multiplayer.FileStorageConflictException
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.RulesetError
@@ -38,7 +36,6 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.io.BufferedReader
 import java.io.DataOutputStream
-import java.io.FileNotFoundException
 import java.io.InputStreamReader
 import java.net.DatagramSocket
 import java.net.HttpURLConnection
@@ -62,6 +59,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private var modCheckBaseSelect: TranslatedSelectBox? = null
     private val modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
+    private val previousMaxWorldZoom = settings.maxWorldZoomOut
 
     //endregion
 
@@ -240,7 +238,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private fun getMultiplayerTab(): Table = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
-        
+
         // at the moment the notification service only exists on Android
         if (Gdx.app.type == Application.ApplicationType.Android) {
             addCheckbox("Enable out-of-game turn notifications",
@@ -258,9 +256,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
             }
         }
-        
+
         val connectionToServerButton = "Check connection to server".toTextButton()
-        
+
         val ipAddress = getIpAddress()
         add("{Current IP address}: $ipAddress".toTextButton().onClick { 
             Gdx.app.clipboard.contents = ipAddress.toString()
@@ -269,7 +267,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         val multiplayerServerTextField = TextField(settings.multiplayerServer, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
-        
+
         serverIpTable.add("Server's IP address".toLabel().onClick { 
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).padRight(10f)
@@ -280,17 +278,17 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
         serverIpTable.add(multiplayerServerTextField)
         add(serverIpTable).row()
-        
+
         add("Reset to Dropbox".toTextButton().onClick {
             multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
         }).row()
-        
+
         add(connectionToServerButton.onClick {
             val popup = Popup(screen).apply { 
                 addGoodSizedLabel("Awaiting response...").row()
             }
             popup.open(true)
-            
+
             successfullyConnectedToServer { success: Boolean, result: String ->
                 if (success) {
                     popup.addGoodSizedLabel("Success!").row()
@@ -302,27 +300,27 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
         }).row()
     }
-    
+
     fun getIpAddress(): String? {
         DatagramSocket().use { socket ->
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002)
-            return socket.getLocalAddress().getHostAddress()
+            return socket.localAddress.hostAddress
         }
     }
-    
-    object SimpleHttp{
-        fun sendGetRequest(url:String, action: (success: Boolean, result:String)->Unit){
+
+    object SimpleHttp {
+        fun sendGetRequest(url: String, action: (success: Boolean, result: String)->Unit) {
             sendRequest(Net.HttpMethods.GET, url, "", action)
         }
-        
-        fun sendRequest(method:String, url:String, content:String, action: (success:Boolean, result:String)->Unit){
+
+        fun sendRequest(method: String, url: String, content: String, action: (success: Boolean, result: String)->Unit) {
             with(URL(url).openConnection() as HttpURLConnection) {
                 requestMethod = method  // default is GET
 
                 doOutput = true
 
                 try {
-                    if (content != "") {
+                    if (content.isNotEmpty()) {
                         // StandardCharsets.UTF_8 requires API 19
                         val postData: ByteArray = content.toByteArray(Charset.forName("UTF-8"))
                         val outputStream = DataOutputStream(outputStream)
@@ -342,10 +340,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 }
             }
         }
-        
+
     }
-    
-    fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+
+    private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
         SimpleHttp.sendGetRequest( "http://"+ settings.multiplayerServer+":8080/isalive", action)
     }
 
@@ -359,6 +357,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             settings.showExperimentalWorldWrap) {
             settings.showExperimentalWorldWrap = it
         }
+
+        addMaxZoomSlider()
 
         if (previousScreen.game.limitOrientationsHelper != null) {
             addCheckbox("Enable portrait orientation", settings.allowAndroidPortrait) {
@@ -554,7 +554,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         if (mod.name.contains("mod"))
             println("mod")
-        
+
         val filesToReplace = listOf(
             "Beliefs.json",
             "Buildings.json",
@@ -879,6 +879,17 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
             settings.save()
         }
+    }
+
+    private fun Table.addMaxZoomSlider() {
+        add("Max zoom out".tr()).left().fillX()
+        val maxZoomSlider = UncivSlider(2f, 6f, 1f,
+            initial = settings.maxWorldZoomOut
+        ) {
+            settings.maxWorldZoomOut = it
+            settings.save()
+        }
+        add(maxZoomSlider).pad(5f).row()
     }
 
     private fun Table.addFontFamilySelect(fonts: Collection<FontData>) {

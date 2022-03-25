@@ -32,22 +32,22 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
  */
 
 open class AutoScrollPane(widget: Actor?, style: ScrollPaneStyle = ScrollPaneStyle()): ScrollPane(widget,style) {
-    constructor(widget: Actor, skin: Skin) : this(widget,skin.get(ScrollPaneStyle::class.java))
-    constructor(widget: Actor, skin: Skin, styleName: String) : this(widget,skin.get(styleName,ScrollPaneStyle::class.java))
+    constructor(widget: Actor?, skin: Skin) : this(widget,skin.get(ScrollPaneStyle::class.java))
+    constructor(widget: Actor?, skin: Skin, styleName: String) : this(widget,skin.get(styleName,ScrollPaneStyle::class.java))
 
     private var savedFocus: Actor? = null
 
     init {
         this.addListener (object : ClickListener() {
             override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
-                if (stage == null)
-                    return
+                if (stage == null) return
+                if (fromActor?.isDescendantOf(this@AutoScrollPane) == true) return
                 if (savedFocus == null) savedFocus = stage.scrollFocus
                 stage.scrollFocus = this@AutoScrollPane
             }
             override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
-                if (stage == null)
-                    return
+                if (stage == null) return
+                if (toActor?.isDescendantOf(this@AutoScrollPane) == true) return
                 if (stage.scrollFocus == this@AutoScrollPane) stage.scrollFocus = savedFocus
                 savedFocus = null
             }

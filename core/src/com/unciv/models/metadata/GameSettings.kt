@@ -5,13 +5,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.Fonts
+import java.io.File
 import java.text.Collator
 import java.util.*
 import kotlin.collections.HashSet
-import kotlin.io.path.Path
 
 data class WindowState (val width: Int = 900, val height: Int = 600)
 
@@ -55,10 +54,10 @@ class GameSettings {
     var windowState = WindowState()
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()
-    
-    
+
+
     var multiplayerServer = Constants.dropboxMultiplayerServer
-    
+
 
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
 
@@ -70,6 +69,9 @@ class GameSettings {
     var lastGameSetup: GameSetupInfo? = null
 
     var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
+
+    /** Maximum zoom-out of the map - performance heavy */
+    var maxWorldZoomOut = 2f
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
@@ -116,10 +118,10 @@ class GameSettings {
          *
          * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
          */
-        fun getSettingsForPlatformLaunchers(base: String = ""): GameSettings {
+        fun getSettingsForPlatformLaunchers(base: String = "."): GameSettings {
             // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
-            // If fact, at this point Gdx.app or Gdx.files are null but this still works.
-            val file = FileHandle(Path(base, GameSaver.settingsFileName).toString())
+            // In fact, at this point Gdx.app or Gdx.files are null but this still works.
+            val file = FileHandle(base + File.separator + GameSaver.settingsFileName)
             return if (file.exists())
                 JsonParser().getFromJson(
                     GameSettings::class.java,
