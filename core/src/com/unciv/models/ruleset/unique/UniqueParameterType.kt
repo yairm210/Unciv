@@ -20,8 +20,11 @@ import com.unciv.models.translations.TranslationFileWriter  // for  Kdoc only
  * [parameterName] and can then validate the actual parameters in [Unique]s loaded from json
  * by calling [getErrorSeverity].
  *
+ * Legacy placeholder guessing for untyped uniques in [TranslationFileWriter] is done by
+ * [guessTypeForTranslationWriter] utilizing the [isTranslationWriterGuess] overloads.
+ *
  * @param parameterName placeholder name used by [UniqueType] for matching
- * @param displayName used by TranslationFileWriter for section header comments
+ * @param displayName used by [TranslationFileWriter] for section header comments
  */
 @Suppress("unused") // Some are used only via enumerating the enum matching on parameterName
 enum class UniqueParameterType(
@@ -63,7 +66,7 @@ enum class UniqueParameterType(
     BaseUnitFilter("baseUnitFilter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if (ruleset.units.containsKey(parameterText)) return null
+            if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return null
             return UnitTypeFilter.getErrorSeverity(parameterText, ruleset)
         }
     },
@@ -72,6 +75,23 @@ enum class UniqueParameterType(
         // the goal is to unify, but for now this is the "real" list
         private val knownValues = setOf("All", "Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
             "non-air", "Nuclear Weapon", "Great Person", "Religious")
+        private val unitTypeStrings = hashSetOf(
+            "Military",
+            "Civilian",
+            "non-air",
+            "relevant",
+            "Nuclear Weapon",
+            "City",
+            // These are up for debate
+            "Air",
+            "land units",
+            "water units",
+            "air units",
+            "military units",
+            "submarine units",
+            // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
+        )
+
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
@@ -79,24 +99,30 @@ enum class UniqueParameterType(
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
 
-        override fun getTranslationWriterStringsForMatching(ruleset: Ruleset) =
-            ruleset.unitTypes.keys + unitTypeStrings
+        override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
+            parameterText in ruleset.unitTypes.keys || parameterText in unitTypeStrings
+    },
+    UnitName("unit") {
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? {
+            if (ruleset.units.containsKey(parameterText)) return null
+            return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
+        }
     },
     GreatPerson("greatPerson") {
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
-            return if (parameterText in ruleset.units && ruleset.units[parameterText]!!.hasUnique("Great Person - []")) null
-            else UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
+            if (ruleset.units[parameterText]?.hasUnique("Great Person - []") == true) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
     Stats("stats") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if (!com.unciv.models.stats.Stats.isStats(parameterText))
-                return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
-            return null
+            if (com.unciv.models.stats.Stats.isStats(parameterText)) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
     },
     StatName("stat") {
@@ -117,14 +143,31 @@ enum class UniqueParameterType(
         }
     },
     CityFilter("cityFilter", "City filters") {
+        private val cityFilterStrings = setOf(
+            "in this city",
+            "in all cities",
+            "in all coastal cities",
+            "in capital",
+            "in all non-occupied cities",
+            "in all cities with a world wonder",
+            "in all cities connected to capital",
+            "in all cities with a garrison",
+            "in all cities in which the majority religion is a major religion",
+            "in all cities in which the majority religion is an enhanced religion",
+            "in non-enemy foreign cities",
+            "in foreign cities",
+            "in annexed cities",
+            "in holy cities",
+            "in City-State cities",
+            "in cities following this religion",
+        )
+
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
-            if (parameterText !in cityFilterStrings)
-                return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
-            return null
+            if (parameterText in cityFilterStrings) return null
+            return UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
 
-        override fun getTranslationWriterStringsForMatching(ruleset: Ruleset) = cityFilterStrings
         override fun getTranslationWriterStringsForOutput() = cityFilterStrings
     },
     BuildingName("buildingName") {
@@ -132,7 +175,7 @@ enum class UniqueParameterType(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
-            if (ruleset.buildings.containsKey(parameterText)) return null
+            if (parameterText in ruleset.buildings) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
     },
@@ -143,10 +186,13 @@ enum class UniqueParameterType(
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            if (Stat.values().any { it.name == parameterText }) return null
+            //if (Stat.values().any { it.name == parameterText }) return null   // TODO why was this here
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
-        } 
+        }
+
+        override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
+            parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null
     },
     // Only used in values deprecated in 3.17.10
         ConstructionFilter("constructionFilter") {
@@ -184,6 +230,8 @@ enum class UniqueParameterType(
             if (ResourceType.values().any { parameterText == it.name + " resource" }) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
+        override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
+            parameterText in ruleset.terrains.keys || parameterText != "All" && parameterText in knownValues
     },
     TileFilter("tileFilter") {
         private val knownValues = setOf("unimproved", "All Road", "Great Improvement")
@@ -270,6 +318,9 @@ enum class UniqueParameterType(
             if (ruleset.tileImprovements.containsKey(parameterText)) return null
             return UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
+
+        override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
+            parameterText != "All" && getErrorSeverity(parameterText, ruleset) == null
     },
     Resource("resource") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -369,56 +420,20 @@ enum class UniqueParameterType(
     /** Validate a [Unique] parameter */
     abstract fun getErrorSeverity(parameterText: String, ruleset: Ruleset): UniqueType.UniqueComplianceErrorSeverity?
 
-    /** Get a list [TranslationFileWriter] can use to guess types of actual json parameters
-     *  in order to get placeholders for the translatable string */
-    open fun getTranslationWriterStringsForMatching(ruleset: Ruleset): Set<String> = setOf()
+    /** Pick this type when [TranslationFileWriter] tries to guess for an untyped [Unique] */
+    open fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset): Boolean =
+        getErrorSeverity(parameterText, ruleset) == null
 
     /** Get a list of possible values [TranslationFileWriter] should include as translatable string 
      *  that are not recognized from other json sources */
     open fun getTranslationWriterStringsForOutput(): Set<String> = setOf()
 
     companion object {
-        private val unitTypeStrings = hashSetOf(
-            "Military",
-            "Civilian",
-            "non-air",
-            "relevant",
-            "Nuclear Weapon",
-            "City",
-            // These are up for debate
-            "Air",
-            "land units",
-            "water units",
-            "air units",
-            "military units",
-            "submarine units",
-            // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
-        )
-
-        private val cityFilterStrings = setOf( // taken straight from the translation!
-            "in this city",
-            "in all cities",
-            "in all coastal cities",
-            "in capital",
-            "in all non-occupied cities",
-            "in all cities with a world wonder",
-            "in all cities connected to capital",
-            "in all cities with a garrison",
-            "in all cities in which the majority religion is a major religion",
-            "in all cities in which the majority religion is an enhanced religion",
-            "in non-enemy foreign cities",
-            "in foreign cities",
-            "in annexed cities",
-            "in holy cities",
-            "in City-State cities",
-            "in cities following this religion",
-        )
-
         private fun scanExistingValues(type: UniqueParameterType): Set<String> {
             return BaseRuleset.values()
                 .mapNotNull { RulesetCache[it.fullName] }
                 .map { scanExistingValues(type, it) }
-                .fold(setOf<String>()) { a, b -> a + b }
+                .fold(setOf()) { a, b -> a + b }
         }
         private fun scanExistingValues(type: UniqueParameterType, ruleset: Ruleset): Set<String> {
             val result = mutableSetOf<String>()
@@ -432,6 +447,19 @@ enum class UniqueParameterType(
                 }
             }
             return result
+        }
+
+        /** Emulate legacy behaviour as exactly as possible */
+        private val translationWriterGuessingOrder = sequenceOf(
+            Number, StatName,
+            UnitName, ImprovementName, Resource, Technology, Promotion,
+            BuildingFilter, UnitTypeFilter, Stats,
+            ImprovementFilter, CityFilter, TileFilter, Unknown
+        )
+        fun guessTypeForTranslationWriter(parameterName: String, ruleset: Ruleset): UniqueParameterType {
+            return translationWriterGuessingOrder.firstOrNull {
+                it.isTranslationWriterGuess(parameterName, ruleset)
+            }!!
         }
 
         fun safeValueOf(param: String) = values().firstOrNull { it.parameterName == param }

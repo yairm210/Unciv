@@ -206,7 +206,6 @@ object TranslationFileWriter {
     }
 
     private fun generateTutorialsStrings(): MutableSet<String> {
-
         val tutorialsStrings = mutableSetOf<String>()
         val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
@@ -250,40 +249,6 @@ object TranslationFileWriter {
 
     private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
         val ruleset = RulesetCache.getVanillaRuleset()
-
-        // build maps identifying parameters as certain types of filters - unitFilter etc
-        // TODO move all into UniqueParameterType.getTranslationWriterStringsForMatching
-        // TODO use 1 master map materialized by associating UniqueParameterType.values() to that method call
-        // .. like so, yes this was tested:
-/*
-        val parameterTypeMap = UniqueParameterType.values()
-            .associate { it to it.getTranslationWriterStringsForMatching(ruleset) }
-        val type: UniqueParameterType? = parameterTypeMap.firstNotNullOfOrNull {
-            (key, set) -> key.takeIf { parameterName in set }
-        }
-*/
-        val tileFilterMap = ruleset.terrains.keys.toMutableSet().apply { addAll(sequenceOf(
-            "Friendly Land",
-            "Foreign Land",
-            Constants.freshWater,
-            "non-fresh water",
-            "Open Terrain",
-            "Rough Terrain",
-            "Natural Wonder",
-            "unimproved"
-        )) }
-        val tileImprovementMap = ruleset.tileImprovements.keys.toMutableSet().apply { add("Great Improvement") }
-        val buildingMap = ruleset.buildings.keys.toMutableSet().apply { addAll(sequenceOf(
-            "Wonders",
-            "Wonder",
-            "National Wonder",
-            "World Wonder",
-            "Buildings",
-            "Building"
-        )) }
-        val unitTypeMap = UniqueParameterType.UnitTypeFilter.getTranslationWriterStringsForMatching(ruleset)
-        val cityFilterMap = UniqueParameterType.CityFilter.getTranslationWriterStringsForMatching(ruleset)
-
         val startMillis = System.currentTimeMillis()
 
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
@@ -316,26 +281,14 @@ object TranslationFileWriter {
                 if (unique.params.isNotEmpty()) {
                     val parameterNames = ArrayList<String>()
                     for ((index, parameter) in unique.params.withIndex()) {
-                        val parameterName = when {
-                            unique.type != null -> {
+                        val parameterName =
+                            if (unique.type != null) {
                                 val possibleParameterTypes = unique.type.parameterTypeMap[index]
                                 // for multiple types. will look like "[unitName/buildingName]"
                                 possibleParameterTypes.joinToString("/") { it.parameterName }
+                            } else {
+                                UniqueParameterType.guessTypeForTranslationWriter(parameter, ruleset).parameterName
                             }
-                            parameter.toFloatOrNull() != null -> "amount"
-                            Stat.values().any { it.name == parameter } -> "stat"
-                            parameter in tileFilterMap -> "tileFilter"
-                            ruleset.units.containsKey(parameter) -> "unit"
-                            parameter in tileImprovementMap -> "tileImprovement"
-                            ruleset.tileResources.containsKey(parameter) -> "resource"
-                            ruleset.technologies.containsKey(parameter) -> "tech"
-                            ruleset.unitPromotions.containsKey(parameter) -> "promotion"
-                            parameter in buildingMap -> "building"
-                            parameter in unitTypeMap -> "unitType"
-                            Stats.isStats(parameter) -> "stats"
-                            parameter in cityFilterMap -> "cityFilter"
-                            else -> "param"
-                        }
                         parameterNames.addNumberedParameter(parameterName)
                     }
                     stringToTranslate = stringToTranslate.fillPlaceholders(*parameterNames.toTypedArray())
