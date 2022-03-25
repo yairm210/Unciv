@@ -251,17 +251,32 @@ class Ruleset {
 
         val policiesFile = folderHandle.child("Policies.json")
         if (policiesFile.exists()) {
-            policyBranches += createHashmap(jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile))
+            policyBranches += createHashmap(
+                jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile)
+            )
             for (branch in policyBranches.values) {
+                // Setup this branch
                 branch.requires = ArrayList()
                 branch.branch = branch
+                for (victoryType in VictoryType.values()) {
+                    if (victoryType.name !in branch.priorities.keys) {
+                        branch.priorities[victoryType.name] = 0
+                    }
+                }
                 policies[branch.name] = branch
+
+                // Append child policies of this branch
                 for (policy in branch.policies) {
                     policy.branch = branch
-                    if (policy.requires == null) policy.requires = arrayListOf(branch.name)
+                    if (policy.requires == null) {
+                        policy.requires = arrayListOf(branch.name)
+                    }
                     policies[policy.name] = policy
                 }
-                branch.policies.last().name = branch.name + Policy.branchCompleteSuffix
+
+                // Add a finisher
+                branch.policies.last().name =
+                    branch.name + Policy.branchCompleteSuffix
             }
         }
 

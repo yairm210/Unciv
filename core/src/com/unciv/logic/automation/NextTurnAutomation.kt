@@ -14,10 +14,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.*
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.Belief
-import com.unciv.models.ruleset.BeliefType
-import com.unciv.models.ruleset.ModOptionsConstants
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -74,7 +71,7 @@ object NextTurnAutomation {
     fun automateGoldToSciencePercentage(civInfo: CivilizationInfo) {
         // Don't let the AI run blindly with the default convert-gold-to-science ratio if that option is enabled
         val estimatedIncome = civInfo.statsForNextTurn.gold.toInt()
-        val projectedGold = civInfo.gold + estimatedIncome 
+        val projectedGold = civInfo.gold + estimatedIncome
         // TODO: some cleverness, this is just wild guessing.
         val pissPoor = civInfo.tech.era.baseUnitBuyCost
         val stinkingRich = civInfo.tech.era.startingGold * 10 + civInfo.cities.size * 2 * pissPoor
@@ -393,35 +390,72 @@ object NextTurnAutomation {
         }
     }
 
-    private object PolicyPriorityMap {
-        //todo This should be moddable, and needs an update to include new G&K Policies
-        /** Maps [VictoryType] to an ordered List of PolicyBranch names - the AI will prefer them in that order */
-        val priorities = mapOf(
-            VictoryType.Cultural to listOf("Piety", "Freedom", "Tradition", "Commerce", "Patronage"),
-            VictoryType.Scientific to listOf("Rationalism", "Commerce", "Liberty", "Order", "Patronage"),
-            VictoryType.Domination to listOf("Autocracy", "Honor", "Liberty", "Rationalism", "Commerce"),
-            VictoryType.Diplomatic to listOf("Patronage", "Commerce", "Rationalism", "Freedom", "Tradition")
-        )
-    }
     private fun adoptPolicy(civInfo: CivilizationInfo) {
+        /*
+        # Branch-based policy-to-adopt decision
+        Basically the AI prioritizes finishing incomplete branches before moving on, \
+        unless a new branch with higher priority is adoptable.
+
+        - If incomplete branches have higher priorities than any newly adoptable branch,
+            - Candidates are the unfinished branches.
+        - Else if newly adoptable branches have higher priorities than any incomplete branch,
+            - Candidates are the new branches.
+        - Choose a random candidate closest to completion.
+        - Pick a random child policy of a chosen branch and adopt it.
+        */
         while (civInfo.policies.canAdoptPolicy()) {
+            val incompleteBranches: Set<PolicyBranch> = civInfo.policies.incompleteBranches
+            val adoptableBranches: Set<PolicyBranch> = civInfo.policies.adoptableBranches
 
-            val adoptablePolicies = civInfo.gameInfo.ruleSet.policies.values
-                    .filter { civInfo.policies.isAdoptable(it) }
+            // Skip the whole thing if all branches are completed
+            if (incompleteBranches.isEmpty() && adoptableBranches.isEmpty()) return
 
-            // This can happen if the player is crazy enough to have the game continue forever and he disabled cultural victory
-            if (adoptablePolicies.isEmpty()) return
+            val priorityMap: Map<PolicyBranch, Int> = civInfo.policies.priorityMap
+            var maxIncompletePriority: Int? =
+                civInfo.policies.getMaxPriority(incompleteBranches)
+            var maxAdoptablePriority: Int? = civInfo.policies.getMaxPriority(adoptableBranches)
 
-            val policyBranchPriority = PolicyPriorityMap.priorities[civInfo.victoryType()]
-                ?: emptyList()
-            val policiesByPreference = adoptablePolicies
-                    .groupBy { policy ->
-                        policyBranchPriority.indexOf(policy.branch.name).let { if (it == -1) 99 else it }
-                    }
+            // This here is a (probably dirty) code to bypass NoSuchElementException error
+            //  when one of the priority variables is null
+            if (maxIncompletePriority == null) maxIncompletePriority =
+                maxAdoptablePriority!! - 1
+            if (maxAdoptablePriority == null) maxAdoptablePriority =
+                maxIncompletePriority - 1
 
-            val preferredPolicies = policiesByPreference.minByOrNull { it.key }!!.value
+            // Candidate branches to adopt
+            val candidates: Set<PolicyBranch> =
+                // If incomplete branches have higher priorities than any newly adoptable branch,
+                if (maxAdoptablePriority <= maxIncompletePriority) {
+                    // Prioritize finishing one of the unfinished branches
+                    incompleteBranches.filter {
+                        priorityMap[it] == maxIncompletePriority
+                    }.toSet()
+                }
+                // If newly adoptable branches have higher priorities than any incomplete branch,
+                else {
+                    // Prioritize adopting one of the new branches
+                    adoptableBranches.filter {
+                        priorityMap[it] == maxAdoptablePriority
+                    }.toSet()
+                }
 
-            val policyToAdopt = preferredPolicies.random()
+            // branchCompletionMap but keys are only candidates
+            val candidateCompletionMap: Map<PolicyBranch, Int> =
+                civInfo.policies.branchCompletionMap.filterKeys { key ->
+                    key in candidates
+                }
+            // The highest number of adopted child policies within a single candidate
+            val maxCompletion: Int =
+                candidateCompletionMap.maxOf { entry -> entry.value }
+            // The candidate closest to completion, hence the target branch
+            val targetBranch = candidateCompletionMap.filterValues { value ->
+                value == maxCompletion
+            }.keys.random()
+
+            val policyToAdopt: Policy =
+                if (civInfo.policies.isAdoptable(targetBranch)) targetBranch
+                else targetBranch.policies.filter { civInfo.policies.isAdoptable(it) }.random()
+
             civInfo.policies.adopt(policyToAdopt)
         }
     }
@@ -441,9 +475,7 @@ object NextTurnAutomation {
             val unitToDisband = civInfo.getCivUnits()
                 .filter { it.baseUnit.requiresResource(resource) }
                 .minByOrNull { it.getForceEvaluation() }
-            if (unitToDisband != null) {
-                unitToDisband.disband()
-            }
+            unitToDisband?.disband()
 
             for (city in civInfo.cities) {
                 if (city.hasSoldBuildingThisTurn)
@@ -485,7 +517,7 @@ object NextTurnAutomation {
         if (civInfo.religionManager.religionState != ReligionState.FoundingReligion) return
         val availableReligionIcons = civInfo.gameInfo.ruleSet.religions
             .filterNot { civInfo.gameInfo.religions.values.map { religion -> religion.name }.contains(it) }
-        val religionIcon = 
+        val religionIcon =
             if (civInfo.nation.favoredReligion in availableReligionIcons) civInfo.nation.favoredReligion
             else availableReligionIcons.randomOrNull()
                 ?: return // Wait what? How did we pass the checking when using a great prophet but not this?
@@ -495,8 +527,8 @@ object NextTurnAutomation {
 
     private fun enhanceReligion(civInfo: CivilizationInfo) {
         civInfo.religionManager.chooseBeliefs(
-            null, 
-            null, 
+            null,
+            null,
             chooseBeliefs(civInfo, civInfo.religionManager.getBeliefsToChooseAtEnhancing()).toList()
         )
     }
@@ -519,11 +551,11 @@ object NextTurnAutomation {
 
     private fun chooseBeliefOfType(civInfo: CivilizationInfo, beliefType: BeliefType, additionalBeliefsToExclude: HashSet<Belief> = hashSetOf()): Belief? {
         return civInfo.gameInfo.ruleSet.beliefs
-            .filter { 
-                (it.value.type == beliefType || beliefType == BeliefType.Any) 
+            .filter {
+                (it.value.type == beliefType || beliefType == BeliefType.Any)
                 && !additionalBeliefsToExclude.contains(it.value)
                 && !civInfo.gameInfo.religions.values
-                    .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value) 
+                    .flatMap { religion -> religion.getBeliefs(beliefType) }.contains(it.value)
             }
             .map { it.value }
             .maxByOrNull { ChooseBeliefsAutomation.rateBelief(civInfo, it) }
