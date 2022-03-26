@@ -105,7 +105,7 @@ class CityInfo {
             civInfo.nation.cities,
             civInfo.gameInfo.civilizations.flatMap { civilization ->
                 civilization.cities.map { city -> city.name }
-            },
+            }.toSet(),
             civInfo.hasUnique(UniqueType.BorrowsCityNames)
         )
 
@@ -188,14 +188,14 @@ class CityInfo {
      * [hasBorrowsCityNames] and, if true, returns a borrowed name. Else, it repeatedly attaches a
      * predefined prefix to the list of names until an unused name is successfully generated.
      *
-     * @param nationCityNames Every city name of the nation.
-     * @param usedCityNames Every city name in use including foreign cities.
+     * @param nationCityNames A [List] of every city name of the nation.
+     * @param usedCityNames A [Set] of every city name in use including foreign cities.
      * @param hasBorrowsCityNames Whether this nation borrows city names or not
      * ([UniqueType.BorrowsCityNames]).
      * @return A new city name in [String].
      */
     private fun generateNewCityName(
-        nationCityNames: List<String>, usedCityNames: List<String>, hasBorrowsCityNames: Boolean
+        nationCityNames: List<String>, usedCityNames: Set<String>, hasBorrowsCityNames: Boolean
     ): String {
         // Attempt to return the first missing name from the list of city names
         // ex) Rome, Antium, ... , Interrama, Adria
@@ -219,10 +219,11 @@ class CityInfo {
         var candidate: String?
         var number = 1
         while (true) {
+            val currentPrefix: String = prefix.repeat(number)
             candidate = nationCityNames.firstOrNull { cityName ->
-                (prefix.repeat(number) + cityName) !in usedCityNames
+                currentPrefix + cityName !in usedCityNames
             }
-            if (candidate != null) return prefix.repeat(number) + candidate
+            if (candidate != null) return currentPrefix + candidate
             number++
         }
     }
@@ -230,10 +231,10 @@ class CityInfo {
     /**
      * Generates and returns a city name borrowed from another nation.
      *
-     * @param usedCityNames Every city name in use including foreign cities.
+     * @param usedCityNames A [Set] of every city name in use including foreign cities.
      * @return A borrowed city name in [String].
      */
-    private fun generateBorrowedCityName(usedCityNames: List<String>): String {
+    private fun generateBorrowedCityName(usedCityNames: Set<String>): String {
         // Attempt to return a random name from the pool of last unused city name for every *other*
         // nation in this game, skipping nations whose names are exhausted
         val otherNations = civInfo.gameInfo.civilizations.filter { nation ->
