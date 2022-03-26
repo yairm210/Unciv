@@ -137,6 +137,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalConsumeUnit -> true
 
+            UniqueType.ConditionalChance -> Random().nextFloat() < condition.params[0].toFloat() / 100f
+
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
@@ -200,8 +202,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
-                relevantTile!=null && relevantTile!!.matchesFilter(condition.params[0], state.civInfo)
+                relevantTile != null && relevantTile!!.matchesFilter(condition.params[0], state.civInfo)
                         && relevantTile!!.matchesFilter(condition.params[1], state.civInfo)
+            UniqueType.ConditionalNearTiles ->
+                relevantTile != null && relevantTile!!.getTilesInDistance(condition.params[0].toInt()).any {
+                    it.matchesFilter(condition.params[1])
+                }
+            
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
