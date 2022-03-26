@@ -47,7 +47,7 @@ class Difficulty: INamed, ICivilopediaText {
     override fun getCivilopediaTextLines(ruleset: Ruleset): List<FormattedLine> {
         val lines = ArrayList<FormattedLine>()
         lines += FormattedLine("Player settings", header = 3)
-        lines += FormattedLine("{Base Happiness}: $baseHappiness ${Fonts.happiness}", indent = 1)
+        lines += FormattedLine("{Base happiness}: $baseHappiness ${Fonts.happiness}", indent = 1)
         lines += FormattedLine("{Extra happiness per luxury}: ${extraHappinessPerLuxury.toInt()} ${Fonts.happiness}", indent = 1)
         lines += FormattedLine("{Research cost modifier}: ${researchCostModifier.toPercent()}% ${Fonts.science}", indent = 1)
         lines += FormattedLine("{Unit cost modifier}: ${unitCostModifier.toPercent()}% ${Fonts.production}", indent = 1)

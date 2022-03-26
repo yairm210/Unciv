@@ -1668,10 +1668,10 @@
 			"[+1] Sight", "Hidden when religion is disabled", "Unbuildable", "Religious Unit"
 		],
 		"movement": 3
-	}
+	},
 
 	/* Spaceship Parts */
-	
+
 	// Must be transported to the Capital for launch.
 	// Can be destroyed by any hostile military unit walking in their tile.
 	{
