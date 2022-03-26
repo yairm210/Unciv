@@ -1,7 +1,9 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -24,6 +26,10 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
     private val scrollPane: ScrollPane
     private val innerTable = Table(skin)
 
+    private val allExpanders = mutableListOf<ExpanderTab>()
+    private val hideShowAllCell: Cell<Group>
+    private var hideShowAllShouldClose = false
+
     init {
         align(Align.topLeft)
 
@@ -37,13 +43,17 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         scrollPane = ScrollPane(innerTable.addBorder(2f, Color.WHITE))
         scrollPane.setOverscroll(false, false)
 
-        add(showConstructionsTableButton).left().padLeft(pad).padBottom(pad).row()
-        add(scrollPane).left().row()
+        val hideShowAllButton = Group()
+        add(showConstructionsTableButton).left().padLeft(pad).padBottom(pad)
+        hideShowAllCell = add(hideShowAllButton).size(30f)  // size as the cell won't be resized when the actor is replaced
+        hideShowAllCell.left().padLeft(pad).padBottom(pad).expandX().row()
+        add(scrollPane).colspan(2).left().row()
     }
 
     internal fun update() {
         val cityInfo = cityScreen.city
 
+        allExpanders.clear()
         innerTable.clear()
 
         innerTable.apply {
@@ -52,8 +62,25 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
             addGreatPersonPointInfo(cityInfo)
         }
 
+        updateHideShowAllButton()
+
         getCell(scrollPane).maxHeight(stage.height - showConstructionsTableButton.height - pad - 10f)
         onContentResize()
+    }
+
+    private fun updateHideShowAllButton() {
+        val anyExpanderOpen = allExpanders.map { it.isOpen }.maxOrNull() ?: false
+        if (anyExpanderOpen == hideShowAllShouldClose) return
+        hideShowAllShouldClose = anyExpanderOpen
+        val hideShowAllButton = getToggleButton(hideShowAllShouldClose)
+        hideShowAllButton.touchable = Touchable.enabled
+        hideShowAllButton.onClick {
+            for (expander in allExpanders) {
+                if (expander.isOpen == hideShowAllShouldClose) expander.toggle()
+            }
+            updateHideShowAllButton()
+        }
+        hideShowAllCell.setActor(hideShowAllButton)
     }
 
     private fun onContentResize() {
@@ -64,12 +91,16 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
     private fun Table.addCategory(category: String, showHideTable: Table) {
         val categoryWidth = cityScreen.stage.width / 4
         val expander = ExpanderTab(category, persistenceID = "CityInfo.$category"
-            , onChange = { onContentResize() }
+            , onChange = {
+                onContentResize()
+                updateHideShowAllButton()
+            }
         ) {
             it.add(showHideTable).minWidth(categoryWidth)
         }
         addSeparator()
         add(expander).minWidth(categoryWidth).expandX().fillX().row()
+        allExpanders += expander
     }
 
     private fun addBuildingInfo(building: Building, destinationTable: Table) {
@@ -262,15 +293,20 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         statValuesTable.pack()
 
         if (stat != Stat.Happiness) {
-            val toggleButtonChar = if (showDetails) "-" else "+"
-            val toggleButton = toggleButtonChar.toLabel().apply { setAlignment(Align.center) }
-                .surroundWithCircle(25f, color = ImageGetter.getBlue())
-                .surroundWithCircle(27f, false)
+            val toggleButton = getToggleButton(showDetails)
             statValuesTable.addActor(toggleButton)
             toggleButton.setPosition(0f, statValuesTable.height, Align.topLeft)
         }
 
         statValuesTable.padBottom(4f)
+    }
+
+    private fun getToggleButton(showDetails: Boolean): IconCircleGroup {
+        val label = (if (showDetails) "-" else "+").toLabel()
+        label.setAlignment(Align.center)
+        return label
+            .surroundWithCircle(25f, color = ImageGetter.getBlue())
+            .surroundWithCircle(27f, false)
     }
 
     private fun Table.addGreatPersonPointInfo(cityInfo: CityInfo) {
