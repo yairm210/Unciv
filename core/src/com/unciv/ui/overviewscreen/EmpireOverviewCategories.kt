@@ -1,5 +1,6 @@
 package com.unciv.ui.overviewscreen
 
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.overviewscreen.EmpireOverviewTab.EmpireOverviewTabPersistableData
@@ -18,34 +19,35 @@ private fun Boolean.toState(): EmpireOverviewTabState = if (this) EmpireOverview
 enum class EmpireOverviewCategories(
     val iconName: String,
     val shortcutKey: KeyCharAndCode,
+    val scrollAlign: Int,
     val factory: FactoryType,
     val stateTester: StateTesterType
 ) {
-    Cities("OtherIcons/Cities", 'C',
+    Cities("OtherIcons/Cities", 'C', Align.topLeft,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = CityOverviewTab(viewingPlayer, overviewScreen, persistedData),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.cities.isEmpty().toState()),
-    Stats("StatIcons/Gold", 'S',
+    Stats("StatIcons/Gold", 'S', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
                 = StatsOverviewTab(viewingPlayer, overviewScreen),
         fun (_: CivilizationInfo) = EmpireOverviewTabState.Normal),
-    Trades("StatIcons/Acquire", 'T',
+    Trades("StatIcons/Acquire", 'T', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
                 = TradesOverviewTab(viewingPlayer, overviewScreen),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.diplomacy.values.all { it.trades.isEmpty() }.toState()),
-    Units("OtherIcons/Shield", 'U',
+    Units("OtherIcons/Shield", 'U', Align.topLeft,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = UnitOverviewTab(viewingPlayer, overviewScreen, persistedData),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.getCivUnits().none().toState()),
-    Diplomacy("OtherIcons/DiplomacyW", 'D',
+    Diplomacy("OtherIcons/DiplomacyW", 'D', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = DiplomacyOverviewTab(viewingPlayer, overviewScreen, persistedData),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.diplomacy.isEmpty().toState()),
-    Resources("StatIcons/Happiness", 'R',
+    Resources("StatIcons/Happiness", 'R', Align.topLeft,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
                 = ResourcesOverviewTab(viewingPlayer, overviewScreen),
         fun (viewingPlayer: CivilizationInfo) = viewingPlayer.detailedCivResources.isEmpty().toState()),
-    Religion("StatIcons/Faith", 'F',
+    Religion("StatIcons/Faith", 'F', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, persistedData: EmpireOverviewTabPersistableData?)
                 = ReligionOverviewTab(viewingPlayer, overviewScreen, persistedData),
         fun (viewingPlayer: CivilizationInfo) = when {
@@ -53,13 +55,12 @@ enum class EmpireOverviewCategories(
             viewingPlayer.gameInfo.religions.isEmpty() -> EmpireOverviewTabState.Disabled
             else -> EmpireOverviewTabState.Normal
         }),
-    Wonders("OtherIcons/Wonders", 'W',
+    Wonders("OtherIcons/Wonders", 'W', Align.top,
         fun (viewingPlayer: CivilizationInfo, overviewScreen: EmpireOverviewScreen, _: EmpireOverviewTabPersistableData?)
                 = WonderOverviewTab(viewingPlayer, overviewScreen),
         fun (viewingPlayer: CivilizationInfo) = (viewingPlayer.naturalWonders.isEmpty() && viewingPlayer.cities.isEmpty()).toState()),
     ;
 
-    constructor(iconName: String, shortcutChar: Char, factory: FactoryType, stateTester: StateTesterType = { _ -> EmpireOverviewTabState.Normal })
-        : this(iconName, KeyCharAndCode(shortcutChar), factory, stateTester)
+    constructor(iconName: String, shortcutChar: Char, scrollAlign: Int, factory: FactoryType, stateTester: StateTesterType = { _ -> EmpireOverviewTabState.Normal })
+        : this(iconName, KeyCharAndCode(shortcutChar), scrollAlign, factory, stateTester)
 }
-
