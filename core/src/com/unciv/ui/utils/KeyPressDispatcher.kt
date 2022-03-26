@@ -64,11 +64,11 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         val UNKNOWN = KeyCharAndCode(Input.Keys.UNKNOWN)
 
         // Kludges because we got crashes: java.lang.NoSuchMethodError: 'int kotlin.CharCodeKt.access$getCode$p(char)'  
-        private fun Char.toCode() =
+        fun Char.toCode() =
             try { code } catch (ex: Throwable) { null }
                 ?: try { @Suppress("DEPRECATION") toInt() } catch (ex: Throwable) { null }
                 ?: 0
-        private fun Int.makeChar() =
+        fun Int.makeChar() =
             try { Char(this) } catch (ex: Throwable) { null }
                 ?: try { toChar() } catch (ex: Throwable) { null }
                 ?: Char.MIN_VALUE
