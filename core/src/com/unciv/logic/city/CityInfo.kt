@@ -106,7 +106,8 @@ class CityInfo {
             civInfo.gameInfo.civilizations.flatMap { civilization ->
                 civilization.cities.map { city -> city.name }
             }.toSet(),
-            civInfo.hasUnique(UniqueType.BorrowsCityNames)
+            civInfo.hasUnique(UniqueType.BorrowsCityNames),
+            listOf("New ", "Neo ", "Nova ", "Altera ")
         )
 
         isOriginalCapital = civInfo.citiesCreated == 0
@@ -188,18 +189,23 @@ class CityInfo {
      * [hasBorrowsCityNames] and, if true, returns a borrowed name. Else, it repeatedly attaches a
      * predefined prefix to the list of names until an unused name is successfully generated.
      *
-     * @param nationCityNames A [List] of every city name of the nation.
-     * @param usedCityNames A [Set] of every city name in use including foreign cities.
-     * @param hasBorrowsCityNames Whether this nation borrows city names or not
+     * @param nationCityNames Every city name of the nation.
+     * @param usedCityNames Every city name in use including foreign cities.
+     * @param hasBorrowsCityNames Whether this nation borrows city names or not.
+     * @param prefixes Prefixes to add when every base name is taken
      * ([UniqueType.BorrowsCityNames]).
      * @return A new city name in [String].
      */
     private fun generateNewCityName(
-        nationCityNames: List<String>, usedCityNames: Set<String>, hasBorrowsCityNames: Boolean
+        nationCityNames: List<String>,
+        usedCityNames: Set<String>,
+        hasBorrowsCityNames: Boolean,
+        prefixes: List<String>
     ): String {
         // Attempt to return the first missing name from the list of city names
-        // ex) Rome, Antium, ... , Interrama, Adria
-        nationCityNames.forEach { cityName -> if (cityName !in usedCityNames) { return cityName } }
+        nationCityNames.forEach { cityName ->
+            if (cityName !in usedCityNames) return cityName
+        }
 
         // If all names are taken and this nation has the BorrowsCityNames unique,
         // return a random borrowed city name
@@ -208,30 +214,31 @@ class CityInfo {
         /*
         If the nation doesn't have the unique above,
         return the first missing name with an increasing number of prefixes attached
-        ex) New Rome, New Antium, ... , New Adria, New New Rome, New New Antium, ...
         TODO: Make the prefix moddable per nation?
          Also, if then, what about other languages using suffixes?
-        TODO: Could've used a [sequence] from 1 to [int.MAX_VALUE] instead of the while loop but my
-         IDE wouldn't stop complaining about a return expression being required. I wonder whether
-         this is the best or there is a better way to do this.
         */
-        val prefix = "New "
         var candidate: String?
-        var number = 1
-        while (true) {
-            val currentPrefix: String = prefix.repeat(number)
-            candidate = nationCityNames.firstOrNull { cityName ->
-                currentPrefix + cityName !in usedCityNames
+        (1..10).forEach { number ->
+            prefixes.forEach { prefix ->
+                val currentPrefix: String = prefix.repeat(number)
+                candidate = nationCityNames.firstOrNull { cityName ->
+                    currentPrefix + cityName !in usedCityNames
+                }
+                if (candidate != null) {
+                    return currentPrefix + candidate
+                }
             }
-            if (candidate != null) return currentPrefix + candidate
-            number++
         }
+
+        // If all else fails (by using some sort of rule set mod without city names),
+        // just return something so we at least have a name
+        return "The City without a Name"
     }
 
     /**
      * Generates and returns a city name borrowed from another nation.
      *
-     * @param usedCityNames A [Set] of every city name in use including foreign cities.
+     * @param usedCityNames Every city name in use including foreign cities.
      * @return A borrowed city name in [String].
      */
     private fun generateBorrowedCityName(usedCityNames: Set<String>): String {
