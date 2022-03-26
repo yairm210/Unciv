@@ -348,8 +348,6 @@ object Battle {
             for (unique in attacker.getCivInfo().getMatchingUniques(UniqueType.GainFromEncampment)) {
                 attacker.getCivInfo().addGold(unique.params[0].toInt())
                 if (unitPlaced) continue
-                val addedUnit = attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName()) ?: continue
-                addedUnit.currentMovement = 0f
                 unitPlaced = spawnCapturedUnit(defender.getName(), attacker, attackedTile,"A barbarian [${defender.getName()}] has joined us!")
             }
         }

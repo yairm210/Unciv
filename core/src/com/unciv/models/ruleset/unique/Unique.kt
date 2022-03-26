@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.Ruleset
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.random.Random
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -131,13 +132,18 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
             else state.unit
         }
+        
+        val tileBasedRandom by lazy {
+            if (relevantTile != null) Random(relevantTile!!.position.toString().hashCode())
+            else Random(-550) // Yes, very random
+        }
 
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalConsumeUnit -> true
 
-            UniqueType.ConditionalChance -> Random().nextFloat() < condition.params[0].toFloat() / 100f
+            UniqueType.ConditionalChance -> tileBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
 
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
