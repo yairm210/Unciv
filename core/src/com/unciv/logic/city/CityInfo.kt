@@ -103,7 +103,9 @@ class CityInfo {
 
         name = generateNewCityName(
             civInfo.nation.cities,
-            civInfo.cities.map { cityInfo -> cityInfo.name },
+            civInfo.gameInfo.civilizations.flatMap { civilization ->
+                civilization.cities.map { city -> city.name }
+            },
             civInfo.hasUnique(UniqueType.BorrowsCityNames)
         )
 
@@ -187,7 +189,7 @@ class CityInfo {
      * predefined prefix to the list of names until an unused name is successfully generated.
      *
      * @param nationCityNames Every city name of the nation.
-     * @param usedCityNames Used city names of the nation.
+     * @param usedCityNames Every city name in use including foreign cities.
      * @param hasBorrowsCityNames Whether this nation borrows city names or not
      * ([UniqueType.BorrowsCityNames]).
      * @return A new city name in [String].
@@ -201,7 +203,7 @@ class CityInfo {
 
         // If all names are taken and this nation has the BorrowsCityNames unique,
         // return a random borrowed city name
-        if (hasBorrowsCityNames) return generateBorrowedCityName()
+        if (hasBorrowsCityNames) return generateBorrowedCityName(usedCityNames)
 
         /*
         If the nation doesn't have the unique above,
@@ -225,30 +227,32 @@ class CityInfo {
         }
     }
 
-    /** Generates and returns a city name borrowed from another nation. */
-    private fun generateBorrowedCityName(): String {
+    /**
+     * Generates and returns a city name borrowed from another nation.
+     *
+     * @param usedCityNames Every city name in use including foreign cities.
+     * @return A borrowed city name in [String].
+     */
+    private fun generateBorrowedCityName(usedCityNames: List<String>): String {
         // Attempt to return a random name from the pool of last unused city name for every *other*
         // nation in this game, skipping nations whose names are exhausted
-        val usedNames = civInfo.gameInfo.civilizations.flatMap { civilization ->
-            civilization.cities.map { city -> city.name }
-        }
         val otherNations = civInfo.gameInfo.civilizations.filter { nation ->
             nation.isMajorCiv() && nation != civInfo
         }
-        var unusedNames = otherNations.mapNotNull {
-            it.nation.cities.lastOrNull { city -> city !in usedNames }
+        var unusedCityNames = otherNations.mapNotNull {
+            it.nation.cities.lastOrNull { name -> name !in usedCityNames }
         }
-        if (unusedNames.isNotEmpty()) return unusedNames.random()
+        if (unusedCityNames.isNotEmpty()) return unusedCityNames.random()
 
         // As per fandom wiki, once the names from the other nations in the game are exhausted,
         // names are taken from the rest of the nations in the rule set
         val missingNations = getRuleset().nations.filter { nation ->
             nation.key !in civInfo.gameInfo.civilizations.map { civ -> civ.nation.name }
         }
-        unusedNames = missingNations.values.flatMap { nation ->
-            nation.cities.filter { city -> city !in usedNames }
+        unusedCityNames = missingNations.values.flatMap { nation ->
+            nation.cities.filter { city -> city !in usedCityNames }
         }
-        if (unusedNames.isNotEmpty()) return unusedNames.random()
+        if (unusedCityNames.isNotEmpty()) return unusedCityNames.random()
 
         // If all else fails (by using some sort of rule set mod without city names),
         // just return something so we at least have a name
