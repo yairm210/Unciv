@@ -295,7 +295,10 @@ class Ruleset {
         val nationsFile = folderHandle.child("Nations.json")
         if (nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
-            for (nation in nations.values) nation.setTransients()
+            nations.values.forEach { nation ->
+                nation.cities = nation.cities.map { cityName -> "{$cityName}" } as ArrayList<String>
+                nation.setTransients()
+            }
         }
 
         val difficultiesFile = folderHandle.child("Difficulties.json")

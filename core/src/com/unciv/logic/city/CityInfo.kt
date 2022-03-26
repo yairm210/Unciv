@@ -107,7 +107,7 @@ class CityInfo {
                 civilization.cities.map { city -> city.name }
             }.toSet(),
             civInfo.hasUnique(UniqueType.BorrowsCityNames),
-            listOf("New ", "Neo ", "Nova ", "Altera ")
+            listOf("{New }", "{Neo }", "{Nova }", "{Altera }")
         )
 
         isOriginalCapital = civInfo.citiesCreated == 0
