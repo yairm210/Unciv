@@ -53,12 +53,19 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
 
         getCell(scrollPane).maxHeight(stage.height - showConstructionsTableButton.height - pad - 10f)
+        onContentResize()
+    }
+
+    private fun onContentResize() {
         pack()
+        setPosition(CityScreen.posFromEdge, stage.height - CityScreen.posFromEdge, Align.topLeft)
     }
 
     private fun Table.addCategory(category: String, showHideTable: Table) {
         val categoryWidth = cityScreen.stage.width / 4
-        val expander = ExpanderTab(category, persistenceID = "CityInfo") {
+        val expander = ExpanderTab(category, persistenceID = "CityInfo.$category"
+            , onChange = { onContentResize() }
+        ) {
             it.add(showHideTable).minWidth(categoryWidth)
         }
         addSeparator()
@@ -69,7 +76,11 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         val icon = ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f)
         val isFree = building.name in cityScreen.city.civInfo.civConstructions.getFreeBuildings(cityScreen.city.id)
         val displayName = if (isFree) "{${building.name}} ({Free})" else building.name
-        val buildingNameAndIconTable = ExpanderTab(displayName, Constants.defaultFontSize, icon, false, 5f) {
+        val buildingNameAndIconTable = ExpanderTab(
+            displayName, Constants.defaultFontSize, icon,
+            startsOutOpened = false, defaultPad = 5f,
+            onChange = { onContentResize() }
+        ) {
             val detailsString = building.getDescription(cityScreen.city, false)
             it.add(detailsString.toLabel().apply { wrap = true })
                 .width(cityScreen.stage.width / 4 - 2 * pad).row() // when you set wrap, then you need to manually set the size of the label
@@ -146,8 +157,13 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
         }
     }
 
-    private fun addStatsToHashmap(statTreeNode: StatTreeNode, hashMap: HashMap<String, Float>, stat:Stat,
-                                  showDetails:Boolean, indentation:Int=0) {
+    private fun addStatsToHashmap(
+        statTreeNode: StatTreeNode,
+        hashMap: HashMap<String, Float>,
+        stat: Stat,
+        showDetails: Boolean,
+        indentation: Int = 0
+    ) {
         for ((name, child) in statTreeNode.children) {
             val statAmount = child.totalStats[stat]
             if (statAmount == 0f) continue
@@ -185,6 +201,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
                 statValuesTable,
                 !showDetails
             )
+            onContentResize()
         }
 
         val relevantBaseStats = LinkedHashMap<String, Float>()
@@ -274,7 +291,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(BaseScreen.skin)
 
     companion object {
         private const val FONT_SIZE_STAT_INFO_HEADER = 22
-        
+
         private fun Float.toPercentLabel() =
             "${if (this>0f) "+" else ""}${DecimalFormat("0.#").format(this)}%".toLabel()
         private fun Float.toOneDecimalLabel() =
