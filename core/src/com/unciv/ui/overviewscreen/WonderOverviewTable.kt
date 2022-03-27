@@ -2,6 +2,7 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -79,8 +80,30 @@ class WonderOverviewTab(
 
     private val wonders: Array<WonderInfo> = collectInfo()
 
+    private val fixedContent = Table()
+    override fun getFixedContent(): WidgetGroup {
+        return fixedContent
+    }
+
     init {
+        fixedContent.apply {
+            defaults().pad(10f).align(Align.center)
+            add()
+            add("Name".toLabel())
+            add("Status".toLabel())
+            add("Location".toLabel())
+            add().minWidth(30f)
+            row()
+        }
+
+        defaults().pad(10f).align(Align.center)
+        (1..5).forEach { _ -> add() }  // dummies so equalizeColumns can work because the first grid cell is colspan(5)
+        row()
+        top()
+
         createGrid()
+
+        equalizeColumns(fixedContent, this)
     }
 
     private fun shouldBeDisplayed(wonder: Building, wonderEra: Int) = when {
@@ -114,8 +137,7 @@ class WonderOverviewTab(
         val wonderEraMap: Map<String, Era> =
             ruleSet.buildings.values.asSequence()
             .filter { it.isWonder }
-            .map { it.name to (ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] ?: viewingPlayer.getEra()) }
-            .toMap()
+            .associate { it.name to (ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] ?: viewingPlayer.getEra()) }
 
         // Maps all World Wonders by their position in sort order to their name
         val allWonderMap: Map<Int, String> =
@@ -123,8 +145,7 @@ class WonderOverviewTab(
             .filter { it.isWonder }
             .sortedWith(compareBy<Building> { wonderEraMap[it.name]!!.eraNumber }.thenBy(collator, { it.name.tr() }))
             .withIndex()
-            .map { it.index to it.value.name }
-            .toMap()
+            .associate { it.index to it.value.name }
         val wonderCount = allWonderMap.size
 
         // Inverse of the above
@@ -134,16 +155,14 @@ class WonderOverviewTab(
         val allNaturalsMap: Map<String, TileInfo> =
             gameInfo.tileMap.values.asSequence()
             .filter { it.isNaturalWonder() }
-            .map { it.naturalWonder!! to it }
-            .toMap()
+            .associateBy { it.naturalWonder!! }
         val naturalsCount = allNaturalsMap.size
 
         // Natural Wonders sort order index to name
         val naturalsIndexMap: Map<Int, String> = allNaturalsMap.keys
-            .sortedWith(compareBy(collator, { it.tr() }))
+            .sortedWith(compareBy(collator) { it.tr() })
             .withIndex()
-            .map { it.index to it.value }
-            .toMap()
+            .associate { it.index to it.value }
 
         // Pre-populate result with "Unknown" entries
         val wonders = Array(wonderCount + naturalsCount) { index ->
@@ -197,14 +216,6 @@ class WonderOverviewTab(
     }
 
     fun createGrid() {
-        defaults().pad(10f).align(Align.center)
-        add()
-        add("Name".toLabel())
-        add("Status".toLabel())
-        add("Location".toLabel())
-        add().minWidth(30f)
-        row()
-        //addSeparator()
         var lastGroup = ""
 
         for (wonder in wonders) {
