@@ -108,7 +108,7 @@ class CityInfo {
                 civilization.cities.asSequence().map { city -> city.name }
             }.toSet(),
             hasBorrowsCityNames = civInfo.hasUnique(UniqueType.BorrowsCityNames),
-            prefixes = arrayOf("New ", "Neo ", "Nova ", "Altera ")
+            prefixes = arrayListOf("New ", "Neo ", "Nova ", "Altera ")
         )
 
         isOriginalCapital = civInfo.citiesCreated == 0
@@ -203,7 +203,7 @@ class CityInfo {
         nationCityNames: List<String>,
         usedCityNames: Set<String>,
         hasBorrowsCityNames: Boolean,
-        prefixes: Array<String>
+        prefixes: List<String>
     ): String {
         // Attempt to return the first missing name from the list of city names
         for (cityName in nationCityNames) {
