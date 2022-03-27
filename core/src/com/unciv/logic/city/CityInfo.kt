@@ -102,7 +102,14 @@ class CityInfo {
         location = cityLocation
         setTransients()
 
-        setNewCityName(civInfo)
+        name = generateNewCityName(
+            nationCityNames = civInfo.nation.cities,
+            usedCityNames = civInfo.gameInfo.civilizations.asSequence().flatMap { civilization ->
+                civilization.cities.asSequence().map { city -> city.name }
+            }.toSet(),
+            hasBorrowsCityNames = civInfo.hasUnique(UniqueType.BorrowsCityNames),
+            prefixes = arrayOf("New ", "Neo ", "Nova ", "Altera ")
+        )
 
         isOriginalCapital = civInfo.citiesCreated == 0
         if (isOriginalCapital) civInfo.hasEverOwnedOriginalCapital = true
@@ -175,23 +182,56 @@ class CityInfo {
         cityConstructions.addFreeBuildings()
     }
 
-    private fun setNewCityName(civInfo: CivilizationInfo) {
-        val nationCities = civInfo.nation.cities
-        val cityNameIndex = civInfo.citiesCreated % nationCities.size
-        val cityName = nationCities[cityNameIndex]
-
-        val cityNameRounds = civInfo.citiesCreated / nationCities.size
-        if (cityNameRounds > 0 && civInfo.hasUnique(UniqueType.BorrowsCityNames)) {
-            name = borrowCityName()
-            return
+    /**
+     * Generates and returns a new city name.
+     *
+     * This method attempts to return the first unused name in the given [nationCityNames], taking
+     * [usedCityNames] into consideration. If that fails, it then checks whether the nation
+     * [hasBorrowsCityNames] and, if true, returns a borrowed name. Else, it repeatedly attaches
+     * one of the given [prefixes] to the list of names up to ten times until an unused name is
+     * successfully generated. If all else fails, it returns ["The City without a Name"][String]
+     * as a failsafe.
+     *
+     * @param nationCityNames Every city name of this nation, ordered.
+     * @param usedCityNames Every city name in use including foreign cities, unordered.
+     * @param hasBorrowsCityNames Whether this nation borrows city names or not
+     * ([UniqueType.BorrowsCityNames]).
+     * @param prefixes Prefixes to add when every base name is taken, ordered.
+     * @return A new city name in [String].
+     */
+    private fun generateNewCityName(
+        nationCityNames: List<String>,
+        usedCityNames: Set<String>,
+        hasBorrowsCityNames: Boolean,
+        prefixes: Array<String>
+    ): String {
+        // Attempt to return the first missing name from the list of city names
+        for (cityName in nationCityNames) {
+            if (cityName !in usedCityNames) return cityName
         }
-        val cityNamePrefix = when (cityNameRounds) {
-            0 -> ""
-            1 -> "New "
-            else -> "Neo "
+
+        // If all names are taken and this nation borrows city names,
+        // return a random borrowed city name
+        // TODO: Somehow purify borrowCityName()
+        if (hasBorrowsCityNames) return borrowCityName()
+
+        // If the nation doesn't have the unique above,
+        // return the first missing name with an increasing number of prefixes attached
+        // TODO: Make prefixes moddable per nation? Support suffixes?
+        var candidate: String?
+        for (number in (1..10)) {
+            for (prefix in prefixes) {
+                val currentPrefix: String = prefix.repeat(number)
+                candidate = nationCityNames.firstOrNull { cityName ->
+                    (currentPrefix + cityName) !in usedCityNames
+                }
+                if (candidate != null) return currentPrefix + candidate
+            }
         }
 
-        name = cityNamePrefix + cityName
+        // If all else fails (by using some sort of rule set mod without city names),
+        // just return something so we at least have a name
+        return "The City without a Name"
     }
 
     private fun borrowCityName(): String {
