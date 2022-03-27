@@ -133,17 +133,14 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             else state.unit
         }
         
-        val tileBasedRandom by lazy {
-            if (relevantTile != null) Random(relevantTile!!.position.toString().hashCode())
-            else Random(-550) // Yes, very random
-        }
+        val stateBasedRandom by lazy { Random(state.hashCode()) }
 
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalConsumeUnit -> true
 
-            UniqueType.ConditionalChance -> tileBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
+            UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
 
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
