@@ -38,18 +38,18 @@ class UnitOverviewTab(
     private val supplyTableWidth = (overviewScreen.stage.width * 0.25f).coerceAtLeast(240f)
     private val unitListTable = Table() // could be `this` instead, extra nesting helps readability a little
     private val unitHeaderTable = Table()
+    private val fixedContent = Table()
 
     override fun getFixedContent(): WidgetGroup {
-        return Table().apply {
-            add(getUnitSupplyTable()).align(Align.top).padBottom(10f).row()
-            add(unitHeaderTable.updateUnitHeaderTable())
-
-            equalizeColumns(unitListTable, unitHeaderTable)
-        }
+        return fixedContent
     }
 
     init {
+        fixedContent.add(getUnitSupplyTable()).align(Align.top).padBottom(10f).row()
+        fixedContent.add(unitHeaderTable.updateUnitHeaderTable())
+        top()
         add(unitListTable.updateUnitListTable())
+        equalizeColumns(unitListTable, unitHeaderTable)
     }
 
     // Here overloads are simpler than a generic:
@@ -89,7 +89,10 @@ class UnitOverviewTab(
             icon = icon,
             startsOutOpened = deficit > 0,
             defaultPad = 0f,
-            expanderWidth = supplyTableWidth
+            expanderWidth = supplyTableWidth,
+            onChange = {
+                overviewScreen.resizePage(this)
+            }
         ) {
             it.defaults().pad(5f).fill(false)
             it.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.6f))

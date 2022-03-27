@@ -133,6 +133,8 @@ class Ruleset {
         units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
+        modOptions.uniques.addAll(ruleset.modOptions.uniques)
+        modOptions.constants.merge(ruleset.modOptions.constants)
         mods += ruleset.mods
     }
 
@@ -159,6 +161,28 @@ class Ruleset {
         unitTypes.clear()
     }
 
+    fun allRulesetObjects(): Sequence<IRulesetObject> =
+            beliefs.values.asSequence() +
+            buildings.values.asSequence() +
+            //difficulties is only INamed
+            eras.values.asSequence() +
+            sequenceOf(globalUniques) +
+            nations.values.asSequence() +
+            policies.values.asSequence() +
+            policyBranches.values.asSequence() +
+            // quests is only INamed
+            // religions is just Strings
+            ruinRewards.values.asSequence() +
+            // specialists is only NamedStats
+            technologies.values.asSequence() +
+            terrains.values.asSequence() +
+            tileImprovements.values.asSequence() +
+            tileResources.values.asSequence() +
+            unitPromotions.values.asSequence() +
+            units.values.asSequence() +
+            unitTypes.values.asSequence()
+    fun allIHasUniques(): Sequence<IHasUniques> =
+            allRulesetObjects() + sequenceOf(modOptions)
 
     fun load(folderHandle: FileHandle, printOutput: Boolean) {
         val gameBasicsStartTime = System.currentTimeMillis()
@@ -227,17 +251,32 @@ class Ruleset {
 
         val policiesFile = folderHandle.child("Policies.json")
         if (policiesFile.exists()) {
-            policyBranches += createHashmap(jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile))
+            policyBranches += createHashmap(
+                jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile)
+            )
             for (branch in policyBranches.values) {
+                // Setup this branch
                 branch.requires = ArrayList()
                 branch.branch = branch
+                for (victoryType in VictoryType.values()) {
+                    if (victoryType.name !in branch.priorities.keys) {
+                        branch.priorities[victoryType.name] = 0
+                    }
+                }
                 policies[branch.name] = branch
+
+                // Append child policies of this branch
                 for (policy in branch.policies) {
                     policy.branch = branch
-                    if (policy.requires == null) policy.requires = arrayListOf(branch.name)
+                    if (policy.requires == null) {
+                        policy.requires = arrayListOf(branch.name)
+                    }
                     policies[policy.name] = policy
                 }
-                branch.policies.last().name = branch.name + Policy.branchCompleteSuffix
+
+                // Add a finisher
+                branch.policies.last().name =
+                    branch.name + Policy.branchCompleteSuffix
             }
         }
 
@@ -842,11 +881,11 @@ object RulesetCache : HashMap<String,Ruleset>() {
             baseRuleset
 
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
-            newRuleset.add(mod)
-            newRuleset.mods += mod.name
             if (mod.modOptions.isBaseRuleset) {
                 newRuleset.modOptions = mod.modOptions
             }
+            newRuleset.add(mod)
+            newRuleset.mods += mod.name
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 

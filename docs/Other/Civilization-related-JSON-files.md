@@ -2,6 +2,7 @@
 - [Buildings.json](#buildingsjson)
 - [Nations.json](#nationsjson)
 - [Policies.json](#policiesjson)
+		- [Branch priorities](#branch-priorities)
 - [Quests.json](#questsjson)
 - [Religions.json](#religionsjson)
 - [Specialists.json](#specialistsjson)
@@ -109,6 +110,7 @@ Each policy branch can have the following properties:
 |-----------|------|-----------|-------|
 | name | String | Required |  |
 | era | String | Required | Unlocking era as defined in [Eras.json](Miscellaneous-JSON-files.md#erasjson) |
+| priorities | Object | Default empty | Priorities for each victory type, [see here](#branch-priorities)
 | uniques | List | Default empty | List of effects, [see here](../Modders/Unique-parameter-types.md#general-uniques) |
 | policies | List | Default empty | List of member policies |
 
@@ -121,6 +123,16 @@ Each member policy can have the following properties:
 | requires | List | Default empty | List of prerequisite policy names |
 | uniques | List | Default empty | List of effects, [see here](../Modders/Unique-parameter-types.md#general-uniques) |
 
+#### Branch priorities
+The "priorities" object lists its branch's priorities for each victory type. The AI refers to this when deciding which branch to prioritize, also taking its preferred victory type into consideration. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates. All values are set to 0 if the object itself is missing or empty.
+
+| Attribute | Type | Optional? | Notes |
+|-----------|------|-----------|-------|
+| Neutral | Int | Default 0 | Priority value when the AI's preferred victory type is Neutral |
+| Cultural | Int | Default 0 | Priority value when the AI's preferred victory type is Cultural |
+| Diplomatic | Int | Default 0 | Priority value when the AI's preferred victory type is Diplomatic |
+| Domination | Int | Default 0 | Priority value when the AI's preferred victory type is Domination|
+| Scientific | Int | Default 0 | Priority value when the AI's preferred victory type is Scientific |
 
 ## Quests.json
 [Link to original](/jsons/Civ%20V%20-%20Vanilla/Quests.json)

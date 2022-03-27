@@ -1,3 +1,16 @@
+## 4.0.1
+
+Custom server port  - By HAHH9527
+
+Add Moddable Policy Priorities  - By HaneulCheong
+
+By SomeTroglodyte:
+- Enable ModOptions uniques and ModConstants from non-base mods 
+- Improved Widgets - Fixing Tabbed Pager Scrolling 
+- Make max Zoom out a setting
+- More thorough workaround for Char.code and Char(Int) crashing 
+- Fix crashes and better crash info
+
 ## 4.0.0
 
 Can now host your own Unciv server for Multiplayer - details in the wiki! 

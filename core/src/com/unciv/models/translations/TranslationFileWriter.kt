@@ -70,8 +70,12 @@ object TranslationFileWriter {
             if (templateFile.exists())
                 linesToTranslate.addAll(templateFile.reader(TranslationFileReader.charset).readLines())
 
-            linesToTranslate += "\n######### City filters ###########\n"
-            linesToTranslate.addAll(UniqueParameterType.cityFilterStrings.map { "$it = " })
+            for (uniqueParameterType in UniqueParameterType.values()) {
+                val strings = uniqueParameterType.getTranslationWriterStringsForOutput()
+                if (strings.isEmpty()) continue
+                linesToTranslate += "\n######### ${uniqueParameterType.displayName} ###########\n"
+                linesToTranslate.addAll(strings.map { "$it = " })
+            }
 
             for (baseRuleset in BaseRuleset.values()) {
                 val generatedStringsFromBaseRuleset =
@@ -91,30 +95,19 @@ object TranslationFileWriter {
         }
 
 
-        linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
-        for (unique in UniqueType.values()) {
-            val deprecationAnnotation = unique.getDeprecationAnnotation()
-            if (deprecationAnnotation != null) continue
-            if (unique.flags.contains(UniqueFlag.HiddenToUsers)) continue
+        if (modFolder == null) { // base game
+            linesToTranslate.add("\n\n#################### Lines from Unique Types #######################\n")
+            for (uniqueType in UniqueType.values()) {
+                val deprecationAnnotation = uniqueType.getDeprecationAnnotation()
+                if (deprecationAnnotation != null) continue
+                if (uniqueType.flags.contains(UniqueFlag.HiddenToUsers)) continue
 
-            // to get rid of multiple equal parameters, like "[amount] [amount]", don't use the unique.text directly
-            //  instead fill the placeholders with incremented values if the previous one exists
-            val newPlaceholders = ArrayList<String>()
-            for (placeholderText in unique.text.getPlaceholderParameters()) {
-                if (!newPlaceholders.contains(placeholderText))
-                    newPlaceholders += placeholderText
-                else {
-                    var i = 2
-                    while (newPlaceholders.contains(placeholderText + i)) i++
-                    newPlaceholders += placeholderText + i
-                }
+                linesToTranslate.add("${uniqueType.getTranslatable()} = ")
             }
-            val finalText = unique.text.fillPlaceholders(*newPlaceholders.toTypedArray())
-            linesToTranslate.add("$finalText = ")
-        }
 
-        for (uniqueTarget in UniqueTarget.values())
-            linesToTranslate.add("$uniqueTarget = ")
+            for (uniqueTarget in UniqueTarget.values())
+                linesToTranslate.add("$uniqueTarget = ")
+        }
 
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()
@@ -213,7 +206,6 @@ object TranslationFileWriter {
     }
 
     private fun generateTutorialsStrings(): MutableSet<String> {
-
         val tutorialsStrings = mutableSetOf<String>()
         val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
@@ -236,30 +228,27 @@ object TranslationFileWriter {
         }
     }
 
-    private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
-        // build maps identifying parameters as certain types of filters - unitFilter etc
-        val ruleset = RulesetCache.getVanillaRuleset()
-        val tileFilterMap = ruleset.terrains.keys.toMutableSet().apply { addAll(sequenceOf(
-            "Friendly Land",
-            "Foreign Land",
-            Constants.freshWater,
-            "non-fresh water",
-            "Open Terrain",
-            "Rough Terrain",
-            "Natural Wonder",
-            "unimproved"
-        )) }
-        val tileImprovementMap = ruleset.tileImprovements.keys.toMutableSet().apply { add("Great Improvement") }
-        val buildingMap = ruleset.buildings.keys.toMutableSet().apply { addAll(sequenceOf(
-            "Wonders",
-            "Wonder",
-            "National Wonder",
-            "World Wonder",
-            "Buildings",
-            "Building"
-        )) }
-        val unitTypeMap = ruleset.unitTypes.keys.toMutableSet().apply { addAll(UniqueParameterType.unitTypeStrings) }
+    private fun UniqueType.getTranslatable(): String {
+        // to get rid of multiple equal parameters, like "[amount] [amount]", don't use the unique.text directly
+        //  instead fill the placeholders with incremented values if the previous one exists
+        val newPlaceholders = ArrayList<String>()
+        for (placeholderText in text.getPlaceholderParameters()) {
+            newPlaceholders.addNumberedParameter(placeholderText)
+        }
+        return text.fillPlaceholders(*newPlaceholders.toTypedArray())
+    }
+    private fun ArrayList<String>.addNumberedParameter(name: String) {
+        if (name !in this) {
+            this += name
+            return
+        }
+        var i = 2
+        while (name + i in this) i++
+        this += name + i
+    }
 
+    private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
+        val ruleset = RulesetCache.getVanillaRuleset()
         val startMillis = System.currentTimeMillis()
 
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
@@ -289,38 +278,20 @@ object TranslationFileWriter {
                     return // We don't need to translate this at all, not user-visible
                 var stringToTranslate = string.removeConditionals()
 
-                val existingParameterNames = HashSet<String>()
                 if (unique.params.isNotEmpty()) {
-                    for ((index,parameter) in unique.params.withIndex()) {
-                        var parameterName = when {
-                            unique.type != null -> {
+                    val parameterNames = ArrayList<String>()
+                    for ((index, parameter) in unique.params.withIndex()) {
+                        val parameterName =
+                            if (unique.type != null) {
                                 val possibleParameterTypes = unique.type.parameterTypeMap[index]
                                 // for multiple types. will look like "[unitName/buildingName]"
                                 possibleParameterTypes.joinToString("/") { it.parameterName }
+                            } else {
+                                UniqueParameterType.guessTypeForTranslationWriter(parameter, ruleset).parameterName
                             }
-                            parameter.toFloatOrNull() != null -> "amount"
-                            Stat.values().any { it.name == parameter } -> "stat"
-                            parameter in tileFilterMap -> "tileFilter"
-                            ruleset.units.containsKey(parameter) -> "unit"
-                            parameter in tileImprovementMap -> "tileImprovement"
-                            ruleset.tileResources.containsKey(parameter) -> "resource"
-                            ruleset.technologies.containsKey(parameter) -> "tech"
-                            ruleset.unitPromotions.containsKey(parameter) -> "promotion"
-                            parameter in buildingMap -> "building"
-                            parameter in unitTypeMap -> "unitType"
-                            Stats.isStats(parameter) -> "stats"
-                            parameter in UniqueParameterType.cityFilterStrings -> "cityFilter"
-                            else -> "param"
-                        }
-                        if (parameterName in existingParameterNames) {
-                            var i = 2
-                            while (parameterName + i in existingParameterNames) i++
-                            parameterName += i
-                        }
-                        existingParameterNames += parameterName
-
-                        stringToTranslate = stringToTranslate.replaceFirst(parameter, parameterName)
+                        parameterNames.addNumberedParameter(parameterName)
                     }
+                    stringToTranslate = stringToTranslate.fillPlaceholders(*parameterNames.toTypedArray())
                 } else if (string.contains('{')) {
                     val matches = curlyBraceRegex.findAll(string)
                     if (matches.any()) {
@@ -338,20 +309,35 @@ object TranslationFileWriter {
                     submitString(element)
                     return
                 }
-                val allFields = (
-                            element.javaClass.declaredFields
-                            + element.javaClass.fields
-                            // Include superclass so the main PolicyBranch, which inherits from Policy,
-                            // will recognize its Uniques and have them translated
-                            + element.javaClass.superclass.declaredFields
-                        ).filter {
+
+                // Example: PolicyBranch inherits from Policy inherits from RulesetObject.
+                // RulesetObject has the name and uniques properties and we wish to include them.
+                // So we need superclass recursion to be sure not to miss stuff in the future.
+                // The superclass != null check is made obsolete in theory by the Object check, but better play safe.
+                fun Class<*>.allSupers(): Sequence<Class<*>> = sequence {
+                    if (this@allSupers == Object::class.java) return@sequence
+                    yield(this@allSupers)
+                    if (superclass != null)
+                        yieldAll(superclass.allSupers())
+                }
+                // Including `fields` is dubious. AFAIK it is an incomplete view of what we're getting via superclass recursion.
+                val allFields = element.javaClass.fields.asSequence() +
+                        element.javaClass.allSupers().flatMap { it.declaredFields.asSequence() }
+                // Filter by classes we can and want to process, avoid Companion fields
+                // Note lazies are not Modifier.TRANSIENT but their type is different and excluded
+                val relevantFields = allFields.filter {
+                        (it.modifiers and (Modifier.STATIC or Modifier.TRANSIENT)) == 0
+                        && (
                             it.type == String::class.java ||
                             it.type == java.util.ArrayList::class.java ||
                             it.type == java.util.List::class.java ||        // CivilopediaText is not an ArrayList
                             it.type == java.util.HashSet::class.java ||
                             it.type.isEnum  // allow scanning Enum names
-                        }
-                for (field in allFields) {
+                        )
+                        && it.type != element.javaClass  // avoid following infinite loops
+                    }.distinct()  // We do get duplicates even without `fields`, no need to do double work, even if submitString operates on a set
+
+                for (field in relevantFields) {
                     field.isAccessible = true
                     val fieldValue = field.get(element)
                     if (isFieldTranslatable(javaClass, field, fieldValue)) { // skip fields which must not be translated
