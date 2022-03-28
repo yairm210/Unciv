@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
@@ -44,9 +43,7 @@ class UnitOverviewTab(
     private val unitHeaderTable = Table()
     private val fixedContent = Table()
 
-    override fun getFixedContent(): WidgetGroup {
-        return fixedContent
-    }
+    override fun getFixedContent() = fixedContent
 
     init {
         fixedContent.add(getUnitSupplyTable()).align(Align.top).padBottom(10f).row()

@@ -2,7 +2,6 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.BaseScreen
@@ -14,20 +13,18 @@ abstract class EmpireOverviewTab (
     val viewingPlayer: CivilizationInfo,
     val overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
-) : Table(BaseScreen.skin), TabbedPager.IPageActivation {
+) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     open class EmpireOverviewTabPersistableData {
         open fun isEmpty() = true
     }
     open val persistableData = persistedData ?: EmpireOverviewTabPersistableData()
+
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         val settings = overviewScreen.game.settings
         if (caption == "Stats")
             settings.addCompletedTutorialTask("See your stats breakdown")
         settings.lastOverviewPage = caption
     }
-
-    /** Override to supply content not participating in scrolling */
-    open fun getFixedContent(): WidgetGroup? = null
 
     val gameInfo = viewingPlayer.gameInfo
 

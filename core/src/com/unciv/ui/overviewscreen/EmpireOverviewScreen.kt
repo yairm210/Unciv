@@ -67,8 +67,7 @@ class EmpireOverviewScreen(
                 icon, iconSize,
                 disabled = tabState != EmpireOverviewTabState.Normal,
                 shortcutKey = category.shortcutKey,
-                scrollAlign = category.scrollAlign,
-                fixedContent = pageObject.getFixedContent()
+                scrollAlign = category.scrollAlign
             )
             if (category.name == page)
                 tabbedPager.selectPage(index)
@@ -88,6 +87,6 @@ class EmpireOverviewScreen(
 
     fun resizePage(tab: EmpireOverviewTab) {
         val category = (pageObjects.entries.find { it.value == tab } ?: return).key
-        tabbedPager.replacePage(category.name, tab, tab.getFixedContent())
+        tabbedPager.replacePage(category.name, tab)
     }
 }

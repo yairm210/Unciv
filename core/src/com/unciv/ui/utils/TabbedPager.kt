@@ -9,7 +9,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
-
 //TODO If keys are assigned, the widget is in a popup not filling stage width, and a button is
 // partially visible on the right end, the key tooltip will show outside the parent.
 
@@ -83,12 +82,17 @@ class TabbedPager(
     //endregion
     //region Public Interfaces
 
-    /** Pages added via [addPage] can optionally implement this to get notified when they are [activated] or [deactivated]. */
-    interface IPageActivation {
+    /** Pages added via [addPage] can optionally implement this to get notified when they are
+     *  [activated] or [deactivated], or to provide [fixed content][getFixedContent] */
+    interface IPageExtensions {
         /** Called by [TabbedPager] after a page is shown, whether by user click or programmatically. */
         fun activated(index: Int, caption: String, pager: TabbedPager)
+
         /** Called by [TabbedPager] before a page is hidden, whether by user click or programmatically. */
         fun deactivated(index: Int, caption: String, pager: TabbedPager) {}
+
+        /** @return Optional second content [Actor], will be placed outside the tab's main [ScrollPane] between header and `content`. Scrolls horizontally only. */
+        fun getFixedContent(): Actor? = null
     }
 
     //endregion
@@ -260,7 +264,7 @@ class TabbedPager(
         }
     }
 
-    private class EmptyClosePage(private val action: ()->Unit) : Actor(), IPageActivation {
+    private class EmptyClosePage(private val action: ()->Unit) : Actor(), IPageExtensions {
         override fun activated(index: Int, caption: String, pager: TabbedPager) {
             action()
         }
@@ -331,7 +335,7 @@ class TabbedPager(
 
         if (activePage != -1) {
             val page = pages[activePage]
-            (page.content as? IPageActivation)?.deactivated(activePage, page.caption, this)
+            (page.content as? IPageExtensions)?.deactivated(activePage, page.caption, this)
             page.button.color = Color.WHITE
             fixedContentScroll.actor = null
             page.scrollX = contentScroll.scrollX
@@ -379,7 +383,7 @@ class TabbedPager(
                 // when coming from a tap/click, can we at least ensure no part of it is outside the visible area
                 headerScroll.run { scrollX = scrollX.coerceIn((page.buttonX + page.buttonW - scrollWidth)..page.buttonX) }
 
-            (page.content as? IPageActivation)?.activated(index, page.caption, this)
+            (page.content as? IPageExtensions)?.activated(index, page.caption, this)
         }
         return true
     }
@@ -464,18 +468,7 @@ class TabbedPager(
         if (isActive) selectPage(-1)
         pages[index].let {
             it.content = content
-            measureContent(it)
-        }
-        if (isActive) selectPage(index)
-    }
-    /** Replace a page's [content] and [fixedContent] by its [index]. */
-    fun replacePage(index: Int, content: Actor, fixedContent: Actor?) {
-        if (index !in 0 until pages.size) return
-        val isActive = index == activePage
-        if (isActive) selectPage(-1)
-        pages[index].let {
-            it.content = content
-            it.fixedContent = fixedContent
+            it.fixedContent = (content as? IPageExtensions)?.getFixedContent()
             measureContent(it)
         }
         if (isActive) selectPage(index)
@@ -483,20 +476,17 @@ class TabbedPager(
 
     /** Replace a page's [content] by its [caption]. */
     fun replacePage(caption: String, content: Actor) = replacePage(getPageIndex(caption), content)
-    /** Replace a page's [content] and [fixedContent] by its [caption]. */
-    fun replacePage(caption: String, content: Actor, fixedContent: Actor?) = replacePage(getPageIndex(caption), content, fixedContent)
 
     /** Add a page!
      * @param caption Text to be shown on the header button (automatically translated), can later be used to reference the page in other calls.
-     * @param content [Actor] to show in the lower area when this page is selected. Can optionally implement [IPageActivation] to be notified of activation or deactivation.
+     * @param content [Actor] to show in the lower area when this page is selected. Can optionally implement [IPageExtensions] to be notified of activation or deactivation.
      * @param icon Actor, typically an [Image], to show before the caption on the header button.
      * @param iconSize Size for [icon] - if not zero, the icon is wrapped to allow a [setSize] even on [Image] which ignores size.
      * @param insertBefore -1 to add at the end, or index of existing page to insert this before it.
      * @param secret Marks page as 'secret'. A password is asked once per [TabbedPager] and if it does not match the has passed in the constructor the page and all subsequent secret pages are dropped.
      * @param disabled Initial disabled state. Disabled pages cannot be selected even with [selectPage], their button is dimmed.
      * @param shortcutKey Optional keyboard key to associate - goes to the [KeyPressDispatcher] passed in the constructor.
-     * @param syncScroll If on, the ScrollPanes for [content] and [fixedContent] will synchronize horizontally.
-     * @param fixedContent Optional second content [Actor], will be placed outside the tab's main [ScrollPane] between header and [content]. Scrolls horizontally only.
+     * @param syncScroll If on, the ScrollPanes for [content] and [fixed content][IPageExtensions.getFixedContent] will synchronize horizontally.
      * @return The new page's index or -1 if it could not be immediately added (secret).
      */
     fun addPage(
@@ -509,14 +499,13 @@ class TabbedPager(
         disabled: Boolean = false,
         shortcutKey: KeyCharAndCode = KeyCharAndCode.UNKNOWN,
         scrollAlign: Int = Align.top,
-        syncScroll: Boolean = true,
-        fixedContent: Actor? = null
+        syncScroll: Boolean = true
     ): Int {
         // Build page descriptor and header button
         val page = PageState(
                 caption = caption,
                 content = content ?: Group(),
-                fixedContent = fixedContent,
+                fixedContent = (content as? IPageExtensions)?.getFixedContent(),
                 disabled = disabled,
                 icon = icon,
                 iconSize = iconSize,
