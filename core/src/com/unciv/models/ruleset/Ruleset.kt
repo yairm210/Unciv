@@ -572,7 +572,7 @@ class Ruleset {
         val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
 
 
-        if (units.values.none { it.uniques.contains(UniqueType.FoundCity.text) })
+        if (units.values.none { it.hasUnique(UniqueType.FoundCity) })
            lines += "No city-founding units in ruleset!"
 
         for (unit in units.values) {
@@ -745,6 +745,10 @@ class Ruleset {
                         lines += "${policy.name} requires policy $prereq which does not exist!"
             checkUniques(policy, lines, rulesetSpecific, forOptionsPopup)
         }
+        
+        for (policy in policyBranches.values.flatMap { it.policies + it })
+            if (policy != policies[policy.name])
+                lines += "More than one policy with the name ${policy.name} exists!"
 
         for (reward in ruinRewards.values) {
             for (difficulty in reward.excludedDifficulties)
@@ -870,11 +874,12 @@ object RulesetCache : HashMap<String,Ruleset>() {
         val newRuleset = Ruleset()
 
         val baseRuleset =
-            if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
+            if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset)
+                this[optionalBaseRuleset]!!
             else getVanillaRuleset()
 
 
-        val loadedMods = mods
+        val loadedMods = mods.asSequence()
             .filter { containsKey(it) }
             .map { this[it]!! }
             .filter { !it.modOptions.isBaseRuleset } + 
@@ -882,7 +887,9 @@ object RulesetCache : HashMap<String,Ruleset>() {
 
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             if (mod.modOptions.isBaseRuleset) {
-                newRuleset.modOptions = mod.modOptions
+                // This is so we don't keep using the base ruleset's unqiues *by reference* and add to in ad infinitum
+                newRuleset.modOptions.uniques = ArrayList()
+                newRuleset.modOptions.isBaseRuleset = true
             }
             newRuleset.add(mod)
             newRuleset.mods += mod.name

@@ -10,6 +10,14 @@ To do so, you must have a JDK installed.
 From the directory where the Unciv.jar file is located, open a terminal and run the following line:
 `java -cp Unciv.jar com.unciv.app.desktop.UncivServer`
 
+Don't forget to use 'cd' to switch to the correct dictionary. Here's an example in Windows.
+```
+D:
+cd Games
+cd unciv
+java -cp Unciv.jar com.unciv.app.desktop.UncivServer
+```
+
 Your server has now started!
 
 

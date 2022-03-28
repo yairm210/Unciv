@@ -466,13 +466,12 @@ open class TileInfo {
             improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!) -> false
             getOwner() != civInfo && !(
                 improvement.hasUnique(UniqueType.CanBuildOutsideBorders)
-                    || ( // citadel can be built only next to or within own borders
-                        improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders)
-                        && neighbors.any { it.getOwner() == civInfo } && civInfo.cities.isNotEmpty()
-                    )
+                || ( // citadel can be built only next to or within own borders
+                    improvement.hasUnique(UniqueType.CanBuildJustOutsideBorders)
+                    && neighbors.any { it.getOwner() == civInfo }
+                )
                 ) -> false
-            improvement.uniqueObjects.filter { it.type == UniqueType.OnlyAvailableWhen }
-                .any { !it.conditionalsApply(StateForConditionals(civInfo)) } -> false
+            improvement.hasUnique(UniqueType.OnlyAvailableWhen, StateForConditionals(civInfo=civInfo, tile=this)) -> false
             improvement.getMatchingUniques(UniqueType.ObsoleteWith).any {
                 civInfo.tech.isResearched(it.params[0])
             } -> return false
