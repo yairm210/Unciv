@@ -211,7 +211,8 @@
 
 		"startIntroPart1": "The blessings of the gods be upon you, Caesar Augustus, emperor of Rome and all her holdings. Your empire was the greatest and longest lived of all in Western civilization. And your people single-handedly shaped its culture, law, art, and warfare like none other, before or since. Through years of glorious conquest, Rome came to dominate all the lands of the Mediterranean from Spain in the west to Syria in the east. And her dominion would eventually expand to cover much of England and northern Germany. Roman art and architecture still awe and inspire the world. And she remains the envy of all lesser civilizations who have followed.",
 		"startIntroPart2": "O mighty emperor, your people turn to you to once more reclaim the glory of Rome! Will you see to it that your empire rises again, bringing peace and order to all? Will you make Rome once again center of the world? Can you build a civilization that will stand the test of time?",
-		"declaringWar": "My treasury contains little and my soldiers are getting impatient... <sigh> ...therefore you must die.",
+		// The original <sigh> causes translation problems
+		"declaringWar": "My treasury contains little and my soldiers are getting impatient... (sigh) ...therefore you must die.",
 		"attacked": "So brave, yet so stupid! If only you had a brain similar to your courage.",
 		"defeated": "The gods have deprived Rome of their favour. We have been defeated.",
 		"introduction": "I greet you. I am Augustus, Imperator and Pontifex Maximus of Rome. If you are a friend of Rome, you are welcome.",
@@ -317,7 +318,7 @@
 		"startIntroPart2": "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?",
 		"declaringWar": "I have just received a report that large numbers of my troops have crossed your borders.",
 		"attacked": "My attempts to avoid violence have failed. An eye for an eye only makes the world blind.",
-		"defeated": "You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. ",
+		"defeated": "You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind.",
 		"introduction": "Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend.",
 		"neutralHello": "I wish you peace.",
 		"hateHello": "What do you want?",
@@ -782,7 +783,7 @@
 		"startIntroPart1": "Noble and virtuous Queen Maria Theresa, Holy Roman Empress and sovereign of Austria, the people bow to your gracious will. Following the death of your father King Charles VI, you ascended the thone of Austria during a time of great instability, but the empty coffers and diminished military did litle to dissuade your ambitions. Faced with war almost immediately upon your succession to the thron, you managed to fend off your foes, and in naming your husband Francis Stephen co-ruler, assured your place as Empress of the Holy Roman Empire. During your reigh, you guided Austria on a new path of reform - strengthening the military, replenishing the treasury, and improving the educational system of the kingdom.",
 		"startIntroPart2": "Oh great queen, bold and dignified, the time has come for you to rise and guide the kingdom once again. Can you return your people to the height of prosperity and splendor? Will you build a civilization that stands the test of time?",
 
-		"declaringWar": "Shame that it has come this far. But ye wished it so. Next time, be so good, choose your words more wisely. ",
+		"declaringWar": "Shame that it has come this far. But ye wished it so. Next time, be so good, choose your words more wisely.",
 		"attacked": "What a fool ye are! Ye will end swiftly and miserably.",
 		"defeated": "The world is pitiful! There's no beauty in it, no wisdom. I am almost glad to go.",
 		"introduction": "The archduchess of Austria welcomes your Eminence to... Oh let's get this over with! I have a luncheon at four o'clock.",

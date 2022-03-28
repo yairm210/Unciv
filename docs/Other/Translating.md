@@ -50,6 +50,12 @@ Make sure that you make the changes in the 'master' branch in your repo!
 
 Each untranslated phrase will have a "requires translation" line before it, so you can quickly find them. You don't need to remove them yourself if you don't want to - they will be automatically removed the next time we rebuild the file.
 
+Order of lines does not matter, they will be rearranged automatically each release.
+
+When Unciv no longer needs a translation entry, it will be moved to the end and prefixed with `#~~`. Those removed lines will survive automatic processes, so please check them and remove those where you are sure they will indeed no longer be needed. They exist for cases where e.g. a detail in the english source version needed changing - that will invalidate existing translations, but now you can recover previous versions and adapt them to the new template.
+
+You can leave very limited comments to yourself or other translators - prefix comments with `#~~#<number> = ` (assign sequential numbers to that `<number>` placeholder) and place them at the end of the file. The comment style you see in the rest of the file is reserved for internal use, and placing such comments in earlier parts will lead to them being moved to the end by the next release.
+
 Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
 
 Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
@@ -64,10 +70,12 @@ Sometimes, new strings (names, uniques, etc) are added in the json files. In ord
 
 - Goes over the template.properties and copies translation lines
 - For every json file in the jsons folder
-    - Selects all string values - both in objects, and in arrays in objects
+    - Selects all string values - both in objects, and in arrays in objects, to any inheritance or nesting level.
+      (Collections that can be parsed must be derived from List or AbstractCollection)
     - Generates a 'key = value' line
+- Scans knowledge from UniqueType and UniqueParameterType instances and generates 'key = value' lines for them
 
-This means that every text that ISN'T in the jsons needs to be added manually to the template.properties in order to be translated!
+This means that every text that ISN'T in the jsons or the UniqueType system needs to be added manually to the template.properties in order to be translated!
 That also means if you've been adding new json structures you (or someone) should check TranslationFileWriter and see if it is able to cope with them.
 
 ## Rules for templates added manually
@@ -82,3 +90,6 @@ Translation templates can use placeholders, and there's two varieties: `[]` and 
 Square brackets `[]` mean the outer and inner components are both translated individually. The outer template will use alias names inside the brackets - example: Your code outputs "Everyone gains [5000] gold!", then the translation template should be "Everyone gains [amount] gold! = ". The translation engine would translate the "Everyone gains [] gold!" and "5000" individually and reassemble them - of course, the number is simply passed through. But in other cases that could be e.g. a Unit name that would be translated, and you could trust that translations for units are already handled just fine. Note that [uniques](../Modders/Unique-parameter-types.md) often use the feature, but it is in no way limited to them. It it makes life easier for translators, use it.
 
 Curly brackets `{}` are simpler - the contents within the brackets are translated individually, while the outer parts are passed through verbatim. Example: `"+$amount${Fonts.gold} {Gold}".toLabel()` - note the first `${}` is a kotlin template while the second pair becomes part of the string. It tells the translation engine to ignore the numbers and the symbol but to translate the single word "Gold".
+
+## Rules for all sources
+The [], {} and <> bracket types are used internally and cannot be part of a translatable text. Use () instead.
