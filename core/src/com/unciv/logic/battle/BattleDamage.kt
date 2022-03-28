@@ -206,6 +206,7 @@ object BattleDamage {
         return modifiers
     }
     
+    @Deprecated("As of 4.0.3", level=DeprecationLevel.WARNING)
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
@@ -226,14 +227,14 @@ object BattleDamage {
     }
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
-        return if (combatant !is MapUnitCombatant // is city
-            || (combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
-                && !combatant.unit.baseUnit.movesLikeAirUnits()
-            )
+        return if (combatant !is MapUnitCombatant
+            || combatant.unit.hasUnique(UniqueType.NoDamagePenalty, checkCivInfoUniques = true)
+            || combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
         ) {
             1f
         }
-        else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game
+        // Each 3 points of health reduces damage dealt by 1%
+        else 1 - (100 - combatant.getHealth()) / 300f 
     }
 
 
