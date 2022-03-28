@@ -181,19 +181,6 @@ object TranslationFileWriter {
 
             countOfTranslatedLines[language] = translationsOfThisLanguage
 
-            // As a courtesy to translators, add in any deletions as comments
-            var needHeader = true
-            for ((translationKey, translationEntry) in translations) {
-                if (translationKey in existingTranslationKeys) continue
-                val translationValue = translationEntry[language] ?: continue
-                if (needHeader) {
-                    needHeader = false
-                    stringBuilder.appendLine("\n#################### Removed Lines ####################\n")
-                }
-                val prefix = (if (translationKey.startsWith("#~~")) "" else "#~~")
-                stringBuilder.appendTranslation(prefix + translationKey, translationValue)
-            }
-
             val fileWriter = getFileHandle(modFolder, languageFileLocation.format(language))
             // Any time you have more than 3 line breaks, make it 3
             val finalFileText = stringBuilder.toString().replace(Regex("\n{4,}"),"\n\n\n")
