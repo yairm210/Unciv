@@ -96,10 +96,10 @@ class WonderOverviewTab(
             row()
         }
 
+        top()
         defaults().pad(10f).align(Align.center)
         (1..5).forEach { _ -> add() }  // dummies so equalizeColumns can work because the first grid cell is colspan(5)
         row()
-        top()
 
         createGrid()
 
