@@ -3,18 +3,17 @@ package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
-import com.unciv.models.UnitActionType
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.*
+import com.unciv.models.translations.TranslationFileWriter
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.OutputStream
 import java.io.PrintStream
-import java.util.*
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
@@ -41,13 +40,13 @@ class TranslationTests {
                 translations.size > 0)
     }
 
-    
+
     // This test is incorrectly defined: it should read from the template.properties file and not fro the final translation files.
 //    @Test
 //    fun allUnitActionsHaveTranslation() {
 //        val actions: MutableSet<String> = HashSet()
 //        for (action in UnitActionType.values()) {
-//            actions.add( 
+//            actions.add(
 //                when(action) {
 //                    UnitActionType.Upgrade -> "Upgrade to [unitType] ([goldCost] gold)"
 //                    UnitActionType.Create -> "Create [improvement]"
@@ -88,6 +87,7 @@ class TranslationTests {
         var allTranslationsHaveCorrectPlaceholders = true
         val languages = translations.getLanguages()
         for (key in translations.keys) {
+            if (key.startsWith(TranslationFileWriter.removedEntryMarker)) continue
             val translationEntry = translations[key]!!.entry
             val placeholders = squareBraceRegex.findAll(translationEntry)
                     .map { it.value }.toList()
@@ -122,7 +122,7 @@ class TranslationTests {
             }
         }
         Assert.assertTrue(
-                "This test will only pass when all placeholder translations'keys match their entry with shortened placeholders",
+                "This test will only pass when all placeholder translation's keys match their entry with shortened placeholders",
                 allPlaceholderKeysMatchEntry
         )
     }
@@ -131,6 +131,7 @@ class TranslationTests {
     fun noTwoPlaceholdersAreTheSame() {
         var noTwoPlaceholdersAreTheSame = true
         for (translationEntry in translations.values) {
+            if (translationEntry.entry.startsWith(TranslationFileWriter.removedEntryMarker)) continue
             val placeholders = squareBraceRegex.findAll(translationEntry.entry)
                     .map { it.value }.toList()
 
@@ -172,7 +173,7 @@ class TranslationTests {
 
         var allWordsTranslatedCorrectly = true
         for (translationEntry in translations.values) {
-            for ((language, translation) in translationEntry) {
+            for ((language, _) in translationEntry) {
                 UncivGame.Current.settings.language = language
                 try {
                     translationEntry.entry.tr()
@@ -187,11 +188,11 @@ class TranslationTests {
             allWordsTranslatedCorrectly
         )
     }
-    
+
     @Test
     fun wordBoundaryTranslationIsFormattedCorrectly() {
         val translationEntry = translations["\" \""]!!
-                
+
         var allTranslationsCheckedOut = true
         for ((language, translation) in translationEntry) {
             if (!translation.startsWith("\"")
@@ -202,19 +203,19 @@ class TranslationTests {
                 println("Translation of the word boundary in $language was incorrectly formatted")
             }
         }
-        
+
         Assert.assertTrue(
-            "This test will only pass when the word boundrary translation succeeds",
+            "This test will only pass when the word boundary translation succeeds",
             allTranslationsCheckedOut
         )
     }
-    
+
 //    @Test
 //    fun allConditionalsAreContainedInConditionalOrderTranslation() {
 //        val orderedConditionals = Translations.englishConditionalOrderingString
 //        val orderedConditionalsSet = orderedConditionals.getConditionals().map { it.placeholderText }
 //        val translationEntry = translations[orderedConditionals]!!
-//        
+//
 //        var allTranslationsCheckedOut = true
 //        for ((language, translation) in translationEntry) {
 //            val translationConditionals = translation.getConditionals().map { it.placeholderText }
@@ -225,7 +226,7 @@ class TranslationTests {
 //                println("Not all or double parameters found in the conditional ordering for $language")
 //            }
 //        }
-//        
+//
 //        Assert.assertTrue(
 //            "This test will only pass when each of the conditionals exists exactly once in the translations for the conditional ordering",
 //            allTranslationsCheckedOut

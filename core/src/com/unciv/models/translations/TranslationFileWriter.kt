@@ -22,6 +22,7 @@ object TranslationFileWriter {
     private const val specialNewLineCode = "# This is an empty line "
     const val templateFileLocation = "jsons/translations/template.properties"
     private const val languageFileLocation = "jsons/translations/%s.properties"
+    const val removedEntryMarker = "#~~"
 
     fun writeNewTranslationFiles(): String {
         try {
@@ -190,8 +191,8 @@ object TranslationFileWriter {
                     needHeader = false
                     stringBuilder.appendLine("\n#################### Removed Lines ####################\n")
                 }
-                val prefix = (if (translationKey.startsWith("#~~")) "" else "#~~")
-                stringBuilder.appendTranslation(prefix + translationKey, translationValue)
+                val prefix = (if (translationKey.startsWith(removedEntryMarker)) "" else removedEntryMarker)
+                stringBuilder.appendTranslation(prefix + translationEntry.entry, translationValue)
             }
 
             val fileWriter = getFileHandle(modFolder, languageFileLocation.format(language))
