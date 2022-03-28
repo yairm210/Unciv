@@ -745,6 +745,10 @@ class Ruleset {
                         lines += "${policy.name} requires policy $prereq which does not exist!"
             checkUniques(policy, lines, rulesetSpecific, forOptionsPopup)
         }
+        
+        for (policy in policyBranches.values.flatMap { it.policies + it })
+            if (policy != policies[policy.name])
+                lines += "More than one policy with the name ${policy.name} exists!"
 
         for (reward in ruinRewards.values) {
             for (difficulty in reward.excludedDifficulties)
@@ -870,7 +874,8 @@ object RulesetCache : HashMap<String,Ruleset>() {
         val newRuleset = Ruleset()
 
         val baseRuleset =
-            if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
+            if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset)
+                this[optionalBaseRuleset]!!
             else getVanillaRuleset()
 
 
