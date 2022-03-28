@@ -1,15 +1,11 @@
 ## 4.0.2
 
-Resolved  - Solved out of memory errors for modded base rulesets
-
-Added check for multiple policies with the same name - unlike techs buildings etc, these are also saved in the *policy branch* and so can affect gameplay
+Solved out of memory errors for modded base rulesets
 
 By SomeTroglodyte:
-- City Info Table Expanders - fix persistence and resizing, close/open all button 
-- Empire overview resources 
-- Translation writer conditionals 
-- Empire Overview Tweaks to better utilize new TabbedPager 
-- Apply Char(Int) and Char.code patch to Maya Calendar 
+- City Info Table Expanders improvements
+- Empire Overview tweaks
+- Translation writer improvements 
 - Reactivate Worldscreen Ctrl key bindings 
 
 Generalized a few nation uniques  - By xlenstra
