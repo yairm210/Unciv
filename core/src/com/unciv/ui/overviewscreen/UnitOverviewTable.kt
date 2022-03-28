@@ -30,9 +30,13 @@ class UnitOverviewTab(
     }
     override val persistableData = (persistedData as? UnitTabPersistableData) ?: UnitTabPersistableData()
 
-    override fun activated() = persistableData.scrollY
-    override fun deactivated(scrollY: Float) {
-        persistableData.scrollY = scrollY
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        if (persistableData.scrollY != null)
+            pager.setPageScrollY(index, persistableData.scrollY!!)
+        super.activated(index, caption, pager)
+    }
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        persistableData.scrollY = pager.getPageScrollY(index)
     }
 
     private val supplyTableWidth = (overviewScreen.stage.width * 0.25f).coerceAtLeast(240f)

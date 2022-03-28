@@ -52,10 +52,7 @@ class EmpireOverviewScreen(
             keyPressDispatcher = keyPressDispatcher,
             capacity = EmpireOverviewCategories.values().size)
 
-        tabbedPager.addPage(Constants.close) {
-            _, _ -> game.setWorldScreen()
-        }
-        tabbedPager.getPageButton(0).setColor(0.75f, 0.1f, 0.1f, 1f)
+        tabbedPager.addClosePage { game.setWorldScreen() }
 
         for (category in EmpireOverviewCategories.values()) {
             val tabState = category.stateTester(viewingPlayer)
@@ -71,16 +68,8 @@ class EmpireOverviewScreen(
                 disabled = tabState != EmpireOverviewTabState.Normal,
                 shortcutKey = category.shortcutKey,
                 scrollAlign = category.scrollAlign,
-                fixedContent = pageObject.getFixedContent(),
-                onDeactivation = { _, _, scrollY -> pageObject.deactivated(scrollY) } 
-            ) {
-                index, name ->
-                val scrollY = pageObject.activated()
-                if (scrollY != null) tabbedPager.setPageScrollY(index, scrollY)
-                if (name == "Stats")
-                    game.settings.addCompletedTutorialTask("See your stats breakdown")
-                game.settings.lastOverviewPage = name
-            }
+                fixedContent = pageObject.getFixedContent()
+            )
             if (category.name == page)
                 tabbedPager.selectPage(index)
         }

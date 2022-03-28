@@ -10,6 +10,9 @@ import com.unciv.UncivGame
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 
+//TODO If keys are assigned, the widget is in a popup not filling stage width, and a button is
+// partially visible on the right end, the key tooltip will show outside the parent.
+
 /*
     Unimplemented ideas:
     Use fixedContent for OptionsPopup mod check tab
@@ -72,9 +75,21 @@ class TabbedPager(
     private val fixedContentScroll = LinkedScrollPane(horizontalOnly = true)
     private val fixedContentScrollCell: Cell<ScrollPane>
     private val contentScroll = LinkedScrollPane(horizontalOnly = false, linkTo = fixedContentScroll)
+    private var savedScrollListener: EventListener? = null
 
     private val deferredSecretPages = ArrayDeque<PageState>(0)
     private var askPasswordLock = false
+
+    //endregion
+    //region Public Interfaces
+
+    /** Pages added via [addPage] can optionally implement this to get notified when they are [activated] or [deactivated]. */
+    interface IPageActivation {
+        /** Called by [TabbedPager] after a page is shown, whether by user click or programmatically. */
+        fun activated(index: Int, caption: String, pager: TabbedPager)
+        /** Called by [TabbedPager] before a page is hidden, whether by user click or programmatically. */
+        fun deactivated(index: Int, caption: String, pager: TabbedPager) {}
+    }
 
     //endregion
     //region Private Classes
@@ -84,8 +99,6 @@ class TabbedPager(
         var content: Actor,
         var fixedContent: Actor?,
         var disabled: Boolean,
-        val onActivation: ((Int, String) -> Unit)?,
-        val onDeactivation: ((Int, String, Float) -> Unit)?,
         icon: Actor?,
         iconSize: Float,
         val shortcutKey: KeyCharAndCode,
@@ -247,6 +260,12 @@ class TabbedPager(
         }
     }
 
+    private class EmptyClosePage(private val action: ()->Unit) : Actor(), IPageActivation {
+        override fun activated(index: Int, caption: String, pager: TabbedPager) {
+            action()
+        }
+    }
+
     //endregion
     //region Initialization
 
@@ -312,7 +331,7 @@ class TabbedPager(
 
         if (activePage != -1) {
             val page = pages[activePage]
-            page.onDeactivation?.invoke(activePage, page.caption, contentScroll.scrollY)
+            (page.content as? IPageActivation)?.deactivated(activePage, page.caption, this)
             page.button.color = Color.WHITE
             fixedContentScroll.actor = null
             page.scrollX = contentScroll.scrollX
@@ -359,7 +378,8 @@ class TabbedPager(
             else
                 // when coming from a tap/click, can we at least ensure no part of it is outside the visible area
                 headerScroll.run { scrollX = scrollX.coerceIn((page.buttonX + page.buttonW - scrollWidth)..page.buttonX) }
-            page.onActivation?.invoke(index, page.caption)
+
+            (page.content as? IPageActivation)?.activated(index, page.caption, this)
         }
         return true
     }
@@ -393,6 +413,12 @@ class TabbedPager(
     /** Access a page's header button e.g. for unusual formatting */
     fun getPageButton(index: Int) = pages[index].button
 
+    /** Query the vertical scroll position af a page's contents */
+    fun getPageScrollY(index: Int): Float {
+        if (index == activePage) return contentScroll.scrollY
+        if (index !in 0 until pages.size) return 0f
+        return pages[index].scrollY
+    }
     /** Change the vertical scroll position af a page's contents */
     fun setPageScrollY(index: Int, scrollY: Float, animation: Boolean = false) {
         if (index !in 0 until pages.size) return
@@ -401,6 +427,19 @@ class TabbedPager(
         if (index != activePage) return
         contentScroll.scrollY = scrollY
         if (!animation) contentScroll.updateVisualScroll()
+    }
+
+    /** Disable/Enable built-in ScrollPane for content pages, including focus stealing prevention */
+    fun setScrollDisabled(disabled: Boolean) {
+        if (disabled == contentScroll.isScrollingDisabledY) return
+        contentScroll.setScrollingDisabled(disabled, disabled)
+        if (disabled) {
+            savedScrollListener = contentScroll.captureListeners.first()
+            contentScroll.captureListeners.clear()
+        } else {
+            if (savedScrollListener != null)
+                contentScroll.addCaptureListener(savedScrollListener)
+        }
     }
 
     /** Remove a page by its index.
@@ -449,7 +488,7 @@ class TabbedPager(
 
     /** Add a page!
      * @param caption Text to be shown on the header button (automatically translated), can later be used to reference the page in other calls.
-     * @param content [Actor] to show in the lower area when this page is selected.
+     * @param content [Actor] to show in the lower area when this page is selected. Can optionally implement [IPageActivation] to be notified of activation or deactivation.
      * @param icon Actor, typically an [Image], to show before the caption on the header button.
      * @param iconSize Size for [icon] - if not zero, the icon is wrapped to allow a [setSize] even on [Image] which ignores size.
      * @param insertBefore -1 to add at the end, or index of existing page to insert this before it.
@@ -458,8 +497,6 @@ class TabbedPager(
      * @param shortcutKey Optional keyboard key to associate - goes to the [KeyPressDispatcher] passed in the constructor.
      * @param syncScroll If on, the ScrollPanes for [content] and [fixedContent] will synchronize horizontally.
      * @param fixedContent Optional second content [Actor], will be placed outside the tab's main [ScrollPane] between header and [content]. Scrolls horizontally only.
-     * @param onDeactivation _Optional_ callback called when this page is hidden. Lambda arguments are page index and caption, and scrollY of the tab's [ScrollPane].
-     * @param onActivation _Optional_ callback called when this page is shown (per actual change to this page, not per header click). Lambda arguments are page index and caption.
      * @return The new page's index or -1 if it could not be immediately added (secret).
      */
     fun addPage(
@@ -473,9 +510,7 @@ class TabbedPager(
         shortcutKey: KeyCharAndCode = KeyCharAndCode.UNKNOWN,
         scrollAlign: Int = Align.top,
         syncScroll: Boolean = true,
-        fixedContent: Actor? = null,
-        onDeactivation: ((Int, String, Float) -> Unit)? = null,
-        onActivation: ((Int, String) -> Unit)? = null
+        fixedContent: Actor? = null
     ): Int {
         // Build page descriptor and header button
         val page = PageState(
@@ -483,8 +518,6 @@ class TabbedPager(
                 content = content ?: Group(),
                 fixedContent = fixedContent,
                 disabled = disabled,
-                onActivation = onActivation,
-                onDeactivation = onDeactivation,
                 icon = icon,
                 iconSize = iconSize,
                 shortcutKey = shortcutKey,
@@ -512,6 +545,18 @@ class TabbedPager(
         }
 
         return addAndShowPage(page, insertBefore)
+    }
+
+    /**
+     * Add a "Close" button tho the Tab headers, with empty content which will invoke [action] when clicked
+     */
+    fun addClosePage(
+        insertBefore: Int = -1,
+        color: Color = Color(0.75f, 0.1f, 0.1f, 1f),
+        action: ()->Unit
+    ) {
+        val index = addPage(Constants.close, EmptyClosePage(action), insertBefore = insertBefore)
+        pages[index].button.color = color
     }
 
     /**

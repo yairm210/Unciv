@@ -16,6 +16,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.checkMultiplayerServerWithPort
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.RulesetError
@@ -60,7 +61,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private var modCheckBaseSelect: TranslatedSelectBox? = null
     private val modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
-    private val previousMaxWorldZoom = settings.maxWorldZoomOut
 
     //endregion
 
@@ -92,10 +92,12 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
         tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
-        if (RulesetCache.size > 1) {
-            tabs.addPage("Locate mod errors", getModCheckTab(), ImageGetter.getImage("OtherIcons/Mods"), 24f) { _, _ ->
+        if (RulesetCache.size > BaseRuleset.values().size) {
+            val content = ModCheckTab(this) {
                 if (modCheckFirstRun) runModChecker()
+                else runModChecker(modCheckBaseSelect!!.selected.value)
             }
+            tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))) {
             tabs.addPage("Debug", getDebugTab(), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
@@ -261,7 +263,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         val connectionToServerButton = "Check connection to server".toTextButton()
 
         val ipAddress = getIpAddress()
-        add("{Current IP address}: $ipAddress".toTextButton().onClick { 
+        add("{Current IP address}: $ipAddress".toTextButton().onClick {
             Gdx.app.clipboard.contents = ipAddress.toString()
         }).row()
 
@@ -269,28 +271,29 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
-        serverIpTable.add("Server's IP address".toLabel().onClick { 
+        serverIpTable.add("Server's IP address".toLabel().onClick {
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
         }).padRight(10f)
-        multiplayerServerTextField.onChange { 
+        multiplayerServerTextField.onChange {
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
-        serverIpTable.add(multiplayerServerTextField)
-        add(serverIpTable).row()
+        serverIpTable.add(multiplayerServerTextField).minWidth(150f).growX()
+        add(serverIpTable).fillX().row()
 
         add("Reset to Dropbox".toTextButton().onClick {
             multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
         }).row()
 
         add(connectionToServerButton.onClick {
-            val popup = Popup(screen).apply { 
+            val popup = Popup(screen).apply {
                 addGoodSizedLabel("Awaiting response...").row()
             }
             popup.open(true)
 
-            successfullyConnectedToServer { success: Boolean, result: String ->
+            successfullyConnectedToServer { success: Boolean, _: String ->
+                popup.cells.removeIndex(0)
                 if (success) {
                     popup.addGoodSizedLabel("Success!").row()
                     popup.addCloseButton()
@@ -343,8 +346,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
 
     }
-    
-    fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+
+    private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
         SimpleHttp.sendGetRequest("http://${settings.multiplayerServer.checkMultiplayerServerWithPort()}/isalive", action)
     }
 
@@ -376,27 +379,32 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         addSetUserId()
     }
 
-    private fun getModCheckTab() = Table(BaseScreen.skin).apply {
-        defaults().pad(10f).align(Align.top)
-        val reloadModsButton = "Reload mods".toTextButton().onClick {
-            runModChecker(modCheckBaseSelect!!.selected.value)
-        }
-        add(reloadModsButton).row()
+    private class ModCheckTab(
+        options: OptionsPopup,
+        private val runAction: ()->Unit
+    ) : Table(BaseScreen.skin), TabbedPager.IPageActivation {
+        init {
+            defaults().pad(10f).align(Align.top)
+            val reloadModsButton = "Reload mods".toTextButton().onClick(runAction)
+            add(reloadModsButton).row()
 
-        val labeledBaseSelect = Table(BaseScreen.skin).apply {
-            add("Check extension mods based on:".toLabel()).padRight(10f)
-            val baseMods = listOf(modCheckWithoutBase) + RulesetCache.getSortedBaseRulesets()
-            modCheckBaseSelect = TranslatedSelectBox(baseMods, modCheckWithoutBase, BaseScreen.skin).apply {
-                selectedIndex = 0
-                onChange {
-                    runModChecker(modCheckBaseSelect!!.selected.value)
+            val labeledBaseSelect = Table(BaseScreen.skin).apply {
+                add("Check extension mods based on:".toLabel()).padRight(10f)
+                val baseMods = listOf(modCheckWithoutBase) + RulesetCache.getSortedBaseRulesets()
+                options.modCheckBaseSelect = TranslatedSelectBox(baseMods, modCheckWithoutBase, BaseScreen.skin).apply {
+                    selectedIndex = 0
+                    onChange { runAction() }
                 }
+                add(options.modCheckBaseSelect)
             }
-            add(modCheckBaseSelect)
-        }
-        add(labeledBaseSelect).row()
+            add(labeledBaseSelect).row()
 
-        add(modCheckResultTable)
+            add(options.modCheckResultTable)
+        }
+
+        override fun activated(index: Int, caption: String, pager: TabbedPager) {
+            runAction()
+        }
     }
 
     private fun runModChecker(base: String = modCheckWithoutBase) {
