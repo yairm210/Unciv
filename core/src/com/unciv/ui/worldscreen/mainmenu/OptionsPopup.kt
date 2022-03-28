@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Net
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -382,13 +383,17 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private class ModCheckTab(
         options: OptionsPopup,
         private val runAction: ()->Unit
-    ) : Table(BaseScreen.skin), TabbedPager.IPageActivation {
+    ) : Table(), TabbedPager.IPageExtensions {
+        private val fixedContent = Table()
+
         init {
             defaults().pad(10f).align(Align.top)
-            val reloadModsButton = "Reload mods".toTextButton().onClick(runAction)
-            add(reloadModsButton).row()
 
-            val labeledBaseSelect = Table(BaseScreen.skin).apply {
+            fixedContent.defaults().pad(10f).align(Align.top)
+            val reloadModsButton = "Reload mods".toTextButton().onClick(runAction)
+            fixedContent.add(reloadModsButton).row()
+
+            val labeledBaseSelect = Table().apply {
                 add("Check extension mods based on:".toLabel()).padRight(10f)
                 val baseMods = listOf(modCheckWithoutBase) + RulesetCache.getSortedBaseRulesets()
                 options.modCheckBaseSelect = TranslatedSelectBox(baseMods, modCheckWithoutBase, BaseScreen.skin).apply {
@@ -397,10 +402,12 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 }
                 add(options.modCheckBaseSelect)
             }
-            add(labeledBaseSelect).row()
+            fixedContent.add(labeledBaseSelect).row()
 
             add(options.modCheckResultTable)
         }
+
+        override fun getFixedContent() = fixedContent
 
         override fun activated(index: Int, caption: String, pager: TabbedPager) {
             runAction()

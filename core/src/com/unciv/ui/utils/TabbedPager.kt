@@ -12,11 +12,6 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 //TODO If keys are assigned, the widget is in a popup not filling stage width, and a button is
 // partially visible on the right end, the key tooltip will show outside the parent.
 
-/*
-    Unimplemented ideas:
-    Use fixedContent for OptionsPopup mod check tab
- */
-
 /**
  * Implements a 'Tabs' widget where different pages can be switched by selecting a header button.
  * 
