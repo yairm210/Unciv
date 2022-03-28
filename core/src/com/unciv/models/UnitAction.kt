@@ -9,6 +9,7 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.Constants
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.ui.utils.darken
 
 
 /** Unit Actions - class - carries dynamic data and actual execution.
@@ -45,7 +46,7 @@ data class UnitAction(
                 val match = fortificationRegex.matchEntire(title)
                 val percentFortified = match?.groups?.get(1)?.value?.toInt() ?: 0
                 ImageGetter.getImage("OtherIcons/Shield").apply { 
-                    color = Color.BLACK.cpy().lerp(Color.GREEN, percentFortified / 80f)
+                    color = Color.GREEN.darken(1f - percentFortified / 80f)
                 }
             }
             else -> ImageGetter.getImage("OtherIcons/Star")
@@ -140,6 +141,8 @@ enum class UnitActionType(
         { imageGetShowMore() }, KeyCharAndCode(Input.Keys.PAGE_DOWN)),
     HideAdditionalActions("Back",
         { imageGetHideMore() }, KeyCharAndCode(Input.Keys.PAGE_UP)),
+    AddInCapital( "Add in capital",
+        { ImageGetter.getUnitIcon("SS Cockpit")}, 'g', UncivSound.Chimes),
     ;
 
     // Allow shorter initializations

@@ -214,7 +214,7 @@ class GameInfo {
         //check is important or else switchTurn
         //would skip a turn if an AI civ calls nextTurn
         //this happens when resigning a multiplayer game
-        if (thisPlayer.isPlayerCivilization()){
+        if (thisPlayer.isPlayerCivilization()) {
             switchTurn()
         }
 
@@ -223,7 +223,7 @@ class GameInfo {
                 || turns < simulateMaxTurns && simulateUntilWin
                 // For multiplayer, if there are 3+ players and one is defeated or spectator,
                 // we'll want to skip over their turn
-                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator())
+                || gameParameters.isOnlineMultiplayer && (thisPlayer.isDefeated() || thisPlayer.isSpectator() && thisPlayer.playerId != UncivGame.Current.settings.userId)
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation.automateCivMoves(thisPlayer)
@@ -283,15 +283,15 @@ class GameInfo {
                 }
         )
     }
-    
+
     private fun checkForTimeVictory() {
         if (turns != gameParameters.maxTurns || !gameParameters.victoryTypes.contains(VictoryType.Time)) return
-        
+
         val winningCiv = civilizations
             .filter { it.isMajorCiv() && !it.isSpectator() && !it.isBarbarian() }
-            .maxByOrNull { it.calculateScoreBreakdown().values.sum() } 
+            .maxByOrNull { it.calculateTotalScore() } 
             ?: return // Are there no civs left?
-        
+
         winningCiv.victoryManager.hasWonTimeVictory = true
     }
 
@@ -303,37 +303,37 @@ class GameInfo {
                 thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, NotificationIcon.War, unitName)
             }
         } else {
-            val positions = tiles.map { it.position }
-            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
+            val positions = tiles.asSequence().map { it.position }
+            thisPlayer.addNotification("[${tiles.size}] enemy units were spotted $inOrNear our territory", LocationAction(positions), NotificationIcon.War)
         }
     }
 
     private fun addBombardNotification(thisPlayer: CivilizationInfo, cities: List<CityInfo>) {
-        if (cities.count() < 3) {
+        if (cities.size < 3) {
             for (city in cities)
                 thisPlayer.addNotification("Your city [${city.name}] can bombard the enemy!", city.location, NotificationIcon.City, NotificationIcon.Crosshair)
-
-        } else
-            thisPlayer.addNotification("[${cities.count()}] of your cities can bombard the enemy!", LocationAction(cities.map { it.location }), NotificationIcon.City, NotificationIcon.Crosshair)
+        } else {
+            val positions = cities.asSequence().map { it.location }
+            thisPlayer.addNotification("[${cities.size}] of your cities can bombard the enemy!", LocationAction(positions), NotificationIcon.City, NotificationIcon.Crosshair)
+        }
     }
 
     fun notifyExploredResources(civInfo: CivilizationInfo, resourceName: String, maxDistance: Int, showForeign: Boolean) {
         // Calling with `maxDistance = 0` removes distance limitation.
         data class CityTileAndDistance(val city: CityInfo, val tile: TileInfo, val distance: Int)
 
-        var exploredRevealTiles:Sequence<TileInfo>
-
-        if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
-            // Look for matching mercantile CS centers 
-            exploredRevealTiles = getAliveCityStates()
-                .asSequence()
-                .filter { it.cityStateResource == resourceName }
-                .map { it.getCapital().getCenterTile() }
-        } else {
-            exploredRevealTiles = tileMap.values
-                .asSequence()
-                .filter { it.resource == resourceName }
-        }
+        val exploredRevealTiles: Sequence<TileInfo> =
+            if (ruleSet.tileResources[resourceName]!!.hasUnique(UniqueType.CityStateOnlyResource)) {
+                // Look for matching mercantile CS centers 
+                getAliveCityStates()
+                    .asSequence()
+                    .filter { it.cityStateResource == resourceName }
+                    .map { it.getCapital().getCenterTile() }
+            } else {
+                tileMap.values
+                    .asSequence()
+                    .filter { it.resource == resourceName }
+            }
 
         val exploredRevealInfo = exploredRevealTiles
             .filter { it.position in civInfo.exploredTiles }
@@ -354,12 +354,12 @@ class GameInfo {
             // re-sort to a more pleasant display order
             .sortedWith(compareBy{ it.tile.aerialDistanceTo(chosenCity.getCenterTile()) })
             .map { it.tile.position }
-            .toList()       // explicit materialization of sequence to satisfy addNotification overload
 
-        val text =  if(positions.size==1)
+        val positionsCount = positions.count()
+        val text =  if (positionsCount == 1)
             "[$resourceName] revealed near [${chosenCity.name}]"
         else
-            "[${positions.size}] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
+            "[$positionsCount] sources of [$resourceName] revealed, e.g. near [${chosenCity.name}]"
 
         civInfo.addNotification(
             text,

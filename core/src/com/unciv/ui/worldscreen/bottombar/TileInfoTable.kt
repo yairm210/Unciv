@@ -6,16 +6,14 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addBorderAllowOpacity
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen.skin) {
     init {
-        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
     }
 
     internal fun updateTileTable(tile: TileInfo?) {
@@ -24,8 +22,7 @@ class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen
         if (tile != null && (UncivGame.Current.viewEntireMapForDebug || viewingCiv.exploredTiles.contains(tile.position)) ) {
             add(getStatsTable(tile))
             add( MarkupRenderer.render(tile.toMarkup(viewingCiv), padding = 0f, iconDisplay = IconDisplay.None) {
-                // We need to pass the current screen here to get this to work and I can't be bothered now
-                // UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet,  link = it))
+                UncivGame.Current.setScreen(CivilopediaScreen(viewingCiv.gameInfo.ruleSet, UncivGame.Current.worldScreen, link = it))
             } ).pad(5f).row()
             if (UncivGame.Current.viewEntireMapForDebug)
                 add(tile.position.run { "(${x.toInt()},${y.toInt()})" }.toLabel()).colspan(2).pad(5f)

@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import kotlin.math.abs
 import kotlin.math.round
+import kotlin.math.roundToInt
 
 class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGenerationRandomness) {
 
@@ -25,8 +26,10 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         if (tileMap.mapParameters.noNaturalWonders)
             return
         val mapRadius = tileMap.mapParameters.mapSize.radius
-        // number of Natural Wonders scales linearly with mapRadius as #wonders = mapRadius * 0.13133208 - 0.56128831
-        val numberToSpawn = round(mapRadius * 0.13133208f - 0.56128831f).toInt()
+        // number of Natural Wonders scales linearly with mapRadius
+        val numberToSpawn = ruleset.modOptions.constants.run {
+            mapRadius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant
+        }.roundToInt()
 
         val spawned = mutableListOf<Terrain>()
         val allNaturalWonders = ruleset.terrains.values
@@ -167,7 +170,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
     }
 
     private fun clearTile(tile: TileInfo){
-        tile.terrainFeatures = listOf()
+        tile.setTerrainFeatures(listOf())
         tile.resource = null
         tile.improvement = null
         tile.setTerrainTransients()
@@ -177,7 +180,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         "Elevated" -> baseTerrain == Constants.mountain || isHill()
         "Water" -> isWater
         "Land" -> isLand
-        "Hill" -> isHill()
+        Constants.hill -> isHill()
         naturalWonder -> true
         in allTerrainFeatures -> getLastTerrain().name == filter
         else -> baseTerrain == filter

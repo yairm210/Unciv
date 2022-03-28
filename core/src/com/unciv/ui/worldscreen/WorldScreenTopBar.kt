@@ -46,8 +46,11 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val malcontentGroup = ImageGetter.getStatIcon("Malcontent")
     private val happinessGroup = ImageGetter.getStatIcon("Happiness")
 
+    val unitSupplyImage = ImageGetter.getImage("OtherIcons/ExclamationMark")
+        .apply { color = Color.FIREBRICK }
+
     init {
-        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
 
         add(getStatsTable()).row()
         add(getResourceTable())
@@ -58,7 +61,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         addActor(getSelectedCivilizationTable())
 
-        addActor(getOverviewButton())
+        addActor(getOverviewAndSupplyButton())
     }
 
     private fun getResourceTable(): Table {
@@ -167,19 +170,19 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return menuButton
     }
 
-    private fun getOverviewButton(): Table {
+    private fun getOverviewAndSupplyButton(): Table {
         val rightTable = Table(BaseScreen.skin).apply{ defaults().pad(10f) }
 
-        val unitSupplyImage = ImageGetter.getImage("OtherIcons/ExclamationMark")
-            .apply { color = Color.FIREBRICK }
-            .onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units")) }
+        unitSupplyImage.onClick {
+            worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units"))
+        }
+        unitSupplyImage.isVisible = worldScreen.selectedCiv.stats().getUnitSupplyDeficit() > 0
 
         val overviewButton = "Overview".toTextButton()
         overviewButton.addTooltip('e')
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
 
-        if (worldScreen.selectedCiv.stats().getUnitSupplyDeficit() > 0)
-            rightTable.add(unitSupplyImage).size(50f)
+        rightTable.add(unitSupplyImage).size(50f)
         rightTable.add(overviewButton)
 
         rightTable.pack()

@@ -16,15 +16,20 @@ import com.unciv.Constants
  * @param fontSize Text size for [String.toLabel].
  * @param fontColor Text colour for [String.toLabel].
  */
-class IconTextButton(text: String, val icon: Actor? = null, fontSize: Int = Constants.defaultFontSize, fontColor: Color = Color.WHITE): Button(BaseScreen.skin) {
-    val button = Button(BaseScreen.skin)
+class IconTextButton(
+    text: String,
+    val icon: Actor? = null,
+    fontSize: Int = Constants.defaultFontSize,
+    fontColor: Color = Color.WHITE
+): Button(BaseScreen.skin) {
     /** [Label] instance produced by and with content and formatting as specified to [String.toLabel]. */
     val label = text.toLabel(fontColor, fontSize)
     /** Table cell containing the [icon] if any, or `null`. */
-    val iconCell: Cell<Actor>? = if (icon != null) {
+    val iconCell: Cell<Actor>? =
+        if (icon != null) {
             val size = fontSize.toFloat()
-        icon.setSize(size,size)
-        icon.setOrigin(Align.center)
+            icon.setSize(size,size)
+            icon.setOrigin(Align.center)
             add(icon).size(size).padRight(size / 3)
         } else null
     /** Table cell instance containing the [label]. */

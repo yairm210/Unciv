@@ -26,6 +26,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             .filterNot { it.isAnyWonder() }
     private val buildableWonders = buildableBuildings
             .filter { it.isAnyWonder() }
+    
+    val buildableUnits = cityConstructions.getConstructableUnits()
 
     val civUnits = civInfo.getCivUnits()
     val militaryUnits = civUnits.count { it.baseUnit.isMilitary() }
@@ -53,8 +55,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     fun chooseNextConstruction() {
         if (!UncivGame.Current.settings.autoAssignCityProduction
             && civInfo.playerType == PlayerType.Human && !cityInfo.isPuppet
-        )
+        ) {
             return
+        }
         if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
 
         addFoodBuildingChoice()
@@ -65,15 +68,15 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addDefenceBuildingChoice()
         addUnitTrainingBuildingChoice()
         addCultureBuildingChoice()
-        addSpaceshipPartChoice()
         addOtherBuildingChoice()
-        addReligiousUnit()
 
         if (!cityInfo.isPuppet) {
+            addSpaceshipPartChoice()
             addWondersChoice()
             addWorkerChoice()
             addWorkBoatChoice()
             addMilitaryUnitChoice()
+            addReligiousUnit()
         }
 
         val production = cityInfo.cityStats.currentCityStats.production
@@ -138,15 +141,16 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addWorkBoatChoice() {
-        val buildableWorkboatUnits = cityInfo.cityConstructions.getConstructableUnits()
+        val buildableWorkboatUnits = buildableUnits
             .filter {
                 it.hasUnique(UniqueType.CreateWaterImprovements)
-                        && Automation.allowSpendingResource(civInfo, it)
+                && Automation.allowSpendingResource(civInfo, it)
             }
-        val canBuildWorkboat = buildableWorkboatUnits.any()
-                && !cityInfo.getTiles()
-            .any { it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true }
-        if (!canBuildWorkboat) return
+        val alreadyHasWorkBoat = buildableWorkboatUnits.any()
+            && !cityInfo.getTiles().any { 
+                it.civilianUnit?.hasUnique(UniqueType.CreateWaterImprovements) == true 
+            }
+        if (!alreadyHasWorkBoat) return
 
 
         val bfs = BFS(cityInfo.getCenterTile()) {
@@ -167,12 +171,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addWorkerChoice() {
-        val workerEquivalents = civInfo.gameInfo.ruleSet.units.values
+        val workerEquivalents = buildableUnits
             .filter {
                 it.hasUnique(UniqueType.BuildImprovements)
-                && it.isBuildable(cityConstructions)
-                && Automation.allowSpendingResource(civInfo, it) }
-        if (workerEquivalents.isEmpty()) return // for mods with no worker units
+                && Automation.allowSpendingResource(civInfo, it) 
+            }
+        if (workerEquivalents.none()) return // for mods with no worker units
 
         if (workers < cities) {
             var modifier = cities / (workers + 0.1f) // The worse our worker to city ratio is, the more desperate we are
@@ -195,7 +199,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addSpaceshipPartChoice() {
-        val spaceshipPart = buildableNotWonders.firstOrNull { it.hasUnique(UniqueType.SpaceshipPart) }
+        val spaceshipPart = (buildableNotWonders + buildableUnits).firstOrNull { it.hasUnique(UniqueType.SpaceshipPart) }
         if (spaceshipPart != null) {
             var modifier = 1.5f
             if (preferredVictoryType == VictoryType.Scientific) modifier = 2f
@@ -334,8 +338,6 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val foodBuilding = buildableNotWonders.asSequence()
             .filter { 
                 (it.isStatRelated(Stat.Food) 
-                    || it.hasUnique(UniqueType.CarryOverFoodDeprecated, conditionalState)
-                    || it.hasUnique(UniqueType.CarryOverFoodAlsoDeprecated, conditionalState)
                     || it.hasUnique(UniqueType.CarryOverFood, conditionalState)
                 ) && Automation.allowSpendingResource(civInfo, it) 
             }.minByOrNull { it.cost }
@@ -360,12 +362,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         // The performance of the regular getMatchingUniques is better, since it only tries to find one unique,
         //  while the canBePurchasedWithStat tries (at time of writing) *6* different uniques.
-        val missionary = cityInfo.getRuleset().units.values
+        val missionary = buildableUnits
             .firstOrNull { it -> it.getMatchingUniques("Can [] [] times").any { it.params[0] == "Spread Religion"}
                     && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
 
 
-        val inquisitor = cityInfo.getRuleset().units.values
+        val inquisitor = buildableUnits
             .firstOrNull { it.hasUnique("Prevents spreading of religion to the city it is next to")
                     && it.canBePurchasedWithStat(cityInfo, Stat.Faith) }
 
@@ -376,7 +378,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val citiesNotFollowingOurReligion = civInfo.cities.asSequence()
             .filterNot { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion!!.name }
 
-        val buildInqusitor = citiesNotFollowingOurReligion
+        val buildInquisitor = citiesNotFollowingOurReligion
             .filter { it.religion.getMajorityReligion()?.name == civInfo.religionManager.religion?.name }
             .toList().size.toFloat() / 10 + modifier
 
@@ -385,7 +387,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
         val buildMissionary = possibleSpreadReligionTargets.toList().size.toFloat() / 15 + modifier
 
-        if (buildMissionary > buildInqusitor && missionary != null) faithConstruction.add(missionary)
+        if (buildMissionary > buildInquisitor && missionary != null) faithConstruction.add(missionary)
         else if(inquisitor != null) faithConstruction.add(inquisitor)
     }
 

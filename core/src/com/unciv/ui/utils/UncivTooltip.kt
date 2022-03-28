@@ -23,9 +23,9 @@ import com.unciv.models.translations.tr
  * @param forceContentSize  Force virtual [content] width/height for alignment calculation
  *                      - because Gdx auto layout reports wrong dimensions on scaled actors.
  */
-@Suppress("unused") // reported incorrectly even when a use is right here in the Companion
+// region fields
 class UncivTooltip <T: Actor>(
-    val target: Group,
+    val target: Actor,
     val content: T,
     val targetAlign: Int = Align.topRight,
     val tipAlign: Int = Align.topRight,
@@ -34,7 +34,6 @@ class UncivTooltip <T: Actor>(
     forceContentSize: Vector2? = null,
 ) : InputListener() {
 
-    // region fields
     private val container: Container<T> = Container(content)
     enum class TipState { Hidden, Showing, Shown, Hiding }
     /** current visibility state of the Tooltip */
@@ -50,9 +49,13 @@ class UncivTooltip <T: Actor>(
         contentHeight = forceContentSize?.y ?: content.height
     }
 
-     //region show, hide and positioning
+    //endregion
+    //region show, hide and positioning
+
     /** Show the Tooltip ([immediate]ly or begin the animation). _Can_ be called programmatically. */
     fun show(immediate: Boolean = false) {
+        if (target.stage == null) return
+
         val useAnimation = animate && !immediate
         if (state == TipState.Shown || state == TipState.Showing && useAnimation || !target.hasParent()) return
         if (state == TipState.Showing || state == TipState.Hiding) {
@@ -60,10 +63,11 @@ class UncivTooltip <T: Actor>(
             state = TipState.Hidden
             container.remove()
         }
-        val pos = target.localToParentCoordinates(target.getEdgePoint(targetAlign)).add(offset)
+
+        val pos = target.localToStageCoordinates(target.getEdgePoint(targetAlign)).add(offset)
         container.run {
-            val originX = getOriginX(contentWidth,tipAlign)
-            val originY = getOriginY(contentHeight,tipAlign)
+            val originX = getOriginX(contentWidth, tipAlign)
+            val originY = getOriginY(contentHeight, tipAlign)
             setOrigin(originX, originY)
             setPosition(pos.x - originX, pos.y - originY)
             if (useAnimation) {
@@ -76,7 +80,8 @@ class UncivTooltip <T: Actor>(
                 setScale(1f)
             }
         }
-        target.parent.addActor(container)
+        target.stage.addActor(container)
+
         if (useAnimation) {
             state = TipState.Showing
             container.addAction(Actions.sequence(
@@ -126,9 +131,10 @@ class UncivTooltip <T: Actor>(
     }
     private fun Actor.getEdgePoint(align: Int) =
         Vector2(getOriginX(width,align),getOriginY(height,align))
-    //endregion
 
+    //endregion
     //region events
+
     override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
         // assert(event?.listenerActor == target) - tested - holds true
         if (fromActor != null && fromActor.isDescendantOf(target)) return
@@ -144,6 +150,7 @@ class UncivTooltip <T: Actor>(
         container.toFront()     // this is a no-op if it has no parent
         return super.touchDown(event, x, y, pointer, button)
     }
+
     //endregion
 
     companion object {
@@ -155,8 +162,16 @@ class UncivTooltip <T: Actor>(
          * @param text Automatically translated tooltip text
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
+         * @param targetAlign   Point on the [target] widget to align the Tooltip to
+         * @param tipAlign      Point on the Tooltip to align with the given point on the [target]
          */
-        fun Group.addTooltip(text: String, size: Float = 26f, always: Boolean = false) {
+        fun Actor.addTooltip(
+            text: String,
+            size: Float = 26f,
+            always: Boolean = false,
+            targetAlign: Int = Align.topRight,
+            tipAlign: Int = Align.top
+        ) {
             if (!(always || KeyPressDispatcher.keyboardAvailable) || text.isEmpty()) return
 
             val label = text.toLabel(ImageGetter.getBlue(), 38)
@@ -171,19 +186,21 @@ class UncivTooltip <T: Actor>(
             background.setPadding(4f+skewPadDescenders, horizontalPad, 8f-skewPadDescenders, horizontalPad)
 
             val widthHeightRatio: Float
+            val multiRowSize = size * (1 + text.count { it == '\n' })
             val labelWithBackground = Container(label).apply {
                 setBackground(background)
                 pack()
                 widthHeightRatio = width / height
                 isTransform = true  // otherwise setScale is ignored
-                setScale(size / height)
+                setScale(multiRowSize / height)
             }
 
             addListener(UncivTooltip(this,
                 labelWithBackground,
-                forceContentSize = Vector2(size * widthHeightRatio, size),
-                offset = Vector2(-size/4, size/4),
-                tipAlign = Align.top
+                forceContentSize = Vector2(multiRowSize * widthHeightRatio, multiRowSize),
+                offset = Vector2(-multiRowSize/4, size/4),
+                targetAlign = targetAlign,
+                tipAlign = tipAlign
             ))
         }
 
@@ -195,7 +212,7 @@ class UncivTooltip <T: Actor>(
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
          */
-        fun Group.addTooltip(char: Char, size: Float = 26f, always: Boolean = false) {
+        fun Actor.addTooltip(char: Char, size: Float = 26f, always: Boolean = false) {
             addTooltip((if (char in "Ii") 'i' else char.uppercaseChar()).toString(), size, always)
         }
 
@@ -207,7 +224,7 @@ class UncivTooltip <T: Actor>(
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
          */
-        fun Group.addTooltip(key: KeyCharAndCode, size: Float = 26f, always: Boolean = false) {
+        fun Actor.addTooltip(key: KeyCharAndCode, size: Float = 26f, always: Boolean = false) {
             if (key != KeyCharAndCode.UNKNOWN)
                 addTooltip(key.toString().tr(), size, always)
         }

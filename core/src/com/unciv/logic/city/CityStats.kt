@@ -90,7 +90,15 @@ class CityStats(val cityInfo: CityInfo) {
             stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             for (unique in cityInfo.getMatchingUniques(UniqueType.StatsFromTradeRoute))
                 stats.add(unique.stats)
-            if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Picchu speciality
+            val percentageStats = Stats()
+            for (unique in cityInfo.getMatchingUniques(UniqueType.StatPercentFromTradeRoutes))
+                percentageStats[Stat.valueOf(unique.params[1])] += unique.params[0].toFloat()
+            // Deprecated as of 3.19.19
+                if (civInfo.hasUnique(UniqueType.GoldBonusFromTradeRoutesDeprecated)) percentageStats[Stat.Gold] += 25f // Machu Picchu speciality
+            //
+            for ((stat, value) in stats) {
+                stats[stat] *= percentageStats[stat].toPercent()
+            }
         }
         return stats
     }
@@ -107,7 +115,7 @@ class CityStats(val cityInfo: CityInfo) {
 
     fun getScienceConversionRate(): Float {
         var conversionRate = 1 / 4f
-        if (cityInfo.civInfo.hasUnique("Production to science conversion in cities increased by 33%"))
+        if (cityInfo.civInfo.hasUnique(UniqueType.ProductionToScienceConversionBonus))
             conversionRate *= 1.33f
         return conversionRate
     }
@@ -314,10 +322,6 @@ class CityStats(val cityInfo: CityInfo) {
             && cityInfo.civInfo.cities.isNotEmpty()
             && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
         ) {
-            // Deprecated since 3.19.3
-                for (unique in cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapitalDeprecated))
-                    addUniqueStats(unique, Stat.Production, 25f)
-            //
             for (unique in cityInfo.getMatchingUniques(UniqueType.PercentProductionBuildingsInCapital))
                 addUniqueStats(unique, Stat.Production, unique.params[0].toFloat())
         }
@@ -358,12 +362,6 @@ class CityStats(val cityInfo: CityInfo) {
             buildingsMaintenance *= cityInfo.civInfo.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
         }
 
-        // e.g. "-[50]% maintenance costs for buildings [in this city]"
-        // Deprecated since 3.18.17
-            for (unique in cityInfo.getMatchingUniques(UniqueType.DecreasedBuildingMaintenanceDeprecated)) {
-                buildingsMaintenance *= (1f - unique.params[0].toFloat() / 100)
-            }
-        //
         for (unique in cityInfo.getMatchingUniques(UniqueType.BuildingMaintenance)) {
             buildingsMaintenance *= unique.params[0].toPercent()
         }
@@ -403,32 +401,31 @@ class CityStats(val cityInfo: CityInfo) {
             unhappinessFromCity *= 2f //doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
-
+        
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
-        var unhappinessFromSpecialists = cityInfo.population.getNumberOfSpecialists().toFloat()
-
-        // Deprecated since 3.16.11
-            for (unique in civInfo.getMatchingUniques("Specialists only produce []% of normal unhappiness"))
-                unhappinessFromSpecialists *= (1f - unique.params[0].toFloat() / 100f)
+        
+        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationTypePercentageChange))
+            if (cityInfo.matchesFilter(unique.params[2]))
+                unhappinessFromCitizens += (unique.params[0].toFloat() / 100f) * cityInfo.population.getPopulationFilterAmount(unique.params[1])
+        
+        // Deprecated as of 3.19.19
+            for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromSpecialistsPercentageChange)) {
+                if (cityInfo.matchesFilter(unique.params[1]))
+                    unhappinessFromCitizens += unique.params[0].toFloat() / 100f * cityInfo.population.getNumberOfSpecialists()
+            }
+    
+            for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChange))
+                if (cityInfo.matchesFilter(unique.params[1]))
+                    unhappinessFromCitizens += unique.params[0].toFloat() / 100f * cityInfo.population.population
         //
-
-        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromSpecialistsPercentageChange)) {
-            if (cityInfo.matchesFilter(unique.params[1]))
-                unhappinessFromSpecialists *= unique.params[0].toPercent()
-        }
-
-        unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists()
-            .toFloat() - unhappinessFromSpecialists
 
         if (cityInfo.isPuppet)
             unhappinessFromCitizens *= 1.5f
         else if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
 
-        for (unique in cityInfo.getMatchingUniques(UniqueType.UnhappinessFromPopulationPercentageChange))
-            if (cityInfo.matchesFilter(unique.params[1]))
-                unhappinessFromCitizens *= unique.params[0].toPercent()
-
+        if (unhappinessFromCitizens < 0) unhappinessFromCitizens = 0f
+        
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city

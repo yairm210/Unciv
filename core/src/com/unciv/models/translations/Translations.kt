@@ -51,12 +51,13 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
      * @return the translation entry or null when not available
      */
     fun get(text: String, language: String, activeMods: HashSet<String>? = null): TranslationEntry? {
-        activeMods?.forEach {
-            modsWithTranslations[it]?.let { modTranslations ->
-                val translationEntry = modTranslations[text]?.get(language)
-                if (translationEntry != null) return modTranslations[text]
+        if (activeMods != null)
+            for (activeMod in activeMods) {
+                val modTranslations = modsWithTranslations[activeMod] ?: continue
+                val translationEntry = modTranslations[text]
+                if (translationEntry?.get(language) != null)
+                    return translationEntry
             }
-        }
 
         return this[text]
     }
@@ -262,7 +263,7 @@ fun String.tr(): String {
     }.toHashSet()
     val language = UncivGame.Current.settings.language
 
-    if (contains('<')) { // Conditionals!
+    if (contains('<') && contains('>')) { // Conditionals!
         /**
          * So conditionals can contain placeholders, such as <vs [unitFilter] units>, which themselves
          * can contain multiple filters, such as <vs [{Military} {Water}] units>.

@@ -9,7 +9,12 @@ object Constants {
 
     const val impassable = "Impassable"
     const val ocean = "Ocean"
+
+    /** The "Coast" _terrain_ */
     const val coast = "Coast"
+    /** The "Coastal" terrain _filter_ */
+    const val coastal = "Coastal"
+
     const val mountain = "Mountain"
     const val hill = "Hill"
     const val plains = "Plains"
@@ -21,11 +26,14 @@ object Constants {
 
     const val forest = "Forest"
     const val jungle = "Jungle"
-
     const val ice = "Ice"
-    const val floodPlains = "Flood plains"
     val vegetation = arrayOf(forest, jungle)
-    val sea = arrayOf(ocean, coast)
+
+    // Note the difference in case. **Not** interchangeable!
+    /** The "Fresh water" terrain _unique_ */
+    const val freshWater = "Fresh water"
+    /** The "Fresh Water" terrain _filter_ */
+    const val freshWaterFilter = "Fresh Water"
 
     const val barbarianEncampment = "Barbarian encampment"
 
@@ -41,7 +49,7 @@ object Constants {
     const val futureTech = "Future Tech"
     // Easter egg name. Hopefully is to hopefully avoid conflicts when later players can name their own religions.
     // This religion name should never be displayed.
-    const val noReligionName = "The religion of TheLegend27" 
+    const val noReligionName = "The religion of TheLegend27"
 
     const val cancelImprovementOrder = "Cancel improvement order"
     const val tutorialPopupNamePrefix = "Tutorial: "
@@ -53,13 +61,21 @@ object Constants {
 
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
-    const val custom = "Custom"
 
     const val rising = "Rising"
     const val lowering = "Lowering"
     const val remove = "Remove "
+
+    const val uniqueOrDelimiter = "\" OR \""
     
-    const val minimumMovementEpsilon = 0.05
+    const val dropboxMultiplayerServer = "Dropbox"
+
+    /**
+     * Use this to determine whether a [MapUnit][com.unciv.logic.map.MapUnit]'s movement is exhausted
+     * (currentMovement <= this) if and only if a fuzzy comparison is needed to account for Float rounding errors.
+     * _Most_ checks do compare to 0!
+     */
+    const val minimumMovementEpsilon = 0.05f  // 0.1f was used previously, too - here for global searches
     const val defaultFontSize = 18
     const val headingFontSize = 24
 }

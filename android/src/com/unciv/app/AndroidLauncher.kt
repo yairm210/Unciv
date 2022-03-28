@@ -2,7 +2,7 @@ package com.unciv.app
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.os.Build
+import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.WorkManager
@@ -11,24 +11,22 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.Fonts
 import java.io.File
 
 open class AndroidLauncher : AndroidApplication() {
     private var customSaveLocationHelper: CustomSaveLocationHelperAndroid? = null
+    private var game: UncivGame? = null
+    private var deepLinkedMultiplayerGame: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            customSaveLocationHelper = CustomSaveLocationHelperAndroid(this)
-        }
+        customSaveLocationHelper = CustomSaveLocationHelperAndroid(this)
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
-        // Only allow mods on KK+, to avoid READ_EXTERNAL_STORAGE permission earlier versions need
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            copyMods()
-            val externalfilesDir = getExternalFilesDir(null)
-            if (externalfilesDir != null) GameSaver.externalFilesDirForAndroid = externalfilesDir.path
-        }
+        copyMods()
+        val externalfilesDir = getExternalFilesDir(null)
+        if (externalfilesDir != null) GameSaver.externalFilesDirForAndroid = externalfilesDir.path
 
         // Manage orientation lock
         val limitOrientationsHelper = LimitOrientationsHelperAndroid(this)
@@ -37,15 +35,28 @@ open class AndroidLauncher : AndroidApplication() {
         val config = AndroidApplicationConfiguration().apply {
             useImmersiveMode = true;
         }
+
+        val fontFamily = GameSettings.getSettingsForPlatformLaunchers(filesDir.path).fontFamily
+
         val androidParameters = UncivGameParameters(
-                version = BuildConfig.VERSION_NAME,
-                crashReportSysInfo = CrashReportSysInfoAndroid,
-                fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt()),
-                customSaveLocationHelper = customSaveLocationHelper,
-                limitOrientationsHelper = limitOrientationsHelper
+            version = BuildConfig.VERSION_NAME,
+            crashReportSysInfo = CrashReportSysInfoAndroid,
+            fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
+            customSaveLocationHelper = customSaveLocationHelper,
+            limitOrientationsHelper = limitOrientationsHelper
         )
-        val game = UncivGame(androidParameters)
+
+        game = UncivGame(androidParameters)
         initialize(game, config)
+
+        // This is also needed in onCreate to open links and notifications
+        // correctly even if the app was not running
+        if (intent.action == Intent.ACTION_VIEW) {
+            val uri: Uri? = intent.data
+            deepLinkedMultiplayerGame = uri?.getQueryParameter("id")
+        } else {
+            deepLinkedMultiplayerGame = null
+        }
     }
 
     /**
@@ -84,15 +95,30 @@ open class AndroidLauncher : AndroidApplication() {
             }
         } catch (ex: Exception) {
         }
+
+        if (deepLinkedMultiplayerGame != null) {
+            game?.deepLinkedMultiplayerGame = deepLinkedMultiplayerGame;
+            deepLinkedMultiplayerGame = null
+        }
+
         super.onResume()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // This should only happen on API 19+ but it's wrapped in the if check to keep the
-            // compiler happy
-            customSaveLocationHelper?.handleIntentData(requestCode, data?.data)
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent == null)
+            return
+
+        if (intent.action == Intent.ACTION_VIEW) {
+            val uri: Uri? = intent.data
+            deepLinkedMultiplayerGame = uri?.getQueryParameter("id")
+        } else {
+            deepLinkedMultiplayerGame = null
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        customSaveLocationHelper?.handleIntentData(requestCode, data?.data)
         super.onActivityResult(requestCode, resultCode, data)
     }
 }

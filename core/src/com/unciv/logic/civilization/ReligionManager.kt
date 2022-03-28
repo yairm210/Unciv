@@ -85,9 +85,7 @@ class ReligionManager {
 
     fun isPickablePantheonBelief(belief: Belief): Boolean {
         if (belief.type != BeliefType.Pantheon) return false
-        if (civInfo.gameInfo.civilizations.any { it.religionManager.religion != null && it.religionManager.religion!!.followerBeliefs.contains(belief.name)})
-            return false
-        return true
+        return (civInfo.gameInfo.civilizations.none { it.religionManager.religion?.followerBeliefs?.contains(belief.name) == true })
     }
 
     fun choosePantheonBelief(belief: Belief) {
@@ -109,7 +107,7 @@ class ReligionManager {
             (200 + 100 * greatProphetsEarned * (greatProphetsEarned + 1) / 2f) * 
             civInfo.gameInfo.gameParameters.gameSpeed.modifier
 
-        for (unique in civInfo.getMatchingUniques("[]% Faith cost of generating Great Prophet equivalents"))
+        for (unique in civInfo.getMatchingUniques(UniqueType.FaithCostOfGreatProphetChange))
             faithCost *= unique.params[0].toPercent()
 
         return faithCost.toInt()
@@ -121,7 +119,7 @@ class ReligionManager {
         if (getGreatProphetEquivalent() == null) return false
         if (storedFaith < faithForNextGreatProphet()) return false
         if (!civInfo.isMajorCiv()) return false
-        if (civInfo.hasUnique("May not generate great prophet equivalents naturally")) return false
+        if (civInfo.hasUnique(UniqueType.MayNotGenerateGreatProphet)) return false
         return true
     }
     

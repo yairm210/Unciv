@@ -19,8 +19,8 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.logic.multiplayer.OnlineMultiplayer
 import java.util.*
-
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
@@ -34,6 +34,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val customSaveLocationHelper = parameters.customSaveLocationHelper
     val limitOrientationsHelper = parameters.limitOrientationsHelper
 
+    var deepLinkedMultiplayerGame: String? = null
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings: GameSettings
@@ -119,9 +120,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
-                if (settings.isFreshlyCreated) {
-                    setScreen(LanguagePickerScreen())
-                } else { setScreen(MainMenuScreen()) }
+                when {
+                    settings.isFreshlyCreated -> setScreen(LanguagePickerScreen())
+                    deepLinkedMultiplayerGame == null -> setScreen(MainMenuScreen())
+                    else -> tryLoadDeepLinkedGame()
+                }
+
                 isInitialized = true
             }
         }
@@ -153,12 +157,27 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
         Gdx.graphics.requestRendering()
     }
+    
+    fun tryLoadDeepLinkedGame() {
+        if (deepLinkedMultiplayerGame != null) {
+            try {
+                loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
+            } catch (ex: Exception) {
+                setScreen(MainMenuScreen())
+            }
+        }
+    }
 
     // This is ALWAYS called after create() on Android - google "Android life cycle"
     override fun resume() {
         super.resume()
         musicController.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
+
+        // This is also needed in resume to open links and notifications
+        // correctly when the app was already running. The handling in onCreate
+        // does not seem to be enough
+        tryLoadDeepLinkedGame()
     }
 
     override fun pause() {

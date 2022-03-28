@@ -18,6 +18,23 @@ import com.unciv.models.stats.Stat
 interface NativeFontImplementation {
     fun getFontSize(): Int
     fun getCharPixmap(char: Char): Pixmap
+    fun getAvailableFont(): Collection<FontData>
+}
+
+// If save in `GameSettings` need use enName.
+// If show to user need use localName.
+// If save localName in `GameSettings` may generate garbled characters by encoding.
+data class FontData(val localName: String, val enName: String = localName) {
+    override fun equals(other: Any?): Boolean {
+        return if (other is FontData) enName == other.enName
+        else super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = localName.hashCode()
+        result = 31 * result + enName.hashCode()
+        return result
+    }
 }
 
 // This class is loosely based on libgdx's FreeTypeBitmapFontData
@@ -128,13 +145,19 @@ object Fonts {
      * This has several advantages: It means we only render each character once (good for both runtime and RAM),
      * AND it means that our 'custom' emojis only need to be once size (50px) and they'll be rescaled for what's needed. */
     const val ORIGINAL_FONT_SIZE = 50f
+    const val DEFAULT_FONT_FAMILY = ""
 
-    lateinit var font:BitmapFont
+    lateinit var font: BitmapFont
     fun resetFont() {
         val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
         font = BitmapFont(fontData, fontData.regions, false)
         font.setOwnsTexture(true)
         font.data.setScale(Constants.defaultFontSize / ORIGINAL_FONT_SIZE)
+    }
+
+    fun getAvailableFontFamilyNames(): Collection<FontData> {
+        if (UncivGame.Current.fontImplementation == null) return emptyList()
+        return UncivGame.Current.fontImplementation!!.getAvailableFont()
     }
 
     /**
@@ -145,15 +168,15 @@ object Fonts {
      * @return New Pixmap with all the size and pixel data from this TextureRegion copied into it.
      */
     // From https://stackoverflow.com/questions/29451787/libgdx-textureregion-to-pixmap
-    fun extractPixmapFromTextureRegion(textureRegion:TextureRegion):Pixmap {
+    fun extractPixmapFromTextureRegion(textureRegion: TextureRegion): Pixmap {
         val textureData = textureRegion.texture.textureData
         if (!textureData.isPrepared) {
             textureData.prepare()
         }
         val pixmap = Pixmap(
-                textureRegion.regionWidth,
-                textureRegion.regionHeight,
-                textureData.format
+            textureRegion.regionWidth,
+            textureRegion.regionHeight,
+            textureData.format
         )
         val textureDataPixmap = textureData.consumePixmap()
         pixmap.drawPixmap(

@@ -316,7 +316,7 @@
 		"cost": 125,
 		"culture": 1,
 		"isNationalWonder": true,
-		"uniques": ["Requires a [Monument] in all cities", "[+25]% great person generation [in this city]", "Cost increases by [30] per owned city"],
+		"uniques": ["Requires a [Monument] in all cities", "[+25]% Great Person generation [in this city]", "Cost increases by [30] per owned city"],
 		"requiredTech": "Philosophy"
 	},
 	{
@@ -380,7 +380,7 @@
 	// Column 5
 	{
 		"name": "Garden",
-		"uniques": ["[+25]% great person generation [in this city]", "Must be next to [Fresh water]"],
+		"uniques": ["[+25]% Great Person generation [in this city]", "Must be next to [Fresh water]"],
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"requiredTech": "Theology"
@@ -396,7 +396,7 @@
 	{
 		"name": "Hagia Sophia",
 		"isWonder": true,
-		"uniques": ["[+25]% great person generation [in all cities]"],
+		"uniques": ["[+25]% Great Person generation [in all cities]"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty' - Procopius, De Aedificis"
 	},
@@ -434,7 +434,7 @@
 		"greatPersonPoints": {"Great Merchant": 1},
 		"culture": 1,
 		"isWonder": true,
-		"uniques": ["Gold from all trade routes +25%","Must have an owned [Mountain] within [2] tiles"],
+		"uniques": ["[+25]% [Gold] from Trade Routes","Must have an owned [Mountain] within [2] tiles"],
 		"requiredTech": "Currency",
 		"quote": "'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.' - Hiram Bingham"
 	},
@@ -465,9 +465,7 @@
 		"hurryCostModifier": 25,
 		"requiredNearbyImprovedResources": ["Iron"],
 		"requiredTech": "Metal Casting",
-		// If spaceship parts are changed into units, the spaceship part unique should be changed to
-		// "[+15]% Production when constructing [Spaceship part] units [in this city]"
-		"uniques": ["[+15]% Production when constructing [Spaceship part] buildings [in this city]",
+		"uniques": ["[+15]% Production when constructing [Spaceship part] units [in this city]",
 			"[+15]% Production when constructing [Land] units [in this city]",
 			"[+1 Production] from [Iron] tiles [in this city]"]
 	},
@@ -541,7 +539,7 @@
 		"culture": 2,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Walls",
-		"uniques": ["[+1 Gold] <after discovering [Flight]>", "Destroyed when the city is captured"],
+		"uniques": ["[+1 Gold] [in this city] <after discovering [Flight]>", "Destroyed when the city is captured"],
 		"requiredTech": "Chivalry"
 	},
 	{
@@ -629,7 +627,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"Great Artist": 1},
-		"uniques": ["[-10]% unhappiness from population [in all cities]"],
+		"uniques": ["[-10]% Unhappiness from [Population] [in all cities]"],
 		"requiredTech": "Banking",
 		"quote": "'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
 	},
@@ -942,26 +940,12 @@
 
 	// Column 15
 	{
-		"name": "SS Cockpit",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Satellites",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
-	},
-	{
-		"name": "SS Booster",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Robotics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
-	},
-	{
 		"name": "Spaceship Factory",
 		"production": 3,
 		"requiredResource": "Aluminum",
 		"cost": 360,
 		"requiredBuilding": "Factory",
-		// If spaceship parts are changed into units, this unique should be changed to
-		// "[+50]% Production when constructing [Spaceship part] units [in this city]"
-		"uniques": ["[+50]% Production when constructing [Spaceship part] buildings [in this city]"],
+		"uniques": ["[+50]% Production when constructing [Spaceship part] units [in this city]"],
 		"requiredTech": "Robotics"
 	},
 	// Column 16
@@ -973,18 +957,6 @@
 		"requiredTech": "Globalization",
 		"uniques": ["Triggers voting for the Diplomatic Victory", "Hidden when [Diplomatic] Victory is disabled", "Triggers a global alert upon completion"],
 		"quote": "'More than ever before in human history, we share a common destiny. We can master it only if we face it together. And that is why we have the United Nations.' - Kofi Annan"
-	},
-	{
-		"name": "SS Engine",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Particle Physics",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
-	},
-	{
-		"name": "SS Stasis Chamber",
-		"requiredResource": "Aluminum",
-		"requiredTech": "Nanotechnology",
-		"uniques": ["Spaceship part", "Triggers a global alert upon completion", "Cannot be purchased", "Hidden when [Scientific] Victory is disabled"]
 	},
 
 	// All Eras

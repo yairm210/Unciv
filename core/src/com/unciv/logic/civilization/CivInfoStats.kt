@@ -79,7 +79,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
 
         val ignoredTileTypes =
-            civInfo.getMatchingUniques("No Maintenance costs for improvements in [] tiles")
+            civInfo.getMatchingUniques(UniqueType.NoImprovementMaintenanceInSpecificTiles)
                 .map { it.params[0] }.toHashSet() // needs to be .toHashSet()ed,
         // Because we go over every tile in every city and check if it's in this list, which can get real heavy.
 
@@ -92,10 +92,6 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                 transportationUpkeep += tile.roadStatus.upkeep
             }
         }
-        // Deprecated since 3.18.17
-            for (unique in civInfo.getMatchingUniques(UniqueType.DecreasedRoadMaintenanceDeprecated))
-                transportationUpkeep *= (100f - unique.params[0].toInt()) / 100
-        //
         for (unique in civInfo.getMatchingUniques(UniqueType.RoadMaintenance))
             transportationUpkeep *= unique.params[0].toPercent()
 
@@ -169,7 +165,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
                     }
                 }
 
-                for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+                for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                     cityStateBonus[Stat.valueOf(unique.params[1])] *= unique.params[0].toPercent()
                 }
 
@@ -246,11 +242,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        for (unique in 
-            // Deprecated since 3.18.17
-                civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxuryDeprecated) +
-            //
-            civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxury))
+        for (unique in civInfo.getMatchingUniques(UniqueType.BonusHappinessFromLuxury))
             happinessPerUniqueLuxury += unique.params[0].toInt()
 
         val ownedLuxuries = civInfo.getCivResources().map { it.resource }
@@ -264,12 +256,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
         statMap["Luxury resources"] = relevantLuxuries * happinessPerUniqueLuxury
 
         val happinessBonusForCityStateProvidedLuxuries =
-            (
-                // Deprecated since 3.18.17
-                    civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappinessDeprecated) + 
-                //        
-                civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappiness)
-            ).sumOf { it.params[0].toInt() } / 100f
+            civInfo.getMatchingUniques(UniqueType.CityStateLuxuryHappiness).sumOf { it.params[0].toInt() } / 100f
 
         val luxuriesProvidedByCityStates = civInfo.getKnownCivs().asSequence()
             .filter { it.isCityState() && it.getAllyCiv() == civInfo.civName }
@@ -304,7 +291,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
             }
         }
 
-        if (civInfo.hasUnique("Provides 1 happiness per 2 additional social policies adopted")) {
+        if (civInfo.hasUnique(UniqueType.HappinessPer2Policies)) {
             if (!statMap.containsKey("Policies")) statMap["Policies"] = 0f
             statMap["Policies"] = statMap["Policies"]!! +
                     civInfo.policies.getAdoptedPolicies()
@@ -358,7 +345,7 @@ class CivInfoStats(val civInfo: CivilizationInfo) {
 
         // Just in case
         if (cityStatesHappiness > 0) {
-            for (unique in civInfo.getMatchingUniques("[]% [] from City-States")) {
+            for (unique in civInfo.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                 if (unique.params[1] == Stat.Happiness.name)
                     cityStatesHappiness *= unique.params[0].toPercent()
             }

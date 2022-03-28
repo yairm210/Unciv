@@ -35,7 +35,7 @@ class TileGroupIcons(val tileGroup: TileGroup) {
     }
 
     fun addPopulationIcon(icon: Image = ImageGetter.getStatIcon("Population")
-            .apply { color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f) }) {
+            .apply { color = Color.GREEN.darken(0.5f) }) {
         populationIcon?.remove()
         populationIcon = icon
         populationIcon!!.run {

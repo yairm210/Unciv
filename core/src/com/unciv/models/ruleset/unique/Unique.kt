@@ -1,14 +1,17 @@
 package com.unciv.models.ruleset.unique
 
+import com.unciv.Constants
 import com.unciv.logic.battle.CombatAction
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.*
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.Ruleset
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.random.Random
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -24,6 +27,7 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
         else Stats.parse(firstStatParam)
     }
     val conditionals: List<Unique> = text.getConditionals()
+
     val isTriggerable = type != null && type.targetTypes.contains(UniqueTarget.Triggerable)
             // <for [amount] turns]> in effect makes any unique become a triggerable unique
             || conditionals.any { it.type == UniqueType.ConditionalTimedUnique }
@@ -52,24 +56,65 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
 
     fun getDeprecationAnnotation(): Deprecated? = type?.getDeprecationAnnotation()
 
-    fun getReplacementText(): String {
+    fun getReplacementText(ruleset: Ruleset): String {
         val deprecationAnnotation = getDeprecationAnnotation() ?: return ""
-        var replacementUniqueText = deprecationAnnotation.replaceWith.expression
+        val replacementUniqueText = deprecationAnnotation.replaceWith.expression
         val deprecatedUniquePlaceholders = type!!.text.getPlaceholderParameters()
+        val possibleUniques = replacementUniqueText.split(Constants.uniqueOrDelimiter)
 
         // Here, for once, we DO want the conditional placeholder parameters together with the regular ones,
         //  so we cheat the conditional detector by removing the '<'
-        for (parameter in replacementUniqueText.replace('<',' ').getPlaceholderParameters()) {
-            val parameterNumberInDeprecatedUnique =
-                deprecatedUniquePlaceholders.indexOf(parameter.removePrefix("+").removePrefix("-"))
-            if (parameterNumberInDeprecatedUnique == -1) continue
-            var replacementText = params[parameterNumberInDeprecatedUnique]
-            if (parameter.startsWith('+')) replacementText = "+$replacementText"
-            else if(parameter.startsWith('-')) replacementText = "-$replacementText"
-            replacementUniqueText =
-                replacementUniqueText.replace("[$parameter]", "[$replacementText]")
+        //  note this is only done for the replacement, not the deprecated unique, thus parameters of
+        //  conditionals on the deprecated unique are ignored
+
+        val finalPossibleUniques = ArrayList<String>()
+
+        for (possibleUnique in possibleUniques) {
+            var resultingUnique = possibleUnique
+            for (parameter in possibleUnique.replace('<', ' ').getPlaceholderParameters()) {
+                val parameterHasSign = parameter.startsWith('-') || parameter.startsWith('+')
+                val parameterUnsigned = if (parameterHasSign) parameter.drop(1) else parameter
+                val parameterNumberInDeprecatedUnique = deprecatedUniquePlaceholders.indexOf(parameterUnsigned)
+                if (parameterNumberInDeprecatedUnique !in params.indices) continue
+                val positionInDeprecatedUnique = type.text.indexOf("[$parameterUnsigned]")
+                var replacementText = params[parameterNumberInDeprecatedUnique]
+                if (UniqueParameterType.Number in type.parameterTypeMap[parameterNumberInDeprecatedUnique]) {
+                    // The following looks for a sign just before [amount] and detects replacing "-[-33]" with "[+33]" and similar situations
+                    val deprecatedHadPlusSign = positionInDeprecatedUnique > 0 && type.text[positionInDeprecatedUnique - 1] == '+'
+                    val deprecatedHadMinusSign = positionInDeprecatedUnique > 0 && type.text[positionInDeprecatedUnique - 1] == '-'
+                    val deprecatedHadSign = deprecatedHadPlusSign || deprecatedHadMinusSign
+                    val positionInNewUnique = possibleUnique.indexOf("[$parameter]")
+                    val newHasMinusSign = positionInNewUnique > 0 && possibleUnique[positionInNewUnique - 1] == '-'
+                    val replacementHasMinusSign = replacementText.startsWith('-')
+                    val replacementHasPlusSign = replacementText.startsWith('+')
+                    val replacementIsSigned = replacementHasPlusSign || replacementHasMinusSign
+                    val replacementTextUnsigned = if (replacementIsSigned) replacementText.drop(1) else replacementText
+                    val replacementShouldBeNegative = if (deprecatedHadMinusSign == newHasMinusSign) replacementHasMinusSign else !replacementHasMinusSign
+                    val replacementShouldBeSigned = deprecatedHadSign && !newHasMinusSign || parameterHasSign
+                    replacementText = when {
+                        !(deprecatedHadSign || newHasMinusSign || replacementIsSigned) -> replacementText
+                        replacementShouldBeNegative -> "-$replacementTextUnsigned"
+                        replacementShouldBeSigned -> "+$replacementTextUnsigned"
+                        else -> replacementTextUnsigned
+                    }
+                }
+                resultingUnique = resultingUnique.replace("[$parameter]", "[$replacementText]")
+            }
+            finalPossibleUniques += resultingUnique
         }
-        return replacementUniqueText
+        if (finalPossibleUniques.size == 1) return finalPossibleUniques.first()
+
+        // filter out possible replacements that are obviously wrong
+        val uniquesWithNoErrors = finalPossibleUniques.filter { 
+            val unique = Unique(it)
+            val errors = ruleset.checkUnique(unique, true, "",
+                UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific, unique.type!!.targetTypes.first())
+            errors.isEmpty()
+        }
+        if (uniquesWithNoErrors.size == 1) return uniquesWithNoErrors.first()
+
+        val uniquesToUnify = if (uniquesWithNoErrors.isNotEmpty()) uniquesWithNoErrors else possibleUniques
+        return uniquesToUnify.joinToString("\", \"")
     }
 
     private fun conditionalApplies(
@@ -87,12 +132,16 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
             else state.unit
         }
+        
+        val stateBasedRandom by lazy { Random(state.hashCode()) }
 
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalConsumeUnit -> true
-            
+
+            UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
+
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
             UniqueType.ConditionalWithResource -> state.civInfo?.hasResource(condition.params[0]) == true
@@ -120,11 +169,15 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.civInfo != null && state.civInfo.policies.isAdopted(condition.params[0])
             UniqueType.ConditionalNoPolicy ->
                 state.civInfo != null && !state.civInfo.policies.isAdopted(condition.params[0])
+            UniqueType.ConditionalBuildingBuilt -> 
+                state.civInfo != null && state.civInfo.cities.any { it.cityConstructions.containsBuildingOrEquivalent(condition.params[0]) }
 
             UniqueType.ConditionalCityWithBuilding -> 
                 state.cityInfo != null && state.cityInfo.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
             UniqueType.ConditionalCityWithoutBuilding -> 
                 state.cityInfo != null && !state.cityInfo.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
+            UniqueType.ConditionalPopulationFilter ->
+                state.cityInfo != null && state.cityInfo.population.getPopulationFilterAmount(condition.params[1]) >= condition.params[0].toInt()
             UniqueType.ConditionalSpecialistCount ->
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
             UniqueType.ConditionalFollowerCount ->
@@ -144,14 +197,21 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.ourCombatant != null && state.ourCombatant.getHealth() > condition.params[0].toInt()
             UniqueType.ConditionalBelowHP ->
                 state.ourCombatant != null && state.ourCombatant.getHealth() < condition.params[0].toInt()
-            
+
             UniqueType.ConditionalInTiles ->
                 relevantTile?.matchesFilter(condition.params[0], state.civInfo) == true
+            UniqueType.ConditionalInTilesNot ->
+                relevantTile?.matchesFilter(condition.params[0], state.civInfo) == false
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
-                relevantTile!=null && relevantTile!!.matchesFilter(condition.params[0], state.civInfo)
+                relevantTile != null && relevantTile!!.matchesFilter(condition.params[0], state.civInfo)
                         && relevantTile!!.matchesFilter(condition.params[1], state.civInfo)
+            UniqueType.ConditionalNearTiles ->
+                relevantTile != null && relevantTile!!.getTilesInDistance(condition.params[0].toInt()).any {
+                    it.matchesFilter(condition.params[1])
+                }
+            
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0
@@ -212,7 +272,7 @@ class UniqueMap: HashMap<String, ArrayList<Unique>>() {
         this[unique.placeholderText]!!.add(unique)
     }
 
-    fun getUniques(placeholderText: String): Sequence<Unique> {
+    private fun getUniques(placeholderText: String): Sequence<Unique> {
         return this[placeholderText]?.asSequence() ?: emptySequence()
     }
 

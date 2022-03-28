@@ -2,8 +2,12 @@ package com.unciv.models.metadata
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
-import com.unciv.UncivGame
+import com.badlogic.gdx.files.FileHandle
+import com.unciv.JsonParser
+import com.unciv.Constants
 import com.unciv.logic.GameSaver
+import com.unciv.ui.utils.Fonts
+import java.io.File
 import java.text.Collator
 import java.util.*
 import kotlin.collections.HashSet
@@ -51,6 +55,10 @@ class GameSettings {
     var isFreshlyCreated = false
     var visualMods = HashSet<String>()
 
+
+    var multiplayerServer = Constants.dropboxMultiplayerServer
+
+
     var showExperimentalWorldWrap = false // We're keeping this as a config due to ANR problems on Android phones for people who don't know what they're doing :/
 
     var lastOverviewPage: String = "Cities"
@@ -59,6 +67,11 @@ class GameSettings {
 
     /** Saves the last successful new game's setup */
     var lastGameSetup: GameSetupInfo? = null
+
+    var fontFamily: String = Fonts.DEFAULT_FONT_FAMILY
+
+    /** Maximum zoom-out of the map - performance heavy */
+    var maxWorldZoomOut = 2f
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
@@ -98,6 +111,24 @@ class GameSettings {
 
     fun getCollatorFromLocale(): Collator {
         return Collator.getInstance(getCurrentLocale())
+    }
+
+    companion object {
+        /** Specialized function to access settings before Gdx is initialized.
+         *
+         * @param base Path to the directory where the file should be - if not set, the OS current directory is used (which is "/" on Android)
+         */
+        fun getSettingsForPlatformLaunchers(base: String = "."): GameSettings {
+            // FileHandle is Gdx, but the class and JsonParser are not dependent on app initialization
+            // In fact, at this point Gdx.app or Gdx.files are null but this still works.
+            val file = FileHandle(base + File.separator + GameSaver.settingsFileName)
+            return if (file.exists())
+                JsonParser().getFromJson(
+                    GameSettings::class.java,
+                    file
+                )
+            else GameSettings().apply { isFreshlyCreated = true }
+        }
     }
 }
 

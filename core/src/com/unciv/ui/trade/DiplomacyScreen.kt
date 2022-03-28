@@ -10,14 +10,15 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
+import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.Quest
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
-import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
@@ -27,62 +28,82 @@ import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import kotlin.collections.ArrayList
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
-class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
+/**
+ * Creates the diplomacy screen for [viewingCiv].
+ *
+ * When [selectCiv] is given and [selectTrade] is not, that Civilization is selected as if clicked on the left side.
+ * When [selectCiv] and [selectTrade] are supplied, that Trade for that Civilization is selected, used for the counter-offer option from `TradePopup`.
+ */
+@Suppress("KDocUnresolvedReference")  // Mentioning non-field parameters is flagged, but they work anyway
+class DiplomacyScreen(
+    val viewingCiv: CivilizationInfo,
+    selectCiv: CivilizationInfo? = null,
+    selectTrade: Trade? = null
+): BaseScreen() {
+    companion object {
+        private const val nationIconSize = 100f
+        private const val nationIconPad = 10f
+    }
 
-    private val leftSideTable = Table().apply { defaults().pad(10f) }
+    private val leftSideTable = Table().apply { defaults().pad(nationIconPad) }
+    private val leftSideScroll = ScrollPane(leftSideTable)
     private val rightSideTable = Table()
+    private val closeButton = Constants.close.toTextButton()
 
     private fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.canChangeState
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
-        val splitPane = SplitPane(ScrollPane(leftSideTable), rightSideTable, false, skin)
+        val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
-        updateLeftSideTable()
+        updateLeftSideTable(selectCiv)
 
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
 
-
-        val closeButton = Constants.close.toTextButton()
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.label.setFontSize(Constants.headingFontSize)
         closeButton.labelCell.pad(10f)
         closeButton.pack()
-        closeButton.y = stage.height - closeButton.height - 10
-        closeButton.x =
-            (stage.width * 0.2f - closeButton.width) / 2   // center, leftSideTable.width not known yet
+        positionCloseButton()
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
+
+        if (selectCiv != null) {
+            if (selectTrade != null) {
+                val tradeTable = setTrade(selectCiv)
+                tradeTable.tradeLogic.currentTrade.set(selectTrade)
+                tradeTable.offerColumnsTable.update()
+            } else
+                updateRightSide(selectCiv)
+        }
     }
 
-    private fun updateLeftSideTable() {
+    private fun positionCloseButton() {
+        closeButton.setPosition(stage.width * 0.1f, stage.height - 10f, Align.top)
+    }
+
+    private fun updateLeftSideTable(selectCiv: CivilizationInfo?) {
         leftSideTable.clear()
         leftSideTable.add().padBottom(60f).row()  // room so the close button does not cover the first
 
-        val civsToDisplay = viewingCiv.gameInfo.civilizations.asSequence()
-            .filterNot {
-                it.isDefeated() || it == viewingCiv || it.isBarbarian() || it.isSpectator() ||
-                    !viewingCiv.knows(it)
+        var selectCivY = 0f
+
+        for (civ in viewingCiv.getKnownCivsSorted()) {
+            if (civ == selectCiv) {
+                selectCivY = leftSideTable.prefHeight
             }
-            .sortedWith(
-                compareByDescending<CivilizationInfo>{ it.isMajorCiv() }
-                    .thenBy (UncivGame.Current.settings.getCollatorFromLocale(), { it.civName.tr() })
-            )
 
-        for (civ in civsToDisplay) {
-
-            val civIndicator = ImageGetter.getNationIndicator(civ.nation, 100f)
+            val civIndicator = ImageGetter.getNationIndicator(civ.nation, nationIconSize)
 
             val relationLevel = civ.getDiplomacyManager(viewingCiv).relationshipLevel()
             val relationshipIcon = if (civ.isCityState() && relationLevel == RelationshipLevel.Ally)
                 ImageGetter.getImage("OtherIcons/Star")
-                    .surroundWithCircle(size = 30f, color = relationLevel.color).apply { 
+                    .surroundWithCircle(size = 30f, color = relationLevel.color).apply {
                         actor.color = Color.GOLD
                     }
             else
@@ -114,9 +135,15 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
 
             civIndicator.onClick { updateRightSide(civ) }
         }
+
+        if (selectCivY != 0f) {
+            leftSideScroll.layout()
+            leftSideScroll.scrollY = selectCivY + (nationIconSize + 2 * nationIconPad - stage.height) / 2
+            leftSideScroll.updateVisualScroll()
+        }
     }
 
-    fun updateRightSide(otherCiv: CivilizationInfo) {
+    private fun updateRightSide(otherCiv: CivilizationInfo) {
         rightSideTable.clear()
         if (otherCiv.isCityState()) rightSideTable.add(
             ScrollPane(getCityStateDiplomacyTable(otherCiv))
@@ -125,7 +152,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             .height(stage.height)
     }
 
-    fun setTrade(civ: CivilizationInfo): TradeTable {
+    private fun setTrade(civ: CivilizationInfo): TradeTable {
         rightSideTable.clear()
         val tradeTable = TradeTable(civ, this)
         rightSideTable.add(tradeTable)
@@ -146,7 +173,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (otherCiv.detailedCivResources.any { it.resource.resourceType != ResourceType.Bonus }) {
             val resourcesTable = Table()
             resourcesTable.add("{Resources}:  ".toLabel()).padRight(10f)
-            for (supplyList in otherCiv.detailedCivResources) {
+            val cityStateResources = otherCiv.cityStateFunctions.getCityStateResourcesForAlly()
+            for (supplyList in cityStateResources) {
                 if (supplyList.resource.resourceType == ResourceType.Bonus)
                     continue
                 val name = supplyList.resource.name
@@ -172,9 +200,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
         if (ally != null) {
-            val allyString = "{Ally}: {$ally} {Influence}: ".tr() +
-                    otherCiv.getDiplomacyManager(ally).influence.toString()
-            diplomacyTable.add(allyString.toLabel()).row()
+            val allyInfluence = otherCiv.getDiplomacyManager(ally).influence.toInt()
+            diplomacyTable
+                .add("Ally: [$ally] with [$allyInfluence] Influence".toLabel())
+                .row()
         }
 
         val protectors = otherCiv.getProtectorCivs()
@@ -210,8 +239,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         if (relationLevel >= RelationshipLevel.Friend) {
             // RelationshipChange = Ally -> Friend or Friend -> Favorable
             val turnsToRelationshipChange = otherCivDiplomacyManager.getTurnsToRelationshipChange()
-            diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel())
-                .row()
+            if (turnsToRelationshipChange != 0)
+                diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel())
+                    .row()
         }
 
         val friendBonusLabelColor = if (relationLevel >= RelationshipLevel.Friend) Color.GREEN else Color.GRAY
@@ -239,7 +269,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         val bonusStrings = ArrayList<String>()
         for (bonus in bonuses) {
             var improved = false
-            for (unique in viewingCiv.getMatchingUniques("[]% [] from City-States")) {
+            for (unique in viewingCiv.getMatchingUniques(UniqueType.StatBonusPercentFromCityStates)) {
                 val boostAmount = unique.params[0].toPercent()
                 val boostedStat = Stat.valueOf(unique.params[1])
                 when (bonus.type) {
@@ -300,7 +330,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             revokeProtectionButton.onClick {
                 YesNoPopup("Revoke protection for [${otherCiv.civName}]?", {
                     otherCiv.removeProtectorCiv(viewingCiv)
-                    updateLeftSideTable()
+                    updateLeftSideTable(otherCiv)
                     updateRightSide(otherCiv)
                 }, this).open()
             }
@@ -311,7 +341,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             protectionButton.onClick {
                 YesNoPopup("Declare Protection of [${otherCiv.civName}]?", {
                     otherCiv.addProtectorCiv(viewingCiv)
-                    updateLeftSideTable()
+                    updateLeftSideTable(otherCiv)
                     updateRightSide(otherCiv)
                 }, this).open()
             }
@@ -347,7 +377,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
                             )
                         )
                         tradeLogic.acceptTrade()
-                        updateLeftSideTable()
+                        updateLeftSideTable(otherCiv)
                         updateRightSide(otherCiv)
                     }, this).open()
                 }
@@ -370,7 +400,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getQuestTable(assignedQuest)).row()
         }
-        
+
         for (target in otherCiv.getKnownCivs().filter { otherCiv.questManager.warWithMajorActive(it) }) {
             diplomacyTable.addSeparator()
             diplomacyTable.add(getWarWithMajorTable(target, otherCiv)).row()
@@ -440,7 +470,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
                 "Gift [$giftAmount] gold (+[$influenceAmount] influence)".toTextButton()
             giftButton.onClick {
                 otherCiv.receiveGoldGift(viewingCiv, giftAmount)
-                updateLeftSideTable()
+                updateLeftSideTable(otherCiv)
                 updateRightSide(otherCiv)
             }
             diplomacyTable.add(giftButton).row()
@@ -576,7 +606,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
     private fun getWarWithMajorTable(target: CivilizationInfo, otherCiv: CivilizationInfo): Table {
         val warTable = Table()
         warTable.defaults().pad(10f)
-        
+
         val title = "War against [${target.civName}]"
         val description = "We need you to help us defend against [${target.civName}]. Killing [${otherCiv.questManager.unitsToKill(target)}] of their military units would slow their offensive."
         val progress = if (viewingCiv.knows(target)) "Currently you have killed [${otherCiv.questManager.unitsKilledSoFar(target, viewingCiv)}] of their military units."
@@ -587,7 +617,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             .width(stage.width / 2).row()
         warTable.add(progress.toLabel().apply { wrap = true; setAlignment(Align.center) })
             .width(stage.width / 2).row()
-  
+
         return warTable
     }
 
@@ -691,7 +721,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
                 denounceButton.onClick {
                     YesNoPopup("Denounce [${otherCiv.civName}]?", {
                         diplomacyManager.denounce()
-                        updateLeftSideTable()
+                        updateLeftSideTable(otherCiv)
                         setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
                     }, this).open()
                 }
@@ -861,7 +891,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
             YesNoPopup("Declare war on [${otherCiv.civName}]?", {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
-                updateLeftSideTable()
+                updateLeftSideTable(otherCiv)
                 UncivGame.Current.musicController.chooseTrack(otherCiv.civName, MusicMood.War, MusicTrackChooserFlags.setSpecific)
             }, this).open()
         }
@@ -894,4 +924,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo): BaseScreen() {
         rightSideTable.add(diplomacyTable)
     }
 
+    override fun resize(width: Int, height: Int) {
+        super.resize(width, height)
+        positionCloseButton()
+    }
 }

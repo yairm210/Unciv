@@ -25,8 +25,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
     private fun getGoldForCapturingCity(conqueringCiv: CivilizationInfo): Int {
         val baseGold = 20 + 10 * city.population.population + tileBasedRandom.nextInt(40)
         val turnModifier = max(0, min(50, city.civInfo.gameInfo.turns - city.turnAcquired)) / 50f
-        val cityModifier = if (city.containsBuildingUnique("Doubles Gold given to enemy if city is captured")) 2f else 1f
-        val conqueringCivModifier = if (conqueringCiv.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities")) 3f else 1f
+        val cityModifier = if (city.containsBuildingUnique(UniqueType.DoublesGoldFromCapturingCity)) 2f else 1f
+        val conqueringCivModifier = if (conqueringCiv.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities)) 3f else 1f
 
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()
@@ -37,9 +37,9 @@ class CityInfoConquestFunctions(val city: CityInfo){
             // Possibly remove other buildings
             for (building in cityConstructions.getBuiltBuildings()) {
                 when {
-                    building.hasUnique("Never destroyed when the city is captured") || building.isWonder -> continue
-                    building.hasUnique("Indicates the capital city") -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
-                    building.hasUnique("Destroyed when the city is captured") ->
+                    building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured) || building.isWonder -> continue
+                    building.hasUnique(UniqueType.IndicatesCapital) -> continue // Palace needs to stay a just a bit longer so moveToCiv isn't confused
+                    building.hasUnique(UniqueType.DestroyedWhenCityCaptured) ->
                         cityConstructions.removeBuilding(building.name)
                     else -> {
                         if (tileBasedRandom.nextInt(100) < 34) {
@@ -70,7 +70,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             for (building in cityConstructions.getBuiltBuildings()) {
                 // Remove national wonders
-                if (building.isNationalWonder && !building.hasUnique("Never destroyed when the city is captured"))
+                if (building.isNationalWonder && !building.hasUnique(UniqueType.NotDestroyedWhenCityCaptured))
                     cityConstructions.removeBuilding(building.name)
 
                 // Check if we exceed MaxNumberBuildable for any buildings
@@ -123,7 +123,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: CivilizationInfo) {
         // Gain gold for plundering city
-        val goldPlundered = getGoldForCapturingCity(conqueringCiv)  // todo: use this val
+        @Suppress("UNUSED_VARIABLE")  // todo: use this val
+        val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         city.apply {
 
             val oldCiv = civInfo

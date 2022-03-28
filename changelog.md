@@ -1,3 +1,175 @@
+## 4.0.2
+
+Solved out of memory errors for modded base rulesets
+
+By SomeTroglodyte:
+- City Info Table Expanders improvements
+- Empire Overview tweaks
+- Translation writer improvements 
+- Reactivate Worldscreen Ctrl key bindings 
+
+Generalized a few nation uniques  - By xlenstra
+
+## 4.0.1
+
+Custom server port  - By HAHH9527
+
+Add Moddable Policy Priorities  - By HaneulCheong
+
+By SomeTroglodyte:
+- Enable ModOptions uniques and ModConstants from non-base mods 
+- Improved Widgets - Fixing Tabbed Pager Scrolling 
+- Make max Zoom out a setting
+- More thorough workaround for Char.code and Char(Int) crashing 
+- Fix crashes and better crash info
+
+## 4.0.0
+
+Can now host your own Unciv server for Multiplayer - details in the wiki! 
+
+By SomeTroglodyte:
+- Prevent Char-to-code crash 
+- Moddable Ice generation 
+- Empire Overview improvements
+- Fix CS unit gift crash 
+
+By xlenstra:
+- Split 6 tiles visible unique into its parts, making it more moddable
+- Fixed a bug where the resource supply overview would not add up
+- Added an AI for building & using spaceship parts 
+- Unified & generalized a few uniques
+
+Custom desktop font - by HAHH9527
+
+## 3.19.18
+
+Double Zoom Out Range  - By itanasi
+
+By SomeTroglodyte:
+- Redesign of Empire Overview Screen - more info saves, better portrait display, and many more changes!
+- World Screen unit supply deficit icon now updates properly 
+- Close little loophole allowing promoting a unit after moving or attacking 
+
+## 3.19.17
+
+Better displaying of units that cannot be built
+
+By SomeTroglodyte:
+- Support more freely modded Worker-like units 
+- Religion overview improved
+- Mod checker minor improvements 
+- Fixed Spectator & AI games in seemingly endless loop  
+
+Multiplayer code cleanup  - By GGGuenni
+
+## 3.19.16
+
+Wiki improvements
+
+Unique units abilities that should be inherited by upgrades  - By SomeTroglodyte
+
+By SpacedOutChicken:
+- Add Amphibious promotion to Songhai units 
+- Petra fix 
+
+## 3.19.15
+
+By SomeTroglodyte:
+- UI improvements of Religion Picker Screen
+- Better Notification locations
+- Code cleanup
+- Fix Mughal Fort unique
+
+By itanasi:
+- Return Stacking Terrain Bonus to Civ5 Rules
+
+By lishaoxia1985:
+- UI improvements
+
+Added "Starts with [policy] adopted" unique  - By HaneulCheong
+
+## 3.19.14
+
+By SomeTroglodyte:
+- Sort maps & accelerate playing a newly edited map
+- Fixed many minor UI bugs
+- WLTK decorations
+- Improve unique replacement for +/- amounts
+- Locate Mod Errors - choose base ruleset to do complex check against
+- Move automated units button was showing when it didn't do anything
+
+Added deep link to multiplayer games  - By GGGuenni
+
+Block Embarked from capturing Civilians on Water  - By itanasi
+
+Translations update
+
+## 3.19.13
+
+Minor performance improvements
+
+By SomeTroglodyte:
+- Fixed Spaceship production bonuses
+- Fixed Ctrl-Letter key bindings
+- Fixed Polynesia's Wayfinding
+- Fixed Petra and Garden not allowed in some cases
+
+Align Embarked Defense Strength per Era  - By itanasi
+
+## 3.19.12
+
+Modding: Multiple Unique documentation improvement
+
+By SomeTroglodyte:
+- Slider fixes
+- Rudimentary AI control over goldPercentConvertedToScience
+
+Fix Navies capturing Land Civilians - By itanasi
+
+Translation updates
+
+## 3.19.11
+
+Mod autoupdate improvements
+
+Performance improvements
+
+Added "copy to clipboard" button for mod errors
+
+Multiple small improvements
+
+By SomeTroglodyte:
+- Resolved no-barbarian mod error
+- Minimum window size
+
+By xlenstra:
+- Reorganized the way city states grant resources
+- Made spaceship parts units instead of buildings
+- Added mod constants for the distance between two cities
+
+By itanasi:
+- Updating Embarking Tutorial with more details
+- Made multiple tile defense bonuses stack
+
+## 3.19.10
+
+Show json parsing errors for mods in the options menu
+
+AI only builds work boats for buildable improvements
+
+Trigger uniques by sacrificing units with conditional
+
+By xlenstra:
+- Damage in battle table is now the average damage done
+- Added conditional checking for tiles
+
+By itanasi:
+- Show Improvements that are buildable after Removing TerrainFeature
+- Embarking penalty logic fix
+- Prevent Civilians from capturing Civilians
+
+Fix for music resumes after minimizing on android - By SomeTroglodyte
+
 ## 3.19.9
 
 Transported units reveal tiles as if they passed through the path of the transporting unit

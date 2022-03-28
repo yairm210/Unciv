@@ -44,7 +44,7 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     /** Checks if the construction should be purchasable, not whether it can be bought with a stat at all */
     fun isPurchasable(cityConstructions: CityConstructions): Boolean {
         val rejectionReasons = getRejectionReasons(cityConstructions)
-        return rejectionReasons.all { it == RejectionReason.Unbuildable }
+        return rejectionReasons.all { it.rejectionReason == RejectionReason.Unbuildable }
     }
     
     fun canBePurchasedWithAnyStat(cityInfo: CityInfo): Boolean {
@@ -82,18 +82,26 @@ interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
 
 
 
-class RejectionReasons: HashSet<RejectionReason>() {
+class RejectionReasons: HashSet<RejectionReasonInstance>() {
+    
+    fun add(rejectionReason: RejectionReason) = add(RejectionReasonInstance(rejectionReason))
+    
+    fun contains(rejectionReason: RejectionReason) = any { it.rejectionReason == rejectionReason }
 
-    fun filterTechPolicyEraWonderRequirements(): HashSet<RejectionReason> {
-        return filterNot { it in techPolicyEraWonderRequirements }.toHashSet()
+    fun filterTechPolicyEraWonderRequirements(): List<RejectionReasonInstance> {
+        return filterNot { it.rejectionReason in techPolicyEraWonderRequirements }
     }
 
     fun hasAReasonToBeRemovedFromQueue(): Boolean {
-        return any { it in reasonsToDefinitivelyRemoveFromQueue }
+        return any { it.rejectionReason in reasonsToDefinitivelyRemoveFromQueue }
     }
 
     fun getMostImportantRejectionReason(): String? {
-        return orderOfErrorMessages.firstOrNull { it in this }?.errorMessage
+        for (rejectionReason in orderOfErrorMessages) {
+            val rejectionReasonInstance = firstOrNull { it.rejectionReason == rejectionReason }
+            if (rejectionReasonInstance != null) return rejectionReasonInstance.errorMessage
+        }
+        return null
     }
 
     // Used for constant variables in the functions above
@@ -127,9 +135,7 @@ class RejectionReasons: HashSet<RejectionReason>() {
 } 
 
 
-// TODO: Put a wrapper class around this containing the errorMessage, so that we don't
-// change the value of a enum constant sometimes.
-enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
+enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
     AlreadyBuilt(false, "Building already built in this city"),
     Unbuildable(false, "Unbuildable"),
     CanOnlyBePurchased(true, "Can only be purchased"),
@@ -145,7 +151,7 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
-    MaxNumberBuildable(true, "Maximum number being built"),
+    MaxNumberBuildable(true, "Maximum number have been built or are being constructed"),
 
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
@@ -158,7 +164,6 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
     MorePolicyBranches(false, "Hidden until more policy branches are fully adopted"),
 
     RequiresNearbyResource(false, "Requires a certain resource being exploited nearby"),
-    InvalidRequiredBuilding(false, "Required building does not exist in ruleSet!"),
     CannotBeBuiltWith(false, "Cannot be built at the same time as another building already built"),
 
     RequiresBuildingInThisCity(true, "Requires a specific building in this city!"),
@@ -179,8 +184,17 @@ enum class RejectionReason(val shouldShow: Boolean, var errorMessage: String) {
 
     PopulationRequirement(true, "Requires more population"),
 
-    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers"),
+    NoSettlerForOneCityPlayers(false, "No settlers for city-states or one-city challengers");
+    
+    fun toInstance(errorMessage: String = this.errorMessage,
+        shouldShow: Boolean = this.shouldShow): RejectionReasonInstance {
+        return RejectionReasonInstance(this, errorMessage, shouldShow)
+    }
 }
+
+data class RejectionReasonInstance(val rejectionReason:RejectionReason,
+                                   val errorMessage: String = rejectionReason.errorMessage,
+                                   val shouldShow: Boolean = rejectionReason.shouldShow)
 
 
 open class PerpetualConstruction(override var name: String, val description: String) : IConstruction {

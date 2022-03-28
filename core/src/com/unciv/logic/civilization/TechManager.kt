@@ -3,7 +3,6 @@ package com.unciv.logic.civilization
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
-import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Era
 import com.unciv.models.ruleset.unique.UniqueMap
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
@@ -34,11 +33,13 @@ class TechManager {
 
     // MapUnit.canPassThrough is the most called function in the game, and having these extremely specific booleans is one way of improving the time cost
     @Transient
-    var wayfinding = false
-    @Transient
     var unitsCanEmbark = false
     @Transient
     var embarkedUnitsCanEnterOcean = false
+    @Transient
+    var allUnitsCanEnterOcean = false
+    @Transient
+    var specificUnitsCanEnterOcean = false
 
     // UnitMovementAlgorithms.getMovementCostBetweenAdjacentTiles is a close second =)
     @Transient
@@ -280,7 +281,7 @@ class TechManager {
         }
 
         val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
-        val unitUpgrades = HashMap<String, ArrayList<CityInfo>>()
+        val unitUpgrades = HashMap<String, HashSet<CityInfo>>()
         for (city in civInfo.cities) {
             // Do not use replaceAll - that's a Java 8 feature and will fail on older phones!
             val oldQueue = city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
@@ -288,7 +289,7 @@ class TechManager {
             for (constructionName in oldQueue) {
                 if (constructionName in obsoleteUnits) {
                     if (constructionName !in unitUpgrades.keys) {
-                        unitUpgrades[constructionName] = ArrayList<CityInfo>()
+                        unitUpgrades[constructionName] = hashSetOf()
                     }
                     unitUpgrades[constructionName]?.add(city)
                     val construction = city.cityConstructions.getConstruction(constructionName)
@@ -301,9 +302,9 @@ class TechManager {
 
         // Add notifications for obsolete units/constructions
         for ((unit, cities) in unitUpgrades) {
-            val construction = cities[0].cityConstructions.getConstruction(unit)
+            val construction = cities.first().cityConstructions.getConstruction(unit)
             if (cities.size == 1) {
-                val city = cities[0]
+                val city = cities.first()
                 if (construction is BaseUnit && construction.upgradesTo != null) {
                     val text = "[${city.name}] changed production from [$unit] to [${construction.upgradesTo!!}]"
                     civInfo.addNotification(text, city.location, unit, NotificationIcon.Construction, construction.upgradesTo!!)
@@ -312,7 +313,7 @@ class TechManager {
                     civInfo.addNotification(text, city.location, NotificationIcon.Construction)
                 }
             } else {
-                val locationAction = LocationAction(cities.map { it.location })
+                val locationAction = LocationAction(cities.asSequence().map { it.location })
                 if (construction is BaseUnit && construction.upgradesTo != null) {
                     val text = "[${cities.size}] cities changed production from [$unit] to [${construction.upgradesTo!!}]"
                     civInfo.addNotification(text, locationAction, unit, NotificationIcon.Construction, construction.upgradesTo!!)
@@ -323,7 +324,7 @@ class TechManager {
             }
         }
 
-        for (unique in civInfo.getMatchingUniques("Receive free [] when you discover []")) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.RecieveFreeUnitWhenDiscoveringTech)) {
             if (unique.params[1] != techName) continue
             civInfo.addUnit(unique.params[0])
         }
@@ -373,15 +374,22 @@ class TechManager {
     fun setTransients() {
         researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
         researchedTechnologies.forEach { addTechToTransients(it) }
+        updateEra()  // before updateTransientBooleans so era-based conditionals can work
         updateTransientBooleans()
-        updateEra()
     }
 
     private fun updateTransientBooleans() {
-        wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
-        unitsCanEmbark = wayfinding || civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
+        val wayfinding = civInfo.hasUnique(UniqueType.EmbarkAndEnterOcean)
+        unitsCanEmbark = wayfinding ||
+                civInfo.hasUnique(UniqueType.LandUnitEmbarkation)
+        val enterOceanUniques = civInfo.getMatchingUniques(UniqueType.UnitsMayEnterOcean)
+        allUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] == "All" }
+        embarkedUnitsCanEnterOcean = wayfinding ||
+                allUnitsCanEnterOcean ||
+                enterOceanUniques.any { it.params[0] == "Embarked" } ||
+                civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
+        specificUnitsCanEnterOcean = enterOceanUniques.any { it.params[0] != "All" && it.params[0] != "Embarked" }
 
-        embarkedUnitsCanEnterOcean = wayfinding || civInfo.hasUnique(UniqueType.EmbarkedUnitsMayEnterOcean)
         movementSpeedOnRoads = if (civInfo.hasUnique(UniqueType.RoadMovementSpeed))
             RoadStatus.Road.movementImproved else RoadStatus.Road.movement
         roadsConnectAcrossRivers = civInfo.hasUnique(UniqueType.RoadsConnectAcrossRivers)

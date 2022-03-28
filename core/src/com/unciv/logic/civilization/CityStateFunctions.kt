@@ -4,15 +4,16 @@ import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.diplomacy.*
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.collections.LinkedHashMap
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
@@ -81,21 +82,31 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
         val placedUnit = receivingCiv.placeUnitNearTile(cities.city1.location, giftedUnit.name)
             ?: return
-        val locations = LocationAction(listOf(placedUnit.getTile().position, cities.city2.location))
+        val locations = LocationAction(placedUnit.getTile().position, cities.city2.location)
         receivingCiv.addNotification( "[${civInfo.civName}] gave us a [${giftedUnit.name}] as a gift!", locations, civInfo.civName, giftedUnit.name)
     }
 
     fun giveMilitaryUnitToPatron(receivingCiv: CivilizationInfo) {
         val cities = NextTurnAutomation.getClosestCities(receivingCiv, civInfo)
         val city = cities.city1
-        val uniqueUnit = civInfo.gameInfo.ruleSet.units[civInfo.cityStateUniqueUnit]
-        // If the receiving civ has discovered the required tech and not the obsolete tech for our unique, always give them the unique
-        val militaryUnit = if (uniqueUnit != null && receivingCiv.tech.isResearched(uniqueUnit.requiredTech!!)
-            && (uniqueUnit.obsoleteTech == null || !receivingCiv.tech.isResearched(uniqueUnit.obsoleteTech!!))) uniqueUnit
-            // Otherwise pick at random
-            else city.cityConstructions.getConstructableUnits()
-            .filter { !it.isCivilian() && it.isLandUnit() && it.uniqueTo==null }
-            .toList().random()
+
+        fun giftableUniqueUnit(): BaseUnit? {
+            val uniqueUnit = civInfo.gameInfo.ruleSet.units[civInfo.cityStateUniqueUnit]
+                ?: return null
+            if (uniqueUnit.requiredTech != null && !receivingCiv.tech.isResearched(uniqueUnit.requiredTech!!))
+                return null
+            if (uniqueUnit.obsoleteTech != null && receivingCiv.tech.isResearched(uniqueUnit.obsoleteTech!!))
+                return null
+            return uniqueUnit
+        }
+        fun randomGiftableUnit() = 
+                city.cityConstructions.getConstructableUnits()
+                .filter { !it.isCivilian() && it.isLandUnit() && it.uniqueTo == null }
+                .toList().randomOrNull()
+        val militaryUnit = giftableUniqueUnit() // If the receiving civ has discovered the required tech and not the obsolete tech for our unique, always give them the unique
+            ?: randomGiftableUnit() // Otherwise pick at random
+            ?: return  // That filter _can_ result in no candidates, if so, quit silently
+
         // placing the unit may fail - in that case stay quiet
         val placedUnit = receivingCiv.placeUnitNearTile(city.location, militaryUnit.name) ?: return
 
@@ -109,8 +120,13 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
 
         // Point to the places mentioned in the message _in that order_ (debatable)
         val placedLocation = placedUnit.getTile().position
-        val locations = LocationAction(listOf(placedLocation, cities.city2.location, city.location))
-        receivingCiv.addNotification("[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", locations, civInfo.civName, militaryUnit.name)
+        val locations = LocationAction(placedLocation, cities.city2.location, city.location)
+        receivingCiv.addNotification(
+            "[${civInfo.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!",
+            locations,
+            civInfo.civName,
+            militaryUnit.name
+        )
     }
 
     fun influenceGainedByGift(donorCiv: CivilizationInfo, giftAmount: Int): Int {
@@ -348,7 +364,7 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (!requireWholeList && modifiers.values.sum() < -100)
             return modifiers
 
-        val bullyRange = max(5, civInfo.gameInfo.tileMap.tileMatrix.size / 10)   // Longer range for larger maps
+        val bullyRange = (civInfo.gameInfo.tileMap.tileMatrix.size / 10).coerceIn(5, 10)   // Longer range for larger maps
         val inRangeTiles = civInfo.getCapital().getCenterTile().getTilesInDistanceRange(1..bullyRange)
         val forceNearCity = inRangeTiles
             .sumOf { if (it.militaryUnit?.civInfo == demandingCiv)
@@ -486,12 +502,12 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         if (diplomacy.diplomaticStatus == DiplomaticStatus.War) return // No reward for enemies
 
         diplomacy.addInfluence(12f)
-        
+
         if (diplomacy.hasFlag(DiplomacyFlags.AngerFreeIntrusion))
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, diplomacy.getFlag(DiplomacyFlags.AngerFreeIntrusion) + 5)
         else
             diplomacy.setFlag(DiplomacyFlags.AngerFreeIntrusion, 5)
-        
+
         otherCiv.addNotification("[${civInfo.civName}] is grateful that you killed a Barbarian that was threatening them!",
             DiplomacyAction(civInfo.civName), civInfo.civName)
     }
@@ -644,11 +660,20 @@ class CityStateFunctions(val civInfo: CivilizationInfo) {
         ) {
             thirdCiv.addNotification(
                 "[${civInfo.civName}] is being attacked by [${attacker.civName}] and asks all major civilizations to help them out by gifting them military units.",
-                civInfo.getCapital().location, 
-                civInfo.civName, 
+                civInfo.getCapital().location,
+                civInfo.civName,
                 "OtherIcons/Present",
             )
         }
     }
 
+    fun getCityStateResourcesForAlly(): ResourceSupplyList {
+        val newDetailedCivResources = ResourceSupplyList()
+        for (city in civInfo.cities) {
+            for (resourceSupply in city.getCityResources())
+                if (resourceSupply.amount > 0) // IGNORE the fact that they consume their own resources - #4769
+                    newDetailedCivResources.add(resourceSupply.resource, resourceSupply.amount, "City-State")
+        }
+        return newDetailedCivResources
+    }
 }

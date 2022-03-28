@@ -1,76 +1,81 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.UncivGame
-import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Counter
 import com.unciv.models.Religion
-import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
 class ReligiousBeliefsPickerScreen (
-    private val choosingCiv: CivilizationInfo,
-    private val gameInfo: GameInfo,
-    private val beliefsToChoose: Counter<BeliefType>,
-    private val pickIconAndName: Boolean
-): PickerScreen(disableScroll = true) {
-
+    choosingCiv: CivilizationInfo,
+    newBeliefsToChoose: Counter<BeliefType>,
+    pickIconAndName: Boolean
+): ReligionPickerScreenCommon(choosingCiv, disableScroll = true) {
     // Roughly follows the layout of the original (although I am not very good at UI designing, so please improve this)
+
     private val topReligionIcons = Table() // Top of the layout, contains icons for religions
     private val leftChosenBeliefs = Table() // Left middle part, contains buttons to select the types of beliefs to choose
+    private val leftScrollPane = AutoScrollPane(leftChosenBeliefs)
     private val rightBeliefsToChoose = Table() // Right middle part, contains the beliefs to choose
-    
+    private val rightScrollPane = AutoScrollPane(rightBeliefsToChoose)
+
     private val middlePanes = Table()
- 
-    private var previouslySelectedIcon: Button? = null
+
+    private var iconSelection = Selection()
     private var displayName: String? = null
     private var religionName: String? = null
 
-    private val chosenBeliefs: Array<Belief?> = Array(beliefsToChoose.values.sum()) { null }
-    
+    // One entry per new Belief to choose - the left side will offer these below the choices from earlier in the game
+    class BeliefToChoose(val type: BeliefType, var belief: Belief? = null)
+    private val beliefsToChoose: Array<BeliefToChoose> =
+        newBeliefsToChoose.flatMap { entry -> (0 until entry.value).map { BeliefToChoose(entry.key) } }.toTypedArray()
+
+    private var leftSelection = Selection()
+    private var leftSelectedIndex = -1
+    private var rightSelection = Selection()
+
+    private val currentReligion = choosingCiv.religionManager.religion
+        ?: Religion("None", gameInfo, choosingCiv.civName)
+
     init {
-        closeButton.isVisible = true
-        setDefaultCloseAction()
-        
+        leftChosenBeliefs.defaults().right().pad(10f).fillX()
+        rightBeliefsToChoose.defaults().left().pad(10f).fillX()
+
         if (pickIconAndName) setupChoosableReligionIcons()
         else setupVisibleReligionIcons()
-        
+
         updateLeftTable()
-        
-        middlePanes.add(ScrollPane(leftChosenBeliefs))
+
+        middlePanes.add(leftScrollPane)
         middlePanes.addSeparatorVertical()
-        middlePanes.add(ScrollPane(rightBeliefsToChoose))
-        
-        topTable.add(topReligionIcons).row()
+        middlePanes.add(rightScrollPane)
+
+        topTable.add(topReligionIcons).minHeight(topReligionIcons.prefHeight).row()
         topTable.addSeparator()
         topTable.add(middlePanes)
-        
-        if (pickIconAndName) rightSideButton.label = "Choose a Religion".toLabel()
-        else rightSideButton.label = "Enhance [${choosingCiv.religionManager.religion!!.getReligionDisplayName()}]".toLabel()
-        rightSideButton.onClick(UncivSound.Choir) {
-            choosingCiv.religionManager.chooseBeliefs(displayName, religionName, chosenBeliefs.map { it!! })            
-            UncivGame.Current.setWorldScreen()
+
+        setOKAction(
+            if (pickIconAndName) "Choose a Religion"
+            else "Enhance [${currentReligion.getReligionDisplayName()}]"
+        ) {
+            chooseBeliefs(displayName, religionName, beliefsToChoose.map { it.belief!! })
         }
     }
 
     private fun checkAndEnableRightSideButton() {
-        if (pickIconAndName && (religionName == null || displayName == null)) return
-        if (chosenBeliefs.any { it == null }) return
+        if (religionName == null || displayName == null) return
+        if (beliefsToChoose.any { it.belief == null }) return
         rightSideButton.enable()
     }
-    
+
     private fun setupChoosableReligionIcons() {
-        topReligionIcons.clear()
-        
-        // This should later be replaced with a user-modifiable text field, but not in this PR
-        // Note that this would require replacing 'religion.name' with 'religion.iconName' at many spots
         val descriptionLabel = "Choose an Icon and name for your Religion".toLabel()
 
         fun changeDisplayedReligionName(newReligionName: String) {
@@ -83,38 +88,22 @@ class ReligiousBeliefsPickerScreen (
             ImageGetter.getImage("OtherIcons/Pencil").apply { this.color = Color.BLACK }.surroundWithCircle(30f),
             skin
         )
-        
-        val iconsTable = Table()
-        iconsTable.align(Align.center)
-        for (religionName in gameInfo.ruleSet.religions) {
-            val button = Button(
-                ImageGetter.getCircledReligionIcon(religionName, 60f), 
-                skin
-            )
-            button.onClick {
-                if (previouslySelectedIcon != null) {
-                    previouslySelectedIcon!!.enable()
-                }
-                previouslySelectedIcon = button
-                button.disable()
-                
+
+        addIconsScroll { button, religionName ->
+            button.onClickSelect(iconSelection, null) {
                 changeDisplayedReligionName(religionName)
                 this.religionName = religionName
                 changeReligionNameButton.enable()
-                
+
                 checkAndEnableRightSideButton()
             }
-            if (religionName == this.religionName || gameInfo.religions.keys.any { it == religionName }) button.disable()
-            iconsTable.add(button).pad(5f)
         }
-        iconsTable.row()
-        topReligionIcons.add(iconsTable).pad(5f).row()
+
         val labelTable = Table()
         labelTable.add(descriptionLabel).pad(5f)
         labelTable.add(changeReligionNameButton).pad(5f).row()
         topReligionIcons.add(labelTable).center().pad(5f).row()
-        
-        
+
         changeReligionNameButton.onClick {
             AskTextPopup(
                 this,
@@ -123,7 +112,7 @@ class ReligiousBeliefsPickerScreen (
                 defaultText = religionName!!,
                 validate = { religionName ->
                     religionName != Constants.noReligionName
-                    && gameInfo.ruleSet.religions.none { it == religionName }
+                    && ruleset.religions.none { it == religionName }
                     && gameInfo.religions.none { it.value.name == religionName }
                 },
                 actionOnOk = { changeDisplayedReligionName(it) }
@@ -134,108 +123,122 @@ class ReligiousBeliefsPickerScreen (
 
     private fun setupVisibleReligionIcons() {
         topReligionIcons.clear()
-        val descriptionLabel = choosingCiv.religionManager.religion!!.getReligionDisplayName().toLabel()
-        
-        val iconsTable = Table()
-        
-        for (religionName in gameInfo.ruleSet.religions) {
-            val button = Button(
-                ImageGetter.getCircledReligionIcon(religionName, 60f),
-                skin
-            )
+        religionName = currentReligion.name
+        displayName = currentReligion.getReligionDisplayName()
+        val descriptionLabel = displayName!!.toLabel()
+        addIconsScroll { button, _ ->
             button.disable()
-            iconsTable.add(button).pad(5f)            
         }
-        topReligionIcons.add(iconsTable).padBottom(10f).row()
-        topReligionIcons.add(descriptionLabel).center().padBottom(5f)
+        topReligionIcons.add(descriptionLabel).center().padBottom(15f)
+    }
+
+    private fun addIconsScroll(buttonSetup: (Button, String)->Unit) {
+        var scrollTo = 0f
+        val iconsTable = Table()
+        iconsTable.align(Align.center)
+
+        for (religionName in ruleset.religions) {
+            if (religionName == this.religionName)
+                scrollTo = iconsTable.packIfNeeded().prefWidth
+            val button = Button(ImageGetter.getCircledReligionIcon(religionName, 60f), skin)
+            buttonSetup(button, religionName)
+            if (religionName == this.religionName) button.disable(Color(greenDisableColor))
+            else if (gameInfo.religions.keys.any { it == religionName }) button.disable(redDisableColor)
+            iconsTable.add(button).pad(5f)
+        }
+        iconsTable.row()
+
+        AutoScrollPane(iconsTable, skin).apply {
+            setScrollingDisabled(false, true)
+            setupFadeScrollBars(0f, 0f)  // only way to "remove" scrollbar
+            setScrollbarsOnTop(true) // don't waste space on scrollbar
+            topReligionIcons.add(this).padBottom(10f).row()
+            layout()
+            scrollX = scrollTo - (width - 70f) / 2  // 70 = button width incl pad
+        }
     }
 
     private fun updateLeftTable() {
         leftChosenBeliefs.clear()
-        val currentReligion = choosingCiv.religionManager.religion ?: Religion("None", gameInfo, choosingCiv.civName)
-        
+        leftSelection.clear()
+
         for (belief in currentReligion.getAllBeliefsOrdered()) {
-            val beliefButton = convertBeliefToButton(belief)
-            leftChosenBeliefs.add(beliefButton).pad(10f).row()
-            beliefButton.disable()
+            val beliefButton = getBeliefButton(belief)
+            leftChosenBeliefs.add(beliefButton).row()
+            beliefButton.disable(Color.GREEN)
         }
-        
-        for (newBelief in chosenBeliefs.withIndex()) {
-            addChoosableBeliefButton(newBelief, getBeliefTypeFromIndex(newBelief.index))
+
+        for ((index, entry) in beliefsToChoose.withIndex()) {
+            addChoosableBeliefButton(entry.belief, entry.type, index)
         }
-        
+
         equalizeAllButtons(leftChosenBeliefs)
     }
-    
+
     private fun loadRightTable(beliefType: BeliefType, leftButtonIndex: Int) {
+        var selectedButtonY = 0f
+        var selectedButtonHeight = 0f
         rightBeliefsToChoose.clear()
-        val availableBeliefs = gameInfo.ruleSet.beliefs.values
-            .filter { 
-                (it.type == beliefType || beliefType == BeliefType.Any)
-                && gameInfo.religions.values.none {
-                    religion -> religion.hasBelief(it.name)
-                }
-                && (it !in chosenBeliefs)
-            }
+        rightSelection.clear()
+        val availableBeliefs = ruleset.beliefs.values
+            .filter { (it.type == beliefType || beliefType == BeliefType.Any) }
         for (belief in availableBeliefs) {
-            val beliefButton = convertBeliefToButton(belief)
-            beliefButton.onClick {
-                chosenBeliefs[leftButtonIndex] = belief
-                updateLeftTable()
-                checkAndEnableRightSideButton()
+            val beliefButton = getBeliefButton(belief)
+            when {
+                beliefsToChoose[leftButtonIndex].belief == belief -> {
+                    selectedButtonY = rightBeliefsToChoose.packIfNeeded().prefHeight
+                    selectedButtonHeight = beliefButton.packIfNeeded().prefHeight + 20f
+                    rightSelection.switch(beliefButton)
+                }
+                beliefsToChoose.any { it.belief == belief } ||
+                        currentReligion.hasBelief(belief.name) -> {
+                    // The Belief button should be disabled because you already have it selected
+                    beliefButton.disable(greenDisableColor)
+                }
+                gameInfo.religions.values.any { it.hasBelief(belief.name) } -> {
+                    // The Belief is not available because someone already has it
+                    beliefButton.disable(redDisableColor)
+                }
+                else ->
+                    beliefButton.onClickSelect(rightSelection, belief) {
+                        beliefsToChoose[leftButtonIndex].belief = belief
+                        updateLeftTable()
+                        checkAndEnableRightSideButton()
+                    }
             }
-            rightBeliefsToChoose.add(beliefButton).left().pad(10f).row()
+            rightBeliefsToChoose.add(beliefButton).row()
         }
         equalizeAllButtons(rightBeliefsToChoose)
-    }
-    
-    private fun equalizeAllButtons(table: Table) {
-        val minWidth = table.cells
-            .filter { it.actor is Button }
-            .maxOfOrNull { it.actor.width }
-            ?: return
-        
-        for (button in table.cells) {
-            if (button.actor is Button)
-                button.minWidth(minWidth)
-        }
-    }
-    
-    private fun addChoosableBeliefButton(belief: IndexedValue<Belief?>, beliefType: BeliefType) {
-        val newBeliefButton =
-            if (belief.value == null) emptyBeliefButton(beliefType)
-            else convertBeliefToButton(belief.value!!)
 
-        leftChosenBeliefs.add(newBeliefButton).pad(10f).row()
-        newBeliefButton.onClick {
-            loadRightTable(beliefType, belief.index)
+        if (rightSelection.isEmpty()) return
+        rightScrollPane.layout()
+        rightScrollPane.scrollY = selectedButtonY - (rightScrollPane.height - selectedButtonHeight) / 2
+    }
+
+    private fun equalizeAllButtons(table: Table) {
+        val minWidth = table.cells.maxOfOrNull { it.prefWidth }
+            ?: return
+
+        for (buttonCell in table.cells) {
+            if (buttonCell.actor is Button)
+                buttonCell.minWidth(minWidth)
         }
     }
-    
-    private fun convertBeliefToButton(belief: Belief): Button {
-        val contentsTable = Table()
-        contentsTable.add(belief.type.name.toLabel(fontColor = Color.valueOf(belief.type.color))).row()
-        contentsTable.add(belief.name.toLabel(fontSize = Constants.headingFontSize)).row()
-        contentsTable.add(belief.uniques.joinToString("\n") { it.tr() }.toLabel())
-        return Button(contentsTable, skin)
-    }
-    
-    private fun emptyBeliefButton(beliefType: BeliefType): Button {
-        val contentsTable = Table()
-        if (beliefType != BeliefType.Any)
-            contentsTable.add("Choose a [${beliefType.name}] belief!".toLabel())
-        else
-            contentsTable.add("Choose any belief!".toLabel())
-        return Button(contentsTable, skin)
-    }
-    
-    private fun getBeliefTypeFromIndex(index: Int): BeliefType {
-        return when {
-            index < beliefsToChoose.filter { it.key <= BeliefType.Pantheon }.values.sum() -> BeliefType.Pantheon
-            index < beliefsToChoose.filter { it.key <= BeliefType.Founder }.values.sum() -> BeliefType.Founder
-            index < beliefsToChoose.filter { it.key <= BeliefType.Follower }.values.sum() -> BeliefType.Follower
-            index < beliefsToChoose.filter { it.key <= BeliefType.Enhancer }.values.sum() -> BeliefType.Enhancer
-            else -> BeliefType.Any
+
+    private fun addChoosableBeliefButton(belief: Belief?, beliefType: BeliefType, index: Int) {
+        val newBeliefButton = getBeliefButton(belief, beliefType)
+
+        if (index == leftSelectedIndex) {
+            leftSelection.switch(newBeliefButton)
+            leftScrollPane.scrollY = leftChosenBeliefs.packIfNeeded().prefHeight -
+                    (leftScrollPane.height - (newBeliefButton.prefHeight + 20f)) / 2
+            leftScrollPane.updateVisualScroll()
+        }
+        leftChosenBeliefs.add(newBeliefButton).row()
+
+        newBeliefButton.onClickSelect(leftSelection, belief) {
+            leftSelectedIndex = index
+            loadRightTable(beliefType, index)
         }
     }
 }

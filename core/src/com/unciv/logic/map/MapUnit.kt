@@ -40,7 +40,7 @@ class MapUnit {
     lateinit var baseUnit: BaseUnit
 
     @Transient
-    internal lateinit var currentTile: TileInfo
+    lateinit var currentTile: TileInfo
 
     @Transient
     val movement = UnitMovementAlgorithms(this)
@@ -376,16 +376,14 @@ class MapUnit {
 
         val conditionalState = StateForConditionals(civInfo = civInfo, unit = this)
 
-        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)
-            && !civInfo.hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)) {
+        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
             return 1
         }
         
         visibilityRange += getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
-        visibilityRange += getTile().getAllTerrains()
-            .flatMap { it.getMatchingUniques(UniqueType.Sight, conditionalState) }
+        visibilityRange += getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
             .sumOf { it.params[0].toInt() }
         
         if (visibilityRange < 1) visibilityRange = 1
@@ -399,13 +397,13 @@ class MapUnit {
     fun updateVisibleTiles(updateCivViewableTiles:Boolean = true) {
         val oldViewableTiles = viewableTiles
 
-        if (baseUnit.isAirUnit()) {
-            viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
-                getTile().getTilesInDistance(6).toHashSet()  // it's that simple
-            else HashSet(0) // bomber units don't do recon
-        } else {
-            viewableTiles = getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
+        viewableTiles = when {
+            hasUnique(UniqueType.NoSight) -> hashSetOf()
+            hasUnique(UniqueType.CanSeeOverObstacles) ->
+                getTile().getTilesInDistance(getVisibilityRange()).toHashSet() // it's that simple
+            else -> getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
         }
+        
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
             civInfo.updateViewableTiles() // for the civ
@@ -521,12 +519,6 @@ class MapUnit {
     fun getCostOfUpgrade(): Int {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2f + 10f
-        // Deprecated since 3.18.17
-            for (unique in civInfo.getMatchingUniques(UniqueType.ReducedUpgradingGoldCost)) {
-                if (matchesFilter(unique.params[0]))
-                    goldCostOfUpgrade *= (1 - unique.params[1].toFloat() / 100f)
-            }
-        //
         for (unique in civInfo.getMatchingUniques(UniqueType.UnitUpgradeCost, StateForConditionals(civInfo, unit=this)))
             goldCostOfUpgrade *= unique.params[0].toPercent()
 
@@ -558,7 +550,7 @@ class MapUnit {
     }
 
     private fun adjacentHealingBonus(): Int {
-        return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() } + 15 * getMatchingUniques(UniqueType.HealAdjacentUnitsDeprecated).count()
+        return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
 
     // Only military land units can truly "garrison"
@@ -676,7 +668,7 @@ class MapUnit {
             productionPointsToAdd * 2 / 3
         if (productionPointsToAdd > 0) {
             closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
-            val locations = LocationAction(listOf(tile.position, closestCity.location))
+            val locations = LocationAction(tile.position, closestCity.location)
             civInfo.addNotification(
                 "Clearing a [$removedTerrainFeature] has created [$productionPointsToAdd] Production for [${closestCity.name}]",
                 locations, NotificationIcon.Construction
@@ -719,14 +711,7 @@ class MapUnit {
         if (!mayHeal) return healing
 
         healing += getMatchingUniques(UniqueType.Heal, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
-        // Deprecated as of 3.19.4
-            for (unique in getMatchingUniques(UniqueType.HealInTiles, checkCivInfoUniques = true)) {
-                if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
-                    healing += unique.params[0].toInt()
-                }
-            }
-        //
-
+        
         val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
             it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.CityHealingUnits).any()
         }?.getCity()
@@ -910,7 +895,7 @@ class MapUnit {
 
         var goldGained =
             civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        if (civInfo.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities"))
+        if (civInfo.hasUnique(UniqueType.TripleGoldFromEncampmentsAndCities))
             goldGained *= 3f
 
         civInfo.addGold(goldGained.toInt())
@@ -1063,16 +1048,13 @@ class MapUnit {
                 && it.improvement != null
                 && civInfo.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
-                tile to (
-                        tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits) + 
-                        tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnitsOld)
-                    )
+                tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
                     .sumOf { it.params[0].toInt() }
             }.maxByOrNull { it.second }
             ?: return
         if (damage == 0) return
         health -= damage
-        val locations = LocationAction(listOf(citadelTile.position, currentTile.position))
+        val locations = LocationAction(citadelTile.position, currentTile.position)
         if (health <= 0) {
             civInfo.addNotification(
                 "An enemy [Citadel] has destroyed our [$name]",
@@ -1101,7 +1083,7 @@ class MapUnit {
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100
-            "Barbarians", "Barbarian" -> civInfo.isBarbarian()
+            Constants.barbarians, "Barbarian" -> civInfo.isBarbarian()
             "City-State" -> civInfo.isCityState()
             "Embarked" -> isEmbarked()
             "Non-City" -> true

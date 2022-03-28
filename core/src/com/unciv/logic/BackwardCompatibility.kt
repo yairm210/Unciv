@@ -5,6 +5,7 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.TechManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 
 /**
@@ -141,4 +142,12 @@ object BackwardCompatibility {
         }
     }
 
+    /** Move max XP from barbarians to new home */
+    @Suppress("DEPRECATION")
+    fun ModOptions.updateDeprecations() {
+        if (maxXPfromBarbarians != 30) {
+            constants.maxXPfromBarbarians = maxXPfromBarbarians
+            maxXPfromBarbarians = 30
+        }
+    }
 }

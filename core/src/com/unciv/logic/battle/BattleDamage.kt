@@ -22,7 +22,7 @@ object BattleDamage {
             UniqueTarget.Nation -> "National ability"
             UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
             else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
-        }
+        }.tr()
         if (unique.conditionals.isEmpty()) return source
 
         val conditionalsText = unique.conditionals.joinToString { it.text.tr() }
@@ -61,15 +61,6 @@ object BattleDamage {
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val adjacentUnits = combatant.getTile().neighbors.flatMap { it.getUnits() }
 
-            // Deprecated since 3.18.17
-                for (unique in civInfo.getMatchingUniques(UniqueType.StrengthFromAdjacentUnits)) {
-                    if (combatant.matchesCategory(unique.params[1])
-                        && adjacentUnits.any { it.civInfo == civInfo && it.matchesFilter(unique.params[2]) }
-                    ) {
-                        modifiers.add("Adjacent units", unique.params[0].toInt())
-                    }
-                }
-            //
 
             for (unique in adjacentUnits.filter { it.civInfo.isAtWarWith(combatant.getCivInfo()) }
                 .flatMap { it.getMatchingUniques("[]% Strength for enemy [] units in adjacent [] tiles") })
@@ -178,18 +169,6 @@ object BattleDamage {
                 }
             }
 
-        } else if (attacker is CityCombatant) {
-            // Deprecated since 3.19.1
-                if (attacker.city.getCenterTile().militaryUnit != null) {
-                    val garrisonBonus = attacker.city.getMatchingUniques(UniqueType.StrengthForGarrisonedCitiesAttacking)
-                        .sumOf { it.params[0].toInt() }
-                    if (garrisonBonus != 0)
-                        modifiers["Garrisoned unit"] = garrisonBonus
-                }
-                for (unique in attacker.city.getMatchingUniques(UniqueType.StrengthForCitiesAttacking)) {
-                    modifiers.add("Attacking Bonus", unique.params[0].toInt())
-                }
-            //
         }
 
         return modifiers
@@ -222,20 +201,16 @@ object BattleDamage {
 
             if (defender.unit.isFortified())
                 modifiers["Fortification"] = 20 * defender.unit.getFortificationTurns()
-        } else if (defender is CityCombatant) {
-
-            modifiers["Defensive Bonus"] =
-                defender.city.civInfo.getMatchingUniques(UniqueType.StrengthForCitiesDefending)
-                    .map { it.params[0].toFloat() / 100f }.sum().toInt()
         }
 
         return modifiers
     }
     
+    @Deprecated("As of 4.0.3", level=DeprecationLevel.WARNING)
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
-        for (unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
+        for (unique in unit.getCivInfo().getMatchingUniques(UniqueType.StrengthWithinTilesOfTile)) {
             if (tile.getTilesInDistance(unique.params[1].toInt())
                     .any { it.matchesFilter(unique.params[2]) }
             )
@@ -252,14 +227,14 @@ object BattleDamage {
     }
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
-        return if (combatant !is MapUnitCombatant // is city
-            || (combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
-                && !combatant.unit.baseUnit.movesLikeAirUnits()
-            )
+        return if (combatant !is MapUnitCombatant
+            || combatant.unit.hasUnique(UniqueType.NoDamagePenalty, checkCivInfoUniques = true)
+            || combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
         ) {
             1f
         }
-        else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game
+        // Each 3 points of health reduces damage dealt by 1%
+        else 1 - (100 - combatant.getHealth()) / 300f 
     }
 
 

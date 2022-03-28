@@ -83,7 +83,7 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
         terrainFeaturesTable.add(getHex(ImageGetter.getRedCross(50f, 0.6f)).apply {
             onClick {
                 tileAction = {
-                    it.terrainFeatures = listOf()
+                    it.setTerrainFeatures(listOf())
                     it.naturalWonder = null
                     it.hasBottomRiver = false
                     it.hasBottomLeftRiver = false
@@ -321,10 +321,11 @@ class MapEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(BaseScr
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
         for (terrain in ruleset.terrains.values) {
             val tileInfo = TileInfo()
+            tileInfo.ruleset = ruleset
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn.isNotEmpty() -> terrain.occursOn.first()
-                    else -> "Grassland"
+                    else -> Constants.grassland
                 }
                 tileInfo.addTerrainFeature(terrain.name)
             } else tileInfo.baseTerrain = terrain.name

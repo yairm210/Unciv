@@ -398,7 +398,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
                     (cityCurrentConstruction as INonPerpetualConstruction).getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
             val productionBar = ImageGetter.getProgressBarVertical(2f, groupHeight, constructionPercentage,
-                    Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.BLACK)
+                    Color.BROWN.brighten(0.5f), Color.BLACK)
             productionBar.x = 10f
             label.x = productionBar.x - label.width - 3
             group.addActor(productionBar)
@@ -415,9 +415,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     private fun foreignCityInfoPopup() {
         fun openDiplomacy() {
             // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-            val screen = DiplomacyScreen(worldScreen.viewingCiv)
-            screen.updateRightSide(city.civInfo)
-            worldScreen.game.setScreen(screen)
+            worldScreen.game.setScreen(DiplomacyScreen(worldScreen.viewingCiv, city.civInfo))
         }
 
         // If there's nothing to display cuz no Religion - skip popup
