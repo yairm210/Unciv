@@ -1,5 +1,10 @@
 package com.unciv.app.desktop
 
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.int
+import com.github.ajalt.clikt.parameters.types.restrictTo
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -12,24 +17,29 @@ import java.io.File
 
 
 internal object UncivServer {
-    private var serverPort = 8080
-
     @JvmStatic
-    fun main(args: Array<String>) {
-        args.forEach { arg ->
-            when {
-                arg.startsWith("-port=") -> with(arg.removePrefix("-port=").toIntOrNull() ?: 0) {
-                    if (this in 1024..49151) serverPort = this
-                    else println("'port' must be between 1024 and 49151")
-                }
-            }
-        }
+    fun main(args: Array<String>) = UncivServerRunner().main(args)
+}
 
-        println("Server will run on $serverPort port, you can use '-port=XXXX' custom port.")
+private class UncivServerRunner : CliktCommand() {
+    private val port by option(
+        "-p", "-port",
+        envvar = "UncivServerPort",
+        help = "Server port"
+    ).int().restrictTo(1024..49151).default(8080)
 
-        val fileFolderName = "MultiplayerFiles"
-        File(fileFolderName).mkdir()
-        println(File(fileFolderName).absolutePath)
+    private val folder by option(
+        "-f", "-folder",
+        envvar = "UncivServerFolder",
+        help = "Multiplayer file's folder"
+    ).default("MultiplayerFiles")
+
+    override fun run() {
+        serverRun(port, folder)
+    }
+
+    private fun serverRun(serverPort: Int, fileFolderName: String) {
+        echo("Starting UncivServer for ${File(fileFolderName).absolutePath} on port $serverPort")
         embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {

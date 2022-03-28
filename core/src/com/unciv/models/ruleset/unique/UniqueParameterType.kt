@@ -98,6 +98,7 @@ enum class UniqueParameterType(
             "air units",
             "military units",
             "submarine units",
+            "Barbarian"
             // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
         )
 

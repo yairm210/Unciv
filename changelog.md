@@ -1,3 +1,15 @@
+## 4.0.2
+
+Solved out of memory errors for modded base rulesets
+
+By SomeTroglodyte:
+- City Info Table Expanders improvements
+- Empire Overview tweaks
+- Translation writer improvements 
+- Reactivate Worldscreen Ctrl key bindings 
+
+Generalized a few nation uniques  - By xlenstra
+
 ## 4.0.1
 
 Custom server port  - By HAHH9527
