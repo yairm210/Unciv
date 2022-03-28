@@ -1,3 +1,19 @@
+## 4.0.2
+
+Resolved  - Solved out of memory errors for modded base rulesets
+
+Added check for multiple policies with the same name - unlike techs buildings etc, these are also saved in the *policy branch* and so can affect gameplay
+
+By SomeTroglodyte:
+- City Info Table Expanders - fix persistence and resizing, close/open all button 
+- Empire overview resources 
+- Translation writer conditionals 
+- Empire Overview Tweaks to better utilize new TabbedPager 
+- Apply Char(Int) and Char.code patch to Maya Calendar 
+- Reactivate Worldscreen Ctrl key bindings 
+
+Generalized a few nation uniques  - By xlenstra
+
 ## 4.0.1
 
 Custom server port  - By HAHH9527
