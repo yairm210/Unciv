@@ -113,7 +113,7 @@ class CityScreen(
             constructionsTable.isVisible = false
             cityInfoTable.isVisible = true
             cityInfoTable.update()
-            cityInfoTable.setPosition(posFromEdge, stage.height - posFromEdge, Align.topLeft)
+            // CityInfoTable sets its relative position itself
         }
 
         // Bottom right: Tile or selected construction info
