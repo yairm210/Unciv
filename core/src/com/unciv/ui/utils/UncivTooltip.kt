@@ -23,6 +23,7 @@ import com.unciv.models.translations.tr
  * @param forceContentSize  Force virtual [content] width/height for alignment calculation
  *                      - because Gdx auto layout reports wrong dimensions on scaled actors.
  */
+// region fields
 class UncivTooltip <T: Actor>(
     val target: Actor,
     val content: T,
@@ -33,7 +34,6 @@ class UncivTooltip <T: Actor>(
     forceContentSize: Vector2? = null,
 ) : InputListener() {
 
-    // region fields
     private val container: Container<T> = Container(content)
     enum class TipState { Hidden, Showing, Shown, Hiding }
     /** current visibility state of the Tooltip */
@@ -49,7 +49,9 @@ class UncivTooltip <T: Actor>(
         contentHeight = forceContentSize?.y ?: content.height
     }
 
-     //region show, hide and positioning
+    //endregion
+    //region show, hide and positioning
+
     /** Show the Tooltip ([immediate]ly or begin the animation). _Can_ be called programmatically. */
     fun show(immediate: Boolean = false) {
         if (target.stage == null) return
@@ -129,9 +131,10 @@ class UncivTooltip <T: Actor>(
     }
     private fun Actor.getEdgePoint(align: Int) =
         Vector2(getOriginX(width,align),getOriginY(height,align))
-    //endregion
 
+    //endregion
     //region events
+
     override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
         // assert(event?.listenerActor == target) - tested - holds true
         if (fromActor != null && fromActor.isDescendantOf(target)) return
@@ -147,6 +150,7 @@ class UncivTooltip <T: Actor>(
         container.toFront()     // this is a no-op if it has no parent
         return super.touchDown(event, x, y, pointer, button)
     }
+
     //endregion
 
     companion object {
@@ -158,9 +162,16 @@ class UncivTooltip <T: Actor>(
          * @param text Automatically translated tooltip text
          * @param size _Vertical_ size of the entire Tooltip including background
          * @param always override requirement: presence of physical keyboard
-         * @param tipAlign Point on the Tooltip to align with the top right of the [target]
+         * @param targetAlign   Point on the [target] widget to align the Tooltip to
+         * @param tipAlign      Point on the Tooltip to align with the given point on the [target]
          */
-        fun Actor.addTooltip(text: String, size: Float = 26f, always: Boolean = false, tipAlign: Int = Align.top) {
+        fun Actor.addTooltip(
+            text: String,
+            size: Float = 26f,
+            always: Boolean = false,
+            targetAlign: Int = Align.topRight,
+            tipAlign: Int = Align.top
+        ) {
             if (!(always || KeyPressDispatcher.keyboardAvailable) || text.isEmpty()) return
 
             val label = text.toLabel(ImageGetter.getBlue(), 38)
@@ -175,18 +186,20 @@ class UncivTooltip <T: Actor>(
             background.setPadding(4f+skewPadDescenders, horizontalPad, 8f-skewPadDescenders, horizontalPad)
 
             val widthHeightRatio: Float
+            val multiRowSize = size * (1 + text.count { it == '\n' })
             val labelWithBackground = Container(label).apply {
                 setBackground(background)
                 pack()
                 widthHeightRatio = width / height
                 isTransform = true  // otherwise setScale is ignored
-                setScale(size / height)
+                setScale(multiRowSize / height)
             }
 
             addListener(UncivTooltip(this,
                 labelWithBackground,
-                forceContentSize = Vector2(size * widthHeightRatio, size),
-                offset = Vector2(-size/4, size/4),
+                forceContentSize = Vector2(multiRowSize * widthHeightRatio, multiRowSize),
+                offset = Vector2(-multiRowSize/4, size/4),
+                targetAlign = targetAlign,
                 tipAlign = tipAlign
             ))
         }

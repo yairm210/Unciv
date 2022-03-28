@@ -19,12 +19,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.roundToInt
 
-private fun String.isStat() = Stat.values().any { it.name == this }
-private fun CityInfo.getStat(stat: Stat) =
-    if (stat == Stat.Happiness)
-        cityStats.happinessList.values.sum().roundToInt()
-    else cityStats.currentCityStats[stat].roundToInt()
-
 class CityOverviewTab(
     viewingPlayer: CivilizationInfo,
     overviewScreen: EmpireOverviewScreen,
@@ -60,6 +54,17 @@ class CityOverviewTab(
             .apply { color = Color.BLACK }
             .surroundWithCircle(iconSize, color = Color.LIGHT_GRAY)
             .apply { addTooltip("Current construction", 18f, tipAlign = Align.center) }
+
+        // Readability helpers
+        private fun String.isStat() = Stat.values().any { it.name == this }
+
+        private fun CityInfo.getStat(stat: Stat) =
+            if (stat == Stat.Happiness)
+                cityStats.happinessList.values.sum().roundToInt()
+            else cityStats.currentCityStats[stat].roundToInt()
+
+        private fun Int.toCenteredLabel(): Label =
+            this.toLabel().apply { setAlignment(Align.center) }
     }
 
     private val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
@@ -85,6 +90,7 @@ class CityOverviewTab(
         updateTotal()
         update()
 
+        top()
         add(cityInfoTableDetails).row()
         addSeparator(Color.GRAY).pad(paddingVert, 0f)
         add(cityInfoTableTotal)
@@ -234,8 +240,4 @@ class CityOverviewTab(
         cityInfoTableTotal.add(viewingPlayer.cities.count { it.isWeLoveTheKingDayActive() }.toCenteredLabel())
         cityInfoTableTotal.pack()
     }
-
-    private fun Int.toCenteredLabel(): Label =
-        this.toLabel().apply { setAlignment(Align.center) }
-
 }
