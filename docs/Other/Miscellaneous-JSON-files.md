@@ -58,7 +58,6 @@ Each era can have the following attributes:
 | settlerBuildings | List of Strings | defaults to none | Buildings that should automatically be built whenever a city is settled when starting a game in this era |
 | startingObsoleteWonders | List of Strings | defaults to none | Wonders (and technically buildings) that should be impossible to built when starting a game in this era. Used in the base game to remove all wonders older than 2 era's |
 
-
 ## ModOptions.json
 
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/ModOptions.json)
@@ -130,7 +129,6 @@ First constant is for cities on the same landmass, the second is for cities on d
 [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
 [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
 [^I]: RiverGenerator: river frequency and length bounds
-
 
 ## Civilopedia text
 Any 'thing' defined in json and listed in the Civilopedia can supply extra text, specifically for the Civilopedia. This can be used to explain special considerations better when the automatically generated display is insufficient, or for 'flavour', background stories and the like. Such text can be formatted and linked to other Civilopedia entries, within limits.

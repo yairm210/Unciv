@@ -1,15 +1,3 @@
-- [Beliefs.json](#beliefsjson)
-- [Buildings.json](#buildingsjson)
-- [Nations.json](#nationsjson)
-- [Policies.json](#policiesjson)
-		- [Branch priorities](#branch-priorities)
-- [Quests.json](#questsjson)
-- [Religions.json](#religionsjson)
-- [Specialists.json](#specialistsjson)
-- [Techs.json](#techsjson)
-		- [Column structure](#column-structure)
-		- [Tech structure](#tech-structure)
-
 ## Beliefs.json
 
 [link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Beliefs.json)

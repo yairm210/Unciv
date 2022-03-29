@@ -1,4 +1,3 @@
-
 # Hosting a Multiplayer server
 
 Due to certain limitations on Dropbox's API, with the current influx of players, we've many times reached the point that Dropbox has become unavailable.

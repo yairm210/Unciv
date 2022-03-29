@@ -7,9 +7,7 @@ In order to add a tileset mod (yes, tilesets are just another type of mod), all 
 Let's look at the example "Grassland+Jungle+Dyes+Trading post" to learn how the game decides which images it should use for this tile:
 
 1. When there is a rule variant entry in the [tileset config](#tileset-config) for this tile we will use the entry. 
-
 2. Else if there is an image called "Grassland+Jungle+Dyes+Trading post" we will use it instead.
-
 3. Otherwise, we will check if there is an image called "Grassland+Jungle" (BaseTerrain+Terrainfeatures) and "Dyes+Trading post" (Resource+Improvement) and use the remainings of it. Let's say you made an image called "Grassland+Jungle" but none called "Dyes+Trading post". In the end, we will then use the images "Grassland+Jungle", "Dyes" and "Trading post".
 
 All these images can also use era-dependant variants if you want to change the appearance of, let's say, "Trading post" throughout the game. Just create images and add the suffix "-[era name]".
@@ -68,11 +66,11 @@ Unciv can colour units according to the civilization that owns them. [[PR3231]](
 
 This is used by providing multiple images per unit, each representing a coloured layer. The image suffixed with "-1" will be tinted to the civilization's inner colour, and the image suffixed with "-2" will be tinted to the civilization's outer colour. For example:
 
-|Image|Description|Colour|
-|---|---|---|
-|Archer.png|Base image|Untinted|
-|Archer-1.png|Colour layer|Nation inner colour|
-|Arhcer-2.png|Colour layer|Nation outer colour|
+| Image| Description|Colour|
+| ---- | ---------- | ---- |
+| Archer.png | Base image | Untinted |
+| Archer-1.png | Colour layer | Nation inner colour |
+| Arhcer-2.png | Colour layer | Nation outer colour |
 
 The [Civ Army Color Style Sheet](https://github.com/AdityaMH/Civ-Army-Color-Style-Sheet/tree/main/Images/TileSets/FantasyHex/Units) mod by @AdityaMH and the [5Hex Tileset](https://github.com/ravignir/5Hex-Tileset/tree/master/Images/TileSets/5Hex/Units) by @ravignir are very good practical examples of how this can be used.
 

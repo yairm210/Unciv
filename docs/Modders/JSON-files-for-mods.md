@@ -38,6 +38,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 Resources: [json.org](https://www.json.org/), [ISO standard](https://standards.iso.org/ittf/PubliclyAvailableStandards/c071616_ISO_IEC_21778_2017.zip)
 
 Almost all Unciv JSON files start with a "[" and end with a "]". In between these are different objects of the type you are describing, each of which is contained between a "{" and a "}". For example, a very simple units.json may look like:
+
 ```
 [
     {
@@ -51,6 +52,7 @@ Almost all Unciv JSON files start with a "[" and end with a "]". In between thes
     }
 ]
 ```
+
 This file contains two unit objects, one for a warrior and one for a spearman. These objects have different attributes, in this case "name", "cost" and "promotions". All these attributes have a certain type, a String (text) for "name", an Integer for "cost" and a List of Strings for "promotions".
 
 There are different types of attributes:
@@ -63,6 +65,7 @@ There are different types of attributes:
 | Object | The most complicated type of attribute. An object is comprised of multiple attributes, each of which again has a type. These attributes have a key (the part before the ":") and a value (the part behind it). For an example, see below. |
 
 Example of a Buildings.json adding a new "Cultural Library" building which gives +50% science and +50% culture:
+
 ```
 [
     {
@@ -71,6 +74,7 @@ Example of a Buildings.json adding a new "Cultural Library" building which gives
     }
 ]
 ```
+
 The keys in this example are "science" and "culture", and both have the value "50".
 
 In some sense you can see from these types that JSON files themselves are actually a list of objects, each describing a single building, unit or something else.
