@@ -1,5 +1,6 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -439,6 +440,19 @@ class TabbedPager(
             if (savedScrollListener != null)
                 contentScroll.addCaptureListener(savedScrollListener)
         }
+    }
+
+    /** Bind arrow keys to navigate pages left/right.
+     *  Needs [keyPressDispatcher] to be set on instantiation.
+     *  Caller is responsible for cleanup if necessary. */
+    fun bindArrowKeys() {
+        if (keyPressDispatcher == null) return
+        fun cyclePage(direction: Int) {
+            if (activePage == -1) return
+            selectPage((activePage + direction).coerceIn(0 until pages.size))
+        }
+        keyPressDispatcher[KeyCharAndCode(Input.Keys.LEFT)] = { cyclePage(-1) }
+        keyPressDispatcher[KeyCharAndCode(Input.Keys.RIGHT)] = { cyclePage(1) }
     }
 
     /** Remove a page by its index.

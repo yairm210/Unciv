@@ -52,6 +52,7 @@ class EmpireOverviewScreen(
             keyPressDispatcher = keyPressDispatcher,
             capacity = EmpireOverviewCategories.values().size)
 
+        tabbedPager.bindArrowKeys()
         tabbedPager.addClosePage { game.setWorldScreen() }
 
         for (category in EmpireOverviewCategories.values()) {
