@@ -93,7 +93,7 @@ stats can accept any list of stats, e.g. '-2 Gold, +1 Science', '+3 Culture', et
 tileFilter can accept any number of tile parameters (base terrain e.g. 'Plains', terrain type eg. 'Land'/'Water', terrain features e.g. 'Forest', improvements e.g. 'Mine', resources e.g. 'Iron'.
 cityFilter can accept 'in this city', 'in all cities', 'in capital', 'in coastal cities', etc.
 
-There are also filters for units, all acceptable values are documented [here](../Modders/Unique-parameter-types.md).
+There are also filters for units, all acceptable values are documented [here](../Modders/unique%20parameters).
 
 
 ## Unique management with Enums

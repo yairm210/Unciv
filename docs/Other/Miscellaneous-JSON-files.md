@@ -1,6 +1,6 @@
 
 ## Difficulties.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/Difficulties.json)
+[Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Difficulties.json)
 
 This file defines the difficulty levels a player can choose when starting a new game.
 
@@ -34,7 +34,7 @@ Each difficulty level can have the following attributes:
 
 
 ## Eras.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/Eras.json)
+[Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Eras.json)
 
 This file should contain all the era's you want to use in your mod.
 
@@ -60,6 +60,8 @@ Each era can have the following attributes:
 
 
 ## ModOptions.json
+[Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/ModOptions.json)
+
 This file is a little different:
 - Does not exist in Vanilla ruleset
 - Is entirely optional but will be created after downloading a mod
@@ -70,7 +72,7 @@ The file can have the following attributes, including the values Unciv sets (no 
 |-----------|------|-----------|-------|
 | isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
 | maxXPfromBarbarians | Integer | 30 | *Deprecated*, see [constants](#ModConstants) |
-| uniques | List | empty | Mod-wide specials, [see here](../Modders/Unique-parameter-types.md#modoptions-uniques) |
+| uniques | List | empty | Mod-wide specials, [see here](../Modders/uniques.md#modoptions-uniques) |
 | techsToRemove | List | empty | List of [Technologies](Civilization-related-JSON-files.md#techsjson) to remove (isBaseRuleset=false only) |
 | buildingsToRemove | List | empty | List of [Buildings or Wonders](Civilization-related-JSON-files.md#buildingsjson) to remove (isBaseRuleset=false only) |
 | unitsToRemove | List | empty | List of [Units](Unit-related-JSON-files.md#unitsjson) to remove (isBaseRuleset=false only) |
@@ -79,7 +81,7 @@ The file can have the following attributes, including the values Unciv sets (no 
 | modUrl | String | empty | Set automatically after download - URL of repository |
 | author | String | empty | Set automatically after download - Owner of repository |
 | modSize | Integer | empty | Set automatically after download - kB in entire repository, not sum of default branch files |
-| constants | Object | empty | see [constants](#ModOptions.constants) |
+| constants | Object | empty | see [ModConstants](#ModConstants) |
 
 ### ModConstants
 Stored in ModOptions.constants, this is a collection of constants used internally in Unciv.

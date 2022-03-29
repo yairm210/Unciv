@@ -12,7 +12,7 @@
 
 
 ## Beliefs.json
-[link to original](/jsons/Civ%20V%20-%20Gods%20&%20Kings/Beliefs.json)
+[link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Beliefs.json)
 
 This file contains the beliefs that can be chosen for religions in your mod.
 
@@ -26,7 +26,7 @@ Each belief can have the following attributes:
 
 
 ## Buildings.json
-[link to original](/jsons/Civ%20V%20-%20Vanilla/Buildings.json)
+[link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Buildings.json)
 
 This file should contain all the buildings and wonders you want to use in your mod.
 
@@ -45,8 +45,8 @@ Each building can have the following attributes:
 | maintenance | Integer (≥0) | defaults to 0 | Maintenance cost of the building |
 | isWonder | Boolean | defaults to false | Whether this building is a global wonder |
 | isNationalWonder | Boolean | defaults to false | Whether this building is a national wonder |
-| requiredBuilding | String | defaults to none | A building that has to be built before this building can be built. Must be in [Buildings.json](/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
-| cannotBeBuiltWith | String | defaults to none | The building [cannotBeBuiltWith] and this building cannot exist in the same city together. Should be in [Buildings.json](/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
+| requiredBuilding | String | defaults to none | A building that has to be built before this building can be built. Must be in [Buildings.json](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
+| cannotBeBuiltWith | String | defaults to none | The building [cannotBeBuiltWith] and this building cannot exist in the same city together. Should be in [Buildings.json](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Buildings.json) |
 | providesFreeBuilding | String | defaults to none | When the building is built, [providesFreeBuilding] is also automatically added to the city |
 | requiredTech | String | defaults to none | The tech that should be researched before this building may be built. Must be in [Techs.json](#techsjson) |
 | requiredResource | String | defaults to none | The resource that is consumed when building this building. Must be in [TileResources.json](Map-related-JSON-files.md#tileresourcesjson) |
@@ -58,16 +58,16 @@ Each building can have the following attributes:
 | cityHealth | Integer | defaults to 0 | Health bonus the city in which this building is built receives |
 | hurryCostModifier | Integer | defaults to 0 | When this building is bought using gold or faith, the price is increased by this much percent |
 | quote | String | defaults to none | If this building is a (national) wonder, this string will be shown on the completion popup |
-| uniques | List of Strings | defaults to none | List of unique abilities this building has. Most of these can be found [here](../Modders/Unique-parameter-types.md#buildings-only) |
+| uniques | List of Strings | defaults to none | List of unique abilities this building has. Most of these can be found [here](../Modders/uniques) |
 | replacementTextForUniques | String | defaults to none | If provided, this string will be shown instead of all of the uniques |
 | percentStatBonus | Object | defaults to none | Percentual bonus for stats provided by the building. Valid keys are the names of stats (production, gold, science, etc.), valid values are Integers (≥0) |
 | greatPersonPoints | Object | defaults to none | How many great person points for each type will be generated per turn. Valid keys are the names of great people (Great Scientist, Great Engineer, etc. .), valid values are Integers (≥0) |
-| specialistSlots | Object | defaults to none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](/jsons/Civ%20V%20-%20Gods%20&%20Kings/Specialists.json)), valid values are Integers, the amount of slots provided for this specialist |
+| specialistSlots | Object | defaults to none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Specialists.json)), valid values are Integers, the amount of slots provided for this specialist |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
 ## Nations.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/Nations.json)
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Nations.json)
 
 This file contains all the nations and city states, including Barbarians and Spectator.
 
@@ -99,7 +99,7 @@ This file contains all the nations and city states, including Barbarians and Spe
 
 
 ## Policies.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/Policies.json)
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Policies.json)
 
 This file lists the available social policies that can be "bought" with culture.
 
@@ -135,7 +135,7 @@ The "priorities" object lists its branch's priorities for each victory type. The
 | Scientific | Int | Default 0 | Priority value when the AI's preferred victory type is Scientific |
 
 ## Quests.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/Quests.json)
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Quests.json)
 
 This file contains the Quests that may be given to major Civilizations by City States.
 
@@ -150,13 +150,13 @@ This file contains the Quests that may be given to major Civilizations by City S
 
 
 ## Religions.json
-[Link to original](/jsons/Civ%20V%20-%20Gods%20&%20Kings/Religions.json)
+[Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Religions.json)
 
 This is just a list of Strings specifying all predefined Religion names. Corresponding icons must exist, that's all to it. After all, they're just containers for [Beliefs](#beliefsjson).
 
 
 ## Specialists.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/Specialists.json)
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Specialists.json)
 
 This file should contain a list of all possible specialists that you want in your mod.
 
@@ -175,7 +175,7 @@ Each specialist can have the following attributes:
 
 
 ## Techs.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/Techs.json)
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Techs.json)
 
 This file contains all the technologies. It is organized into an outer list of 'columns' which in turn contain one or more tech each.
 
