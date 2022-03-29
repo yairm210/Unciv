@@ -1,5 +1,5 @@
-
 ## Terrains.json
+
 This file lists the base terrains, terrain features and natural wonders that can appear on the map.
 
 Each terrain entry can have the following properties:
@@ -23,6 +23,7 @@ Each terrain entry can have the following properties:
 
 
 ## TileImprovements.json
+
 This file lists the improvements that can be constructed or created on a map tile by a unit (any unit having the appropriate unique).
 
 Note that improvements have two visual representations - icon and pixel graphic in the tileset. Omitting the icon results in a horribly ugly user interface, while omitting tileset graphics will just miss out on an _optional_ visualization. If you provide a pixel graphic for FantasyHex, please be aware of the layering system and the ruleVariants in the tileset json. A single graphic may suffice if it has lots of transparency, as it will be drawn on top of all other terrain elements.
@@ -48,6 +49,7 @@ Each improvement can have the following properties:
 
 
 ## TileResources.json
+
 This file lists the resources that a map tile can have.
 
 Note the predefined resource _types_ cannot be altered in json.
@@ -70,6 +72,7 @@ Each resource can have the following properties:
 
 
 ## Ruins.json
+
 [Link to original](/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
 
 This file contains the possible rewards ancient ruins give. It is not required, if omitted, the default file for the game is used, even in baseRuleSet mods.
@@ -110,7 +113,6 @@ A few uniques can be added to ancient ruin effects to modify when they can be ea
 - "Hidden when religion is disabled"
 - "Hidden after a great prophet has been earned"
 
-
 ## Tileset-specific json
 
 A mod can define new Tilesets or add to existing ones, namely FantasyHex. There is one json file per Tileset, named same as the Tileset, and placed in a subfolder named "TileSets" relative to the other json files. This is called TileSetConfig and has the following structure:
@@ -123,6 +125,7 @@ A mod can define new Tilesets or add to existing ones, namely FantasyHex. There 
 | ruleVariants | List | Default empty | see below |
 
 ruleVariants control substitutions when layering images for a tile, they are list looking like:
+
 ```json
     "ruleVariants": {
         "Grassland+Forest": ["Grassland","GrasslandForest"],
@@ -131,10 +134,10 @@ ruleVariants control substitutions when layering images for a tile, they are lis
         ...
     }
 ```
+
 Each line means "if the tile content is this... then combine the following png images". The key part follows a specific order and must match in its entirety, meaning "Plains+Forest" is not valid for "Plains+Forest+Deer", and when it matches no other image layering is done except roads and units (I think - *WIP*).
 
 When TileSetConfig's for the same Tileset are combined, for the first three properties the last mod wins, while ruleVariants are merged, meaning only an entry with the same key overwrites an earlier entry.
-
 
 ## Stats
 
@@ -142,6 +145,7 @@ Terrains, features, resources and improvements may list yield statistics. They c
 - production, food, gold, science, culture, happiness, faith
 
 If an object carries general stats, any combination (or none) of these can be specified. For specialized stats, they might come as sub-object in a named field. Example:
+
 ```json
 		"gold": 2,
 		"improvement": "Quarry",

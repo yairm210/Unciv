@@ -10,13 +10,14 @@
 		- [Column structure](#column-structure)
 		- [Tech structure](#tech-structure)
 
-
 ## Beliefs.json
+
 [link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Beliefs.json)
 
 This file contains the beliefs that can be chosen for religions in your mod.
 
 Each belief can have the following attributes:
+
 | attribute | Type | Optional or not | notes |
 | --------- | ---- | --------------- | ----- |
 | name | String | Required | Name of the belief |
@@ -24,13 +25,14 @@ Each belief can have the following attributes:
 | uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](../Modders/Unique-parameter-types.md#buildings-only), as well as the general uniques on that page |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
 
-
 ## Buildings.json
+
 [link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Buildings.json)
 
 This file should contain all the buildings and wonders you want to use in your mod.
 
 Each building can have the following attributes:
+
 | attribute | Type | Optional or not | notes |
 | --------- | ---- | --------------- | ----- |
 | name | String | required | Name of the building |
@@ -65,8 +67,8 @@ Each building can have the following attributes:
 | specialistSlots | Object | defaults to none | Specialist slots provided by this building. Valid keys are the names of specialists (as defined in [Specialists.json](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Specialists.json)), valid values are Integers, the amount of slots provided for this specialist |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
 
-
 ## Nations.json
+
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Nations.json)
 
 This file contains all the nations and city states, including Barbarians and Spectator.
@@ -97,8 +99,8 @@ This file contains all the nations and city states, including Barbarians and Spe
 | cities | List | Default empty | City names used sequentially for newly founded cities. |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
 
-
 ## Policies.json
+
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Policies.json)
 
 This file lists the available social policies that can be "bought" with culture.
@@ -106,6 +108,7 @@ This file lists the available social policies that can be "bought" with culture.
 They are organized in 'branches', each branch has an 'opener', one or more 'member' policies, and a 'finisher'. Therefore this file is organized using two levels - branch and member policy. The properties of the 'opener' are defined with the branch level, while the 'finisher' has an entry on the member level which _must_ be named as branch name + " Complete", case sensitive.
 
 Each policy branch can have the following properties:
+
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | name | String | Required |  |
@@ -115,6 +118,7 @@ Each policy branch can have the following properties:
 | policies | List | Default empty | List of member policies |
 
 Each member policy can have the following properties:
+
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | name | String | Required |  |
@@ -124,6 +128,7 @@ Each member policy can have the following properties:
 | uniques | List | Default empty | List of effects, [see here](../Modders/Unique-parameter-types.md#general-uniques) |
 
 #### Branch priorities
+
 The "priorities" object lists its branch's priorities for each victory type. The AI refers to this when deciding which branch to prioritize, also taking its preferred victory type into consideration. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates. All values are set to 0 if the object itself is missing or empty.
 
 | Attribute | Type | Optional? | Notes |
@@ -135,6 +140,7 @@ The "priorities" object lists its branch's priorities for each victory type. The
 | Scientific | Int | Default 0 | Priority value when the AI's preferred victory type is Scientific |
 
 ## Quests.json
+
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Quests.json)
 
 This file contains the Quests that may be given to major Civilizations by City States.
@@ -148,19 +154,21 @@ This file contains the Quests that may be given to major Civilizations by City S
 | duration | Integer | Default 0 | Maximum number of turns to complete the quest, 0 if there's no turn limit |
 | minimumCivs | Integer | Default 1 | Minimum number of Civs needed to start the quest. It is meaningful only for type = Global |
 
-
 ## Religions.json
+
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Religions.json)
 
 This is just a list of Strings specifying all predefined Religion names. Corresponding icons must exist, that's all to it. After all, they're just containers for [Beliefs](#beliefsjson).
 
 
 ## Specialists.json
+
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Specialists.json)
 
 This file should contain a list of all possible specialists that you want in your mod.
 
 Each specialist can have the following attributes:
+
 | attribute | type | optional or not | notes |
 | --------- | ---- | --------------- | ----- |
 | name | String | required | Name of the specialist |
@@ -173,13 +181,14 @@ Each specialist can have the following attributes:
 | color | List of 3 Integers | required | Color of the image for this specialist |
 | greatPersonPoints | Object | defaults to none | Great person points generated by this specialist. Valid keys are the names of the great person(Great Scientist, Great Merachant, etc.), valid values are Integers (≥0) | 
 
-
 ## Techs.json
+
 [Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Techs.json)
 
 This file contains all the technologies. It is organized into an outer list of 'columns' which in turn contain one or more tech each.
 
 #### Column structure
+
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | columnNumber | Integer | Required | Horizontal placement in the Tech Tree. |
@@ -190,6 +199,7 @@ This file contains all the technologies. It is organized into an outer list of '
 | techs | List of Techs | Required | List of techs as follows - pay attention to the nesting of {} and []. |
 
 #### Tech structure
+
 | Attribute | Type | Optional? | Notes |
 |-----------|------|-----------|-------|
 | name | String | Required | The name of this Technology. |

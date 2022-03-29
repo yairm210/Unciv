@@ -1,5 +1,5 @@
-
 ## Difficulties.json
+
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Difficulties.json)
 
 This file defines the difficulty levels a player can choose when starting a new game.
@@ -32,8 +32,8 @@ Each difficulty level can have the following attributes:
 | turnBarbariansCanEnterPlayerTiles | Integer | Default 0 |
 | clearBarbarianCampReward | Integer | Default 25 |
 
-
 ## Eras.json
+
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/Eras.json)
 
 This file should contain all the era's you want to use in your mod.
@@ -60,6 +60,7 @@ Each era can have the following attributes:
 
 
 ## ModOptions.json
+
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/ModOptions.json)
 
 This file is a little different:
@@ -84,6 +85,7 @@ The file can have the following attributes, including the values Unciv sets (no 
 | constants | Object | empty | see [ModConstants](#ModConstants) |
 
 ### ModConstants
+
 Stored in ModOptions.constants, this is a collection of constants used internally in Unciv.
 
 | Attribute | Type | Defaults | Notes |
@@ -134,6 +136,7 @@ First constant is for cities on the same landmass, the second is for cities on d
 Any 'thing' defined in json and listed in the Civilopedia can supply extra text, specifically for the Civilopedia. This can be used to explain special considerations better when the automatically generated display is insufficient, or for 'flavour', background stories and the like. Such text can be formatted and linked to other Civilopedia entries, within limits.
 
 An example of the format is:
+
 ```json
         "civilopediaText": [
 			{"text":"Ancient ruins provide a one-time random bonus when explored"},

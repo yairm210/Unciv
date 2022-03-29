@@ -1,6 +1,6 @@
-
 ## Units.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/Units.json)
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/Units.json)
 
 This file should contain a list of all the units, both military and civilian, that you want to use in your mod.
 
@@ -9,7 +9,7 @@ Each unit can have the following attributes:
 | attribute | Type | optional or not | notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the units (required) |
-| unitType | String | required | The type of the unit. Must be in [UnitTypes.json](/jsons/Civ%20V%20-%20Gods%20&%20Kings/UnitTypes.json) |
+| unitType | String | required | The type of the unit. Must be in [UnitTypes.json](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/UnitTypes.json) |
 | cost | Integer (≥0) | defaults to 0 | The amount of production required to build this unit |
 | movement | Integer (≥0) | defaults to 0 | The amount of movement points the unit has by default |
 | strength | Integer (≥0) | defaults to 0 | The melee attack and defensive strength of the unit. If this and rangedStrength are ommited or 0, the unit will be a civilian |
@@ -31,7 +31,8 @@ Each unit can have the following attributes:
 
 
 ## UnitPromotions.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/UnitPromotions.json)
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/UnitPromotions.json)
 
 This file lists the available unit promotions.
 
@@ -50,9 +51,9 @@ Each promotion can have the following properties:
 | uniques | List | Default empty | List of effects, [see here](../Modders/Unique-parameter-types.md#unit-uniques) |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
 
-
 ## UnitTypes.json
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/UnitTypes.json)
+
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/UnitTypes.json)
 
 This optional file is used for defining new types of units. The names of these can be used in unitFilters, and these types determine what domain the unit moves in: over land, over water or through the air. If the file is ommitted, the following are automatically added:
 Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee, WaterRanged, WaterSubmarine, WaterAircraftCarrier, Fighter, Bomber, AtomicBomber, and Missile.
