@@ -19,7 +19,7 @@ Creating and editing mods from your phone is NOT RECOMMENDED - it's *much easier
 
 ## Audiovisual Mods
 
-I addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](Audiovisual-Mods.md).
+I addition to changing the rules - or even without doing so, mods can override existing graphics or sounds, or add music tracks. The game also has the ability to display graphics that are not included in the base game at all, such as leader portrait or wonder splash images, that must be provided by mods. For details, see [Audiovisual Mods](Images-and-Audio.md).
 
 Custom tilesets are closely related, see [Creating a custom tileset](Creating-a-custom-tileset.md).
 
@@ -107,6 +107,6 @@ When loading a mod, it needs to be in its own folder in `/mods` - this is how yo
 
 Existing mods can be found [here](https://github.com/topics/unciv-mod)!
 
-A list of uniques and how to use them can be found [here](Unique-parameter-types.md)!
+A list of uniques and how to use them can be found [here](Unique-parameters.md)!
 
-Some images don't exist at all in the base game, but can be added in mods. For more info, see [Audiovisual Mods](Audiovisual-Mods.md).
+Some images don't exist at all in the base game, but can be added in mods. For more info, see [Audiovisual Mods](Images-and-Audio.md).

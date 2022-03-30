@@ -40,7 +40,7 @@ Each improvement can have the following properties:
 | uniqueTo | String | Default none | The name of the nation this improvement is unique for |
 | `<stats>` | Float | Optional | Per-turn bonus yield for the tile, see [Stats](#stats) |
 | turnsToBuild | Integer |  | Number of turns a worker spends building this (ignored for 'create' actions) |
-| uniques | List | Default empty | List of effects, [see here](../Modders/Unique-parameter-types.md#improvement-uniques) |
+| uniques | List | Default empty | List of effects, [see here](../Modders/Unique-parameters.md#improvement-uniques) |
 | shortcutKey | String | Default none | Keyboard binding. At the moment a single character (no function keys or Ctrl combinations) |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
 
@@ -68,13 +68,13 @@ Each resource can have the following properties:
 | improvement | String | Default empty | The improvement ([TileImprovements.json](#tileimprovementsjson)) for this resource |
 | improvementStats | Object | Default empty | The additional yield when improved as sub-object with one or more [Stats](#stats) |
 | revealedBy | String | Default empty | The technology name required to see, work and improve this resource |
-| unique | String | Default empty | Effects, [see here](../Modders/Unique-parameter-types.md#resource-uniques) - at the moment only one unique may be added |
+| unique | String | Default empty | Effects, [see here](../Modders/Unique-parameters.md#resource-uniques) - at the moment only one unique may be added |
 | civilopediaText | List | Default empty | see [civilopediaText chapter](Miscellaneous-JSON-files.md#civilopedia-text) |
 
 
 ## Ruins.json
 
-[Link to original](/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
+[Link to original](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Vanilla/Ruins.json)
 
 This file contains the possible rewards ancient ruins give. It is not required, if omitted, the default file for the game is used, even in baseRuleSet mods.
 
@@ -85,7 +85,7 @@ Each of the objects in the file represents a single reward you can get from ruin
 | name | String | required | Name of the ruins. Never shown to the user, but they have to be distinct |
 | notification | String | required | Notification added to the user when this reward is chosen. If omitted, an empty notification is shown. Some notifications may have parameters, refer to the table below. |
 | weight | Integer (≥0) | defaults to 1 | Weight this reward should have. Higher weights result in a higher chance of it being chosen* |
-| uniques | List of Strings | defaults to none | [uniques]Uniques#one-time-effect) or [uniques](../Modders/Unique-parameter-types.md#one-time-effect-units) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug. |
+| uniques | List of Strings | defaults to none | [uniques]Uniques#one-time-effect) or [uniques](../Modders/Unique-parameters.md#one-time-effect-units) that will trigger when entering the ruins. If more than 1 unique is added, the notification will be shown multiple times due to a bug. |
 | excludedDifficulties | List of Strings | defaults to None | A list of all difficulties on which this reward may _not_ be awarded |
 
 The exact algorithm for choosing a reward is the following:

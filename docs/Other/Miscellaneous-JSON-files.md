@@ -19,7 +19,7 @@ Each difficulty level can have the following attributes:
 | policyCostModifier | Float | Default 1 |
 | unhappinessModifier | Float | Default 1 |
 | barbarianBonus | Float | Default 0 |
-| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](Unit-related-JSON-files.md#unitsjson)] |
+| playerBonusStartingUnits | List of Units | Default empty | Can also be 'Era Starting Unit', maps to `startingMilitaryUnit` of the Eras file. All other units must be in [Units.json](Unit-related-JSON-files.md#Units.json)] |
 | aiCityGrowthModifier | Float | Default 1 |
 | aiUnitCostModifier | Float | Default 1 |
 | aiBuildingCostModifier | Float | Default 1 |
@@ -46,7 +46,7 @@ Each era can have the following attributes:
 | --------- | ---- | -------- | ----- |
 | name | String | required | Name of the era |
 | researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements were the most technologically advanced civ is in this era |
-| iconRGB | List of 3 Integers | defaults to [255,255,255] | RGB color that icons for technologies of this era should have in the Tech screen |
+| iconRGB | List of 3 Integers | defaults to [255, 255, 255] | RGB color that icons for technologies of this era should have in the Tech screen |
 | unitBaseBuyCost | Integer (≥0) | defaults to 200 | Base cost of buying units with Faith, Food, Science or Culture when no other cost is provided |
 | startingSettlerCount | Integer (≥0) | defaults to 1 | Amount of settler units that should be spawned when starting a game in this era |
 | startingSettlerUnit | String | defaults to "Settler" | Name of the unit that should be used for the previous field. Must be in [Units.json](Unit-related-JSON-files.md#unitsjson) |
@@ -110,28 +110,30 @@ Stored in ModOptions.constants, this is a collection of constants used internall
 | minRiverLength| Int | 5 | [^I] |
 | maxRiverLength| Int | 666 | [^I] |
 
-[^A]: Max amount of experience that can be gained from combat with barbarians
-[^B]: Formula for city Strength:
-Strength = baseStrength + strengthPerPop + strengthFromTiles +
-((%techs * multiplier) ^ exponent) * fullMultiplier +
-(garrisonBonus * garrisonUnitStrength * garrisonUnitHealth/100) +
-defensiveBuildingStrength
-where %techs is the percentage of techs in the tech tree that are complete
-If no techs exist in this ruleset, %techs = 0.5 (=50%)
-[^C]: Formula for Unit Supply:
-Supply = unitSupplyBase (difficulties.json)
-unitSupplyPerCity * amountOfCities + (difficulties.json)
-unitSupplyPerPopulation * amountOfPopulationInAllCities
-unitSupplyBase and unitSupplyPerCity can be found in difficulties.json
-unitSupplyBase, unitSupplyPerCity and unitSupplyPerPopulation can also be increased through uniques
-[^D]: The minimal distance that must be between any two cities, not counting the tiles cities are on
-The number is the amount of tiles between two cities, not counting the tiles the cities are on.
-e.g. "C__C", where "C" is a tile with a city and "_" is a tile without a city, has a distance of 2.
-First constant is for cities on the same landmass, the second is for cities on different continents.
-[^E]: NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size. The number scales linearly with map radius: #wonders = radius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant. The defaults effectively mean Tiny - 1, Small - 2, Medium - 3, Large - 4, Huge - 5, Custom radius >=109 - all G&K wonders.
-[^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
-[^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
-[^I]: RiverGenerator: river frequency and length bounds
+Legend:
+
+-   [^A]: Max amount of experience that can be gained from combat with barbarians
+-   [^B]: Formula for city Strength:
+    Strength = baseStrength + strengthPerPop + strengthFromTiles +
+    ((%techs * multiplier) ^ exponent) * fullMultiplier +
+    (garrisonBonus * garrisonUnitStrength * garrisonUnitHealth/100) +
+    defensiveBuildingStrength
+    where %techs is the percentage of techs in the tech tree that are complete
+    If no techs exist in this ruleset, %techs = 0.5 (=50%)
+-   [^C]: Formula for Unit Supply:
+    Supply = unitSupplyBase (difficulties.json)
+    unitSupplyPerCity * amountOfCities + (difficulties.json)
+    unitSupplyPerPopulation * amountOfPopulationInAllCities
+    unitSupplyBase and unitSupplyPerCity can be found in difficulties.json
+    unitSupplyBase, unitSupplyPerCity and unitSupplyPerPopulation can also be increased through uniques
+-   [^D]: The minimal distance that must be between any two cities, not counting the tiles cities are on
+    The number is the amount of tiles between two cities, not counting the tiles the cities are on.
+    e.g. "C__C", where "C" is a tile with a city and "_" is a tile without a city, has a distance of 2.
+    First constant is for cities on the same landmass, the second is for cities on different continents.
+-   [^E]: NaturalWonderGenerator uses these to determine the number of Natural Wonders to spawn for a given map size. The number scales linearly with map radius: #wonders = radius * naturalWonderCountMultiplier + naturalWonderCountAddedConstant. The defaults effectively mean Tiny - 1, Small - 2, Medium - 3, Large - 4, Huge - 5, Custom radius >=109 - all G&K wonders.
+-   [^F]: MapGenerator.spreadAncientRuins: number of ruins = suitable tile count * this
+-   [^H]: MapGenerator.spawnLakesAndCoasts: Water bodies up to this tile count become Lakes
+-   [^I]: RiverGenerator: river frequency and length bounds
 
 ## Civilopedia text
 

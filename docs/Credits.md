@@ -337,7 +337,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 #### Information Era
 
 -   [CN Tower Toronto](https://thenounproject.com/search/?q=cn%20tower&i=807678) By mikicon for CN tower
--   [War Shelter](https://www.flaticon.com/free-icon/war-shelter_978661) by [Frepik](www.freepik.com) for Bomb Shelter
+-   [War Shelter](https://www.flaticon.com/free-icon/war-shelter_978661) by [Frepik](https://www.freepik.com) for Bomb Shelter
 -   [Hubble Telescope](https://thenounproject.com/search/?q=hubble%20space&i=445502) By Scott Lewis for Hubble Space Telescope
 -   [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
 -   [United Nations](https://thenounproject.com/search/?q=united+nations&i=3104698) by Imam for United Nations

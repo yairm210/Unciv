@@ -1,12 +1,5 @@
 # Images and Audio
 
--   [The 'Permanent audiovisual mod' feature](#permanent-audiovisual-mods)
--   [Mods can override built-in graphics](#override-built-in-graphics)
--   [Mods can supply additional tilesets - see separate page](Creating-a-custom-tileset.md)
--   [Mods can supply additional graphics not included in the base game](#supply-additional-graphics)
--   [Mods can override built-in sounds](#override-built-in-sounds)
--   [Mods can supply additional music tracks](#supply-additional-music)
-
 ## Permanent audiovisual mods
 
 The following chapters describe possibilities that will work while a mod is ***active***. It is either selected for the current game (during new game creation, cannot be changed after that for saved games), meaning all its rules and resources will be used. _Or_ it is marked as 'Permanent audiovisual mod' in the mod manager (you must select it in the 'installed' column to get the checkbox). In that case only graphics and audio will be active, the rule changes will be ignored (if it contains any) unless the first way is _also_ used.
@@ -80,35 +73,36 @@ Triggers indicate context (call it intent, mood, whatever, it doesn't matter) by
 
 The current list of triggers is as follows:
 
-| Description | Prefix | M[^M] | Suffix | M[^X] | Flags |
-| ----------- |:------ |:-----:| ------:|:-----:|:-----:|
+| Description | Prefix | [^M] | Suffix | [^X] | Flags |
+| ----------- |:------ |:----:| ------:|:----:|:-----:|
 | Automatic next-track[^0] | | | Ambient | | |
 | Launch game[^1] | | | Menu | | |
-| Every 10th turn | (player civ name) | M | Peace or War[^2] | | F[^F] |
-| New game: Select a mod | (mod name) | M | Theme | | S[^S] |
-| New game: Pick a nation for a player | (nation name) | M | Theme or Peace | | S[^S] |
-| Diplomacy: Select player | (nation name) | M | Peace or War[^3] | | S[^S] |
-| First contact[^4] | (civ name) | M | Theme or Peace | M | |
-| War declaration[^5] | (civ name) | M | War | M | |
-| Civ defeated | (civ name) | | Defeat | M | |
-| Golden Age | (civ name) | M | Golden | M | N[^N] |
-| Wonder built | (wonder name) | M | Built | M | N[^N] |
-| Tech researched | (tech name) | M | Researched | M | N[^N] |
-| Map editor: Select nation start location | (nation name) | M | Theme | | S[^S] N[^N] |
-| Options: Volume slider or Default track downloaded | | | | | D[^D] |
-| Options: Click currently playing label[^6] | | M | Ambient | | S[^S] | 
+| Every 10th turn | (player civ name) | [^M] | Peace or War[^2] | | [^F] |
+| New game: Select a mod | (mod name) | [^M] | Theme | | [^S] |
+| New game: Pick a nation for a player | (nation name) | [^M] | Theme or Peace | | [^S] |
+| Diplomacy: Select player | (nation name) | [^M] | Peace or War[^3] | | [^S] |
+| First contact[^4] | (civ name) | [^M] | Theme or Peace | [^X] | |
+| War declaration[^5] | (civ name) | [^M] | War | [^X] | |
+| Civ defeated | (civ name) | | Defeat | [^X] | |
+| Golden Age | (civ name) | [^M] | Golden | [^X] | [^N] |
+| Wonder built | (wonder name) | [^M] | Built | [^X] | [^N] |
+| Tech researched | (tech name) | [^M] | Researched | [^X] | [^N] |
+| Map editor: Select nation start location | (nation name) | [^M] | Theme | | [^S] [^N] |
+| Options: Volume slider or Default track downloaded | | | | | [^D] |
+| Options: Click currently playing label[^6] | | [^M] | Ambient | | [^S] | 
 
 Legend:
-[^N]: **Not implemented**
-[^M]: Prefix must match. If no matching file is found, the trigger will do nothing.
-[^X]: Suffix must match. If no matching file is found, the trigger will do nothing.
-[^S]: Stop after playback. No automatic next choice.
-[^F]: Slow fadeout of replaced track.
-[^D]: Always plays the default file.
-[^0]: Whenever a track finishes and the configured silence has elapsed, an 'Ambient' track without any context is chosen. Also triggered by 'resume' (e.g. switching to another app and back on Android)
-[^1]: First opening of the Main Menu (or the initial language picker).
-[^2]: Whether the active player is at war with anybody.
-[^3]: According to your relation to the picked player.
-[^4]: Excluding City States.
-[^5]: Both in the alert when another player declares War on you and declaring War yourself in Diplomacy screen.
-[^6]: Yes these flags are not optimal.
+
+-   [^N]: **Not implemented**
+-   [^M]: Prefix must match. If no matching file is found, the trigger will do nothing.
+-   [^X]: Suffix must match. If no matching file is found, the trigger will do nothing.
+-   [^S]: Stop after playback. No automatic next choice.
+-   [^F]: Slow fadeout of replaced track.
+-   [^D]: Always plays the default file.
+-   [^0]: Whenever a track finishes and the configured silence has elapsed, an 'Ambient' track without any context is chosen. Also triggered by 'resume' (e.g. switching to another app and back on Android)
+-   [^1]: First opening of the Main Menu (or the initial language picker).
+-   [^2]: Whether the active player is at war with anybody.
+-   [^3]: According to your relation to the picked player.
+-   [^4]: Excluding City States.
+-   [^5]: Both in the alert when another player declares War on you and declaring War yourself in Diplomacy screen.
+-   [^6]: Yes these flags are not optimal.
