@@ -6,7 +6,7 @@ This file should contain a list of all the units, both military and civilian, th
 
 Each unit can have the following attributes:
 
-| attribute | Type | optional or not | notes |
+| Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the units (required) |
 | unitType | String | required | The type of the unit. Must be in [UnitTypes.json](https://github.com/yairm210/Unciv/blob/master/android/assets/jsons/Civ%20V%20-%20Gods%20%26%20Kings/UnitTypes.json) |
@@ -42,8 +42,8 @@ Remember, promotions can be "bought" with XP, but also granted by the unit type,
 
 Each promotion can have the following properties:
 
-| Attribute | Type | Optional? | Notes |
-|-----------|------|-----------|-------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | Required | See above for "I, II, III" progressions |
 | prerequisites | List | Default empty | Prerequisite promotions |
 | effect | String | Default empty | Deprecated, use uniques instead |
@@ -58,7 +58,7 @@ Each promotion can have the following properties:
 This optional file is used for defining new types of units. The names of these can be used in unitFilters, and these types determine what domain the unit moves in: over land, over water or through the air. If the file is ommitted, the following are automatically added:
 Civilian, Melee, Ranged, Scout, Mounted, Armor, Siege, WaterCivilian, WaterMelee, WaterRanged, WaterSubmarine, WaterAircraftCarrier, Fighter, Bomber, AtomicBomber, and Missile.
 
-| attribute | Type | optional or not | notes |
+| Attribute | Type | Optional | Notes |
 | --------- | ---- | -------- | ----- |
 | name | String | required | The name of the unit type |
 | movementType | String | required | The domain through which the unit moves. Allowed values: "Water", "Land", "Air" |

@@ -6,8 +6,8 @@ This file contains the beliefs that can be chosen for religions in your mod.
 
 Each belief can have the following attributes:
 
-| attribute | Type | Optional or not | notes |
-| --------- | ---- | --------------- | ----- |
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | Required | Name of the belief |
 | type | String | Required | The type of the belief. Valid values are: "Pantheon", "Follower", "Founder" and "Enhancer". |
 | uniques | List of Strings | defaults to none | The unique abilities this belief adds to cities following it. May be chosen from the list of building uniques [here](../Modders/Unique-parameter-types.md#buildings-only), as well as the general uniques on that page |
@@ -21,8 +21,8 @@ This file should contain all the buildings and wonders you want to use in your m
 
 Each building can have the following attributes:
 
-| attribute | Type | Optional or not | notes |
-| --------- | ---- | --------------- | ----- |
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | required | Name of the building |
 | cost | Integer (≥0) | defaults to 0 | Amount of production required to build the building |
 | food | Integer | defaults to 0 | Food produced by the building |
@@ -61,8 +61,8 @@ Each building can have the following attributes:
 
 This file contains all the nations and city states, including Barbarians and Spectator.
 
-| Attribute | Type | Optional? | Notes |
-|-----------|------|-----------|-------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | Required |  |
 | leaderName | String | Default empty | Omit only for city states! If you want LeaderPortraits, the image file names must match exactly, including case. |
 | style | String | Default empty | Modifier appended to pixel unit image names |
@@ -97,8 +97,8 @@ They are organized in 'branches', each branch has an 'opener', one or more 'memb
 
 Each policy branch can have the following properties:
 
-| Attribute | Type | Optional? | Notes |
-|-----------|------|-----------|-------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | Required |  |
 | era | String | Required | Unlocking era as defined in [Eras.json](Miscellaneous-JSON-files.md#erasjson) |
 | priorities | Object | Default empty | Priorities for each victory type, [see here](#branch-priorities)
@@ -119,8 +119,8 @@ Each member policy can have the following properties:
 
 The "priorities" object lists its branch's priorities for each victory type. The AI refers to this when deciding which branch to prioritize, also taking its preferred victory type into consideration. If two or more candidate branches have the same priority, the AI chooses a random branch among the candidates. All values are set to 0 if the object itself is missing or empty.
 
-| Attribute | Type | Optional? | Notes |
-|-----------|------|-----------|-------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | Neutral | Int | Default 0 | Priority value when the AI's preferred victory type is Neutral |
 | Cultural | Int | Default 0 | Priority value when the AI's preferred victory type is Cultural |
 | Diplomatic | Int | Default 0 | Priority value when the AI's preferred victory type is Diplomatic |
@@ -133,8 +133,8 @@ The "priorities" object lists its branch's priorities for each victory type. The
 
 This file contains the Quests that may be given to major Civilizations by City States.
 
-| Attribute | Type | Optional? | Notes |
-|-----------|------|-----------|-------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | Required | Unique identifier name of the quest, it is also shown |
 | description | String | Required | Description of the quest shown to players |
 | type | Enum | Default Individual | Individual or Global |
@@ -157,8 +157,8 @@ This file should contain a list of all possible specialists that you want in you
 
 Each specialist can have the following attributes:
 
-| attribute | type | optional or not | notes |
-| --------- | ---- | --------------- | ----- |
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | required | Name of the specialist |
 | food | Integer | defaults to 0 | Amount of food produced by this specialist |
 | production | Integer | defaults to 0 | Amount of production produced by this specialist |
@@ -177,8 +177,8 @@ This file contains all the technologies. It is organized into an outer list of '
 
 #### Column structure
 
-| Attribute | Type | Optional? | Notes |
-|-----------|------|-----------|-------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | columnNumber | Integer | Required | Horizontal placement in the Tech Tree. |
 | era | String | Required | References [Eras.json](Miscellaneous-JSON-files.mdrasjson). |
 | techCost | Integer | Required | Default cost of the techs in this column. |
@@ -188,8 +188,8 @@ This file contains all the technologies. It is organized into an outer list of '
 
 #### Tech structure
 
-| Attribute | Type | Optional? | Notes |
-|-----------|------|-----------|-------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | Required | The name of this Technology. |
 | row | Integer | Defaults to 0 | Vertical placement in the Tech Tree, must be unique per column. |
 | cost | Integer | Defaults to column techCost | The amount of science required to research this tech. |

@@ -1,37 +1,36 @@
 These pages are a work in progress. Information they contain may be incomplete.
 
-
 The JSON files that make up mods can have many different fields, and as not all are used in the base game, this wiki page will contain the full information of each. It will also give a short explanation of the syntax of JSON files.
 
 # Table of Contents
-* [General Overview of JSON files](#general-overview-of-json-files)
-* [Civilization-related JSON files](../Other/Civilization-related-JSON-files.md)
-    * [Beliefs.json](../Other/Civilization-related-JSON-files.md#beliefsjson)
-    * [Buildings.json](../Other/Civilization-related-JSON-files.md#buildingsjson)
-    * [Nations.json](../Other/Civilization-related-JSON-files.md#nationsjson)
-    * [Policies.json](../Other/Civilization-related-JSON-files.md#policiesjson)
-    * [Quests.json](../Other/Civilization-related-JSON-files.md#questsjson)
-    * [Religions.json](../Other/Civilization-related-JSON-files.md#religionsjson)
-    * [Specialists.json](../Other/Civilization-related-JSON-files.md#specialistsjson)
-    * [Techs.json](../Other/Civilization-related-JSON-files.md#techsjson)
-* [Map-related JSON files](../Other/Map-related-JSON-files.md)
-    * [Terrains.json](../Other/Map-related-JSON-files.md#terrainsjson)
-    * [TileResources.json](../Other/Map-related-JSON-files.md#tileresourcesjson)
-    * [TileImprovements.json](../Other/Map-related-JSON-files.md#tileimprovementsjson)
-    * [Ruins.json](../Other/Map-related-JSON-files.md#ruinsjson)
-    * [Tileset-specific json](../Other/Map-related-JSON-files.md#tileset-specific-json)
-* [Unit-related JSON files](../Other/Unit-related-JSON-files.md)
-    * [Units.json](../Other/Unit-related-JSON-files.md#unitsjson)
-    * [UnitPromotions.json](../Other/Unit-related-JSON-files.md#unitpromotionsjson)
-    * [UnitTypes.json](../Other/Unit-related-JSON-files.md#unittypesjson)
-* [Miscellaneous JSON files](../Other/Miscellaneous-JSON-files.md)
-    * [Difficulties.json](../Other/Miscellaneous-JSON-files.md#difficultiesjson)
-    * [Eras.json](../Other/Miscellaneous-JSON-files.md#erasjson)
-    * [ModOptions.json](../Other/Miscellaneous-JSON-files.md#modoptionsjson)
-* [Stats](../Other/Map-related-JSON-files.md#stats)
-* [Sounds](../Other/Unit-related-JSON-files.md#sounds)
-* [Civilopedia text](../Other/Miscellaneous-JSON-files.md#civilopedia-text)
 
+-   [General Overview of JSON files](#general-overview-of-json-files)
+-   [Civilization-related JSON files](../Other/Civilization-related-JSON-files.md)
+    -   [Beliefs.json](../Other/Civilization-related-JSON-files.md#beliefsjson)
+    -   [Buildings.json](../Other/Civilization-related-JSON-files.md#buildingsjson)
+    -   [Nations.json](../Other/Civilization-related-JSON-files.md#nationsjson)
+    -   [Policies.json](../Other/Civilization-related-JSON-files.md#policiesjson)
+    -   [Quests.json](../Other/Civilization-related-JSON-files.md#questsjson)
+    -   [Religions.json](../Other/Civilization-related-JSON-files.md#religionsjson)
+    -   [Specialists.json](../Other/Civilization-related-JSON-files.md#specialistsjson)
+    -   [Techs.json](../Other/Civilization-related-JSON-files.md#techsjson)
+-   [Map-related JSON files](../Other/Map-related-JSON-files.md)
+    -   [Terrains.json](../Other/Map-related-JSON-files.md#terrainsjson)
+    -   [TileResources.json](../Other/Map-related-JSON-files.md#tileresourcesjson)
+    -   [TileImprovements.json](../Other/Map-related-JSON-files.md#tileimprovementsjson)
+    -   [Ruins.json](../Other/Map-related-JSON-files.md#ruinsjson)
+    -   [Tileset-specific json](../Other/Map-related-JSON-files.md#tileset-specific-json)
+-   [Unit-related JSON files](../Other/Unit-related-JSON-files.md)
+    -   [Units.json](../Other/Unit-related-JSON-files.md#unitsjson)
+    -   [UnitPromotions.json](../Other/Unit-related-JSON-files.md#unitpromotionsjson)
+    -   [UnitTypes.json](../Other/Unit-related-JSON-files.md#unittypesjson)
+-   [Miscellaneous JSON files](../Other/Miscellaneous-JSON-files.md)
+    -   [Difficulties.json](../Other/Miscellaneous-JSON-files.md#difficultiesjson)
+    -   [Eras.json](../Other/Miscellaneous-JSON-files.md#erasjson)
+    -   [ModOptions.json](../Other/Miscellaneous-JSON-files.md#modoptionsjson)
+-   [Stats](../Other/Map-related-JSON-files.md#stats)
+-   [Sounds](../Other/Unit-related-JSON-files.md#sounds)
+-   [Civilopedia text](../Other/Miscellaneous-JSON-files.md#civilopedia-text)
 
 # General Overview of JSON files
 
@@ -79,14 +78,8 @@ The keys in this example are "science" and "culture", and both have the value "5
 
 In some sense you can see from these types that JSON files themselves are actually a list of objects, each describing a single building, unit or something else.
 
-
 # Information on JSON files used in the game
 
 Many parts of Unciv are moddable, and for each there is a seperate json file. There is a json file for buildings, for units, for promotions units can have, for technologies, etc. The different new buildings or units you define can also have lots of different attributes, though not all are required. Below are tables documenting all the different attributes everything can have. Only the attributes which are noted to be 'required' must be provided. All others have a default value that will be used when it is omitted.
 
-The individual files are described on separate pages:
-
-* [Civilization-related JSON files](../Other/Civilization-related-JSON-files.md)
-* [Map-related JSON files](../Other/Map-related-JSON-files.md)
-* [Unit-related JSON files](../Other/Unit-related-JSON-files.md)
-* [Miscellaneous JSON files](../Other/Miscellaneous-JSON-files.md)
+The individual files are described on [separate pages](#Table-of-Contents).

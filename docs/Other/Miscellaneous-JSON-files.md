@@ -6,8 +6,8 @@ This file defines the difficulty levels a player can choose when starting a new 
 
 Each difficulty level can have the following attributes:
 
-| Attribute | Type | Mandatory | Notes |
-| --------- | ---- | ------- | ----- |
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | Required | Name of the difficulty level |
 | baseHappiness | Integer | Default 0 |
 | extraHappinessPerLuxury | Float | Default 0 |
@@ -40,8 +40,8 @@ This file should contain all the era's you want to use in your mod.
 
 Each era can have the following attributes:
 
-| attribute | Type | optional or not | notes |
-| --------- | ---- | --------------- | ----- |
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | name | String | required | Name of the era |
 | researchAgreementCost | Integer (≥0) | defaults to 300 | Cost of research agreements were the most technologically advanced civ is in this era |
 | iconRGB | List of 3 Integers | defaults to [255,255,255] | RGB color that icons for technologies of this era should have in the Tech screen |
@@ -63,13 +63,14 @@ Each era can have the following attributes:
 [Link to original](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Civ%20V%20-%20Gods%20&%20Kings/ModOptions.json)
 
 This file is a little different:
-- Does not exist in Vanilla ruleset
-- Is entirely optional but will be created after downloading a mod
+
+-   Does not exist in Vanilla ruleset
+-   Is entirely optional but will be created after downloading a mod
 
 The file can have the following attributes, including the values Unciv sets (no point in a mod author setting those):
 
-| Attribute | Type | Defaults | Notes |
-|-----------|------|-----------|-------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | isBaseRuleset | Boolean | false | Differentiates mods that change the vanilla ruleset or replace it |
 | maxXPfromBarbarians | Integer | 30 | *Deprecated*, see [constants](#ModConstants) |
 | uniques | List | empty | Mod-wide specials, [see here](../Modders/uniques.md#modoptions-uniques) |
@@ -87,8 +88,8 @@ The file can have the following attributes, including the values Unciv sets (no 
 
 Stored in ModOptions.constants, this is a collection of constants used internally in Unciv.
 
-| Attribute | Type | Defaults | Notes |
-|-----------|------|-----------|-------|
+| Attribute | Type | Optional | Notes |
+| --------- | ---- | -------- | ----- |
 | maxXPfromBarbarians | Int | 30 | [^A] |
 | cityStrengthBase| Float | 8.0 | [^B] |
 | cityStrengthPerPop| Float | 0.4 | [^B] |
@@ -131,22 +132,33 @@ First constant is for cities on the same landmass, the second is for cities on d
 [^I]: RiverGenerator: river frequency and length bounds
 
 ## Civilopedia text
+
 Any 'thing' defined in json and listed in the Civilopedia can supply extra text, specifically for the Civilopedia. This can be used to explain special considerations better when the automatically generated display is insufficient, or for 'flavour', background stories and the like. Such text can be formatted and linked to other Civilopedia entries, within limits.
 
 An example of the format is:
 
 ```json
         "civilopediaText": [
-			{"text":"Ancient ruins provide a one-time random bonus when explored"},
-			{"separator":true},
-			{"text":"This line is red and links to the Scout including icons", "link":"Unit/Scout", "color":"red"},
-			{"text":"A big fat header sporting a golden star", "header":1, "starred":true, "color":"#ffeb7f"},
+			{ "text": "Ancient ruins provide a one-time random bonus when explored" },
+			{ "separator": true },
+			{
+                "text": "This line is red and links to the Scout including icons",
+                "link": "Unit/Scout",
+                "color": "red"
+            },
+			{
+                "text": "A big fat header sporting a golden star",
+                "header": 1,
+                "starred": true,
+                "color": "#ffeb7f"
+            },
 		],
 ```
+
 List of attributes - note not all combinations are valid:
 
-|attribute|type|description|
-|---------|----|-----------|
+| Attribute | Type | Description |
+| --------- | ---- | ----------- |
 |`text`|String|Text to display.|
 |`link`|String|Create link and icon, format: Category/Name or _external_ link ('http://','https://','mailto:').|
 |`icon`|String|Show icon without linking, format: Category/Name.|

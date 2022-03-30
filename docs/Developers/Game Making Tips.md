@@ -36,11 +36,9 @@ Caching is a trade-off between purer, state-agnostic code and higher performance
 Coming from a PC background, I automatically assume that anything less than O(n^2) is less than a millisecond and therefore, not a caching candidate.
 This is not so in mobile development.
 
-
 This becomes especially relevant when you need to save and load game data which has lots of connected parts - you have to avoid circular references, and you want to minimise the save size, but you need to reconstruct the missing links when loading.
 
 ### Minimize String operations
-
 
 All the tip and tricks you've heard to minimize String operations? Use them!
 
@@ -54,9 +52,8 @@ But apparently, the memory allocation for these tasks is Serious Business.
 
 So whenever possible, take your list and .asSequence() it before activating list operations - this results in huge savings of both time and memory!
 
-The only time you shouldn't be doing this, though, is when you want to cache the specific values for future use -
- sequences will go through the whole process every time you iterate on them, so just .toList() them when you've gotten the final results!
- 
+The only time you shouldn't be doing this, though, is when you want to cache the specific values for future use - sequences will go through the whole process every time you iterate on them, so just .toList() them when you've gotten the final results!
+
 # General tips for making an Open Source game
 
 ## Lower the entry bar - for both programmers and players
@@ -73,9 +70,9 @@ Same think with new players - getting the game up and running should be AS SIMPL
 
 This includes:
 
-- Source-To-Executable automation - I use Travis
-- Play stores and the like
-- Internal game tutorials - your players will NEVER BE SATISFIED with this last point, but at least do what you candidate
+-   Source-To-Executable automation - I use Travis
+-   Play stores and the like
+-   Internal game tutorials - your players will NEVER BE SATISFIED with this last point, but at least do what you candidate
 
 ## Community, Community, Community!
 
@@ -94,12 +91,12 @@ Another think to remember is that there's a larger community around you - the Op
 
 There are lots of people who will play your game only because it's open source, and it also means they don't have as many options.
 
-For example... 
+For example...
 
-- Being the best 4X game means competing with the biggest names out there
-- Being the best 4X game for Linux means many less competitors, but All The Cool Kids (tm) are multiplatforming nowadays so you're still outperformed.
-- Being the best Open Source 4X game means about 5 competitors, and no money is involved either so the average entry is not as polished.
-- Being the best Open Source 4X game for Android... means having so few competitors that it's totally doable.
+-   Being the best 4X game means competing with the biggest names out there
+-   Being the best 4X game for Linux means many less competitors, but All The Cool Kids (tm) are multiplatforming nowadays so you're still outperformed.
+-   Being the best Open Source 4X game means about 5 competitors, and no money is involved either so the average entry is not as polished.
+-   Being the best Open Source 4X game for Android... means having so few competitors that it's totally doable.
 
 ## Everything is marketing.
 
@@ -117,13 +114,13 @@ We went though a number of iterations regarding how to save translations until w
 
 The important parts are:
 
-- Game translation files should be AUTO GENERATED. This allows you to add new objects into the game with impunity,
- knowing that corresponding lines will be auto-added to the translations.
- 
-- Translations for each language should be stored separately - this allows concurrent modification of several independent languages with no risk of conflict
+-   Game translation files should be AUTO GENERATED. This allows you to add new objects into the game with impunity,
+    knowing that corresponding lines will be auto-added to the translations.
 
-- Translations should be PR'd in! This allows other speakers to question or change the proposed translations, and allows you to run tests on your translations.
-If you require a specific format, this is invaluable as it means that bad translations will be rejected at the door.
+-   Translations for each language should be stored separately - this allows concurrent modification of several independent languages with no risk of conflict
+
+-   Translations should be PR'd in! This allows other speakers to question or change the proposed translations, and allows you to run tests on your translations.
+    If you require a specific format, this is invaluable as it means that bad translations will be rejected at the door.
 
 ## Open source problems require open (source?) solutions
 
@@ -143,7 +140,6 @@ We are small and open, so we just allow to download from Github, which lets us u
 
 And unlike the Dropbox usage, which is basically abuse, Github is built for this kind of thing!
 This is exactly the kind of use case they were thinking of to start with!
-
 
 # The Reckoning
 
@@ -176,4 +172,3 @@ And that's basically the loop I've been in for the last hundred versions or so! 
 I don't think I'll ever really continue to finish G&K, I'm DEFINITELY not planning on implementing BNW mechanics which frankly I think are...not great.
 
 That's where I am right now. Kind of done with the game, but considering that I thought that half a year ago and releases are still releasing roughly every week, also kind of not.
-
