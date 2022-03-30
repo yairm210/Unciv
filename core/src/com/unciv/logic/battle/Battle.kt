@@ -77,7 +77,7 @@ object Battle {
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
             val withdraw = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
-                .sumOf{ it.params[0].toInt() }  // If a mod allows multiple withdraw properties, ensure the best is used
+                .maxOfOrNull { it.params[0].toInt() } ?: 0 // If a mod allows multiple withdraw properties, ensure the best is used
             if (withdraw != 0 && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
         }
 
