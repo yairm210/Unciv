@@ -63,15 +63,16 @@ data class KeyCharAndCode(val char: Char, val code: Int) {
         /** Guaranteed to be ignored by [KeyPressDispatcher.set] and never to be generated for an actual event, used as fallback to ensure no action is taken */
         val UNKNOWN = KeyCharAndCode(Input.Keys.UNKNOWN)
 
-        // Kludges because we got crashes: java.lang.NoSuchMethodError: 'int kotlin.CharCodeKt.access$getCode$p(char)'  
-        fun Char.toCode() =
-            try { code } catch (ex: Throwable) { null }
-                ?: try { @Suppress("DEPRECATION") toInt() } catch (ex: Throwable) { null }
-                ?: 0
-        fun Int.makeChar() =
-            try { Char(this) } catch (ex: Throwable) { null }
-                ?: try { toChar() } catch (ex: Throwable) { null }
-                ?: Char.MIN_VALUE
+        // Kludges because we got crashes: java.lang.NoSuchMethodError: 'int kotlin.CharCodeKt.access$getCode$p(char)'
+        //TODO fixed by removing UncivServer from the desktop module - clean up comments and all uses
+        fun Char.toCode() = code
+//            try { code } catch (ex: Throwable) { null }
+//                ?: try { @Suppress("DEPRECATION") toInt() } catch (ex: Throwable) { null }
+//                ?: 0
+        fun Int.makeChar() = Char(this)
+//            try { Char(this) } catch (ex: Throwable) { null }
+//                ?: try { toChar() } catch (ex: Throwable) { null }
+//                ?: Char.MIN_VALUE
 
         /** mini-factory for control codes - case insensitive */
         fun ctrl(letter: Char) = KeyCharAndCode((letter.toCode() and 31).makeChar(),0)
