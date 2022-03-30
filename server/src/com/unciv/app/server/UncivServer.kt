@@ -1,4 +1,4 @@
-package com.unciv.app.desktop
+package com.unciv.app.server
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.default

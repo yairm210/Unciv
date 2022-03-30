@@ -70,9 +70,15 @@ project(":desktop") {
         }
 
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
+    }
 
+}
+
+project(":server") {
+    apply(plugin = "kotlin")
+
+    dependencies {
         // For server-side
-
         "implementation"("io.ktor:ktor-server-core:1.6.8")
         "implementation"("io.ktor:ktor-server-netty:1.6.8")
         "implementation"("ch.qos.logback:logback-classic:1.2.5")
