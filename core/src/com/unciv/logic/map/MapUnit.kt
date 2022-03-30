@@ -332,8 +332,11 @@ class MapUnit {
             .none { it.value != DoubleMovementTerrainTarget.Feature }
         noFilteredDoubleMovementUniques = doubleMovementInTerrain
             .none { it.value == DoubleMovementTerrainTarget.Filter }
-        costToDisembark = getMatchingUniques(UniqueType.ReducedDisembarkCost, checkCivInfoUniques = true)
-            .minOfOrNull { it.params[0].toFloat() }
+        costToDisembark = (getMatchingUniques(UniqueType.ReducedDisembarkCost, checkCivInfoUniques = true)
+            // Deprecated as of 4.0.3
+                + getMatchingUniques(UniqueType.DisembarkCostDeprecated, checkCivInfoUniques = true)
+            //
+            ).minOfOrNull { it.params[0].toFloat() }
         costToEmbark = getMatchingUniques(UniqueType.ReducedEmbarkCost, checkCivInfoUniques = true)
             .minOfOrNull { it.params[0].toFloat() }
 
