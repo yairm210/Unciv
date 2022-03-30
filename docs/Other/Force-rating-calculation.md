@@ -1,4 +1,4 @@
-# Force rating
+# Force rating calculation
 
 Since the question has come up several times, here is a summary of how Force ratings are calculated.
 

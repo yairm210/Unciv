@@ -1,8 +1,10 @@
+# JSON files for mods
+
 These pages are a work in progress. Information they contain may be incomplete.
 
 The JSON files that make up mods can have many different fields, and as not all are used in the base game, this wiki page will contain the full information of each. It will also give a short explanation of the syntax of JSON files.
 
-# Table of Contents
+## Table of Contents
 
 -   [General Overview of JSON files](#general-overview-of-json-files)
 -   [Civilization-related JSON files](../Other/Civilization-related-JSON-files.md)
@@ -32,7 +34,7 @@ The JSON files that make up mods can have many different fields, and as not all 
 -   [Sounds](../Other/Unit-related-JSON-files.md#sounds)
 -   [Civilopedia text](../Other/Miscellaneous-JSON-files.md#civilopedia-text)
 
-# General Overview of JSON files
+## General Overview of JSON files
 
 Resources: [json.org](https://www.json.org/), [ISO standard](https://standards.iso.org/ittf/PubliclyAvailableStandards/c071616_ISO_IEC_21778_2017.zip)
 
@@ -78,7 +80,7 @@ The keys in this example are "science" and "culture", and both have the value "5
 
 In some sense you can see from these types that JSON files themselves are actually a list of objects, each describing a single building, unit or something else.
 
-# Information on JSON files used in the game
+## Information on JSON files used in the game
 
 Many parts of Unciv are moddable, and for each there is a seperate json file. There is a json file for buildings, for units, for promotions units can have, for technologies, etc. The different new buildings or units you define can also have lots of different attributes, though not all are required. Below are tables documenting all the different attributes everything can have. Only the attributes which are noted to be 'required' must be provided. All others have a default value that will be used when it is omitted.
 

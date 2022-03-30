@@ -1,3 +1,5 @@
+# Map-related JSON files
+
 ## Terrains.json
 
 This file lists the base terrains, terrain features and natural wonders that can appear on the map.

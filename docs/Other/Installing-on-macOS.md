@@ -1,3 +1,5 @@
+# Installing on macOS
+
 There is currently two ways to install UnCiv on macOS. It is recommended that you use the first method as the second one is overly complicated and the end result will be the same. Both installation methods require that you have Java 8 installed on your mac.
 
 ## Installing using JAR

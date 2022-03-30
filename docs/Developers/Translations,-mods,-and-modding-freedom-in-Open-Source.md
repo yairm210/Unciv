@@ -1,10 +1,12 @@
+# Translations, mods, and modding freedom in Open Source
+
 Unciv is, at its core, a remake of Civ V, meaning mechanics-wise there's almost by definition not much place for innovation.
 In terms of UI, there's nothing here that hasn't been done dozens of times, with far greater polish.
 However, there is one area where Unciv is groundbreaking: in its accessibility of translations, the possibility space of its mods, and the relationship between them.
 
-# Translations
+## Translations
 
-## The translation process
+### The translation process
 
 So let's start with translation. Surely this is a solved problem, right? Source text + language = translated text, and this information needs to be in a file so the game can read it. What makes us different from, for example, Firaxis?
 
@@ -29,7 +31,7 @@ Here are some ways that we managed to go wrong in the past:
 
 The format we decided to go for is one file per language, delimited by " = " for visual separation, in a .properties file. Lines starting in # are considered comments, so we can add comments for translators.
 
-## Building the translation files
+### Building the translation files
 
 As stated, Unciv releases versions semiweekly, and very often these changes include new objects or new UI elements. How do we keep all translation files up to date?
 
@@ -40,7 +42,7 @@ But on the other hand, since for each line that we add we already know if it's t
 
 Since there are UI texts that are not part of any specific object (like "Start new game"), we have a separate template.properties file for texts to translate that are not in the json files. Unlike adding objects, where the developer doesn't need to address the translation files at all since it's all linked, when adding UI elements with new texts devs need to remember to add the texts to template.properties file.
 
-## Translation placeholders
+### Translation placeholders
 
 This is all well and good for specific text-to-text translations, but what about translating "A Temple has been built in Rome"? The same template could potentially be any building name, or any city name!
 
@@ -55,15 +57,15 @@ To translate a text like "[Temple] has been built in [Rome]", therefore, we need
 -   Map placeholder names to input text (construction = Temple, cityName = Rome)
 -   Replace placeholders in translation with TRANSLATED input text (in `[cityName] ha costruito [construction]`, replace "[cityName]" with translation of "Rome", and "[construction]" with translation of "Temple")
 
-## Translating mod data
+### Translating mod data
 
 The translation generation reads information from "a ruleset", i.e. the set of jsons defining the game's objects.
 Every mod is also a ruleset, either replacing or adding to the base ruleset defined in the game.
 This means that the same translation generation that we do for the base game can also be applied to mods, and so each modder can decide (from within the game) to generate translation files for his mod, and since mods are uploaded to Github to be widely available as part of the mod release methodology, translators will be able to translate those files the exact same way that they translate Unciv's base ruleset.
 
-# Uniques
+## Uniques
 
-## Moddable unique effects
+### Moddable unique effects
 
 Every object in Unciv can include "uniques" - a list of strings, each granting a unique effect that is not applicable for every object of its type.
 
@@ -77,7 +79,7 @@ Since the translation template is the same as the unique template, these uniques
 We do have a slight problem, though - since translation texts come directly from the json files, and the json files have "Requires a [Library] in all cities", how do we tell the translators not to directly translate "Library" but the take the parameter name verbatim?
 Well, 95% of translation parameters fit nicely into a certain type - units, buildings, techs, terrains etc. So we can search for an object with than name, and since we find a Library building, we can put "Requires a [buildingName] in all cities = " as our translation line.
 
-## Filters
+### Filters
 
 As time went on, we noticed that many of our "uniques" weren't so unique after all. Many were the same but with slightly different conditions. One affects all cities, one only coastal cities, and one only the city the building is built in. One affects Mounted units, one affects wounded units, one affects all water units, etc. We started compiling these conditions into "filters", which limited the number of uniques while expanding their range considerably.
 
@@ -90,7 +92,7 @@ cityFilter can accept 'in this city', 'in all cities', 'in capital', 'in coastal
 
 There are also filters for units, all acceptable values are documented [here](../Modders/unique%20parameters).
 
-## Unique management with Enums
+### Unique management with Enums
 
 The further along we go, the more generic the uniques become, and the more of them there are.
 Older uniques become new ones, by being merged or made more generic, and the older ones are deprecated. Deprecation notices are put on Discord, but a one-time message is easy to miss, and if you come back after a while you don't know what's changed.
@@ -109,7 +111,7 @@ The "autodetection" of parameter types for translations can also be fed from her
 
 Deprecated values can be detected due to the `@Deprecated` annotation, and can be displayed to the modders when loading the mod, together with the correct replacement.
 
-## Conditionals
+### Conditionals
 
 Beyond the existing filters for units, buildings, tiles etc, there are some conditions that are global. For example, uniques that take effect when the empire is happy; when a tech has been researched; when the empire is at war; etc.
 Rather than being 'build in' to specific uniques, these conditions can be seen as extensions of existing uniques and thus globally relevant.
@@ -120,7 +122,7 @@ B. Turns the conditional into an extra piece that can be added onto any other un
 
 Conditionals have a lot of nuance, especially regarding translation and ordering, so work in that field is more gradual.
 
-## What's next?
+### What's next?
 
 We have yet to fully map all existing uniques and convert all textual references in the code to Enum usages, and have yet to extract all conditionals from their uniques.
 

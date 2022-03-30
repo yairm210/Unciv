@@ -1,4 +1,6 @@
-# Icon Credits
+# Credits
+
+## Icon Credits
 
 Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) and licensed by Creative Commons 3.0
 
@@ -14,7 +16,7 @@ Tile icons for the "ThorfMaps tileset belong to Thorfinn Tait and are licensed u
 
 Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
-## Stat icons
+### Stat icons
 
 -   [Gear](https://thenounproject.com/term/gear/29368) by Alex Bickov for Production
 -   [Apple](https://thenounproject.com/term/apple/1139396) by Pedro Gonçalves for Food
@@ -26,9 +28,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [User](https://thenounproject.com/term/user/38217) by Stéphanie Rusch for Population
 -   [Unhappy](https://thenounproject.com/term/unhappy/116793) By Daryl Vandermont for Malcontent
 
-## Units
+### Units
 
-### Ancient Era
+#### Ancient Era
 
 -   [Hammer](https://thenounproject.com/search/?q=Hammer&i=667666) By Hea Poh Lin for Worker
 -   [Flag](https://thenounproject.com/search/?q=Flag&i=50114) By Melvin Poppelaars for Settler
@@ -57,7 +59,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger
 -   [warrior](https://thenounproject.com/term/warrior/988830/) By DinosoftLab for Pictish Warrior (combined with Shamrock, see Promotions)
 
-### Classical Era
+#### Classical Era
 
 -   [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
 -   [Unloaded Crossbow](https://thenounproject.com/term/unloaded-crossbow/815992/) By Hamish as Ballista
@@ -70,7 +72,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Elephant](https://thenounproject.com/term/elephant/1302749) By Angriawan Ditya Zulkarnain for African Forest Elephant. The original work has been modified.
 -   [Horse](https://thenounproject.com/search/?q=horse&i=3270758) By Ranah Pixel Studio for Cataphract
 
-### Medieval Era
+#### Medieval Era
 
 -   [Ship](https://thenounproject.com/term/ship/1998589/) By Vanisha for Galleass
 -   [Crossbow](https://thenounproject.com/term/crossbow/965389/) By Creaticca Creative Agency for Crossbowman
@@ -82,7 +84,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Halberd](https://thenounproject.com/naripuru/uploads/?i=440128) parkjisun for Landsknecht
 -   [Knight](https://thenounproject.com/search/?q=Knight&i=30912) By Tyler Glaude
 
-### Renaissance Era
+#### Renaissance Era
 
 -   [Portuguese Caravel](https://thenounproject.com/icon/portuguese-caravel-1626301/) by Zack McCune for Caravel
 -   [Cannon](https://thenounproject.com/search/?q=Cannon&i=1618747) By Orin Zuu
@@ -98,7 +100,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Sword](https://thenounproject.com/search/?q=saber&i=1174742) By Daniela Baptista for Sipahi
 -   [Helmet](https://thenounproject.com/term/helmet/1514355/) by Robert Bjurshagen for Hakkapeliitta
 
-### Industrial Era
+#### Industrial Era
 
 -   [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
 -   [Bayonet](https://thenounproject.com/term/bayonet/3101681/) By food lover for Carolean
@@ -109,7 +111,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 -   [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
-### Modern Era
+#### Modern Era
 
 -   [Submarine](https://thenounproject.com/search/?q=submarine&i=589519) By Hea Poh Lin, MY
 -   [Helmet](https://thenounproject.com/term/helmet/25216/) By Daniel Turner for Great War Infantry
@@ -122,7 +124,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
 -   [Warship](https://thenounproject.com/term/warship/1597474/) By zidney for Destroyer
 
-### Atomic Era
+#### Atomic Era
 
 -   [Water Gun](https://thenounproject.com/term/water-gun/2121571) by ProSymbols for Marine
 -   [Parachute](https://thenounproject.com/term/parachute/2025018) by Nociconist for Paratrooper
@@ -133,7 +135,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Military vehicle](https://thenounproject.com/search/?q=Army%20rocket&i=23115) By Luke Anthony Firth For Rocket Artillery
 -   [Missile](https://thenounproject.com/term/missile/2311325/) By Eucalyp for Mobile SAM
 
-### Information Era
+#### Information Era
 
 -   [Submarine](https://www.flaticon.com/free-icon/submarine_1534201) by Freepik adapted for Nuclear Submarine
 -   [APC](https://thenounproject.com/search/?q=apc&i=9965) By Luke Anthony Firth for Mechanized Infantry
@@ -146,7 +148,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Engine](https://thenounproject.com/term/engine/1877958/) By Andre for SS Engine
 -   [Chamber](https://thenounproject.com/term/chamber/1242689/) By IYIKON for SS Stasis Chamber
 
-### All Eras
+#### All Eras
 
 -   [Pallet](https://thenounproject.com/search/?q=Pallet&i=6862) By James Keuning for Great Artist
 -   [Gear](https://thenounproject.com/search/?q=Gear&i=17369) By Melvin Salas for Great Engineer
@@ -156,7 +158,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Religion](https://thenounproject.com/search/?q=preach&i=53064) by Bruno Gätjens González adapted for Missionary
 -   [invisibility cloak ](https://thenounproject.com/term/invisibility-cloak/1419648/) by Locad for Inquisitor
 
-## Resources
+### Resources
 
 -   [Saffron](https://thenounproject.com/term/saffron/1576606/) By parkjisun for Dye
 -   [Can](https://thenounproject.com/term/can/708971/) By Nick Bluth for Aluminum
@@ -188,7 +190,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Truffle](https://thenounproject.com/search/?q=Truffles&i=1576609) By parkjisun
 -   [Salt](https://thenounproject.com/search/?q=salt&i=3614173) By HAMEL KHALED, DZ
 
-## Improvements
+### Improvements
 
 -   [Woodcutting axe](https://thenounproject.com/term/woodcutting-axe/1060560/) By Chanut is Industries for Lumber Mill
 -   [Monument](https://thenounproject.com/term/monument/1175928/) By Setyo Ari Wibowo for Landmark
@@ -211,9 +213,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Village](https://thenounproject.com/search/?q=city+center&i=476338) by Andrey Vasiliev
 -   [pumping station](https://thenounproject.com/search/?q=dike&i=555172) by Peter van Driel for Polder
 
-## Buildings
+### Buildings
 
-### Ancient Era
+#### Ancient Era
 
 -   [Storehouse](https://thenounproject.com/term/storehouse/966786/) By Pedro Santos for Granary
 -   [Shinto Gate](https://thenounproject.com/search/?q=shrine&i=253325) by Alexander Skowalsky for Shrine
@@ -233,7 +235,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   Icon for Statue of Zeus made by [JackRainy](https://github.com/JackRainy), based on [King](https://thenounproject.com/eucalyp/collection/game-elements-glyph1/?i=3155251) By Eucalyp
 -   [temple](https://thenounproject.com/search/?q=temple&i=28256) By Fabio Meroni for Temple of Artemis
 
-### Classical Era
+#### Classical Era
 
 -   [Lighthouse](https://thenounproject.com/search/?q=lighthouse&i=866966) By Dolly Holmes
 -   [Lighthouse](https://thenounproject.com/term/lighthouse/583069/) By Hea Poh Lin for The Great Lighthouse
@@ -255,7 +257,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Judge](https://thenounproject.com/search/?q=judge&i=1076388) By Krisztián Mátyás for Courthouse
 -   [Petra](https://thenounproject.com/search/?q=petra&i=2855893) By Ranah Pixel Studio for Petra
 
-### Medieval Era
+#### Medieval Era
 
 -   [College](https://thenounproject.com/term/college/129978/) By Alexander Skowalsky for University
 -   [Wat Arun Ratchawararam Ratchawaramahawihan](https://thenounproject.com/term/wat-arun-ratchawararam-ratchawaramahawihan/320664/) By József Balázs-Hegedüs for Wat
@@ -278,7 +280,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Garden](https://thenounproject.com/search/?q=garden&i=1478380) By Bharat
 -   [Mosque](https://thenounproject.com/search/?q=mosque&i=2458353) by yanti for Great Mosque of Djenne
 
-### Renaissance Era
+#### Renaissance Era
 
 -   [Museum](https://thenounproject.com/term/museum/803560/) by zidney
 -   [Hermitage](https://thenounproject.com/term/hermitage/133969/) By Yuri Mamaev
@@ -300,7 +302,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
 -   [Ceilidh](https://thenounproject.com/term/ceilidh/403422/) By P Thanga Vignesh for Ceilidh Hall
 
-### Industrial Era
+#### Industrial Era
 
 -   [Books](https://thenounproject.com/term/books/1767500/) By Minh Do for Public School
 -   [Hospital](https://thenounproject.com/term/hospital/1658509/) By Adrien Coquet
@@ -308,7 +310,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Military](https://thenounproject.com/term/military/1857519/) By myiconfinder for Military Academy
 -   [Factory](https://thenounproject.com/term/factory/545906/) By icon 54
 
-### Modern Era
+#### Modern Era
 
 -   [Stadium](https://thenounproject.com/term/stadium/13872/) By Karuna Lalvani
 -   [Signal Tower](https://thenounproject.com/term/signal-tower/1547758/) By Nociconist for Broadcast Tower
@@ -320,7 +322,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Neuschwanstein](https://thenounproject.com/search/?q=Neuschwanstein&i=2107683) By Vectors Market
 -   [Big Ben](https://thenounproject.com/search/?q=Big%20Ben&i=443690) By Ben Davis, RO
 
-### Atomic Era
+#### Atomic Era
 
 -   [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall for Medical Lab
 -   [Pentagon](https://thenounproject.com/search/?q=the%20pentagon&i=1788323) By Maxim Kulikov
@@ -332,7 +334,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
 -   [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
 
-### Information Era
+#### Information Era
 
 -   [CN Tower Toronto](https://thenounproject.com/search/?q=cn%20tower&i=807678) By mikicon for CN tower
 -   [War Shelter](https://www.flaticon.com/free-icon/war-shelter_978661) by [Frepik](www.freepik.com) for Bomb Shelter
@@ -340,7 +342,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
 -   [United Nations](https://thenounproject.com/search/?q=united+nations&i=3104698) by Imam for United Nations
 
-### All Era's
+#### All Era's
 
 -   [Illuminati](https://thenounproject.com/term/illuminati/1617812) by emilegraphics for the Utopia Project
 -   [Christian Church](https://thenounproject.com/term/christian-church/1174183/) by Andrejs Kirma for Monastery
@@ -348,9 +350,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Mosque](https://thenounproject.com/search/?q=mosque&i=1744106) by yanti for Mosque
 -   [Pagoda](https://thenounproject.com/search/?q=pagoda&i=446665) by Xinh Studio for Pagoda
 
-## Social Policies
+### Social Policies
 
-### Tradition
+#### Tradition
 
 -   [coat of arms](https://thenounproject.com/term/coat-of-arms/366462/) By Martina Krasnayova for Oligarchy
 -   [Apple](https://thenounproject.com/term/apple/1916523/) By EnQiu for Landed Elite
@@ -358,7 +360,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Pyramid](https://thenounproject.com/term/pyramid/175066/) By Creative Stall for Aristocracy
 -   [Gavel](https://thenounproject.com/term/gavel/225541/) By Rflor for Legalism
 
-### Liberty
+#### Liberty
 
 -   [People](https://thenounproject.com/term/people/199814/) By Elizabeth Lopez for Citizenship
 -   [Assembly](https://thenounproject.com/term/assembly/468455/) By Noël Rasendrason for Republic
@@ -366,7 +368,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [People](https://thenounproject.com/term/people/1355818/) By Wilson Joseph for Representation
 -   [Torch](https://thenounproject.com/term/torch/589999/) By Hea Poh Lin for Collective Rule
 
-### Honor
+#### Honor
 
 -   [Sword](https://thenounproject.com/term/sword/5111/) By dsathiyaraj for Military Tradition
 -   [Castle](https://thenounproject.com/term/castle/55045/) By Gabriele Malaspina for Military Caste
@@ -374,14 +376,14 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Shield](https://thenounproject.com/term/shield/874633/) By Kimmi Studio for Discipline
 -   [Spartan Helmet](https://thenounproject.com/term/spartan-helmet/1732615/) By Joni Ramadhan for Warrior Code
 
-### Piety
+#### Piety
 
 -   [Protestantism](https://thenounproject.com/term/protestantism/1524922/) By Evgeni Moryakov for Reformation
 -   [Temple](https://thenounproject.com/term/temple/95523/) By N.K.Narasimhan for Theocracy
 -   [Religion](https://thenounproject.com/term/religion/1307794/) By Ben Avery for Free Religion
 -   [Flame](https://thenounproject.com/term/flame/633228/) By Ian Shoobridge for Mandate Of Heaven
 
-### Patronage
+#### Patronage
 
 -   Adapted from [Gold](https://thenounproject.com/term/gold/842351) by Aneeque Ahmed for Philantropy
 -   [Ornament](https://thenounproject.com/term/ornament/3945298) by Tommy Suhartomo for Aesthetics
@@ -389,7 +391,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [agreement](https://thenounproject.com/term/agreement/1828960) by RomanP for Cultural Diplomacy
 -   [professor](https://thenounproject.com/term/professor/232239) by Andrew Doane for Educated Elite
 
-### Commerce
+#### Commerce
 
 -   [Trade](https://thenounproject.com/term/trade/686718/) By Gregor Cresnar for Trade Unions
 -   [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet for Protectionism
@@ -398,7 +400,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [captain](https://thenounproject.com/icon/captain-2379135/) by taamir468
     and [Wheel](https://thenounproject.com/icon/wheel-2526426/) by Andrejs Kirma for Merchant Navy
 
-### Rationalism
+#### Rationalism
 
 -   [Science](https://thenounproject.com/term/science/1788338/) By Three Six Five for Scientific Revolution
 -   [Graph](https://thenounproject.com/term/graph/1329095/) By Ben Davis for Secularism
@@ -406,7 +408,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Dialogue](https://thenounproject.com/term/dialogue/1867557/) By ProSymbols for Free Thought
 -   [Logic](https://thenounproject.com/term/logic/718608/) By Arthur Shlain for Humanism
 
-### Freedom
+#### Freedom
 
 -   [Social Network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu for Civil Society
 -   [Gender Equality](https://thenounproject.com/term/gender-equality/577561/) By corpus delicti for Universal Suffrage
@@ -414,7 +416,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Voting](https://thenounproject.com/term/voting/981735/) By Nikita Kozin for Democracy
 -   [Mic](https://thenounproject.com/term/mic/1666564/) By Aybige for Free Speech
 
-### Autocracy
+#### Autocracy
 
 -   [War](https://thenounproject.com/term/war/1643541/) By Abdul Karim for Total War
 -   [Military Grade](https://thenounproject.com/term/military-grade/578687/) By Ben Davis for Militarism
@@ -422,7 +424,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Newspaper](https://thenounproject.com/term/newspaper/1207487/) By Trishul for Populism
 -   [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix for Police State
 
-### Order
+#### Order
 
 -   Adapted from [Plan](https://thenounproject.com/term/plan/2973572) by Cattaleeya Thongsriphong for Planned Economy
 -   [Flag](https://thenounproject.com/term/flag/2712405) by Muhammad Tajudin for Nationalism
@@ -430,9 +432,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Hammer and Sickle](https://thenounproject.com/term/hammer-and-sickle/1367670) by Dmitry Baranovskiy for Communism
 -   [United](https://thenounproject.com/term/united/3433531) by Izwar Muis for United Front
 
-## Technologies
+### Technologies
 
-### Ancient
+#### Ancient
 
 -   [Agriculture](https://thenounproject.com/term/agriculture/4221/) By OCHA Visual Information Unit
 -   [Jug](https://thenounproject.com/term/jug/869999/) By Vladimir Belochkin for Pottery
@@ -446,7 +448,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Bricks](https://thenounproject.com/term/bricks/1018659/) By Vaibhav Radhakrishnan for Construction
 -   [Mallet](https://thenounproject.com/term/mallet/1306669/) By Ben Avery for Bronze Working
 
-### Classical
+#### Classical
 
 -   [Telescope](https://thenounproject.com/term/telescope/1932888/) for Optics
 -   [Horse Riding](https://thenounproject.com/term/horse-riding/583093/) By Hea Poh Lin for Horseback Riding
@@ -457,7 +459,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Engineering Blueprint](https://thenounproject.com/term/engineering-blueprint/1588543/) By Sachin Modgekar for Engineering
 -   [Metalworking](https://thenounproject.com/term/metalworking/1561383/) By Symbolon for Iron Working
 
-### Medieval
+#### Medieval
 
 -   [Judaism](https://thenounproject.com/term/judaism/324145/) By Ben Davis for Theology
 -   [Institution](https://thenounproject.com/term/institution/260586/) By Luis Prado for Civil Service
@@ -471,7 +473,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Lever](https://thenounproject.com/term/lever/4927/) By Jakob Ukrop for Physics
 -   [Sword](https://thenounproject.com/term/sword/1365080/) By Jonathan P Lambert for Steel
 
-### Renaissance
+#### Renaissance
 
 -   [Telescope](https://thenounproject.com/term/telescope/1976706/) By ProSymbols for Astronomy
 -   [Sound waves](https://thenounproject.com/term/sound-waves/792661/) By Makarenko Andrey for Acoustics
@@ -485,7 +487,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Metal Block](https://thenounproject.com/term/metal-bock/1518464/) By Creaticca Creative Agency for Metallurgy
 -   [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall
 
-### Industrial
+#### Industrial
 
 -   [Science](https://thenounproject.com/term/science/1901524/) By Dinosoft Labs for Scientific Theory
 -   [Factory](https://thenounproject.com/term/factory/26212/) By Lil Squid for Industrialization
@@ -497,7 +499,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Turbines](https://thenounproject.com/term/turbine/86212/) By Leonardo Schneider for Steam Power
 -   [Dynamite](https://thenounproject.com/term/dynamite/610652/) By Simon Martin
 
-### Modern
+#### Modern
 
 -   [Gears](https://thenounproject.com/term/gears/1484672/) By Aiden Icons for Replaceable Parts
 -   [Radio](https://thenounproject.com/term/radio/124575/) By Arthur Shlain
@@ -509,7 +511,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Fridge](https://thenounproject.com/search/?q=refridgerator&i=1188873) By b farias for Refrigeration
 -   [telegraph](https://thenounproject.com/icon/telegraph-22058/) by Luke Anthony Firth for Telegraph\*
 
-### Atomic
+#### Atomic
 
 -   [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals
 -   [Satellite Dish](https://thenounproject.com/search/?q=satellite%20dish&i=2054441) By Vectors Market for Radar
@@ -518,7 +520,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov for Rocketry
 -   [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry for Computers
 
-### Information
+#### Information
 
 -   [telecommunications](https://thenounproject.com/search/?q=telecommunications&i=3191260) by Wichai Wi for Telcommunications
 -   [Tactics](https://thenounproject.com/search/?q=tactics&i=2290123) By Grafix Point for Mobile Tactics
@@ -533,11 +535,11 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Electronics](https://thenounproject.com/search/?q=Electronics&i=1565843) By Cuby Design
 -   [Radar](https://thenounproject.com/term/radar/1546196/) By CINDYFLA, ID for Stealth
 
-### Future
+#### Future
 
 -   [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech
 
-## Terrain
+### Terrain
 
 -   [Hills](https://thenounproject.com/term/hills/540185/) By Juraj Sedlák
 -   [Mountains](https://thenounproject.com/term/mountains/2062034/) By icon 54
@@ -550,7 +552,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Island](https://thenounproject.com/search/?q=island&i=1546376) By Chanut is Industries for Atoll
 -   [Iceberg](https://thenounproject.com/search/?q=iceberg&i=44820) By Jaime Carrion for Ice
 
-## Nations
+### Nations
 
 -   [Eye of Horus](https://thenounproject.com/search/?q=eye%20of%20horus&i=92471) By Lilit Kalachyan for Egypt
 -   [Russia](https://thenounproject.com/search/?q=russia&i=64137) By Eugen Belyakoff
@@ -587,7 +589,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
     -   [pennant](https://thenounproject.com/term/pennant/194797/) by Sara Jeffries
 -   [Maya civilization](https://thenounproject.com/term/maya-civilization/1715786/) by Olena Panasovska for The Maya
 
-## Promotions
+### Promotions
 
 -   [Sight](https://thenounproject.com/search/?q=sight&i=2631027) By Jejen Juliansyah Nur Agung for Scouting
 -   [skill bow rain arrow](https://thenounproject.com/search/?q=rain%20of%20arrows&i=2360192) by Maxicons for Barrage
@@ -621,7 +623,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Shamrock](https://thenounproject.com/term/shamrock/358507/) By P Thanga Vignesh for Pictish Courage
 -   [home sweet home](https://thenounproject.com/term/home-sweet-home/3817166/) By Silviu Ojog for Home Sweet Home
 
-## Religions
+### Religions
 
 -   [Lightning Bolt](https://thenounproject.com/search/?q=lightning+bolt&i=154820) by sian huxtable for Pantheon
 -   [Christianity](https://thenounproject.com/search/?q=christianity&i=181) by Public Domain Nouns for Christianity
@@ -640,7 +642,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Hero](https://thenounproject.com/term/preacher/195465/) by Andrew J. Young for Founder
 -   [yell](https://thenounproject.com/term/yell/4159889/) by Adrien Coquet for Enhancer
 
-## Others
+### Others
 
 -   [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige
 -   [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
@@ -685,7 +687,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Party](https://thenounproject.com/icon/party-2955155/) by Lars Meiertoberens as additional WLKT decoration
 -   [turn right](https://thenounproject.com/icon/turn-right-1920867/) by Alice Design for Resource Overview
 
-## Main menu
+### Main menu
 
 -   [Lightning](https://thenounproject.com/search/?q=lightning&i=102300) by Rohith M S for Quickstart
 -   [Loading](https://thenounproject.com/search/?q=load&i=208033) by Universal Icons for Load Game
@@ -695,7 +697,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 -   [Options](https://thenounproject.com/search/?q=options&i=866090) By Thengakola
 -   [Package](https://thenounproject.com/search/?q=package&i=1886048) by shashank singh
 
-# Sound credits
+## Sound credits
 
 Sounds are from FreeSound.org unless otherwise noted and are either Creative Commons or Public Domain unless otherwise noted
 
@@ -741,7 +743,7 @@ Sounds are from FreeSound.org unless otherwise noted and are either Creative Com
 -   Excerpt from [Missile Strike](https://freesound.org/people/BaDoink/sounds/570690/) by BaDoink for guided missile
 -   Excerpt from [FireBurning_v2.wav](https://freesound.org/people/pcaeldries/sounds/30322/) by pcaeldries for 'remove heresy' action of inquisitor ([License](http://creativecommons.org/licenses/by/3.0/))
 
-# Music
+## Music
 
 The following music is from https://filmmusic.io
 "[Thatched Villagers](https://incompetech.filmmusic.io/song/4481-thatched-villagers)" by Kevin MacLeod (https://incompetech.com)
