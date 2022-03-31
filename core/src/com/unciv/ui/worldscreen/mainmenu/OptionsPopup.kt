@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Net
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -18,7 +17,6 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.BaseRuleset
-import com.unciv.models.metadata.checkMultiplayerServerWithPort
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.RulesetError
 import com.unciv.models.ruleset.Ruleset.RulesetErrorSeverity
@@ -269,7 +267,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
-        multiplayerServerTextField.width = screen.stage.width / 2
         val serverIpTable = Table()
 
         serverIpTable.add("Server address".toLabel().onClick { 
@@ -280,7 +277,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
-        serverIpTable.add(multiplayerServerTextField).minWidth(150f).growX()
+        serverIpTable.add(multiplayerServerTextField).minWidth(180f).growX()
         add(serverIpTable).fillX().row()
 
         add("Reset to Dropbox".toTextButton().onClick {
@@ -322,7 +319,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             with(URL(url).openConnection() as HttpURLConnection) {
                 requestMethod = method  // default is GET
 
-                doOutput = true
+                if (method != Net.HttpMethods.GET) doOutput = true
 
                 try {
                     if (content.isNotEmpty()) {

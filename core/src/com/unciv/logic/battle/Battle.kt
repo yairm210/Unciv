@@ -76,9 +76,10 @@ object Battle {
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
-            val withdraw = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
-                .sumOf{ it.params[0].toInt() }  // If a mod allows multiple withdraw properties, ensure the best is used
-            if (withdraw != 0 && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
+            val withdrawUniques = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
+            val baseWithdrawChance = 100-withdrawUniques.fold(100) { probability, unique -> probability * (100-unique.params[0].toInt()) }
+            // If a mod allows multiple withdraw properties, they stack multiplicatively
+            if (baseWithdrawChance != 0 && doWithdrawFromMeleeAbility(attacker, defender, baseWithdrawChance)) return
         }
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
@@ -820,6 +821,7 @@ object Battle {
     }
 
     private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, baseWithdrawChance: Int): Boolean {
+        if (baseWithdrawChance == 0) return false
         // Some notes...
         // unit.getUniques() is a union of BaseUnit uniques and Promotion effects.
         // according to some strategy guide the Slinger's withdraw ability is inherited on upgrade,
