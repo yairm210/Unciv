@@ -1010,6 +1010,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Eliminates combat penalty for attacking across a coast"
 	Applicable to: Unit
 
+??? example  "May attack when embarked"
+	Applicable to: Unit
+
 ??? example  "No Sight"
 	Applicable to: Unit
 
