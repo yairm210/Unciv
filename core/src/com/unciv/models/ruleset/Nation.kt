@@ -78,9 +78,6 @@ class Nation : RulesetObject() {
     @Transient
     var ignoreHillMovementCost = false
 
-    @Transient
-    var disembarkCosts1 = false
-
     fun setTransients() {
         outerColorObject = colorFromRGB(outerColor)
 
@@ -89,7 +86,6 @@ class Nation : RulesetObject() {
 
         forestsAndJunglesAreRoads = uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
         ignoreHillMovementCost = uniques.contains("Units ignore terrain costs when moving into any tile with Hills")
-        disembarkCosts1 = uniques.contains("Units pay only 1 movement point to disembark")
     }
 
     var cities: ArrayList<String> = arrayListOf()

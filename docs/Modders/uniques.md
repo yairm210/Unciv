@@ -751,6 +751,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
+??? example  "[amount] Movement point cost to disembark"
+	Example: "[20] Movement point cost to disembark"
+
+	Applicable to: Global, Unit
+
+??? example  "[amount] Movement point cost to embark"
+	Example: "[20] Movement point cost to embark"
+
+	Applicable to: Global, Unit
+
 ??? example  "This Unit upgrades for free"
 	Applicable to: Global
 
