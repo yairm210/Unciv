@@ -10,12 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.unciv.MainMenuScreen
 import com.unciv.CrashHandlingStage
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
 import com.unciv.ui.tutorials.TutorialController
-import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 
 abstract class BaseScreen : Screen {
@@ -125,26 +123,6 @@ abstract class BaseScreen : Screen {
     fun isNarrowerThan4to3() = stage.viewport.screenHeight * 4 > stage.viewport.screenWidth * 3
 
     fun openOptionsPopup() {
-        val limitOrientationsHelper = game.limitOrientationsHelper
-        if (limitOrientationsHelper == null || !game.settings.allowAndroidPortrait || !isCrampedPortrait()) {
-            OptionsPopup(this).open(force = true)
-            return
-        }
-        if (!(this is MainMenuScreen || this is WorldScreen)) {
-            throw IllegalArgumentException("openOptionsPopup called on wrong derivative class")
-        }
-        limitOrientationsHelper.allowPortrait(false)
-        crashHandlingThread(name="WaitForRotation") {
-            var waited = 0
-            while (true) {
-                val newScreen = (UncivGame.Current.screen as? BaseScreen)
-                if (waited >= 10000 || newScreen!=null && !newScreen.isPortrait() ) {
-                    postCrashHandlingRunnable { OptionsPopup(newScreen ?: this).open(true) }
-                    break
-                }
-                Thread.sleep(200)
-                waited += 200
-            }
-        }
+        OptionsPopup(this).open(force = true)
     }
 }
