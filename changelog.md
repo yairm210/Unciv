@@ -4,7 +4,7 @@ Changed server connection to URL-based to allow connection to uncivserver.xyz
 
 By xlenstra:
 - Added a unique for attacking when embarked 
-- Typed denmarks unique and generalized it 
+- Generalized Denmark's unique 
 
 By HaneulCheong:
 - Improved city name generation 

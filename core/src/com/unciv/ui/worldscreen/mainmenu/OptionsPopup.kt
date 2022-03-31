@@ -264,7 +264,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         else "https://..."
         val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
-        multiplayerServerTextField.width = screen.stage.width / 2
         val serverIpTable = Table()
 
         serverIpTable.add("Server address".toLabel().onClick { 
@@ -275,7 +274,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
-        serverIpTable.add(multiplayerServerTextField)
+        serverIpTable.add(multiplayerServerTextField).width(screen.stage.width / 2)
         add(serverIpTable).row()
 
         add("Reset to Dropbox".toTextButton().onClick {
@@ -316,7 +315,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             with(URL(url).openConnection() as HttpURLConnection) {
                 requestMethod = method  // default is GET
 
-                doOutput = true
+                if (method != Net.HttpMethods.GET) doOutput = true
 
                 try {
                     if (content.isNotEmpty()) {
