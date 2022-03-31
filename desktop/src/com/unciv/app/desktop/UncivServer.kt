@@ -26,7 +26,7 @@ private class UncivServerRunner : CliktCommand() {
         "-p", "-port",
         envvar = "UncivServerPort",
         help = "Server port"
-    ).int().restrictTo(1024..49151).default(8080)
+    ).int().restrictTo(1024..49151).default(80)
 
     private val folder by option(
         "-f", "-folder",
