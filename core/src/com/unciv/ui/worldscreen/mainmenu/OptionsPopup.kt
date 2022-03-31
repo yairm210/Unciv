@@ -264,19 +264,18 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val connectionToServerButton = "Check connection to server".toTextButton()
 
-        val ipAddress = getIpAddress()
-        add("{Current IP address}: $ipAddress".toTextButton().onClick {
-            Gdx.app.clipboard.contents = ipAddress.toString()
-        }).row()
-
-        val multiplayerServerTextField = TextField(settings.multiplayerServer, BaseScreen.skin)
+        val textToShowForMultiplayerAddress = 
+            if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
+        else "https://..."
+        val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
+        multiplayerServerTextField.width = screen.stage.width / 2
         val serverIpTable = Table()
 
-        serverIpTable.add("Server's IP address".toLabel().onClick {
+        serverIpTable.add("Server address".toLabel().onClick { 
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).padRight(10f)
-        multiplayerServerTextField.onChange {
+        }).row()
+        multiplayerServerTextField.onChange { 
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
@@ -348,9 +347,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }
 
     }
-
-    private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
-        SimpleHttp.sendGetRequest("http://${settings.multiplayerServer.checkMultiplayerServerWithPort()}/isalive", action)
+    
+    fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+        SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
     }
 
     private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
