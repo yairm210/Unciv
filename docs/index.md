@@ -1,4 +1,4 @@
-Welcome to the Unciv wiki!
+# Welcome to the Unciv wiki!
 
 If you're a developer, you'll probably want to start at the [Getting Started](Developers/Building-Locally.md) page!
 

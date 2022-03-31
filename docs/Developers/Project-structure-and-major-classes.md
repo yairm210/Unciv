@@ -22,22 +22,22 @@ So yes, you can - for instance - get the center tile of a city, a TileInfo, dire
 
 The Game State:
 
-* GameInfo
-    * CivilizationInfo
-        * CityInfo
-    * TileMap
-        * TileInfo
-            * MapUnit
-    * RuleSet (unique in that it is not part of the game state)
+-   GameInfo
+    -   CivilizationInfo
+        -   CityInfo
+    -   TileMap
+        -   TileInfo
+            -   MapUnit
+    -   RuleSet (unique in that it is not part of the game state)
 
 The UI:
 
-* MainMenuScreen
-* NewGameScreen
-* WorldScreen
-* CityScreen
-* MapEditorScreen
-* Picker Screens - TechPickerScreen, PolicyPickerScreen, ImprovementPickerScreen, PromotionPickerScreen
+-   MainMenuScreen
+-   NewGameScreen
+-   WorldScreen
+-   CityScreen
+-   MapEditorScreen
+-   Picker Screens - TechPickerScreen, PolicyPickerScreen, ImprovementPickerScreen, PromotionPickerScreen
 
 ## Game State
 
@@ -45,14 +45,14 @@ The UI:
 
 First off, let's clarify: When we say "The Game", we mean the *state* of the game (what turn it is, who the players are, what each one has etc) and not the *UI* of the game.
 
-That is, The Game is the *currently played* game, not *Unciv*.
+That is, The Game is the *currently playe*_ game, not *Unciv*.
 
 The game contains three major parts:
 
-- The list of the players, or civilizations - `List<CivilizationInfo>`
-- The map upon which the game is played - `TileMap`
-- The ruleset by which the game is played - `RuleSet`. This includes what technologies, buildings, units etc. are available, and IS NOT serialized and deserialized, but comes straight from the game files - more on that later.
-- Parameters unique to this game - difficulty, game speed, victory conditions, etc.
+-   The list of the players, or civilizations - `List<CivilizationInfo>`
+-   The map upon which the game is played - `TileMap`
+-   The ruleset by which the game is played - `RuleSet`. This includes what technologies, buildings, units etc. are available, and IS NOT serialized and deserialized, but comes straight from the game files - more on that later.
+-   Parameters unique to this game - difficulty, game speed, victory conditions, etc.
 
 When we save the game, or load the game, we're actually serializing and deserializing this class, which means that the this class is the root of the entire game state.
 
@@ -64,9 +64,9 @@ This represents one of the players of the game, and NOT a specific nation - mean
 
 As one of the focal points of the game, it contains a lot of important information, the most important of which are:
 
- - The list of cities the civilization has - `List<CityInfo>`
- - Which nation this is - references a certain Nation (part of the ruleset)
- - Various Managers for the different aspects of the civilization - `PolicyManager`, `GoldenAgeManager`, `GreatPersonManager`, `TechManager`, `VictoryManager`, `DiplomacyManager`
+-   The list of cities the civilization has - `List<CityInfo>`
+-   Which nation this is - references a certain Nation (part of the ruleset)
+-   Various Managers for the different aspects of the civilization - `PolicyManager`, `GoldenAgeManager`, `GreatPersonManager`, `TechManager`, `VictoryManager`, `DiplomacyManager`
 
 ### A City - `CityInfo`
 
@@ -74,9 +74,9 @@ This contains the information about a specific city.
 
 Beyond basic information like name, location on map etc, the most important classes it contains are:
 
-- Calculating the yield of the city - `CityStats`
-- Managers for the various aspects - `PopulationManager`, `CityConstructions`, `CityExpansionManager`
-- The tiles controlled and worked by the city - only their locations are permanently saved in the CityInfo, the actual information is in the TileInfo in the TileMap
+-   Calculating the yield of the city - `CityStats`
+-   Managers for the various aspects - `PopulationManager`, `CityConstructions`, `CityExpansionManager`
+-   The tiles controlled and worked by the city - only their locations are permanently saved in the CityInfo, the actual information is in the TileInfo in the TileMap
 
 ### The map - `TileMap`
 
@@ -87,11 +87,12 @@ This contains mostly helper functions and acts as a wrapper for the list of tile
 Each tile is comprised of several layers, and so has information for each.
 
 Tiles have, primarily:
-- A base terrain - Grassland, Hills, Desert etc. References a certain `Terrain` (part of the ruleset)
-- An optional terrain feature - Forest, Jungle, Oasis etc.  References a certain `Terrain`  (part of the ruleset)
-- An optional resource - Iron, Dye, Wheat etc. References a certain `TileResource` (part of the ruleset)
-- An improvement built on the tile, if any.  References a certain `TileImprovement` (part of the ruleset)
-- The units that are currently in the tile - `MapUnit`
+
+-   A base terrain - Grassland, Hills, Desert etc. References a certain `Terrain` (part of the ruleset)
+-   An optional terrain feature - Forest, Jungle, Oasis etc. References a certain `Terrain` (part of the ruleset)
+-   An optional resource - Iron, Dye, Wheat etc. References a certain `TileResource` (part of the ruleset)
+-   An improvement built on the tile, if any. References a certain `TileImprovement` (part of the ruleset)
+-   The units that are currently in the tile - `MapUnit`
 
 ### A unit on the map - `MapUnit`
 
@@ -100,9 +101,10 @@ Unlike buildings, Unit in Unciv has two meanings. One is a *Type* of unit (like 
 `MapUnit` is a specific instance of a unit, whereas `BaseUnit` is the type of unit.
 
 Main information:
-- A name - references a specific `BaseUnit`
-- Health and Movement
-- Promotion status - `UnitPromotions`
+
+-   A name - references a specific `BaseUnit`
+-   Health and Movement
+-   Promotion status - `UnitPromotions`
 
 ### Ruleset
 
@@ -113,15 +115,16 @@ Since these things remain the same for every game, these are not saved on a per-
 Each class in the game state that saves one of these will reference it by name, and when the game is running it will check the Ruleset to find the relevant information for that object.
 
 The various objects are:
-- `Technology` - referenced mainly in `CivilizationInfo.TechManager`
-- `Nations` - referenced mainly in `CivilizationInfo`
-- `Policy`  - referenced mainly in `CivilizationInfo.PolicyManager` (seeing a pattern here?)
-- `Building` - referenced mainly in `CityInfo.ConstructionManager`
-- `BaseUnit` - referenced mainly in `MapUnit`
-- `Promotion` - referenced mainly in `MapUnit`
-- `Terrain` - referenced mainly in `TileInfo`
-- `TileResource` - referenced mainly in `TileInfo`
-- `TileImprovement` - referenced mainly in `TileInfo`
+
+-   `Technology` - referenced mainly in `CivilizationInfo.TechManager`
+-   `Nations` - referenced mainly in `CivilizationInfo`
+-   `Policy` - referenced mainly in `CivilizationInfo.PolicyManager` (seeing a pattern here?)
+-   `Building` - referenced mainly in `CityInfo.ConstructionManager`
+-   `BaseUnit` - referenced mainly in `MapUnit`
+-   `Promotion` - referenced mainly in `MapUnit`
+-   `Terrain` - referenced mainly in `TileInfo`
+-   `TileResource` - referenced mainly in `TileInfo`
+-   `TileImprovement` - referenced mainly in `TileInfo`
 
 There are also Translations in the Ruleset, but they technically have nothing to do with the game state but rather with the UI display.
 
@@ -141,9 +144,9 @@ This is what the user sees when first entering the game. It acts as a hub to loa
 
 This is basically a giant setting screen for GameOptions and MapOptions classes, divided into:
 
-* GameOptionsTable - game speed, mods, etc
-* MapOptionsTable - either from preexisting map file or generated, in which case: size, map generation type, etc.
-* PlayerPickerTable - What civs are in the game and who controls them
+-   GameOptionsTable - game speed, mods, etc
+-   MapOptionsTable - either from preexisting map file or generated, in which case: size, map generation type, etc.
+-   PlayerPickerTable - What civs are in the game and who controls them
 
 ### The World Screen - `WorldScreen`
 
@@ -152,20 +155,22 @@ This is basically a giant setting screen for GameOptions and MapOptions classes,
 This is the main hub of the game, with all other screens being opened from it, and closing back to reveal it.
 
 Most notable are:
-* The map itself - a `TileMapHolder` - with each of the rendered tiles being a `TileGroup`
-* The information panels - `WorldScreenTopBar` for stats and resources, `UnitTable` for the currently selected unit, `TileInfoTable` or the currently selected tile, `BattleTable` for battle simulation, and `NotificationsScroll` for the notifications
-* The minimap - `MinimapHolder`
-* Buttons linking to other screens - to the `TechPickerScreen`, `EmpireOverviewScreen`, and `PolicyPickerScreen`
-* The almighty Next Turn button
+
+-   The map itself - a `TileMapHolder` - with each of the rendered tiles being a `TileGroup`
+-   The information panels - `WorldScreenTopBar` for stats and resources, `UnitTable` for the currently selected unit, `TileInfoTable` or the currently selected tile, `BattleTable` for battle simulation, and `NotificationsScroll` for the notifications
+-   The minimap - `MinimapHolder`
+-   Buttons linking to other screens - to the `TechPickerScreen`, `EmpireOverviewScreen`, and `PolicyPickerScreen`
+-   The almighty Next Turn button
 
 ### The city screen - `CityScreen`
 
-The second-most important screen. 
+The second-most important screen.
 
 Notable parts:
-* the City Stats table - should definitely be its own class come to think of it
-* The construction list and current construction (bottom left) - `ConstructionsTable`
-* Existing buildings, specialists and stats drilldown - `CityInfoTable`
+
+-   the City Stats table - should definitely be its own class come to think of it
+-   The construction list and current construction (bottom left) - `ConstructionsTable`
+-   Existing buildings, specialists and stats drilldown - `CityInfoTable`
 
 ## Others
 
