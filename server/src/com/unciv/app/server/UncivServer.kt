@@ -43,6 +43,7 @@ private class UncivServerRunner : CliktCommand() {
         embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {
+                    println("Received isalive request from ${call.request.local.remoteHost}")
                     call.respondText("true")
                 }
                 put("/files/{fileName}") {
