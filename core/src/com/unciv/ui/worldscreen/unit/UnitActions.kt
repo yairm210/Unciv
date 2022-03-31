@@ -482,6 +482,7 @@ object UnitActions {
                     (300 + 30 * tile.getCity()!!.population.population) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier,
                     cityConstructions.getRemainingWork(cityConstructions.currentConstructionFromQueue).toFloat() - 1
                 ).toInt()
+                if (productionPointsToAdd <= 0) continue
 
                 actionList += UnitAction(UnitActionType.HurryBuilding,
                     title = "Hurry Construction (+[$productionPointsToAdd]⚙)",
