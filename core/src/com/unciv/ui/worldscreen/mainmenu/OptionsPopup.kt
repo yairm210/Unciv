@@ -277,7 +277,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
-        serverIpTable.add(multiplayerServerTextField).minWidth(180f).growX()
+        serverIpTable.add(multiplayerServerTextField).minWidth(screen.stage.width / 2).growX()
         add(serverIpTable).fillX().row()
 
         add("Reset to Dropbox".toTextButton().onClick {
@@ -291,14 +291,8 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             popup.open(true)
 
             successfullyConnectedToServer { success: Boolean, _: String ->
-                popup.cells.removeIndex(0)
-                if (success) {
-                    popup.addGoodSizedLabel("Success!").row()
-                    popup.addCloseButton()
-                } else {
-                    popup.addGoodSizedLabel("Failed!").row()
-                    popup.addCloseButton()
-                }
+                popup.addGoodSizedLabel(if (success) "Success!" else "Failed!").row()
+                popup.addCloseButton()
             }
         }).row()
     }
