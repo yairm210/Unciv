@@ -16,7 +16,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
-import com.unciv.models.metadata.checkMultiplayerServerWithPort
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.RulesetError
 import com.unciv.models.ruleset.Ruleset.RulesetErrorSeverity
@@ -260,24 +259,22 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         val connectionToServerButton = "Check connection to server".toTextButton()
 
-        val ipAddress = getIpAddress()
-        add("{Current IP address}: $ipAddress".toTextButton().onClick { 
-            Gdx.app.clipboard.contents = ipAddress.toString()
-        }).row()
-
-        val multiplayerServerTextField = TextField(settings.multiplayerServer, BaseScreen.skin)
+        val textToShowForMultiplayerAddress = 
+            if (settings.multiplayerServer != Constants.dropboxMultiplayerServer) settings.multiplayerServer
+        else "https://..."
+        val multiplayerServerTextField = TextField(textToShowForMultiplayerAddress, BaseScreen.skin)
         multiplayerServerTextField.programmaticChangeEvents = true
         val serverIpTable = Table()
 
-        serverIpTable.add("Server's IP address".toLabel().onClick { 
+        serverIpTable.add("Server address".toLabel().onClick { 
             multiplayerServerTextField.text = Gdx.app.clipboard.contents
-        }).padRight(10f)
+        }).row()
         multiplayerServerTextField.onChange { 
             settings.multiplayerServer = multiplayerServerTextField.text
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
-        serverIpTable.add(multiplayerServerTextField)
+        serverIpTable.add(multiplayerServerTextField).width(screen.stage.width / 2)
         add(serverIpTable).row()
 
         add("Reset to Dropbox".toTextButton().onClick {
@@ -318,7 +315,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             with(URL(url).openConnection() as HttpURLConnection) {
                 requestMethod = method  // default is GET
 
-                doOutput = true
+                if (method != Net.HttpMethods.GET) doOutput = true
 
                 try {
                     if (content.isNotEmpty()) {
@@ -345,7 +342,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     }
     
     fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
-        SimpleHttp.sendGetRequest("http://${settings.multiplayerServer.checkMultiplayerServerWithPort()}/isalive", action)
+        SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
     }
 
     private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
