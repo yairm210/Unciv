@@ -8,15 +8,14 @@ import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.concurrent.timer
 
 
 object DropBox: IFileStorage {
-    var remainingRateLimitSeconds = 0
-    var rateLimitTimer: Timer? = null
+    private var remainingRateLimitSeconds = 0
+    private var rateLimitTimer: Timer? = null
 
-    fun dropboxApi(url: String, data: String = "", contentType: String = "", dropboxApiArg: String = ""): InputStream? {
+    private fun dropboxApi(url: String, data: String = "", contentType: String = "", dropboxApiArg: String = ""): InputStream? {
 
         if (remainingRateLimitSeconds > 0)
             throw FileStorageRateLimitReached(remainingRateLimitSeconds.toString())
@@ -101,6 +100,12 @@ object DropBox: IFileStorage {
         return BufferedReader(InputStreamReader(inputStream)).readText()
     }
 
+    fun downloadFile(fileName: String): InputStream {
+        val response = dropboxApi("https://content.dropboxapi.com/2/files/download",
+                contentType = "text/plain", dropboxApiArg = "{\"path\":\"$fileName\"}")
+        return response!!
+    }
+
     /**
      * If the dropbox rate limit is reached for this bearer token we strictly have to wait for the
      * specified retry_after seconds before trying again. If non is supplied or can not be parsed
@@ -138,12 +143,6 @@ object DropBox: IFileStorage {
             folderList.addAll(currentFolderListChunk.entries)
         }
         return folderList
-    }
-
-    fun downloadFile(fileName: String): InputStream {
-        val response = dropboxApi("https://content.dropboxapi.com/2/files/download",
-                contentType = "text/plain", dropboxApiArg = "{\"path\":\"$fileName\"}")
-        return response!!
     }
 
     fun fileExists(fileName: String): Boolean {
