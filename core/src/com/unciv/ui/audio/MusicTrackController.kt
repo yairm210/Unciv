@@ -164,9 +164,7 @@ class MusicTrackController(private var volume: Float) {
                 music.play()
             true
         } catch (ex: Throwable) {
-            println("Exception playing music: ${ex.message}")
-            if (MusicController.consoleLog)
-                ex.printStackTrace()
+            MusicController.showPlayingException(ex)
             false
         }
     }

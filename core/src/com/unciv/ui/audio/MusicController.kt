@@ -2,6 +2,7 @@ package com.unciv.ui.audio
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Files.FileType
+import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
@@ -35,6 +36,15 @@ class MusicController {
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
                 Gdx.files.external(path)
             else Gdx.files.local(path)
+
+        internal fun showPlayingException(ex: Throwable) {
+            if (consoleLog) {
+                println("${ex.javaClass.simpleName} playing music: ${ex.message}")
+                if (ex.stackTrace != null) ex.printStackTrace()
+            } else {
+                println("Error playing music: ${ex.message}")
+            }
+        }
     }
 
     //region Fields
@@ -140,6 +150,10 @@ class MusicController {
     private fun clearCurrent() {
         current?.clear()
         current = null
+    }
+    private fun clearNext() {
+        next?.clear()
+        next = null
     }
 
     private fun musicTimerTask() {
@@ -387,14 +401,8 @@ class MusicController {
             musicTimer!!.cancel()
             musicTimer = null
         }
-        if (next != null) {
-            next!!.clear()
-            next = null
-        }
-        if (current != null) {
-            current!!.clear()
-            current = null
-        }
+        clearNext()
+        clearCurrent()
         musicHistory.clear()
         if (consoleLog)
             println("MusicController shut down.")
@@ -403,6 +411,16 @@ class MusicController {
     fun downloadDefaultFile() {
         val file = DropBox.downloadFile(musicFallbackLocation)
         getFile(musicFallbackLocation).write(file, false)
+    }
+
+    fun getAudioExceptionHandler(): ((Throwable, Music) -> Unit) {
+        return {
+            ex: Throwable, music: Music ->
+            // Just clean up, recovery will be handled by the timer
+            if (music == next?.music) clearNext()
+            else if (music == current?.music) clearCurrent()
+            showPlayingException(ex)
+        }
     }
 
     //endregion

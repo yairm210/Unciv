@@ -33,6 +33,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
     val limitOrientationsHelper = parameters.limitOrientationsHelper
+    private val audioExceptionHelper = parameters.audioExceptionHelper
 
     var deepLinkedMultiplayerGame: String? = null
     lateinit var gameInfo: GameInfo
@@ -92,6 +93,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         settings = GameSaver.getGeneralSettings() // needed for the screen
         screen = LoadingScreen()  // NOT dependent on any atlas or skin
         musicController = MusicController()  // early, but at this point does only copy volume from settings
+        audioExceptionHelper?.installHooks(musicController.getAudioExceptionHandler())
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods

@@ -34,6 +34,10 @@ internal object DesktopLauncher {
         config.setHdpiMode(HdpiMode.Logical)
         config.setWindowSizeLimits(120, 80, -1, -1)
 
+        // We don't need the initial Audio created in Lwjgl3Application, HardenGdxAudio will replace it anyway.
+        // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
+        config.disableAudio(true)
+
         val settings = GameSettings.getSettingsForPlatformLaunchers()
         if (!settings.isFreshlyCreated) {
             config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
@@ -50,7 +54,8 @@ internal object DesktopLauncher {
             cancelDiscordEvent = { discordTimer?.cancel() },
             fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
             customSaveLocationHelper = CustomSaveLocationHelperDesktop(),
-            crashReportSysInfo = CrashReportSysInfoDesktop()
+            crashReportSysInfo = CrashReportSysInfoDesktop(),
+            audioExceptionHelper = HardenGdxAudio()
         )
 
         val game = UncivGame(desktopParameters)
