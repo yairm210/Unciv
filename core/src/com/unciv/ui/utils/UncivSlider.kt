@@ -42,6 +42,7 @@ class UncivSlider (
     initial: Float = min,
     sound: UncivSound = UncivSound.Slider,
     private val getTipText: ((Float) -> String)? = null,
+    onFinishDrag: ((Float) -> Unit)? = null,
     onChange: ((Float) -> Unit)? = null
 ): Table(BaseScreen.skin) {
     companion object {
@@ -174,6 +175,8 @@ class UncivSlider (
                 valueChanged()
                 onChange?.invoke(slider.value)
                 Sounds.play(sound)
+                if (!slider.isDragging && onFinishDrag != null)
+                    onFinishDrag(slider.value)
             }
         })
     }

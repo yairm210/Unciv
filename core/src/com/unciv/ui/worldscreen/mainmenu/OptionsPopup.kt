@@ -232,7 +232,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
 
         if (previousScreen.game.musicController.isMusicAvailable()) {
             addMusicVolumeSlider()
-            addMusicPauseSlider()
             addMusicCurrentlyPlaying()
         } else {
             addDownloadMusic()
@@ -699,50 +698,18 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         val musicVolumeSlider = UncivSlider(0f, 1.0f, 0.05f,
             initial = settings.musicVolume,
             sound = UncivSound.Silent,
-            getTipText = UncivSlider::formatPercent
+            getTipText = UncivSlider::formatPercent,
+            onFinishDrag = {
+                val music = previousScreen.game.musicController
+                if (!music.isPlayingOrLoading())
+                    music.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
+            }
         ) {
             settings.musicVolume = it
             settings.save()
-
-            val music = previousScreen.game.musicController
-            music.setVolume(it)
-            if (!music.isPlaying())
-                music.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
+            previousScreen.game.musicController.setVolume(it)
         }
         add(musicVolumeSlider).pad(5f).row()
-    }
-
-    private fun Table.addMusicPauseSlider() {
-        val music = previousScreen.game.musicController
-
-        // map to/from 0-1-2..10-12-14..30-35-40..60-75-90-105-120
-        fun posToLength(pos: Float): Float = when (pos) {
-            in 0f..10f -> pos
-            in 11f..20f -> pos * 2f - 10f
-            in 21f..26f -> pos * 5f - 70f
-            else -> pos * 15f - 330f
-        }
-        fun lengthToPos(length: Float): Float = floor(when (length) {
-            in 0f..10f -> length
-            in 11f..30f -> (length + 10f) / 2f
-            in 31f..60f -> (length + 10f) / 5f
-            else -> (length + 330f) / 15f
-        })
-        val getTipText: (Float)->String = {
-            "%.0f".format(posToLength(it))
-        }
-
-        add("Pause between tracks".tr()).left().fillX()
-
-        val pauseLengthSlider = UncivSlider(0f, 30f, 1f,
-            initial = lengthToPos(music.silenceLength),
-            sound = UncivSound.Silent,
-            getTipText = getTipText
-        ) {
-            music.silenceLength = posToLength(it)
-            settings.pauseBetweenTracks = music.silenceLength.toInt()
-        }
-        add(pauseLengthSlider).pad(5f).row()
     }
 
     private fun Table.addMusicCurrentlyPlaying() {

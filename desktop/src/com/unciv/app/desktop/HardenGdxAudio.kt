@@ -1,6 +1,7 @@
 package com.unciv.app.desktop
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.audio.AudioDevice
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALLwjgl3Audio
 import com.badlogic.gdx.backends.lwjgl3.audio.OpenALMusic
@@ -30,8 +31,12 @@ import com.unciv.ui.utils.AudioExceptionHelper
  *  * ArrayIndexOutOfBoundsException: arraycopy: last destination index 1733 out of bounds for byte[1732] from PushbackInputStream.unread(PushbackInputStream.java:232)
  *  * ArrayIndexOutOfBoundsException: arraycopy: length -109 is negative from OggInputStream.readPCM(OggInputStream.java:319)
  *  * IllegalArgumentException: newPosition > limit: (29308 > 4608) from java.nio.Buffer.position(Buffer.java:316)
+ *  * IllegalArgumentException: newPosition < 0: (11520 < 0)
  *  * java.nio.BufferOverflowException at java.base/java.nio.ByteBuffer.put(ByteBuffer.java:1179)
  *  * [gdx-audio] Error reading OGG: Corrupt or missing data in bitstream.
+ *  * ArithmeticException in LayerIIIDecoder:904
+ *  * javazoom.jl.decoder.BitstreamException: Bitstream errorcode 102
+ *  * NullPointerException: Cannot invoke "javazoom.jl.decoder.Bitstream.closeFrame()" because "this.bitstream" is null
  */
 class HardenGdxAudio : AudioExceptionHelper {
 
@@ -81,6 +86,9 @@ class HardenGdxAudio : AudioExceptionHelper {
             music = musicField.get(this) as Array<OpenALMusic>
         }
 
+        override fun newAudioDevice(sampleRate: Int, isMono: Boolean): AudioDevice {
+            return super.newAudioDevice(sampleRate, isMono)
+        }
         // This is just a kotlin translation of the original `update` with added try-catch and cleanup
         override fun update() {
             if (noDevice) return

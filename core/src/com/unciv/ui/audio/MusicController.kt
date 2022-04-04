@@ -7,8 +7,9 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.logic.multiplayer.DropBox
+import com.unciv.ui.utils.crashHandlingThread
 import java.util.*
-import kotlin.concurrent.timer
+import kotlin.concurrent.thread
 
 
 /**
@@ -22,11 +23,8 @@ class MusicController {
         private val musicLocation = FileType.Local
         const val musicPath = "music"
         const val modPath = "mods"
-        const val musicFallbackLocation = "/music/thatched-villagers.mp3"
+        const val musicFallbackLocation = "music/thatched-villagers.mp3"
         const val maxVolume = 0.6f                  // baseVolume has range 0.0-1.0, which is multiplied by this for the API
-        private const val ticksPerSecond = 20       // Timer frequency defines smoothness of fade-in/out
-        private const val timerPeriod = 1000L / ticksPerSecond
-        const val defaultFadingStep = 0.08f         // this means fade is 12 ticks or 0.6 seconds
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
         private val fileExtensions = listOf("mp3", "ogg")   // flac, opus, m4a... blocked by Gdx, `wav` we don't want
 
@@ -36,54 +34,17 @@ class MusicController {
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
                 Gdx.files.external(path)
             else Gdx.files.local(path)
-
-        internal fun showPlayingException(ex: Throwable) {
-            if (consoleLog) {
-                println("${ex.javaClass.simpleName} playing music: ${ex.message}")
-                if (ex.stackTrace != null) ex.printStackTrace()
-            } else {
-                println("Error playing music: ${ex.message}")
-            }
-        }
     }
 
     //region Fields
-    /** mirrors [GameSettings.musicVolume] - use [setVolume] to update */
-    var baseVolume: Float = UncivGame.Current.settings.musicVolume
-        private set
+    private var music: Music? = null
 
-    /** Pause in seconds between tracks unless [chooseTrack] is called to force a track change */
-    var silenceLength: Float
-        get() = silenceLengthInTicks.toFloat() / ticksPerSecond
-        set(value) { silenceLengthInTicks = (ticksPerSecond * value).toInt() }
-    private var silenceLengthInTicks = UncivGame.Current.settings.pauseBetweenTracks * ticksPerSecond
+    private var loaderThread: Thread? = null
 
     private var mods = HashSet<String>()
 
-    private var state = ControllerState.Idle
-
-    private var ticksOfSilence: Int = 0
-
-    private var musicTimer: Timer? = null
-
-    private enum class ControllerState {
-        /** As the name says. Timer will stop itself if it encounters this state. */
-        Idle,
-        /** Play a track to its end, then silence for a while, then choose another track */
-        Playing,
-        /** Play a track to its end, then go [Idle] */
-        PlaySingle,
-        /** Wait for a while in silence to start next track */
-        Silence,
-        /** Music fades to pause or is paused. Continue with chooseTrack or resume. */
-        Pause,
-        /** Fade out then stop */
-        Shutdown
-    }
-
-    /** Simple two-entry only queue, for smooth fade-overs from one track to another */
-    var current: MusicTrackController? = null
-    var next: MusicTrackController? = null
+    /** mirrors [GameSettings.musicVolume] - use [setVolume] to update */
+    private var baseVolume: Float = UncivGame.Current.settings.musicVolume
 
     /** Keeps paths of recently played track to reduce repetition */
     private val musicHistory = ArrayDeque<String>(musicHistorySize)
@@ -95,11 +56,8 @@ class MusicController {
     //region Pure functions
 
     /** @return the path of the playing track or null if none playing */
-    private fun currentlyPlaying(): String = when(state) {
-        ControllerState.Playing, ControllerState.PlaySingle, ControllerState.Pause ->
-            musicHistory.peekLast() ?: ""
-        else -> ""
-    }
+    private fun currentlyPlaying(): String = if (isPlaying()) musicHistory.peekLast() ?: ""
+        else ""
 
     /** Registers a callback that will be called with the new track name every time it changes.
      *  The track name will be prettified ("Modname: Track" instead of "mods/Modname/music/Track.ogg").
@@ -119,7 +77,7 @@ class MusicController {
         }
         val fileNameParts = fileName.split('/')
         val modName = if (fileNameParts.size > 1 && fileNameParts[0] == "mods") fileNameParts[1] else ""
-        var trackName = fileNameParts[if (fileNameParts.size > 3 && fileNameParts[2] == "music") 3 else 1]
+        var trackName = fileNameParts.last()
         for (extension in fileExtensions)
             trackName = trackName.removeSuffix(".$extension")
         fireOnChange(modName + (if (modName.isEmpty()) "" else ": ") + trackName)
@@ -141,68 +99,21 @@ class MusicController {
 
     /** @return `true` if there's a current music track and if it's actively playing */
     fun isPlaying(): Boolean {
-        return current?.isPlaying() == true
+        return music?.isPlaying == true
+    }
+
+    /** @return `true` if there's a current music playing _or_ a background load is underway.
+     * 
+     *  Exists to alleviate a race condition when the music volume slider in options is just
+     *  moved up from zero, and done so quickly so several changes in succession register.
+     *  The handling of interrupt() and isInterrupted helps, but an effect is still audible sometimes.
+     */
+    fun isPlayingOrLoading(): Boolean {
+        return music?.isPlaying == true || loaderThread?.isInterrupted == false
     }
 
     //endregion
     //region Internal helpers
-
-    private fun clearCurrent() {
-        current?.clear()
-        current = null
-    }
-    private fun clearNext() {
-        next?.clear()
-        next = null
-    }
-
-    private fun musicTimerTask() {
-        // This ticks [ticksPerSecond] times per second
-        when (state) {
-            ControllerState.Playing, ControllerState.PlaySingle ->
-                if (current == null) {
-                    if (next == null) {
-                        // no music to play - begin silence or shut down
-                        ticksOfSilence = 0
-                        state = if (state == ControllerState.PlaySingle) ControllerState.Shutdown else ControllerState.Silence
-                        fireOnChange()
-                    } else if (next!!.state.canPlay) {
-                        // Next track - if top slot empty and a next exists, move it to top and start
-                        current = next
-                        next = null
-                        if (!current!!.play()) {
-                            // Retry another track if playback start fails, after an extended pause
-                            ticksOfSilence = -silenceLengthInTicks - 1000
-                            state = ControllerState.Silence
-                        } else {
-                            fireOnChange()
-                        }
-                    } // else wait for the thread of next.load() to finish
-                } else if (!current!!.isPlaying()) {
-                    // normal end of track
-                    clearCurrent()
-                    // rest handled next tick
-                } else {
-                    if (current?.timerTick() == MusicTrackController.State.Idle)
-                        clearCurrent()
-                    next?.timerTick()
-                }
-            ControllerState.Silence ->
-                if (++ticksOfSilence > silenceLengthInTicks) {
-                    ticksOfSilence = 0
-                    chooseTrack()
-                }
-            ControllerState.Shutdown -> {
-                // Fade out first, when all queue entries are idle set up for real shutdown
-                if (current?.shutdownTick() != false && next?.shutdownTick() != false)
-                    state = ControllerState.Idle
-            }
-            ControllerState.Idle ->
-                shutdown()  // stops timer so this will not repeat
-            ControllerState.Pause ->
-                current?.timerTick()
-        }
-    }
 
     /** Get sequence of potential music locations */
     private fun getMusicFolders() = sequence {
@@ -287,43 +198,45 @@ class MusicController {
         if (!musicFile.exists())
             return false  // Safety check - nothing to play found?
 
-        next?.clear()
-        next = MusicTrackController(baseVolume * maxVolume)
-
-        next!!.load(musicFile, onError = {
-            ticksOfSilence = 0
-            state = ControllerState.Silence // will retry after one silence period
-            next = null
-        }, onSuccess = {
-            if (consoleLog)
-                println("Music queued: ${musicFile.path()} for prefix=$prefix, suffix=$suffix, flags=$flags")
-
-            if (musicHistory.size >= musicHistorySize) musicHistory.removeFirst()
-            musicHistory.addLast(musicFile.path())
-
-            val fadingStep = defaultFadingStep / (if (flags.contains(MusicTrackChooserFlags.SlowFade)) 5 else 1)
-            it.startFade(MusicTrackController.State.FadeIn, fadingStep)
-
-            when (state) {
-                ControllerState.Playing, ControllerState.PlaySingle ->
-                    current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
-                ControllerState.Pause ->
-                    if (current?.state == MusicTrackController.State.Idle) clearCurrent()
-                else -> Unit
+        clearLoader()
+        loaderThread = crashHandlingThread(name = "MusicLoader") {
+            val newMusic = try {
+                Gdx.audio.newMusic(musicFile)
+            } catch (ex: Throwable) {
+                println("Exception loading ${musicFile.name()}: ${ex.message}")
+                if (consoleLog)
+                    ex.printStackTrace()
+                null
             }
-        })
-
-        // Yes while the loader is doing its thing we wait for it in a Playing state
-        state = if (flags.contains(MusicTrackChooserFlags.PlaySingle)) ControllerState.PlaySingle else ControllerState.Playing
-
-        // Start background TimerTask which manages track changes
-        if (musicTimer == null)
-            musicTimer = timer("MusicTimer", true, 0, timerPeriod) {
-                musicTimerTask()
+            if (loaderThread?.isInterrupted == true) {
+                newMusic?.dispose()
+            } else if (newMusic != null) {
+                if (consoleLog)
+                    println("Music loaded: ${musicFile.path()} for prefix=$prefix, suffix=$suffix, flags=$flags")
+                newMusic.volume = baseVolume * maxVolume
+                if (tryPlay(newMusic)) {
+                    clearMusic()
+                    if (consoleLog)
+                        println("Music successfully started.")
+                    if (musicHistory.size >= musicHistorySize) musicHistory.removeFirst()
+                    musicHistory.addLast(musicFile.path())
+                    newMusic.setOnCompletionListener(Music.OnCompletionListener {
+                        if (consoleLog)
+                            println("MusicController: OnCompletionListener called")
+                        it.dispose()
+                        clear()
+                        chooseTrack()
+                    })
+                    music = newMusic
+                }
             }
+            fireOnChange()
+            loaderThread = null
+        }
 
         return true
     }
+
     /** Variant of [chooseTrack] that tries several moods ([suffixes]) until a match is chosen */
     fun chooseTrack (
         prefix: String = "",
@@ -336,76 +249,82 @@ class MusicController {
         return false
     }
 
+    private fun tryPlay(): Boolean {
+        // Version for this.music
+        if (music == null) return false
+        if (tryPlay(music!!)) return true
+        music = null
+        return false
+    }
+
+    private fun tryPlay(music: Music): Boolean {
+        // Version for newly created Music from chooseTrack
+        return try {
+            music.play()
+            true
+        } catch (ex: Throwable) {
+            audioExceptionHandler(ex, music)
+            false
+        }
+    }
+
     /**
-     * Pause playback with fade-out
-     * 
-     * @param speedFactor accelerate (>1) or slow down (<1) the fade-out. Clamped to 1/1000..1000.
+     * Pause playback
      */
-    fun pause(speedFactor: Float = 1f) {
+    fun pause() {
         if (consoleLog)
             println("MusicTrackController.pause called")
-        if ((state != ControllerState.Playing && state != ControllerState.PlaySingle) || current == null) return
-        val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
-        current!!.startFade(MusicTrackController.State.FadeOut, fadingStep)
-        if (next?.state == MusicTrackController.State.FadeIn)
-            next!!.startFade(MusicTrackController.State.FadeOut)
-        state = ControllerState.Pause
+        if (isPlaying())
+            music!!.pause()
     }
 
     /**
      * Resume playback with fade-in - from a pause will resume where playback left off,
      * otherwise it will start a new ambient track choice.
-     *
-     * @param speedFactor accelerate (>1) or slow down (<1) the fade-in. Clamped to 1/1000..1000.
      */
-    fun resume(speedFactor: Float = 1f) {
+    fun resume() {
         if (consoleLog)
             println("MusicTrackController.resume called")
-        if (state == ControllerState.Pause && current != null) {
-            val fadingStep = defaultFadingStep * speedFactor.coerceIn(0.001f..1000f)
-            current!!.startFade(MusicTrackController.State.FadeIn, fadingStep)
-            state = ControllerState.Playing  // this may circumvent a PlaySingle, but, currently only the main menu resumes, and then it's perfect
-            current!!.play()
-        } else if (state == ControllerState.Idle) {
+        if (isPlaying()) return
+        if (!tryPlay())
             chooseTrack()
-        }
-    }
-
-    /** Fade out then shutdown with a given [duration] in seconds */
-    fun fadeoutToSilence(duration: Float = 4.0f) {
-        val fadingStep = 1f / ticksPerSecond / duration
-        current?.startFade(MusicTrackController.State.FadeOut, fadingStep)
-        next?.startFade(MusicTrackController.State.FadeOut, fadingStep)
-        state = ControllerState.Shutdown
     }
 
     /** Update playback volume, to be called from options popup */
     fun setVolume(volume: Float) {
         baseVolume = volume
         if ( volume < 0.01 ) shutdown()
-        else if (isPlaying()) current!!.setVolume(baseVolume * maxVolume)
+        else if (isPlaying()) music!!.volume = baseVolume * maxVolume
     }
 
     /** Soft shutdown of music playback, with fadeout */
     fun gracefulShutdown() {
-        if (state == ControllerState.Idle) shutdown()
-        else state = ControllerState.Shutdown
+        shutdown()
     }
 
     /** Forceful shutdown of music playback and timers - see [gracefulShutdown] */
     private fun shutdown() {
-        state = ControllerState.Idle
+        clear()
         fireOnChange()
         // keep onTrackChangeListener! OptionsPopup will want to know when we start up again
-        if (musicTimer != null) {
-            musicTimer!!.cancel()
-            musicTimer = null
-        }
-        clearNext()
-        clearCurrent()
         musicHistory.clear()
         if (consoleLog)
             println("MusicController shut down.")
+    }
+
+    private fun clearLoader() {
+        if (loaderThread == null) return
+        loaderThread!!.interrupt()
+        loaderThread = null
+    }
+    private fun clearMusic() {
+        if (music == null) return
+        music!!.dispose()
+        music = null
+    }
+    private fun clear() {
+        clearLoader()
+        clearMusic()
     }
 
     fun downloadDefaultFile() {
@@ -413,14 +332,32 @@ class MusicController {
         getFile(musicFallbackLocation).write(file, false)
     }
 
-    fun getAudioExceptionHandler(): ((Throwable, Music) -> Unit) {
-        return {
-            ex: Throwable, music: Music ->
-            // Just clean up, recovery will be handled by the timer
-            if (music == next?.music) clearNext()
-            else if (music == current?.music) clearCurrent()
-            showPlayingException(ex)
+    private fun audioExceptionHandler(ex: Throwable, music: Music) {
+        // Gdx _will_ try to read more data from file in Lwjgl3Application.loop even for
+        // Music instances that already have thrown an exception.
+        // disposing as quickly as possible is a feeble attempt to prevent that.
+        music.dispose()
+        if (music == this.music)
+            this.music = null
+        clearLoader()
+
+        if (consoleLog) {
+            println("${ex.javaClass.simpleName} playing music: ${ex.message}")
+            if (ex.stackTrace != null) ex.printStackTrace()
+        } else {
+            println("Error playing music: ${ex.message ?: ""}")
         }
+
+        thread {
+            Thread.sleep(2000)
+            Gdx.app.postRunnable {
+                this.chooseTrack()
+            }
+        }
+    }
+    fun getAudioExceptionHandler() = {
+        ex: Throwable, music: Music ->
+        audioExceptionHandler(ex, music)
     }
 
     //endregion
