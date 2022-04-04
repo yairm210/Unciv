@@ -37,8 +37,7 @@ class ReligionOverviewTab(
     private val statsTable = Table()
     private val beliefsTable = Table()
 
-    override fun getFixedContent(): WidgetGroup? {
-        return Table().apply {
+    override fun getFixedContent() = Table().apply {
             defaults().pad(5f)
             align(Align.top)
 
@@ -49,7 +48,6 @@ class ReligionOverviewTab(
             add(religionButtonLabel)
             addSeparator()
         }
-    }
 
     init {
         defaults().pad(5f)

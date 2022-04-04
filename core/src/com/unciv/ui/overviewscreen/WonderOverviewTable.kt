@@ -81,9 +81,7 @@ class WonderOverviewTab(
     private val wonders: Array<WonderInfo> = collectInfo()
 
     private val fixedContent = Table()
-    override fun getFixedContent(): WidgetGroup {
-        return fixedContent
-    }
+    override fun getFixedContent() = fixedContent
 
     init {
         fixedContent.apply {
