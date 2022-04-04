@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
@@ -30,9 +29,13 @@ class UnitOverviewTab(
     }
     override val persistableData = (persistedData as? UnitTabPersistableData) ?: UnitTabPersistableData()
 
-    override fun activated() = persistableData.scrollY
-    override fun deactivated(scrollY: Float) {
-        persistableData.scrollY = scrollY
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        if (persistableData.scrollY != null)
+            pager.setPageScrollY(index, persistableData.scrollY!!)
+        super.activated(index, caption, pager)
+    }
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        persistableData.scrollY = pager.getPageScrollY(index)
     }
 
     private val supplyTableWidth = (overviewScreen.stage.width * 0.25f).coerceAtLeast(240f)
@@ -40,9 +43,7 @@ class UnitOverviewTab(
     private val unitHeaderTable = Table()
     private val fixedContent = Table()
 
-    override fun getFixedContent(): WidgetGroup {
-        return fixedContent
-    }
+    override fun getFixedContent() = fixedContent
 
     init {
         fixedContent.add(getUnitSupplyTable()).align(Align.top).padBottom(10f).row()

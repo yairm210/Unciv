@@ -89,6 +89,8 @@ enum class UniqueParameterType(
             "relevant",
             "Nuclear Weapon",
             "City",
+            "Barbarian",
+            "Great Person",
             // These are up for debate
             "Air",
             "land units",
@@ -96,7 +98,6 @@ enum class UniqueParameterType(
             "air units",
             "military units",
             "submarine units",
-            "Barbarian"
             // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
         )
 
@@ -381,7 +382,19 @@ enum class UniqueParameterType(
     },
 
     FoundingOrEnhancing("foundingOrEnhancing", "Prophet Action Filters") {
+        // Used in FreeExtraBeliefs, FreeExtraAnyBeliefs
         private val knownValues = setOf("founding", "enhancing")
+        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
+                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
+            in knownValues -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
+        }
+        override fun getTranslationWriterStringsForOutput() = knownValues
+    },
+
+    //TODO the Unique "Can [] [] times" that should use this isn't typed yet
+    ReligiousAction("religiousAction", "Religious Action Filters") {
+        private val knownValues = setOf(Constants.spreadReligionAbilityCount, Constants.removeHeresyAbilityCount)
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
             in knownValues -> null

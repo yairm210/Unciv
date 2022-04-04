@@ -11,6 +11,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -19,6 +20,7 @@ import com.unciv.models.ruleset.unique.StateForConditionals
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.ceil
@@ -102,7 +104,11 @@ class CityInfo {
         location = cityLocation
         setTransients()
 
-        setNewCityName(civInfo)
+        name = generateNewCityName(
+            civInfo,
+            civInfo.gameInfo.civilizations.asSequence().filter { civ -> civ.isAlive() }.toSet(),
+            arrayListOf("New ", "Neo ", "Nova ", "Altera ")
+        ) ?: "City Without A Name"
 
         isOriginalCapital = civInfo.citiesCreated == 0
         if (isOriginalCapital) civInfo.hasEverOwnedOriginalCapital = true
@@ -175,59 +181,104 @@ class CityInfo {
         cityConstructions.addFreeBuildings()
     }
 
-    private fun setNewCityName(civInfo: CivilizationInfo) {
-        val nationCities = civInfo.nation.cities
-        val cityNameIndex = civInfo.citiesCreated % nationCities.size
-        val cityName = nationCities[cityNameIndex]
+    /**
+     * Generates and returns a new city name for the [foundingCiv].
+     *
+     * This method attempts to return the first unused city name of the [foundingCiv], taking used
+     * city names into consideration (including foreign cities). If that fails, it then checks
+     * whether the civilization has [UniqueType.BorrowsCityNames] and, if true, returns a borrowed
+     * name. Else, it repeatedly attaches one of the given [prefixes] to the list of names up to ten
+     * times until an unused name is successfully generated. If all else fails, null is returned.
+     *
+     * @param foundingCiv The civilization that founded this city.
+     * @param aliveCivs Every civilization currently alive.
+     * @param prefixes Prefixes to add when every base name is taken, ordered.
+     * @return A new city name in [String]. Null if failed to generate a name.
+     */
+    private fun generateNewCityName(
+        foundingCiv: CivilizationInfo,
+        aliveCivs: Set<CivilizationInfo>,
+        prefixes: List<String>
+    ): String? {
+        val usedCityNames: Set<String> =
+            aliveCivs.asSequence().flatMap { civilization ->
+                civilization.cities.asSequence().map { city -> city.name }
+            }.toSet()
 
-        val cityNameRounds = civInfo.citiesCreated / nationCities.size
-        if (cityNameRounds > 0 && civInfo.hasUnique(UniqueType.BorrowsCityNames)) {
-            name = borrowCityName()
-            return
-        }
-        val cityNamePrefix = when (cityNameRounds) {
-            0 -> ""
-            1 -> "New "
-            else -> "Neo "
+        // Attempt to return the first missing name from the list of city names
+        for (cityName in foundingCiv.nation.cities) {
+            if (cityName !in usedCityNames) return cityName
         }
 
-        name = cityNamePrefix + cityName
+        // If all names are taken and this nation borrows city names,
+        // return a random borrowed city name
+        if (foundingCiv.hasUnique(UniqueType.BorrowsCityNames)) {
+            return borrowCityName(foundingCiv, aliveCivs, usedCityNames)
+        }
+
+        // If the nation doesn't have the unique above,
+        // return the first missing name with an increasing number of prefixes attached
+        // TODO: Make prefixes moddable per nation? Support suffixes?
+        var candidate: String?
+        for (number in (1..10)) {
+            for (prefix in prefixes) {
+                val currentPrefix: String = prefix.repeat(number)
+                candidate = foundingCiv.nation.cities.firstOrNull { cityName ->
+                    (currentPrefix + cityName) !in usedCityNames
+                }
+                if (candidate != null) return currentPrefix + candidate
+            }
+        }
+
+        // If all else fails (by using some sort of rule set mod without city names),
+        return null
     }
 
-    private fun borrowCityName(): String {
-        val usedCityNames =
-            civInfo.gameInfo.civilizations.flatMap { it.cities.map { city -> city.name } }
-        // We take the last unused city name for each other civ in this game, skipping civs whose
-        // names are exhausted, and choose a random one from that pool if it's not empty.
-        var newNames = civInfo.gameInfo.civilizations
-            .filter { it.isMajorCiv() && it != civInfo }
-            .mapNotNull {
-                it.nation.cities
-                    .lastOrNull { city -> city !in usedCityNames }
-            }
-        if (newNames.isNotEmpty()) {
-            return newNames.random()
-        }
+    /**
+     * Borrows a city name from another major civilization.
+     *
+     * @param foundingCiv The civilization that founded this city.
+     * @param aliveCivs Every civilization currently alive.
+     * @param usedCityNames Every city name that have already been taken.
+     * @return A new city named in [String]. Null if failed to generate a name.
+     */
+    private fun borrowCityName(
+        foundingCiv: CivilizationInfo,
+        aliveCivs: Set<CivilizationInfo>,
+        usedCityNames: Set<String>
+    ): String? {
+        val aliveMajorNations: Sequence<Nation> =
+            aliveCivs.asSequence().filter { civ -> civ.isMajorCiv() }.map { civ -> civ.nation }
+
+        /*
+        We take the last unused city name for each other major nation in this game,
+        skipping nations whose names are exhausted,
+        and choose a random one from that pool if it's not empty.
+        */
+        val otherMajorNations: Sequence<Nation> =
+            aliveMajorNations.filter { nation -> nation != foundingCiv.nation }
+        var newCityNames: Set<String> =
+            otherMajorNations.mapNotNull { nation ->
+                nation.cities.lastOrNull { city -> city !in usedCityNames }
+            }.toSet()
+        if (newCityNames.isNotEmpty()) return newCityNames.random()
 
         // As per fandom wiki, once the names from the other nations in the game are exhausted,
-        // names are taken from the rest of the nations in the ruleset
-        newNames = getRuleset()
-            .nations
-            .filter { it.key !in civInfo.gameInfo.civilizations.map { civ -> civ.nation.name } }
-            .values
-            .map {
-                it.cities
-                    .filter { city -> city !in usedCityNames }
-            }.flatten()
-        if (newNames.isNotEmpty()) {
-            return newNames.random()
-        }
-        // If for some reason we have used every single city name in the game,
-        // (are we using some sort of baserule mod without city names?)
-        // just return something so we at least have a name
-        return "The City without a Name"
-    }
+        // names are taken from the rest of the major nations in the rule set
+        val absentMajorNations: Sequence<Nation> =
+            getRuleset().nations.values.asSequence().filter { nation ->
+                nation.isMajorCiv() && nation !in aliveMajorNations
+            }
+        newCityNames =
+            absentMajorNations.flatMap { nation ->
+                nation.cities.asSequence().filter { city -> city !in usedCityNames }
+            }.toSet()
+        if (newCityNames.isNotEmpty()) return newCityNames.random()
 
+        // If for some reason we have used every single city name in the game,
+        // (are we using some sort of rule set mod without city names?)
+        return null
+    }
 
     //region pure functions
     fun clone(): CityInfo {

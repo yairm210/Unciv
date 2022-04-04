@@ -2,10 +2,10 @@ package com.unciv.ui.overviewscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.TabbedPager
 import com.unciv.ui.utils.packIfNeeded
 import com.unciv.ui.utils.toLabel
 
@@ -13,17 +13,18 @@ abstract class EmpireOverviewTab (
     val viewingPlayer: CivilizationInfo,
     val overviewScreen: EmpireOverviewScreen,
     persistedData: EmpireOverviewTabPersistableData? = null
-) : Table(BaseScreen.skin) {
+) : Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     open class EmpireOverviewTabPersistableData {
         open fun isEmpty() = true
     }
     open val persistableData = persistedData ?: EmpireOverviewTabPersistableData()
-    /** Override if your Tab needs to do stuff on activation. @return non-null to scroll the Tab vertically within the TabbedPager. */
-    open fun activated(): Float? = null
-    /** Override if your Tab needs to do housekeeping when it loses focus. [scrollY] is the Tab's current vertical scroll position. */
-    open fun deactivated(scrollY: Float) {}
-    /** Override to supply content not participating in scrolling */
-    open fun getFixedContent(): WidgetGroup? = null
+
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        val settings = overviewScreen.game.settings
+        if (caption == "Stats")
+            settings.addCompletedTutorialTask("See your stats breakdown")
+        settings.lastOverviewPage = caption
+    }
 
     val gameInfo = viewingPlayer.gameInfo
 

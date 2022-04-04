@@ -1,3 +1,19 @@
+## 4.0.3
+
+Changed server connection to URL-based to allow connection to uncivserver.xyz
+
+By xlenstra:
+- Added a unique for attacking when embarked 
+- Generalized Denmark's unique 
+
+By HaneulCheong:
+- Improved city name generation 
+- Fixed the official wiki 
+
+By SomeTroglodyte:
+- Remove re-orientation for OptionsPopup 
+- Fix enabled buildings not displaying in games without nukes 
+
 ## 4.0.2
 
 Solved out of memory errors for modded base rulesets
