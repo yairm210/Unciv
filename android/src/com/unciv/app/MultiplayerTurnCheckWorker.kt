@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
+import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
@@ -48,6 +49,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         private const val USER_ID = "USER_ID"
         private const val CONFIGURED_DELAY = "CONFIGURED_DELAY"
         private const val PERSISTENT_NOTIFICATION_ENABLED = "PERSISTENT_NOTIFICATION_ENABLED"
+        private const val FILE_STORAGE = Constants.dropboxMultiplayerServer
 
         fun enqueue(appContext: Context,
                     delayInMinutes: Int, inputData: Data) {
@@ -196,7 +198,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
             } else {
                 val inputData = workDataOf(Pair(FAIL_COUNT, 0), Pair(GAME_ID, gameIds), Pair(GAME_NAME, gameNames),
                         Pair(USER_ID, settings.userId), Pair(CONFIGURED_DELAY, settings.multiplayerTurnCheckerDelayInMinutes),
-                        Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.multiplayerTurnCheckerPersistentNotificationEnabled))
+                        Pair(PERSISTENT_NOTIFICATION_ENABLED, settings.multiplayerTurnCheckerPersistentNotificationEnabled),
+                        Pair(FILE_STORAGE, settings.multiplayerServer))
 
                 if (settings.multiplayerTurnCheckerPersistentNotificationEnabled) {
                     showPersistentNotification(applicationContext,
@@ -234,6 +237,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
     override fun doWork(): Result {
         val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
         val configuredDelay = inputData.getInt(CONFIGURED_DELAY, 5)
+        val fileStorage = inputData.getString(FILE_STORAGE)
 
         try {
             val gameIds = inputData.getStringArray(GAME_ID)!!
@@ -249,7 +253,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     continue
 
                 try {
-                    val gamePreview = OnlineMultiplayer().tryDownloadGamePreview(gameId)
+                    val gamePreview = OnlineMultiplayer(fileStorage).tryDownloadGamePreview(gameId)
                     val currentTurnPlayer = gamePreview.getCivilization(gamePreview.currentPlayer)
 
                     //Save game so MultiplayerScreen gets updated
