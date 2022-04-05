@@ -273,7 +273,7 @@ class MapEditorEditStartsTab(
 class MapEditorEditRiversTab(
     private val editTab: MapEditorEditTab,
     private val ruleset: Ruleset
-): Table(BaseScreen.skin), IMapEditorEditSubTabs, TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), IMapEditorEditSubTabs, TabbedPager.IPageExtensions {
     private val iconSize = 50f
     private val showOnTerrain = ruleset.terrains.values.asSequence()
         .filter { it.type.isBaseTerrain && !it.isRough() }
@@ -355,7 +355,7 @@ class MapEditorEditRiversTab(
 
     override fun isDisabled() = false
 
-    override fun activated(index: Int) {
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
         editTab.brushSize = 1
     }
 

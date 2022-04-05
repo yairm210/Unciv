@@ -28,10 +28,10 @@ class MapEditorGenerateTab(
         top()
         addPage("New map", newTab,
             ImageGetter.getImage("OtherIcons/New"), 20f,
-            key = KeyCharAndCode.ctrl('n'))
+            shortcutKey = KeyCharAndCode.ctrl('n'))
         addPage("Partial", partialTab,
             ImageGetter.getImage("OtherIcons/Settings"), 20f,
-            key = KeyCharAndCode.ctrl('g'))
+            shortcutKey = KeyCharAndCode.ctrl('g'))
         selectPage(0)
         setButtonsEnabled(true)
         partialTab.generateButton.disable()  // Starts with choice "None"

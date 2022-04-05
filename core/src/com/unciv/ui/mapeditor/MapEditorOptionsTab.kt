@@ -11,7 +11,7 @@ import com.unciv.ui.utils.*
 
 class MapEditorOptionsTab(
     private val editorScreen: MapEditorScreenV2
-): Table(BaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val seedLabel = "".toLabel(Color.GOLD)
     private val copySeedButton = "Copy to clipboard".toTextButton()
     private val tileMatchGroup = ButtonGroup<CheckBox>()
@@ -69,7 +69,7 @@ class MapEditorOptionsTab(
         }
     }
 
-    override fun activated(index: Int) {
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
         seedToCopy = editorScreen.tileMap.mapParameters.seed.toString()
         seedLabel.setText("Current map RNG seed = [$seedToCopy]".tr())
         editorScreen.keyPressDispatcher[KeyCharAndCode.ctrl('c')] = this::copyHandler
@@ -77,7 +77,7 @@ class MapEditorOptionsTab(
         pasteMapButton.isEnabled = Gdx.app.clipboard.hasContents()
     }
 
-    override fun deactivated(newIndex: Int) {
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         editorScreen.tileMatchFuzziness = tileMatchFuzziness
         editorScreen.keyPressDispatcher.revertToCheckPoint()
     }

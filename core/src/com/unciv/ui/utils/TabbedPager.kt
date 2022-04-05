@@ -36,8 +36,8 @@ import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
  * [keyPressDispatcher] is optional and works with the `shortcutKey` parameter of [addPage] to support key bindings with tooltips.
  */
 //region Fields
-@Suppress("MemberVisibilityCanBePrivate", "unused")  // All member are part of our API
-class TabbedPager(
+@Suppress("MemberVisibilityCanBePrivate", "unused")  // All members are part of our API
+open class TabbedPager(
     minimumWidth: Float = 0f,
     maximumWidth: Float = Float.MAX_VALUE,
     minimumHeight: Float = 0f,
@@ -65,7 +65,7 @@ class TabbedPager(
 
     private val header = Table(BaseScreen.skin)
     private val headerScroll = LinkedScrollPane(horizontalOnly = true, header)
-    private var headerHeight = 0f
+    protected var headerHeight = 0f
 
     private val fixedContentScroll = LinkedScrollPane(horizontalOnly = true)
     private val fixedContentScrollCell: Cell<ScrollPane>
@@ -295,12 +295,14 @@ class TabbedPager(
     // The following are part of the Widget interface and serve dynamic sizing
     override fun getPrefWidth() = dimW.pref
     fun setPrefWidth(width: Float) {
+        if (dimW.growMax && width > dimW.max) dimW.max = width
         if (width !in dimW.min..dimW.max) throw IllegalArgumentException()
         dimW.pref = width
         invalidateHierarchy()
     }
     override fun getPrefHeight() = dimH.pref
     fun setPrefHeight(height: Float) {
+        if (dimH.growMax && height > dimH.max) dimH.max = height
         if (height !in dimH.min..dimH.max) throw IllegalArgumentException()
         dimH.pref = height
         invalidateHierarchy()

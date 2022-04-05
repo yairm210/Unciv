@@ -12,7 +12,7 @@ import com.unciv.ui.utils.*
 
 class MapEditorModsTab(
     private val editorScreen: MapEditorScreenV2
-): Table(BaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private var mods = editorScreen.newMapParameters.mods
     private var modsTable: ModCheckboxTable
     private val modsTableCell: Cell<ModCheckboxTable>
@@ -46,7 +46,7 @@ class MapEditorModsTab(
     private fun enableApplyButton() {
         applyButton.isEnabled = editorScreen.tileMap.mapParameters.mods != mods
     }
-    override fun activated(index: Int) {
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
         enableApplyButton()
         if (!editorScreen.modsTabNeedsRefresh) return
         mods = editorScreen.tileMap.mapParameters.mods

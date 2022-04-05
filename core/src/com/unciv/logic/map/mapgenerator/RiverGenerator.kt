@@ -42,7 +42,7 @@ class RiverGenerator(
         return true
     }
 
-    private fun getClosestWaterTile(tile: TileInfo): TileInfo? {
+    fun getClosestWaterTile(tile: TileInfo): TileInfo? {
         for (distance in 1..maxRiverLength) {
             val waterTiles = tile.getTilesAtDistance(distance).filter { it.isWater }
             if (waterTiles.any())

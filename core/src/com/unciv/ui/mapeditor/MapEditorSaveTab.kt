@@ -17,7 +17,7 @@ import kotlin.concurrent.thread
 class MapEditorSaveTab(
     private val editorScreen: MapEditorScreenV2,
     headerHeight: Float
-): Table(BaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val mapFiles = MapEditorFilesTable(editorScreen.getToolsWidth() - 40f, this::selectFile)
 
     private val saveButton: TextButton
@@ -68,8 +68,8 @@ class MapEditorSaveTab(
         }, editorScreen).open()
     }
 
-    override fun activated(index: Int) {
-        editorScreen.tabs.setScrollDisabled(true)
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        pager.setScrollDisabled(true)
         mapFiles.update()
         editorScreen.keyPressDispatcher[KeyCharAndCode.RETURN] = this::saveHandler
         editorScreen.keyPressDispatcher[KeyCharAndCode.DEL] = this::deleteHandler
@@ -78,9 +78,9 @@ class MapEditorSaveTab(
         selectFile(null)
     }
 
-    override fun deactivated(newIndex: Int) {
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         editorScreen.keyPressDispatcher.revertToCheckPoint()
-        editorScreen.tabs.setScrollDisabled(false)
+        pager.setScrollDisabled(false)
         stage.keyboardFocus = null
     }
 

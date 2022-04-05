@@ -20,7 +20,7 @@ import com.unciv.ui.utils.*
 
 class MapEditorViewTab(
     private val editorScreen: MapEditorScreenV2
-): Table(BaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private var tileDataCell: Cell<Table>? = null
     private val mockCiv = createMockCiv(editorScreen.ruleset)
     private val naturalWonders = Counter<String>()
@@ -128,11 +128,12 @@ class MapEditorViewTab(
         validate()
     }
 
-    override fun activated(index: Int) {
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
         editorScreen.tileClickHandler = this::tileClickHandler
         update()
     }
-    override fun deactivated(newIndex: Int) {
+
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         editorScreen.hideSelection()
         tileDataCell?.setActor(null)
         editorScreen.tileClickHandler = null

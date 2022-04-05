@@ -17,7 +17,7 @@ import com.unciv.ui.utils.*
 class MapEditorEditTab(
     private val editorScreen: MapEditorScreenV2,
     headerHeight: Float
-): Table(BaseScreen.skin), TabbedPager.IPageActivation {
+): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val subTabs: TabbedPager
     private val brushTable = Table(skin)
     private val brushSlider: UncivSlider
@@ -94,7 +94,7 @@ class MapEditorEditTab(
             val tab = page.instantiate(this, ruleset)
             subTabs.addPage(page.caption, tab,
                 ImageGetter.getImage(page.icon), 20f,
-                key = KeyCharAndCode(page.key),
+                shortcutKey = KeyCharAndCode(page.key),
                 disabled = (tab as IMapEditorEditSubTabs).isDisabled())
         }
         subTabs.selectPage(0)
@@ -149,14 +149,14 @@ class MapEditorEditTab(
         brushHandlerType = handlerType
     }
 
-    override fun activated(index: Int) {
+    override fun activated(index: Int, caption: String, pager: TabbedPager) {
         editorScreen.tileClickHandler = this::tileClickHandler
-        editorScreen.tabs.setScrollDisabled(true)
+        pager.setScrollDisabled(true)
         tileMatchFuzziness = editorScreen.tileMatchFuzziness
     }
 
-    override fun deactivated(newIndex: Int) {
-        editorScreen.tabs.setScrollDisabled(true)
+    override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
+        pager.setScrollDisabled(true)
         editorScreen.tileClickHandler = null
     }
 
@@ -254,7 +254,13 @@ class MapEditorEditTab(
         val paintedTile = tile.clone()
         brushAction(paintedTile)
         paintedTile.ruleset = ruleset
-        paintedTile.setTerrainTransients()
+        try {
+            paintedTile.setTerrainTransients()
+        } catch (ex: Exception) {
+            val message = ex.message ?: throw ex
+            if (!message.endsWith("not exist in this ruleset!")) throw ex
+            ToastPopup(message, editorScreen)
+        }
 
         brushAction(tile)
         tile.setTerrainTransients()
@@ -290,8 +296,7 @@ class MapEditorEditTab(
     private fun TileInfo.applyFrom(other: TileInfo) {
         // 90% copy w/o position, improvement times or transients. Add units once Unit paint is in.
         baseTerrain = other.baseTerrain
-        removeTerrainFeatures()
-        addTerrainFeatures(other.terrainFeatures)
+        setTerrainFeatures(other.terrainFeatures)
         resource = other.resource
         improvement = other.improvement
         naturalWonder = other.naturalWonder

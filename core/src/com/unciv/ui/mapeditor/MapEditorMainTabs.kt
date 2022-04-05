@@ -12,7 +12,7 @@ class MapEditorMainTabs(
     minimumHeight = editorScreen.stage.height,
     maximumHeight = editorScreen.stage.height,
     headerFontSize = 24,
-    parentScreen = editorScreen,
+    keyPressDispatcher = editorScreen.keyPressDispatcher,
     capacity = 7
 ) {
     val view = MapEditorViewTab(editorScreen)
@@ -28,25 +28,25 @@ class MapEditorMainTabs(
 
         addPage("View", view,
             ImageGetter.getImage("OtherIcons/Search"), 25f,
-            key = KeyCharAndCode.ctrl('i'))
+            shortcutKey = KeyCharAndCode.ctrl('i'))
         addPage("Generate", generate,
             ImageGetter.getImage("OtherIcons/New"), 25f)
         addPage("Edit", edit,
             ImageGetter.getImage("OtherIcons/Terrains"), 25f,
-            key = KeyCharAndCode.ctrl('e'))
+            shortcutKey = KeyCharAndCode.ctrl('e'))
         addPage("Load", load,
             ImageGetter.getImage("OtherIcons/Load"), 25f,
-            key = KeyCharAndCode.ctrl('l'),
+            shortcutKey = KeyCharAndCode.ctrl('l'),
             disabled = MapSaver.getMaps().isEmpty())
         addPage("Save", save,
             ImageGetter.getImage("OtherIcons/Checkmark"), 25f,
-            key = KeyCharAndCode.ctrl('s'))
+            shortcutKey = KeyCharAndCode.ctrl('s'))
         addPage("Mods", mods,
             ImageGetter.getImage("OtherIcons/Mods"), 25f,
-            key = KeyCharAndCode.ctrl('d'))
+            shortcutKey = KeyCharAndCode.ctrl('d'))
         addPage("Options", options,
             ImageGetter.getImage("OtherIcons/Settings"), 25f,
-            key = KeyCharAndCode.ctrl('o'))
+            shortcutKey = KeyCharAndCode.ctrl('o'))
         selectPage(0)
     }
 }
