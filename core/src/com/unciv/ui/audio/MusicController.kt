@@ -7,7 +7,6 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
 import com.unciv.logic.multiplayer.DropBox
-import com.unciv.ui.utils.crashHandlingThread
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -28,7 +27,7 @@ class MusicController {
         private const val musicHistorySize = 8      // number of names to keep to avoid playing the same in short succession
         private val fileExtensions = listOf("mp3", "ogg")   // flac, opus, m4a... blocked by Gdx, `wav` we don't want
 
-        internal const val consoleLog = false
+        internal const val consoleLog = true
 
         private fun getFile(path: String) =
             if (musicLocation == FileType.External && Gdx.files.isExternalStorageAvailable)
@@ -38,8 +37,6 @@ class MusicController {
 
     //region Fields
     private var music: Music? = null
-
-    private var loaderThread: Thread? = null
 
     private var mods = HashSet<String>()
 
@@ -100,16 +97,6 @@ class MusicController {
     /** @return `true` if there's a current music track and if it's actively playing */
     fun isPlaying(): Boolean {
         return music?.isPlaying == true
-    }
-
-    /** @return `true` if there's a current music playing _or_ a background load is underway.
-     * 
-     *  Exists to alleviate a race condition when the music volume slider in options is just
-     *  moved up from zero, and done so quickly so several changes in succession register.
-     *  The handling of interrupt() and isInterrupted helps, but an effect is still audible sometimes.
-     */
-    fun isPlayingOrLoading(): Boolean {
-        return music?.isPlaying == true || loaderThread?.isInterrupted == false
     }
 
     //endregion
@@ -198,42 +185,37 @@ class MusicController {
         if (!musicFile.exists())
             return false  // Safety check - nothing to play found?
 
-        clearLoader()
-        loaderThread = crashHandlingThread(name = "MusicLoader") {
-            val newMusic = try {
-                Gdx.audio.newMusic(musicFile)
-            } catch (ex: Throwable) {
-                println("Exception loading ${musicFile.name()}: ${ex.message}")
-                if (consoleLog)
-                    ex.printStackTrace()
-                null
-            }
-            if (loaderThread?.isInterrupted == true) {
-                newMusic?.dispose()
-            } else if (newMusic != null) {
-                if (consoleLog)
-                    println("Music loaded: ${musicFile.path()} for prefix=$prefix, suffix=$suffix, flags=$flags")
-                newMusic.volume = baseVolume * maxVolume
-                if (tryPlay(newMusic)) {
-                    clearMusic()
-                    if (consoleLog)
-                        println("Music successfully started.")
-                    if (musicHistory.size >= musicHistorySize) musicHistory.removeFirst()
-                    musicHistory.addLast(musicFile.path())
-                    newMusic.setOnCompletionListener(Music.OnCompletionListener {
-                        if (consoleLog)
-                            println("MusicController: OnCompletionListener called")
-                        it.dispose()
-                        clear()
-                        chooseTrack()
-                    })
-                    music = newMusic
-                }
-            }
-            fireOnChange()
-            loaderThread = null
+        val newMusic = try {
+            Gdx.audio.newMusic(musicFile)
+        } catch (ex: Throwable) {
+            println("Exception loading ${musicFile.name()}: ${ex.message}")
+            if (consoleLog)
+                ex.printStackTrace()
+            null
         }
 
+        if (newMusic != null) {
+            if (consoleLog)
+                println("Music loaded: ${musicFile.path()} for prefix=$prefix, suffix=$suffix, flags=$flags")
+            newMusic.volume = baseVolume * maxVolume
+            if (tryPlay(newMusic)) {
+                clear()
+                if (consoleLog)
+                    println("Music successfully started.")
+                if (musicHistory.size >= musicHistorySize) musicHistory.removeFirst()
+                musicHistory.addLast(musicFile.path())
+                newMusic.setOnCompletionListener(Music.OnCompletionListener {
+                    if (consoleLog)
+                        println("MusicController: OnCompletionListener called")
+                    it.dispose()
+                    clear()
+                    chooseTrack()
+                })
+                music = newMusic
+            }
+        }
+
+        fireOnChange()
         return true
     }
 
@@ -312,19 +294,10 @@ class MusicController {
             println("MusicController shut down.")
     }
 
-    private fun clearLoader() {
-        if (loaderThread == null) return
-        loaderThread!!.interrupt()
-        loaderThread = null
-    }
-    private fun clearMusic() {
+    private fun clear() {
         if (music == null) return
         music!!.dispose()
         music = null
-    }
-    private fun clear() {
-        clearLoader()
-        clearMusic()
     }
 
     fun downloadDefaultFile() {
@@ -339,7 +312,6 @@ class MusicController {
         music.dispose()
         if (music == this.music)
             this.music = null
-        clearLoader()
 
         if (consoleLog) {
             println("${ex.javaClass.simpleName} playing music: ${ex.message}")

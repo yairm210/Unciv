@@ -36,7 +36,6 @@ import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.UUID
-import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
 /**
@@ -701,7 +700,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             getTipText = UncivSlider::formatPercent,
             onFinishDrag = {
                 val music = previousScreen.game.musicController
-                if (!music.isPlayingOrLoading())
+                if (!music.isPlaying())
                     music.chooseTrack(flags = MusicTrackChooserFlags.setPlayDefault)
             }
         ) {
