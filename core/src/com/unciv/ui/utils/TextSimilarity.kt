@@ -37,6 +37,10 @@ fun getTextDistance(text1: String, text2: String): Int {
         if (char1 == char2) {
             i1++
             i2++
+        } else if (char1.lowercaseChar() == char2.lowercaseChar()) {
+            dist++
+            i1++
+            i2++
         } else {
             val firstMatchIndex1 = (i1..text1.lastIndex).firstOrNull { text1[it] == char2 }
             val firstMatchIndex2 = (i2..text2.lastIndex).firstOrNull { text2[it] == char1 }
