@@ -803,9 +803,10 @@ open class TileInfo {
             out.add("Terrain feature [$terrainFeature] does not exist in ruleset!")
         if (resource != null && !ruleset.tileResources.containsKey(resource))
             out.add("Resource [$resource] does not exist in ruleset!")
-        if (improvement != null && !improvement!!.startsWith(TileMap.startingLocationPrefix)
-            && !ruleset.tileImprovements.containsKey(improvement))
+        if (improvement != null && !ruleset.tileImprovements.containsKey(improvement))
             out.add("Improvement [$improvement] does not exist in ruleset!")
+        if (naturalWonder != null && !ruleset.terrains.containsKey(naturalWonder))
+            out.add("Natural Wonder [$naturalWonder] does not exist in ruleset!")
         return out
     }
 
@@ -888,7 +889,7 @@ open class TileInfo {
 
     fun removeTerrainFeature(terrainFeature: String) =
         setTerrainFeatures(ArrayList(terrainFeatures).apply { remove(terrainFeature) })
-    
+
     fun removeTerrainFeatures() =
         setTerrainFeatures(listOf())
 
@@ -916,26 +917,28 @@ open class TileInfo {
     }
 
     fun normalizeToRuleset(ruleset: Ruleset) {
-        if (!ruleset.terrains.containsKey(naturalWonder)) naturalWonder = null
+        if (naturalWonder != null && !ruleset.terrains.containsKey(naturalWonder))
+            naturalWonder = null
         if (naturalWonder != null) {
-            val naturalWonder = ruleset.terrains[naturalWonder]!!
-            baseTerrain = naturalWonder.turnsInto!!
+            baseTerrain = this.getNaturalWonder().turnsInto!!
             setTerrainFeatures(listOf())
             resource = null
             improvement = null
         }
 
-        for (terrainFeature in terrainFeatures.toList()) {
+        if (!ruleset.terrains.containsKey(baseTerrain))
+            baseTerrain = ruleset.terrains.values.first { it.type == TerrainType.Land && !it.impassable }.name
+
+        val newFeatures = ArrayList<String>()
+        for (terrainFeature in terrainFeatures) {
             val terrainFeatureObject = ruleset.terrains[terrainFeature]
-            if (terrainFeatureObject == null) {
-                removeTerrainFeature(terrainFeature)
-                continue
-            }
-
+                ?: continue
             if (terrainFeatureObject.occursOn.isNotEmpty() && !terrainFeatureObject.occursOn.contains(baseTerrain))
-                removeTerrainFeature(terrainFeature)
+                continue
+            newFeatures.add(terrainFeature)
         }
-
+        if (newFeatures.size != terrainFeatures.size)
+            setTerrainFeatures(newFeatures)
 
         if (resource != null && !ruleset.tileResources.containsKey(resource)) resource = null
         if (resource != null) {

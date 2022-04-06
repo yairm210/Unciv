@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.UncivGame
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.mapgenerator.MapGenerator
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.MapParametersTable
 import com.unciv.ui.utils.*
@@ -49,7 +49,7 @@ class MapEditorGenerateTab(
         val message = mapParameters.mapSize.fixUndesiredSizes(mapParameters.worldWrap)
         if (message != null) {
             Gdx.app.postRunnable {
-                ToastPopup( message, UncivGame.Current.screen as BaseScreen, 4000 )
+                ToastPopup( message, editorScreen, 4000 )
                 newTab.mapParametersTable.run { mapParameters.mapSize.also {
                     customMapSizeRadius.text = it.radius.toString()
                     customMapWidth.text = it.width.toString()
@@ -77,11 +77,12 @@ class MapEditorGenerateTab(
             try {
                 // Map generation can take a while and we don't want ANRs
                 if (step == MapGeneratorSteps.All) {
-                    val generatedMap = MapGenerator(editorScreen.ruleset).generateMap(mapParameters)
+                    val newRuleset = RulesetCache.getComplexRuleset(mapParameters.mods, mapParameters.baseRuleset)
+                    val generatedMap = MapGenerator(newRuleset).generateMap(mapParameters)
 
                     Gdx.app.postRunnable {
                         MapEditorScreenV2.saveDefaultParameters(mapParameters)
-                        editorScreen.loadMap(generatedMap)
+                        editorScreen.loadMap(generatedMap, newRuleset)
                         editorScreen.isDirty = true
                         setButtonsEnabled(true)
                         Gdx.input.inputProcessor = editorScreen.stage
@@ -90,9 +91,9 @@ class MapEditorGenerateTab(
                     MapGenerator(editorScreen.ruleset).generateSingleStep(editorScreen.tileMap, step)
 
                     Gdx.app.postRunnable {
-                        editorScreen.isDirty = true
                         if (step == MapGeneratorSteps.NaturalWonders) editorScreen.naturalWondersNeedRefresh = true
                         editorScreen.mapHolder.updateTileGroups()
+                        editorScreen.isDirty = true
                         setButtonsEnabled(true)
                         Gdx.input.inputProcessor = editorScreen.stage
                     }

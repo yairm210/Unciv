@@ -2,6 +2,7 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
@@ -22,6 +23,9 @@ class EditorMapHolderV2(
     private lateinit var tileGroupMap: TileGroupMap<TileGroup>
     private val allTileGroups = ArrayList<TileGroup>()
 
+    private val maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
+    private val minZoomScale = 1f / maxWorldZoomOut
+
     init {
         continuousScrollingX = tileMap.mapParameters.worldWrap
         addTiles(parentScreen.stage)
@@ -32,7 +36,11 @@ class EditorMapHolderV2(
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
 
-        tileGroupMap = TileGroupMap(daTileGroups, stage.width, stage.height, continuousScrollingX)
+        tileGroupMap = TileGroupMap(
+            daTileGroups,
+            stage.width * maxWorldZoomOut / 2,
+            stage.height * maxWorldZoomOut / 2,
+            continuousScrollingX)
         actor = tileGroupMap
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
@@ -54,21 +62,23 @@ class EditorMapHolderV2(
 
         for (tileGroup in allTileGroups) {
 
+/* revisit when Unit editing is re-implemented
             // This is a hack to make the unit icons render correctly on the game, even though the map isn't part of a game
             // and the units aren't assigned to any "real" CivInfo
-            //todo make safe the !!
+            //to do make safe the !!
+            //to do worse - don't create a whole Civ instance per unit
             tileGroup.tileInfo.getUnits().forEach {
                 it.civInfo = CivilizationInfo().apply {
                     nation = ruleset.nations[it.owner]!!
                 }
             }
-
+*/
             tileGroup.showEntireMap = true
             tileGroup.update()
             tileGroup.onClick { onTileClick(tileGroup.tileInfo) }
         }
 
-        setSize(stage.width * 2, stage.height * 2)
+        setSize(stage.width * maxWorldZoomOut, stage.height * maxWorldZoomOut)
         setOrigin(width / 2,height / 2)
         center(stage)
 
@@ -89,17 +99,31 @@ class EditorMapHolderV2(
             tileInfo.setTerrainTransients()
     }
 
+    // This emulates `private TileMap.getOrNull(Int,Int)` and should really move there
+    // still more efficient than `if (rounded in tileMap) tileMap[rounded] else null`
+    private fun TileMap.getOrNull(pos: Vector2): TileInfo? {
+        val x = pos.x.toInt()
+        val y = pos.y.toInt()
+        if (contains(x, y)) return get(x, y)
+        return null
+    }
+
+    // Currently unused, drag painting will need it
     fun getClosestTileTo(stageCoords: Vector2): TileInfo? {
         val positionalCoords = tileGroupMap.getPositionalVector(stageCoords)
         val hexPosition = HexMath.world2HexCoords(positionalCoords)
         val rounded = HexMath.roundHexCoords(hexPosition)
-
-        return if (rounded in tileMap) tileMap[rounded] else null
+        return tileMap.getOrNull(rounded)
     }
 
     fun setCenterPosition(vector: Vector2) {
         val tileGroup = allTileGroups.firstOrNull { it.tileInfo.position == vector } ?: return
         scrollX = tileGroup.x + tileGroup.width / 2 - width / 2
         scrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
+    }
+
+    override fun zoom(zoomScale: Float) {
+        if (zoomScale < minZoomScale || zoomScale > 2f) return
+        setScale(zoomScale)
     }
 }

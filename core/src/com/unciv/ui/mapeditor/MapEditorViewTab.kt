@@ -57,15 +57,16 @@ class MapEditorViewTab(
 
         val tileMap = editorScreen.tileMap
 
-        if (tileMap.mapParameters.name.isNotEmpty()) {
-            val mapNameLabel = "${tileMap.mapParameters.name}{}".toLabel(Color.SKY, 24)
-            add(mapNameLabel).padBottom(15f).row()
-        }
-
-        val mapParameterText = tileMap.mapParameters.toString()
-            .replace("\"${tileMap.mapParameters.name}\" ", "")
-        val mapParameterLabel = WrappableLabel(mapParameterText, labelWidth)
-        add(mapParameterLabel.apply { wrap = true }).row()
+        val headerText = tileMap.mapParameters.name.ifEmpty { "New map" }
+        add(ExpanderTab(
+            headerText,
+            startsOutOpened = false
+        ) {
+            val mapParameterText = tileMap.mapParameters.toString()
+                .replace("\"${tileMap.mapParameters.name}\" ", "")
+            val mapParameterLabel = WrappableLabel(mapParameterText, labelWidth)
+            it.add(mapParameterLabel.apply { wrap = true }).row()
+        }).row()
 
         tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
         val statsText = "Area: ${tileMap.values.size} tiles, ${tileMap.continentSizes.size} continents/islands"
@@ -78,7 +79,7 @@ class MapEditorViewTab(
             naturalWonders.clear()
             tileMap.values.asSequence()
                 .mapNotNull { it.naturalWonder }
-                .sortedWith(compareBy(collator, { it.tr() }))
+                .sortedWith(compareBy(collator) { it.tr() })
                 .forEach {
                     naturalWonders.add(it, 1)
                 }
@@ -201,11 +202,11 @@ class MapEditorViewTab(
         startingLocationsByNation.asSequence()
         .filter { tile == null || tile in it.value }
         .mapNotNull { ruleset!!.nations[it.key] }
-        .sortedWith(compareBy<Nation>{ it.isCityState() }.thenBy(collator, { it.name.tr() }))
+        .sortedWith(compareBy<Nation>{ it.isCityState() }.thenBy(collator) { it.name.tr() })
 
     private fun TileMap.getStartingLocationSummary() =
         startingLocationsByNation.asSequence()
         .mapNotNull { if (it.key in ruleset!!.nations) ruleset!!.nations[it.key]!! to it.value.size else null }
-        .sortedWith(compareBy<Pair<Nation,Int>>{ it.first.isCityState() }.thenBy(collator, { it.first.name.tr() }))
+        .sortedWith(compareBy<Pair<Nation,Int>>{ it.first.isCityState() }.thenBy(collator) { it.first.name.tr() })
         .map { it.first.name to it.second }
 }

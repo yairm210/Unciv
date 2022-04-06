@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.MapSaver
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.KeyCharAndCode
@@ -30,7 +29,8 @@ class MapEditorMainTabs(
             ImageGetter.getImage("OtherIcons/Search"), 25f,
             shortcutKey = KeyCharAndCode.ctrl('i'))
         addPage("Generate", generate,
-            ImageGetter.getImage("OtherIcons/New"), 25f)
+            ImageGetter.getImage("OtherIcons/New"), 25f,
+            shortcutKey = KeyCharAndCode.ctrl('n'))
         addPage("Edit", edit,
             ImageGetter.getImage("OtherIcons/Terrains"), 25f,
             shortcutKey = KeyCharAndCode.ctrl('e'))

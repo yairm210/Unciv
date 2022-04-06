@@ -6,6 +6,7 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.*
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -13,14 +14,16 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
 
-//todo work in Simon's changes to continent/landmass
-//todo work in Simon's regions - check whether generate and store or discard is the way
-//todo Regions: If relevant, view and possibly work in Simon's colored visualization
-//todo adapt to new BaseRuleset way of things - currently generate will use G&K / edit will use Vanilla
-//todo normalize properly
-//todo check completeness of translation templates
 
+//+todo adapt to new BaseRuleset way of things - currently generate will use G&K / edit will use Vanilla
 //todo Loading a map should set the mod checkboxes from the file
+//Todo mod tab: "Revert" and better Explanation
+//todo Mod check on mod tab should respect _selected_ not loaded base ruleset
+//todo Deciv Gold/Water: Font symbol loaded and stays when going Vanilla, but translation never shows
+
+//todo normalize properly
+
+//todo check completeness of translation templates
 //todo height of the resources+improvement scroller wrong
 //todo width of the tabs sometimes derails (brush line getting longer than initial width)
 //todo drag painting - migrate from old editor
@@ -28,28 +31,36 @@ import com.unciv.ui.utils.*
 //todo functional Tab for Units
 //todo allow loading maps from mods (but not saving)
 //todo copy/paste tile areas? (As tool tab, brush sized, floodfill forbidden, tab displays copied area)
-//todo TabbedPager page scroll disabling goes into Widget
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
 //todo left-align everything so a half-open drawer is more useful
 //todo combined brush
 //todo Load should check isDirty before discarding and replacing the current map
 //todo New function `convertTerrains` is auto-run after rivers the right decision for step-wise generation? Will paintRiverFromTo need the same? Will painting manually need the conversion?
+//todo work in Simon's changes to continent/landmass
+//todo work in Simon's regions - check whether generate and store or discard is the way
+//todo Regions: If relevant, view and possibly work in Simon's colored visualization
+//todo Civilopedia links from View tab
+//todo Tooltips for Edit items with info on placeability? Place this info as Brush description? In Expander?
+//todo Civilopedia links from edit items by right-click/long-tap?
 
 class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
     /** The map being edited, with mod list for that map */
     var tileMap: TileMap
     /** Flag indicating the map should be saved */
     var isDirty = false
-    /** RuleSet corresponding to [tileMap]'s mod list */
-    var ruleset = RulesetCache.getVanillaRuleset()
 
     /** The parameters to use for new maps, and the UI-shown mod list (which can be applied to the active map) */
     var newMapParameters = getDefaultParameters()
 
+    /** RuleSet corresponding to [tileMap]'s mod list */
+    var ruleset: Ruleset
+
     /** Set only by loading a map from file and used only by mods tab */
     var modsTabNeedsRefresh = false
+    /** Set by loading a map or changing ruleset and used only by the edit tabs */
+    var editTabsNeedRefresh = false
     /** Set on load, generate or paint natural wonder - used to read nat wonders for the view tab */
-    var naturalWondersNeedRefresh = true
+    var naturalWondersNeedRefresh = false
     /** Copy of same field in [MapEditorOptionsTab] */
     var tileMatchFuzziness = MapEditorOptionsTab.TileMatchFuzziness.CompleteMatch
 
@@ -61,9 +72,19 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
     private val highlightedTileGroups = mutableListOf<TileGroup>()
 
     init {
-        tileMap = map ?: TileMap(MapSize.Tiny.radius, ruleset, false)
+        if (map == null) {
+            ruleset = RulesetCache[BaseRuleset.Civ_V_GnK.fullName]!!
+            tileMap = TileMap(MapSize.Tiny.radius, ruleset, false).apply {
+                mapParameters.mapSize = MapSizeNew(MapSize.Tiny)
+            }
+        } else {
+            ruleset = map.ruleset ?:
+                RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
+            tileMap = map
+        }
 
-        mapHolder = newMapHolder()
+        mapHolder = newMapHolder() // will set up ImageGetter and translations, and all dirty flags
+        isDirty = false
 
         tabs = MapEditorMainTabs(this)
         MapEditorToolsDrawer(tabs, stage)
@@ -72,23 +93,8 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
         // so all levels select to show the tab in question is too complex. Sub-Tabs need to maintain
         // the key binding here and the used key in their `addPage`s again for the tooltips.
         fun selectGeneratePage(index: Int) { tabs.run { selectPage(1); generate.selectPage(index) } }
-        fun selectEditPage(index: Int) { tabs.run { selectPage(2); edit.selectPage(index) } }
         keyPressDispatcher[KeyCharAndCode.ctrl('n')] = { selectGeneratePage(0) }
         keyPressDispatcher[KeyCharAndCode.ctrl('g')] = { selectGeneratePage(1) }
-        keyPressDispatcher['t'] = { selectEditPage(0) }
-        keyPressDispatcher['f'] = { selectEditPage(1) }
-        keyPressDispatcher['w'] = { selectEditPage(2) }
-        keyPressDispatcher['r'] = { selectEditPage(3) }
-        keyPressDispatcher['i'] = { selectEditPage(4) }
-        keyPressDispatcher['v'] = { selectEditPage(5) }
-        keyPressDispatcher['s'] = { selectEditPage(6) }
-        keyPressDispatcher['u'] = { selectEditPage(7) }
-        keyPressDispatcher['1'] = { tabs.edit.brushSize = 1 }
-        keyPressDispatcher['2'] = { tabs.edit.brushSize = 2 }
-        keyPressDispatcher['3'] = { tabs.edit.brushSize = 3 }
-        keyPressDispatcher['4'] = { tabs.edit.brushSize = 4 }
-        keyPressDispatcher['5'] = { tabs.edit.brushSize = 5 }
-        keyPressDispatcher[KeyCharAndCode.ctrl('f')] = { tabs.edit.brushSize = -1 }
         keyPressDispatcher[KeyCharAndCode.BACK] = this::closeEditor
         keyPressDispatcher.setCheckpoint()
     }
@@ -97,7 +103,10 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
         private fun getDefaultParameters(): MapParameters {
             val lastSetup = UncivGame.Current.settings.lastGameSetup
                 ?: return MapParameters()
-            return lastSetup.mapParameters.clone().apply { reseed() }
+            return lastSetup.mapParameters.clone().apply {
+                reseed()
+                mods.removeAll(RulesetCache.getSortedBaseRulesets())
+            }
         }
         fun saveDefaultParameters(parameters: MapParameters) {
             val settings = UncivGame.Current.settings
@@ -122,18 +131,22 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
 
         stage.root.addActorAt(0, result)
         stage.scrollFocus = result
+
+        isDirty = true
+        modsTabNeedsRefresh = true
+        editTabsNeedRefresh = true
+        naturalWondersNeedRefresh = true
         return result
     }
 
-    fun loadMap(map: TileMap) {
+    fun loadMap(map: TileMap, newRuleset: Ruleset? = null) {
         mapHolder.remove()
         tileMap = map
         checkAndFixMapSize()
-        ruleset = RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
+        ruleset = newRuleset ?:
+            RulesetCache.getComplexRuleset(map.mapParameters.mods, map.mapParameters.baseRuleset)
         mapHolder = newMapHolder()
         isDirty = false
-        modsTabNeedsRefresh = true
-        naturalWondersNeedRefresh = true
         Gdx.app.postRunnable {
             // Doing this directly freezes the game, despite loadMap already running under postRunnable
             tabs.selectPage(0)
@@ -145,13 +158,14 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
             setTransients(setUnitCivTransients = false)
         }
 
-    fun applyRuleset(newRuleset: Ruleset) {
-        tileMap.mapParameters.mods = newRuleset.mods
+    fun applyRuleset(newRuleset: Ruleset, newBaseRuleset: String, mods: LinkedHashSet<String>) {
+        mapHolder.remove()
+        tileMap.mapParameters.baseRuleset = newBaseRuleset
+        tileMap.mapParameters.mods = mods
         tileMap.ruleset = newRuleset
         ruleset = newRuleset
-        ImageGetter.setNewRuleset(newRuleset)
-        UncivGame.Current.translations.translationActiveMods = ruleset.mods
-        isDirty = true
+        mapHolder = newMapHolder()
+        modsTabNeedsRefresh = false
     }
 
     internal fun closeEditor() {

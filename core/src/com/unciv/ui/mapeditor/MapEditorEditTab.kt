@@ -2,6 +2,7 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.BFS
@@ -24,7 +25,7 @@ class MapEditorEditTab(
     private val brushLabel = "Brush ([1]):".toLabel()
     private val brushCell: Cell<Actor>
 
-    private val ruleset = editorScreen.ruleset
+    private var ruleset = editorScreen.ruleset
     private val randomness = MapGenerationRandomness()  // for auto river
 
     enum class BrushHandlerType { None, Direct, Tile, Road, River, RiverFromTo }
@@ -91,11 +92,9 @@ class MapEditorEditTab(
         )
 
         for (page in AllEditSubTabs.values()) {
-            val tab = page.instantiate(this, ruleset)
-            subTabs.addPage(page.caption, tab,
-                ImageGetter.getImage(page.icon), 20f,
-                shortcutKey = KeyCharAndCode(page.key),
-                disabled = (tab as IMapEditorEditSubTabs).isDisabled())
+            // Empty tabs with placeholders, filled when activated()
+            subTabs.addPage(page.caption, Group(), ImageGetter.getImage(page.icon), 20f,
+                shortcutKey = KeyCharAndCode(page.key), disabled = true)
         }
         subTabs.selectPage(0)
 
@@ -104,7 +103,7 @@ class MapEditorEditTab(
         add(subTabs).left().fillX().row()
     }
 
-    fun selectPage(index: Int) = subTabs.selectPage(index)
+    private fun selectPage(index: Int) = subTabs.selectPage(index)
 
     fun setBrush(
         name: String,
@@ -150,14 +149,44 @@ class MapEditorEditTab(
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
+        if (editorScreen.editTabsNeedRefresh) {
+            // ruleset has changed
+            ruleset = editorScreen.ruleset
+            ImageGetter.setNewRuleset(ruleset)
+            for (page in AllEditSubTabs.values()) {
+                val tab = page.instantiate(this, ruleset)
+                subTabs.replacePage(page.caption, tab)
+                subTabs.setPageDisabled(page.caption, (tab as IMapEditorEditSubTabs).isDisabled())
+            }
+            brushHandlerType = BrushHandlerType.None
+            editorScreen.editTabsNeedRefresh = false
+        }
+
         editorScreen.tileClickHandler = this::tileClickHandler
         pager.setScrollDisabled(true)
         tileMatchFuzziness = editorScreen.tileMatchFuzziness
+
+        val keyPressDispatcher = editorScreen.keyPressDispatcher
+        keyPressDispatcher['t'] = { selectPage(0) }
+        keyPressDispatcher['f'] = { selectPage(1) }
+        keyPressDispatcher['w'] = { selectPage(2) }
+        keyPressDispatcher['r'] = { selectPage(3) }
+        keyPressDispatcher['i'] = { selectPage(4) }
+        keyPressDispatcher['v'] = { selectPage(5) }
+        keyPressDispatcher['s'] = { selectPage(6) }
+        keyPressDispatcher['u'] = { selectPage(7) }
+        keyPressDispatcher['1'] = { brushSize = 1 }
+        keyPressDispatcher['2'] = { brushSize = 2 }
+        keyPressDispatcher['3'] = { brushSize = 3 }
+        keyPressDispatcher['4'] = { brushSize = 4 }
+        keyPressDispatcher['5'] = { brushSize = 5 }
+        keyPressDispatcher[KeyCharAndCode.ctrl('f')] = { brushSize = -1 }
     }
 
     override fun deactivated(index: Int, caption: String, pager: TabbedPager) {
         pager.setScrollDisabled(true)
         editorScreen.tileClickHandler = null
+        editorScreen.keyPressDispatcher.revertToCheckPoint()
     }
 
     fun tileClickHandler(tile: TileInfo) {
