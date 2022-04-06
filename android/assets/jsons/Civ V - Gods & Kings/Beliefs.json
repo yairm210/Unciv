@@ -60,7 +60,7 @@
     {
         "name": "Goddess of Protection",
         "type": "Pantheon",
-        "uniques": ["[+30]% attacking Strength for cities"]
+        "uniques": ["[+30]% Strength for cities <when attacking>"]
     },
     {
         "name": "Goddess of the Hunt",
