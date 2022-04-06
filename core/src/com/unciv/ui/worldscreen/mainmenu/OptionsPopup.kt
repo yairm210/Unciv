@@ -82,7 +82,12 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
-        tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
+        crashHandlingThread(name="Add Advanced Options Tab") {
+            val fontNames = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
+            postCrashHandlingRunnable {
+                tabs.addPage("Advanced", getAdvancedTab(fontNames), ImageGetter.getImage("OtherIcons/Settings"), 24f)
+            }
+        }
         if (RulesetCache.size > BaseRuleset.values().size) {
             val content = ModCheckTab(this) {
                 if (modCheckFirstRun) runModChecker()
@@ -293,7 +298,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }).row()
     }
 
-    private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
+    private fun getAdvancedTab(fontNames: Collection<FontData>) = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -314,7 +319,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
         }
 
-        addFontFamilySelect(Fonts.getAvailableFontFamilyNames())
+        addFontFamilySelect(fontNames)
 
         addTranslationGeneration()
 
