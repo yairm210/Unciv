@@ -4,10 +4,7 @@ import com.badlogic.gdx.Net
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
-import java.net.DatagramSocket
-import java.net.HttpURLConnection
-import java.net.InetAddress
-import java.net.URI
+import java.net.*
 import java.nio.charset.Charset
 
 object SimpleHttp {
@@ -20,7 +17,15 @@ object SimpleHttp {
         if (uri.host == null) uri = URI("http://$url")
         if (uri.port == -1) uri = URI(uri.scheme, uri.userInfo, uri.host, 8080, uri.path, uri.query, uri.fragment)
 
-        with(uri.toURL().openConnection() as HttpURLConnection) {
+        val urlObj: URL
+        try {
+            urlObj = uri.toURL()
+        } catch (t:Throwable){
+            action(false, "Bad URL")
+            return
+        }
+        
+        with(urlObj.openConnection() as HttpURLConnection) {
             requestMethod = method  // default is GET
 
             try {
