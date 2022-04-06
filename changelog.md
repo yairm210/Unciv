@@ -1,16 +1,13 @@
 ## 4.0.4
 
-Resolved  - custom User-Agent for requests
-
 Caught bad URL parsing exceptions
 
 Resolved ANRs when opening Options menu
 
-Resolved  - solved check server connection errors on Android
+Solved 'check server connection' errors on Android
 
 By SomeTroglodyte:
-- Fix Goddess of Protection - maybe 
-- Move SimpleHttp object 
+- Fix Goddess of Protection error
 - Tabbed pager architecture update 
 
 ## 4.0.3
