@@ -61,9 +61,7 @@ class DiplomacyOverviewTab (
         update()
     }
 
-    override fun getFixedContent(): WidgetGroup {
-        return fixedContent
-    }
+    override fun getFixedContent() = fixedContent
 
     // Refresh content and determine landscape/portrait layout
     private fun update() {

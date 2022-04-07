@@ -3,7 +3,6 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.Net
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -15,7 +14,9 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.SimpleHttp
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.Ruleset.RulesetError
 import com.unciv.models.ruleset.Ruleset.RulesetErrorSeverity
@@ -34,15 +35,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
-import java.io.BufferedReader
-import java.io.DataOutputStream
-import java.io.InputStreamReader
-import java.net.DatagramSocket
-import java.net.HttpURLConnection
-import java.net.InetAddress
-import java.net.URL
-import java.nio.charset.Charset
-import java.util.*
+import java.util.UUID
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -59,7 +52,6 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
     private var modCheckBaseSelect: TranslatedSelectBox? = null
     private val modCheckResultTable = Table()
     private val selectBoxMinWidth: Float
-    private val previousMaxWorldZoom = settings.maxWorldZoomOut
 
     //endregion
 
@@ -81,7 +73,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             tabMaxHeight = (if (isPortrait()) 0.7f else 0.8f) * stage.height
         }
         tabs = TabbedPager(tabMinWidth, tabMaxWidth, 0f, tabMaxHeight,
-            headerFontSize = 21, backgroundColor = Color.CLEAR, capacity = 8)
+            headerFontSize = 21, backgroundColor = Color.CLEAR, keyPressDispatcher = this.keyPressDispatcher, capacity = 8)
         add(tabs).pad(0f).grow().row()
 
         tabs.addPage("About", getAboutTab(), ImageGetter.getExternalImage("Icon.png"), 24f)
@@ -90,15 +82,23 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
-        tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
-        if (RulesetCache.size > 1) {
-            tabs.addPage("Locate mod errors", getModCheckTab(), ImageGetter.getImage("OtherIcons/Mods"), 24f) { _, _ ->
-                if (modCheckFirstRun) runModChecker()
+        crashHandlingThread(name="Add Advanced Options Tab") {
+            val fontNames = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
+            postCrashHandlingRunnable {
+                tabs.addPage("Advanced", getAdvancedTab(fontNames), ImageGetter.getImage("OtherIcons/Settings"), 24f)
             }
+        }
+        if (RulesetCache.size > BaseRuleset.values().size) {
+            val content = ModCheckTab(this) {
+                if (modCheckFirstRun) runModChecker()
+                else runModChecker(modCheckBaseSelect!!.selected.value)
+            }
+            tabs.addPage("Locate mod errors", content, ImageGetter.getImage("OtherIcons/Mods"), 24f)
         }
         if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT) && (Gdx.input.isKeyPressed(Input.Keys.CONTROL_RIGHT) || Gdx.input.isKeyPressed(Input.Keys.ALT_RIGHT))) {
             tabs.addPage("Debug", getDebugTab(), ImageGetter.getImage("OtherIcons/SecretOptions"), 24f, secret = true)
         }
+        tabs.bindArrowKeys() // If we're sharing WorldScreen's dispatcher that's OK since it does revertToCheckPoint on update
 
         addCloseButton {
             previousScreen.game.musicController.onChange(null)
@@ -128,6 +128,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
         (previousScreen.game.screen as BaseScreen).openOptionsPopup()
+    }
+
+    private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+        SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
     }
 
     //region Page builders
@@ -274,78 +278,27 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             settings.save()
             connectionToServerButton.isEnabled = multiplayerServerTextField.text != Constants.dropboxMultiplayerServer
         }
-        serverIpTable.add(multiplayerServerTextField).width(screen.stage.width / 2)
-        add(serverIpTable).row()
+        serverIpTable.add(multiplayerServerTextField).minWidth(screen.stage.width / 2).growX()
+        add(serverIpTable).fillX().row()
 
         add("Reset to Dropbox".toTextButton().onClick {
             multiplayerServerTextField.text = Constants.dropboxMultiplayerServer
         }).row()
 
         add(connectionToServerButton.onClick {
-            val popup = Popup(screen).apply { 
+            val popup = Popup(screen).apply {
                 addGoodSizedLabel("Awaiting response...").row()
             }
             popup.open(true)
 
-            successfullyConnectedToServer { success: Boolean, result: String ->
-                if (success) {
-                    popup.addGoodSizedLabel("Success!").row()
-                    popup.addCloseButton()
-                } else {
-                    popup.addGoodSizedLabel("Failed!").row()
-                    popup.addCloseButton()
-                }
+            successfullyConnectedToServer { success: Boolean, _: String ->
+                popup.addGoodSizedLabel(if (success) "Success!" else "Failed!").row()
+                popup.addCloseButton()
             }
         }).row()
     }
 
-    fun getIpAddress(): String? {
-        DatagramSocket().use { socket ->
-            socket.connect(InetAddress.getByName("8.8.8.8"), 10002)
-            return socket.localAddress.hostAddress
-        }
-    }
-
-    object SimpleHttp {
-        fun sendGetRequest(url: String, action: (success: Boolean, result: String)->Unit) {
-            sendRequest(Net.HttpMethods.GET, url, "", action)
-        }
-
-        fun sendRequest(method: String, url: String, content: String, action: (success: Boolean, result: String)->Unit) {
-            with(URL(url).openConnection() as HttpURLConnection) {
-                requestMethod = method  // default is GET
-
-                if (method != Net.HttpMethods.GET) doOutput = true
-
-                try {
-                    if (content.isNotEmpty()) {
-                        // StandardCharsets.UTF_8 requires API 19
-                        val postData: ByteArray = content.toByteArray(Charset.forName("UTF-8"))
-                        val outputStream = DataOutputStream(outputStream)
-                        outputStream.write(postData)
-                        outputStream.flush()
-                    }
-
-                    val text = BufferedReader(InputStreamReader(inputStream)).readText()
-                    action(true, text)
-                } catch (t: Throwable) {
-                    println(t.message)
-                    val errorMessageToReturn =
-                        if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
-                        else t.message!!
-                    println(errorMessageToReturn)
-                    action(false, errorMessageToReturn)
-                }
-            }
-        }
-
-    }
-    
-    fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
-        SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
-    }
-
-    private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
+    private fun getAdvancedTab(fontNames: Collection<FontData>) = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -366,34 +319,45 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
         }
 
-        addFontFamilySelect(Fonts.getAvailableFontFamilyNames())
+        addFontFamilySelect(fontNames)
 
         addTranslationGeneration()
 
         addSetUserId()
     }
 
-    private fun getModCheckTab() = Table(BaseScreen.skin).apply {
-        defaults().pad(10f).align(Align.top)
-        val reloadModsButton = "Reload mods".toTextButton().onClick {
-            runModChecker(modCheckBaseSelect!!.selected.value)
-        }
-        add(reloadModsButton).row()
+    private class ModCheckTab(
+        options: OptionsPopup,
+        private val runAction: ()->Unit
+    ) : Table(), TabbedPager.IPageExtensions {
+        private val fixedContent = Table()
 
-        val labeledBaseSelect = Table(BaseScreen.skin).apply {
-            add("Check extension mods based on:".toLabel()).padRight(10f)
-            val baseMods = listOf(modCheckWithoutBase) + RulesetCache.getSortedBaseRulesets()
-            modCheckBaseSelect = TranslatedSelectBox(baseMods, modCheckWithoutBase, BaseScreen.skin).apply {
-                selectedIndex = 0
-                onChange {
-                    runModChecker(modCheckBaseSelect!!.selected.value)
+        init {
+            defaults().pad(10f).align(Align.top)
+
+            fixedContent.defaults().pad(10f).align(Align.top)
+            val reloadModsButton = "Reload mods".toTextButton().onClick(runAction)
+            fixedContent.add(reloadModsButton).row()
+
+            val labeledBaseSelect = Table().apply {
+                add("Check extension mods based on:".toLabel()).padRight(10f)
+                val baseMods = listOf(modCheckWithoutBase) + RulesetCache.getSortedBaseRulesets()
+                options.modCheckBaseSelect = TranslatedSelectBox(baseMods, modCheckWithoutBase, BaseScreen.skin).apply {
+                    selectedIndex = 0
+                    onChange { runAction() }
                 }
+                add(options.modCheckBaseSelect)
             }
-            add(modCheckBaseSelect)
-        }
-        add(labeledBaseSelect).row()
+            fixedContent.add(labeledBaseSelect).row()
 
-        add(modCheckResultTable)
+            add(options.modCheckResultTable)
+        }
+
+        override fun getFixedContent() = fixedContent
+
+        override fun activated(index: Int, caption: String, pager: TabbedPager) {
+            runAction()
+        }
     }
 
     private fun runModChecker(base: String = modCheckWithoutBase) {
