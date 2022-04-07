@@ -1,13 +1,11 @@
 package com.unciv.logic.multiplayer
 
 import com.badlogic.gdx.Net
+import com.unciv.UncivGame
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
-import java.net.DatagramSocket
-import java.net.HttpURLConnection
-import java.net.InetAddress
-import java.net.URI
+import java.net.*
 import java.nio.charset.Charset
 
 object SimpleHttp {
@@ -18,10 +16,18 @@ object SimpleHttp {
     fun sendRequest(method: String, url: String, content: String, action: (success: Boolean, result: String)->Unit) {
         var uri = URI(url)
         if (uri.host == null) uri = URI("http://$url")
-        if (uri.port == -1) uri = URI(uri.scheme, uri.userInfo, uri.host, 8080, uri.path, uri.query, uri.fragment)
 
-        with(uri.toURL().openConnection() as HttpURLConnection) {
+        val urlObj: URL
+        try {
+            urlObj = uri.toURL()
+        } catch (t:Throwable){
+            action(false, "Bad URL")
+            return
+        }
+        
+        with(urlObj.openConnection() as HttpURLConnection) {
             requestMethod = method  // default is GET
+            setRequestProperty("User-Agent", "Unciv/${UncivGame.Current.version}-GNU-Terry-Pratchett")
 
             try {
                 if (content.isNotEmpty()) {

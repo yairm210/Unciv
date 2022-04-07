@@ -66,7 +66,7 @@ class NativeFontAndroid(private val size: Int, private val fontFamily: String) :
 
     override fun getAvailableFont(): Collection<FontData> {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            SystemFonts.getAvailableFonts().mapNotNull {
+            SystemFonts.getAvailableFonts().asSequence().mapNotNull {
                 it.file?.nameWithoutExtension
             }.map { FontData(it) }.toSet()
         } else {
