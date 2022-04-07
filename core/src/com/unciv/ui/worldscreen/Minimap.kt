@@ -179,7 +179,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group(){
                 
                 val hexagonEdgeLength = tileImages.tileHexagonImage.width/2
 
-                borderImage.setSize(hexagonEdgeLength, hexagonEdgeLength/10)
+                borderImage.setSize(hexagonEdgeLength, hexagonEdgeLength/4)
                 borderImage.setOrigin(Align.center)
                 val hexagonCenterX = tileImages.tileHexagonImage.x + tileImages.tileHexagonImage.width/2
                 borderImage.x = hexagonCenterX - borderImage.width/2
