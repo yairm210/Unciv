@@ -655,17 +655,17 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[amount] Movement"
-	Example: "[20] Movement"
+	Example: "[3] Movement"
 
 	Applicable to: Global, Unit
 
 ??? example  "[amount] Sight"
-	Example: "[20] Sight"
+	Example: "[5] Sight"
 
 	Applicable to: Global, Unit, Terrain
 
 ??? example  "[amount] Range"
-	Example: "[20] Range"
+	Example: "[3] Range"
 
 	Applicable to: Global, Unit
 
