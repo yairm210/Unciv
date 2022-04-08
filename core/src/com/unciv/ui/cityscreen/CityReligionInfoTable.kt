@@ -8,15 +8,11 @@ import com.unciv.logic.city.CityInfoReligionManager
 import com.unciv.models.Religion
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewCategories
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
-import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.ExpanderTab
-import com.unciv.ui.utils.IconCircleGroup
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.addSeparatorVertical
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 class CityReligionInfoTable(
     private val religionManager: CityInfoReligionManager,
