@@ -7,7 +7,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameInfoPreview
 import com.unciv.logic.GameSaver
 import com.unciv.ui.saves.Gzip
-import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import java.util.*
 
 interface IFileStorage {
@@ -25,7 +24,7 @@ interface IFileMetaData {
 
 class UncivServerFileStorage(val serverUrl:String):IFileStorage {
     override fun saveFileData(fileName: String, data: String) {
-        OptionsPopup.SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data){
+        SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data){
             success: Boolean, result: String ->
             if (!success) {
                 println(result)
@@ -36,7 +35,7 @@ class UncivServerFileStorage(val serverUrl:String):IFileStorage {
 
     override fun loadFileData(fileName: String): String {
         var fileData = ""
-        OptionsPopup.SimpleHttp.sendGetRequest("$serverUrl/files/$fileName"){
+        SimpleHttp.sendGetRequest("$serverUrl/files/$fileName"){
                 success: Boolean, result: String ->
             if (!success) {
                 println(result)
@@ -52,7 +51,7 @@ class UncivServerFileStorage(val serverUrl:String):IFileStorage {
     }
 
     override fun deleteFile(fileName: String) {
-        OptionsPopup.SimpleHttp.sendRequest(Net.HttpMethods.DELETE, "$serverUrl/files/$fileName", ""){
+        SimpleHttp.sendRequest(Net.HttpMethods.DELETE, "$serverUrl/files/$fileName", ""){
                 success: Boolean, result: String ->
             if (!success) throw java.lang.Exception(result)
         }
