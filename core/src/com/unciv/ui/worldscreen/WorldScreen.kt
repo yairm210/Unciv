@@ -40,6 +40,13 @@ import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.ExitGamePopup
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
@@ -82,7 +89,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val fogOfWarButton = createFogOfWarButton()
     private val nextTurnButton = createNextTurnButton()
     private var nextTurnAction: () -> Unit = {}
-    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f)) }
+    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
+        ImageGetter.getBlue().darken(0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false

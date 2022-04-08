@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.KeyCharAndCode.Companion.makeChar
 import com.unciv.ui.utils.KeyCharAndCode.Companion.toCode
 import kotlin.math.abs

@@ -61,13 +61,22 @@ class UncivServerFileStorage(val serverUrl:String):IFileStorage {
 
 class FileStorageConflictException: Exception()
 
-class OnlineMultiplayer {
+/**
+ * Allows access to games stored on a server for multiplayer purposes.
+ * Defaults to using UncivGame.Current.settings.multiplayerServer if fileStorageIdentifier is not given.
+ *
+ * @param fileStorageIdentifier must be given if UncivGame.Current might not be initialized
+ * @see IFileStorage
+ * @see UncivGame.Current.settings.multiplayerServer
+ */
+class OnlineMultiplayer(var fileStorageIdentifier: String? = null) {
     val fileStorage: IFileStorage
     init {
-        val settings = UncivGame.Current.settings
-        fileStorage = if (settings.multiplayerServer == Constants.dropboxMultiplayerServer)
+        if (fileStorageIdentifier == null)
+            fileStorageIdentifier = UncivGame.Current.settings.multiplayerServer
+        fileStorage = if (fileStorageIdentifier == Constants.dropboxMultiplayerServer)
             DropboxFileStorage()
-        else UncivServerFileStorage(settings.multiplayerServer)
+        else UncivServerFileStorage(fileStorageIdentifier!!)
     }
 
     fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {

@@ -1,7 +1,7 @@
 package com.unciv
 
 import com.unciv.logic.CustomSaveLocationHelper
-import com.unciv.ui.utils.CrashReportSysInfo
+import com.unciv.ui.crashhandling.CrashReportSysInfo
 import com.unciv.ui.utils.LimitOrientationsHelper
 import com.unciv.ui.utils.NativeFontImplementation
 

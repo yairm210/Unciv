@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.MapUnit
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.pad
 import com.unciv.ui.worldscreen.WorldMapHolder

@@ -12,6 +12,7 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*

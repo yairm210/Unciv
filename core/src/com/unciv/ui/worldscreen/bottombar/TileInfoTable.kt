@@ -9,6 +9,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 
 class TileInfoTable(private val viewingCiv :CivilizationInfo) : Table(BaseScreen.skin) {

@@ -1,9 +1,12 @@
-package com.unciv.ui.utils
+package com.unciv.ui.popup
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.KeyCharAndCode
+import com.unciv.ui.utils.toLabel
 
 /** Variant of [Popup] pre-populated with one label, plus yes and no buttons
  * @param question The text for the label
@@ -12,10 +15,10 @@ import com.unciv.UncivGame
  * @param restoreDefault A lambda to execute when "No" is chosen
  */
 open class YesNoPopup (
-        question: String,
-        action: ()->Unit,
-        screen: BaseScreen = UncivGame.Current.worldScreen,
-        restoreDefault: ()->Unit = {}
+    question: String,
+    action: ()->Unit,
+    screen: BaseScreen = UncivGame.Current.worldScreen,
+    restoreDefault: ()->Unit = {}
     ) : Popup(screen) {
 
     /** The [Label][com.badlogic.gdx.scenes.scene2d.ui.Label] created for parameter `question` for optional layout tweaking */
@@ -32,7 +35,7 @@ open class YesNoPopup (
 
 /** Shortcut to open a [YesNoPopup] with the exit game question */
 class ExitGamePopup(screen: BaseScreen, force: Boolean = false)
-    : YesNoPopup (
+    : YesNoPopup(
         question = "Do you want to exit the game?",
         action = { Gdx.app.exit() },
         screen = screen,

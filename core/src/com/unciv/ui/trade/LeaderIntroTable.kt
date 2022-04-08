@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.BaseScreen
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.toLabel
 
 /**

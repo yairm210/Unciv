@@ -23,8 +23,8 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.utils.YesNoPopup
-import com.unciv.ui.utils.hasOpenPopups
+import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.utils.toPercent
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
@@ -764,7 +764,8 @@ object UnitActions {
     private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, showingAdditionalActions: Boolean) {
         if (unit.isFortified() || unit.canFortify() || unit.currentMovement == 0f) return
         // If this unit is working on an improvement, it cannot sleep
-        if (unit.currentTile.hasImprovementInProgress() && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)) return
+        if (unit.currentTile.hasImprovementInProgress()
+            && unit.canBuildImprovement(unit.currentTile.getTileImprovementInProgress()!!)) return
         val isSleeping = unit.isSleeping()
         val isDamaged = unit.health < 100
 

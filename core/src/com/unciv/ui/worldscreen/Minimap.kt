@@ -18,8 +18,8 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.tilegroups.ActionlessGroup
-import com.unciv.ui.utils.IconCircleGroup
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
 import kotlin.math.max

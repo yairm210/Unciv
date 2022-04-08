@@ -5,8 +5,8 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSettings
-import com.unciv.ui.utils.crashHandlingThread
-import com.unciv.ui.utils.postCrashHandlingRunnable
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import java.io.File
 
 object GameSaver {

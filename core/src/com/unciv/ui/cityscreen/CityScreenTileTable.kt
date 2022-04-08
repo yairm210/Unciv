@@ -8,9 +8,13 @@ import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.Sounds
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.roundToInt

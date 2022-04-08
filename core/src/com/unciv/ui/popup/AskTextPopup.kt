@@ -1,8 +1,11 @@
-package com.unciv.ui.utils
+package com.unciv.ui.popup
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.*
 
 /** Simple class for showing a prompt for a string to the user
  * @param screen The previous screen the user was on

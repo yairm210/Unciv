@@ -3,8 +3,7 @@ package com.unciv.ui.audio
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.ui.utils.crashHandlingThread
-import kotlin.concurrent.thread
+import com.unciv.ui.crashhandling.crashHandlingThread
 
 /** Wraps one Gdx Music instance and manages threaded loading, playback, fading and cleanup */
 class MusicTrackController(private var volume: Float) {

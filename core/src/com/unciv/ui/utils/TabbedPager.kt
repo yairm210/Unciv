@@ -8,6 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 //TODO If keys are assigned, the widget is in a popup not filling stage width, and a button is
