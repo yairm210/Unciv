@@ -61,6 +61,14 @@ class UncivServerFileStorage(val serverUrl:String):IFileStorage {
 
 class FileStorageConflictException: Exception()
 
+/**
+ * Allows access to games stored on a server for multiplayer purposes.
+ * Defaults to using UncivGame.Current.settings.multiplayerServer if fileStorageIdentifier is not given.
+ *
+ * @param fileStorageIdentifier must be given if UncivGame.Current might not be initialized
+ * @see IFileStorage
+ * @see UncivGame.Current.settings.multiplayerServer
+ */
 class OnlineMultiplayer(var fileStorageIdentifier: String? = null) {
     val fileStorage: IFileStorage
     init {
