@@ -1,7 +1,9 @@
-package com.unciv.ui.utils
+package com.unciv.ui.popup
 
-import com.badlogic.gdx.Gdx
-import kotlin.concurrent.thread
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 
 /**
  * This is an unobtrusive popup which will close itself after a given amount of time.

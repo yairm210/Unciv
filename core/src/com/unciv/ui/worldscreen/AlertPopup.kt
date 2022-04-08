@@ -14,6 +14,8 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.*
 import java.util.*

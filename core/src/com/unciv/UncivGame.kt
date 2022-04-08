@@ -20,6 +20,10 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {

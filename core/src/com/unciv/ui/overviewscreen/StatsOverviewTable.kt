@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
 

@@ -19,6 +19,8 @@ import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.cityscreen.YieldGroup
+import com.unciv.ui.images.ImageAttempter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import java.lang.IllegalStateException
 import kotlin.math.*

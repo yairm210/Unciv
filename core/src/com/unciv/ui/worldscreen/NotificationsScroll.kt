@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Notification
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import kotlin.math.min

@@ -1,6 +1,7 @@
-package com.unciv.ui.utils
+package com.unciv.ui.crashhandling
 
 import com.badlogic.gdx.Gdx
+import com.unciv.ui.utils.wrapCrashHandlingUnit
 import kotlin.concurrent.thread
 
 /** Wrapped version of [kotlin.concurrent.thread], that brings the main game loop to a [com.unciv.CrashScreen] if an exception happens. */

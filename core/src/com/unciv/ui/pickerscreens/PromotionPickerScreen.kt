@@ -10,6 +10,8 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.AskTextPopup
 import com.unciv.ui.utils.*
 
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {

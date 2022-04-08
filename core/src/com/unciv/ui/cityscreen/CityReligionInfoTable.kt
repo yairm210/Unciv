@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.city.CityInfoReligionManager
 import com.unciv.models.Religion
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 
 class CityReligionInfoTable(

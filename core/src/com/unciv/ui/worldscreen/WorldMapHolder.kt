@@ -25,6 +25,10 @@ import com.unciv.logic.map.*
 import com.unciv.models.*
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -273,6 +277,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
              * so that and that alone will be relegated to the concurrent thread.
              */
 
+            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
+             * And so, all UI editing will be done on the main thread.
+             * The only "heavy lifting" that needs to be done is getting the turns to get there,
+             * so that and that alone will be relegated to the concurrent thread.
+             */
+
             val unitToTurnsToTile = HashMap<MapUnit, Int>()
             for (unit in selectedUnits) {
                 val shortestPath = ArrayList<TileInfo>()
@@ -414,7 +424,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
         val swapWithButton = Group().apply { width = buttonSize;height = buttonSize; }
         swapWithButton.addActor(ImageGetter.getCircle().apply { width = buttonSize; height = buttonSize })
-        swapWithButton.addActor(ImageGetter.getImage("OtherIcons/Swap")
+        swapWithButton.addActor(
+            ImageGetter.getImage("OtherIcons/Swap")
             .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2; center(swapWithButton) })
 
         val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)

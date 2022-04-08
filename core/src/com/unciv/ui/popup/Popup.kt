@@ -1,4 +1,4 @@
-package com.unciv.ui.utils
+package com.unciv.ui.popup
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.*
 
 /**
  * Base class for all Popups, i.e. Tables that get rendered in the middle of a screen and on top of everything else

@@ -14,6 +14,13 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.YesNoPopup
+import com.unciv.ui.popup.closeAllPopups
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import kotlin.math.max

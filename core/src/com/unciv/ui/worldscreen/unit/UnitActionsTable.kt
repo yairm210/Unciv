@@ -6,6 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.UnitAction
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.images.IconTextButton
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.KeyPressDispatcher.Companion.keyboardAvailable
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
