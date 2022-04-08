@@ -66,9 +66,10 @@ class OnlineMultiplayer(var fileStorageIdentifier: String? = null) {
     init {
         if (fileStorageIdentifier == null)
             fileStorageIdentifier = UncivGame.Current.settings.multiplayerServer
-        if (fileStorageIdentifier == Constants.dropboxMultiplayerServer)
-            fileStorage = DropboxFileStorage()
-        else fileStorage = UncivServerFileStorage(fileStorageIdentifier!!)
+        fileStorage = if (fileStorageIdentifier == Constants.dropboxMultiplayerServer)
+            DropboxFileStorage()
+        else
+            UncivServerFileStorage(fileStorageIdentifier!!)
     }
 
     fun tryUploadGame(gameInfo: GameInfo, withPreview: Boolean) {

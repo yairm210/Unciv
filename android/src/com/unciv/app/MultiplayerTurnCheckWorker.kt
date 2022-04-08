@@ -13,7 +13,6 @@ import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
-import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
@@ -49,7 +48,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         private const val USER_ID = "USER_ID"
         private const val CONFIGURED_DELAY = "CONFIGURED_DELAY"
         private const val PERSISTENT_NOTIFICATION_ENABLED = "PERSISTENT_NOTIFICATION_ENABLED"
-        private const val FILE_STORAGE = Constants.dropboxMultiplayerServer
+        private const val FILE_STORAGE = "FILE_STORAGE"
 
         fun enqueue(appContext: Context,
                     delayInMinutes: Int, inputData: Data) {
