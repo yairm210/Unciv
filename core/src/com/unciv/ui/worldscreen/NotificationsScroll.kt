@@ -24,7 +24,7 @@ class NotificationsScroll(
         const val inverseScaleFactor = 1f / scaleFactor
         /** Limit width by wrapping labels to this percentage of the stage */
         const val maxWidthOfStage = 0.333f
-        /** Logical size of the notification icons - note fontsize is coded separately */
+        /** Logical size of the notification icons - note font size is coded separately */
         const val iconSize = 30f
     }
 
@@ -110,5 +110,9 @@ class NotificationsScroll(
         notificationsTable.invalidate() // looks redundant but isn't
         // (the flags it sets are already on when inspected in debugger, but when omitting it the
         // ScrollPane will not properly scroll down to the new maxY when TileInfoTable changes to a smaller height)
+    }
+
+    fun setTopRight (right: Float, top: Float) {
+        setPosition(right - width * scaleFactor, top - height * scaleFactor)
     }
 }

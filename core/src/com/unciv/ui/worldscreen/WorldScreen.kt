@@ -467,8 +467,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         }
         updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it
         notificationsScroll.update(viewingCiv.notifications, bottomTileInfoTable.height)
-        notificationsScroll.setPosition(stage.width - notificationsScroll.width * 0.5f - 10f,
-                nextTurnButton.y - notificationsScroll.height * 0.5f - 5f)
+        notificationsScroll.setTopRight(stage.width - 10f, nextTurnButton.y - 5f)
     }
 
     private fun getCurrentTutorialTask(): String {
