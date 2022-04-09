@@ -109,6 +109,11 @@ class ReligionOverviewTab(
         }
     }
 
+    override fun select(selection: String) {
+        persistableData.selectedReligion = selection
+        loadReligionButtons()  // so the icon is "highlighted"
+        loadReligion(selection)
+    }
     private fun loadReligion(religionName: String?) {
         if (religionName == null) return
         val religion = gameInfo.religions[religionName] ?: return
