@@ -24,6 +24,7 @@ import com.unciv.ui.audio.Sounds
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
+import sun.security.jgss.spnego.SpNegoCredElement
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -197,6 +198,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun render() = wrappedCrashHandlingRender()
 
     override fun dispose() {
+        Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
+        
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
@@ -205,7 +208,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val numThreads = Thread.activeCount()
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
-
+        
         if (isGameInfoInitialized()) {
             val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
             if (autoSaveThread != null && autoSaveThread.isAlive) {
