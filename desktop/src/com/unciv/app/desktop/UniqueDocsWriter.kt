@@ -7,15 +7,52 @@ import com.unciv.models.translations.fillPlaceholders
 import java.io.File
 
 class UniqueDocsWriter {
+    companion object {
+        /**
+         * Switch from each Unique shown once under one UniqueTarget heading chosen from targetTypes (`true`)
+         * to showing each Unique repeatedly under each UniqueTarget heading it applies to (`false`).
+         */
+        private const val showUniqueOnOneTarget = true
+
+        /** Switch **on** the display of _inherited_ UniqueTargets in "Applicable to:" */
+        private const val showInheritedTargets = false
+
+        private fun UniqueTarget.allTargets(): Sequence<UniqueTarget> = sequence {
+            if (showInheritedTargets && inheritsFrom != null) yieldAll(inheritsFrom!!.allTargets())
+            yield(this@allTargets)
+        }
+        private fun UniqueType.allTargets(): Sequence<UniqueTarget> =
+            targetTypes.asSequence().flatMap { it.allTargets() }.distinct()
+        private fun UniqueTarget.allUniqueTypes(): Sequence<UniqueType> =
+            UniqueType.values().asSequence().filter {
+                this in it.targetTypes
+            }
+    }
     fun toLink(string: String): String {
         return "#" + string.split(' ').joinToString("-") { it.lowercase() }
     }
 
     fun write() {
-        val targetTypesToUniques = UniqueType.values().groupBy { it.targetTypes.minOrNull()!! }
-            .toSortedMap()
+        // This will output each unique only once, even if it has several targets.
+        // Each is grouped under the UniqueTarget is is allowed for with the lowest enum ordinal.
+        // UniqueTarget.inheritsFrom is _not_ resolved for this.
+        // The UniqueType are shown in enum order within their group, and groups are ordered
+        // by their UniqueTarget.ordinal as well - source code order.
+        val targetTypesToUniques: Map<UniqueTarget, List<UniqueType>> =
+            if(showUniqueOnOneTarget)
+                UniqueType.values().asSequence()
+                    .groupBy { it.targetTypes.minOrNull()!! }
+                    .toSortedMap()
+            else
+        // if, on the other hand, we wish to list every UniqueType with multiple targets under
+        // _each_ of the groups it is applicable to, then this might do:
+                UniqueTarget.values().asSequence().associateWith { target ->
+                    target.allTargets().flatMap { inheritedTarget ->
+                        inheritedTarget.allUniqueTypes()
+                    }.distinct().toList()
+                }
 
-        val capacity = 25 + targetTypesToUniques.size + UniqueType.values().size * 3
+        val capacity = 25 + targetTypesToUniques.size + UniqueType.values().size * (if (showUniqueOnOneTarget) 3 else 16)
         val lines = ArrayList<String>(capacity)
         lines += "# Uniques"
         lines += "Simple unique parameters are explained by mouseover. Complex parameters are explained in [Unique parameter types](../unique parameters)"
@@ -36,7 +73,7 @@ class UniqueDocsWriter {
                     val paramExamples = uniqueType.parameterTypeMap.map { it.first().docExample }.toTypedArray()
                     lines += "\tExample: \"${uniqueText.fillPlaceholders(*paramExamples)}\"\n"
                 }
-                lines += "\tApplicable to: " + uniqueType.targetTypes.sorted().joinToString()
+                lines += "\tApplicable to: " + uniqueType.allTargets().sorted().joinToString()
                 lines += ""
             }
         }
