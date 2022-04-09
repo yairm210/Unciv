@@ -111,6 +111,10 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     class UnitLayerGroupClass:Group(){
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+        override fun act(delta: Float) { // No 'snapshotting' since we trust it wil remain the same
+            for (child in children)
+                child.act(delta)
+        }
     }
 
     class UnitImageLayerGroupClass:ActionlessGroup(){
