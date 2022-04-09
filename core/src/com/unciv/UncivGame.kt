@@ -75,6 +75,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val translations = Translations()
 
     override fun create() {
+        isInitialized = false // this could be on reload, therefore we need to keep setting this to false
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false
@@ -100,7 +101,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
-        if(settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
+        if (settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
             settings.tileSet = "FantasyHex"
         }
 
@@ -166,7 +167,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun tryLoadDeepLinkedGame() {
         if (deepLinkedMultiplayerGame != null) {
             try {
-                loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
+                val onlineGame = OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!)
+                loadGame(onlineGame)
             } catch (ex: Exception) {
                 setScreen(MainMenuScreen())
             }
