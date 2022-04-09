@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.Constants
 import com.unciv.models.translations.tr
-import kotlin.math.min
+import kotlin.math.floor
 
 /** A [Label] that unlike the original participates correctly in layout
  *  Caveat: You still need to turn wrap on _after_ instantiation, doing it here in init leads to hell.
@@ -16,9 +16,10 @@ class WrappableLabel(
     text: String,
     private val expectedWidth: Float,
     fontColor: Color = Color.WHITE,
-    fontSize: Int = Constants.defaultFontSize
+    private val fontSize: Int = Constants.defaultFontSize
 ) : Label(text.tr(), BaseScreen.skin) {
     private var _measuredWidth = 0f
+    private var optimizedWidth = Float.MAX_VALUE
 
     init {
         if (fontColor != Color.WHITE || fontSize!=Constants.defaultFontSize) {
@@ -40,6 +41,27 @@ class WrappableLabel(
     private fun getMeasuredWidth(): Float = if (wrap) _measuredWidth else super.getPrefWidth()
 
     override fun getMinWidth() = 48f  // ~ 2 chars 
-    override fun getPrefWidth() = min(getMeasuredWidth(), expectedWidth)
+    override fun getPrefWidth() = minOf(getMeasuredWidth(), expectedWidth, optimizedWidth)
     override fun getMaxWidth() = getMeasuredWidth()
+
+    /** If the label can wrap and needs to, try to determine the minimum width that will still wrap
+     *  to the least number of lines possible. Return that value, and set as new prefWidth.  */
+    fun optimizePrefWidth(): Float {
+        if (!wrap) return _measuredWidth
+
+        val labelRows = floor(_measuredWidth / expectedWidth) + 1f
+        var optimizedWidth = _measuredWidth / labelRows
+        var lineWidth = 0f
+        for (word in text.split(Regex("\\b"))) {
+            if (word.isEmpty()) continue
+            val wordWidth = WrappableLabel(word, Float.MAX_VALUE, fontSize = fontSize).prefWidth
+            lineWidth += wordWidth
+            if (lineWidth > optimizedWidth) {
+                if (word.isNotBlank()) optimizedWidth = lineWidth
+                lineWidth = 0f
+            }
+        }
+        this.optimizedWidth = optimizedWidth.coerceAtMost(expectedWidth)
+        return optimizedWidth
+    }
 }
