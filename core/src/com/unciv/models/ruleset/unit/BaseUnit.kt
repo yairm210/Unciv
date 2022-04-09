@@ -13,6 +13,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.utils.Fonts
+import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -529,11 +530,9 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            return filter.removePrefix("{").removeSuffix("}").split("} {")
-                .all { matchesFilter(it) }
+        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            ?: when (filter) {
 
-        return when (filter) {
             unitType -> true
             name -> true
             replaces -> true

@@ -23,6 +23,7 @@ import com.unciv.models.ruleset.unique.UniqueMapTyped
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.utils.filterAndLogic
 import com.unciv.ui.utils.toPercent
 import java.text.DecimalFormat
 import kotlin.math.pow
@@ -1089,11 +1090,9 @@ class MapUnit {
 
     /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
-        if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
-            return filter.removePrefix("{").removeSuffix("}").split("} {")
-                .all { matchesFilter(it) }
-        
-        return when (filter) {
+        return filter.filterAndLogic { matchesFilter(it) } // multiple types at once - AND logic. Looks like:"{Military} {Land}"
+            ?: when (filter) {
+
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100

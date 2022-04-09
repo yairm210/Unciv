@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.TranslationFileWriter  // for  Kdoc only
+import com.unciv.ui.utils.filterCompositeLogic
 
 // 'region' names beginning with an underscore are used here for a prettier "Structure window" - they go in front ot the rest.
 
@@ -63,9 +64,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if ('{' in parameterText) // "{filter} {filter}" for and logic
-                return parameterText.removePrefix("{").removeSuffix("}").split("} {")
-                    .mapNotNull { getErrorSeverity(it, ruleset) }
-                    .maxByOrNull { it.ordinal }
+                return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
             if (parameterText in knownValues) return null
             return BaseUnitFilter.getErrorSeverity(parameterText, ruleset)
         }
@@ -76,6 +75,8 @@ enum class UniqueParameterType(
     BaseUnitFilter("baseUnitFilter") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
+            if ('{' in parameterText) // "{filter} {filter}" for and logic
+                return parameterText.filterCompositeLogic({ getErrorSeverity(it, ruleset) }) { a, b -> maxOf(a, b) }
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return null
             return UnitTypeFilter.getErrorSeverity(parameterText, ruleset)
         }
