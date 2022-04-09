@@ -20,7 +20,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.*
 import kotlin.math.PI
 import kotlin.math.atan
-import com.unciv.ui.tilegroups.ActionlessGroup
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.onClick
@@ -154,10 +153,14 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group(){
             if (tileInfo.isCityCenter() && tileImages.owningCiv != tileInfo.getOwner()) {
                 tileImages.cityCircleImage?.remove()
                 val nation = tileInfo.getOwner()!!.nation
-                val hex = tileImages.tileHexagonImage
+                val hex = tileImages.tileHexagonImage                
+                val nationIconSize = (if (tileInfo.getCity()!!.isCapital() && tileInfo.getOwner()!!.isMajorCiv()) 1.667f else 1.25f)* hex.width
                 val nationIcon= ImageGetter.getCircle().apply { color = nation.getInnerColor() }
-                    .surroundWithCircle(hex.width, color = nation.getOuterColor())
-                nationIcon.setPosition(hex.x, hex.y)
+                    .surroundWithCircle(nationIconSize, color = nation.getOuterColor())
+                val hexCenterXPosition = hex.x + hex.width/2
+                nationIcon.x = hexCenterXPosition - nationIconSize/2
+                val hexCenterYPosition = hex.y + hex.height/2
+                nationIcon.y = hexCenterYPosition - nationIconSize/2
                 nationIcon.onClick {
                     mapHolder.setCenterPosition(tileInfo.position)
                 }
@@ -167,6 +170,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group(){
             
             if (tileImages.owningCiv != tileInfo.getOwner()){
                 tileImages.neighborToBorderImage.values.forEach { it.remove() }
+                tileImages.owningCiv = tileInfo.getOwner()
             }
             
             for (neighbor in tileInfo.neighbors){
