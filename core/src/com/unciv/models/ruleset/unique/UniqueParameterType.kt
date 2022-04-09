@@ -219,7 +219,7 @@ enum class UniqueParameterType(
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            //if (Stat.values().any { it.name == parameterText }) return null   // TODO why was this here
+            if (Stat.values().any { it.name == parameterText }) return null   // Allow filtering Science, Culture buildings
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
@@ -421,17 +421,6 @@ enum class UniqueParameterType(
         override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
-    //TODO the Unique "Can [] [] times" that should use this isn't typed yet
-    ReligiousAction("religiousAction", "Religious Action Filters") {
-        private val knownValues = setOf(Constants.spreadReligionAbilityCount, Constants.removeHeresyAbilityCount)
-        override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
-                UniqueType.UniqueComplianceErrorSeverity? = when (parameterText) {
-            in knownValues -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
-        }
-        override fun getTranslationWriterStringsForOutput() = knownValues
-    },
-
     /** [UniqueType.ConditionalTech] and others, no central implementation */
     Technology("tech") {
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -496,6 +485,7 @@ enum class UniqueParameterType(
             return if (parameterText in knownValues) null
             else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
+        override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     /** Behaves like [Unknown], but states explicitly the parameter is OK and its contents are ignored */
