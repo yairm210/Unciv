@@ -49,9 +49,10 @@ class PopulationManager {
             foodRequired *= cityInfo.civInfo.gameInfo.getDifficulty().aiCityGrowthModifier
         return foodRequired.toInt()
     }
-    
+
     //endregion
 
+    /** Implements [UniqueParameterType.PopulationFilter][com.unciv.models.ruleset.unique.UniqueParameterType.PopulationFilter] */
     fun getPopulationFilterAmount(filter: String): Int {
         return when (filter) {
             "Specialists" -> getNumberOfSpecialists()

@@ -527,6 +527,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         else ruleset.units[replaces!!]!!
     }
 
+    /** Implements [UniqueParameterType.BaseUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.BaseUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
         if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
             return filter.removePrefix("{").removeSuffix("}").split("} {")

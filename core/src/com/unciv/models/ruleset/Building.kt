@@ -707,6 +707,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
         return true
     }
 
+    /** Implements [UniqueParameterType.BuildingFilter] */
     fun matchesFilter(filter: String): Boolean {
         return when (filter) {
             "All" -> true

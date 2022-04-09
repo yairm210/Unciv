@@ -1087,6 +1087,7 @@ class MapUnit {
         )
     }
 
+    /** Implements [UniqueParameterType.MapUnitFilter][com.unciv.models.ruleset.unique.UniqueParameterType.MapUnitFilter] */
     fun matchesFilter(filter: String): Boolean {
         if (filter.contains('{')) // multiple types at once - AND logic. Looks like:"{Military} {Land}"
             return filter.removePrefix("{").removeSuffix("}").split("} {")

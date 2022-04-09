@@ -176,6 +176,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset, val randomness: MapGeneration
         tile.setTerrainTransients()
     }
 
+    /** Implements [UniqueParameterType.SimpleTerrain][com.unciv.models.ruleset.unique.UniqueParameterType.SimpleTerrain] */
     private fun TileInfo.matchesWonderFilter(filter: String) = when (filter) {
         "Elevated" -> baseTerrain == Constants.mountain || isHill()
         "Water" -> isWater
