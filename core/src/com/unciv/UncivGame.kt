@@ -24,7 +24,6 @@ import com.unciv.ui.audio.Sounds
 import com.unciv.ui.crashhandling.crashHandlingThread
 import com.unciv.ui.crashhandling.postCrashHandlingRunnable
 import com.unciv.ui.images.ImageGetter
-import sun.security.jgss.spnego.SpNegoCredElement
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
