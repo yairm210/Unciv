@@ -1,3 +1,19 @@
+## 4.0.5
+
+Added borders to minimap 
+
+Resolved  - package reorg
+
+Cities that become capital no longer continue being razed
+
+By SomeTroglodyte:
+- Make Icons clickable in religions per city display 
+- Nicer NotificationScroll 
+
+Fixed a bug where crosshairs are everywhere with the 'attack when embarked' unique  - By xlenstra
+
+Fixed turn checker crashes   - By GGGuenni
+
 ## 4.0.4
 
 Caught bad URL parsing exceptions
