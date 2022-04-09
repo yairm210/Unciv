@@ -1,4 +1,4 @@
-package com.unciv
+package com.unciv.ui.crashhandling
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -7,7 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Json
+import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
 import java.io.PrintWriter
@@ -180,7 +185,9 @@ class CrashScreen(val exception: Throwable): BaseScreen() {
                     this@CrashScreen
                 )
             }
-        val reportButton = IconTextButton("Open Issue Tracker", ImageGetter.getImage("OtherIcons/Link"), Constants.headingFontSize)
+        val reportButton = IconTextButton("Open Issue Tracker", ImageGetter.getImage("OtherIcons/Link"),
+            Constants.headingFontSize
+        )
             .onClick {
                 if (copied) {
                     Gdx.net.openURI("https://github.com/yairm210/Unciv/issues")

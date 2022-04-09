@@ -1,4 +1,4 @@
-package com.unciv.ui.utils
+package com.unciv.ui.images
 
 /**
  * Metaprogrammy class for short-circuitingly finding the first existing of multiple image options according to [ImageGetter.imageExists].

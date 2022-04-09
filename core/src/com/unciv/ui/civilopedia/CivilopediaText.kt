@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unique.Unique
 import com.unciv.models.stats.INamed
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import kotlin.math.max
 

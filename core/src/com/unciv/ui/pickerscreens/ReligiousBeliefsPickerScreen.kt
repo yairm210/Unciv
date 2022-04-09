@@ -11,6 +11,8 @@ import com.unciv.models.Religion
 import com.unciv.models.ruleset.Belief
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.AskTextPopup
 import com.unciv.ui.utils.*
 
 class ReligiousBeliefsPickerScreen (

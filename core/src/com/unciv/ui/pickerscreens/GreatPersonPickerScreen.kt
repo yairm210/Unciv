@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 
 class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {

@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min

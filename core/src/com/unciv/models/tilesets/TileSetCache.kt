@@ -5,7 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 
 object TileSetCache : HashMap<String, TileSetConfig>() {
     private data class TileSetAndMod(val tileSet: String, val mod: String)

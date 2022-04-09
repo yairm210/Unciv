@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Disposable
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.stats.Stat
+import com.unciv.ui.images.ImageGetter
 
 interface NativeFontImplementation {
     fun getFontSize(): Int

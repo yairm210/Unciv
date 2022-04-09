@@ -5,7 +5,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameStarter
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.ui.utils.crashHandlingThread
+import com.unciv.ui.crashhandling.crashHandlingThread
 import kotlin.time.Duration
 import kotlin.math.max
 import kotlin.time.ExperimentalTime

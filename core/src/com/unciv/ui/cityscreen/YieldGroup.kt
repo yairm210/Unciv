@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.surroundWithCircle
 
 class YieldGroup : HorizontalGroup() {

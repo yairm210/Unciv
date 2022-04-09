@@ -1,6 +1,5 @@
 ﻿package com.unciv
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -17,16 +16,19 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.models.metadata.GameSetupInfo
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
+import com.unciv.ui.popup.*
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
-import kotlin.concurrent.thread
 
 class MainMenuScreen: BaseScreen() {
     private val autosave = "Autosave"
-    private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
+    private val backgroundTable = Table().apply { background= ImageGetter.getBackground(Color.WHITE) }
     private val singleColumn = isCrampedPortrait()
 
     /** Create one **Main Menu Button** including onClick/key binding
@@ -141,7 +143,7 @@ class MainMenuScreen: BaseScreen() {
         table.center(scrollPane)
 
         onBackButtonClicked {
-            if(hasOpenPopups()) {
+            if (hasOpenPopups()) {
                 closeAllPopups()
                 return@onBackButtonClicked
             }
@@ -151,7 +153,7 @@ class MainMenuScreen: BaseScreen() {
 
 
     /** Shows the [Popup] with the map editor initialization options */
-    class MapEditorMainScreenPopup(screen: MainMenuScreen):Popup(screen){
+    class MapEditorMainScreenPopup(screen: MainMenuScreen): Popup(screen){
         init{
             // Using MainMenuScreen.getMenuButton - normally that would place key bindings into the
             // screen's key dispatcher, but we need them in this Popup's dispatcher instead.

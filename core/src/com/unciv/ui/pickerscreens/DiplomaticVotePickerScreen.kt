@@ -4,7 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.onClick
 
 class DiplomaticVotePickerScreen(private val votingCiv: CivilizationInfo) : PickerScreen() {

@@ -1,4 +1,4 @@
-package com.unciv.ui.utils
+package com.unciv.ui.images
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
@@ -24,6 +24,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.tilesets.TileSetCache
+import com.unciv.ui.utils.*
 import kotlin.math.atan2
 import kotlin.math.max
 import kotlin.math.min
@@ -54,7 +55,7 @@ object ImageGetter {
 
     /** Required every time the ruleset changes, in order to load mod-specific images */
     fun setNewRuleset(ruleset: Ruleset) {
-        this.ruleset = ruleset
+        ImageGetter.ruleset = ruleset
         textureRegionDrawables.clear()
         // These are the drawables from the base game
         for (region in atlas.regions) {

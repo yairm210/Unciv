@@ -11,12 +11,16 @@ import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.MapParametersTable
 import com.unciv.ui.newgamescreen.ModCheckboxTable
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
-import kotlin.concurrent.thread
 import kotlin.math.max
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 

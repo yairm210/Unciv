@@ -20,6 +20,11 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.*
 import kotlin.math.PI
 import kotlin.math.atan
+import com.unciv.ui.tilegroups.ActionlessGroup
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.surroundWithCircle
 import kotlin.math.max
 import kotlin.math.min
 

@@ -7,6 +7,7 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.*
