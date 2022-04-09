@@ -2,7 +2,7 @@
 
 Added borders to minimap 
 
-Resolved  - package reorg
+Resolved Diplomatic Victory check not triggering for human player
 
 Cities that become capital no longer continue being razed
 
