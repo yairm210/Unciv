@@ -957,18 +957,24 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     ;
 
+    /** A map of allowed [UniqueParameterType]s per parameter position. Initialized from overridable function [parameterTypeMapInitializer]. */
+    val parameterTypeMap = parameterTypeMapInitializer()
+
     /** For uniques that have "special" parameters that can accept multiple types, we can override them manually
      *  For 95% of cases, auto-matching is fine. */
-    val parameterTypeMap = ArrayList<List<UniqueParameterType>>()
-    val targetTypes = HashSet<UniqueTarget>()
-
-    init {
+    open fun parameterTypeMapInitializer(): ArrayList<List<UniqueParameterType>> {
+        val map = ArrayList<List<UniqueParameterType>>()
         for (placeholder in text.getPlaceholderParameters()) {
             val matchingParameterTypes = placeholder
                 .split('/')
                 .map { UniqueParameterType.safeValueOf(it.replace(numberRegex, "")) }
-            parameterTypeMap.add(matchingParameterTypes)
+            map.add(matchingParameterTypes)
         }
+        return map
+    }
+    val targetTypes = HashSet<UniqueTarget>()
+
+    init {
         targetTypes.addAll(targets)
     }
 
