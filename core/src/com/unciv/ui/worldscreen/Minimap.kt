@@ -17,7 +17,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.tilegroups.ActionlessGroup
+import com.unciv.ui.utils.*
+import kotlin.math.PI
+import kotlin.math.atan
 import com.unciv.ui.images.IconCircleGroup
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.onClick
@@ -27,11 +29,14 @@ import kotlin.math.min
 
 class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group(){
     private val allTiles = Group()
-    private val tileImages = HashMap<TileInfo, Image>()
+    class MinimapTileImages(val tileHexagonImage:Image) {
+        var cityCircleImage: IconCircleGroup? = null
+        var owningCiv: CivilizationInfo? = null
+        var neighborToBorderImage = HashMap<TileInfo,Image>()
+    }
+    private val tileinfoToImages = HashMap<TileInfo, MinimapTileImages>()
     private val scrollPositionIndicators = ArrayList<ClippingImage>()
-
-    private val cityIconsGroup = ActionlessGroup()
-
+    
     init {
         isTransform = false // don't try to resize rotate etc - this table has a LOT of children so that's valuable render time!
 
@@ -68,7 +73,7 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group(){
                 mapHolder.setCenterPosition(tileInfo.position)
             }
             allTiles.addActor(hex)
-            tileImages[tileInfo] = hex
+            tileinfoToImages[tileInfo] = MinimapTileImages(hex)
 
             topX = max(topX, hex.x + groupSize)
             topY = max(topY, hex.y + groupSize)
@@ -98,8 +103,6 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group(){
 
         setSize(allTiles.width, allTiles.height)
         addActor(allTiles)
-        cityIconsGroup.setSize(width, height)
-        addActor(cityIconsGroup)
     }
 
     /**### Transform and set coordinates for the scrollPositionIndicator.
@@ -136,29 +139,72 @@ class Minimap(val mapHolder: WorldMapHolder, minimapSize: Int) : Group(){
         }
     }
 
-    private class CivAndImage(val civInfo: CivilizationInfo, val image: IconCircleGroup)
-    private val cityIcons = HashMap<TileInfo, CivAndImage>()
-
     fun update(cloneCivilization: CivilizationInfo) {
-        for ((tileInfo, hex) in tileImages) {
-            hex.color = when {
+        for ((tileInfo, tileImages) in tileinfoToImages) {
+            tileImages.tileHexagonImage.color = when {
                 !(UncivGame.Current.viewEntireMapForDebug || cloneCivilization.exploredTiles.contains(tileInfo.position)) -> Color.DARK_GRAY
                 tileInfo.isCityCenter() && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getInnerColor()
                 tileInfo.getCity() != null && !tileInfo.isWater -> tileInfo.getOwner()!!.nation.getOuterColor()
                 else -> tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
             }
-
-            if (tileInfo.isCityCenter() && cloneCivilization.exploredTiles.contains(tileInfo.position)
-                    && (!cityIcons.containsKey(tileInfo) || cityIcons[tileInfo]!!.civInfo != tileInfo.getOwner())) {
-                if (cityIcons.containsKey(tileInfo)) cityIcons[tileInfo]!!.image.remove() // city changed hands - remove old icon
+            
+            if (!cloneCivilization.exploredTiles.contains(tileInfo.position)) continue
+            
+            if (tileInfo.isCityCenter() && tileImages.owningCiv != tileInfo.getOwner()) {
+                tileImages.cityCircleImage?.remove()
                 val nation = tileInfo.getOwner()!!.nation
-                val nationIcon= ImageGetter.getCircle().apply { color = nation.getInnerColor() }.surroundWithCircle(hex.width, color = nation.getOuterColor())
-                nationIcon.setPosition(hex.x, hex.y)
+                val hex = tileImages.tileHexagonImage                
+                val nationIconSize = (if (tileInfo.getCity()!!.isCapital() && tileInfo.getOwner()!!.isMajorCiv()) 1.667f else 1.25f)* hex.width
+                val nationIcon= ImageGetter.getCircle().apply { color = nation.getInnerColor() }
+                    .surroundWithCircle(nationIconSize, color = nation.getOuterColor())
+                val hexCenterXPosition = hex.x + hex.width/2
+                nationIcon.x = hexCenterXPosition - nationIconSize/2
+                val hexCenterYPosition = hex.y + hex.height/2
+                nationIcon.y = hexCenterYPosition - nationIconSize/2
                 nationIcon.onClick {
                     mapHolder.setCenterPosition(tileInfo.position)
                 }
-                cityIconsGroup.addActor(nationIcon)
-                cityIcons[tileInfo] = CivAndImage(tileInfo.getOwner()!!, nationIcon)
+                tileImages.cityCircleImage = nationIcon
+                addActor(nationIcon)
+            }
+            
+            if (tileImages.owningCiv != tileInfo.getOwner()){
+                tileImages.neighborToBorderImage.values.forEach { it.remove() }
+                tileImages.owningCiv = tileInfo.getOwner()
+            }
+            
+            for (neighbor in tileInfo.neighbors){
+                val shouldHaveBorderDisplayed = tileInfo.getOwner() != null &&
+                        neighbor.getOwner() != tileInfo.getOwner() 
+                if (!shouldHaveBorderDisplayed) {
+                    tileImages.neighborToBorderImage[neighbor]?.remove()
+                    tileImages.neighborToBorderImage.remove(neighbor)
+                    continue
+                }
+                if (tileImages.neighborToBorderImage.containsKey(neighbor)) continue
+                val borderImage = ImageGetter.getWhiteDot()
+                
+                // copied from tilegroup border logic
+                
+                val hexagonEdgeLength = tileImages.tileHexagonImage.width/2
+
+                borderImage.setSize(hexagonEdgeLength, hexagonEdgeLength/4)
+                borderImage.setOrigin(Align.center)
+                val hexagonCenterX = tileImages.tileHexagonImage.x + tileImages.tileHexagonImage.width/2
+                borderImage.x = hexagonCenterX - borderImage.width/2
+                val hexagonCenterY = tileImages.tileHexagonImage.y + tileImages.tileHexagonImage.height/2
+                borderImage.y = hexagonCenterY - borderImage.height/2
+                // Until this point, the border image is now CENTERED on the tile it's a border for
+
+                val relativeWorldPosition = tileInfo.tileMap.getNeighborTilePositionAsWorldCoords(tileInfo, neighbor)
+                val sign = if (relativeWorldPosition.x < 0) -1 else 1
+                val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
+
+                borderImage.moveBy(-relativeWorldPosition.x * hexagonEdgeLength/2,
+                    -relativeWorldPosition.y * hexagonEdgeLength/2)
+                borderImage.rotateBy(angle)
+                borderImage.color = tileInfo.getOwner()!!.nation.getInnerColor()
+                addActor(borderImage)
             }
         }
     }
@@ -192,15 +238,10 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
             if (backgroundColor != null) {
                 innerActor = innerActor
                     .surroundWithCircle(30f)
-                    .apply {
-                        circle.color = backgroundColor
-
-                    }
+                    .apply { circle.color = backgroundColor }
             }
             // So, the "Food" and "Population" stat icons have green as part of their image, but the "Cattle" icon needs a background colour, which is… An interesting mixture/reuse of texture data and render-time processing.
-            innerActor.surroundWithCircle(40f).apply {
-                circle.color = Color.BLACK
-            }
+            innerActor.surroundWithCircle(40f).apply { circle.color = Color.BLACK }
         }
 
         init {
@@ -302,7 +343,6 @@ class MinimapHolder(val mapHolder: WorldMapHolder): Table() {
             resourceImageButton.update()
         }
     }
-
 
     // For debugging purposes
     override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
