@@ -89,7 +89,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stats] in cities on [terrainFilter] tiles"
-	Example: "[+1 Gold, +2 Production] in cities on [Forest] tiles"
+	Example: "[+1 Gold, +2 Production] in cities on [Fresh Water] tiles"
 
 	Applicable to: Global, FollowerBelief
 
@@ -114,7 +114,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[stats] from every [tileFilter/specialist/buildingFilter]"
-	Example: "[+1 Gold, +2 Production] from every [tileFilter/specialist/buildingFilter]"
+	Example: "[+1 Gold, +2 Production] from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -134,7 +134,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[amount]% [stat] from every [tileFilter/specialist/buildingName]"
-	Example: "[20]% [Culture] from every [tileFilter/specialist/buildingName]"
+	Example: "[20]% [Culture] from every [Farm]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -281,7 +281,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "[amount]% Unhappiness from [populationFilter] [cityFilter]"
-	Example: "[20]% Unhappiness from [populationFilter] [in all cities]"
+	Example: "[20]% Unhappiness from [Followers of this Religion] [in all cities]"
 
 	Applicable to: Global, FollowerBelief
 
@@ -490,7 +490,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global
 
 ??? example  "Land units may cross [terrainName] tiles after the first [baseUnitFilter] is earned"
-	Example: "Land units may cross [terrainName] tiles after the first [Melee] is earned"
+	Example: "Land units may cross [Forest] tiles after the first [Melee] is earned"
 
 	Applicable to: Global
 
@@ -585,7 +585,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, FollowerBelief
 
 ??? example  "[baseUnitFilter] units built [cityFilter] can [action] [amount] extra times"
-	Example: "[Melee] units built [in all cities] can [action] [20] extra times"
+	Example: "[Melee] units built [in all cities] can [Spread Religion] [20] extra times"
 
 	Applicable to: Global, FollowerBelief
 
@@ -722,7 +722,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Global, Unit
 
 ??? example  "[greatPerson] is earned [amount]% faster"
-	Example: "[greatPerson] is earned [20]% faster"
+	Example: "[Great General] is earned [20]% faster"
 
 	Applicable to: Global, Unit
 
@@ -876,22 +876,22 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Building
 
 ??? example  "Must be on [terrainFilter]"
-	Example: "Must be on [Forest]"
+	Example: "Must be on [Fresh Water]"
 
 	Applicable to: Building
 
 ??? example  "Must not be on [terrainFilter]"
-	Example: "Must not be on [Forest]"
+	Example: "Must not be on [Fresh Water]"
 
 	Applicable to: Building
 
 ??? example  "Must be next to [terrainFilter]"
-	Example: "Must be next to [Forest]"
+	Example: "Must be next to [Fresh Water]"
 
 	Applicable to: Building, Improvement
 
 ??? example  "Must not be next to [terrainFilter]"
-	Example: "Must not be next to [Forest]"
+	Example: "Must not be next to [Fresh Water]"
 
 	Applicable to: Building
 
@@ -942,7 +942,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Can build [improvementFilter/terrainFilter] improvements on tiles"
-	Example: "Can build [improvementFilter/terrainFilter] improvements on tiles"
+	Example: "Can build [All Road] improvements on tiles"
 
 	Applicable to: Unit
 
@@ -1056,7 +1056,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Unit
 
 ??? example  "Double movement in [terrainFilter]"
-	Example: "Double movement in [Forest]"
+	Example: "Double movement in [Fresh Water]"
 
 	Applicable to: Unit
 
@@ -1224,7 +1224,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Becomes [terrainName] when adjacent to [terrainFilter]"
-	Example: "Becomes [terrainName] when adjacent to [Forest]"
+	Example: "Becomes [Forest] when adjacent to [Fresh Water]"
 
 	Applicable to: Terrain
 
@@ -1401,7 +1401,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Ruins
 
 ??? example  "Reveal up to [amount/'all'] [tileFilter] within a [amount] tile radius"
-	Example: "Reveal up to [amount/'all'] [Farm] within a [20] tile radius"
+	Example: "Reveal up to [20] [Farm] within a [20] tile radius"
 
 	Applicable to: Ruins
 
@@ -1556,7 +1556,7 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with at least [amount] [populationFilter]&gt;"
-	Example: "&lt;in cities with at least [20] [populationFilter]&gt;"
+	Example: "&lt;in cities with at least [20] [Followers of this Religion]&gt;"
 
 	Applicable to: Conditional
 
@@ -1662,25 +1662,24 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Conditional
 
 
+*[action]: An action that a unit can perform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'
 *[amount]: This indicates a whole number, possibly with a + or - sign, such as `2`, `+13`, or `-3`.
 *[baseTerrain]: The name of any terrain that is a base terrain according to the json file.
-*[action]: An action that a unit can preform. Currently, there are only two actions part of this: 'Spread Religion' and 'Remove Foreign religions from your own cities'
-*[belief]: The name of any belief
-*[beliefType]: 'Pantheon', 'Follower', 'Founder' or 'Enhancer'.
-*[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'
-*[tech]: The name of any tech
-*[resource]: The name of any resource
-*[specialist]: The name of any specialist
-*[promotion]: The name of any promotion
-*[policy]: The name of any policy
-*[improvementName]: The name of any improvement
-*[buildingName]: The name of any building
-*[era]: The name of any era
-*[constructionFilter]: A filter for used when testing the current construction of a city. All values of `baseUnitFilter` and `buildingFilter` are allowed.
-*[foundingOrEnhancing]: `founding` or `enhancing`
-*[costOrStrength]: `Cost` or `Strength`
+*[belief]: The name of any belief.
+*[beliefType]: 'Pantheon', 'Follower', 'Founder' or 'Enhancer'
+*[buildingName]: The name of any building.
 *[combatantFilter]: This indicates a combatant, which can either be a unit or a city (when bombarding). Must either be `City` or a `mapUnitFilter`.
-*[plunderableStat]: All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`
-*[tileFilter]: Anything that can be used either in an improvementFilter or in a tileFilter can be used here
+*[costOrStrength]: `Cost` or `Strength`.
+*[era]: The name of any era.
+*[foundingOrEnhancing]: `founding` or `enhancing`.
+*[improvementName]: The name of any improvement.
+*[plunderableStat]: All the following stats can be plundered: `Gold`, `Science`, `Culture`, `Faith`.
+*[policy]: The name of any policy.
+*[promotion]: The name of any promotion.
+*[resource]: The name of any resource.
+*[specialist]: The name of any specialist.
 *[stat]: This is one of the 7 major stats in the game - `Gold`, `Science`, `Production`, `Food`, `Happiness`, `Culture` and `Faith`. Note that the stat names need to be capitalized!
 *[stats]: For example: `+2 Production, +3 Food`. Note that the stat names need to be capitalized!
+*[tech]: The name of any tech.
+*[tileFilter]: Anything that can be used either in an improvementFilter or in a terrainFilter can be used here, plus 'unimproved'
+*[victoryType]: The name of any victory type: 'Neutral', 'Cultural', 'Diplomatic', 'Domination', 'Scientific', 'Time'
