@@ -380,8 +380,8 @@ class CityConstructions {
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
                     if (rejectionReasons.all { it.rejectionReason == RejectionReason.Obsoleted } && construction.upgradesTo != null) {
-                        inProgressConstructions[construction.upgradesTo!!] =
-                            (inProgressConstructions[construction.upgradesTo!!] ?: 0) + workDone
+                        inProgressConstructions[cityInfo.civInfo.getEquivalentConstructionName(construction.upgradesTo!!)!!] =
+                            (inProgressConstructions[cityInfo.civInfo.getEquivalentConstructionName(construction.upgradesTo!!)] ?: 0) + workDone
                     }
                 }
                 inProgressConstructions.remove(constructionName)

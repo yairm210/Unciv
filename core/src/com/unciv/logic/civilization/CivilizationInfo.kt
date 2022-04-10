@@ -7,6 +7,7 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -475,6 +476,14 @@ class CivilizationInfo {
         if (!tech.canResearchTech()) return false
         if (tech.freeTechs != 0) return true
         return tech.currentTechnology() == null && cities.isNotEmpty()
+    }
+    
+    fun getEquivalentConstructionName(constructionName: String): String? {
+        return when (constructionName) {
+            in gameInfo.ruleSet.buildings -> getEquivalentBuilding(constructionName).name
+            in gameInfo.ruleSet.units -> getEquivalentUnit(constructionName).name
+            else -> null
+        }
     }
 
     fun getEquivalentBuilding(buildingName: String) = getEquivalentBuilding(gameInfo.ruleSet.buildings[buildingName]!!)
