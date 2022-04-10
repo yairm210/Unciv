@@ -380,8 +380,8 @@ class CityConstructions {
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
                     if (rejectionReasons.all { it.rejectionReason == RejectionReason.Obsoleted } && construction.upgradesTo != null) {
-                        inProgressConstructions[cityInfo.civInfo.getEquivalentUnit(construction.upgradesTo!!).name] =
-                            (inProgressConstructions[cityInfo.civInfo.getEquivalentUnit(construction.upgradesTo!!).name] ?: 0) + workDone
+                        val upgradedUnitName = cityInfo.civInfo.getEquivalentUnit(construction.upgradesTo!!).name
+                        inProgressConstructions[upgradedUnitName] = (inProgressConstructions[upgradedUnitName] ?: 0) + workDone
                     }
                 }
                 inProgressConstructions.remove(constructionName)
