@@ -477,14 +477,6 @@ class CivilizationInfo {
         if (tech.freeTechs != 0) return true
         return tech.currentTechnology() == null && cities.isNotEmpty()
     }
-    
-    fun getEquivalentConstructionName(constructionName: String): String? {
-        return when (constructionName) {
-            in gameInfo.ruleSet.buildings -> getEquivalentBuilding(constructionName).name
-            in gameInfo.ruleSet.units -> getEquivalentUnit(constructionName).name
-            else -> null
-        }
-    }
 
     fun getEquivalentBuilding(buildingName: String) = getEquivalentBuilding(gameInfo.ruleSet.buildings[buildingName]!!)
     fun getEquivalentBuilding(baseBuilding: Building): Building {
