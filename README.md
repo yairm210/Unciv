@@ -37,7 +37,7 @@ Is this order:
 
 ## How can I help?
 
-Programmers start [here](https://yairm210.github.io/Unciv/Developers/Getting-Started/)!
+Programmers start [here](https://yairm210.github.io/Unciv/Developers/Building-Locally/)!
 
 Translators start [here](https://yairm210.github.io/Unciv/Other/Translating/)!
 
