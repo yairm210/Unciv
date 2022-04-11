@@ -25,5 +25,7 @@ enum class MusicTrackChooserFlags {
         val setSpecific: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch, SuffixMustMatch)
         /** EnumSet.of([PrefixMustMatch], [SlowFade]) */
         val setNextTurn: EnumSet<MusicTrackChooserFlags> = EnumSet.of(PrefixMustMatch, SlowFade)
+        /** EnumSet.noneOf() */
+        val none: EnumSet<MusicTrackChooserFlags> = EnumSet.noneOf(MusicTrackChooserFlags::class.java)
     }
 }

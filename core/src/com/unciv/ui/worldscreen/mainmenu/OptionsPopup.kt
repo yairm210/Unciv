@@ -240,9 +240,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             addMusicVolumeSlider()
             addMusicPauseSlider()
             addMusicCurrentlyPlaying()
-        } else {
-            addDownloadMusic()
         }
+
+        if (!previousScreen.game.musicController.isDefaultFileAvailable())
+            addDownloadMusic()
     }
 
     private fun getMultiplayerTab(): Table = Table(BaseScreen.skin).apply {
@@ -760,7 +761,9 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
                 label.setText("Currently playing: [$it]".tr())
             }
         }
-        label.onClick { previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.setNextTurn) }
+        label.onClick(UncivSound.Silent) {
+            previousScreen.game.musicController.chooseTrack(flags = MusicTrackChooserFlags.none)
+        }
     }
 
     private fun Table.addDownloadMusic() {
