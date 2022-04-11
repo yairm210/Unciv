@@ -3,7 +3,6 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.Net
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -15,6 +14,7 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.multiplayer.SimpleHttp
 import com.unciv.models.UncivSound
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.Ruleset
@@ -30,20 +30,18 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.LanguageTable.Companion.addLanguageTables
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.worldscreen.WorldScreen
-import java.io.BufferedReader
-import java.io.DataOutputStream
-import java.io.InputStreamReader
-import java.net.DatagramSocket
-import java.net.HttpURLConnection
-import java.net.InetAddress
-import java.net.URL
-import java.nio.charset.Charset
-import java.util.*
+import java.util.UUID
 import kotlin.math.floor
 import com.badlogic.gdx.utils.Array as GdxArray
 
@@ -90,7 +88,12 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         tabs.addPage("Language", getLanguageTab(), ImageGetter.getImage("FlagIcons/${settings.language}"), 24f)
         tabs.addPage("Sound", getSoundTab(), ImageGetter.getImage("OtherIcons/Speaker"), 24f)
         tabs.addPage("Multiplayer", getMultiplayerTab(), ImageGetter.getImage("OtherIcons/Multiplayer"), 24f)
-        tabs.addPage("Advanced", getAdvancedTab(), ImageGetter.getImage("OtherIcons/Settings"), 24f)
+        crashHandlingThread(name="Add Advanced Options Tab") {
+            val fontNames = Fonts.getAvailableFontFamilyNames() // This is a heavy operation and causes ANRs
+            postCrashHandlingRunnable {
+                tabs.addPage("Advanced", getAdvancedTab(fontNames), ImageGetter.getImage("OtherIcons/Settings"), 24f)
+            }
+        }
         if (RulesetCache.size > BaseRuleset.values().size) {
             val content = ModCheckTab(this) {
                 if (modCheckFirstRun) runModChecker()
@@ -131,6 +134,10 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             previousScreen.game.setScreen(MainMenuScreen())
         }
         (previousScreen.game.screen as BaseScreen).openOptionsPopup()
+    }
+
+    private fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
+        SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
     }
 
     //region Page builders
@@ -297,53 +304,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
         }).row()
     }
 
-    fun getIpAddress(): String? {
-        DatagramSocket().use { socket ->
-            socket.connect(InetAddress.getByName("8.8.8.8"), 10002)
-            return socket.localAddress.hostAddress
-        }
-    }
-
-    object SimpleHttp {
-        fun sendGetRequest(url: String, action: (success: Boolean, result: String)->Unit) {
-            sendRequest(Net.HttpMethods.GET, url, "", action)
-        }
-
-        fun sendRequest(method: String, url: String, content: String, action: (success: Boolean, result: String)->Unit) {
-            with(URL(url).openConnection() as HttpURLConnection) {
-                requestMethod = method  // default is GET
-
-                if (method != Net.HttpMethods.GET) doOutput = true
-
-                try {
-                    if (content.isNotEmpty()) {
-                        // StandardCharsets.UTF_8 requires API 19
-                        val postData: ByteArray = content.toByteArray(Charset.forName("UTF-8"))
-                        val outputStream = DataOutputStream(outputStream)
-                        outputStream.write(postData)
-                        outputStream.flush()
-                    }
-
-                    val text = BufferedReader(InputStreamReader(inputStream)).readText()
-                    action(true, text)
-                } catch (t: Throwable) {
-                    println(t.message)
-                    val errorMessageToReturn =
-                        if (errorStream != null) BufferedReader(InputStreamReader(errorStream)).readText()
-                        else t.message!!
-                    println(errorMessageToReturn)
-                    action(false, errorMessageToReturn)
-                }
-            }
-        }
-
-    }
-    
-    fun successfullyConnectedToServer(action: (Boolean, String)->Unit){
-        SimpleHttp.sendGetRequest("${settings.multiplayerServer}/isalive", action)
-    }
-
-    private fun getAdvancedTab() = Table(BaseScreen.skin).apply {
+    private fun getAdvancedTab(fontNames: Collection<FontData>) = Table(BaseScreen.skin).apply {
         pad(10f)
         defaults().pad(5f)
 
@@ -364,7 +325,7 @@ class OptionsPopup(val previousScreen: BaseScreen) : Popup(previousScreen) {
             }
         }
 
-        addFontFamilySelect(Fonts.getAvailableFontFamilyNames())
+        addFontFamilySelect(fontNames)
 
         addTranslationGeneration()
 

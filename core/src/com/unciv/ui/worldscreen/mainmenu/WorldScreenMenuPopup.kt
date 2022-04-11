@@ -5,9 +5,9 @@ import com.unciv.MainMenuScreen
 import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
-import com.unciv.ui.utils.Popup
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.WorldScreen
 

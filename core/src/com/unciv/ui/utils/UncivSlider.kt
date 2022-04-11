@@ -13,6 +13,8 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Timer
 import com.unciv.Constants
 import com.unciv.models.UncivSound
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.images.IconCircleGroup
 import kotlin.math.abs
 import kotlin.math.sign
 

@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 
 // The ruleset also acts as a secondary parameter to determine if this is the right or self side of the player picker

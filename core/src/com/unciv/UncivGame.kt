@@ -20,6 +20,10 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -70,6 +74,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val translations = Translations()
 
     override fun create() {
+        isInitialized = false // this could be on reload, therefore we need to keep setting this to false
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false
@@ -95,7 +100,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
-        if(settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
+        if (settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
             settings.tileSet = "FantasyHex"
         }
 
@@ -161,7 +166,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     fun tryLoadDeepLinkedGame() {
         if (deepLinkedMultiplayerGame != null) {
             try {
-                loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
+                val onlineGame = OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!)
+                loadGame(onlineGame)
             } catch (ex: Exception) {
                 setScreen(MainMenuScreen())
             }
@@ -193,6 +199,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun render() = wrappedCrashHandlingRender()
 
     override fun dispose() {
+        Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
+        
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
@@ -201,7 +209,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val numThreads = Thread.activeCount()
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
-
+        
         if (isGameInfoInitialized()) {
             val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
             if (autoSaveThread != null && autoSaveThread.isAlive) {

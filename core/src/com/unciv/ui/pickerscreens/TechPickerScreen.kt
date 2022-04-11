@@ -1,6 +1,5 @@
 package com.unciv.ui.pickerscreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -15,6 +14,9 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 import java.util.*
 import kotlin.collections.ArrayList

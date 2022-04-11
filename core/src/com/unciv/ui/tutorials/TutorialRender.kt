@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.models.Tutorial
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*
 
 data class TutorialForRender(val tutorial: Tutorial, val texts: Array<String>)

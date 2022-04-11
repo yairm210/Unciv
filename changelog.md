@@ -1,3 +1,31 @@
+## 4.0.5
+
+Added borders to minimap 
+
+Resolved Diplomatic Victory check not triggering for human player
+
+Cities that become capital no longer continue being razed
+
+By SomeTroglodyte:
+- Make Icons clickable in religions per city display 
+- Nicer NotificationScroll 
+
+Fixed a bug where crosshairs are everywhere with the 'attack when embarked' unique  - By xlenstra
+
+Fixed turn checker crashes   - By GGGuenni
+
+## 4.0.4
+
+Caught bad URL parsing exceptions
+
+Resolved ANRs when opening Options menu
+
+Solved 'check server connection' errors on Android
+
+By SomeTroglodyte:
+- Fix Goddess of Protection error
+- Tabbed pager architecture update 
+
 ## 4.0.3
 
 Changed server connection to URL-based to allow connection to uncivserver.xyz

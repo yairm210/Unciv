@@ -8,8 +8,11 @@ import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.ModCheckboxTable
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 import kotlin.math.max
 

@@ -8,6 +8,8 @@ import com.unciv.logic.civilization.TechManager
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 
 class TechButton(techName:String, private val techManager: TechManager, isWorldScreen: Boolean = true) : Table(BaseScreen.skin) {
@@ -92,7 +94,8 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
             techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, techIconSize))
 
         for (unique in tech.uniques)
-            techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Star")
+            techEnabledIcons.add(
+                ImageGetter.getImage("OtherIcons/Star")
                 .apply { color = Color.BLACK }.surroundWithCircle(techIconSize))
 
         if (isWorldScreen) rightSide.add(techEnabledIcons)

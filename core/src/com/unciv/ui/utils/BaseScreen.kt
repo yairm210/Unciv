@@ -10,9 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.unciv.CrashHandlingStage
+import com.unciv.ui.crashhandling.CrashHandlingStage
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 

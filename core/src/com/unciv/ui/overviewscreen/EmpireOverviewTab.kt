@@ -26,6 +26,9 @@ abstract class EmpireOverviewTab (
         settings.lastOverviewPage = caption
     }
 
+    /** Override if the tab can _select_ something specific */
+    open fun select(selection: String) {}
+
     val gameInfo = viewingPlayer.gameInfo
 
     /** Sets first row cell's minWidth to the max of the widths of that column over all given tables

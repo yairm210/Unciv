@@ -966,9 +966,12 @@ class CivilizationInfo {
          flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0
          && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
-    // Yes, this is the same function as above, but with a different use case so it has a different name.
+    // Yes, this is the same function as above, but with the possibility that the results were shown
+    //  to the user and thus the flag is set at -1/ 
     fun shouldCheckForDiplomaticVictory() =
-        shouldShowDiplomaticVotingResults()
+        (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0 
+                || flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == -1)
+                && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     private fun updateRevolts() {
         if (gameInfo.civilizations.none { it.isBarbarian() }) {

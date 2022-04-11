@@ -1,7 +1,7 @@
 package com.unciv.app
 
 import android.os.Build
-import com.unciv.ui.utils.CrashReportSysInfo
+import com.unciv.ui.crashhandling.CrashReportSysInfo
 
 object CrashReportSysInfoAndroid: CrashReportSysInfo {
 

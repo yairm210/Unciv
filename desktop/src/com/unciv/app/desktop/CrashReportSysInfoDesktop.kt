@@ -1,7 +1,7 @@
 package com.unciv.app.desktop
 
 import com.badlogic.gdx.files.FileHandle
-import com.unciv.ui.utils.CrashReportSysInfo
+import com.unciv.ui.crashhandling.CrashReportSysInfo
 import java.nio.charset.Charset
 
 class CrashReportSysInfoDesktop : CrashReportSysInfo {
