@@ -9,13 +9,12 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.Terrain
-import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.tile.*
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.mapeditor.MapEditorEditImprovementsTab.Companion.group
 import com.unciv.ui.mapeditor.MapEditorEditTab.BrushHandlerType
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -157,9 +156,17 @@ class MapEditorEditResourcesTab(
 
     private fun allowedResources() = ruleset.tileResources.values.asSequence()
         .filter { !it.hasUnique("Can only be created by Mercantile City-States") }  //todo type-i-fy
-    private fun getResources() = allowedResources()
-        .map { FormattedLine(it.name, it.name, "Resource/${it.name}", size = 32) }
-        .toList()
+    private fun getResources(): List<FormattedLine> = sequence {
+        var lastGroup = ResourceType.Bonus
+        for (resource in allowedResources()) {
+            val name = resource.name
+            if (resource.resourceType != lastGroup) {
+                lastGroup = resource.resourceType
+                yield(FormattedLine(separator = true, color = "#888"))
+            }
+            yield (FormattedLine(name, name, "Resource/$name", size = 32))
+        }
+    }.toList()
 
     override fun isDisabled() = allowedResources().none()
 }
@@ -192,7 +199,7 @@ class MapEditorEditImprovementsTab(
             val road = RoadStatus.values().firstOrNull { r -> r.name == it }
             if (road != null)
                 editTab.setBrush(BrushHandlerType.Road, it, "Improvement/$it") { tile ->
-                    tile.roadStatus = road
+                    tile.roadStatus = if (tile.roadStatus == road) RoadStatus.None else road
                 }
             else
                 editTab.setBrush(it, "Improvement/$it") { tile ->
@@ -203,19 +210,35 @@ class MapEditorEditImprovementsTab(
 
     private fun allowedImprovements() = ruleset.tileImprovements.values.asSequence()
         .filter { improvement ->
-            //todo This should really be easier, the attributes should allow such a test in one go
             disallowImprovements.none { improvement.name.startsWith(it) }
         }
-    private fun getImprovements() = allowedImprovements()
-        .map { FormattedLine(it.name, it.name, "Improvement/${it.name}", size = 32) }
-        .toList()
+    private fun getImprovements(): List<FormattedLine> = sequence {
+        var lastGroup = 0
+        for (improvement in allowedImprovements()) {
+            val name = improvement.name
+            val group = improvement.group()
+            if (group != lastGroup) {
+                lastGroup = group
+                yield(FormattedLine(separator = true, color = "#888"))
+            }
+            yield (FormattedLine(name, name, "Improvement/$name", size = 32))
+        }
+    }.toList()
 
     override fun isDisabled() = allowedImprovements().none()
 
     companion object {
+        //todo This should really be easier, the attributes should allow such a test in one go
         private val disallowImprovements = listOf(
             "Remove ", "Cancel improvement", "City center", Constants.barbarianEncampment
         )
+        private fun TileImprovement.group() = when {
+            RoadStatus.values().any { it.name == name } -> 2
+            "Great Improvement" in uniques -> 3
+            uniqueTo != null -> 4
+            "Unpillagable" in uniques -> 5
+            else -> 0
+        }
     }
 }
 

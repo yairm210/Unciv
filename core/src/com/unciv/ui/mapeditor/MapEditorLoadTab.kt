@@ -10,6 +10,9 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
@@ -17,20 +20,21 @@ class MapEditorLoadTab(
     private val editorScreen: MapEditorScreenV2,
     headerHeight: Float
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
-    private val mapFiles = MapEditorFilesTable(editorScreen.getToolsWidth() - 40f, this::selectFile)
+    private val mapFiles = MapEditorFilesTable(
+        initWidth = editorScreen.getToolsWidth() - 20f,
+        includeMods = true,
+        this::selectFile)
 
-    private val loadButton: TextButton
-    private val deleteButton: TextButton
+    private val loadButton = "Load map".toTextButton()
+    private val deleteButton = "Delete map".toTextButton()
 
     private var chosenMap: FileHandle? = null
 
     init {
         val buttonTable = Table(skin)
         buttonTable.defaults().pad(10f).fillX()
-        loadButton = "Load Map".toTextButton()
         loadButton.onClick(this::loadHandler)
         buttonTable.add(loadButton)
-        deleteButton = "Delete map".toTextButton()
         deleteButton.onClick(this::deleteHandler)
         buttonTable.add(deleteButton)
         buttonTable.pack()
@@ -38,7 +42,7 @@ class MapEditorLoadTab(
         val fileTableHeight = editorScreen.stage.height - headerHeight - buttonTable.height - 2f
         val scrollPane = AutoScrollPane(mapFiles, skin)
         scrollPane.setOverscroll(false, true)
-        add(scrollPane).height(fileTableHeight).fillX().row()
+        add(scrollPane).height(fileTableHeight).width(editorScreen.getToolsWidth() - 20f).row()
         add(buttonTable).row()
     }
 

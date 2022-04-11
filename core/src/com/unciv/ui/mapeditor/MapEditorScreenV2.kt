@@ -11,25 +11,18 @@ import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
 
 
-//+todo adapt to new BaseRuleset way of things - currently generate will use G&K / edit will use Vanilla
-//todo Loading a map should set the mod checkboxes from the file
-//Todo mod tab: "Revert" and better Explanation
-//todo Mod check on mod tab should respect _selected_ not loaded base ruleset
-//todo Deciv Gold/Water: Font symbol loaded and stays when going Vanilla, but translation never shows
-
 //todo normalize properly
 
-//todo check completeness of translation templates
-//todo height of the resources+improvement scroller wrong
-//todo width of the tabs sometimes derails (brush line getting longer than initial width)
 //todo drag painting - migrate from old editor
 //todo Nat Wonder step generator: *New* wonders?
 //todo functional Tab for Units
-//todo allow loading maps from mods (but not saving)
 //todo copy/paste tile areas? (As tool tab, brush sized, floodfill forbidden, tab displays copied area)
 //todo Synergy with Civilopedia for drawing loose tiles / terrain icons
 //todo left-align everything so a half-open drawer is more useful
@@ -39,9 +32,11 @@ import com.unciv.ui.utils.*
 //todo work in Simon's changes to continent/landmass
 //todo work in Simon's regions - check whether generate and store or discard is the way
 //todo Regions: If relevant, view and possibly work in Simon's colored visualization
-//todo Civilopedia links from View tab
 //todo Tooltips for Edit items with info on placeability? Place this info as Brush description? In Expander?
 //todo Civilopedia links from edit items by right-click/long-tap?
+//todo Mod tab change base ruleset - disableAllCheckboxes - instead some intelligence to leave those mods on that stay compatible?
+//todo The setSkin call in newMapHolder belongs in ImageGetter.setNewRuleset and should be intelligent as resetFont is expensive and the probability a mod touched a few EmojiIcons is low
+
 
 class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
     /** The map being edited, with mod list for that map */
@@ -50,7 +45,7 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
     var isDirty = false
 
     /** The parameters to use for new maps, and the UI-shown mod list (which can be applied to the active map) */
-    var newMapParameters = getDefaultParameters()
+    val newMapParameters = getDefaultParameters()
 
     /** RuleSet corresponding to [tileMap]'s mod list */
     var ruleset: Ruleset
@@ -121,11 +116,18 @@ class MapEditorScreenV2(map: TileMap? = null): BaseScreen() {
 
     private fun newMapHolder(): EditorMapHolderV2 {
         ImageGetter.setNewRuleset(ruleset)
+        // setNewRuleset is missing some graphics - those "EmojiIcons"&co already rendered as font characters
+        // so to get the "Water" vs "Gold" icons when switching between Deciv and Vanilla to render properly,
+        // we will need to ditch the already rendered font glyphs. Fonts.resetFont is not sufficient,
+        // the skin seems to clone a separate copy of the Fonts singleton, proving that kotlin 'object'
+        // are not really guaranteed to exist in one instance only.
+        setSkin()
+
         tileMap.setTransients(ruleset,false)
         tileMap.setStartingLocationsTransients()
         UncivGame.Current.translations.translationActiveMods = ruleset.mods
 
-        val result = EditorMapHolderV2(this, tileMap, ruleset) {
+        val result = EditorMapHolderV2(this, tileMap) {
             tileClickHandler?.invoke(it)
         }
 

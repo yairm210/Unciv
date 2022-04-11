@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.MapSaver
 import com.unciv.models.translations.tr
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 
 class MapEditorOptionsTab(
@@ -71,7 +72,7 @@ class MapEditorOptionsTab(
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         seedToCopy = editorScreen.tileMap.mapParameters.seed.toString()
-        seedLabel.setText("Current map RNG seed = [$seedToCopy]".tr())
+        seedLabel.setText("Current map RNG seed: [$seedToCopy]".tr())
         editorScreen.keyPressDispatcher[KeyCharAndCode.ctrl('c')] = this::copyHandler
         editorScreen.keyPressDispatcher[KeyCharAndCode.ctrl('v')] = this::pasteHandler
         pasteMapButton.isEnabled = Gdx.app.clipboard.hasContents()

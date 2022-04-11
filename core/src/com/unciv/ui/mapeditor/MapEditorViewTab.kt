@@ -13,9 +13,11 @@ import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.civilopedia.CivilopediaScreen
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.civilopedia.FormattedLine.IconDisplay
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 
 class MapEditorViewTab(
@@ -68,8 +70,13 @@ class MapEditorViewTab(
             it.add(mapParameterLabel.apply { wrap = true }).row()
         }).row()
 
-        tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
-        val statsText = "Area: ${tileMap.values.size} tiles, ${tileMap.continentSizes.size} continents/islands"
+        try {
+            tileMap.assignContinents(TileMap.AssignContinentsMode.Ensure)
+        } catch (ex: Exception) {
+            ToastPopup("Error assigning continents: ${ex.message}", editorScreen)
+        }
+
+        val statsText = "Area: [${tileMap.values.size}] tiles, [${tileMap.continentSizes.size}] continents/islands"
         val statsLabel = WrappableLabel(statsText, labelWidth)
         add(statsLabel.apply { wrap = true }).row()
 
@@ -173,10 +180,23 @@ class MapEditorViewTab(
         val continent = tile.getContinent()
         if (continent >= 0) {
             lines += FormattedLine()
-            lines += FormattedLine("Continent: [$continent] ([${tile.tileMap.continentSizes[continent]}] tiles)")
+            lines += FormattedLine("Continent: [$continent] ([${tile.tileMap.continentSizes[continent]}] tiles)", link = "continent")
         }
 
-        tileDataCell?.setActor(MarkupRenderer.render(lines, labelWidth, iconDisplay = IconDisplay.NoLink))
+        tileDataCell?.setActor(MarkupRenderer.render(lines, labelWidth) {
+            if (it == "continent") {
+                // Visualize the continent this tile is on
+                editorScreen.hideSelection()
+                val color = Color.BROWN.darken(0.5f)
+                for (markTile in tile.tileMap.values) {
+                    if (markTile.getContinent() == continent)
+                        editorScreen.highlightTile(markTile, color)
+                }
+            } else {
+                // This needs CivilopediaScreen to be able to work without a GameInfo!
+                UncivGame.Current.setScreen(CivilopediaScreen(tile.ruleset, editorScreen, link = it))
+            }
+        })
 
         editorScreen.hideSelection()
         editorScreen.highlightTile(tile, Color.CORAL)

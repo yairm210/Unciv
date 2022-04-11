@@ -167,11 +167,11 @@ open class TabbedPager(
             group.packIfNeeded()
             return measure(group.minHeight, group.prefHeight, group.maxHeight)
         }
-        fun combine(header: Float, top: DimensionMeasurement, bottom: DimensionMeasurement) {
-            min = (header + top.min + bottom.min).coerceAtLeast(min).coerceAtMost(limit)
-            pref = (header + top.pref + bottom.pref).coerceAtLeast(pref).coerceIn(min..limit)
+        fun combine(top: DimensionMeasurement, bottom: DimensionMeasurement) {
+            min = (top.min + bottom.min).coerceAtLeast(min).coerceAtMost(limit)
+            pref = (top.pref + bottom.pref).coerceAtLeast(pref).coerceIn(min..limit)
             if (growMax)
-                max = (header + top.max + bottom.max).coerceAtLeast(max).coerceIn(pref..limit)
+                max = (top.max + bottom.max).coerceAtLeast(max).coerceIn(pref..limit)
         }
     }
 
@@ -303,17 +303,18 @@ open class TabbedPager(
         dimW.pref = width
         invalidateHierarchy()
     }
-    override fun getPrefHeight() = dimH.pref
+    override fun getPrefHeight() = dimH.pref + headerHeight
     fun setPrefHeight(height: Float) {
-        if (dimH.growMax && height > dimH.max) dimH.max = height
-        if (height !in dimH.min..dimH.max) throw IllegalArgumentException()
-        dimH.pref = height
+        val contentHeight = (height - headerHeight).coerceIn(0f..dimH.limit)
+        if (dimH.growMax && contentHeight > dimH.max) dimH.max = contentHeight
+        if (contentHeight !in dimH.min..dimH.max) throw IllegalArgumentException()
+        dimH.pref = contentHeight
         invalidateHierarchy()
     }
     override fun getMinWidth() = dimW.min
     override fun getMaxWidth() = dimW.max
-    override fun getMinHeight() = dimH.min
-    override fun getMaxHeight() = dimH.max
+    override fun getMinHeight() = dimH.min + headerHeight
+    override fun getMaxHeight() = dimH.max + headerHeight
 
     //endregion
     //region API
@@ -604,7 +605,7 @@ open class TabbedPager(
         page.fixedHeight = dimFixedH.min
         dimW.measureWidth(page.content as? WidgetGroup)
         dimContentH.measureHeight(page.content as? WidgetGroup)
-        dimH.combine(headerHeight, dimFixedH, dimContentH)
+        dimH.combine(dimFixedH, dimContentH)
     }
 
     private fun addAndShowPage(page: PageState, insertBefore: Int): Int {

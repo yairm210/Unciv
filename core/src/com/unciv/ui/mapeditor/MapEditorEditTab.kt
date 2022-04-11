@@ -12,7 +12,9 @@ import com.unciv.logic.map.mapgenerator.RiverGenerator
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.MapEditorOptionsTab.TileMatchFuzziness
+import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 
 class MapEditorEditTab(
@@ -51,7 +53,7 @@ class MapEditorEditTab(
         val caption: String,
         val key: Char,
         val icon: String,
-        val instantiate: (MapEditorEditTab, Ruleset)->Actor
+        val instantiate: (MapEditorEditTab, Ruleset)->Table
     ) {
         Terrain("Terrain", 't', "OtherIcons/Terrains", { parent, ruleset -> MapEditorEditTerrainTab(parent, ruleset) }),
         TerrainFeatures("Features", 'f', "OtherIcons/Star", { parent, ruleset -> MapEditorEditFeaturesTab(parent, ruleset) }),
@@ -71,9 +73,9 @@ class MapEditorEditTab(
             defaults().pad(10f).left()
             add(brushLabel)
             brushCell = add().padLeft(0f)
-            brushSlider = UncivSlider(1f,6f,1f, getTipText = ::getBrushTip) {
+            brushSlider = UncivSlider(1f,6f,1f, getTipText = { getBrushTip(it).tr() }) {
                 brushSize = if (it > 5f) -1 else it.toInt()
-                brushLabel.setText("Brush ([${getBrushTip(it)}]):".tr())
+                brushLabel.setText("Brush ([${getBrushTip(it).take(1)}]):".tr())
             }
             add(brushSlider).padLeft(0f)
         }

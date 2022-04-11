@@ -3,20 +3,24 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.newgamescreen.ModCheckboxTable
 import com.unciv.ui.newgamescreen.TranslatedSelectBox
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*
+import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 class MapEditorModsTab(
     private val editorScreen: MapEditorScreenV2
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
-    private var mods = editorScreen.newMapParameters.mods
+    private val mods = editorScreen.newMapParameters.mods
     private var modsTable: ModCheckboxTable
     private val modsTableCell: Cell<ModCheckboxTable>
-    private val applyButton = "Change ruleset".toTextButton()
+    private val applyButton = "Change map ruleset".toTextButton()
+    private val revertButton = "Revert to map ruleset".toTextButton()
     private val baseRulesetSelectBox: TranslatedSelectBox
 
     init {
@@ -28,7 +32,10 @@ class MapEditorModsTab(
         val baseRulesets = RulesetCache.getSortedBaseRulesets()
         baseRulesetSelectBox = TranslatedSelectBox(baseRulesets, rulesetName, BaseScreen.skin)
         baseRulesetSelectBox.onChange {
-            editorScreen.newMapParameters.baseRuleset = baseRulesetSelectBox.selected.value
+            val newBaseRuleset = baseRulesetSelectBox.selected.value
+            editorScreen.newMapParameters.baseRuleset = newBaseRuleset
+            modsTable.setBaseRuleset(newBaseRuleset)
+            modsTable.disableAllCheckboxes()
             enableApplyButton()
         }
 
@@ -39,43 +46,63 @@ class MapEditorModsTab(
             add("{Base Ruleset}:".toLabel())
             add(baseRulesetSelectBox).fillX()
         }).fillX().padBottom(10f).row()
-        add(applyButton).pad(10f).row()
+
+        add(Table().apply {
+            add(applyButton).padRight(10f)
+            add(revertButton)
+        }).fillX().pad(10f).row()
+
         modsTableCell = add(modsTable)
         row()
 
-        applyButton.onClick {
-            val newRuleset = RulesetCache.getComplexRuleset(mods, editorScreen.newMapParameters.baseRuleset)
-            val incompatibilities = getIncompatibilities(newRuleset)
-            if (incompatibilities.isEmpty()) {
-                editorScreen.applyRuleset(newRuleset, editorScreen.newMapParameters.baseRuleset, mods)
-                enableApplyButton()
-            } else {
-                AskFitMapToRulesetPopup(editorScreen, incompatibilities) {
-                    fitMapToRuleset(newRuleset)
-                    editorScreen.applyRuleset(newRuleset, editorScreen.newMapParameters.baseRuleset, mods)
-                    enableApplyButton()
-                }
-            }
-        }
+        applyButton.onClick(this::applyControls)
+        applyButton.addTooltip("Change the map to use the ruleset selected on this page", 21f, targetAlign = Align.bottom)
+
+        revertButton.onClick(this::revertControls)
+        revertButton.addTooltip("Reset the controls to reflect the current map ruleset", 21f, targetAlign = Align.bottom)
     }
 
     private fun enableApplyButton() {
         val currentParameters = editorScreen.tileMap.mapParameters
-        applyButton.isEnabled =
+        val enabled =
             currentParameters.mods != mods ||
             currentParameters.baseRuleset != baseRulesetSelectBox.selected.value
+        applyButton.isEnabled = enabled
+        revertButton.isEnabled = enabled
+    }
+
+    private fun revertControls() {
+        val currentParameters = editorScreen.tileMap.mapParameters
+        baseRulesetSelectBox.setSelected(currentParameters.baseRuleset)
+        mods.clear()
+        mods.addAll(currentParameters.mods)  // clone current "into" editorScreen.newMapParameters.mods
+        modsTable = ModCheckboxTable(mods, currentParameters.baseRuleset, editorScreen, false) {
+            enableApplyButton()
+        }
+        modsTableCell.setActor(modsTable)
+        enableApplyButton()
+    }
+
+    private fun applyControls() {
+        val newRuleset = RulesetCache.getComplexRuleset(mods, editorScreen.newMapParameters.baseRuleset)
+        val incompatibilities = getIncompatibilities(newRuleset)
+        if (incompatibilities.isEmpty()) {
+            editorScreen.applyRuleset(newRuleset, editorScreen.newMapParameters.baseRuleset, mods)
+            enableApplyButton()
+        } else {
+            AskFitMapToRulesetPopup(editorScreen, incompatibilities) {
+                fitMapToRuleset(newRuleset)
+                editorScreen.applyRuleset(newRuleset, editorScreen.newMapParameters.baseRuleset, mods)
+                enableApplyButton()
+            }
+        }
     }
 
     override fun activated(index: Int, caption: String, pager: TabbedPager) {
         enableApplyButton()
         if (!editorScreen.modsTabNeedsRefresh) return
-        val currentParameters = editorScreen.tileMap.mapParameters
-        baseRulesetSelectBox.setSelected(currentParameters.baseRuleset)
-        mods = currentParameters.mods
-        modsTable = ModCheckboxTable(mods, currentParameters.baseRuleset, editorScreen, false) {
-            enableApplyButton()
-        }
-        modsTableCell.setActor(modsTable)
+        editorScreen.modsTabNeedsRefresh = false
+        revertControls()
     }
 
     private fun getIncompatibilities(newRuleset: Ruleset): List<String> {

@@ -11,6 +11,9 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
@@ -18,10 +21,13 @@ class MapEditorSaveTab(
     private val editorScreen: MapEditorScreenV2,
     headerHeight: Float
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
-    private val mapFiles = MapEditorFilesTable(editorScreen.getToolsWidth() - 40f, this::selectFile)
+    private val mapFiles = MapEditorFilesTable(
+        initWidth = editorScreen.getToolsWidth() - 40f,
+        includeMods = false,
+        this::selectFile)
 
-    private val saveButton: TextButton
-    private val deleteButton: TextButton
+    private val saveButton = "Save map".toTextButton()
+    private val deleteButton = "Delete map".toTextButton()
     private val mapNameTextField = TextField("", skin)
 
     private var chosenMap: FileHandle? = null
@@ -35,13 +41,12 @@ class MapEditorSaveTab(
 
         val buttonTable = Table(skin)
         buttonTable.defaults().pad(10f).fillX()
-        saveButton = "Save Map".toTextButton()
         saveButton.onClick(this::saveHandler)
         mapNameTextField.onChange {
             saveButton.isEnabled = mapNameTextField.text.isNotBlank()
         }
         buttonTable.add(saveButton)
-        deleteButton = "Delete map".toTextButton()
+
         deleteButton.onClick(this::deleteHandler)
         buttonTable.add(deleteButton)
         buttonTable.pack()

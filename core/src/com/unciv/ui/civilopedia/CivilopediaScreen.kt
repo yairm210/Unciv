@@ -174,13 +174,16 @@ class CivilopediaScreen(
         val imageSize = 50f
         onBackButtonClicked { game.setScreen(previousScreen) }
 
-        val religionEnabled = game.gameInfo.isReligionEnabled()
+        val religionEnabled = if (game.isGameInfoInitialized()) game.gameInfo.isReligionEnabled()
+            else ruleset.beliefs.isNotEmpty()
+        val victoryTypes = if (game.isGameInfoInitialized()) game.gameInfo.gameParameters.victoryTypes
+            else VictoryType.values().toList()
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
                 obj.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
                 (!religionEnabled && obj.hasUnique(UniqueType.HiddenWithoutReligion)) -> false
-                obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(it.params[0] )) } -> false
+                obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !victoryTypes.contains(VictoryType.valueOf(it.params[0])) } -> false
                 else -> true
             }
         }

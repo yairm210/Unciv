@@ -4,10 +4,8 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -16,7 +14,6 @@ import com.unciv.ui.utils.*
 class EditorMapHolderV2(
     parentScreen: BaseScreen,
     internal val tileMap: TileMap,
-    private val ruleset: Ruleset,
     private val onTileClick: (TileInfo) -> Unit
 ): ZoomableScrollPane() {
     val tileGroups = HashMap<TileInfo, List<TileGroup>>()
