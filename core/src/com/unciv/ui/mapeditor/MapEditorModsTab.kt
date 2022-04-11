@@ -14,7 +14,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 
 class MapEditorModsTab(
-    private val editorScreen: MapEditorScreenV2
+    private val editorScreen: MapEditorScreen
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val mods = editorScreen.newMapParameters.mods
     private var modsTable: ModCheckboxTable

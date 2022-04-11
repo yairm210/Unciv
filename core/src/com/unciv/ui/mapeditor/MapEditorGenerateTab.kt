@@ -16,7 +16,7 @@ import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
 class MapEditorGenerateTab(
-    private val editorScreen: MapEditorScreenV2
+    private val editorScreen: MapEditorScreen
 ): TabbedPager(capacity = 2) {
     private val newTab = MapEditorNewMapTab(this)
     private val partialTab = MapEditorGenerateStepsTab(this)
@@ -84,7 +84,7 @@ class MapEditorGenerateTab(
                     val generatedMap = MapGenerator(newRuleset).generateMap(mapParameters)
 
                     Gdx.app.postRunnable {
-                        MapEditorScreenV2.saveDefaultParameters(mapParameters)
+                        MapEditorScreen.saveDefaultParameters(mapParameters)
                         editorScreen.loadMap(generatedMap, newRuleset)
                         editorScreen.isDirty = true
                         setButtonsEnabled(true)

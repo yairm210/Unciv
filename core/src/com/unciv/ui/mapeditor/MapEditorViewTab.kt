@@ -21,7 +21,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 
 class MapEditorViewTab(
-    private val editorScreen: MapEditorScreenV2
+    private val editorScreen: MapEditorScreen
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private var tileDataCell: Cell<Table>? = null
     private val mockCiv = createMockCiv(editorScreen.ruleset)

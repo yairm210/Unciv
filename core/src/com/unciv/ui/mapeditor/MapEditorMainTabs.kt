@@ -6,7 +6,7 @@ import com.unciv.ui.utils.KeyCharAndCode
 import com.unciv.ui.utils.TabbedPager
 
 class MapEditorMainTabs(
-    editorScreen: MapEditorScreenV2
+    editorScreen: MapEditorScreen
 ) : TabbedPager(
     minimumHeight = editorScreen.stage.height,
     maximumHeight = editorScreen.stage.height,

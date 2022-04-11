@@ -11,7 +11,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 
 class MapEditorOptionsTab(
-    private val editorScreen: MapEditorScreenV2
+    private val editorScreen: MapEditorScreen
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val seedLabel = "".toLabel(Color.GOLD)
     private val copySeedButton = "Copy to clipboard".toTextButton()

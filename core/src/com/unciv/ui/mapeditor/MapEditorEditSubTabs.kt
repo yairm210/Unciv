@@ -14,7 +14,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
 import com.unciv.ui.images.ImageGetter
-import com.unciv.ui.mapeditor.MapEditorEditImprovementsTab.Companion.group
 import com.unciv.ui.mapeditor.MapEditorEditTab.BrushHandlerType
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings

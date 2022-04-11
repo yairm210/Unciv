@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.MapSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.RulesetCache
@@ -17,7 +16,7 @@ import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
 class MapEditorLoadTab(
-    private val editorScreen: MapEditorScreenV2,
+    private val editorScreen: MapEditorScreen,
     headerHeight: Float
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val mapFiles = MapEditorFilesTable(

@@ -18,7 +18,7 @@ import com.unciv.ui.popup.ToastPopup
 import com.unciv.ui.utils.*
 
 class MapEditorEditTab(
-    private val editorScreen: MapEditorScreenV2,
+    private val editorScreen: MapEditorScreen,
     headerHeight: Float
 ): Table(BaseScreen.skin), TabbedPager.IPageExtensions {
     private val subTabs: TabbedPager
