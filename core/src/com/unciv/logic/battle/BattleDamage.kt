@@ -264,7 +264,7 @@ object BattleDamage {
         defender: ICombatant,
         ignoreRandomness: Boolean = false,
     ): Int {
-        if (attacker.isRanged()) return 0
+        if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
         val ratio =
             getAttackingStrength(attacker, defender) / getDefendingStrength(

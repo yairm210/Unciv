@@ -221,7 +221,7 @@ object Battle {
 
         if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker.isMelee()) {
             captureCivilianUnit(attacker, defender)
-        } else if (attacker.isRanged()) {
+        } else if (attacker.isRanged() && !attacker.isAirUnit()) {  // Air Units are Ranged, but take damage as well
             defender.takeDamage(potentialDamageToDefender) // straight up
         } else {
             //melee attack is complicated, because either side may defeat the other midway
