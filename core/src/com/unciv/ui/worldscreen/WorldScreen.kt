@@ -415,15 +415,17 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         unitActionsTable.y = bottomUnitTable.height
 
         mapHolder.resetArrows()
-        val allUnits = gameInfo.civilizations.asSequence().flatMap { it.getCivUnits() }
-        val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
-            gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
-        mapHolder.updateMovementOverlay(
-            allUnits.filter(mapVisualization::isUnitPastVisible),
-            allUnits.filter(mapVisualization::isUnitFutureVisible),
-            allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
-                    .map { (_, source, target) -> source to target }
-        )
+        if (UncivGame.Current.settings.showUnitMovements) {
+            val allUnits = gameInfo.civilizations.asSequence().flatMap { it.getCivUnits() }
+            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
+                gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
+            mapHolder.updateMovementOverlay(
+                allUnits.filter(mapVisualization::isUnitPastVisible),
+                allUnits.filter(mapVisualization::isUnitFutureVisible),
+                allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
+                        .map { (_, source, target) -> source to target }
+            )
+        }
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder

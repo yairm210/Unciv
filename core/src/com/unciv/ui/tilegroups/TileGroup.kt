@@ -558,12 +558,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     /** Create and setup Actors for all arrows to be drawn from this tile. */
     private fun updateArrows() {
-        if (!UncivGame.Current.settings.showUnitMovements) return // don't waste time if this isn't important
-        for (actorList in arrows.values) {
-            for (actor in actorList) {
+        for (actorList in arrows.values) 
+            for (actor in actorList)
                 actor.remove()
-            }
-        }
         arrows.clear()
 
         val tileScale = 50f * 0.8f // See notes in updateRoadImages.
