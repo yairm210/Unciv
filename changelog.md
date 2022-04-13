@@ -1,3 +1,21 @@
+## 4.0.6
+
+Discord suggestion - have allied city states see all tiles of their ally, so they can support them militarily
+
+Bad import got in
+
+Hopefully got rid of ANRs when entering a link when the app has been closed for too long? I think that's the problem?
+
+Hopefully got rid of ANRs on shutdown
+
+Don't update arrows if the user isn't displaying arrows - this is most users
+
+Hopefully improved continuous rendering's framerate, to solve some ANRs
+
+MusicController - Can catch exceptions from Gdx.app.loop and replaces Timer on desktop with a callback from OpenALLwjgl3Audio.update  - By SomeTroglodyte
+
+Fixed a bug where production would not be retained when changing from an obsolete unit to its upgraded version when that upgraded version was unique to the nation  - By xlenstra
+
 ## 4.0.5
 
 Added borders to minimap 
