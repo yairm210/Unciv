@@ -70,7 +70,7 @@ object Battle {
         }
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isAirUnit()) {
-            tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo())
+            tryInterceptAirAttack(attacker, attackedTile, defender)
             if (attacker.isDefeated()) return
         }
 
@@ -792,11 +792,15 @@ object Battle {
         if (targetedCity.population.population < 1) targetedCity.population.setPopulation(1)
     }
 
-    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile:TileInfo, interceptingCiv:CivilizationInfo) {
+    // One defender gets to try and Intercept
+    // Can't be unit that being attacked
+    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile:TileInfo, defender: ICombatant) {
         if (attacker.unit.hasUnique("Cannot be intercepted")) return
+        val interceptingCiv = defender.getCivInfo()
         // Pick highest chance interceptor
         val interceptor = interceptingCiv.getCivUnits()
-            .filter { it.canIntercept(attackedTile) }
+                .filterNot { defender is MapUnitCombatant && it == defender.unit }  // can't defend and Intercept
+                .filter { it.canIntercept(attackedTile) }
                 .sortedByDescending { it.interceptChance() }.first()
         // Does Intercept happen
         if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
@@ -832,6 +836,50 @@ object Battle {
         interceptingCiv.addNotification(interceptorText, locations,
                 interceptorName, NotificationIcon.War, attackerName)
         return
+    }
+
+    // All of the Civ's units will try to Intercept. But only 1 can succeed
+    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile:TileInfo, interceptingCiv: CivilizationInfo) {
+        if (attacker.unit.hasUnique("Cannot be intercepted")) return
+        // Pick highest chance interceptor
+        for (interceptor in interceptingCiv.getCivUnits()
+                .filter { it.canIntercept(attackedTile) }
+                .sortedByDescending { it.interceptChance() }) {
+            // Does Intercept happen
+            if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
+
+            var damage = BattleDamage.calculateDamageToDefender(
+                    MapUnitCombatant(interceptor),
+                    null,
+                    attacker
+            )
+
+            var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
+            damageFactor *= attacker.unit.receivedInterceptDamageFactor()
+
+            damage = (damage.toFloat() * damageFactor).toInt()
+
+            attacker.takeDamage(damage)
+            interceptor.attacksThisTurn++
+
+            if (damage > 0)
+                addXp(MapUnitCombatant(interceptor), 2, attacker)
+
+            val attackerName = attacker.getName()
+            val interceptorName = interceptor.name
+            val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
+            val attackerText = if (attacker.isDefeated())
+                "Our [$attackerName] was destroyed by an intercepting [$interceptorName]"
+            else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
+            val interceptorText = if (attacker.isDefeated())
+                "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
+            else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
+            attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
+                    attackerName, NotificationIcon.War, interceptorName)
+            interceptingCiv.addNotification(interceptorText, locations,
+                    interceptorName, NotificationIcon.War, attackerName)
+            return
+        }
     }
 
     private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, baseWithdrawChance: Int): Boolean {
