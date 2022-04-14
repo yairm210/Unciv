@@ -394,6 +394,8 @@ class DiplomacyScreen(
                 diplomacyTable.add(declareWarButton).row()
             }
         }
+        
+        diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
 
         val diplomaticMarriageButton = getDiplomaticMarriageButton(otherCiv)
         if (diplomaticMarriageButton != null) diplomacyTable.add(diplomaticMarriageButton).row()
@@ -746,6 +748,9 @@ class DiplomacyScreen(
         diplomacyTable.add(demandsButton).row()
         if (isNotPlayersTurn()) demandsButton.disable()
 
+        if (otherCiv.getCapital().location in viewingCiv.exploredTiles)
+            diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
+        
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
@@ -925,6 +930,15 @@ class DiplomacyScreen(
         rightSideTable.clear()
         rightSideTable.add(diplomacyTable)
     }
+    
+    private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
+        val goToOnMapButton = TextButton("Go To on Map", skin)
+        goToOnMapButton.onClick {
+            UncivGame.Current.setWorldScreen()
+            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital().location, selectUnit = false)
+        }
+        return goToOnMapButton
+    } 
 
     override fun resize(width: Int, height: Int) {
         super.resize(width, height)
