@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
+import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.StateForConditionals
@@ -522,6 +523,8 @@ object Battle {
         val defenderCiv = defender.getCivInfo()
 
         val capturedUnit = defender.unit
+        // Stop current action
+        capturedUnit.action = null
 
         val capturedUnitTile = capturedUnit.getTile()
         val originalOwner = if (capturedUnit.originalOwner != null)
