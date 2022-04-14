@@ -785,39 +785,41 @@ object Battle {
 
     private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile:TileInfo, interceptingCiv:CivilizationInfo) {
         if (attacker.unit.hasUnique("Cannot be intercepted")) return
-        for (interceptor in interceptingCiv.getCivUnits()
-            .filter { it.canIntercept(attackedTile) }) {
-            if (Random().nextFloat() > interceptor.interceptChance() / 100f) continue
+        // Pick highest chance interceptor
+        val interceptor = interceptingCiv.getCivUnits()
+            .filter { it.canIntercept(attackedTile) }
+                .sortedByDescending { it.interceptChance() }.first()
+        // Does Intercept happen
+        if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
-            var damage = BattleDamage.calculateDamageToDefender(
+        var damage = BattleDamage.calculateDamageToDefender(
                 MapUnitCombatant(interceptor),
                 null,
                 attacker
-            )
+        )
 
-            var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
-            damageFactor *= attacker.unit.receivedInterceptDamageFactor()
+        var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
+        damageFactor *= attacker.unit.receivedInterceptDamageFactor()
 
-            damage = (damage.toFloat() * damageFactor).toInt()
+        damage = (damage.toFloat() * damageFactor).toInt()
 
-            attacker.takeDamage(damage)
-            interceptor.attacksThisTurn++
+        attacker.takeDamage(damage)
+        interceptor.attacksThisTurn++
 
-            val attackerName = attacker.getName()
-            val interceptorName = interceptor.name
-            val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
-            val attackerText = if (attacker.isDefeated())
-                "Our [$attackerName] was destroyed by an intercepting [$interceptorName]"
-                else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
-            val interceptorText = if (attacker.isDefeated())
-                "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
-                else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
-            attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
+        val attackerName = attacker.getName()
+        val interceptorName = interceptor.name
+        val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
+        val attackerText = if (attacker.isDefeated())
+            "Our [$attackerName] was destroyed by an intercepting [$interceptorName]"
+        else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
+        val interceptorText = if (attacker.isDefeated())
+            "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
+        else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
+        attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
                 attackerName, NotificationIcon.War, interceptorName)
-            interceptingCiv.addNotification(interceptorText, locations,
+        interceptingCiv.addNotification(interceptorText, locations,
                 interceptorName, NotificationIcon.War, attackerName)
-            return
-        }
+        return
     }
 
     private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, baseWithdrawChance: Int): Boolean {
