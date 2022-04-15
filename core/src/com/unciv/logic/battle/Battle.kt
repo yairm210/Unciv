@@ -522,6 +522,8 @@ object Battle {
         val defenderCiv = defender.getCivInfo()
 
         val capturedUnit = defender.unit
+        // Stop current action
+        capturedUnit.action = null
 
         val capturedUnitTile = capturedUnit.getTile()
         val originalOwner = if (capturedUnit.originalOwner != null)
