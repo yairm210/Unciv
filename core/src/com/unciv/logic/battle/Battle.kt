@@ -799,7 +799,7 @@ object Battle {
                 .filter { it.canIntercept(attackedTile) }
                 .sortedByDescending { it.interceptChance() }) { 
             // defender can't also intercept
-            if (defender == null && MapUnitCombatant(interceptor) == defender) continue
+            if (defender != null && defender is MapUnitCombatant && interceptor == defender.unit) continue
             // Does Intercept happen? If not, exit
             if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
