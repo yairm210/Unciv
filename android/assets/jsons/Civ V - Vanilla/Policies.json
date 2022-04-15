@@ -217,16 +217,16 @@
             "Scientific": 0
         },
         "uniques": [
-            "[+100]% Production when constructing [Shrine] buildings [in all cities]",
-            "[+100]% Production when constructing [Temple] buildings [in all cities]",
+            "[+15]% Production when constructing [Culture] buildings [in all cities]",
             "Only available <before adopting [Rationalism]>"
         ],
         "policies": [
             {
                 "name": "Organized Religion",
                 "uniques": [
-                    "[+1 Faith] from every [Shrine]",
-                    "[+1 Faith] from every [Temple]"
+                    "[+1 Happiness] from every [Monument]",
+                    "[+1 Happiness] from every [Temple]",
+                    "[+1 Happiness] from every [Monastery]"
                 ],
                 "row": 1,
                 "column": 2
@@ -256,7 +256,12 @@
             },
             {
                 "name": "Free Religion",
-                "uniques": ["[-10]% Culture cost of adopting new Policies"],
+                "uniques": [
+                    "[1] Free Social Policy",
+                    "[+1 Culture] from every [Monument]",
+                    "[+1 Culture] from every [Temple]",
+                    "[+1 Culture] from every [Monastery]"
+                ],
                 "requires": ["Mandate Of Heaven", "Reformation"],
                 "row": 3,
                 "column": 4
@@ -264,8 +269,7 @@
             {
                 "name": "Piety Complete",
                 "uniques": [
-                    "[Faith] cost of purchasing items in cities [-20]% ",
-                    "[+3 Gold, +3 Culture] from every [Holy site]"
+                    "[-10]% Culture cost of adopting new Policies"
                 ]
             }
         ]
