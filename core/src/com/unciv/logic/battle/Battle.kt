@@ -399,8 +399,14 @@ object Battle {
     }
 
     private fun postBattleAddXp(attacker: ICombatant, defender: ICombatant) {
-        if (!attacker.isMelee()) { // ranged attack
-            addXp(attacker, 2, defender)
+        if (attacker.isAirUnit()) {
+            addXp(attacker, 4, defender)
+            addXp(defender, 2, attacker)
+        } else if (attacker.isRanged()) { // ranged attack
+            if(defender.isCity())
+                addXp(attacker, 3, defender)
+            else
+                addXp(attacker, 2, defender)
             addXp(defender, 2, attacker)
         } else if (!defender.isCivilian()) // unit was not captured but actually attacked
         {
@@ -804,6 +810,8 @@ object Battle {
 
             attacker.takeDamage(damage)
             interceptor.attacksThisTurn++
+            if (damage > 0)
+                addXp(MapUnitCombatant(interceptor), 2, attacker)
 
             val attackerName = attacker.getName()
             val interceptorName = interceptor.name
