@@ -410,10 +410,7 @@ object Battle {
             addXp(defender, 2, attacker)
         } else if (!defender.isCivilian()) // unit was not captured but actually attacked
         {
-            if(defender.isCity())
-                addXp(attacker, 5, defender)
-            else
-                addXp(attacker, 6, defender)
+            addXp(attacker, 5, defender)
             addXp(defender, 4, attacker)
         }
     }
