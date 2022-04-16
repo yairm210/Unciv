@@ -67,7 +67,7 @@ class ServerMutex(val gameInfo: GameInfoPreview) {
         }
 
         try {
-            OnlineMultiplayer().fileStorage.saveFileData(fileName, Gzip.zip(GameSaver.json().toJson(LockFile())))
+            OnlineMultiplayer().fileStorage.saveFileData(fileName, Gzip.zip(GameSaver.json().toJson(LockFile())), false)
         } catch (ex: FileStorageConflictException) {
             return locked
         }

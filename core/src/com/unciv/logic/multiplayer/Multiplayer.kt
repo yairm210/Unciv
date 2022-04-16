@@ -12,7 +12,7 @@ import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import java.util.*
 
 interface IFileStorage {
-    fun saveFileData(fileName: String, data: String)
+    fun saveFileData(fileName: String, data: String, overwrite: Boolean)
     fun loadFileData(fileName: String): String
     fun getFileMetaData(fileName: String): IFileMetaData
     fun deleteFile(fileName: String)
@@ -26,7 +26,7 @@ interface IFileMetaData {
 
 class UncivServerFileStorage(val serverIp:String):IFileStorage {
     val serverUrl = "http://$serverIp:8080"
-    override fun saveFileData(fileName: String, data: String) {
+    override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
         OptionsPopup.SimpleHttp.sendRequest(Net.HttpMethods.PUT, "$serverUrl/files/$fileName", data){
             success: Boolean, result: String -> 
             if (!success) {
@@ -82,7 +82,7 @@ class OnlineMultiplayer {
         }
 
         val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
-        fileStorage.saveFileData(gameInfo.gameId, zippedGameInfo)
+        fileStorage.saveFileData(gameInfo.gameId, zippedGameInfo, true)
     }
 
     /**
@@ -93,7 +93,7 @@ class OnlineMultiplayer {
      */
     fun tryUploadGamePreview(gameInfo: GameInfoPreview) {
         val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
-        fileStorage.saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo)
+        fileStorage.saveFileData("${gameInfo.gameId}_Preview", zippedGameInfo, true)
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {

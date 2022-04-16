@@ -86,12 +86,13 @@ object DropBox: IFileStorage {
         return GameSaver.json().fromJson(MetaData::class.java, reader.readText())
     }
 
-    override fun saveFileData(fileName: String, data: String) {
+    override fun saveFileData(fileName: String, data: String, overwrite: Boolean) {
+        val overwriteModeString = if(!overwrite) "" else ""","mode":{".tag":"overwrite"}"""
         dropboxApi(
             url="https://content.dropboxapi.com/2/files/upload",
             data=data,
             contentType="application/octet-stream",
-            dropboxApiArg = """{"path":"${getLocalGameLocation(fileName)}"}"""
+            dropboxApiArg = """{"path":"${getLocalGameLocation(fileName)}"$overwriteModeString}"""
         )
     }
 
