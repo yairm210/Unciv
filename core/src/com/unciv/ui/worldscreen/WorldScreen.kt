@@ -360,6 +360,16 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             postCrashHandlingRunnable {
                 loadingGamePopup.reuseWith("Server limit reached! Please wait for [${ex.message}] seconds", true)
             }
+            // stop refresher to not spam user with "Server limit reached!"
+            // popups and restart after limit timer is over
+            stopMultiPlayerRefresher()
+            val restartAfter : Long = (ex.message?.toLongOrNull() ?: 0) * 1000
+
+            timer("RestartTimerTimer", true, restartAfter, 0 ) {
+                multiPlayerRefresher = timer("multiPlayerRefresh", true, period = 10000) {
+                    loadLatestMultiplayerState()
+                }
+            }
         } catch (ex: Throwable) {
             postCrashHandlingRunnable {
                 loadingGamePopup.reuseWith("Couldn't download the latest game state!", true)
