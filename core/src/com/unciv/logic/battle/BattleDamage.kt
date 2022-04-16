@@ -264,7 +264,7 @@ object BattleDamage {
         defender: ICombatant,
         ignoreRandomness: Boolean = false,
     ): Int {
-        if (attacker.isRanged()) return 0
+        if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
         val ratio =
             getAttackingStrength(attacker, defender) / getDefendingStrength(
@@ -302,9 +302,9 @@ object BattleDamage {
         if (damageToAttacker && attackerToDefenderRatio > 1 || !damageToAttacker && attackerToDefenderRatio < 1) // damage ratio from the weaker party is inverted
             ratioModifier = ratioModifier.pow(-1)
         val randomSeed = attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode() // so people don't save-scum to get optimal results
-        val randomCenteredAround30 = 24 + 
-            if (ignoreRandomness) 6f
-            else 12 * Random(randomSeed.toLong()).nextFloat()
+        val randomCenteredAround30 = 24 +
+                if (ignoreRandomness) 6f
+                else 12 * Random(randomSeed.toLong()).nextFloat()
         return randomCenteredAround30 * ratioModifier
     }
 }

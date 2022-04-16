@@ -70,7 +70,7 @@ object Battle {
         }
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isAirUnit()) {
-            tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo())
+            tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo(), defender)
             if (attacker.isDefeated()) return
         }
 
@@ -221,7 +221,7 @@ object Battle {
 
         if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker.isMelee()) {
             captureCivilianUnit(attacker, defender)
-        } else if (attacker.isRanged()) {
+        } else if (attacker.isRanged() && !attacker.isAirUnit()) {  // Air Units are Ranged, but take damage as well
             defender.takeDamage(potentialDamageToDefender) // straight up
         } else {
             //melee attack is complicated, because either side may defeat the other midway
@@ -662,7 +662,7 @@ object Battle {
             .filter{it != attackingCiv}) {
                 tryDeclareWar(civWhoseUnitWasAttacked)
                 if (attacker.unit.baseUnit.isAirUnit() && !attacker.isDefeated()) {
-                    tryInterceptAirAttack(attacker, targetTile, civWhoseUnitWasAttacked)
+                    tryInterceptAirAttack(attacker, targetTile, civWhoseUnitWasAttacked, null)
             }
         }
         if (attacker.isDefeated()) return
@@ -790,17 +790,22 @@ object Battle {
         targetedCity.population.addPopulation(-populationLoss.toInt())
         if (targetedCity.population.population < 1) targetedCity.population.setPopulation(1)
     }
-
-    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile:TileInfo, interceptingCiv:CivilizationInfo) {
+    
+    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: TileInfo, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
         if (attacker.unit.hasUnique("Cannot be intercepted")) return
+        // Pick highest chance interceptor
         for (interceptor in interceptingCiv.getCivUnits()
-            .filter { it.canIntercept(attackedTile) }) {
-            if (Random().nextFloat() > interceptor.interceptChance() / 100f) continue
+                .filter { it.canIntercept(attackedTile) }
+                .sortedByDescending { it.interceptChance() }) { 
+            // defender can't also intercept
+            if (defender != null && defender is MapUnitCombatant && interceptor == defender.unit) continue
+            // Does Intercept happen? If not, exit
+            if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
             var damage = BattleDamage.calculateDamageToDefender(
-                MapUnitCombatant(interceptor),
-                null,
-                attacker
+                    MapUnitCombatant(interceptor),
+                    null,
+                    attacker
             )
 
             var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
@@ -813,19 +818,22 @@ object Battle {
             if (damage > 0)
                 addXp(MapUnitCombatant(interceptor), 2, attacker)
 
+            if (damage > 0)
+                addXp(MapUnitCombatant(interceptor), 2, attacker)
+
             val attackerName = attacker.getName()
             val interceptorName = interceptor.name
             val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
             val attackerText = if (attacker.isDefeated())
                 "Our [$attackerName] was destroyed by an intercepting [$interceptorName]"
-                else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
+            else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
             val interceptorText = if (attacker.isDefeated())
                 "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
-                else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
+            else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
             attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
-                attackerName, NotificationIcon.War, interceptorName)
+                    attackerName, NotificationIcon.War, interceptorName)
             interceptingCiv.addNotification(interceptorText, locations,
-                interceptorName, NotificationIcon.War, attackerName)
+                    interceptorName, NotificationIcon.War, attackerName)
             return
         }
     }

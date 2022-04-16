@@ -979,6 +979,8 @@ class MapUnit {
 
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
+        // Air Units can only Intercept if they didn't move this turn
+        if (baseUnit.isAirUnit() && currentMovement == 0f) return false
         val maxAttacksPerTurn = 1 +
             getMatchingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
