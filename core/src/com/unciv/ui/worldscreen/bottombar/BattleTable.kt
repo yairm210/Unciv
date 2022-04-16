@@ -15,6 +15,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.max

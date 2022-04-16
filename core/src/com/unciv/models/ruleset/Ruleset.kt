@@ -133,6 +133,8 @@ class Ruleset {
         units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
+        modOptions.uniques.addAll(ruleset.modOptions.uniques)
+        modOptions.constants.merge(ruleset.modOptions.constants)
         mods += ruleset.mods
     }
 
@@ -159,6 +161,28 @@ class Ruleset {
         unitTypes.clear()
     }
 
+    fun allRulesetObjects(): Sequence<IRulesetObject> =
+            beliefs.values.asSequence() +
+            buildings.values.asSequence() +
+            //difficulties is only INamed
+            eras.values.asSequence() +
+            sequenceOf(globalUniques) +
+            nations.values.asSequence() +
+            policies.values.asSequence() +
+            policyBranches.values.asSequence() +
+            // quests is only INamed
+            // religions is just Strings
+            ruinRewards.values.asSequence() +
+            // specialists is only NamedStats
+            technologies.values.asSequence() +
+            terrains.values.asSequence() +
+            tileImprovements.values.asSequence() +
+            tileResources.values.asSequence() +
+            unitPromotions.values.asSequence() +
+            units.values.asSequence() +
+            unitTypes.values.asSequence()
+    fun allIHasUniques(): Sequence<IHasUniques> =
+            allRulesetObjects() + sequenceOf(modOptions)
 
     fun load(folderHandle: FileHandle, printOutput: Boolean) {
         val gameBasicsStartTime = System.currentTimeMillis()
@@ -227,17 +251,32 @@ class Ruleset {
 
         val policiesFile = folderHandle.child("Policies.json")
         if (policiesFile.exists()) {
-            policyBranches += createHashmap(jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile))
+            policyBranches += createHashmap(
+                jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile)
+            )
             for (branch in policyBranches.values) {
+                // Setup this branch
                 branch.requires = ArrayList()
                 branch.branch = branch
+                for (victoryType in VictoryType.values()) {
+                    if (victoryType.name !in branch.priorities.keys) {
+                        branch.priorities[victoryType.name] = 0
+                    }
+                }
                 policies[branch.name] = branch
+
+                // Append child policies of this branch
                 for (policy in branch.policies) {
                     policy.branch = branch
-                    if (policy.requires == null) policy.requires = arrayListOf(branch.name)
+                    if (policy.requires == null) {
+                        policy.requires = arrayListOf(branch.name)
+                    }
                     policies[policy.name] = policy
                 }
-                branch.policies.last().name = branch.name + Policy.branchCompleteSuffix
+
+                // Add a finisher
+                branch.policies.last().name =
+                    branch.name + Policy.branchCompleteSuffix
             }
         }
 
@@ -346,12 +385,16 @@ class Ruleset {
             val equalUniques =
                 similarUniques.filter { it.placeholderText == unique.placeholderText }
             return when {
-                equalUniques.isNotEmpty() -> {
-                    // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
-                    listOf(RulesetError(
-                            "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
-                            RulesetErrorSeverity.OK))
-                }
+                // Malformed conditional
+                unique.text.count { it=='<' } != unique.text.count { it=='>' } ->listOf(
+                        RulesetError("$name's unique \"${unique.text}\" contains mismatched conditional braces!",
+                            RulesetErrorSeverity.Warning))
+                
+                // This should only ever happen if a bug is or has been introduced that prevents Unique.type from being set for a valid UniqueType, I think.\
+                equalUniques.isNotEmpty() -> listOf(RulesetError(
+                        "$name's unique \"${unique.text}\" looks like it should be fine, but for some reason isn't recognized.",
+                        RulesetErrorSeverity.OK))
+                
                 similarUniques.isNotEmpty() -> {
                     val text =
                         "$name's unique \"${unique.text}\" looks like it may be a misspelling of:\n" +
@@ -366,7 +409,7 @@ class Ruleset {
                                 }.prependIndent("\t")
                     listOf(RulesetError(text, RulesetErrorSeverity.OK))
                 }
-                RulesetCache.modCheckerAllowUntypedUniques -> return emptyList()
+                RulesetCache.modCheckerAllowUntypedUniques -> emptyList()
                 else -> listOf(RulesetError(
                         "$name's unique \"${unique.text}\" not found in Unciv's unique types.",
                         RulesetErrorSeverity.OK))
@@ -529,7 +572,7 @@ class Ruleset {
         val vanillaRuleset = RulesetCache.getVanillaRuleset()  // for UnitTypes fallback
 
 
-        if (units.values.none { it.uniques.contains(UniqueType.FoundCity.text) })
+        if (units.values.none { it.hasUnique(UniqueType.FoundCity) })
            lines += "No city-founding units in ruleset!"
 
         for (unit in units.values) {
@@ -702,6 +745,10 @@ class Ruleset {
                         lines += "${policy.name} requires policy $prereq which does not exist!"
             checkUniques(policy, lines, rulesetSpecific, forOptionsPopup)
         }
+        
+        for (policy in policyBranches.values.flatMap { it.policies + it })
+            if (policy != policies[policy.name])
+                lines += "More than one policy with the name ${policy.name} exists!"
 
         for (reward in ruinRewards.values) {
             for (difficulty in reward.excludedDifficulties)
@@ -827,22 +874,25 @@ object RulesetCache : HashMap<String,Ruleset>() {
         val newRuleset = Ruleset()
 
         val baseRuleset =
-            if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset) this[optionalBaseRuleset]!!
+            if (containsKey(optionalBaseRuleset) && this[optionalBaseRuleset]!!.modOptions.isBaseRuleset)
+                this[optionalBaseRuleset]!!
             else getVanillaRuleset()
 
 
-        val loadedMods = mods
+        val loadedMods = mods.asSequence()
             .filter { containsKey(it) }
             .map { this[it]!! }
             .filter { !it.modOptions.isBaseRuleset } + 
             baseRuleset
 
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
+            if (mod.modOptions.isBaseRuleset) {
+                // This is so we don't keep using the base ruleset's unqiues *by reference* and add to in ad infinitum
+                newRuleset.modOptions.uniques = ArrayList()
+                newRuleset.modOptions.isBaseRuleset = true
+            }
             newRuleset.add(mod)
             newRuleset.mods += mod.name
-            if (mod.modOptions.isBaseRuleset) {
-                newRuleset.modOptions = mod.modOptions
-            }
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 

@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.models.ruleset.unique.UniqueType
 
-class UnitMovementAlgorithms(val unit:MapUnit) {
+class UnitMovementAlgorithms(val unit: MapUnit) {
 
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     private fun getMovementCostBetweenAdjacentTiles(
@@ -18,8 +18,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     ): Float {
 
         if (from.isLand != to.isLand && unit.baseUnit.isLandUnit())
-            return if (unit.civInfo.nation.disembarkCosts1 && from.isWater && to.isLand) 1f
-            else 100f // this is embarkment or disembarkment, and will take the entire turn
+            return if (from.isWater && to.isLand) unit.costToDisembark ?: 100f
+            else unit.costToEmbark ?: 100f
 
         // If the movement is affected by a Zone of Control, all movement points are expended
         if (considerZoneOfControl && isMovementAffectedByZoneOfControl(from, to, civInfo))
@@ -40,7 +40,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (from.roadStatus == RoadStatus.Railroad && to.roadStatus == RoadStatus.Railroad)
             return RoadStatus.Railroad.movement + extraCost
 
+        // Each of these two function calls `hasUnique(UniqueType.CityStateTerritoryAlwaysFriendly)`
+        // when entering territory of a city state
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
+        
         val areConnectedByRiver = from.isAdjacentToRiver() && to.isAdjacentToRiver() && from.isConnectedByRiver(to)
 
         if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))

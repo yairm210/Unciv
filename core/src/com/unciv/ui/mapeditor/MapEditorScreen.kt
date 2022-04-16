@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -13,16 +12,19 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.translations.tr
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.popups
 import com.unciv.ui.utils.*
 
 class MapEditorScreen(): BaseScreen() {
     var mapName = ""
     var tileMap = TileMap()
-    var ruleset = Ruleset().apply { add(RulesetCache.getVanillaRuleset()) }
+    var ruleset = RulesetCache.getVanillaRuleset()  // This will return a clone
 
     var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder

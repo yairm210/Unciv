@@ -4,7 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.tilesets.TileSetCache
 import com.unciv.models.tilesets.TileSetConfig
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 
 /**
  * @param tileSet Name of the tileset. Defaults to active at time of instantiation.

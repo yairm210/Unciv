@@ -25,6 +25,8 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.tilegroups.CityButton
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
@@ -208,7 +210,7 @@ class DiplomacyScreen(
 
         val protectors = otherCiv.getProtectorCivs()
         if (protectors.isNotEmpty()) {
-            val protectorString = "{Protected by}: " + protectors.joinToString(", ") { it.civName }
+            val protectorString = "{Protected by}: " + protectors.joinToString(", ") { it.civName.tr() }
             diplomacyTable.add(protectorString.toLabel()).row()
         }
 
@@ -225,12 +227,12 @@ class DiplomacyScreen(
 
         val eraInfo = viewingCiv.getEra()
 
-        var friendBonusText = "{When Friends}: ".tr()
+        var friendBonusText = "{When Friends:} ".tr()
         val friendBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Friend)
         val friendBonusStrings = getAdjustedBonuses(friendBonusObjects)
         friendBonusText += friendBonusStrings.joinToString(separator = ", ") { it.tr() }
 
-        var allyBonusText = "{When Allies}: ".tr()
+        var allyBonusText = "{When Allies:} ".tr()
         val allyBonusObjects = eraInfo.getCityStateBonuses(otherCiv.cityStateType, RelationshipLevel.Ally)
         val allyBonusStrings = getAdjustedBonuses(allyBonusObjects)
         allyBonusText += allyBonusStrings.joinToString(separator = ", ") { it.tr() }

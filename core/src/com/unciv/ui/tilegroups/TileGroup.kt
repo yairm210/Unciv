@@ -19,6 +19,8 @@ import com.unciv.models.helpers.MiscArrowTypes
 import com.unciv.models.helpers.TintedMapArrow
 import com.unciv.models.helpers.UnitMovementMemoryType
 import com.unciv.ui.cityscreen.YieldGroup
+import com.unciv.ui.images.ImageAttempter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import java.lang.IllegalStateException
 import kotlin.math.*
@@ -109,6 +111,10 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     class UnitLayerGroupClass:Group(){
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
+        override fun act(delta: Float) { // No 'snapshotting' since we trust it wil remain the same
+            for (child in children)
+                child.act(delta)
+        }
     }
 
     class UnitImageLayerGroupClass:ActionlessGroup(){
@@ -552,11 +558,9 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
 
     /** Create and setup Actors for all arrows to be drawn from this tile. */
     private fun updateArrows() {
-        for (actorList in arrows.values) {
-            for (actor in actorList) {
+        for (actorList in arrows.values) 
+            for (actor in actorList)
                 actor.remove()
-            }
-        }
         arrows.clear()
 
         val tileScale = 50f * 0.8f // See notes in updateRoadImages.

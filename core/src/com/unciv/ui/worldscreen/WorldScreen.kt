@@ -41,6 +41,13 @@ import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.ExitGamePopup
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.hasOpenPopups
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import java.util.*
@@ -66,7 +73,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     val canChangeState
         get() = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
-    val mapVisualization = MapVisualization(gameInfo, viewingCiv)
+    private val mapVisualization = MapVisualization(gameInfo, viewingCiv)
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
     private val minimapWrapper = MinimapHolder(mapHolder)
@@ -83,7 +90,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
     private val fogOfWarButton = createFogOfWarButton()
     private val nextTurnButton = createNextTurnButton()
     private var nextTurnAction: () -> Unit = {}
-    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f)) }
+    private val tutorialTaskTable = Table().apply { background = ImageGetter.getBackground(
+        ImageGetter.getBlue().darken(0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
@@ -100,7 +108,9 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
 
-        notificationsScroll = NotificationsScroll(this)
+        val maxNotificationsHeight = topBar.y - nextTurnButton.height -
+                (if (game.settings.showMinimap) minimapWrapper.height else 0f) - 25f
+        notificationsScroll = NotificationsScroll(this, maxNotificationsHeight)
         // notifications are right-aligned, they take up only as much space as necessary.
         notificationsScroll.width = stage.width / 2
 
@@ -135,11 +145,11 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
 
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
+        stage.addActor(notificationsScroll)  // very low in z-order, so we're free to let it extend _below_ tile info and minimap if we want 
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
         stage.addActor(techPolicyAndVictoryHolder)
-        stage.addActor(notificationsScroll)
         stage.addActor(tutorialTaskTable)
 
 
@@ -264,10 +274,10 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             if (!mapHolder.setCenterPosition(capital.location))
                 game.setScreen(CityScreen(capital))
         }
-        // These cause crashes so disabling for now
-//        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { this.openOptionsPopup() }    //   Game Options
-//        keyPressDispatcher[KeyCharAndCode.ctrl('S')] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
-//        keyPressDispatcher[KeyCharAndCode.ctrl('L')] = { game.setScreen(LoadGameScreen(this)) }    //   Load
+        keyPressDispatcher[KeyCharAndCode.ctrl('O')] = { this.openOptionsPopup() }    //   Game Options
+        keyPressDispatcher[KeyCharAndCode.ctrl('S')] = { game.setScreen(SaveGameScreen(gameInfo)) }    //   Save
+        keyPressDispatcher[KeyCharAndCode.ctrl('L')] = { game.setScreen(LoadGameScreen(this)) }    //   Load
+        keyPressDispatcher[KeyCharAndCode.ctrl('Q')] = { ExitGamePopup(this, true) }    //   Quit
         keyPressDispatcher[Input.Keys.NUMPAD_ADD] = { this.mapHolder.zoomIn() }    //   '+' Zoom
         keyPressDispatcher[Input.Keys.NUMPAD_SUBTRACT] = { this.mapHolder.zoomOut() }    //   '-' Zoom
         keyPressDispatcher.setCheckpoint()
@@ -416,15 +426,17 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
         unitActionsTable.y = bottomUnitTable.height
 
         mapHolder.resetArrows()
-        val allUnits = gameInfo.civilizations.asSequence().flatMap { it.getCivUnits() }
-        val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
-            gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
-        mapHolder.updateMovementOverlay(
-            allUnits.filter(mapVisualization::isUnitPastVisible),
-            allUnits.filter(mapVisualization::isUnitFutureVisible),
-            allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
-                    .map { (_, source, target) -> source to target }
-        )
+        if (UncivGame.Current.settings.showUnitMovements) {
+            val allUnits = gameInfo.civilizations.asSequence().flatMap { it.getCivUnits() }
+            val allAttacks = allUnits.map { unit -> unit.attacksSinceTurnStart.asSequence().map { attacked -> Triple(unit.civInfo, unit.getTile().position, attacked) } }.flatten() +
+                gameInfo.civilizations.asSequence().flatMap { civInfo -> civInfo.attacksSinceTurnStart.asSequence().map { Triple(civInfo, it.source, it.target) } }
+            mapHolder.updateMovementOverlay(
+                allUnits.filter(mapVisualization::isUnitPastVisible),
+                allUnits.filter(mapVisualization::isUnitFutureVisible),
+                allAttacks.filter { (attacker, source, target) -> mapVisualization.isAttackVisible(attacker, source, target) }
+                        .map { (_, source, target) -> source to target }
+            )
+        }
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
@@ -467,9 +479,8 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
             }
         }
         updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it
-        notificationsScroll.update(viewingCiv.notifications)
-        notificationsScroll.setPosition(stage.width - notificationsScroll.width * 0.5f - 10f,
-                nextTurnButton.y - notificationsScroll.height * 0.5f - 5f)
+        notificationsScroll.update(viewingCiv.notifications, bottomTileInfoTable.height)
+        notificationsScroll.setTopRight(stage.width - 10f, nextTurnButton.y - 5f)
     }
 
     private fun getCurrentTutorialTask(): String {
@@ -731,6 +742,7 @@ class WorldScreen(val gameInfo: GameInfo, val viewingCiv:CivilizationInfo) : Bas
      * to re-enable the next turn button within its Close button action
      */
     fun enableNextTurnButtonAfterOptions() {
+        mapHolder.reloadMaxZoom()
         nextTurnButton.isEnabled = isPlayersTurn && !waitingForAutosave
     }
 

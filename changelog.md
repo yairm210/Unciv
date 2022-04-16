@@ -1,3 +1,86 @@
+## 4.0.6
+
+Got rid of ANRs from multiple sources
+
+Performance improvements, including framerate
+
+Improved continuous rendering's framerate, to solve some ANRs
+
+Discord suggestion - have allied city states see all tiles of their ally, so they can support them militarily
+
+MusicController improvements  - By SomeTroglodyte
+
+Fixed a bug where production would not be retained when changing from an obsolete unit to its upgraded unique unit - By xlenstra
+
+## 4.0.5
+
+Added borders to minimap 
+
+Resolved Diplomatic Victory check not triggering for human player
+
+Cities that become capital no longer continue being razed
+
+By SomeTroglodyte:
+- Make Icons clickable in religions per city display 
+- Nicer NotificationScroll 
+
+Fixed a bug where crosshairs are everywhere with the 'attack when embarked' unique  - By xlenstra
+
+Fixed turn checker crashes   - By GGGuenni
+
+## 4.0.4
+
+Caught bad URL parsing exceptions
+
+Resolved ANRs when opening Options menu
+
+Solved 'check server connection' errors on Android
+
+By SomeTroglodyte:
+- Fix Goddess of Protection error
+- Tabbed pager architecture update 
+
+## 4.0.3
+
+Changed server connection to URL-based to allow connection to uncivserver.xyz
+
+By xlenstra:
+- Added a unique for attacking when embarked 
+- Generalized Denmark's unique 
+
+By HaneulCheong:
+- Improved city name generation 
+- Fixed the official wiki 
+
+By SomeTroglodyte:
+- Remove re-orientation for OptionsPopup 
+- Fix enabled buildings not displaying in games without nukes 
+
+## 4.0.2
+
+Solved out of memory errors for modded base rulesets
+
+By SomeTroglodyte:
+- City Info Table Expanders improvements
+- Empire Overview tweaks
+- Translation writer improvements 
+- Reactivate Worldscreen Ctrl key bindings 
+
+Generalized a few nation uniques  - By xlenstra
+
+## 4.0.1
+
+Custom server port  - By HAHH9527
+
+Add Moddable Policy Priorities  - By HaneulCheong
+
+By SomeTroglodyte:
+- Enable ModOptions uniques and ModConstants from non-base mods 
+- Improved Widgets - Fixing Tabbed Pager Scrolling 
+- Make max Zoom out a setting
+- More thorough workaround for Char.code and Char(Int) crashing 
+- Fix crashes and better crash info
+
 ## 4.0.0
 
 Can now host your own Unciv server for Multiplayer - details in the wiki! 

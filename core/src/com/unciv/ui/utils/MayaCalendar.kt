@@ -6,6 +6,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.unique.UniqueTriggerActivation
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.utils.KeyCharAndCode.Companion.makeChar
+import com.unciv.ui.utils.KeyCharAndCode.Companion.toCode
 import kotlin.math.abs
 
 object MayaCalendar {
@@ -23,7 +26,7 @@ object MayaCalendar {
     const val zero = 'ⅰ' // U+2170
     const val nineteen = 'Ↄ' // U+2183
     val digits = zero..nineteen
-    fun digitIcon(ch: Char) = iconFolder + (ch.code - zero.code).toString()
+    fun digitIcon(ch: Char) = iconFolder + (ch.toCode() - zero.toCode()).toString()
 
     // Calculation
     private const val daysOn30000101BCE = 36000 + 5040 + 240 + 11
@@ -43,9 +46,9 @@ object MayaCalendar {
         }
 
         override fun toString(): String {
-            val baktunDigit = Char(zero.code + baktuns)
-            val katunDigit = Char(zero.code + katuns)
-            val tunDigit = Char(zero.code + tuns)
+            val baktunDigit = (zero.toCode() + baktuns).makeChar()
+            val katunDigit = (zero.toCode() + katuns).makeChar()
+            val tunDigit = (zero.toCode() + tuns).makeChar()
             return "$baktunDigit$baktun$katunDigit$katun$tunDigit$tun"
         }
     }

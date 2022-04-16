@@ -1,5 +1,10 @@
 package com.unciv.app.desktop
 
+import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.int
+import com.github.ajalt.clikt.parameters.types.restrictTo
 import io.ktor.application.*
 import io.ktor.response.*
 import io.ktor.routing.*
@@ -13,11 +18,29 @@ import java.io.File
 
 internal object UncivServer {
     @JvmStatic
-    fun main(arg: Array<String>) {
-        val fileFolderName = "MultiplayerFiles"
-        File(fileFolderName).mkdir()
-        println(File(fileFolderName).absolutePath)
-        embeddedServer(Netty, port = 8080) {
+    fun main(args: Array<String>) = UncivServerRunner().main(args)
+}
+
+private class UncivServerRunner : CliktCommand() {
+    private val port by option(
+        "-p", "-port",
+        envvar = "UncivServerPort",
+        help = "Server port"
+    ).int().restrictTo(1024..49151).default(80)
+
+    private val folder by option(
+        "-f", "-folder",
+        envvar = "UncivServerFolder",
+        help = "Multiplayer file's folder"
+    ).default("MultiplayerFiles")
+
+    override fun run() {
+        serverRun(port, folder)
+    }
+
+    private fun serverRun(serverPort: Int, fileFolderName: String) {
+        echo("Starting UncivServer for ${File(fileFolderName).absolutePath} on port $serverPort")
+        embeddedServer(Netty, port = serverPort) {
             routing {
                 get("/isalive") {
                     call.respondText("true")

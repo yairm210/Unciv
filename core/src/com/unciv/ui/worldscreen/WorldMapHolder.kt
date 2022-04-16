@@ -25,13 +25,15 @@ import com.unciv.logic.map.*
 import com.unciv.models.*
 import com.unciv.models.helpers.MapArrowType
 import com.unciv.models.helpers.MiscArrowTypes
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
-//import com.unciv.ui.worldscreen.unit.UnitMovementsOverlayGroup
-import kotlin.concurrent.thread
 
 
 class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
@@ -47,9 +49,19 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     private val unitMovementPaths: HashMap<MapUnit, ArrayList<TileInfo>> = HashMap()
 
+    private var maxWorldZoomOut = 2f
+    private var minZoomScale = 0.5f
+
     init {
         if (Gdx.app.type == Application.ApplicationType.Desktop) this.setFlingTime(0f)
         continuousScrollingX = tileMap.mapParameters.worldWrap
+        reloadMaxZoom()
+    }
+
+    internal fun reloadMaxZoom() {
+        maxWorldZoomOut = UncivGame.Current.settings.maxWorldZoomOut
+        minZoomScale = 1f / maxWorldZoomOut
+        if (scaleX < minZoomScale) zoom(1f)   // since normally min isn't reached exactly, only powers of 0.8
     }
 
     // Interface for classes that contain the data required to draw a button
@@ -62,7 +74,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
-        val tileGroupMap = TileGroupMap(daTileGroups, worldScreen.stage.width, worldScreen.stage.height, continuousScrollingX)
+        val tileGroupMap = TileGroupMap(
+            daTileGroups,
+            worldScreen.stage.width * maxWorldZoomOut / 2,
+            worldScreen.stage.height * maxWorldZoomOut / 2,
+            continuousScrollingX)
         val mirrorTileGroups = tileGroupMap.getMirrorTiles()
 
         for (tileGroup in daTileGroups) {
@@ -130,7 +146,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         actor = tileGroupMap
 
-        setSize(worldScreen.stage.width * 2, worldScreen.stage.height * 2)
+        setSize(worldScreen.stage.width * maxWorldZoomOut, worldScreen.stage.height * maxWorldZoomOut)
         setOrigin(width / 2, height / 2)
         center(worldScreen.stage)
 
@@ -255,6 +271,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tileInfo: TileInfo) {
         crashHandlingThread(name = "TurnsToGetThere") {
+            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
+             * And so, all UI editing will be done on the main thread.
+             * The only "heavy lifting" that needs to be done is getting the turns to get there,
+             * so that and that alone will be relegated to the concurrent thread.
+             */
+
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
@@ -402,7 +424,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun getSwapWithButton(dto: SwapWithButtonDto): Group {
         val swapWithButton = Group().apply { width = buttonSize;height = buttonSize; }
         swapWithButton.addActor(ImageGetter.getCircle().apply { width = buttonSize; height = buttonSize })
-        swapWithButton.addActor(ImageGetter.getImage("OtherIcons/Swap")
+        swapWithButton.addActor(
+            ImageGetter.getImage("OtherIcons/Swap")
             .apply { color = Color.BLACK; width = buttonSize / 2; height = buttonSize / 2; center(swapWithButton) })
 
         val unitIcon = UnitGroup(dto.unit, smallerCircleSizes)
@@ -463,13 +486,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
      * @param visibleAttacks Sequence of pairs of [Vector2] positions of the sources and the targets of all attacks that can be displayed.
      * */
     internal fun updateMovementOverlay(pastVisibleUnits: Sequence<MapUnit>, targetVisibleUnits: Sequence<MapUnit>, visibleAttacks: Sequence<Pair<Vector2, Vector2>>) {
-        if (!UncivGame.Current.settings.showUnitMovements) {
-            return
-        }
         for (unit in pastVisibleUnits) {
-            if (unit.movementMemories.isEmpty()) {
-                continue
-            }
+            if (unit.movementMemories.isEmpty()) continue
             val stepIter = unit.movementMemories.iterator()
             var previous = stepIter.next()
             while (stepIter.hasNext()) {
@@ -702,12 +720,13 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     override fun zoom(zoomScale: Float) {
-        super.zoom(zoomScale)
+        if (zoomScale < minZoomScale || zoomScale > 2f) return
+        setScale(zoomScale)
         val scale = 1 / scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
         if (scale >= 1)
             for (tileGroup in allWorldTileGroups)
                 tileGroup.cityButtonLayerGroup.isTransform = false // to save on rendering time to improve framerate
-        if (scale < 1 && scale > 0.5f)
+        if (scale < 1 && scale >= minZoomScale)
             for (tileGroup in allWorldTileGroups) {
                 // ONLY set those groups that have active city buttons as transformable!
                 // This is massively framerate-improving!

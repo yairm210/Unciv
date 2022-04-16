@@ -1,4 +1,4 @@
-package com.unciv.ui.utils
+package com.unciv.ui.images
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.ui.utils.BaseScreen
+import com.unciv.ui.utils.toLabel
 
 /**
  * Translate a [String] and make a [Button] widget from it, with control over font size, font colour, an optional icon, and custom formatting.

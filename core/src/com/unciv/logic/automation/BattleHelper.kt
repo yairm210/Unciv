@@ -91,9 +91,10 @@ object BattleHelper {
     }
 
     fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
-        if (combatant is MapUnitCombatant && combatant.unit.isEmbarked()) {
-            if (tile.isWater) return false // can't attack water units while embarked, only land
-            if (combatant.isRanged()) return false
+        if (combatant is MapUnitCombatant && combatant.unit.isEmbarked() && !combatant.hasUnique(UniqueType.AttackOnSea)) {
+            // Can't attack water units while embarked, only land
+            if (tile.isWater || combatant.isRanged()) 
+                return false
         }
 
         val tileCombatant = Battle.getMapCombatantOfTile(tile) ?: return false

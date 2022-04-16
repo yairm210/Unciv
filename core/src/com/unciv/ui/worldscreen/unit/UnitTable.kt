@@ -2,7 +2,6 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -16,6 +15,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen

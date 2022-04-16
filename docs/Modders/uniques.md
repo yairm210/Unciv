@@ -441,9 +441,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  ""Borrows" city names from other civilizations in the game"
 	Applicable to: Global
 
-??? example  "Units fight as though they were at full strength even when damaged"
-	Applicable to: Global
-
 ??? example  "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)"
 	Applicable to: Global
 
@@ -459,10 +456,14 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "May not generate great prophet equivalents naturally"
 	Applicable to: Global
 
-??? example  "67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment"
+??? example  "When conquering an encampment, earn [amount] Gold and recruit a Barbarian unit"
+	Example: "When conquering an encampment, earn [20] Gold and recruit a Barbarian unit"
+
 	Applicable to: Global
 
-??? example  "50% chance of capturing defeated Barbarian naval units and earning 25 Gold"
+??? example  "When defeating a [mapUnitFilter] unit, earn [amount] Gold and recruit it"
+	Example: "When defeating a [Wounded] unit, earn [20] Gold and recruit it"
+
 	Applicable to: Global
 
 ??? example  "Receive triple Gold from Barbarian encampments and pillaging Cities"
@@ -505,11 +506,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Resting point for Influence with City-States following this religion [amount]"
 	Example: "Resting point for Influence with City-States following this religion [20]"
-
-	Applicable to: Global
-
-??? example  "+[amount]% Strength if within [amount] tiles of a [tileFilter]"
-	Example: "+[20]% Strength if within [20] tiles of a [Farm]"
 
 	Applicable to: Global
 
@@ -689,6 +685,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "No defensive terrain penalty"
 	Applicable to: Global, Unit
 
+??? example  "Damage is ignored when determining unit Strength"
+	Applicable to: Global, Unit
+
 ??? example  "No movement cost to pillage"
 	Applicable to: Global, Unit
 
@@ -711,9 +710,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "Defense bonus when embarked"
 	Applicable to: Global, Unit
-
-??? example  "Embarked units can defend themselves"
-	Applicable to: Global
 
 ??? example  "[amount]% maintenance costs"
 	Example: "[20]% maintenance costs"
@@ -752,6 +748,16 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "[amount]% XP gained from combat"
 	Example: "[20]% XP gained from combat"
+
+	Applicable to: Global, Unit
+
+??? example  "[amount] Movement point cost to disembark"
+	Example: "[20] Movement point cost to disembark"
+
+	Applicable to: Global, Unit
+
+??? example  "[amount] Movement point cost to embark"
+	Example: "[20] Movement point cost to embark"
 
 	Applicable to: Global, Unit
 
@@ -1004,6 +1010,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Eliminates combat penalty for attacking across a coast"
 	Applicable to: Unit
 
+??? example  "May attack when embarked"
+	Applicable to: Unit
+
 ??? example  "No Sight"
 	Applicable to: Unit
 
@@ -1246,8 +1255,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "Rare feature"
 	Applicable to: Terrain
 
-??? example  "[amount]% chance to be destroyed by nukes"
-	Example: "[20]% chance to be destroyed by nukes"
+??? example  "[amount]% Chance to be destroyed by nukes"
+	Example: "[20]% Chance to be destroyed by nukes"
 
 	Applicable to: Terrain
 
@@ -1448,6 +1457,19 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: CityState
 
 ## Conditional uniques
+??? example  "&lt;for [amount] turns&gt;"
+	Example: "&lt;for [20] turns&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;by consuming this unit&gt;"
+	Applicable to: Conditional
+
+??? example  "&lt;with [amount]% chance&gt;"
+	Example: "&lt;with [20]% chance&gt;"
+
+	Applicable to: Conditional
+
 ??? example  "&lt;when at war&gt;"
 	Applicable to: Conditional
 
@@ -1521,14 +1543,6 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 ??? example  "&lt;if [buildingName] is constructed&gt;"
 	Example: "&lt;if [Library] is constructed&gt;"
 
-	Applicable to: Conditional
-
-??? example  "&lt;for [amount] turns&gt;"
-	Example: "&lt;for [20] turns&gt;"
-
-	Applicable to: Conditional
-
-??? example  "&lt;by consuming this unit&gt;"
 	Applicable to: Conditional
 
 ??? example  "&lt;in cities with a [buildingFilter]&gt;"
@@ -1626,6 +1640,11 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 ??? example  "&lt;in tiles without [tileFilter]&gt;"
 	Example: "&lt;in tiles without [Farm]&gt;"
+
+	Applicable to: Conditional
+
+??? example  "&lt;within [amount] tiles of a [tileFilter]&gt;"
+	Example: "&lt;within [20] tiles of a [Farm]&gt;"
 
 	Applicable to: Conditional
 

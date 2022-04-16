@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.PolicyBranch
 import com.unciv.models.ruleset.Policy.PolicyBranchType
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.min
@@ -25,19 +26,21 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         val policies = viewingCiv.policies
         displayTutorial(Tutorial.CultureAndPolicies)
 
-        if (viewingCiv.gameInfo.ruleSet.policies.values.none {
-                viewingCiv.policies.isAdoptable(it, checkEra = false) 
-        })
-            rightSideButton.setText("All policies adopted".tr())
-        else
-            rightSideButton.setText("{Adopt policy}\n(".tr() + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
+        rightSideButton.setText(when {
+            policies.allPoliciesAdopted(checkEra = false) ->
+                "All policies adopted"
+            policies.freePolicies > 0 ->
+                "Adopt free policy"
+            else ->
+                "{Adopt policy}\n(${policies.storedCulture}/${policies.getCultureNeededForNextPolicy()})"
+        }.tr())
 
         setDefaultCloseAction()
 
-        if (policies.freePolicies > 0) {
-            rightSideButton.setText("Adopt free policy".tr())
-            if (policies.canAdoptPolicy()) closeButton.disable()
-        } else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        if (policies.freePolicies > 0 && policies.canAdoptPolicy())
+            closeButton.disable()
+        else
+            onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
             val policy = pickedPolicy!!
@@ -75,7 +78,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         // plan a nice geometry
         if (scrollPane.width < scrollPane.height) {
             // Portrait - arrange more in the vertical direction
-            if (numBranchesX < 2.5f) rowChangeCount = 2    
+            if (numBranchesX < 2.5f) rowChangeCount = 2
             else rowChangeWidth = scrollPane.width + 10f  // 10f to ignore 1 horizontal padding
         } else {
             // Landscape - arrange in as few rows as looks nice
@@ -117,7 +120,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         scrollPane.updateVisualScroll()
     }
 
-    fun policyIsPickable(policy: Policy):Boolean {
+    private fun policyIsPickable(policy: Policy):Boolean {
         if (!worldScreen.isPlayersTurn
             || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
             || viewingCiv.isDefeated()
@@ -142,7 +145,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             game.setScreen(PolicyPickerScreen(worldScreen))
         }
         pickedPolicy = policy
-        
+
         descriptionLabel.setText(policy.getDescription())
     }
 
@@ -175,10 +178,10 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         }
 
         branchGroup.add(branchTable).height(150f).row()
-        
+
         // Add the finisher button.
         branchGroup.add(getPolicyButton(branch.policies.last(), false)).padTop(15f)
-        
+
         // Ensure dimensions are calculated
         branchGroup.pack()
         return branchGroup
