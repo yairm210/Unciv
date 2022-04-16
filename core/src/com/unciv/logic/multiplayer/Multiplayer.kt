@@ -76,7 +76,7 @@ class OnlineMultiplayer(var fileStorageIdentifier: String? = null) {
         if (fileStorageIdentifier == null)
             fileStorageIdentifier = UncivGame.Current.settings.multiplayerServer
         fileStorage = if (fileStorageIdentifier == Constants.dropboxMultiplayerServer)
-            Dropbox
+            DropBox
         else UncivServerFileStorage(fileStorageIdentifier!!)
     }
 
