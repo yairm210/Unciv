@@ -292,7 +292,7 @@ object BattleDamage {
     private fun damageModifier(
         attackerToDefenderRatio: Float,
         damageToAttacker: Boolean,
-        attacker: ICombatant,
+        attacker: ICombatant, // for the randomness
         ignoreRandomness: Boolean = false,
     ): Float {
         // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
@@ -302,12 +302,10 @@ object BattleDamage {
         if (damageToAttacker && attackerToDefenderRatio > 1 || !damageToAttacker && attackerToDefenderRatio < 1) // damage ratio from the weaker party is inverted
             ratioModifier = ratioModifier.pow(-1)
         val randomSeed = attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode() // so people don't save-scum to get optimal results
-        val baseDamage = if (attacker.isCity()) 20 else 24
-        val addRandomDamage = if (attacker.isCity()) 10f else 12f
-        val randomDamage = baseDamage + 
-            if (ignoreRandomness) addRandomDamage / 2
-            else addRandomDamage * Random(randomSeed.toLong()).nextFloat()
-        return randomDamage * ratioModifier
+        val randomCenteredAround30 = 24 +
+                if (ignoreRandomness) 6f
+                else 12 * Random(randomSeed.toLong()).nextFloat()
+        return randomCenteredAround30 * ratioModifier
     }
 }
 
