@@ -549,7 +549,8 @@ class CivilizationInfo {
         for ((key, value) in giftAmount)
             otherCiv.addStat(key, value.toInt())
         
-        otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital().location)
+        if (cities.isNotEmpty())
+            otherCiv.exploredTiles = otherCiv.exploredTiles.withItem(getCapital().location)
         
         questManager.justMet(otherCiv) // Include them in war with major pseudo-quest
     }
