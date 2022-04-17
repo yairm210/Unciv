@@ -513,8 +513,9 @@ class MapUnit {
         if (name == unitToUpgradeTo.name) return false
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
         if (rejectionReasons.isEmpty()) return true
+        if (ignoreRequired && rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()) return true
 
-        if (rejectionReasons.size == 1 && rejectionReasons.contains(RejectionReason.ConsumesResources)) {
+        if (rejectionReasons.contains(RejectionReason.ConsumesResources)) {
             // We need to remove the unit from the civ for this check,
             // because if the unit requires, say, horses, and so does its upgrade,
             // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
