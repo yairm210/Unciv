@@ -248,7 +248,7 @@ class Nation : RulesetObject() {
                 // This does not use the auto-linking FormattedLine(Unique) for two reasons:
                 // would look a little chaotic as unit uniques unlike most uniques are a HashSet and thus do not preserve order
                 // No .copy() factory on FormattedLine and no FormattedLine(Unique, all other val's) constructor either
-                if (unit.replacementTextForUniques.isNotEmpty()){
+                if (unit.replacementTextForUniques.isNotEmpty()) {
                     yield(FormattedLine(unit.replacementTextForUniques))
                 }
                 else for (unique in unit.uniqueObjects.filterNot { it.text in originalUnit.uniques || it.hasFlag(UniqueFlag.HiddenToUsers) }) {
