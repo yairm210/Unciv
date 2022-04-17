@@ -1,3 +1,25 @@
+## 4.0.7
+
+Resolved  - problems in hosting Unciv server
+
+Resolved  - replacementTextForUniques activates for units when picking nations
+
+4.0.6-patch1
+
+By xlenstra:
+- Tested and reworked the 'unit upgrades for free' unique till it worked 
+- Added a 'go to capital'-button in the diplomacy overview screen 
+- Fixed vanilla policies regression 
+
+By itanasi:
+- Air Units take damage in Combat 
+- Updating XP Rewards. Interception now gives XP 
+- When capturing Civilian, stop current action 
+
+Fixed TurnChecker crash when using custom server  - By GGGuenni
+
+Add modding translation instruction to the wiki  - By heipizhu4
+
 ## 4.0.6
 
 Got rid of ANRs from multiple sources
