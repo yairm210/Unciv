@@ -40,7 +40,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
 
     override fun getUniqueTarget() = UniqueTarget.Unit
 
-    private var replacementTextForUniques = ""
+    var replacementTextForUniques = ""
     var promotions = HashSet<String>()
     var obsoleteTech: String? = null
     var upgradesTo: String? = null
