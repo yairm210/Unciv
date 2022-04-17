@@ -66,11 +66,14 @@ class UnitPromotions {
 
         val ruleset = unit.civInfo.gameInfo.ruleSet
         val promotion = ruleset.unitPromotions[promotionName]!!
-        doDirectPromotionEffects(promotion)
 
         if (!promotion.hasUnique("Doing so will consume this opportunity to choose a Promotion"))
             promotions.add(promotionName)
 
+        // If we upgrade this unit to its new version, we already need to have this promotion added,
+        // so this has to go after the `promotions.add(promotionname)` line.
+        doDirectPromotionEffects(promotion)
+        
         unit.updateUniques(ruleset)
 
         // Since some units get promotions upon construction, they will get the addPromotion from the unit.postBuildEvent
