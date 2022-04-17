@@ -1,14 +1,10 @@
 ## 4.0.7
 
-Resolved  - problems in hosting Unciv server
-
-Resolved  - replacementTextForUniques activates for units when picking nations
-
-4.0.6-patch1
+Resolved problems in hosting Unciv server
 
 By xlenstra:
-- Tested and reworked the 'unit upgrades for free' unique till it worked 
-- Added a 'go to capital'-button in the diplomacy overview screen 
+- Added 'unit upgrades for free' unique
+- Added a 'go to capital'-button in diplomacy screen 
 - Fixed vanilla policies regression 
 
 By itanasi:
