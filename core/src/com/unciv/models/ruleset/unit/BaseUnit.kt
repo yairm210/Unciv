@@ -351,6 +351,12 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val rejectionReasons = RejectionReasons()
         if (isWaterUnit() && !cityConstructions.cityInfo.isCoastal())
             rejectionReasons.add(RejectionReason.WaterUnitsInCoastalCities)
+        if (isAirUnit()) {
+            val fakeUnit = getMapUnit(cityConstructions.cityInfo.civInfo)
+            val canUnitEnterTile = fakeUnit.movement.canMoveTo(cityConstructions.cityInfo.getCenterTile())
+            if (!canUnitEnterTile)
+                rejectionReasons.add(RejectionReason.NoPlaceToPutUnit)
+        }
         val civInfo = cityConstructions.cityInfo.civInfo
         for (unique in uniqueObjects) {
             @Suppress("NON_EXHAUSTIVE_WHEN")

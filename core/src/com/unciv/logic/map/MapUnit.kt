@@ -1008,7 +1008,7 @@ class MapUnit {
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any{matchesFilter(it.params[0])}) return false
+        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
         if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }
