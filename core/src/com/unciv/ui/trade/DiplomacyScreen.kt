@@ -748,7 +748,7 @@ class DiplomacyScreen(
         diplomacyTable.add(demandsButton).row()
         if (isNotPlayersTurn()) demandsButton.disable()
 
-        if (otherCiv.getCapital().location in viewingCiv.exploredTiles)
+        if (otherCiv.cities.isNotEmpty() && otherCiv.getCapital().location in viewingCiv.exploredTiles)
             diplomacyTable.add(getGoToOnMapButton(otherCiv)).row()
         
         if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
@@ -932,7 +932,7 @@ class DiplomacyScreen(
     }
     
     private fun getGoToOnMapButton(civilization: CivilizationInfo): TextButton {
-        val goToOnMapButton = TextButton("Go To on Map", skin)
+        val goToOnMapButton = TextButton("Go to on map", skin)
         goToOnMapButton.onClick {
             UncivGame.Current.setWorldScreen()
             UncivGame.Current.worldScreen.mapHolder.setCenterPosition(civilization.getCapital().location, selectUnit = false)
