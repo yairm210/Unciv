@@ -266,11 +266,12 @@ object BattleDamage {
     ): Int {
         if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
-        val ratio =
-            getAttackingStrength(attacker, defender) / getDefendingStrength(
-                attacker,
-                defender
-            )
+        val atkStr = getAttackingStrength(attacker, defender)
+        val defStr = getDefendingStrength(attacker, defender)
+        if (defStr == 0f && atkStr == 0f) return 0
+        if (atkStr == 0f) return 100
+        if (defStr == 0f) return 0
+        val ratio = atkStr / defStr
         return (damageModifier(ratio, true, attacker, ignoreRandomness) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
@@ -280,12 +281,13 @@ object BattleDamage {
         defender: ICombatant,
         ignoreRandomness: Boolean = false,
     ): Int {
-        val ratio =
-            getAttackingStrength(attacker, defender) / getDefendingStrength(
-                attacker,
-                defender
-            )
         if (defender.isCivilian()) return 40
+        val atkStr = getAttackingStrength(attacker, defender)
+        val defStr = getDefendingStrength(attacker, defender)
+        if (defStr == 0f && atkStr == 0f) return 0
+        if (atkStr == 0f) return 0
+        if (defStr == 0f) return 100
+        val ratio = atkStr / defStr
         return (damageModifier(ratio, false, attacker, ignoreRandomness) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
