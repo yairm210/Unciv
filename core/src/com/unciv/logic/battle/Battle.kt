@@ -733,20 +733,23 @@ object Battle {
 
         // Pillage improvements, remove roads, add fallout
         if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Indestructible)) {
-            tile.turnsToImprovement = 2 
-            tile.improvementInProgress = tile.improvement
-            tile.improvement = null
+            if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
+                tile.improvement = null
+            } else {
+                tile.turnsToImprovement = 2
+                tile.improvementInProgress = tile.improvement
+                tile.improvement = null
+            }
         }
         tile.roadStatus = RoadStatus.None
         if (tile.isLand && !tile.isImpassible()) {
             if (tile.hasUnique(UniqueType.DestroyableByNukesChance)) {
                 for (terrainFeature in tile.terrainFeatureObjects) {
-                    for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) { 
-                        if (Random().nextFloat() < unique.params[0].toFloat() / 100f) {
-                            tile.removeTerrainFeature(terrainFeature.name)
-                            if (!tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible))
-                                tile.addTerrainFeature("Fallout")
-                        }
+                    for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) {
+                        if (Random().nextFloat() >= unique.params[0].toFloat() / 100f) continue
+                        tile.removeTerrainFeature(terrainFeature.name)
+                        if (!tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible))
+                            tile.addTerrainFeature("Fallout")
                     }
                 }
             } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible)) {
