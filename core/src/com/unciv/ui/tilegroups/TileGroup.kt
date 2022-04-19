@@ -76,10 +76,10 @@ open class TileGroup(var tileInfo: TileInfo, val tileSetStrings:TileSetStrings, 
     protected var cityImage: Image? = null
     private var naturalWonderImage: Image? = null
 
-    private  var pixelMilitaryUnitImageLocation = ""
-    private  var pixelMilitaryUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
-    private  var pixelCivilianUnitImageLocation = ""
-    private  var pixelCivilianUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    private var pixelMilitaryUnitImageLocation = ""
+    var pixelMilitaryUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
+    private var pixelCivilianUnitImageLocation = ""
+    var pixelCivilianUnitGroup = ActionlessGroup().apply { isTransform = false; setSize(groupSize, groupSize) }
 
     class MiscLayerGroupClass:ActionlessGroup(){
         override fun draw(batch: Batch?, parentAlpha: Float) = super.draw(batch, parentAlpha)
