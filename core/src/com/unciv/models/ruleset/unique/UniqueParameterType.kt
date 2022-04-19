@@ -79,26 +79,13 @@ enum class UniqueParameterType(
     UnitTypeFilter("unitType", "Unit Type Filters") {
         // As you can see there is a difference between these and what's in unitTypeStrings (for translation) -
         // the goal is to unify, but for now this is the "real" list
-        private val knownValues = setOf("All", "Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
-            "non-air", "Nuclear Weapon", "Great Person", "Religious", "Barbarian")
-        // TODO make this obsolete
-        private val unitTypeStrings = setOf(
-            "Military",
-            "Civilian",
-            "non-air",
-            "relevant",
-            "Nuclear Weapon",
-            "City",
-            "Barbarian",
-            "Great Person",
+        // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
+        private val knownValues = setOf(
+            "All", "Melee", "Ranged", "Civilian", "Military", "Land", "Water", "Air",
+            "non-air", "Nuclear Weapon", "Great Person", "Religious", "Barbarian",
+            "relevant", "City",
             // These are up for debate
-            "Air",
-            "land units",
-            "water units",
-            "air units",
-            "military units",
-            "submarine units",
-            // Note: this can't handle combinations of parameters (e.g. [{Military} {Water}])
+//            "land units", "water units", "air units", "military units", "submarine units",
         )
 
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
@@ -110,8 +97,9 @@ enum class UniqueParameterType(
         }
 
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
-            parameterText in ruleset.unitTypes.keys || parameterText in unitTypeStrings
-        override fun getTranslationWriterStringsForOutput() = unitTypeStrings
+            parameterText in ruleset.unitTypes.keys || parameterText in getTranslationWriterStringsForOutput()
+
+        override fun getTranslationWriterStringsForOutput() = knownValues
     },
 
     UnitName("unit") {
