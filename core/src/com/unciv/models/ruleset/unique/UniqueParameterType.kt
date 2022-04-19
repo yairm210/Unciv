@@ -198,13 +198,13 @@ enum class UniqueParameterType(
     },
 
     BuildingFilter("buildingFilter") {
-        private val knownValues = setOf("All","Building","Buildings","Wonder","Wonders","National Wonder","World Wonder")
+        private val knownValues = mutableSetOf("All","Building","Buildings","Wonder","Wonders","National Wonder","World Wonder")
+            .apply { addAll(Stat.values().map { it.name }) }
         override fun getErrorSeverity(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
-            //if (Stat.values().any { it.name == parameterText }) return null   // TODO why was this here
             if (BuildingName.getErrorSeverity(parameterText, ruleset) == null) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
