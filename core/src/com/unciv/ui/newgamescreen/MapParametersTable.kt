@@ -34,6 +34,7 @@ class MapParametersTable(
     private lateinit var noRuinsCheckbox: CheckBox
     private lateinit var noNaturalWondersCheckbox: CheckBox
     private lateinit var worldWrapCheckbox: CheckBox
+    private lateinit var seedTextField: TextField
 
     // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders
     // in a HashMap for reuse later - in the reset to defaults button. Better here as field than as closure.
@@ -50,6 +51,11 @@ class MapParametersTable(
         addResourceSelectBox()
         addWrappedCheckBoxes()
         addAdvancedSettings()
+    }
+
+    fun reseed() {
+        mapParameters.reseed()
+        seedTextField.text = mapParameters.seed.toString()
     }
 
     private fun addMapShapeSelectBox() {
@@ -225,7 +231,7 @@ class MapParametersTable(
     private fun addAdvancedControls(table: Table) {
         table.defaults().pad(5f)
 
-        val seedTextField = TextField(mapParameters.seed.toString(), skin)
+        seedTextField = TextField(mapParameters.seed.toString(), skin)
         seedTextField.textFieldFilter = DigitsOnlyFilter()
 
         // If the field is empty, fallback seed value to 0

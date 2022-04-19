@@ -15,7 +15,7 @@ class GameSetupInfo(
 
     // This constructor is used for starting a new game from a running one, cloning the setup, including map seed
     constructor(gameInfo: GameInfo) : this(gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters.clone())
-    // Cloning constructor used for [fromSettings] and [GameParametersScreen], reseeds map
+    // Cloning constructor used for [fromSettings], reseeds map
     constructor(setup: GameSetupInfo): this(setup.gameParameters.clone(), setup.mapParameters.clone())
 
     companion object {
