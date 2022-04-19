@@ -726,8 +726,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global, Unit
 
-??? example  "Earn [amount]% of the damage done to [mapUnitFilter] units as [plunderableStat]"
-	Example: "Earn [20]% of the damage done to [Wounded] units as [Gold]"
+??? example  "Earn [amount]% of the damage done to [combatantFilter] units as [plunderableStat]"
+	Example: "Earn [20]% of the damage done to [City] units as [Gold]"
 
 	Applicable to: Global, Unit
 
@@ -1166,6 +1166,9 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 	Applicable to: Terrain
 
 ??? example  "Provides a one-time Production bonus to the closest city when cut down"
+	Applicable to: Terrain
+
+??? example  "Vegetation"
 	Applicable to: Terrain
 
 ??? example  "Tile provides yield without assigned population"

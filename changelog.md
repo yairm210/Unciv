@@ -1,28 +1,16 @@
 ## 4.0.8
 
-Added "Vegetation" unique so that vegetation spawn is not limited to just jungle and forest 
-
-Unified unit type filters and removed unwanted ones
-
-TerrainFilter parameters accept any unique that exists in terrains. Unrecognized texts now throw errors. - see 
-
-Resolved DamageUnitsPlunder's warnings for City parameter and warnings for "Aircraft" - see 
-
-baseUnitFilter accepts all uniques that exist on units - see 
-
-Re-added stat values to be a known part of buildingFilter - see 
+Redone Map Editor - By SomeTroglodyte
 
 Added very basic "flash red on attack" battle animations
 
-Resolved  - Air units with no space in the city cannot be selected for construction
+Air units with no space in the city cannot be selected for construction
 
-Resolved  - unpillagable improvements removed entirely on nuke
+Unpillagable improvements removed entirely on nuke
 
 AIs don't add double agreements to counteroffers
 
-Clearer "owned" resource
-
-Request for take-over: Rewritten Map Editor  - By SomeTroglodyte
+Clearer "owned" resource on AI trade offer
 
 By xlenstra:
 - Made 'go to on map' translatable & fixed crash 
