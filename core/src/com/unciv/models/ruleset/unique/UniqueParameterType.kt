@@ -72,6 +72,7 @@ enum class UniqueParameterType(
         override fun getErrorSeverity(parameterText: String, ruleset: Ruleset):
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (UnitName.getErrorSeverity(parameterText, ruleset) == null) return null
+            if (ruleset.units.values.any { it.uniques.contains(parameterText) }) return null
             return UnitTypeFilter.getErrorSeverity(parameterText, ruleset)
         }
     },
