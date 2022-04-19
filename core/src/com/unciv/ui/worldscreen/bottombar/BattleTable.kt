@@ -263,10 +263,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                 }
                 worldScreen.stage.addAction(Actions.sequence(
                     object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                        override fun update(percent: Float)=updateRedPercent(percent)
+                        override fun update(percent: Float) = updateRedPercent(percent)
                     },
                     object : FloatAction(0f, 1f, 0.3f, Interpolation.sine) {
-                        override fun update(percent: Float)=updateRedPercent(1-percent)
+                        override fun update(percent: Float) = updateRedPercent(1 - percent)
                     }
                 ))
             }
