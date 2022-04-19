@@ -7,7 +7,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.TranslationFileWriter  // for  Kdoc only
 
@@ -106,6 +105,7 @@ enum class UniqueParameterType(
                 UniqueType.UniqueComplianceErrorSeverity? {
             if (parameterText in knownValues) return null
             if (ruleset.unitTypes.containsKey(parameterText)) return null
+            if (ruleset.unitTypes.values.any { it.uniques.contains(parameterText) }) return null
             return UniqueType.UniqueComplianceErrorSeverity.WarningOnly
         }
 
