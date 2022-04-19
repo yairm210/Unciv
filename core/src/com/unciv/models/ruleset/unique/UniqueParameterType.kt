@@ -250,7 +250,8 @@ enum class UniqueParameterType(
             in knownValues -> null
             in ruleset.terrains -> null
             in ruleset.tileResources -> null
-            else -> UniqueType.UniqueComplianceErrorSeverity.WarningOnly
+            in ruleset.terrains.values.asSequence().flatMap { it.uniques } -> null
+            else -> UniqueType.UniqueComplianceErrorSeverity.RulesetSpecific
         }
         override fun isTranslationWriterGuess(parameterText: String, ruleset: Ruleset) =
             parameterText in ruleset.terrains || parameterText != "All" && parameterText in knownValues
