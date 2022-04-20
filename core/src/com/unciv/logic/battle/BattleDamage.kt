@@ -11,6 +11,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.set
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -246,7 +247,7 @@ object BattleDamage {
         defender: ICombatant
     ): Float {
         val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker, defender))
-        return attacker.getAttackingStrength() * attackModifier
+        return max(1f, attacker.getAttackingStrength() * attackModifier)
     }
 
 
@@ -255,7 +256,7 @@ object BattleDamage {
      */
     private fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         val defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker, defender))
-        return defender.getDefendingStrength() * defenceModifier
+        return max(1f, defender.getDefendingStrength() * defenceModifier)
     }
 
     fun calculateDamageToAttacker(
@@ -266,12 +267,8 @@ object BattleDamage {
     ): Int {
         if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
-        val atkStr = getAttackingStrength(attacker, defender)
-        val defStr = getDefendingStrength(attacker, defender)
-        if (defStr == 0f && atkStr == 0f) return 0
-        if (atkStr == 0f) return 100
-        if (defStr == 0f) return 0
-        val ratio = atkStr / defStr
+        val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
+                attacker, defender)
         return (damageModifier(ratio, true, attacker, ignoreRandomness) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
@@ -282,12 +279,8 @@ object BattleDamage {
         ignoreRandomness: Boolean = false,
     ): Int {
         if (defender.isCivilian()) return 40
-        val atkStr = getAttackingStrength(attacker, defender)
-        val defStr = getDefendingStrength(attacker, defender)
-        if (defStr == 0f && atkStr == 0f) return 0
-        if (atkStr == 0f) return 0
-        if (defStr == 0f) return 100
-        val ratio = atkStr / defStr
+        val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
+                attacker, defender)
         return (damageModifier(ratio, false, attacker, ignoreRandomness) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
