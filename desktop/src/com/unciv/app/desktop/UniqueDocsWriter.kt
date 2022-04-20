@@ -21,6 +21,7 @@ class UniqueDocsWriter {
                 .replace("[combatantFilter]", "[City]")
                 .replace("[mapUnitFilter]", "[Wounded]")
                 .replace("[baseUnitFilter]", "[Melee]")
+                .replace("[unit]","[Musketman]")
                 .replace("[great person]", "[Great Scientist]")
                 .replace("[stats]", "[+1 Gold, +2 Production]")
                 .replace("[stat]", "[Culture]")
