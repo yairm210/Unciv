@@ -425,7 +425,11 @@ object SpecificUnitAutomation {
         //todo: maybe group by size and choose highest priority within the same size turns
         val closestCityThatCanAttackFrom = citiesThatCanAttackFrom.minByOrNull { pathsToCities[it]!!.size }!!
         val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
-        airUnit.movement.moveToTile(firstStepInPath)
+        try {
+            airUnit.movement.moveToTile(firstStepInPath)
+        }catch (ex:java.lang.Exception){
+            println()
+        }
     }
     
     fun automateNukes(unit: MapUnit) {
@@ -449,19 +453,20 @@ object SpecificUnitAutomation {
     private fun tryRelocateToNearbyAttackableCities(unit: MapUnit) {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
         val immediatelyReachableCities = tilesInRange
-                .filter { unit.movement.canMoveTo(it) }
-        
-        for (city in immediatelyReachableCities) {
-            if (city.getTilesInDistance(unit.getRange())
-                    .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) }) {
-                unit.movement.moveToTile(city)
-                return
-            }
-        }
+            .filter { unit.movement.canMoveTo(it) }
 
-        val pathsToCities = unit.movement.getAerialPathsToCities()
-        if (pathsToCities.isEmpty()) return // can't actually move anywhere else
-        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
+        for (city in immediatelyReachableCities) if (city.getTilesInDistance(unit.getRange())
+                .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) }
+        ) {
+            unit.movement.moveToTile(city)
+            return
+        }
+        
+        if (unit.baseUnit.isAirUnit()) {
+            val pathsToCities = unit.movement.getAerialPathsToCities()
+            if (pathsToCities.isEmpty()) return // can't actually move anywhere else
+            tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
+        } else UnitAutomation.tryHeadTowardsEnemyCity(unit)
     }
 
     private fun tryRelocateToCitiesWithEnemyNearBy(unit: MapUnit): Boolean {

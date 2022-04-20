@@ -389,7 +389,7 @@ object UnitAutomation {
         return false
     }
 
-    private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
+    fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
         if (unit.civInfo.cities.isEmpty()) return false
 
         // only focus on *attacking* 1 enemy at a time otherwise you'll lose on both fronts
