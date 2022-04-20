@@ -123,7 +123,8 @@ class CityInfoConquestFunctions(val city: CityInfo){
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: CivilizationInfo) {
         // Gain gold for plundering city
-        val goldPlundered = getGoldForCapturingCity(conqueringCiv)  // todo: use this val
+        @Suppress("UNUSED_VARIABLE")  // todo: use this val
+        val goldPlundered = getGoldForCapturingCity(conqueringCiv)
         city.apply {
 
             val oldCiv = civInfo
@@ -252,8 +253,10 @@ class CityInfoConquestFunctions(val city: CityInfo){
             if (cityConstructions.isBuilt(capitalCityIndicator)) {
                 cityConstructions.removeBuilding(capitalCityIndicator)
                 val firstOtherCity = oldCiv.cities.firstOrNull { it != this }
-                if (firstOtherCity != null)
+                if (firstOtherCity != null) {
                     firstOtherCity.cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
+                    firstOtherCity.isBeingRazed = false // Do not allow it to continue being razed if it was!
+                }
             }
 
             civInfo.cities = civInfo.cities.toMutableList().apply { remove(city) }

@@ -70,15 +70,16 @@ object Battle {
         }
 
         if (attacker is MapUnitCombatant && attacker.unit.baseUnit.isAirUnit()) {
-            tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo())
+            tryInterceptAirAttack(attacker, attackedTile, defender.getCivInfo(), defender)
             if (attacker.isDefeated()) return
         }
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant) {
-            val withdraw = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
-                .sumOf{ it.params[0].toInt() }  // If a mod allows multiple withdraw properties, ensure the best is used
-            if (withdraw != 0 && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
+            val withdrawUniques = defender.unit.getMatchingUniques(UniqueType.MayWithdraw)
+            val baseWithdrawChance = 100-withdrawUniques.fold(100) { probability, unique -> probability * (100-unique.params[0].toInt()) }
+            // If a mod allows multiple withdraw properties, they stack multiplicatively
+            if (baseWithdrawChance != 0 && doWithdrawFromMeleeAbility(attacker, defender, baseWithdrawChance)) return
         }
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
@@ -94,8 +95,11 @@ object Battle {
         if (!captureMilitaryUnitSuccess) // capture creates a new unit, but `defender` still is the original, so this function would still show a kill message
             postBattleNotifications(attacker, defender, attackedTile, attacker.getTile())
 
+        if (defender.getCivInfo().isBarbarian() && attackedTile.improvement == Constants.barbarianEncampment)
+            defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
+            
         postBattleNationUniques(defender, attackedTile, attacker)
-
+        
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
         if (defender.isDefeated() && defender is CityCombatant && attacker is MapUnitCombatant
                 && attacker.isMelee() && !attacker.unit.hasUnique(UniqueType.CannotCaptureCities)) {
@@ -206,21 +210,7 @@ object Battle {
         // This is called after takeDamage and so the defeated defender is already destroyed and
         // thus removed from the tile - but MapUnit.destroy() will not clear the unit's currentTile.
         // Therefore placeUnitNearTile _will_ place the new unit exactly where the defender was
-        val defenderName = defender.getName()
-        val newUnit = attacker.getCivInfo().placeUnitNearTile(defender.getTile().position, defenderName)
-            ?: return false  // silently fail
-
-        attacker.getCivInfo().addNotification(
-            "Your [${attacker.getName()}] captured an enemy [$defenderName]",
-            newUnit.getTile().position, attacker.getName(), NotificationIcon.War, defenderName )
-
-        // Also capture any civilians on the same tile
-        if (newUnit.currentTile.civilianUnit != null)
-            captureCivilianUnit(attacker, MapUnitCombatant(newUnit.currentTile.civilianUnit!!))
-
-        newUnit.currentMovement = 0f
-        newUnit.health = 50
-        return true
+        return spawnCapturedUnit(defender.getName(), attacker, defender.getTile(), "Your [${attacker.getName()}] captured an enemy [${defender.getName()}]!")
     }
 
     private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
@@ -231,7 +221,7 @@ object Battle {
 
         if (defender is MapUnitCombatant && defender.unit.isCivilian() && attacker.isMelee()) {
             captureCivilianUnit(attacker, defender)
-        } else if (attacker.isRanged()) {
+        } else if (attacker.isRanged() && !attacker.isAirUnit()) {  // Air Units are Ranged, but take damage as well
             defender.takeDamage(potentialDamageToDefender) // straight up
         } else {
             //melee attack is complicated, because either side may defeat the other midway
@@ -325,38 +315,71 @@ object Battle {
                 attacker.unit.healBy(amountToHeal)
             }
     }
+    
+    /** Places a [unitName] unit near [tile] after being attacked by [attacker].
+     * Adds a notification to [attacker]'s civInfo and returns whether the captured unit could be placed */
+    private fun spawnCapturedUnit(unitName: String, attacker: ICombatant, tile: TileInfo, notification: String): Boolean {
+        val addedUnit = attacker.getCivInfo().placeUnitNearTile(tile.position, unitName) ?: return false
+        addedUnit.currentMovement = 0f
+        addedUnit.health = 50
+        attacker.getCivInfo().addNotification(notification, addedUnit.getTile().position, attacker.getName(), unitName)
+        // Also capture any civilians on the same tile
+        if (tile.civilianUnit != null)
+            captureCivilianUnit(attacker, MapUnitCombatant(tile.civilianUnit!!))
+        return true
+    }
 
     private fun postBattleNationUniques(defender: ICombatant, attackedTile: TileInfo, attacker: ICombatant) {
-
+        if (!defender.isDefeated()) return
+        
         // Barbarians reduce spawn countdown after their camp was attacked "kicking the hornet's nest"
         if (defender.getCivInfo().isBarbarian() && attackedTile.improvement == Constants.barbarianEncampment) {
-            defender.getCivInfo().gameInfo.barbarians.campAttacked(attackedTile.position)
-
+            var unitPlaced = false
             // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
-            if (defender.isDefeated()
-                    && attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitBarbarianFromEncampment)
-                    && Random().nextDouble() < 0.67) {
-                attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
-                attacker.getCivInfo().addGold(25)
-                attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!", attackedTile.position, defender.getName())
-                // Also capture any civilians on the same tile
-                if (attackedTile.civilianUnit != null)
-                    captureCivilianUnit(attacker, MapUnitCombatant(attackedTile.civilianUnit!!))
+            // Deprecated as of 4.0.3
+                if (attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitBarbarianFromEncampment) 
+                    && Random().nextDouble() < 0.67
+                ) {
+                    attacker.getCivInfo().addGold(25)
+                    unitPlaced = spawnCapturedUnit(defender.getName(), attacker, attackedTile,"A barbarian [${defender.getName()}] has joined us!")
+                }
+            
+                // New version of unique
+            //
+            for (unique in attacker.getCivInfo().getMatchingUniques(UniqueType.GainFromEncampment)) {
+                attacker.getCivInfo().addGold(unique.params[0].toInt())
+                if (unitPlaced) continue
+                unitPlaced = spawnCapturedUnit(defender.getName(), attacker, attackedTile,"A barbarian [${defender.getName()}] has joined us!")
             }
         }
-
+        
         // Similarly, Ottoman unique
-        if (attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitNavalBarbarian)
-                && defender.isDefeated()
-                && defender is MapUnitCombatant
-                && defender.unit.baseUnit.isWaterUnit()
-                && defender.getCivInfo().isBarbarian()
-                && attacker.isMelee()
-                && attacker is MapUnitCombatant
-                && attacker.unit.baseUnit.isWaterUnit()
-                && Random().nextDouble() > 0.5) {
-            attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
-            attacker.getCivInfo().addGold(25)
+        // Deprecated as of 4.0.3
+            if (attacker.getCivInfo().hasUnique(UniqueType.ChanceToRecruitNavalBarbarian)
+                    && defender.isDefeated()
+                    && defender is MapUnitCombatant
+                    && defender.unit.baseUnit.isWaterUnit()
+                    && defender.getCivInfo().isBarbarian()
+                    && attacker.isMelee()
+                    && attacker is MapUnitCombatant
+                    && attacker.unit.baseUnit.isWaterUnit()
+                    && Random().nextDouble() < 0.5) {
+                attacker.getCivInfo().addGold(25)
+                spawnCapturedUnit(defender.getName(), attacker, attackedTile, "We have captured an enemy [${defender.getName()}]!")
+            }
+        //
+        if (defender.isDefeated() && defender is MapUnitCombatant) {
+            var unitPlaced = false
+            for (unique in attacker.getCivInfo().getMatchingUniques(UniqueType.GainFromDefeatingUnit)) {
+                if (defender.unit.matchesFilter(unique.params[0])
+                    && attacker.isMelee()
+                ) {
+                    attacker.getCivInfo().addGold(unique.params[1].toInt())
+                    if (unitPlaced) continue
+                    unitPlaced = spawnCapturedUnit(defender.getName(), attacker, attackedTile, "We have captured an enemy [${defender.getName()}]!")
+
+                }
+            }
         }
     }
 
@@ -376,8 +399,14 @@ object Battle {
     }
 
     private fun postBattleAddXp(attacker: ICombatant, defender: ICombatant) {
-        if (!attacker.isMelee()) { // ranged attack
-            addXp(attacker, 2, defender)
+        if (attacker.isAirUnit()) {
+            addXp(attacker, 4, defender)
+            addXp(defender, 2, attacker)
+        } else if (attacker.isRanged()) { // ranged attack
+            if(defender.isCity())
+                addXp(attacker, 3, defender)
+            else
+                addXp(attacker, 2, defender)
             addXp(defender, 2, attacker)
         } else if (!defender.isCivilian()) // unit was not captured but actually attacked
         {
@@ -499,6 +528,8 @@ object Battle {
         val defenderCiv = defender.getCivInfo()
 
         val capturedUnit = defender.unit
+        // Stop current action
+        capturedUnit.action = null
 
         val capturedUnitTile = capturedUnit.getTile()
         val originalOwner = if (capturedUnit.originalOwner != null)
@@ -631,7 +662,7 @@ object Battle {
             .filter{it != attackingCiv}) {
                 tryDeclareWar(civWhoseUnitWasAttacked)
                 if (attacker.unit.baseUnit.isAirUnit() && !attacker.isDefeated()) {
-                    tryInterceptAirAttack(attacker, targetTile, civWhoseUnitWasAttacked)
+                    tryInterceptAirAttack(attacker, targetTile, civWhoseUnitWasAttacked, null)
             }
         }
         if (attacker.isDefeated()) return
@@ -648,7 +679,7 @@ object Battle {
 
         for (tile in hitTiles) {
             // Handle complicated effects
-            doNukeExplosion(attacker, tile, strength)
+            doNukeExplosionForTile(attacker, tile, strength)
         }
 
         // Instead of postBattleAction() just destroy the unit, all other functions are not relevant
@@ -665,7 +696,7 @@ object Battle {
         }
     }
     
-    private fun doNukeExplosion(attacker: MapUnitCombatant, tile: TileInfo, nukeStrength: Int) {
+    private fun doNukeExplosionForTile(attacker: MapUnitCombatant, tile: TileInfo, nukeStrength: Int) {
         // https://forums.civfanatics.com/resources/unit-guide-modern-future-units-g-k.25628/
         // https://www.carlsguides.com/strategy/civilization5/units/aircraft-nukes.ph
         // Testing done by Ravignir
@@ -702,20 +733,41 @@ object Battle {
 
         // Pillage improvements, remove roads, add fallout
         if (tile.improvement != null && !tile.getTileImprovement()!!.hasUnique(UniqueType.Indestructible)) {
-            tile.turnsToImprovement = 2 
-            tile.improvementInProgress = tile.improvement
-            tile.improvement = null
+            if (tile.getTileImprovement()!!.hasUnique(UniqueType.Unpillagable)) {
+                tile.improvement = null
+            } else {
+                tile.turnsToImprovement = 2
+                tile.improvementInProgress = tile.improvement
+                tile.improvement = null
+            }
         }
         tile.roadStatus = RoadStatus.None
-        if (tile.isLand && !tile.isImpassible() && !tile.terrainFeatures.contains("Fallout")) {
-            val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
-            else 0.5f
-            if (Random().nextFloat() < destructionChance) {
-                for (terrainFeature in tile.terrainFeatureObjects)
-                    if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
+        if (tile.isLand && !tile.isImpassible()) {
+            if (tile.hasUnique(UniqueType.DestroyableByNukesChance)) {
+                for (terrainFeature in tile.terrainFeatureObjects) {
+                    for (unique in terrainFeature.getMatchingUniques(UniqueType.DestroyableByNukesChance)) {
+                        if (Random().nextFloat() >= unique.params[0].toFloat() / 100f) continue
                         tile.removeTerrainFeature(terrainFeature.name)
+                        if (!tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible))
+                            tile.addTerrainFeature("Fallout")
+                    }
+                }
+            } else if (Random().nextFloat() < 0.5f && !tile.terrainFeatures.contains("Fallout") && !tile.hasUnique(UniqueType.Indestructible)) {
                 tile.addTerrainFeature("Fallout")
             }
+            if (!tile.hasUnique(UniqueType.DestroyableByNukes)) return;
+            
+            // Deprecated as of 3.19.19 -- If removed, the two successive `if`s above should be merged
+                val destructionChance = if (tile.hasUnique(UniqueType.ResistsNukes)) 0.25f
+                else 0.5f
+                if (Random().nextFloat() < destructionChance) {
+                    for (terrainFeature in tile.terrainFeatureObjects)
+                        if (terrainFeature.hasUnique(UniqueType.DestroyableByNukes))
+                            tile.removeTerrainFeature(terrainFeature.name)
+                    if (!tile.hasUnique(UniqueType.Indestructible))
+                        tile.addTerrainFeature("Fallout")
+                }
+            //
         }
     }
     
@@ -734,11 +786,6 @@ object Battle {
                 2 -> (60 + Random().nextInt(20)) / 100f
                 else -> 1f
             }
-        // Deprecated since 3.16.11
-            for (unique in targetedCity.getLocalMatchingUniques(UniqueType.PopulationLossFromNukesDeprecated)) {
-                populationLoss *= 1 - unique.params[0].toFloat() / 100f
-            }
-        //
         for (unique in targetedCity.getMatchingUniques(UniqueType.PopulationLossFromNukes)) {
             if (!targetedCity.matchesFilter(unique.params[1])) continue
             populationLoss *= unique.params[0].toPercent()
@@ -746,17 +793,22 @@ object Battle {
         targetedCity.population.addPopulation(-populationLoss.toInt())
         if (targetedCity.population.population < 1) targetedCity.population.setPopulation(1)
     }
-
-    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile:TileInfo, interceptingCiv:CivilizationInfo) {
+    
+    private fun tryInterceptAirAttack(attacker: MapUnitCombatant, attackedTile: TileInfo, interceptingCiv: CivilizationInfo, defender: ICombatant?) {
         if (attacker.unit.hasUnique("Cannot be intercepted")) return
+        // Pick highest chance interceptor
         for (interceptor in interceptingCiv.getCivUnits()
-            .filter { it.canIntercept(attackedTile) }) {
-            if (Random().nextFloat() > interceptor.interceptChance() / 100f) continue
+                .filter { it.canIntercept(attackedTile) }
+                .sortedByDescending { it.interceptChance() }) { 
+            // defender can't also intercept
+            if (defender != null && defender is MapUnitCombatant && interceptor == defender.unit) continue
+            // Does Intercept happen? If not, exit
+            if (Random().nextFloat() > interceptor.interceptChance() / 100f) return
 
             var damage = BattleDamage.calculateDamageToDefender(
-                MapUnitCombatant(interceptor),
-                null,
-                attacker
+                    MapUnitCombatant(interceptor),
+                    null,
+                    attacker
             )
 
             var damageFactor = 1f + interceptor.interceptDamagePercentBonus().toFloat() / 100f
@@ -766,25 +818,31 @@ object Battle {
 
             attacker.takeDamage(damage)
             interceptor.attacksThisTurn++
+            if (damage > 0)
+                addXp(MapUnitCombatant(interceptor), 2, attacker)
+
+            if (damage > 0)
+                addXp(MapUnitCombatant(interceptor), 2, attacker)
 
             val attackerName = attacker.getName()
             val interceptorName = interceptor.name
             val locations = LocationAction(interceptor.currentTile.position, attacker.unit.currentTile.position)
             val attackerText = if (attacker.isDefeated())
                 "Our [$attackerName] was destroyed by an intercepting [$interceptorName]"
-                else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
+            else "Our [$attackerName] was attacked by an intercepting [$interceptorName]"
             val interceptorText = if (attacker.isDefeated())
                 "Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]"
-                else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
+            else "Our [$interceptorName] intercepted and attacked an enemy [$attackerName]"
             attacker.getCivInfo().addNotification(attackerText, interceptor.currentTile.position,
-                attackerName, NotificationIcon.War, interceptorName)
+                    attackerName, NotificationIcon.War, interceptorName)
             interceptingCiv.addNotification(interceptorText, locations,
-                interceptorName, NotificationIcon.War, attackerName)
+                    interceptorName, NotificationIcon.War, attackerName)
             return
         }
     }
 
     private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, baseWithdrawChance: Int): Boolean {
+        if (baseWithdrawChance == 0) return false
         // Some notes...
         // unit.getUniques() is a union of BaseUnit uniques and Promotion effects.
         // according to some strategy guide the Slinger's withdraw ability is inherited on upgrade,

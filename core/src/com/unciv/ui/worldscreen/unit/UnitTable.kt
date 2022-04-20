@@ -2,7 +2,6 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -16,6 +15,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -243,7 +243,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         return true
     }
 
-    fun tileSelected(selectedTile: TileInfo) {
+    fun tileSelected(selectedTile: TileInfo, forceSelectUnit: MapUnit? = null) {
 
         val previouslySelectedUnit = selectedUnit
         val previousNumberOfSelectedUnits = selectedUnits.size
@@ -251,23 +251,27 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         // Do not select a different unit or city center if we click on it to swap our current unit to it
         if (selectedUnitIsSwapping && selectedUnit != null && selectedUnit!!.movement.canUnitSwapTo(selectedTile)) return
 
-        if (selectedTile.isCityCenter()
-                && (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
-            citySelected(selectedTile.getCity()!!)
-        } else if (selectedTile.militaryUnit != null
-                && (selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
-                && selectedTile.militaryUnit!! !in selectedUnits
-                && (selectedTile.civilianUnit == null || selectedUnit != selectedTile.civilianUnit)) { // Only select the military unit there if we do not currently have the civilian unit selected
-            selectUnit(selectedTile.militaryUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
-        } else if (selectedTile.civilianUnit != null
-                && (selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
-                && selectedUnit != selectedTile.civilianUnit) {
-            selectUnit(selectedTile.civilianUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
-        } else if (selectedTile == previouslySelectedUnit?.currentTile) {
-            // tapping the same tile again will deselect a unit.
-            // important for single-tap-move to abort moving easily
-            selectUnit()
-            isVisible = false
+        when {
+            forceSelectUnit != null ->
+                selectUnit(forceSelectUnit)
+            selectedTile.isCityCenter() &&
+                    (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) ->
+                citySelected(selectedTile.getCity()!!)
+            selectedTile.militaryUnit != null &&
+                    (selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator()) &&
+                    selectedTile.militaryUnit!! !in selectedUnits &&
+                    (selectedTile.civilianUnit == null || selectedUnit != selectedTile.civilianUnit) -> // Only select the military unit there if we do not currently have the civilian unit selected
+                selectUnit(selectedTile.militaryUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+            selectedTile.civilianUnit != null
+                    && (selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
+                    && selectedUnit != selectedTile.civilianUnit ->
+                selectUnit(selectedTile.civilianUnit!!, Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+            selectedTile == previouslySelectedUnit?.currentTile -> {
+                // tapping the same tile again will deselect a unit.
+                // important for single-tap-move to abort moving easily
+                selectUnit()
+                isVisible = false
+            }
         }
 
         if (selectedUnit != previouslySelectedUnit || selectedUnits.size != previousNumberOfSelectedUnits)

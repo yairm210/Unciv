@@ -3,7 +3,6 @@ package com.unciv.ui.overviewscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -16,15 +15,14 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
-class WonderOverviewTable(
-    private val viewingPlayer: CivilizationInfo,
-    @Suppress("unused") private val overviewScreen: EmpireOverviewScreen
-): Table() {
-    val gameInfo = viewingPlayer.gameInfo
+class WonderOverviewTab(
+    viewingPlayer: CivilizationInfo,
+    overviewScreen: EmpireOverviewScreen
+) : EmpireOverviewTab(viewingPlayer, overviewScreen) {
     val ruleSet = gameInfo.ruleSet
 
     private val hideReligionItems = !gameInfo.isReligionEnabled()
@@ -80,8 +78,28 @@ class WonderOverviewTable(
 
     private val wonders: Array<WonderInfo> = collectInfo()
 
+    private val fixedContent = Table()
+    override fun getFixedContent() = fixedContent
+
     init {
+        fixedContent.apply {
+            defaults().pad(10f).align(Align.center)
+            add()
+            add("Name".toLabel())
+            add("Status".toLabel())
+            add("Location".toLabel())
+            add().minWidth(30f)
+            row()
+        }
+
+        top()
+        defaults().pad(10f).align(Align.center)
+        (1..5).forEach { _ -> add() }  // dummies so equalizeColumns can work because the first grid cell is colspan(5)
+        row()
+
         createGrid()
+
+        equalizeColumns(fixedContent, this)
     }
 
     private fun shouldBeDisplayed(wonder: Building, wonderEra: Int) = when {
@@ -115,8 +133,7 @@ class WonderOverviewTable(
         val wonderEraMap: Map<String, Era> =
             ruleSet.buildings.values.asSequence()
             .filter { it.isWonder }
-            .map { it.name to (ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] ?: viewingPlayer.getEra()) }
-            .toMap()
+            .associate { it.name to (ruleSet.eras[ruleSet.technologies[it.requiredTech]?.era()] ?: viewingPlayer.getEra()) }
 
         // Maps all World Wonders by their position in sort order to their name
         val allWonderMap: Map<Int, String> =
@@ -124,8 +141,7 @@ class WonderOverviewTable(
             .filter { it.isWonder }
             .sortedWith(compareBy<Building> { wonderEraMap[it.name]!!.eraNumber }.thenBy(collator, { it.name.tr() }))
             .withIndex()
-            .map { it.index to it.value.name }
-            .toMap()
+            .associate { it.index to it.value.name }
         val wonderCount = allWonderMap.size
 
         // Inverse of the above
@@ -135,16 +151,14 @@ class WonderOverviewTable(
         val allNaturalsMap: Map<String, TileInfo> =
             gameInfo.tileMap.values.asSequence()
             .filter { it.isNaturalWonder() }
-            .map { it.naturalWonder!! to it }
-            .toMap()
+            .associateBy { it.naturalWonder!! }
         val naturalsCount = allNaturalsMap.size
 
         // Natural Wonders sort order index to name
         val naturalsIndexMap: Map<Int, String> = allNaturalsMap.keys
-            .sortedWith(compareBy(collator, { it.tr() }))
+            .sortedWith(compareBy(collator) { it.tr() })
             .withIndex()
-            .map { it.index to it.value }
-            .toMap()
+            .associate { it.index to it.value }
 
         // Pre-populate result with "Unknown" entries
         val wonders = Array(wonderCount + naturalsCount) { index ->
@@ -198,14 +212,6 @@ class WonderOverviewTable(
     }
 
     fun createGrid() {
-        defaults().pad(10f).align(Align.center)
-        add()
-        add("Name".toLabel())
-        add("Status".toLabel())
-        add("Location".toLabel())
-        add().minWidth(30f)
-        row()
-        //addSeparator()
         var lastGroup = ""
 
         for (wonder in wonders) {

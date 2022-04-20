@@ -18,6 +18,8 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.ui.cityscreen.CityReligionInfoTable
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import kotlin.math.max
@@ -415,9 +417,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
     private fun foreignCityInfoPopup() {
         fun openDiplomacy() {
             // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-            val screen = DiplomacyScreen(worldScreen.viewingCiv)
-            screen.updateRightSide(city.civInfo)
-            worldScreen.game.setScreen(screen)
+            worldScreen.game.setScreen(DiplomacyScreen(worldScreen.viewingCiv, city.civInfo))
         }
 
         // If there's nothing to display cuz no Religion - skip popup

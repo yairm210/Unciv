@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 
 class ConstructionInfoTable(val cityScreen: CityScreen): Table() {

@@ -20,8 +20,10 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.utils.*
 import java.util.*
 
@@ -128,7 +130,7 @@ class PlayerPickerTable(
      * @param player for which [Table] is generated
      * @return [Table] containing the all the elements
      */
-    fun getPlayerTable(player: Player): Table {
+    private fun getPlayerTable(player: Player): Table {
         val playerTable = Table()
         playerTable.pad(5f)
         playerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.8f))
@@ -274,7 +276,7 @@ private class NationPickerPopup(
         add(nationDetailsScroll).size(civBlocksWidth + 10f, partHeight) // Same here, see above
 
         val randomNation = Nation().apply {
-            name = "Random"
+            name = Constants.random
             innerColor = listOf(255, 255, 255)
             outerColor = listOf(0, 0, 0)
             setTransients()
@@ -285,7 +287,7 @@ private class NationPickerPopup(
         if (spectator != null) nations += spectator
 
         nations += playerPicker.getAvailablePlayerCivs(player.chosenCiv)
-            .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale(), { it.name.tr() }))
+            .sortedWith(compareBy(UncivGame.Current.settings.getCollatorFromLocale()) { it.name.tr() })
 
         var nationListScrollY = 0f
         var currentY = 0f

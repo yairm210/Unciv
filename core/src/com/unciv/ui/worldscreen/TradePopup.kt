@@ -2,17 +2,12 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.NotificationIcon
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
-import com.unciv.ui.audio.MusicMood
-import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.*
@@ -59,7 +54,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         fun getOfferText(offer:TradeOffer): String {
             var tradeText = offer.getOfferText()
             if (offer.type == TradeType.Luxury_Resource || offer.type == TradeType.Strategic_Resource)
-                tradeText += "\n" + "Owned: [${ourResources[offer.name]}]".tr()
+                tradeText += "\n" + "Owned by you: [${ourResources[offer.name]}]".tr()
             return tradeText
         }
 
@@ -90,23 +85,15 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         }
 
         addButton("Not this time.", 'n') {
-
             tradeRequest.decline(viewingCiv)
-
             close()
             requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", viewingCiv.civName, NotificationIcon.Trade)
-
             worldScreen.shouldUpdate = true
         }
 
         addButton("How about something else...", 'e') {
             close()
-
-            val diplomacyScreen = DiplomacyScreen(viewingCiv)
-            val tradeTable = diplomacyScreen.setTrade(requestingCiv)
-            tradeTable.tradeLogic.currentTrade.set(trade)
-            tradeTable.offerColumnsTable.update()
-            worldScreen.game.setScreen(diplomacyScreen)
+            worldScreen.game.setScreen(DiplomacyScreen(viewingCiv, requestingCiv, trade))
             worldScreen.shouldUpdate = true
         }
     }

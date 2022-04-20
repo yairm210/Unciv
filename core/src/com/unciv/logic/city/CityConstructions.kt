@@ -71,6 +71,7 @@ class CityConstructions {
         return toReturn
     }
 
+    // Why is one of these called 'buildable' and the other 'constructable'?
     internal fun getBuildableBuildings(): Sequence<Building> = cityInfo.getRuleset().buildings.values
         .asSequence().filter { it.isBuildable(this) }
 
@@ -378,9 +379,9 @@ class CityConstructions {
                     }
                 } else if (construction is BaseUnit) {
                     // Production put into upgradable units gets put into upgraded version
-                    if (rejectionReasons.all { it == RejectionReason.Obsoleted } && construction.upgradesTo != null) {
-                        inProgressConstructions[construction.upgradesTo!!] =
-                            (inProgressConstructions[construction.upgradesTo!!] ?: 0) + workDone
+                    if (rejectionReasons.all { it.rejectionReason == RejectionReason.Obsoleted } && construction.upgradesTo != null) {
+                        val upgradedUnitName = cityInfo.civInfo.getEquivalentUnit(construction.upgradesTo!!).name
+                        inProgressConstructions[upgradedUnitName] = (inProgressConstructions[upgradedUnitName] ?: 0) + workDone
                     }
                 }
                 inProgressConstructions.remove(constructionName)

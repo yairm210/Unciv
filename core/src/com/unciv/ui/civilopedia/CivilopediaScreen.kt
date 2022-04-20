@@ -12,6 +12,8 @@ import com.unciv.models.ruleset.unique.IHasUniques
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.IconTextButton
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
@@ -173,13 +175,16 @@ class CivilopediaScreen(
         val imageSize = 50f
         onBackButtonClicked { game.setScreen(previousScreen) }
 
-        val religionEnabled = game.gameInfo.isReligionEnabled()
+        val religionEnabled = if (game.isGameInfoInitialized()) game.gameInfo.isReligionEnabled()
+            else ruleset.beliefs.isNotEmpty()
+        val victoryTypes = if (game.isGameInfoInitialized()) game.gameInfo.gameParameters.victoryTypes
+            else VictoryType.values().toList()
 
         fun shouldBeDisplayed(obj: IHasUniques): Boolean {
             return when {
                 obj.hasUnique(UniqueType.HiddenFromCivilopedia) -> false
                 (!religionEnabled && obj.hasUnique(UniqueType.HiddenWithoutReligion)) -> false
-                obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !game.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(it.params[0] )) } -> false
+                obj.getMatchingUniques(UniqueType.HiddenWithoutVictoryType).any { !victoryTypes.contains(VictoryType.valueOf(it.params[0])) } -> false
                 else -> true
             }
         }

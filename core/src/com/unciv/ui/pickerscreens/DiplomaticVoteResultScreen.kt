@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.CivFlags
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel

@@ -95,14 +95,13 @@ data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
 /** enter diplomacy screen */
 data class DiplomacyAction(val otherCivName: String = ""): NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        val screen = DiplomacyScreen(worldScreen.viewingCiv)
-        screen.updateRightSide(worldScreen.gameInfo.getCivilization(otherCivName))
-        worldScreen.game.setScreen(screen)
+        val otherCiv = worldScreen.gameInfo.getCivilization(otherCivName)
+        worldScreen.game.setScreen(DiplomacyScreen(worldScreen.viewingCiv, otherCiv))
     }
 }
 
 /** enter Maya Long Count popup */
-class MayaLongCountAction() : NotificationAction {
+class MayaLongCountAction : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         MayaCalendar.openPopup(worldScreen, worldScreen.selectedCiv, worldScreen.gameInfo.getYear())
     }

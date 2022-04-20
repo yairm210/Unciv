@@ -8,10 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.CrashScreen
+import com.unciv.ui.crashhandling.CrashScreen
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.images.IconCircleGroup
+import com.unciv.ui.images.ImageGetter
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -21,9 +25,9 @@ import kotlin.random.Random
  */
 
 /** Disable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
-fun Button.disable(){
+fun Button.disable() {
     touchable= Touchable.disabled
-    color= Color.GRAY
+    color = Color.GRAY
 }
 /** Enable a [Button] by setting its [touchable][Button.touchable] and [color][Button.color] properties. */
 fun Button.enable() {

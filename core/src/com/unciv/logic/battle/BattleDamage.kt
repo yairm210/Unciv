@@ -11,6 +11,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.set
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -22,7 +23,7 @@ object BattleDamage {
             UniqueTarget.Nation -> "National ability"
             UniqueTarget.Global -> GlobalUniques.getUniqueSourceDescription(unique)
             else -> "[${unique.sourceObjectName}] ([${unique.sourceObjectType?.name}])"
-        }
+        }.tr()
         if (unique.conditionals.isEmpty()) return source
 
         val conditionalsText = unique.conditionals.joinToString { it.text.tr() }
@@ -206,6 +207,7 @@ object BattleDamage {
         return modifiers
     }
     
+    @Deprecated("As of 4.0.3", level=DeprecationLevel.WARNING)
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): Counter<String> {
         val modifiers = Counter<String>()
 
@@ -226,14 +228,14 @@ object BattleDamage {
     }
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
-        return if (combatant !is MapUnitCombatant // is city
-            || (combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
-                && !combatant.unit.baseUnit.movesLikeAirUnits()
-            )
+        return if (combatant !is MapUnitCombatant
+            || combatant.unit.hasUnique(UniqueType.NoDamagePenalty, checkCivInfoUniques = true)
+            || combatant.getCivInfo().hasUnique(UniqueType.UnitsFightFullStrengthWhenDamaged)
         ) {
             1f
         }
-        else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game
+        // Each 3 points of health reduces damage dealt by 1%
+        else 1 - (100 - combatant.getHealth()) / 300f 
     }
 
 
@@ -245,7 +247,7 @@ object BattleDamage {
         defender: ICombatant
     ): Float {
         val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker, defender))
-        return attacker.getAttackingStrength() * attackModifier
+        return max(1f, attacker.getAttackingStrength() * attackModifier)
     }
 
 
@@ -254,7 +256,7 @@ object BattleDamage {
      */
     private fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         val defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker, defender))
-        return defender.getDefendingStrength() * defenceModifier
+        return max(1f, defender.getDefendingStrength() * defenceModifier)
     }
 
     fun calculateDamageToAttacker(
@@ -263,13 +265,10 @@ object BattleDamage {
         defender: ICombatant,
         ignoreRandomness: Boolean = false,
     ): Int {
-        if (attacker.isRanged()) return 0
+        if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
-        val ratio =
-            getAttackingStrength(attacker, defender) / getDefendingStrength(
-                attacker,
-                defender
-            )
+        val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
+                attacker, defender)
         return (damageModifier(ratio, true, attacker, ignoreRandomness) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
@@ -279,12 +278,9 @@ object BattleDamage {
         defender: ICombatant,
         ignoreRandomness: Boolean = false,
     ): Int {
-        val ratio =
-            getAttackingStrength(attacker, defender) / getDefendingStrength(
-                attacker,
-                defender
-            )
         if (defender.isCivilian()) return 40
+        val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
+                attacker, defender)
         return (damageModifier(ratio, false, attacker, ignoreRandomness) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
@@ -301,9 +297,9 @@ object BattleDamage {
         if (damageToAttacker && attackerToDefenderRatio > 1 || !damageToAttacker && attackerToDefenderRatio < 1) // damage ratio from the weaker party is inverted
             ratioModifier = ratioModifier.pow(-1)
         val randomSeed = attacker.getCivInfo().gameInfo.turns * attacker.getTile().position.hashCode() // so people don't save-scum to get optimal results
-        val randomCenteredAround30 = 24 + 
-            if (ignoreRandomness) 6f
-            else 12 * Random(randomSeed.toLong()).nextFloat()
+        val randomCenteredAround30 = 24 +
+                if (ignoreRandomness) 6f
+                else 12 * Random(randomSeed.toLong()).nextFloat()
         return randomCenteredAround30 * ratioModifier
     }
 }

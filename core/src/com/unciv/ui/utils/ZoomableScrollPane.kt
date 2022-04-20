@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import kotlin.math.sqrt
 
 
-open class ZoomableScrollPane: ScrollPane(null) {
+open class ZoomableScrollPane : ScrollPane(null) {
     var continuousScrollingX = false
 
     init{

@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter.DigitsOnlyFilter
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.*
 import com.unciv.ui.utils.*
@@ -35,11 +34,12 @@ class MapParametersTable(
     private lateinit var noRuinsCheckbox: CheckBox
     private lateinit var noNaturalWondersCheckbox: CheckBox
     private lateinit var worldWrapCheckbox: CheckBox
+    private lateinit var seedTextField: TextField
 
     // Keep references (in the key) and settings value getters (in the value) of the 'advanced' sliders
     // in a HashMap for reuse later - in the reset to defaults button. Better here as field than as closure.
     // A HashMap indexed on a Widget is problematic, as it does not define its own hashCode and equals
-    // overrides nor is a Widget a data class. Seems to work anyway.  
+    // overrides nor is a Widget a data class. Seems to work anyway.
     private val advancedSliders = HashMap<UncivSlider, ()->Float>()
 
     init {
@@ -51,6 +51,11 @@ class MapParametersTable(
         addResourceSelectBox()
         addWrappedCheckBoxes()
         addAdvancedSettings()
+    }
+
+    fun reseed() {
+        mapParameters.reseed()
+        seedTextField.text = mapParameters.seed.toString()
     }
 
     private fun addMapShapeSelectBox() {
@@ -97,7 +102,7 @@ class MapParametersTable(
     }
 
     private fun addWorldSizeTable() {
-        val mapSizes = MapSize.values().map { it.name } + listOf(Constants.custom)
+        val mapSizes = MapSize.values().map { it.name } + listOf(MapSize.custom)
         worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.mapSize.name, skin)
         worldSizeSelectBox.onChange { updateWorldSizeTable() }
 
@@ -155,9 +160,9 @@ class MapParametersTable(
     private fun updateWorldSizeTable() {
         customWorldSizeTable.clear()
 
-        if (mapParameters.shape == MapShape.hexagonal && worldSizeSelectBox.selected.value == Constants.custom)
+        if (mapParameters.shape == MapShape.hexagonal && worldSizeSelectBox.selected.value == MapSize.custom)
             customWorldSizeTable.add(hexagonalSizeTable).grow().row()
-        else if (mapParameters.shape == MapShape.rectangular && worldSizeSelectBox.selected.value == Constants.custom)
+        else if (mapParameters.shape == MapShape.rectangular && worldSizeSelectBox.selected.value == MapSize.custom)
             customWorldSizeTable.add(rectangularSizeTable).grow().row()
         else
             mapParameters.mapSize = MapSizeNew(worldSizeSelectBox.selected.value)
@@ -226,7 +231,7 @@ class MapParametersTable(
     private fun addAdvancedControls(table: Table) {
         table.defaults().pad(5f)
 
-        val seedTextField = TextField(mapParameters.seed.toString(), skin)
+        seedTextField = TextField(mapParameters.seed.toString(), skin)
         seedTextField.textFieldFilter = DigitsOnlyFilter()
 
         // If the field is empty, fallback seed value to 0

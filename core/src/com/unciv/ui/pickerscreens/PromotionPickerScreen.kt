@@ -10,6 +10,8 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.AskTextPopup
 import com.unciv.ui.utils.*
 
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
@@ -34,14 +36,13 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
         rightSideButton.setText("Pick promotion".tr())
         rightSideButton.onClick(UncivSound.Promote) {
-          acceptPromotion(selectedPromotion)
+            acceptPromotion(selectedPromotion)
         }
         val canBePromoted = unit.promotions.canBePromoted()
         val canChangeState = game.worldScreen.canChangeState
         val canPromoteNow = canBePromoted && canChangeState
                 && unit.currentMovement > 0 && unit.attacksThisTurn == 0
-        if (!canPromoteNow)
-            rightSideButton.isEnabled = false
+        rightSideButton.isEnabled = canPromoteNow
 
         val availablePromotionsGroup = Table()
         availablePromotionsGroup.defaults().pad(5f)
@@ -89,7 +90,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
             availablePromotionsGroup.add(selectPromotionButton)
 
-            if (canBePromoted && isPromotionAvailable && canChangeState) {
+            if (canPromoteNow && isPromotionAvailable) {
                 val pickNow = "Pick now!".toLabel()
                 pickNow.setAlignment(Align.center)
                 pickNow.onClick {
@@ -108,7 +109,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         displayTutorial(Tutorial.Experience)
     }
 
-    fun setScrollY(scrollY: Float): PromotionPickerScreen {
+    private fun setScrollY(scrollY: Float): PromotionPickerScreen {
         splitPane.pack()    // otherwise scrollPane.maxY == 0
         scrollPane.scrollY = scrollY
         scrollPane.updateVisualScroll()

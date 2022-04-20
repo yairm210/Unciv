@@ -10,12 +10,19 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Json
 import com.unciv.JsonParser
 import com.unciv.MainMenuScreen
+import com.unciv.logic.BackwardCompatibility.updateDeprecations
 import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.utils.*
 import com.unciv.ui.pickerscreens.ModManagementOptions.SortType
+import com.unciv.ui.popup.Popup
+import com.unciv.ui.popup.ToastPopup
+import com.unciv.ui.popup.YesNoPopup
 import com.unciv.ui.utils.UncivDateFormat.formatDate
 import com.unciv.ui.utils.UncivDateFormat.parseDate
 import com.unciv.ui.worldscreen.mainmenu.Github
@@ -422,6 +429,7 @@ class ModManagementScreen(
         modOptions.lastUpdated = repo.pushed_at
         modOptions.author = repo.owner.login
         modOptions.modSize = repo.size
+        modOptions.updateDeprecations()
         Json().toJson(modOptions, modOptionsFile)
     }
 

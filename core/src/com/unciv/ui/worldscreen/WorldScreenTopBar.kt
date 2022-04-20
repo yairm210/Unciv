@@ -10,9 +10,11 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.civilopedia.CivilopediaCategories
 import com.unciv.ui.civilopedia.CivilopediaScreen
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
+import com.unciv.ui.popup.popups
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.UncivTooltip.Companion.addTooltip
 import com.unciv.ui.victoryscreen.VictoryScreen
@@ -46,6 +48,9 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val malcontentGroup = ImageGetter.getStatIcon("Malcontent")
     private val happinessGroup = ImageGetter.getStatIcon("Happiness")
 
+    val unitSupplyImage = ImageGetter.getImage("OtherIcons/ExclamationMark")
+        .apply { color = Color.FIREBRICK }
+
     init {
         background = ImageGetter.getBackground(ImageGetter.getBlue().darken(0.5f))
 
@@ -58,7 +63,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         addActor(getSelectedCivilizationTable())
 
-        addActor(getOverviewButton())
+        addActor(getOverviewAndSupplyButton())
     }
 
     private fun getResourceTable(): Table {
@@ -167,19 +172,19 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return menuButton
     }
 
-    private fun getOverviewButton(): Table {
+    private fun getOverviewAndSupplyButton(): Table {
         val rightTable = Table(BaseScreen.skin).apply{ defaults().pad(10f) }
 
-        val unitSupplyImage = ImageGetter.getImage("OtherIcons/ExclamationMark")
-            .apply { color = Color.FIREBRICK }
-            .onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units")) }
+        unitSupplyImage.onClick {
+            worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv, "Units"))
+        }
+        unitSupplyImage.isVisible = worldScreen.selectedCiv.stats().getUnitSupplyDeficit() > 0
 
         val overviewButton = "Overview".toTextButton()
         overviewButton.addTooltip('e')
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
 
-        if (worldScreen.selectedCiv.stats().getUnitSupplyDeficit() > 0)
-            rightTable.add(unitSupplyImage).size(50f)
+        rightTable.add(unitSupplyImage).size(50f)
         rightTable.add(overviewButton)
 
         rightTable.pack()

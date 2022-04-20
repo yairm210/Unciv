@@ -14,6 +14,8 @@ import com.unciv.models.translations.fillPlaceholders
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.audio.MusicTrackChooserFlags
+import com.unciv.ui.images.ImageGetter
+import com.unciv.ui.popup.Popup
 import com.unciv.ui.trade.LeaderIntroTable
 import com.unciv.ui.utils.*
 import java.util.*
@@ -306,7 +308,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         val responseTable = Table()
         responseTable.defaults()
             .pad(0f, 30f) // Small buttons, plenty of pad so we don't fat-finger it
-        responseTable.add(getCloseButton("Yes", 'y') {
+        responseTable.add(getCloseButton(Constants.yes, 'y') {
             // Return it to original owner
             val unitName = capturedUnit.baseUnit.name
             capturedUnit.destroy()
@@ -325,7 +327,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     .setModifier(DiplomaticModifiers.ReturnedCapturedUnits, 20f)
             }
         })
-        responseTable.add(getCloseButton("No", 'n') {
+        responseTable.add(getCloseButton(Constants.no, 'n') {
             // Take it for ourselves
             // Settlers become workers at this point
             if (capturedUnit.hasUnique(UniqueType.FoundCity)) {

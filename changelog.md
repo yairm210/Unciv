@@ -1,3 +1,171 @@
+## 4.0.8
+
+Redone Map Editor - By SomeTroglodyte
+
+Added very basic "flash red on attack" battle animations
+
+Air units with no space in the city cannot be selected for construction
+
+Unpillagable improvements removed entirely on nuke
+
+AIs don't add double agreements to counteroffers
+
+Clearer "owned" resource on AI trade offer
+
+By xlenstra:
+- Made 'go to on map' translatable & fixed crash 
+- Fixed two small bugs 
+
+## 4.0.7
+
+Resolved problems in hosting Unciv server
+
+By xlenstra:
+- Added 'unit upgrades for free' unique
+- Added a 'go to capital'-button in diplomacy screen 
+- Fixed vanilla policies regression 
+
+By itanasi:
+- Air Units take damage in Combat 
+- Updating XP Rewards. Interception now gives XP 
+- When capturing Civilian, stop current action 
+
+Fixed TurnChecker crash when using custom server  - By GGGuenni
+
+Add modding translation instruction to the wiki  - By heipizhu4
+
+## 4.0.6
+
+Got rid of ANRs from multiple sources
+
+Performance improvements, including framerate
+
+Improved continuous rendering's framerate, to solve some ANRs
+
+Discord suggestion - have allied city states see all tiles of their ally, so they can support them militarily
+
+MusicController improvements  - By SomeTroglodyte
+
+Fixed a bug where production would not be retained when changing from an obsolete unit to its upgraded unique unit - By xlenstra
+
+## 4.0.5
+
+Added borders to minimap 
+
+Resolved Diplomatic Victory check not triggering for human player
+
+Cities that become capital no longer continue being razed
+
+By SomeTroglodyte:
+- Make Icons clickable in religions per city display 
+- Nicer NotificationScroll 
+
+Fixed a bug where crosshairs are everywhere with the 'attack when embarked' unique  - By xlenstra
+
+Fixed turn checker crashes   - By GGGuenni
+
+## 4.0.4
+
+Caught bad URL parsing exceptions
+
+Resolved ANRs when opening Options menu
+
+Solved 'check server connection' errors on Android
+
+By SomeTroglodyte:
+- Fix Goddess of Protection error
+- Tabbed pager architecture update 
+
+## 4.0.3
+
+Changed server connection to URL-based to allow connection to uncivserver.xyz
+
+By xlenstra:
+- Added a unique for attacking when embarked 
+- Generalized Denmark's unique 
+
+By HaneulCheong:
+- Improved city name generation 
+- Fixed the official wiki 
+
+By SomeTroglodyte:
+- Remove re-orientation for OptionsPopup 
+- Fix enabled buildings not displaying in games without nukes 
+
+## 4.0.2
+
+Solved out of memory errors for modded base rulesets
+
+By SomeTroglodyte:
+- City Info Table Expanders improvements
+- Empire Overview tweaks
+- Translation writer improvements 
+- Reactivate Worldscreen Ctrl key bindings 
+
+Generalized a few nation uniques  - By xlenstra
+
+## 4.0.1
+
+Custom server port  - By HAHH9527
+
+Add Moddable Policy Priorities  - By HaneulCheong
+
+By SomeTroglodyte:
+- Enable ModOptions uniques and ModConstants from non-base mods 
+- Improved Widgets - Fixing Tabbed Pager Scrolling 
+- Make max Zoom out a setting
+- More thorough workaround for Char.code and Char(Int) crashing 
+- Fix crashes and better crash info
+
+## 4.0.0
+
+Can now host your own Unciv server for Multiplayer - details in the wiki! 
+
+By SomeTroglodyte:
+- Prevent Char-to-code crash 
+- Moddable Ice generation 
+- Empire Overview improvements
+- Fix CS unit gift crash 
+
+By xlenstra:
+- Split 6 tiles visible unique into its parts, making it more moddable
+- Fixed a bug where the resource supply overview would not add up
+- Added an AI for building & using spaceship parts 
+- Unified & generalized a few uniques
+
+Custom desktop font - by HAHH9527
+
+## 3.19.18
+
+Double Zoom Out Range  - By itanasi
+
+By SomeTroglodyte:
+- Redesign of Empire Overview Screen - more info saves, better portrait display, and many more changes!
+- World Screen unit supply deficit icon now updates properly 
+- Close little loophole allowing promoting a unit after moving or attacking 
+
+## 3.19.17
+
+Better displaying of units that cannot be built
+
+By SomeTroglodyte:
+- Support more freely modded Worker-like units 
+- Religion overview improved
+- Mod checker minor improvements 
+- Fixed Spectator & AI games in seemingly endless loop  
+
+Multiplayer code cleanup  - By GGGuenni
+
+## 3.19.16
+
+Wiki improvements
+
+Unique units abilities that should be inherited by upgrades  - By SomeTroglodyte
+
+By SpacedOutChicken:
+- Add Amphibious promotion to Songhai units 
+- Petra fix 
+
 ## 3.19.15
 
 By SomeTroglodyte:

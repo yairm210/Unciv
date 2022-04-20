@@ -21,7 +21,7 @@ buildscript {
         mavenCentral()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         gradlePluginPortal()
-        maven{ url = uri("https://jitpack.io") } // for the anuken packr
+        maven { url = uri("https://jitpack.io") } // for the anuken packr
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${com.unciv.build.BuildConfig.kotlinVersion}")
@@ -33,10 +33,10 @@ buildscript {
         classpath("com.github.anuken:packr:-SNAPSHOT")
     }
 }
-        
+
 allprojects {
-    apply(plugin  = "eclipse")
-    apply(plugin  = "idea")
+    apply(plugin = "eclipse")
+    apply(plugin = "idea")
 
 
     version = "1.0.1"
@@ -53,7 +53,7 @@ allprojects {
         mavenCentral()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
         maven { url = uri("https://oss.sonatype.org/content/repositories/releases/") }
-        maven{ url = uri("https://jitpack.io") } // for java-discord-rpc
+        maven { url = uri("https://jitpack.io") } // for java-discord-rpc
     }
 }
 
@@ -70,6 +70,13 @@ project(":desktop") {
         }
 
         "implementation"("com.github.MinnDevelopment:java-discord-rpc:v2.0.1")
+
+        // For server-side
+
+        "implementation"("io.ktor:ktor-server-core:1.6.8")
+        "implementation"("io.ktor:ktor-server-netty:1.6.8")
+        "implementation"("ch.qos.logback:logback-classic:1.2.5")
+        "implementation"("com.github.ajalt.clikt:clikt:3.4.0")
     }
 
 }

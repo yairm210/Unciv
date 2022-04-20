@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.Ruleset
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.random.Random
 
 
 class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val sourceObjectName: String? = null) {
@@ -131,11 +132,15 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             if (state.ourCombatant != null && state.ourCombatant is MapUnitCombatant) state.ourCombatant.unit
             else state.unit
         }
+        
+        val stateBasedRandom by lazy { Random(state.hashCode()) }
 
         return when (condition.type) {
             // These are 'what to do' and not 'when to do' conditionals
             UniqueType.ConditionalTimedUnique -> true
             UniqueType.ConditionalConsumeUnit -> true
+
+            UniqueType.ConditionalChance -> stateBasedRandom.nextFloat() < condition.params[0].toFloat() / 100f
 
             UniqueType.ConditionalWar -> state.civInfo?.isAtWar() == true
             UniqueType.ConditionalNotWar -> state.civInfo?.isAtWar() == false
@@ -171,6 +176,8 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
                 state.cityInfo != null && state.cityInfo.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
             UniqueType.ConditionalCityWithoutBuilding -> 
                 state.cityInfo != null && !state.cityInfo.cityConstructions.containsBuildingOrEquivalent(condition.params[0])
+            UniqueType.ConditionalPopulationFilter ->
+                state.cityInfo != null && state.cityInfo.population.getPopulationFilterAmount(condition.params[1]) >= condition.params[0].toInt()
             UniqueType.ConditionalSpecialistCount ->
                 state.cityInfo != null && state.cityInfo.population.getNumberOfSpecialists() >= condition.params[0].toInt()
             UniqueType.ConditionalFollowerCount ->
@@ -198,8 +205,13 @@ class Unique(val text: String, val sourceObjectType: UniqueTarget? = null, val s
             UniqueType.ConditionalFightingInTiles ->
                 state.attackedTile?.matchesFilter(condition.params[0], state.civInfo) == true
             UniqueType.ConditionalInTilesAnd ->
-                relevantTile!=null && relevantTile!!.matchesFilter(condition.params[0], state.civInfo)
+                relevantTile != null && relevantTile!!.matchesFilter(condition.params[0], state.civInfo)
                         && relevantTile!!.matchesFilter(condition.params[1], state.civInfo)
+            UniqueType.ConditionalNearTiles ->
+                relevantTile != null && relevantTile!!.getTilesInDistance(condition.params[0].toInt()).any {
+                    it.matchesFilter(condition.params[1])
+                }
+            
             UniqueType.ConditionalVsLargerCiv -> {
                 val yourCities = state.civInfo?.cities?.size ?: 1
                 val theirCities = state.theirCombatant?.getCivInfo()?.cities?.size ?: 0

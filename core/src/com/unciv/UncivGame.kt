@@ -19,8 +19,11 @@ import com.unciv.ui.audio.MusicMood
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.PlayerReadyScreen
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
-import java.lang.Exception
+import com.unciv.logic.multiplayer.OnlineMultiplayer
+import com.unciv.ui.audio.Sounds
+import com.unciv.ui.crashhandling.crashHandlingThread
+import com.unciv.ui.crashhandling.postCrashHandlingRunnable
+import com.unciv.ui.images.ImageGetter
 import java.util.*
 
 class UncivGame(parameters: UncivGameParameters) : Game() {
@@ -34,6 +37,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val consoleMode = parameters.consoleMode
     val customSaveLocationHelper = parameters.customSaveLocationHelper
     val limitOrientationsHelper = parameters.limitOrientationsHelper
+    private val audioExceptionHelper = parameters.audioExceptionHelper
 
     var deepLinkedMultiplayerGame: String? = null
     lateinit var gameInfo: GameInfo
@@ -71,6 +75,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     val translations = Translations()
 
     override fun create() {
+        isInitialized = false // this could be on reload, therefore we need to keep setting this to false
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false
@@ -93,10 +98,14 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         settings = GameSaver.getGeneralSettings() // needed for the screen
         screen = LoadingScreen()  // NOT dependent on any atlas or skin
         musicController = MusicController()  // early, but at this point does only copy volume from settings
+        audioExceptionHelper?.installHooks(
+            musicController.getAudioLoopCallback(),
+            musicController.getAudioExceptionHandler()
+        )
 
         ImageGetter.resetAtlases()
         ImageGetter.setNewRuleset(ImageGetter.ruleset)  // This needs to come after the settings, since we may have default visual mods
-        if(settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
+        if (settings.tileSet !in ImageGetter.getAvailableTilesets()) { // If one of the tilesets is no longer available, default back
             settings.tileSet = "FantasyHex"
         }
 
@@ -121,19 +130,12 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
 
                 ImageGetter.ruleset = RulesetCache.getVanillaRuleset() // so that we can enter the map editor without having to load a game first
 
-                if (settings.isFreshlyCreated) {
-                    setScreen(LanguagePickerScreen())
-                } else {
-                    if (deepLinkedMultiplayerGame == null)
-                        setScreen(MainMenuScreen())
-                    else {
-                        try {
-                            loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
-                        } catch (ex: Exception) {
-                            setScreen(MainMenuScreen())
-                        }
-                    }
+                when {
+                    settings.isFreshlyCreated -> setScreen(LanguagePickerScreen())
+                    deepLinkedMultiplayerGame == null -> setScreen(MainMenuScreen())
+                    else -> tryLoadDeepLinkedGame()
                 }
+
                 isInitialized = true
             }
         }
@@ -165,6 +167,17 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
         Gdx.graphics.requestRendering()
     }
+    
+    fun tryLoadDeepLinkedGame() {
+        if (deepLinkedMultiplayerGame != null) {
+            try {
+                val onlineGame = OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!)
+                loadGame(onlineGame)
+            } catch (ex: Exception) {
+                setScreen(MainMenuScreen())
+            }
+        }
+    }
 
     // This is ALWAYS called after create() on Android - google "Android life cycle"
     override fun resume() {
@@ -175,13 +188,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         // This is also needed in resume to open links and notifications
         // correctly when the app was already running. The handling in onCreate
         // does not seem to be enough
-        if (deepLinkedMultiplayerGame != null) {
-            try {
-                loadGame(OnlineMultiplayer().tryDownloadGame(deepLinkedMultiplayerGame!!))
-            } catch (ex: Exception) {
-                setScreen(MainMenuScreen())
-            }
-        }
+        tryLoadDeepLinkedGame()
     }
 
     override fun pause() {
@@ -197,6 +204,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     override fun render() = wrappedCrashHandlingRender()
 
     override fun dispose() {
+        Gdx.input.inputProcessor = null // don't allow ANRs when shutting down, that's silly
+        
         cancelDiscordEvent?.invoke()
         Sounds.clearCache()
         if (::musicController.isInitialized) musicController.gracefulShutdown()  // Do allow fade-out
@@ -205,7 +214,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         val numThreads = Thread.activeCount()
         val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
-
+        
         if (isGameInfoInitialized()) {
             val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
             if (autoSaveThread != null && autoSaveThread.isAlive) {

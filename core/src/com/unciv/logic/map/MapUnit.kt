@@ -107,6 +107,12 @@ class MapUnit {
 
     @Transient
     var canEnterForeignTerrain: Boolean = false
+    
+    @Transient
+    var costToDisembark: Float? = null
+    
+    @Transient
+    var costToEmbark: Float? = null
 
     @Transient
     var paradropRange = 0
@@ -261,7 +267,7 @@ class MapUnit {
     fun getMatchingUniques(
         uniqueType: UniqueType,
         stateForConditionals: StateForConditionals = StateForConditionals(civInfo, unit=this),
-        checkCivInfoUniques:Boolean = false
+        checkCivInfoUniques: Boolean = false
     ) = sequence {
         val tempUniques = tempUniquesMap[uniqueType]
         if (tempUniques != null)
@@ -326,6 +332,13 @@ class MapUnit {
             .none { it.value != DoubleMovementTerrainTarget.Feature }
         noFilteredDoubleMovementUniques = doubleMovementInTerrain
             .none { it.value == DoubleMovementTerrainTarget.Filter }
+        costToDisembark = (getMatchingUniques(UniqueType.ReducedDisembarkCost, checkCivInfoUniques = true)
+            // Deprecated as of 4.0.3
+                + getMatchingUniques(UniqueType.DisembarkCostDeprecated, checkCivInfoUniques = true)
+            //
+            ).minOfOrNull { it.params[0].toFloat() }
+        costToEmbark = getMatchingUniques(UniqueType.ReducedEmbarkCost, checkCivInfoUniques = true)
+            .minOfOrNull { it.params[0].toFloat() }
 
         //todo: consider parameterizing [terrainFilter] in some of the following:
         canEnterIceTiles = hasUnique(UniqueType.CanEnterIceTiles)
@@ -376,16 +389,14 @@ class MapUnit {
 
         val conditionalState = StateForConditionals(civInfo = civInfo, unit = this)
 
-        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)
-            && !civInfo.hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState)) {
+        if (isEmbarked() && !hasUnique(UniqueType.NormalVisionWhenEmbarked, conditionalState, checkCivInfoUniques = true)) {
             return 1
         }
         
         visibilityRange += getMatchingUniques(UniqueType.Sight, conditionalState, checkCivInfoUniques = true)
             .sumOf { it.params[0].toInt() }
 
-        visibilityRange += getTile().getAllTerrains()
-            .flatMap { it.getMatchingUniques(UniqueType.Sight, conditionalState) }
+        visibilityRange += getTile().getMatchingUniques(UniqueType.Sight, conditionalState)
             .sumOf { it.params[0].toInt() }
         
         if (visibilityRange < 1) visibilityRange = 1
@@ -399,13 +410,13 @@ class MapUnit {
     fun updateVisibleTiles(updateCivViewableTiles:Boolean = true) {
         val oldViewableTiles = viewableTiles
 
-        if (baseUnit.isAirUnit()) {
-            viewableTiles = if (hasUnique(UniqueType.SixTilesAlwaysVisible))
-                getTile().getTilesInDistance(6).toHashSet()  // it's that simple
-            else HashSet(0) // bomber units don't do recon
-        } else {
-            viewableTiles = getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
+        viewableTiles = when {
+            hasUnique(UniqueType.NoSight) -> hashSetOf()
+            hasUnique(UniqueType.CanSeeOverObstacles) ->
+                getTile().getTilesInDistance(getVisibilityRange()).toHashSet() // it's that simple
+            else -> getTile().getViewableTilesList(getVisibilityRange()).toHashSet()
         }
+        
         // Set equality automatically determines if anything changed - https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-abstract-set/equals.html
         if (updateCivViewableTiles && oldViewableTiles != viewableTiles)
             civInfo.updateViewableTiles() // for the civ
@@ -502,8 +513,9 @@ class MapUnit {
         if (name == unitToUpgradeTo.name) return false
         val rejectionReasons = unitToUpgradeTo.getRejectionReasons(civInfo)
         if (rejectionReasons.isEmpty()) return true
+        if (ignoreRequired && rejectionReasons.filterTechPolicyEraWonderRequirements().isEmpty()) return true
 
-        if (rejectionReasons.size == 1 && rejectionReasons.contains(RejectionReason.ConsumesResources)) {
+        if (rejectionReasons.contains(RejectionReason.ConsumesResources)) {
             // We need to remove the unit from the civ for this check,
             // because if the unit requires, say, horses, and so does its upgrade,
             // and the civ currently has 0 horses, we need to see if the upgrade will be buildable
@@ -552,7 +564,7 @@ class MapUnit {
     }
 
     private fun adjacentHealingBonus(): Int {
-        return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() } + 15 * getMatchingUniques(UniqueType.HealAdjacentUnitsDeprecated).count()
+        return getMatchingUniques(UniqueType.HealAdjacentUnits).sumOf { it.params[0].toInt() }
     }
 
     // Only military land units can truly "garrison"
@@ -713,14 +725,7 @@ class MapUnit {
         if (!mayHeal) return healing
 
         healing += getMatchingUniques(UniqueType.Heal, checkCivInfoUniques = true).sumOf { it.params[0].toInt() }
-        // Deprecated as of 3.19.4
-            for (unique in getMatchingUniques(UniqueType.HealInTiles, checkCivInfoUniques = true)) {
-                if (tileInfo.matchesFilter(unique.params[1], civInfo)) {
-                    healing += unique.params[0].toInt()
-                }
-            }
-        //
-
+        
         val healingCity = tileInfo.getTilesInDistance(1).firstOrNull {
             it.isCityCenter() && it.getCity()!!.getMatchingUniques(UniqueType.CityHealingUnits).any()
         }?.getCity()
@@ -975,6 +980,8 @@ class MapUnit {
 
     fun canIntercept(): Boolean {
         if (interceptChance() == 0) return false
+        // Air Units can only Intercept if they didn't move this turn
+        if (baseUnit.isAirUnit() && currentMovement == 0f) return false
         val maxAttacksPerTurn = 1 +
             getMatchingUniques("[] extra interceptions may be made per turn").sumOf { it.params[0].toInt() }
         if (attacksThisTurn >= maxAttacksPerTurn) return false
@@ -1001,7 +1008,7 @@ class MapUnit {
     fun canTransport(unit: MapUnit): Boolean {
         if (owner != unit.owner) return false
         if (!isTransportTypeOf(unit)) return false
-        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any{matchesFilter(it.params[0])}) return false
+        if (unit.getMatchingUniques(UniqueType.CannotBeCarriedBy).any { matchesFilter(it.params[0]) }) return false
         if (currentTile.airUnits.count { it.isTransported } >= carryCapacity(unit)) return false
         return true
     }
@@ -1057,10 +1064,7 @@ class MapUnit {
                 && it.improvement != null
                 && civInfo.isAtWarWith(it.getOwner()!!)
             }.map { tile ->
-                tile to (
-                        tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits) + 
-                        tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnitsOld)
-                    )
+                tile to tile.getTileImprovement()!!.getMatchingUniques(UniqueType.DamagesAdjacentEnemyUnits)
                     .sumOf { it.params[0].toInt() }
             }.maxByOrNull { it.second }
             ?: return
@@ -1095,7 +1099,7 @@ class MapUnit {
             // todo: unit filters should be adjectives, fitting "[filterType] units"
             // This means converting "wounded units" to "Wounded", "Barbarians" to "Barbarian"
             "Wounded", "wounded units" -> health < 100
-            "Barbarians", "Barbarian" -> civInfo.isBarbarian()
+            Constants.barbarians, "Barbarian" -> civInfo.isBarbarian()
             "City-State" -> civInfo.isCityState()
             "Embarked" -> isEmbarked()
             "Non-City" -> true

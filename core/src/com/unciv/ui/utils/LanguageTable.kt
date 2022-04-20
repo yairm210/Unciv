@@ -1,17 +1,17 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.ui.civilopedia.FormattedLine
 import com.unciv.ui.civilopedia.MarkupRenderer
+import com.unciv.ui.images.ImageGetter
 import java.util.ArrayList
 
 /** Represents a row in the Language picker, used both in OptionsPopup and in LanguagePickerScreen */
 internal class LanguageTable(val language:String, val percentComplete: Int): Table(){
     private val blue = ImageGetter.getBlue()
-    private val darkBlue = blue.darken(0.5f)!!
+    private val darkBlue = blue.darken(0.5f)
 
     init{
         pad(10f)

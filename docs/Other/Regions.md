@@ -1,19 +1,22 @@
 # Regions
+
 ## The Concept
+
 During the generation of a random map (only; not pre-made maps) the map is split into a number of regions equal to the number of major civs. Each region gets classified according to its prevalent terrain, or if unable to be classified is called a "hybrid" region.
 The region type corresponds to the start bias of the civs as they are distributed.
 The region type also determines start placement and what luxuries will appear in the region.
 
-<details><summary>Example</summary>
-
-![](https://user-images.githubusercontent.com/63475501/140308518-ad5a2f50-d5f1-4467-a296-3a67f6d0b007.png)
-
+<details>
+    <summary>Example</summary>
+    <img src="https://user-images.githubusercontent.com/63475501/140308518-ad5a2f50-d5f1-4467-a296-3a67f6d0b007.png" alt="Region Example" />
 </details>
 
 ## How to define region behavior in your mod
+
 The game will work without any extra json definitions, but if you want the region system to work well when generating maps for your mod, these are the relevant uniques to define.
 
 ### Terrains.json
+
 "Always Fertility [amount] for Map Generation", "[amount] to Fertility for Map Generation" - these determine how good a terrain is for purposes of dividing land up fairly. The numbers are arbitrary but should reflect the relative value of the terrains.
 
 "A Region is formed with at least [amount]% [simpleTerrain] tiles, with priority [amount]",

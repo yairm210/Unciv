@@ -5,15 +5,11 @@ import club.minnced.discord.rpc.DiscordRPC
 import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
-import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.sun.jna.Native
-import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
-import com.unciv.logic.GameSaver
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.Fonts
 import java.util.*
 import kotlin.concurrent.timer
@@ -33,12 +29,14 @@ internal object DesktopLauncher {
         config.setWindowIcon("ExtraImages/Icon.png")
         config.setTitle("Unciv")
         config.setHdpiMode(HdpiMode.Logical)
-        config.setWindowSizeLimits(120, 80, -1, -1);
-        if (FileHandle(GameSaver.settingsFileName).exists()) {
-            val settings = JsonParser().getFromJson(
-                GameSettings::class.java,
-                FileHandle(GameSaver.settingsFileName)
-            )
+        config.setWindowSizeLimits(120, 80, -1, -1)
+
+        // We don't need the initial Audio created in Lwjgl3Application, HardenGdxAudio will replace it anyway.
+        // Note that means config.setAudioConfig() would be ignored too, those would need to go into the HardenedGdxAudio constructor.
+        config.disableAudio(true)
+
+        val settings = GameSettings.getSettingsForPlatformLaunchers()
+        if (!settings.isFreshlyCreated) {
             config.setWindowedMode(settings.windowState.width.coerceAtLeast(120), settings.windowState.height.coerceAtLeast(80))
         }
 
@@ -51,14 +49,15 @@ internal object DesktopLauncher {
         val desktopParameters = UncivGameParameters(
             versionFromJar,
             cancelDiscordEvent = { discordTimer?.cancel() },
-            fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt()),
-            customSaveLocationHelper = CustomSaveLocationHelperDesktop()
+            fontImplementation = NativeFontDesktop(Fonts.ORIGINAL_FONT_SIZE.toInt(), settings.fontFamily),
+            customSaveLocationHelper = CustomSaveLocationHelperDesktop(),
+            crashReportSysInfo = CrashReportSysInfoDesktop(),
+            audioExceptionHelper = HardenGdxAudio()
         )
 
         val game = UncivGame(desktopParameters)
 
         tryActivateDiscord(game)
-
         Lwjgl3Application(game, config)
     }
 

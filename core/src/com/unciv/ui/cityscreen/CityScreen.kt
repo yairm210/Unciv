@@ -10,6 +10,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.INonPerpetualConstruction
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
@@ -113,7 +114,7 @@ class CityScreen(
             constructionsTable.isVisible = false
             cityInfoTable.isVisible = true
             cityInfoTable.update()
-            cityInfoTable.setPosition(posFromEdge, stage.height - posFromEdge, Align.topLeft)
+            // CityInfoTable sets its relative position itself
         }
 
         // Bottom right: Tile or selected construction info

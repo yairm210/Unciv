@@ -1,7 +1,6 @@
 package com.unciv.app
 
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import androidx.core.app.NotificationManagerCompat
@@ -11,6 +10,7 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.Fonts
 import java.io.File
 
@@ -24,35 +24,32 @@ open class AndroidLauncher : AndroidApplication() {
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         copyMods()
-        val externalfilesDir = getExternalFilesDir(null)
-        if (externalfilesDir != null) GameSaver.externalFilesDirForAndroid = externalfilesDir.path
+        val externalFilesDir = getExternalFilesDir(null)
+        if (externalFilesDir != null) GameSaver.externalFilesDirForAndroid = externalFilesDir.path
+
+        val config = AndroidApplicationConfiguration().apply {
+            useImmersiveMode = true
+        }
+
+        val settings = GameSettings.getSettingsForPlatformLaunchers(filesDir.path)
+        val fontFamily = settings.fontFamily
 
         // Manage orientation lock
         val limitOrientationsHelper = LimitOrientationsHelperAndroid(this)
-        limitOrientationsHelper.limitOrientations(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+        limitOrientationsHelper.allowPortrait(settings.allowAndroidPortrait)
 
-        val config = AndroidApplicationConfiguration().apply {
-            useImmersiveMode = true;
-        }
         val androidParameters = UncivGameParameters(
-                version = BuildConfig.VERSION_NAME,
-                crashReportSysInfo = CrashReportSysInfoAndroid,
-                fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt()),
-                customSaveLocationHelper = customSaveLocationHelper,
-                limitOrientationsHelper = limitOrientationsHelper
+            version = BuildConfig.VERSION_NAME,
+            crashReportSysInfo = CrashReportSysInfoAndroid,
+            fontImplementation = NativeFontAndroid(Fonts.ORIGINAL_FONT_SIZE.toInt(), fontFamily),
+            customSaveLocationHelper = customSaveLocationHelper,
+            limitOrientationsHelper = limitOrientationsHelper
         )
 
         game = UncivGame(androidParameters)
         initialize(game, config)
 
-        // This is also needed in onCreate to open links and notifications
-        // correctly even if the app was not running
-        if (intent.action == Intent.ACTION_VIEW) {
-            val uri: Uri? = intent.data
-            deepLinkedMultiplayerGame = uri?.getQueryParameter("id")
-        } else {
-            deepLinkedMultiplayerGame = null
-        }
+        setDeepLinkedGame(intent)
     }
 
     /**
@@ -93,7 +90,7 @@ open class AndroidLauncher : AndroidApplication() {
         }
 
         if (deepLinkedMultiplayerGame != null) {
-            game?.deepLinkedMultiplayerGame = deepLinkedMultiplayerGame;
+            game?.deepLinkedMultiplayerGame = deepLinkedMultiplayerGame
             deepLinkedMultiplayerGame = null
         }
 
@@ -105,11 +102,15 @@ open class AndroidLauncher : AndroidApplication() {
         if (intent == null)
             return
 
-        if (intent.action == Intent.ACTION_VIEW) {
+        setDeepLinkedGame(intent)
+    }
+
+    private fun setDeepLinkedGame(intent: Intent) {
+        // This is needed in onCreate _and_ onNewIntent to open links and notifications
+        // correctly even if the app was not running
+        deepLinkedMultiplayerGame = if (intent.action != Intent.ACTION_VIEW) null else {
             val uri: Uri? = intent.data
-            deepLinkedMultiplayerGame = uri?.getQueryParameter("id")
-        } else {
-            deepLinkedMultiplayerGame = null
+            uri?.getQueryParameter("id")
         }
     }
 

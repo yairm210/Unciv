@@ -12,21 +12,20 @@ import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
-import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
-    
+
     val gameInfo = worldScreen.gameInfo
     private val playerCivInfo = worldScreen.viewingCiv
     val victoryTypes = gameInfo.gameParameters.victoryTypes
     private val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
     private val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
     private val dominationVictoryEnabled = victoryTypes.contains(VictoryType.Domination)
-
 
     private val contentsTable = Table()
 
@@ -193,10 +192,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         dominationVictoryColumn.addSeparator()
 
         for (civ in majorCivs.filter { !it.isDefeated() })
-            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).fillX().row()
+            dominationVictoryColumn.add(getCivGroup(civ, "", playerCivInfo)).fillX().row()
 
         for (civ in majorCivs.filter { it.isDefeated() })
-            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).fillX().row()
+            dominationVictoryColumn.add(getCivGroup(civ, "", playerCivInfo)).fillX().row()
 
         return dominationVictoryColumn
     }
@@ -213,7 +212,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         }.sortedByDescending { it.branchesCompleted }
 
         for (entry in civsToBranchesCompleted) {
-            val civToBranchesHaveCompleted = EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
+            val civToBranchesHaveCompleted = getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
             policyVictoryColumn.add(civToBranchesHaveCompleted).fillX().row()
         }
         return policyVictoryColumn
@@ -232,7 +231,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         }
 
         for (entry in civsToPartsRemaining) {
-            val civToPartsBeRemaining = (EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.partsRemaining, playerCivInfo))
+            val civToPartsBeRemaining = (getCivGroup(entry.civ, " - " + entry.partsRemaining, playerCivInfo))
             scientificVictoryColumn.add(civToPartsBeRemaining).fillX().row()
         }
         return scientificVictoryColumn
@@ -248,7 +247,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             column.addSeparator()
 
             for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
-                column.add(EmpireOverviewScreen.getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
+                column.add(getCivGroup(civ, ": " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
             }
 
             civRankingsTable.add(column)
@@ -258,4 +257,36 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         contentsTable.add(civRankingsTable)
     }
 
+    companion object {
+        fun getCivGroup(civ: CivilizationInfo, afterCivNameText:String, currentPlayer:CivilizationInfo): Table {
+            val civGroup = Table()
+
+            var labelText = civ.civName.tr()+afterCivNameText
+            var labelColor = Color.WHITE
+            val backgroundColor: Color
+
+            if (civ.isDefeated()) {
+                civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
+                backgroundColor = Color.LIGHT_GRAY
+                labelColor = Color.BLACK
+            } else if (currentPlayer == civ  // || game.viewEntireMapForDebug
+                || currentPlayer.knows(civ) || currentPlayer.isDefeated() || currentPlayer.victoryManager.hasWon()) {
+                civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
+                backgroundColor = civ.nation.getOuterColor()
+                labelColor = civ.nation.getInnerColor()
+            } else {
+                civGroup.add(ImageGetter.getRandomNationIndicator(30f))
+                backgroundColor = Color.DARK_GRAY
+                labelText = Constants.unknownNationName
+            }
+
+            civGroup.background = ImageGetter.getRoundedEdgeRectangle(backgroundColor)
+            val label = labelText.toLabel(labelColor)
+            label.setAlignment(Align.center)
+
+            civGroup.add(label).padLeft(10f)
+            civGroup.pack()
+            return civGroup
+        }
+    }
 }
