@@ -11,6 +11,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.toPercent
 import java.util.*
 import kotlin.collections.set
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -246,7 +247,7 @@ object BattleDamage {
         defender: ICombatant
     ): Float {
         val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker, defender))
-        return attacker.getAttackingStrength() * attackModifier
+        return max(1f, attacker.getAttackingStrength() * attackModifier)
     }
 
 
@@ -255,7 +256,7 @@ object BattleDamage {
      */
     private fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         val defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker, defender))
-        return defender.getDefendingStrength() * defenceModifier
+        return max(1f, defender.getDefendingStrength() * defenceModifier)
     }
 
     fun calculateDamageToAttacker(
@@ -266,11 +267,8 @@ object BattleDamage {
     ): Int {
         if (attacker.isRanged() && !attacker.isAirUnit()) return 0
         if (defender.isCivilian()) return 0
-        val ratio =
-            getAttackingStrength(attacker, defender) / getDefendingStrength(
-                attacker,
-                defender
-            )
+        val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
+                attacker, defender)
         return (damageModifier(ratio, true, attacker, ignoreRandomness) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
@@ -280,12 +278,9 @@ object BattleDamage {
         defender: ICombatant,
         ignoreRandomness: Boolean = false,
     ): Int {
-        val ratio =
-            getAttackingStrength(attacker, defender) / getDefendingStrength(
-                attacker,
-                defender
-            )
         if (defender.isCivilian()) return 40
+        val ratio = getAttackingStrength(attacker, defender) / getDefendingStrength(
+                attacker, defender)
         return (damageModifier(ratio, false, attacker, ignoreRandomness) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
