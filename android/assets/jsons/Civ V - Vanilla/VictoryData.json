@@ -21,6 +21,7 @@
     {
         "name": "Diplomatic",
         "hiddenInVictoryScreen": true
+        //"milestones": ["Built [United Nations]", "Win Diplomatic Vote"]
         // Requirement for winning vote is already put on the UN
     },
     {
