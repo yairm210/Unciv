@@ -83,6 +83,7 @@ class TileImprovement : RulesetStatsObject() {
             "All" -> true
             "All Road" -> isRoad()
             "Great Improvement", "Great" -> isGreatImprovement()
+            in uniques -> true
             else -> false
         }
     }
