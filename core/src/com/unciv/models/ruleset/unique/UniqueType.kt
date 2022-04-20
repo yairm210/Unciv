@@ -254,8 +254,7 @@ enum class UniqueType(val text: String, vararg targets: UniqueTarget, val flags:
 
     // Acts as a trigger - this should be generalized somehow but the current setup does not allow this
     // It would currently mean cycling through EVERY unique type to find ones with a specific conditional...
-    @Suppress("SpellCheckingInspection")  // Not worth fixing
-    RecieveFreeUnitWhenDiscoveringTech("Receive free [baseUnitFilter] when you discover [tech]", UniqueTarget.Global),
+    ReceiveFreeUnitWhenDiscoveringTech("Receive free [unit] when you discover [tech]", UniqueTarget.Global),
 
     EnablesOpenBorders("Enables Open Borders agreements", UniqueTarget.Global),
     // Should the 'R' in 'Research agreements' be capitalized?

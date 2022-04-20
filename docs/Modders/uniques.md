@@ -522,8 +522,8 @@ Simple unique parameters are explained by mouseover. Complex parameters are expl
 
 	Applicable to: Global
 
-??? example  "Receive free [baseUnitFilter] when you discover [tech]"
-	Example: "Receive free [Melee] when you discover [Agriculture]"
+??? example  "Receive free [unit] when you discover [tech]"
+	Example: "Receive free [Musketman] when you discover [Agriculture]"
 
 	Applicable to: Global
 

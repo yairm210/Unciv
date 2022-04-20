@@ -324,7 +324,7 @@ class TechManager {
             }
         }
 
-        for (unique in civInfo.getMatchingUniques(UniqueType.RecieveFreeUnitWhenDiscoveringTech)) {
+        for (unique in civInfo.getMatchingUniques(UniqueType.ReceiveFreeUnitWhenDiscoveringTech)) {
             if (unique.params[1] != techName) continue
             civInfo.addUnit(unique.params[0])
         }
