@@ -229,6 +229,7 @@ class BaseUnit : RulesetObject(), INonPerpetualConstruction {
         val unit = MapUnit()
         unit.name = name
         unit.civInfo = civInfo
+        unit.owner = civInfo.civName
 
         // must be after setting name & civInfo because it sets the baseUnit according to the name
         // and the civInfo is required for using `hasUnique` when determining its movement options  

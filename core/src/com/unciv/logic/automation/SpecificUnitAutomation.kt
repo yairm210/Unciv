@@ -414,22 +414,19 @@ object SpecificUnitAutomation {
 
     private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<TileInfo, ArrayList<TileInfo>>, airUnit: MapUnit) {
         val citiesThatCanAttackFrom = pathsToCities.keys
-                .filter {
-                    destinationCity -> destinationCity != airUnit.currentTile
-                    && destinationCity.getTilesInDistance(airUnit.getRange())
-                        .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
-                }
+            .filter { destinationCity ->
+                destinationCity != airUnit.currentTile
+                        && destinationCity.getTilesInDistance(airUnit.getRange())
+                    .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
+            }
         if (citiesThatCanAttackFrom.isEmpty()) return
 
         //todo: this logic looks similar to some parts of automateFighter, maybe pull out common code
         //todo: maybe group by size and choose highest priority within the same size turns
-        val closestCityThatCanAttackFrom = citiesThatCanAttackFrom.minByOrNull { pathsToCities[it]!!.size }!!
+        val closestCityThatCanAttackFrom =
+            citiesThatCanAttackFrom.minByOrNull { pathsToCities[it]!!.size }!!
         val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
-        try {
-            airUnit.movement.moveToTile(firstStepInPath)
-        }catch (ex:java.lang.Exception){
-            println()
-        }
+        airUnit.movement.moveToTile(firstStepInPath)
     }
     
     fun automateNukes(unit: MapUnit) {
