@@ -2,7 +2,6 @@ package com.unciv.ui.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
@@ -11,7 +10,7 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
-import com.unciv.models.ruleset.unique.UniqueType
+import com.unciv.models.ruleset.CompletionStatus
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -35,7 +34,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         stage.addActor(difficultyLabel)
 
         val tabsTable = Table().apply { defaults().pad(10f) }
-        val setMyVictoryButton = "Our status".toTextButton().onClick { setMyVictoryTable() }
+        val setMyVictoryButton = "Our status".toTextButton().onClick { setOurVictoryTable() }
         if (!playerCivInfo.isSpectator()) tabsTable.add(setMyVictoryButton)
         val setGlobalVictoryButton = "Global status".toTextButton().onClick { setGlobalVictoryTable() }
         tabsTable.add(setGlobalVictoryButton)
@@ -48,7 +47,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         if (playerCivInfo.isSpectator())
             setGlobalVictoryTable()
         else
-            setMyVictoryTable()
+            setOurVictoryTable()
 
         rightSideButton.isVisible = false
 
@@ -107,71 +106,50 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         }
     }
 
-
-    private fun setMyVictoryTable() {
-        val myVictoryStatusTable = Table()
-        myVictoryStatusTable.defaults().pad(10f)
-        if (scientificVictoryEnabled) myVictoryStatusTable.add("Science victory".toLabel())
-        if (culturalVictoryEnabled) myVictoryStatusTable.add("Cultural victory".toLabel())
-        if (dominationVictoryEnabled) myVictoryStatusTable.add("Conquest victory".toLabel())
-        myVictoryStatusTable.row()
-        if (scientificVictoryEnabled) myVictoryStatusTable.add(scienceVictoryColumn())
-        if (culturalVictoryEnabled) myVictoryStatusTable.add(culturalVictoryColumn())
-        if (dominationVictoryEnabled) myVictoryStatusTable.add(conquestVictoryColumn())
-        myVictoryStatusTable.row()
-        if (scientificVictoryEnabled) myVictoryStatusTable.add("Complete all the spaceship parts\n to win!".toLabel())
-        if (culturalVictoryEnabled) myVictoryStatusTable.add("Complete 5 policy branches and build\n the Utopia Project to win!".toLabel())
-        if (dominationVictoryEnabled) myVictoryStatusTable.add("Destroy all enemies\n to win!".toLabel())
-
-        contentsTable.clear()
-        contentsTable.add(myVictoryStatusTable)
-    }
-
-    private fun scienceVictoryColumn(): Table {
-        val t = Table()
-        t.defaults().pad(5f)
-        t.add(getMilestone("Built Apollo Program",
-                playerCivInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))).row()
-
-        val victoryManager = playerCivInfo.victoryManager
-
-        for (key in victoryManager.requiredSpaceshipParts.keys)
-            for (i in 0 until victoryManager.requiredSpaceshipParts[key]!!)
-                t.add(getMilestone(key, victoryManager.currentsSpaceshipParts[key]!! > i)).row()     //(key, builtSpaceshipParts)
-
-        return t
-    }
-
-    private fun culturalVictoryColumn(): Table {
-        val t = Table()
-        t.defaults().pad(5f)
-        for (branch in playerCivInfo.gameInfo.ruleSet.policyBranches.values) {
-            val finisher = branch.policies.last().name
-            t.add(getMilestone(finisher, playerCivInfo.policies.isAdopted(finisher))).row()
+    private fun setOurVictoryTable() {
+        val ourVictoryStatusTable = Table()
+        ourVictoryStatusTable.defaults().pad(10f)
+        val victoriesToShow = gameInfo.ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && victoryTypes.contains(VictoryType.valueOf(it.key))}
+        
+        for (victory in victoriesToShow) {
+            ourVictoryStatusTable.add("[${victory.key}] Victory".toLabel())
         }
-        return t
+        ourVictoryStatusTable.row()
+        
+        for (victory in victoriesToShow) {
+            ourVictoryStatusTable.add(getOurVictoryColumn(victory.key))
+        }
+        ourVictoryStatusTable.row()
+        
+        for (victory in victoriesToShow) {
+            ourVictoryStatusTable.add(victory.value.victoryScreenHeader.toLabel())
+        }
+        
+        contentsTable.clear()
+        contentsTable.add(ourVictoryStatusTable)
     }
 
-    private fun conquestVictoryColumn(): Table {
+    private fun getOurVictoryColumn(victory: String): Table {
+        val victoryObject = gameInfo.ruleSet.victories[victory]!!
         val table = Table()
         table.defaults().pad(5f)
-        for (civ in playerCivInfo.gameInfo.civilizations) {
-            if (civ.isCurrentPlayer() || !civ.isMajorCiv()) continue
-            val civName =
-                    if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
-                    else Constants.unknownNationName
-            table.add(getMilestone("Destroy [$civName]", civ.isDefeated())).row()
+        var firstIncomplete: Boolean = true
+        for (milestone in victoryObject.milestoneObjects) {
+            val completionStatus =
+                when {
+                    milestone.hasBeenCompletedBy(playerCivInfo) -> CompletionStatus.Completed
+                    firstIncomplete -> {
+                        firstIncomplete = false
+                        CompletionStatus.Partially
+                    }
+                    else -> CompletionStatus.Incomplete
+                }
+            for (button in milestone.getVictoryScreenButtons(completionStatus, playerCivInfo)) {
+                table.add(button).row()
+            }
         }
         return table
     }
-
-    fun getMilestone(text: String, achieved: Boolean): TextButton {
-        val textButton = text.toTextButton()
-        if (achieved) textButton.color = Color.GREEN
-        else textButton.color = Color.GRAY
-        return textButton
-    }
-
 
     private fun setGlobalVictoryTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }

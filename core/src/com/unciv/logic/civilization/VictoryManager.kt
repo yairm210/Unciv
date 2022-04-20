@@ -8,7 +8,9 @@ class VictoryManager {
     @Transient
     lateinit var civInfo: CivilizationInfo
 
+    @Transient
     var requiredSpaceshipParts = Counter<String>()
+    
     var currentsSpaceshipParts = Counter<String>()
     var hasWonTimeVictory = false
 

@@ -1,26 +1,29 @@
 [
     {
         "name": "Scientific",
-        "victoryScreenHeader": "Complete all the spaceship parts\n to win!",
+        "victoryScreenHeader": "Complete all the spaceship parts\nto win!",
         "milestones": [
-            "Built [Apollo Program]","Add [3] [SS Booster] units in capital", "Add [1] [SS Cockpit] units in capital",
-            "Add [1] [SS Engine] units in capital", "Add [1] [SS Stasis Chamber] units in capital"
+            "Built [Apollo Program]", "Add all spaceship parts in capital"
+        ],
+        "spaceshipParts": [
+            "SS Engine", "SS Stasis Chamber", "SS Cockpit", "SS Booster", "SS Booster", "SS Booster"
         ]
     },
     {
         "name": "Cultural",
         // Requirement for building UP is already put on that building
-        "victoryScreenHeader": "Complete 5 policy branches and build\n the Utopia Project to win!",
-        "milestones": ["Complete [5] policy branches", "Built [Utopia Project]"]
+        "victoryScreenHeader": "Complete 5 policy branches and\nbuild the Utopia Project to win!",
+        "milestones": ["Complete [5] Policy branches", "Built [Utopia Project]"]
     },
     {
         "name": "Domination",
-        "victoryScreenHeader": "Destroy all enemies\n to win!",
+        "victoryScreenHeader": "Destroy all enemies\nto win!",
         "milestones": ["Destroy all players"]
     },
     {
         "name": "Diplomatic",
         "hiddenInVictoryScreen": true
+        //"milestones": ["Built [United Nations]", "Win Diplomatic Vote"]
         // Requirement for winning vote is already put on the UN
     },
     {

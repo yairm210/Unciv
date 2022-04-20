@@ -134,6 +134,7 @@ class Ruleset {
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
         unitTypes.putAll(ruleset.unitTypes)
+        victories.putAll(ruleset.victories)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
         modOptions.uniques.addAll(ruleset.modOptions.uniques)
         modOptions.constants.merge(ruleset.modOptions.constants)
@@ -161,6 +162,7 @@ class Ruleset {
         unitPromotions.clear()
         units.clear()
         unitTypes.clear()
+        victories.clear()
     }
 
     fun allRulesetObjects(): Sequence<IRulesetObject> =
@@ -183,6 +185,7 @@ class Ruleset {
             unitPromotions.values.asSequence() +
             units.values.asSequence() +
             unitTypes.values.asSequence()
+            // Victories is only INamed
     fun allIHasUniques(): Sequence<IHasUniques> =
             allRulesetObjects() + sequenceOf(modOptions)
 
