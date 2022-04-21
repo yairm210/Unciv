@@ -118,7 +118,6 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
             RejectionReason.WonderAlreadyBuilt,
             RejectionReason.NationalWonderAlreadyBuilt,
             RejectionReason.CannotBeBuiltWith,
-            RejectionReason.ReachedBuildCap,
             RejectionReason.MaxNumberBuildable,
         )
         private val orderOfErrorMessages = listOf(
