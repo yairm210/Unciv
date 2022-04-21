@@ -538,8 +538,6 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 UniqueType.SpaceshipPart -> {
                     if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
-                    if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0)
-                        rejectionReasons.add(RejectionReason.ReachedBuildCap)
                 }
 
                 UniqueType.RequiresAnotherBuilding -> {

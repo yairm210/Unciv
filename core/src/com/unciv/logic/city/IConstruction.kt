@@ -153,7 +153,7 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
     MustOwnTile(false, "Must own a specific tile close by"),
     WaterUnitsInCoastalCities(false, "May only built water units in coastal cities"),
     CanOnlyBeBuiltInSpecificCities(false, "Can only be built in specific cities"),
-    MaxNumberBuildable(true, "Maximum number have been built or are being constructed"),
+    MaxNumberBuildable(false, "Maximum number have been built or are being constructed"),
 
     UniqueToOtherNation(false, "Unique to another nation"),
     ReplacedByOurUnique(false, "Our unique replaces this"),
@@ -179,8 +179,6 @@ enum class RejectionReason(val shouldShow: Boolean, val errorMessage: String) {
     CityStateWonder(false, "No Wonders for city-states"),
     CityStateNationalWonder(false, "No National Wonders for city-states"),
     WonderDisabledEra(false, "This Wonder is disabled when starting in this era"),
-
-    ReachedBuildCap(false, "Don't need to build any more of these!"),
 
     ConsumesResources(true, "Consumes resources which you are lacking"),
 
