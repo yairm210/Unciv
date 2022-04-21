@@ -237,7 +237,7 @@ object Automation {
     }
 
     fun getReservedSpaceResourceAmount(civInfo: CivilizationInfo): Int {
-        return if (civInfo.nation.preferredVictoryType == VictoryType.Scientific) 3 else 2
+        return if (civInfo.victoryType() == VictoryType.Scientific) 3 else 2
     }
 
     fun threatAssessment(assessor: CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {

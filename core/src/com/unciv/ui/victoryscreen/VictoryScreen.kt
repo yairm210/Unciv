@@ -5,8 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.CompletionStatus
@@ -20,10 +18,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
     val gameInfo = worldScreen.gameInfo
     private val playerCivInfo = worldScreen.viewingCiv
-    val victoryTypes = gameInfo.gameParameters.victoryTypes
-    private val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
-    private val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
-    private val dominationVictoryEnabled = victoryTypes.contains(VictoryType.Domination)
+    val enabledVictoryTypes = gameInfo.gameParameters.victoryTypes
 
     private val contentsTable = Table()
 
@@ -104,7 +99,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun setOurVictoryTable() {
         val ourVictoryStatusTable = Table()
         ourVictoryStatusTable.defaults().pad(10f)
-        val victoriesToShow = gameInfo.ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && victoryTypes.contains(VictoryType.valueOf(it.key))}
+        val victoriesToShow = gameInfo.ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && enabledVictoryTypes.contains(it.key) }
         
         for (victory in victoriesToShow) {
             ourVictoryStatusTable.add("[${victory.key}] Victory".toLabel())
@@ -149,8 +144,9 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun setGlobalVictoryTable() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         val globalVictoryTable = Table().apply { defaults().pad(10f) }
-
-        for (victory in gameInfo.ruleSet.victories.filter { !it.value.hiddenInVictoryScreen }) {
+        val victoriesToShow = gameInfo.ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && enabledVictoryTypes.contains(it.key) }
+        
+        for (victory in victoriesToShow) {
             globalVictoryTable.add(getGlobalVictoryColumn(majorCivs, victory.key))
         }
 

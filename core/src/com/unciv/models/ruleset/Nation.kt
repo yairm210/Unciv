@@ -21,7 +21,7 @@ class Nation : RulesetObject() {
 
     val style = ""
     var cityStateType: CityStateType? = null
-    var preferredVictoryType: VictoryType = VictoryType.Neutral
+    var preferredVictoryType: String = Constants.neutralVictoryType
     var declaringWar = ""
     var attacked = ""
     var defeated = ""

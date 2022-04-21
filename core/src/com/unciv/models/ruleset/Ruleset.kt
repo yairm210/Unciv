@@ -263,7 +263,7 @@ class Ruleset {
                 // Setup this branch
                 branch.requires = ArrayList()
                 branch.branch = branch
-                for (victoryType in VictoryType.values()) {
+                for (victoryType in victories.values) {
                     if (victoryType.name !in branch.priorities.keys) {
                         branch.priorities[victoryType.name] = 0
                     }

@@ -47,6 +47,8 @@ class Victory : INamed {
     
     val victoryString = "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!"
     val defeatString = "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
+    
+    fun enablesMaxTurns(): Boolean = milestoneObjects.any { it.type == MilestoneType.ScoreAfterTimeOut }
 }
 
 class Milestone(private val uniqueDescription: String, private val accompaniedVictory: Victory) {

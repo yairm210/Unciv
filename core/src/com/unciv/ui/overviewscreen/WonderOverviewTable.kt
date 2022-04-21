@@ -108,7 +108,7 @@ class WonderOverviewTab(
         wonder.name in startingObsolete -> false
         wonder.getMatchingUniques(UniqueType.HiddenWithoutVictoryType)
             .any { unique ->
-                !gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0]))
+                !gameInfo.gameParameters.victoryTypes.contains(unique.params[0])
             } -> false
         else -> wonderEra <= viewerEra
     }

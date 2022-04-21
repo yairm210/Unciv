@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.UncivShowableException
@@ -332,10 +333,19 @@ class CivilizationInfo {
     fun victoryType(): VictoryType {
         val victoryTypes = gameInfo.gameParameters.victoryTypes
         if (victoryTypes.size == 1)
+            return VictoryType.valueOf(victoryTypes.first()) // That is the most relevant one
+        val victoryType = nation.preferredVictoryType
+        return if (victoryType in victoryTypes) VictoryType.valueOf(victoryType)
+               else VictoryType.Neutral
+    }
+    
+    fun getPreferredVictoryType(): String {
+        val victoryTypes = gameInfo.gameParameters.victoryTypes
+        if (victoryTypes.size == 1)
             return victoryTypes.first() // That is the most relevant one
         val victoryType = nation.preferredVictoryType
-        return if (victoryType in victoryTypes) victoryType
-               else VictoryType.Neutral
+        return if (victoryType in gameInfo.ruleSet.victories) victoryType
+               else Constants.neutralVictoryType
     }
 
     @Transient

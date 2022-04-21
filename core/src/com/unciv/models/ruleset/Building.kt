@@ -588,7 +588,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                 }
 
                 UniqueType.HiddenWithoutVictoryType -> {
-                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.valueOf(unique.params[0])))
+                    if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(unique.params[0]))
                         rejectionReasons.add(RejectionReason.HiddenWithoutVictory.toInstance(unique.text))
                 }
             }

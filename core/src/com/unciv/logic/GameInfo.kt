@@ -285,14 +285,6 @@ class GameInfo {
         )
     }
 
-    private fun checkForTimeVictory() {
-        if (turns != gameParameters.maxTurns || !gameParameters.victoryTypes.contains(VictoryType.Time)) return
-
-        val winningCiv = getAliveMajorCivs()
-            .maxByOrNull { it.calculateTotalScore() } 
-            ?: return // Are there no civs left?
-    }
-    
     fun processDiplomaticVictory() {
         if (diplomaticVictoryVotesProcessed) return
         for (civInfo in civilizations) {
