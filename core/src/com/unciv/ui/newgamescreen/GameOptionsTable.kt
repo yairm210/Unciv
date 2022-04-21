@@ -4,9 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.metadata.GameSpeed
-import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.translations.tr
 import com.unciv.ui.audio.MusicMood

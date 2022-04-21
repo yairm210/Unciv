@@ -5,7 +5,7 @@
         "milestones": [
             "Built [Apollo Program]", "Add all spaceship parts in capital"
         ],
-        "spaceshipParts": [
+        "requiredSpaceshipParts": [
             "SS Engine", "SS Stasis Chamber", "SS Cockpit", "SS Booster", "SS Booster", "SS Booster"
         ],
         "victoryString": "You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!",
@@ -13,7 +13,6 @@
     },
     {
         "name": "Cultural",
-        // Requirement for building UP is already put on that building
         "victoryScreenHeader": "Complete 5 policy branches and\nbuild the Utopia Project to win!",
         "milestones": ["Complete [5] Policy branches", "Built [Utopia Project]"],
         "victoryString": "You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.",

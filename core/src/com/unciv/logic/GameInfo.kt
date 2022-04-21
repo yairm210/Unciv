@@ -284,6 +284,8 @@ class GameInfo {
                 }
         )
     }
+    
+    fun getEnabledVictories() = ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && gameParameters.victoryTypes.contains(it.key) }
 
     fun processDiplomaticVictory() {
         if (diplomaticVictoryVotesProcessed) return

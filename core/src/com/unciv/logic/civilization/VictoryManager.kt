@@ -1,8 +1,8 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Milestone
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
 
 class VictoryManager {
@@ -69,12 +69,12 @@ class VictoryManager {
     
     fun getVictoryTypeAchieved(): String? {
         if (!civInfo.isMajorCiv()) return null
-        for (victoryName in civInfo.gameInfo.ruleSet.victories.keys) {
+        for (victoryName in civInfo.gameInfo.ruleSet.victories.keys.filter { it != Constants.neutralVictoryType}) {
             if (getNextMilestone(victoryName) == null)
                 return victoryName
         }
         if (civInfo.hasUnique(UniqueType.TriggersVictory))
-            return "Neutral"
+            return Constants.neutralVictoryType
         return null
     }
     

@@ -119,6 +119,9 @@ class CivilizationInfo {
 
     @Transient
     val lastEraResourceUsedForUnit = HashMap<String, Int>()
+    
+    @Transient
+    var thingsToFocusOnForVictory = setOf<ThingToFocus>()
 
     var playerType = PlayerType.AI
 
@@ -330,15 +333,6 @@ class CivilizationInfo {
     fun originalMajorCapitalsOwned(): Int = cities.count { it.isOriginalCapital && it.foundingCiv != "" && gameInfo.getCivilization(it.foundingCiv).isMajorCiv() }
     private fun getCivTerritory() = cities.asSequence().flatMap { it.tiles.asSequence() }
 
-    fun victoryType(): VictoryType {
-        val victoryTypes = gameInfo.gameParameters.victoryTypes
-        if (victoryTypes.size == 1)
-            return VictoryType.valueOf(victoryTypes.first()) // That is the most relevant one
-        val victoryType = nation.preferredVictoryType
-        return if (victoryType in victoryTypes) VictoryType.valueOf(victoryType)
-               else VictoryType.Neutral
-    }
-    
     fun getPreferredVictoryType(): String {
         val victoryTypes = gameInfo.gameParameters.victoryTypes
         if (victoryTypes.size == 1)
@@ -347,7 +341,15 @@ class CivilizationInfo {
         return if (victoryType in gameInfo.ruleSet.victories) victoryType
                else Constants.neutralVictoryType
     }
-
+    
+    fun getPreferredVictoryTypeObject(): Victory {
+        return gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
+    }
+    
+    fun wantsToFocusOn(thingToFocusOn: ThingToFocus): Boolean {
+        return thingsToFocusOnForVictory.contains(thingToFocusOn)
+    }
+    
     @Transient
     private val civInfoStats = CivInfoStats(this)
     fun stats() = civInfoStats
@@ -762,6 +764,8 @@ class CivilizationInfo {
         }
 
         victoryManager.civInfo = this
+        
+        thingsToFocusOnForVictory = getPreferredVictoryTypeObject().getThingsToFocus(this)
 
         for (cityInfo in cities) {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo

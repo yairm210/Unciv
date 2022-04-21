@@ -8,7 +8,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.ThingToFocus
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -41,7 +41,7 @@ object Automation {
 
             rank += stats.production
             rank += stats.science
-            if (city.tiles.size < 12 || city.civInfo.victoryType() == VictoryType.Cultural) {
+            if (city.tiles.size < 12 || city.civInfo.wantsToFocusOn(ThingToFocus.Culture)) {
                 rank += stats.culture
             } else rank += stats.culture / 2
         }
@@ -237,7 +237,7 @@ object Automation {
     }
 
     fun getReservedSpaceResourceAmount(civInfo: CivilizationInfo): Int {
-        return if (civInfo.victoryType() == VictoryType.Scientific) 3 else 2
+        return if (civInfo.wantsToFocusOn(ThingToFocus.Science)) 3 else 2
     }
 
     fun threatAssessment(assessor: CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {

@@ -315,7 +315,9 @@ class Ruleset {
         val victoryTypesFiles = folderHandle.child("VictoryTypes.json")
         if (victoryTypesFiles.exists()) {
             victories += createHashmap(jsonParser.getFromJson(Array<Victory>::class.java, victoryTypesFiles))
-        }        
+            // We need to add this somewhere as a fallback for nations without a preferred victory, e.g. barbs
+            victories[Constants.neutralVictoryType] = Victory.getNeutralVictory() 
+        }
         
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")

@@ -5,7 +5,6 @@ import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.BeliefType
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.TranslationFileWriter  // for  Kdoc only
@@ -429,7 +428,7 @@ enum class UniqueParameterType(
             parameterText: String,
             ruleset: Ruleset
         ): UniqueType.UniqueComplianceErrorSeverity? {
-            return if (parameterText in VictoryType.values().map { it.name }) null
+            return if (parameterText in ruleset.victories) null
             else UniqueType.UniqueComplianceErrorSeverity.RulesetInvariant
         }
     },

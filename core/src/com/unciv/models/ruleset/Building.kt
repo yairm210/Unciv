@@ -18,7 +18,7 @@ import kotlin.math.pow
 
 class Building : RulesetStatsObject(), INonPerpetualConstruction {
 
-    var requiredTech: String? = null
+    override var requiredTech: String? = null
 
     var cost: Int = 0
     var maintenance = 0

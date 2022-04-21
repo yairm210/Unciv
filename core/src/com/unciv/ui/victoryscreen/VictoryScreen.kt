@@ -99,7 +99,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private fun setOurVictoryTable() {
         val ourVictoryStatusTable = Table()
         ourVictoryStatusTable.defaults().pad(10f)
-        val victoriesToShow = gameInfo.ruleSet.victories.filter { !it.value.hiddenInVictoryScreen && enabledVictoryTypes.contains(it.key) }
+        val victoriesToShow = gameInfo.getEnabledVictories()
         
         for (victory in victoriesToShow) {
             ourVictoryStatusTable.add("[${victory.key}] Victory".toLabel())

@@ -20,6 +20,7 @@ interface IConstruction : INamed {
 
 interface INonPerpetualConstruction : IConstruction, INamed, IHasUniques {
     val hurryCostModifier: Int
+    var requiredTech: String?
 
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getStatBuyCost(cityInfo: CityInfo, stat: Stat): Int?
