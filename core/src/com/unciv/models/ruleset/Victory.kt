@@ -88,49 +88,52 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
         return textButton
     }
     
-    private fun getVictoryScreenButtonHeader(completed: Boolean, civInfo: CivilizationInfo): TextButton {
+    fun getVictoryScreenButtonHeaderText(completed: Boolean, civInfo: CivilizationInfo): String {
         return when (type) {
             MilestoneType.BuildingBuiltGlobally, MilestoneType.WinDiplomaticVote, 
             MilestoneType.ScoreAfterTimeOut, MilestoneType.BuiltBuilding -> 
-                getMilestoneButton(uniqueDescription, completed)
+                uniqueDescription
             MilestoneType.CompletePolicyBranches -> {
                 val amountToDo = params[0]
                 val amountDone =
                     if (completed) amountToDo
                     else civInfo.getCompletedPolicyBranchesCount()
-                getMilestoneButton("[$uniqueDescription] ($amountDone/$amountToDo)", completed)
+                "[$uniqueDescription] ($amountDone/$amountToDo)"
             }
             MilestoneType.CaptureAllCapitals -> {
                 val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() }
                 val amountDone =
                     if (completed) amountToDo
                     else civInfo.originalMajorCapitalsOwned()
-                getMilestoneButton("[$uniqueDescription] ($amountDone/$amountToDo)", completed)
+                "[$uniqueDescription] ($amountDone/$amountToDo)"
             }
             MilestoneType.DestroyAllPlayers -> {
                 val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1  // Don't count yourself
                 val amountDone =
                     if (completed) amountToDo
-                    else amountToDo - (civInfo.gameInfo.getAliveMajorCivs().count() - 1) // Don't count yourself (again)
-                getMilestoneButton("[$uniqueDescription] ($amountDone/$amountToDo)", completed)
+                    else amountToDo - (civInfo.gameInfo.getAliveMajorCivs().filter { it != civInfo }.count())
+                "[$uniqueDescription] ($amountDone/$amountToDo)"
             }
             MilestoneType.AddedSSPartsInCapital -> {
                 val completeSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
                 val incompleteSpaceshipParts = accompaniedVictory.getRequiredSpaceshipParts.clone()
+                val amountToDo = incompleteSpaceshipParts.sumValues()
                 incompleteSpaceshipParts.remove(completeSpaceshipParts)
                 
-                val amountToDo = completeSpaceshipParts.map { it.value }.sum()
-                val amountDone = incompleteSpaceshipParts.map { it.value }.sum()
+                val amountDone = amountToDo - incompleteSpaceshipParts.sumValues()
                 
-                getMilestoneButton("[$uniqueDescription] ($amountDone/$amountToDo)", completed)
+                "[$uniqueDescription] ($amountDone/$amountToDo)"
             }
         }
     }
     
     fun getVictoryScreenButtons(completionStatus: CompletionStatus, civInfo: CivilizationInfo): List<TextButton> {
-        val headerButton = getVictoryScreenButtonHeader(completionStatus == CompletionStatus.Completed, civInfo)
+        val headerButton = getMilestoneButton(
+            getVictoryScreenButtonHeaderText(completionStatus == CompletionStatus.Completed, civInfo), 
+            completionStatus == CompletionStatus.Completed
+        )
         if (completionStatus == CompletionStatus.Completed || completionStatus == CompletionStatus.Incomplete) {
-            // When done or almost done, only show the header button
+            // When done or not working on this milestone, only show the header button
             return listOf(headerButton)
         }
         // Otherwise, append the partial buttons of each step

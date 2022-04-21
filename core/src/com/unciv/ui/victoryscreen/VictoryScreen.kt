@@ -150,64 +150,31 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val majorCivs = gameInfo.civilizations.filter { it.isMajorCiv() }
         val globalVictoryTable = Table().apply { defaults().pad(10f) }
 
-        if (scientificVictoryEnabled) globalVictoryTable.add(getGlobalScientificVictoryColumn(majorCivs))
-        if (culturalVictoryEnabled) globalVictoryTable.add(getGlobalCulturalVictoryColumn(majorCivs))
-        if (dominationVictoryEnabled) globalVictoryTable.add(getGlobalDominationVictoryColumn(majorCivs))
+        for (victory in gameInfo.ruleSet.victories.filter { !it.value.hiddenInVictoryScreen }) {
+            globalVictoryTable.add(getGlobalVictoryColumn(majorCivs, victory.key))
+        }
 
         contentsTable.clear()
         contentsTable.add(globalVictoryTable)
     }
+    
+    private fun getGlobalVictoryColumn(majorCivs: List<CivilizationInfo>, victory: String): Table {
+        val victoryColumn = Table().apply { defaults().pad(10f) }
+        
+        victoryColumn.add("[$victory] Victory".toLabel()).row()
+        victoryColumn.addSeparator()
 
-    private fun getGlobalDominationVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
-        val dominationVictoryColumn = Table().apply { defaults().pad(10f) }
-
-        dominationVictoryColumn.add("Undefeated civs".toLabel()).row()
-        dominationVictoryColumn.addSeparator()
-
-        for (civ in majorCivs.filter { !it.isDefeated() })
-            dominationVictoryColumn.add(getCivGroup(civ, "", playerCivInfo)).fillX().row()
-
-        for (civ in majorCivs.filter { it.isDefeated() })
-            dominationVictoryColumn.add(getCivGroup(civ, "", playerCivInfo)).fillX().row()
-
-        return dominationVictoryColumn
-    }
-
-    private fun getGlobalCulturalVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
-        val policyVictoryColumn = Table().apply { defaults().pad(10f) }
-        policyVictoryColumn.add("Branches completed".toLabel()).row()
-        policyVictoryColumn.addSeparator()
-
-        data class CivToBranchesCompleted(val civ: CivilizationInfo, val branchesCompleted: Int)
-
-        val civsToBranchesCompleted = majorCivs.map {
-            CivToBranchesCompleted(it, it.policies.adoptedPolicies.count { pol -> Policy.isBranchCompleteByName(pol) })
-        }.sortedByDescending { it.branchesCompleted }
-
-        for (entry in civsToBranchesCompleted) {
-            val civToBranchesHaveCompleted = getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
-            policyVictoryColumn.add(civToBranchesHaveCompleted).fillX().row()
-        }
-        return policyVictoryColumn
-    }
-
-    private fun getGlobalScientificVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
-        val scientificVictoryColumn = Table().apply { defaults().pad(10f) }
-        scientificVictoryColumn.add("Spaceship parts remaining".toLabel()).row()
-        scientificVictoryColumn.addSeparator()
-
-        data class civToSpaceshipPartsRemaining(val civ: CivilizationInfo, val partsRemaining: Int)
-
-        val civsToPartsRemaining = majorCivs.map {
-            civToSpaceshipPartsRemaining(it,
-                    it.victoryManager.spaceshipPartsRemaining())
+        for (civ in majorCivs.filter { !it.isDefeated() }.sortedByDescending { it.victoryManager.amountMilestonesCompleted(victory) }) {
+            val buttonText = civ.victoryManager.getNextMilestone(victory)?.getVictoryScreenButtonHeaderText(false, civ) ?: "Done!"
+            victoryColumn.add(getCivGroup(civ, "\n" + buttonText.tr(), playerCivInfo)).fillX().row()
         }
 
-        for (entry in civsToPartsRemaining) {
-            val civToPartsBeRemaining = (getCivGroup(entry.civ, " - " + entry.partsRemaining, playerCivInfo))
-            scientificVictoryColumn.add(civToPartsBeRemaining).fillX().row()
+        for (civ in majorCivs.filter { it.isDefeated() }.sortedByDescending { it.victoryManager.amountMilestonesCompleted(victory) }) {
+            val buttonText = civ.victoryManager.getNextMilestone(victory)?.getVictoryScreenButtonHeaderText(false, civ) ?: "Done!"
+            victoryColumn.add(getCivGroup(civ, "\n" + buttonText.tr(), playerCivInfo)).fillX().row()
         }
-        return scientificVictoryColumn
+        
+        return victoryColumn
     }
 
     private fun setCivRankingsTable() {
@@ -230,36 +197,38 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         contentsTable.add(civRankingsTable)
     }
 
-    companion object {
-        fun getCivGroup(civ: CivilizationInfo, afterCivNameText:String, currentPlayer:CivilizationInfo): Table {
-            val civGroup = Table()
+    private fun getCivGroup(civ: CivilizationInfo, afterCivNameText: String, currentPlayer: CivilizationInfo): Table {
+        val civGroup = Table()
 
-            var labelText = civ.civName.tr()+afterCivNameText
-            var labelColor = Color.WHITE
-            val backgroundColor: Color
+        var labelText = "{${civ.civName.tr()}}{${afterCivNameText.tr()}}"
+        var labelColor = Color.WHITE
+        val backgroundColor: Color
 
-            if (civ.isDefeated()) {
-                civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
-                backgroundColor = Color.LIGHT_GRAY
-                labelColor = Color.BLACK
-            } else if (currentPlayer == civ  // || game.viewEntireMapForDebug
-                || currentPlayer.knows(civ) || currentPlayer.isDefeated() || currentPlayer.victoryManager.hasWon()) {
-                civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
-                backgroundColor = civ.nation.getOuterColor()
-                labelColor = civ.nation.getInnerColor()
-            } else {
-                civGroup.add(ImageGetter.getRandomNationIndicator(30f))
-                backgroundColor = Color.DARK_GRAY
-                labelText = Constants.unknownNationName
-            }
-
-            civGroup.background = ImageGetter.getRoundedEdgeRectangle(backgroundColor)
-            val label = labelText.toLabel(labelColor)
-            label.setAlignment(Align.center)
-
-            civGroup.add(label).padLeft(10f)
-            civGroup.pack()
-            return civGroup
+        if (civ.isDefeated()) {
+            civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
+            backgroundColor = Color.LIGHT_GRAY
+            labelColor = Color.BLACK
+        } else if (currentPlayer == civ // || game.viewEntireMapForDebug
+            || currentPlayer.knows(civ) 
+            || currentPlayer.isDefeated() 
+            || currentPlayer.victoryManager.hasWon()
+        ) {
+            civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
+            backgroundColor = civ.nation.getOuterColor()
+            labelColor = civ.nation.getInnerColor()
+        } else {
+            civGroup.add(ImageGetter.getRandomNationIndicator(30f))
+            backgroundColor = Color.DARK_GRAY
+            labelText = Constants.unknownNationName
         }
+        
+
+        civGroup.background = ImageGetter.getRoundedEdgeRectangle(backgroundColor)
+        val label = labelText.toLabel(labelColor)
+        label.setAlignment(Align.center)
+
+        civGroup.add(label).padLeft(10f)
+        civGroup.pack()
+        return civGroup
     }
 }

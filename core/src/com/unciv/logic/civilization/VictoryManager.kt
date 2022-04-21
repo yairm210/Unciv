@@ -12,6 +12,8 @@ class VictoryManager {
     @Transient
     var requiredSpaceshipParts = Counter<String>()
     
+    // There is very likely a typo in this name (currents), but as its saved in save files,
+    // fixing it is non-trivial
     var currentsSpaceshipParts = Counter<String>()
     var hasEverWonDiplomaticVote = false
 
@@ -82,6 +84,17 @@ class VictoryManager {
                 return milestone
         }
         return null
+    }
+    
+    fun amountMilestonesCompleted(victory: String): Int {
+        var completed = 0
+        for (milestone in civInfo.gameInfo.ruleSet.victories[victory]!!.milestoneObjects) {
+            if (milestone.hasBeenCompletedBy(civInfo))
+                ++completed
+            else
+                break
+        }
+        return completed
     }
 
     fun hasWon() = getVictoryTypeAchieved() != null

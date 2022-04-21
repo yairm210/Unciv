@@ -34,6 +34,10 @@ open class Counter<K> : LinkedHashMap<K, Int>() {
         for (key in keys) newCounter[key] = this[key]!! * amount
         return newCounter
     }
+    
+    fun sumValues(): Int {
+        return this.map { it.value }.sum()
+    }
 
     override fun clone(): Counter<K> {
         val newCounter = Counter<K>()
