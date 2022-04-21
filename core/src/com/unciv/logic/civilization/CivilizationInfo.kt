@@ -342,8 +342,10 @@ class CivilizationInfo {
                else Constants.neutralVictoryType
     }
     
-    fun getPreferredVictoryTypeObject(): Victory {
-        return gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
+    fun getPreferredVictoryTypeObject(): Victory? {
+        val preferredVictoryType = getPreferredVictoryType()
+        return if (preferredVictoryType == Constants.neutralVictoryType) null
+               else gameInfo.ruleSet.victories[getPreferredVictoryType()]!!
     }
     
     fun wantsToFocusOn(thingToFocusOn: ThingToFocus): Boolean {
@@ -765,7 +767,7 @@ class CivilizationInfo {
 
         victoryManager.civInfo = this
         
-        thingsToFocusOnForVictory = getPreferredVictoryTypeObject().getThingsToFocus(this)
+        thingsToFocusOnForVictory = getPreferredVictoryTypeObject()?.getThingsToFocus(this) ?: setOf()
 
         for (cityInfo in cities) {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo

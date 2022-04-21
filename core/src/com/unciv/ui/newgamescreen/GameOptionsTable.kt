@@ -134,7 +134,7 @@ class GameOptionsTable(
     }
 
     private fun Table.addMaxTurnsSlider(): UncivSlider? {
-        if (gameParameters.victoryTypes.none { ruleset.victories[it]!!.enablesMaxTurns() })
+        if (gameParameters.victoryTypes.none { ruleset.victories[it]?.enablesMaxTurns() == true })
             return null
 
         add("{Max Turns}:".toLabel()).left().expandX()

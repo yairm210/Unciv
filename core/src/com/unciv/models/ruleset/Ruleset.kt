@@ -315,10 +315,30 @@ class Ruleset {
         val victoryTypesFiles = folderHandle.child("VictoryTypes.json")
         if (victoryTypesFiles.exists()) {
             victories += createHashmap(jsonParser.getFromJson(Array<Victory>::class.java, victoryTypesFiles))
-            // We need to add this somewhere as a fallback for nations without a preferred victory, e.g. barbs
-            victories[Constants.neutralVictoryType] = Victory.getNeutralVictory() 
         }
+
         
+        
+        // Add objects that might not be present in base ruleset mods, but are required
+        if (modOptions.isBaseRuleset) {
+            // This one should be temporary
+            if (unitTypes.isEmpty()) {
+                unitTypes.putAll(RulesetCache.getVanillaRuleset().unitTypes)
+            }
+
+            // These should be permanent
+            if (ruinRewards.isEmpty()) {
+                ruinRewards.putAll(RulesetCache.getVanillaRuleset().ruinRewards)
+            }
+            if (globalUniques.uniques.isEmpty()) {
+                globalUniques = RulesetCache.getVanillaRuleset().globalUniques
+            }
+            // If we have no victories, add all the default victories
+            if (victories.isEmpty()) {
+                victories.putAll(RulesetCache.getVanillaRuleset().victories)
+            }
+        }
+
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         if (printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
     }
@@ -783,6 +803,18 @@ class Ruleset {
         for (unitType in unitTypes.values) {
             checkUniques(unitType, lines, rulesetSpecific, forOptionsPopup)
         }
+        
+        for (victoryType in victories.values) {
+            for (requiredUnit in victoryType.requiredSpaceshipParts) 
+                if (!units.contains(requiredUnit))
+                    lines.add("Victory type ${victoryType.name} requires adding the non-existant unit $requiredUnit to the capital to win!", RulesetErrorSeverity.Warning)
+            for (milestone in victoryType.milestoneObjects) 
+                if (milestone.type == null) 
+                    lines.add("Victory type ${victoryType.name} has milestone ${milestone.uniqueDescription} that is of an unknown type!", RulesetErrorSeverity.Error)
+            for (victory in victories.values)
+                if (victory.name != victoryType.name && victory.milestones == victoryType.milestones)
+                    lines.add("Victory types ${victoryType.name} and ${victory.name} have the same requirements!", RulesetErrorSeverity.Warning)
+        }
 
         for (difficulty in difficulties.values) {
             for (unitName in difficulty.aiCityStateBonusStartingUnits + difficulty.aiMajorCivBonusStartingUnits + difficulty.playerBonusStartingUnits)
@@ -907,22 +939,7 @@ object RulesetCache : HashMap<String,Ruleset>() {
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
-        // This one should be temporary
-        if (newRuleset.unitTypes.isEmpty()) {
-            newRuleset.unitTypes.putAll(getVanillaRuleset().unitTypes)
-        }
-
-        // These should be permanent
-        if (newRuleset.ruinRewards.isEmpty()) {
-            newRuleset.ruinRewards.putAll(getVanillaRuleset().ruinRewards)
-        }
-        if (newRuleset.globalUniques.uniques.isEmpty()) {
-            newRuleset.globalUniques = getVanillaRuleset().globalUniques
-        }
-        if (newRuleset.victories.isEmpty()) {
-            newRuleset.victories.putAll(getVanillaRuleset().victories)
-        }
-
+        println(optionalBaseRuleset)
         println(newRuleset.victories)
         
         return newRuleset

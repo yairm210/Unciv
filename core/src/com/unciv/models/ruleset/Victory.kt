@@ -71,9 +71,9 @@ class Victory : INamed {
     }
 }
 
-class Milestone(private val uniqueDescription: String, private val accompaniedVictory: Victory) {
+class Milestone(val uniqueDescription: String, private val accompaniedVictory: Victory) {
 
-    val type: MilestoneType = MilestoneType.values().first { uniqueDescription.getPlaceholderText() == it.text.getPlaceholderText() }
+    val type: MilestoneType? = MilestoneType.values().firstOrNull { uniqueDescription.getPlaceholderText() == it.text.getPlaceholderText() }
     val params by lazy { uniqueDescription.getPlaceholderParameters() }
 
     fun getIncompleteSpaceshipParts(civInfo: CivilizationInfo): Counter<String> {
@@ -83,7 +83,7 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
     }
     
     fun hasBeenCompletedBy(civInfo: CivilizationInfo): Boolean {
-        return when (type) {
+        return when (type!!) {
             MilestoneType.BuiltBuilding ->
                 civInfo.cities.any { it.cityConstructions.builtBuildings.contains(params[0])}
             MilestoneType.AddedSSPartsInCapital -> {
@@ -114,7 +114,7 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
     }
     
     fun getVictoryScreenButtonHeaderText(completed: Boolean, civInfo: CivilizationInfo): String {
-        return when (type) {
+        return when (type!!) {
             MilestoneType.BuildingBuiltGlobally, MilestoneType.WinDiplomaticVote, 
             MilestoneType.ScoreAfterTimeOut, MilestoneType.BuiltBuilding -> 
                 uniqueDescription
@@ -213,7 +213,7 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
     
     fun getThingToFocus(civInfo: CivilizationInfo): ThingToFocus {
         val ruleset = civInfo.gameInfo.ruleSet
-        return when (type) {
+        return when (type!!) {
             MilestoneType.BuiltBuilding -> {
                 val building = ruleset.buildings[params[0]]!!
                 if (building.requiredTech != null && !civInfo.tech.isResearched(building.requiredTech!!)) ThingToFocus.Science
