@@ -7,7 +7,6 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.VictoryType
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSetupInfo
 import com.unciv.models.ruleset.CompletionStatus
@@ -53,22 +52,21 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         var someoneHasWon = false
 
-        val playerVictoryType = playerCivInfo.victoryManager.hasWonVictoryType()
+        val playerVictoryType = playerCivInfo.victoryManager.getVictoryTypeAchieved()
         if (playerVictoryType != null) {
             someoneHasWon = true
-            wonOrLost("You have won a [${playerVictoryType.name}] Victory!")
+            wonOrLost("You have won a [$playerVictoryType] Victory!", playerVictoryType, true)
         }
         for (civ in gameInfo.civilizations.filter { it.isMajorCiv() && it != playerCivInfo }) {
-            val civVictoryType = civ.victoryManager.hasWonVictoryType()
+            val civVictoryType = civ.victoryManager.getVictoryTypeAchieved()
             if (civVictoryType != null) {
                 someoneHasWon = true
-                val winningCivName = civ.civName
-                wonOrLost("[$winningCivName] has won a [${civVictoryType.name}] Victory!")
+                wonOrLost("[${civ.civName}] has won a [$civVictoryType] Victory!", civVictoryType, false)
             }
         }
 
         if (playerCivInfo.isDefeated()) {
-            wonOrLost("")
+            wonOrLost("", null, false)
         } else if (!someoneHasWon) {
             setDefaultCloseAction()
             onBackButtonClicked { game.setWorldScreen() }
@@ -76,18 +74,15 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     }
 
 
-    private fun wonOrLost(description: String) {
-        // description will be empty when the player loses - no parameters - so this will be when(null) and end up in the else branch:
-        val endGameMessage = when (description.getPlaceholderParameters().firstOrNull()) {
-            VictoryType.Time.name -> "The world has been convulsed by war. Many great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!"
-            VictoryType.Cultural.name -> "You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart."
-            VictoryType.Domination.name -> "The world has been convulsed by war. Many great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!"
-            VictoryType.Scientific.name -> "You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!"
-            VictoryType.Diplomatic.name -> "You have triumphed over your foes through the art of diplomacy! Your cunning and wisdom have earned you great friends - and divided and sown confusion among your enemies! Forever will you be remembered as the leader who brought peace to this weary world!"
-            VictoryType.Neutral.name -> "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!"
-            else -> "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
-        }
-
+    private fun wonOrLost(description: String, victoryType: String?, hasWon: Boolean) {
+        val endGameMessage =
+            when {
+                hasWon && (victoryType == null || victoryType !in gameInfo.ruleSet.victories) -> "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!"
+                victoryType == null || victoryType !in gameInfo.ruleSet.victories -> "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
+                hasWon -> playerCivInfo.gameInfo.ruleSet.victories[victoryType]!!.victoryString
+                else -> playerCivInfo.gameInfo.ruleSet.victories[victoryType]!!.defeatString
+            }
+        
         descriptionLabel.setText(description.tr() + "\n" + endGameMessage.tr())
 
         rightSideButton.setText("Start new game".tr())

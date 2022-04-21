@@ -13,10 +13,13 @@ import com.unciv.ui.utils.toTextButton
 
 enum class MilestoneType(val text: String) {
     BuiltBuilding("Built [building]"),
+    BuildingBuiltGlobally("[building] built globally"),
     AddedSSPartsInCapital("Add all spaceship parts in capital"),
     DestroyAllPlayers("Destroy all players"),
     CaptureAllCapitals("Capture all capitals"),
-    CompletePolicyBranches("Complete [amount] Policy branches")
+    CompletePolicyBranches("Complete [amount] Policy branches"),
+    WinDiplomaticVote("Win diplomatic vote"),
+    ScoreAfterTimeOut("Have highest score after max turns"),
 }
 
 enum class CompletionStatus {
@@ -41,6 +44,9 @@ class Victory : INamed {
             parts.add(spaceshipPart, 1)
         parts
     }
+    
+    val victoryString = "Your civilization stands above all others! The exploits of your people shall be remembered until the end of civilization itself!"
+    val defeatString = "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
 }
 
 class Milestone(private val uniqueDescription: String, private val accompaniedVictory: Victory) {
@@ -53,14 +59,25 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
         return when (type) {
             MilestoneType.BuiltBuilding ->
                 civInfo.cities.any { it.cityConstructions.builtBuildings.contains(params[0])}
-            MilestoneType.AddedSSPartsInCapital ->
-                civInfo.victoryManager.spaceshipPartsRemaining() == 0
+            MilestoneType.AddedSSPartsInCapital -> {
+                val incompleteSpaceshipParts = accompaniedVictory.getRequiredSpaceshipParts.clone()
+                incompleteSpaceshipParts.remove(civInfo.victoryManager.currentsSpaceshipParts)
+                incompleteSpaceshipParts.isEmpty()
+            }
             MilestoneType.DestroyAllPlayers ->
                 civInfo.gameInfo.getAliveMajorCivs() == listOf(civInfo)
             MilestoneType.CaptureAllCapitals ->
                 civInfo.originalMajorCapitalsOwned() == civInfo.gameInfo.civilizations.count { it.isMajorCiv() }
             MilestoneType.CompletePolicyBranches ->
                 civInfo.policies.completedBranches.size >= params[0].toInt()
+            MilestoneType.BuildingBuiltGlobally -> civInfo.gameInfo.getCities().any {
+                it.cityConstructions.builtBuildings.contains(params[0])
+            }
+            MilestoneType.WinDiplomaticVote -> civInfo.victoryManager.hasEverWonDiplomaticVote
+            MilestoneType.ScoreAfterTimeOut -> {
+                civInfo.gameInfo.turns >= civInfo.gameInfo.gameParameters.maxTurns
+                && civInfo == civInfo.gameInfo.civilizations.maxByOrNull { it.calculateTotalScore() }
+            }
         }
     }
 
@@ -73,7 +90,9 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
     
     private fun getVictoryScreenButtonHeader(completed: Boolean, civInfo: CivilizationInfo): TextButton {
         return when (type) {
-            MilestoneType.BuiltBuilding -> getMilestoneButton(uniqueDescription, completed)
+            MilestoneType.BuildingBuiltGlobally, MilestoneType.WinDiplomaticVote, 
+            MilestoneType.ScoreAfterTimeOut, MilestoneType.BuiltBuilding -> 
+                getMilestoneButton(uniqueDescription, completed)
             MilestoneType.CompletePolicyBranches -> {
                 val amountToDo = params[0]
                 val amountDone =
@@ -96,10 +115,13 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
                 getMilestoneButton("[$uniqueDescription] ($amountDone/$amountToDo)", completed)
             }
             MilestoneType.AddedSSPartsInCapital -> {
-                val amountToDo = accompaniedVictory.spaceshipParts.count()
-                val amountDone =
-                    if (completed) amountToDo
-                    else amountToDo - civInfo.victoryManager.spaceshipPartsRemaining()
+                val completeSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
+                val incompleteSpaceshipParts = accompaniedVictory.getRequiredSpaceshipParts.clone()
+                incompleteSpaceshipParts.remove(completeSpaceshipParts)
+                
+                val amountToDo = completeSpaceshipParts.map { it.value }.sum()
+                val amountDone = incompleteSpaceshipParts.map { it.value }.sum()
+                
                 getMilestoneButton("[$uniqueDescription] ($amountDone/$amountToDo)", completed)
             }
         }
@@ -114,7 +136,9 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
         // Otherwise, append the partial buttons of each step
         val buttons = mutableListOf(headerButton)
         when (type) {
-            MilestoneType.BuiltBuilding -> {} // No extra buttons necessary
+            // No extra buttons necessary
+            MilestoneType.BuiltBuilding, MilestoneType.BuildingBuiltGlobally, 
+            MilestoneType.ScoreAfterTimeOut, MilestoneType.WinDiplomaticVote -> {} 
             MilestoneType.AddedSSPartsInCapital -> {
                 val completedSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
                 val incompleteSpaceshipParts = accompaniedVictory.getRequiredSpaceshipParts.clone()

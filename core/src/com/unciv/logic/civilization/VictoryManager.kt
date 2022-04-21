@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.models.Counter
+import com.unciv.models.ruleset.Milestone
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.unique.UniqueType
 
@@ -12,8 +13,9 @@ class VictoryManager {
     var requiredSpaceshipParts = Counter<String>()
     
     var currentsSpaceshipParts = Counter<String>()
-    var hasWonTimeVictory = false
+    var hasEverWonDiplomaticVote = false
 
+    // TODO: Remove this
     init {
         requiredSpaceshipParts.add("SS Booster", 3)
         requiredSpaceshipParts.add("SS Cockpit", 1)
@@ -24,18 +26,14 @@ class VictoryManager {
     fun clone(): VictoryManager {
         val toReturn = VictoryManager()
         toReturn.currentsSpaceshipParts.putAll(currentsSpaceshipParts)
+        toReturn.hasEverWonDiplomaticVote = hasEverWonDiplomaticVote
         return toReturn
     }
 
-    fun unconstructedSpaceshipParts(): Counter<String> {
-        val counter = requiredSpaceshipParts.clone()
-        counter.remove(currentsSpaceshipParts)
-        return counter
-    }
-
+    // TODO: Remove this
     fun spaceshipPartsRemaining() = requiredSpaceshipParts.values.sum() - currentsSpaceshipParts.values.sum()
 
-    fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String>): Counter<String> {
+    private fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String>): Counter<String> {
         val results = Counter<String>()
         for (castVote in votesCast) {
             results.add(castVote.value, 1)
@@ -43,7 +41,7 @@ class VictoryManager {
         return results
     }
     
-    fun votesNeededForDiplomaticVictory(): Int {
+    private fun votesNeededForDiplomaticVictory(): Int {
         val civCount = civInfo.gameInfo.civilizations.count { !it.isDefeated() }
 
         // CvGame.cpp::DoUpdateDiploVictory() in the source code of the original
@@ -56,44 +54,35 @@ class VictoryManager {
     fun hasEnoughVotesForDiplomaticVictory(): Boolean {
         val results = calculateDiplomaticVotingResults(civInfo.gameInfo.diplomaticVictoryVotesCast)
         val bestCiv = results.maxByOrNull { it.value } ?: return false
-
+        
         // If we don't have the highest score, we have not won anyway
         if (bestCiv.key != civInfo.civName) return false
         
+        // If we don't have enough votes, we haven't won
         if (bestCiv.value < votesNeededForDiplomaticVictory()) return false
         
         // If there's a tie, we haven't won either
         return (results.none { it != bestCiv && it.value == bestCiv.value }) 
     }
     
-    private fun hasVictoryType(victoryType: VictoryType) = civInfo.gameInfo.gameParameters.victoryTypes.contains(victoryType)
-
-    fun hasWonScientificVictory() = hasVictoryType(VictoryType.Scientific) 
-            && spaceshipPartsRemaining() == 0
-
-    fun hasWonCulturalVictory() = hasVictoryType(VictoryType.Cultural)
-            && civInfo.hasUnique(UniqueType.TriggersCulturalVictory)
-
-    fun hasWonDominationVictory()= hasVictoryType(VictoryType.Domination)
-            && civInfo.gameInfo.civilizations.all { it == civInfo || it.isDefeated() || !it.isMajorCiv() }
-    
-    fun hasWonDiplomaticVictory() = hasVictoryType(VictoryType.Diplomatic) 
-            && civInfo.shouldCheckForDiplomaticVictory()
-            && hasEnoughVotesForDiplomaticVictory()
-
-    fun hasWonTimeVictory() = hasVictoryType(VictoryType.Time)
-            && hasWonTimeVictory
-    
-    fun hasWonVictoryType(): VictoryType? {
+    fun getVictoryTypeAchieved(): String? {
         if (!civInfo.isMajorCiv()) return null
-        if (hasWonTimeVictory()) return VictoryType.Time
-        if (hasWonDominationVictory()) return VictoryType.Domination
-        if (hasWonScientificVictory()) return VictoryType.Scientific
-        if (hasWonCulturalVictory()) return VictoryType.Cultural
-        if (hasWonDiplomaticVictory()) return VictoryType.Diplomatic
-        if (civInfo.hasUnique(UniqueType.TriggersVictory)) return VictoryType.Neutral
+        for (victoryName in civInfo.gameInfo.ruleSet.victories.keys) {
+            if (getNextMilestone(victoryName) == null)
+                return victoryName
+        }
+        if (civInfo.hasUnique(UniqueType.TriggersVictory))
+            return "Neutral"
+        return null
+    }
+    
+    fun getNextMilestone(victory: String): Milestone? {
+        for (milestone in civInfo.gameInfo.ruleSet.victories[victory]!!.milestoneObjects) {
+            if (!milestone.hasBeenCompletedBy(civInfo))
+                return milestone
+        }
         return null
     }
 
-    fun hasWon() = hasWonVictoryType() != null
+    fun hasWon() = getVictoryTypeAchieved() != null
 }

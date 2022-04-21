@@ -111,14 +111,15 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
             RejectionReason.RequiresTech,
             RejectionReason.RequiresPolicy,
             RejectionReason.MorePolicyBranches,
-            RejectionReason.RequiresBuildingInSomeCity
+            RejectionReason.RequiresBuildingInSomeCity,
         )
         private val reasonsToDefinitivelyRemoveFromQueue = hashSetOf(
             RejectionReason.Obsoleted,
             RejectionReason.WonderAlreadyBuilt,
             RejectionReason.NationalWonderAlreadyBuilt,
             RejectionReason.CannotBeBuiltWith,
-            RejectionReason.ReachedBuildCap
+            RejectionReason.ReachedBuildCap,
+            RejectionReason.MaxNumberBuildable,
         )
         private val orderOfErrorMessages = listOf(
             RejectionReason.WonderBeingBuiltElsewhere,
@@ -130,7 +131,7 @@ class RejectionReasons: HashSet<RejectionReasonInstance>() {
             RejectionReason.ConsumesResources,
             RejectionReason.CanOnlyBePurchased,
             RejectionReason.MaxNumberBuildable,
-            RejectionReason.NoPlaceToPutUnit
+            RejectionReason.NoPlaceToPutUnit,
         )
     }
 } 

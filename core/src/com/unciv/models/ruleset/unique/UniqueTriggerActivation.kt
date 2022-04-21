@@ -459,7 +459,7 @@ object UniqueTriggerActivation {
                     if (!civ.isBarbarian() && !civ.isSpectator())
                         civ.addFlag(
                             CivFlags.TurnsTillNextDiplomaticVote.name,
-                            civInfo.getTurnsBetweenDiplomaticVotings()
+                            civInfo.getTurnsBetweenDiplomaticVotes()
                         )
                 if (notification != null)
                     civInfo.addNotification(notification, NotificationIcon.Diplomacy)

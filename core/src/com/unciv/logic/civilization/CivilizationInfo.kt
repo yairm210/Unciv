@@ -7,7 +7,6 @@ import com.unciv.logic.UncivShowableException
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.RuinsManager.RuinsManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -930,16 +929,17 @@ class CivilizationInfo {
     private fun handleDiplomaticVictoryFlags() {
         if (flagsCountdown[CivFlags.ShouldResetDiplomaticVotes.name] == 0) {
             gameInfo.diplomaticVictoryVotesCast.clear()
-            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
             removeFlag(CivFlags.ShowDiplomaticVotingResults.name)
+            removeFlag(CivFlags.ShouldResetDiplomaticVotes.name)
         }
 
         if (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0) {
+            gameInfo.processDiplomaticVictory()
             if (gameInfo.civilizations.any { it.victoryManager.hasWon() } ) {
                 removeFlag(CivFlags.TurnsTillNextDiplomaticVote.name)
             } else {
                 addFlag(CivFlags.ShouldResetDiplomaticVotes.name, 1)
-                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotings())
+                addFlag(CivFlags.TurnsTillNextDiplomaticVote.name, getTurnsBetweenDiplomaticVotes())
             }
         }
 
@@ -952,7 +952,7 @@ class CivilizationInfo {
     fun removeFlag(flag: String) = flagsCountdown.remove(flag)
     fun hasFlag(flag: String) = flagsCountdown.contains(flag)
 
-    fun getTurnsBetweenDiplomaticVotings() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
+    fun getTurnsBetweenDiplomaticVotes() = (15 * gameInfo.gameParameters.gameSpeed.modifier).toInt() // Dunno the exact calculation, hidden in Lua files
 
     fun getTurnsTillNextDiplomaticVote() = flagsCountdown[CivFlags.TurnsTillNextDiplomaticVote.name]
 
@@ -977,8 +977,8 @@ class CivilizationInfo {
     //  to the user and thus the flag is set at -1/ 
     fun shouldCheckForDiplomaticVictory() =
         (flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == 0 
-                || flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == -1)
-                && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
+            || flagsCountdown[CivFlags.ShowDiplomaticVotingResults.name] == -1)
+        && gameInfo.civilizations.any { it.isMajorCiv() && !it.isDefeated() && it != this }
 
     private fun updateRevolts() {
         if (gameInfo.civilizations.none { it.isBarbarian() }) {
