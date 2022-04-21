@@ -312,7 +312,7 @@ class Ruleset {
             globalUniques = jsonParser.getFromJson(GlobalUniques::class.java, globalUniquesFile)
         }
         
-        val victoryTypesFiles = folderHandle.child("VictoryData.json")
+        val victoryTypesFiles = folderHandle.child("VictoryTypes.json")
         if (victoryTypesFiles.exists()) {
             victories += createHashmap(jsonParser.getFromJson(Array<Victory>::class.java, victoryTypesFiles))
         }        

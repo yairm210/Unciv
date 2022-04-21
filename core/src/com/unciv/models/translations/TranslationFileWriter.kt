@@ -377,7 +377,9 @@ object TranslationFileWriter {
                 when {
                     // Promotion names are not uniques but since we did the "[unitName] ability"
                     // they need the "parameters" treatment too
-                    (field.name == "uniques" || field.name == "promotions") && (fieldValue is java.util.AbstractCollection<*>) ->
+                    // Same for victory milestones
+                    (field.name == "uniques" || field.name == "promotions" || field.name == "milestones") 
+                    && (fieldValue is java.util.AbstractCollection<*>) ->
                         for (item in fieldValue)
                             if (item is String) submitString(item, Unique(item)) else serializeElement(item!!)
                     fieldValue is java.util.AbstractCollection<*> ->
@@ -456,6 +458,7 @@ object TranslationFileWriter {
                     "UnitPromotions" -> emptyArray<Promotion>().javaClass
                     "Units" -> emptyArray<BaseUnit>().javaClass
                     "UnitTypes" -> emptyArray<UnitType>().javaClass
+                    "VictoryTypes" -> emptyArray<Victory>().javaClass
                     else -> this.javaClass // dummy value
                 }
             }

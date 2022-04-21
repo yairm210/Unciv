@@ -36,11 +36,11 @@ class Victory : INamed {
     // Needs to be ordered, as the milestones are supposed to be obtained in a specific order
     val milestones = ArrayList<String>()
     val milestoneObjects by lazy { milestones.map { Milestone(it, this) }}
-    val spaceshipParts = ArrayList<String>()
+    val requiredSpaceshipParts = ArrayList<String>()
 
-    val getRequiredSpaceshipParts by lazy {
+    val requiredSpaceshipPartsAsCounter by lazy {
         val parts = Counter<String>()
-        for (spaceshipPart in spaceshipParts)
+        for (spaceshipPart in requiredSpaceshipParts)
             parts.add(spaceshipPart, 1)
         parts
     }
@@ -56,13 +56,12 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
     val type: MilestoneType = MilestoneType.values().first { uniqueDescription.getPlaceholderText() == it.text.getPlaceholderText() }
     val params by lazy { uniqueDescription.getPlaceholderParameters() }
 
-    fun getDisplayString() = uniqueDescription.tr()
     fun hasBeenCompletedBy(civInfo: CivilizationInfo): Boolean {
         return when (type) {
             MilestoneType.BuiltBuilding ->
                 civInfo.cities.any { it.cityConstructions.builtBuildings.contains(params[0])}
             MilestoneType.AddedSSPartsInCapital -> {
-                val incompleteSpaceshipParts = accompaniedVictory.getRequiredSpaceshipParts.clone()
+                val incompleteSpaceshipParts = accompaniedVictory.requiredSpaceshipPartsAsCounter.clone()
                 incompleteSpaceshipParts.remove(civInfo.victoryManager.currentsSpaceshipParts)
                 incompleteSpaceshipParts.isEmpty()
             }
@@ -118,7 +117,7 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
             }
             MilestoneType.AddedSSPartsInCapital -> {
                 val completeSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
-                val incompleteSpaceshipParts = accompaniedVictory.getRequiredSpaceshipParts.clone()
+                val incompleteSpaceshipParts = accompaniedVictory.requiredSpaceshipPartsAsCounter.clone()
                 val amountToDo = incompleteSpaceshipParts.sumValues()
                 incompleteSpaceshipParts.remove(completeSpaceshipParts)
                 
@@ -146,7 +145,7 @@ class Milestone(private val uniqueDescription: String, private val accompaniedVi
             MilestoneType.ScoreAfterTimeOut, MilestoneType.WinDiplomaticVote -> {} 
             MilestoneType.AddedSSPartsInCapital -> {
                 val completedSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
-                val incompleteSpaceshipParts = accompaniedVictory.getRequiredSpaceshipParts.clone()
+                val incompleteSpaceshipParts = accompaniedVictory.requiredSpaceshipPartsAsCounter.clone()
                 incompleteSpaceshipParts.remove(completedSpaceshipParts)
                 
                 for (part in completedSpaceshipParts) {
