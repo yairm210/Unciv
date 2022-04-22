@@ -12,9 +12,9 @@ import com.unciv.ui.utils.toTextButton
 
 
 enum class MilestoneType(val text: String) {
-    BuiltBuilding("Built [building]"),
-    BuildingBuiltGlobally("[building] built globally"),
-    AddedSSPartsInCapital("Add all spaceship parts in capital"),
+    BuiltBuilding("Build [building]"),
+    BuildingBuiltGlobally("[building] build globally"),
+    AddedSSPartsInCapital("Add all [comment] in capital"),
     DestroyAllPlayers("Destroy all players"),
     CaptureAllCapitals("Capture all capitals"),
     CompletePolicyBranches("Complete [amount] Policy branches"),
@@ -63,12 +63,6 @@ class Victory : INamed {
         .filter { !it.hasBeenCompletedBy(civInfo) }
         .map { it.getThingToFocus(civInfo) }
         .toSet()
-    
-    companion object {
-        fun getNeutralVictory(): Victory {
-            return Victory().apply { this.name = Constants.neutralVictoryType }
-        }
-    }
 }
 
 class Milestone(val uniqueDescription: String, private val accompaniedVictory: Victory) {

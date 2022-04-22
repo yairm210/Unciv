@@ -452,8 +452,10 @@ class GameInfo {
             }
         }
 
+        spaceResources.clear()
         spaceResources.addAll(ruleSet.buildings.values.filter { it.hasUnique(UniqueType.SpaceshipPart) }
             .flatMap { it.getResourceRequirements().keys } )
+        spaceResources.addAll(ruleSet.victories.values.flatMap { it.requiredSpaceshipParts })
         
         barbarians.setTransients(this)
 

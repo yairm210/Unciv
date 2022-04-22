@@ -535,6 +535,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
                     }
                 }
 
+                // To be replaced with `Only available <after [Apollo Project] has been build>`
                 UniqueType.SpaceshipPart -> {
                     if (!civInfo.hasUnique(UniqueType.EnablesConstructionOfSpaceshipParts))
                         rejectionReasons.add(RejectionReason.RequiresBuildingInSomeCity.toInstance("Apollo project not built!"))
@@ -668,7 +669,7 @@ class Building : RulesetStatsObject(), INonPerpetualConstruction {
     override fun postBuildEvent(cityConstructions: CityConstructions, boughtWith: Stat?): Boolean {
         val civInfo = cityConstructions.cityInfo.civInfo
 
-        if (hasUnique(UniqueType.SpaceshipPart)) {
+        if (civInfo.gameInfo.spaceResources.contains(name)) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }

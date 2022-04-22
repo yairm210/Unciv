@@ -37,11 +37,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val allTechsAreResearched = civInfo.tech.getNumberOfTechsResearched() >= civInfo.gameInfo.ruleSet.technologies.size
 
     val isAtWar = civInfo.isAtWar()
-    val buildingsToBuildForVictory = civInfo.gameInfo.getEnabledVictories().values
-        .mapNotNull { civInfo.victoryManager.getNextMilestone(it.name) }
-        .filter { it.type == MilestoneType.BuiltBuilding || it.type == MilestoneType.BuildingBuiltGlobally }
-        .map { it.params[0] }
+    private val buildingsForVictory = civInfo.gameInfo.getEnabledVictories().values
+            .mapNotNull { civInfo.victoryManager.getNextMilestone(it.name) }
+            .filter { it.type == MilestoneType.BuiltBuilding || it.type == MilestoneType.BuildingBuiltGlobally }
+            .map { it.params[0] }
+    
+    private val spaceshipParts = civInfo.gameInfo.spaceResources
 
+    
     private val averageProduction = civInfo.cities.map { it.cityStats.currentCityStats.production }.average()
     val cityIsOverAverageProduction = cityInfo.cityStats.currentCityStats.production >= averageProduction
 
@@ -203,10 +206,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addSpaceshipPartChoice() {
-        val spaceshipPart = (buildableNotWonders + buildableUnits).firstOrNull { it.hasUnique(UniqueType.SpaceshipPart) }
+        val spaceshipPart = (buildableNotWonders + buildableUnits).firstOrNull { it.name in spaceshipParts }
         if (spaceshipPart != null) {
-            var modifier = 1.5f
-            if (civInfo.wantsToFocusOn(ThingToFocus.Science)) modifier = 2f
+            val modifier = 2f
             addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
         }
     }
@@ -229,7 +231,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         ) {
             return 10f
         }
-        if (wonder.name in buildingsToBuildForVictory)
+        if (wonder.name in buildingsForVictory)
             return 5f
         if (civInfo.wantsToFocusOn(ThingToFocus.Culture)
             // TODO: Moddability

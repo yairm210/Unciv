@@ -9,21 +9,10 @@ class VictoryManager {
     @Transient
     lateinit var civInfo: CivilizationInfo
 
-    @Transient
-    var requiredSpaceshipParts = Counter<String>()
-    
     // There is very likely a typo in this name (currents), but as its saved in save files,
     // fixing it is non-trivial
     var currentsSpaceshipParts = Counter<String>()
     var hasEverWonDiplomaticVote = false
-
-    // TODO: Remove this
-    init {
-        requiredSpaceshipParts.add("SS Booster", 3)
-        requiredSpaceshipParts.add("SS Cockpit", 1)
-        requiredSpaceshipParts.add("SS Engine", 1)
-        requiredSpaceshipParts.add("SS Stasis Chamber", 1)
-    }
 
     fun clone(): VictoryManager {
         val toReturn = VictoryManager()
@@ -31,9 +20,6 @@ class VictoryManager {
         toReturn.hasEverWonDiplomaticVote = hasEverWonDiplomaticVote
         return toReturn
     }
-
-    // TODO: Remove this
-    fun spaceshipPartsRemaining() = requiredSpaceshipParts.values.sum() - currentsSpaceshipParts.values.sum()
 
     private fun calculateDiplomaticVotingResults(votesCast: HashMap<String, String>): Counter<String> {
         val results = Counter<String>()

@@ -8,6 +8,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.MilestoneType
 import com.unciv.models.ruleset.ThingToFocus
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unique.UniqueType
@@ -175,7 +176,7 @@ object Automation {
             return true
 
         // Spaceships are always allowed
-        if (construction.hasUnique(UniqueType.SpaceshipPart))
+        if (construction.name in civInfo.gameInfo.spaceResources)
             return true
 
         val requiredResources = construction.getResourceRequirements()

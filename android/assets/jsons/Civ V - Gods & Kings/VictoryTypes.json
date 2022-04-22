@@ -3,7 +3,7 @@
         "name": "Scientific",
         "victoryScreenHeader": "Complete all the spaceship parts\nto win!",
         "milestones": [
-            "Built [Apollo Program]", "Add all spaceship parts in capital"
+            "Build [Apollo Program]", "Add all [spaceship parts] in capital"
         ],
         "requiredSpaceshipParts": [
             "SS Engine", "SS Stasis Chamber", "SS Cockpit", "SS Booster", "SS Booster", "SS Booster"
@@ -14,7 +14,7 @@
     {
         "name": "Cultural",
         "victoryScreenHeader": "Complete 5 policy branches and\nbuild the Utopia Project to win!",
-        "milestones": ["Complete [5] Policy branches", "Built [Utopia Project]"],
+        "milestones": ["Complete [5] Policy branches", "Build [Utopia Project]"],
         "victoryString": "You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.",
         "defeatString": "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
     },
@@ -28,7 +28,7 @@
     {
         "name": "Diplomatic",
         "hiddenInVictoryScreen": true,
-        "milestones": ["[United Nations] built globally", "Win diplomatic vote"],
+        "milestones": ["[United Nations] build globally", "Win diplomatic vote"],
         "victoryString": "You have triumphed over your foes through the art of diplomacy! Your cunning and wisdom have earned you great friends - and divided and sown confusion among your enemies! Forever will you be remembered as the leader who brought peace to this weary world!",
         "defeatString": "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
     },
