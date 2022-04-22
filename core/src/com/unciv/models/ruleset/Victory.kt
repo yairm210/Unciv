@@ -117,21 +117,21 @@ class Milestone(val uniqueDescription: String, private val accompaniedVictory: V
                 val amountDone =
                     if (completed) amountToDo
                     else civInfo.getCompletedPolicyBranchesCount()
-                "[$uniqueDescription] ($amountDone/$amountToDo)"
+                "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
             MilestoneType.CaptureAllCapitals -> {
                 val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() }
                 val amountDone =
                     if (completed) amountToDo
                     else civInfo.originalMajorCapitalsOwned()
-                "[$uniqueDescription] ($amountDone/$amountToDo)"
+                "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
             MilestoneType.DestroyAllPlayers -> {
                 val amountToDo = civInfo.gameInfo.civilizations.count { it.isMajorCiv() } - 1  // Don't count yourself
                 val amountDone =
                     if (completed) amountToDo
                     else amountToDo - (civInfo.gameInfo.getAliveMajorCivs().filter { it != civInfo }.count())
-                "[$uniqueDescription] ($amountDone/$amountToDo)"
+                "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
             MilestoneType.AddedSSPartsInCapital -> {
                 val completeSpaceshipParts = civInfo.victoryManager.currentsSpaceshipParts
@@ -141,7 +141,7 @@ class Milestone(val uniqueDescription: String, private val accompaniedVictory: V
                 
                 val amountDone = amountToDo - incompleteSpaceshipParts.sumValues()
                 
-                "[$uniqueDescription] ($amountDone/$amountToDo)"
+                "{$uniqueDescription} ($amountDone/$amountToDo)"
             }
         }
     }
