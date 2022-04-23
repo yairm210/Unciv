@@ -73,11 +73,11 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
 
         var turnsToPopString =
                 when {
+                    cityInfo.getRuleset().units[cityInfo.cityConstructions.currentConstructionFromQueue]
+                        .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
+                    -> "Food converts to production"
                     cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population"
                     cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population"
-                    cityInfo.getRuleset().units[cityInfo.cityConstructions.currentConstructionFromQueue]
-                            .let { it != null && it.hasUnique(UniqueType.ConvertFoodToProductionWhenConstructed) }
-                    -> "Food converts to production"
                     else -> "Stopped population growth"
                 }.tr()
         turnsToPopString += " (${cityInfo.population.foodStored}${Fonts.food}/${cityInfo.population.getFoodToNextPopulation()}${Fonts.food})"
