@@ -49,6 +49,9 @@ class CityScreen(
     /** Displays raze city button - sits on TOP CENTER */
     private var razeCityButtonHolder = Table()
 
+    /** Displays reset population button - sits on TOP CENTER */
+    private var resetPopulationButtonHolder = Table()
+
     /** Displays city stats info */
     private var cityStatsTable = CityStatsTable(this)
 
@@ -81,6 +84,12 @@ class CityScreen(
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
+        val resetPopulationCityButton = "Reset Population".toTextButton()
+        resetPopulationCityButton.labelCell.pad(5f)
+        resetPopulationCityButton.onClick { city.reassignPopulation(resetLocked = true); update() }
+        resetPopulationButtonHolder.add(resetPopulationCityButton)
+        resetPopulationButtonHolder.pack()
+        stage.addActor(resetPopulationButtonHolder)
         constructionsTable.addActorsToStage()
         stage.addActor(cityInfoTable)
         stage.addActor(selectedConstructionTable)
@@ -145,6 +154,8 @@ class CityScreen(
         // Top right of screen: Stats / Specialists
         cityStatsTable.update()
         cityStatsTable.setPosition(stage.width - posFromEdge, stage.height - posFromEdge, Align.topRight)
+        resetPopulationButtonHolder.setPosition(stage.width - posFromEdge,
+                stage.height - posFromEdge - cityStatsTable.height - 10f, Align.topRight)
 
         // Top center: Annex/Raze button
         updateAnnexAndRazeCityButton()

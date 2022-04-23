@@ -584,7 +584,7 @@ class CityInfo {
         tryUpdateRoadStatus()
         attackedThisTurn = false
 
-        if (isPuppet) reassignPopulation()
+        if (isPuppet) reassignPopulation(resetLocked = true)
 
         // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
         if (!hasFlag(CityFlags.WeLoveTheKing))
@@ -639,14 +639,18 @@ class CityInfo {
         demandedResource = ""
     }
 
-    fun reassignPopulation() {
+    fun reassignPopulation(resetLocked: Boolean = false) {
         var foodWeight = 1f
         var foodPerTurn = 0f
         while (foodWeight < 3 && foodPerTurn <= 0) {
-            workedTiles = hashSetOf()
+            if (resetLocked) {
+                workedTiles = hashSetOf()
+                lockedTiles = hashSetOf()
+            }else{
+                workedTiles = lockedTiles
+            }
             population.specialistAllocations.clear()
-            for (i in 0..population.population)
-                population.autoAssignPopulation(foodWeight)
+            population.autoAssignPopulation(foodWeight)
             cityStats.update()
 
             foodPerTurn = foodForNextTurn().toFloat()
