@@ -15,6 +15,7 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import java.util.*
+import kotlin.math.max
 
 class CityScreen(
     internal val city: CityInfo,
@@ -131,6 +132,8 @@ class CityScreen(
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
+        resetPopulationButtonHolder.setPosition(stage.width - posFromEdge,
+                posFromEdge + max(tileTable.height, selectedConstructionTable.height) + 10f, Align.bottomRight)
 
         // In portrait mode only: calculate already occupied horizontal space
         val rightMargin = when {
@@ -154,8 +157,6 @@ class CityScreen(
         // Top right of screen: Stats / Specialists
         cityStatsTable.update()
         cityStatsTable.setPosition(stage.width - posFromEdge, stage.height - posFromEdge, Align.topRight)
-        resetPopulationButtonHolder.setPosition(stage.width - posFromEdge,
-                stage.height - posFromEdge - cityStatsTable.height - 10f, Align.topRight)
 
         // Top center: Annex/Raze button
         updateAnnexAndRazeCityButton()
