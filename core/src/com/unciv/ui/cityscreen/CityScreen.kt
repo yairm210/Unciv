@@ -50,7 +50,7 @@ class CityScreen(
     /** Displays raze city button - sits on TOP CENTER */
     private var razeCityButtonHolder = Table()
 
-    /** Displays reset population button - sits on TOP CENTER */
+    /** Displays reset tiles button - sits on BOT RIGHT */
     private var resetTilesButtonHolder = Table()
 
     /** Displays city stats info */

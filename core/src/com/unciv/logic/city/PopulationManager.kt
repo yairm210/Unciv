@@ -118,7 +118,7 @@ class PopulationManager {
             val valueBestTile = if (bestTile == null) 0f
             else Automation.rankTileForCityWork(bestTile, cityInfo, foodWeight)
 
-            val bestJob: String? = getMaxSpecialists()
+            val bestJob: String? = if(cityInfo.manualSpecialists) null else getMaxSpecialists()
                     .filter { specialistAllocations[it.key]!! < it.value }
                     .map { it.key }
                     .maxByOrNull { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
@@ -169,7 +169,7 @@ class PopulationManager {
             else Automation.rankTileForCityWork(worstWorkedTile, cityInfo)
 
             //evaluate specialists
-            val worstJob: String? = specialistAllocations.keys
+            val worstJob: String? = if(cityInfo.manualSpecialists) null else specialistAllocations.keys
                     .minByOrNull { Automation.rankSpecialist(getStatsOfSpecialist(it), cityInfo) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)

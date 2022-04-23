@@ -111,6 +111,15 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         }
 
         innerTable.add(tableWithIcons).row()
+        if(cityInfo.manualSpecialists){
+            val manualSpecialists = "Manual Specialists".toLabel(Color.SKY)
+            manualSpecialists.onClick { cityInfo.manualSpecialists = false; cityInfo.reassignPopulation(); cityScreen.update() }
+            innerTable.add(manualSpecialists).row()
+        }else{
+            val autoSpecialists = "Auto Specialists".toLabel(Color.WHITE)
+            autoSpecialists.onClick { cityInfo.manualSpecialists = true; update() }
+            innerTable.add(autoSpecialists).row()
+        }
     }
 
     private fun addReligionInfo() {

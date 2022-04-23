@@ -109,7 +109,7 @@ class CityInfoConquestFunctions(val city: CityInfo){
 
             health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
             if (population.population > 1) population.addPopulation(-1 - population.population / 4) // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
-            reassignPopulation(resetLocked = true)
+            reassignAllPopulation()
 
             setFlag(CityFlags.Resistance,
                 if (reconqueredCityWhileStillInResistance || foundingCiv == receivingCiv.civName) 0

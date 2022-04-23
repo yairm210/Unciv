@@ -81,6 +81,7 @@ class CityInfo {
 
     /** Tiles that the population in them won't be reassigned */
     var lockedTiles = HashSet<Vector2>()
+    var manualSpecialists = false
     var isBeingRazed = false
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
@@ -584,7 +585,7 @@ class CityInfo {
         tryUpdateRoadStatus()
         attackedThisTurn = false
 
-        if (isPuppet) reassignPopulation(resetLocked = true)
+        if (isPuppet) reassignAllPopulation()
 
         // The ordering is intentional - you get a turn without WLTKD even if you have the next resource already
         if (!hasFlag(CityFlags.WeLoveTheKing))
@@ -639,6 +640,13 @@ class CityInfo {
         demandedResource = ""
     }
 
+    // Reassign all Specialists and Unlock all tiles
+    // Mainly for automated cities, Puppets, just captured
+    fun reassignAllPopulation(){
+        manualSpecialists = false
+        reassignPopulation(resetLocked = true)
+    }
+    
     fun reassignPopulation(resetLocked: Boolean = false) {
         var foodWeight = 1f
         var foodPerTurn = 0f
@@ -649,7 +657,8 @@ class CityInfo {
             }else{
                 workedTiles = lockedTiles
             }
-            population.specialistAllocations.clear()
+            if(!manualSpecialists)
+                population.specialistAllocations.clear()
             population.autoAssignPopulation(foodWeight)
             cityStats.update()
 

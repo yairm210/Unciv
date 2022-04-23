@@ -52,6 +52,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
                 .surroundWithCircle(30f).apply { circle.color= Color.GREEN.darken(0.2f) }
         assignButton.onClick {
             cityInfo.population.specialistAllocations.add(specialistName, 1)
+            cityInfo.manualSpecialists = true
             cityInfo.cityStats.update()
             cityScreen.update()
         }
@@ -66,6 +67,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(BaseScreen.sk
                 .surroundWithCircle(30f).apply { circle.color= Color.RED.darken(0.1f) }
         unassignButton.onClick {
             cityInfo.population.specialistAllocations.add(specialistName, -1)
+            cityInfo.manualSpecialists = true
             cityInfo.cityStats.update()
             cityScreen.update()
         }
