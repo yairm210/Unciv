@@ -51,7 +51,7 @@ class CityScreen(
     private var razeCityButtonHolder = Table()
 
     /** Displays reset population button - sits on TOP CENTER */
-    private var resetPopulationButtonHolder = Table()
+    private var resetTilesButtonHolder = Table()
 
     /** Displays city stats info */
     private var cityStatsTable = CityStatsTable(this)
@@ -85,12 +85,12 @@ class CityScreen(
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
-        val resetPopulationCityButton = "Reset Population".toTextButton()
-        resetPopulationCityButton.labelCell.pad(5f)
-        resetPopulationCityButton.onClick { city.reassignPopulation(resetLocked = true); update() }
-        resetPopulationButtonHolder.add(resetPopulationCityButton)
-        resetPopulationButtonHolder.pack()
-        stage.addActor(resetPopulationButtonHolder)
+        val resetTilesButton = "Reset Tiles".toTextButton()
+        resetTilesButton.labelCell.pad(5f)
+        resetTilesButton.onClick { city.reassignPopulation(resetLocked = true); update() }
+        resetTilesButtonHolder.add(resetTilesButton)
+        resetTilesButtonHolder.pack()
+        stage.addActor(resetTilesButtonHolder)
         constructionsTable.addActorsToStage()
         stage.addActor(cityInfoTable)
         stage.addActor(selectedConstructionTable)
@@ -132,7 +132,7 @@ class CityScreen(
         tileTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - posFromEdge, posFromEdge, Align.bottomRight)
-        resetPopulationButtonHolder.setPosition(stage.width - posFromEdge,
+        resetTilesButtonHolder.setPosition(stage.width - posFromEdge,
                 posFromEdge + max(tileTable.height, selectedConstructionTable.height) + 10f, Align.bottomRight)
 
         // In portrait mode only: calculate already occupied horizontal space
